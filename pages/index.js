@@ -3,10 +3,10 @@ import Card from '@/components/Card'
 
 const Homepage = () => {
   const [values, handleChange] = useForm({
-    subreddit: 'apple'
+    subreddit: 'astrophotography'
   })
   const [isLoading, {data}] = useFetch(
-    `https://www.reddit.com/r/${values.subreddit}/top/.json?limit=10`
+    `https://www.reddit.com/r/${values.subreddit}/top/.json?limit=200&show=all`
   )
 
   let content = <p>Loading Subreddit...</p>
@@ -30,7 +30,7 @@ const Homepage = () => {
           </div>
         </aside>
 
-        <main>
+        <main className="flex flex-wrap space-y-4">
           {data.children.map((post, index) => (
             <Card key={index} data={post} />
           ))}
