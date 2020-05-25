@@ -1,6 +1,12 @@
 # Next.js Reddit App
 
-Displays a subreddit using React Hooks and Next.js. https://nextjs-reddit.now.sh
+Display a subreddit using React Hooks and Next.js. https://nextjs-reddit.now.sh
+
+## Features
+
+- Simple interface
+- Live search
+- Lazy loading images
 
 ## Install
 
