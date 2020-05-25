@@ -1,28 +1,30 @@
-import { useForm, useFetch } from "../lib/hooks";
-import Card from "../components/Card";
+import {useFetch, useForm} from '@/lib/hooks'
+import Card from '@/components/Card'
 
 const Homepage = () => {
   const [values, handleChange] = useForm({
-    subreddit: "apple",
-  });
+    subreddit: 'apple'
+  })
+  const [isLoading, {data}] = useFetch(
+    `https://www.reddit.com/r/${values.subreddit}/top/.json?limit=10`
+  )
 
-  const [isLoading, { data }] = useFetch(
-    `https://www.reddit.com/r/${values.subreddit}/.json`
-  );
-
-  let content = <p>Loading Subreddit...</p>;
+  let content = <p>Loading Subreddit...</p>
 
   if (!isLoading) {
     content = (
-      <div className="App">
-        <div className="search">
-          <p>Enter the name of a subreddit, e.g., "apple"</p>
-          <input
-            type="text"
-            name="subreddit"
-            value={values.subreddit}
-            onChange={handleChange}
-          />
+      <div className="flex space-x-8">
+        <div className="text-lg w-1/4 min-h-screen relative">
+          <div className="sticky">
+            <p>Enter the name of a subreddit, e.g., apple</p>
+            <input
+              className="border-solid border-2 border-gray-600 p-2"
+              type="text"
+              name="subreddit"
+              value={values.subreddit}
+              onChange={handleChange}
+            />
+          </div>
         </div>
 
         <div className="display">
@@ -31,10 +33,10 @@ const Homepage = () => {
           ))}
         </div>
       </div>
-    );
+    )
   }
 
-  return content;
-};
+  return content
+}
 
-export default Homepage;
+export default Homepage
