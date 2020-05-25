@@ -28,8 +28,11 @@ const Homepage = () => {
         </div>
       </aside>
       <main className="grid grid-cols-1 gap-4">
-        {!loading &&
-          data.children.map((post, index) => <Card key={index} data={post} />)}
+        {loading ? (
+          <p>Loading sub...</p>
+        ) : (
+          data.children.map((post, index) => <Card key={index} data={post} />)
+        )}
       </main>
     </section>
   )
