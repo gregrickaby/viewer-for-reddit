@@ -4,16 +4,31 @@ import Img from 'react-cool-img'
 const Card = (props) => {
   const post = props.data.data
   return (
-    <article className="w-full  bg-gray-400">
-      <h2>
-        <a href={post.url}>{post.title}</a>
-      </h2>
+    <article className="p-4 border border-solid ">
+      <header className="flex space-around justify-between items-center">
+        <h2 className="text-2xl mb-4">
+          <a
+            className="hover:underline"
+            href={post.url}
+            dangerouslySetInnerHTML={{__html: post.title}}
+          />
+        </h2>
+
+        <div className="flex space-x-2">
+          <span>{post.ups}&uarr;</span>
+          <span>{post.downs}&darr;</span>
+        </div>
+      </header>
+
       {post.thumbnail.length > 0 && (
-        <Img src={post.thumbnail} alt={post.title} />
+        <a href={post.url}>
+          <Img
+            className="object-cover object-center"
+            src={post.url}
+            alt={post.title}
+          />
+        </a>
       )}
-      <p dangerouslySetInnerHTML={{__html: post.selftext}} />
-      <span>{post.ups}</span>
-      <span>{post.downs}</span>
     </article>
   )
 }
