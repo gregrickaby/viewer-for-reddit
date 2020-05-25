@@ -1,5 +1,5 @@
 const Card = (props) => {
-  const post = props.data.data;
+  const post = props.data.data
   return (
     <article className="card">
       {post.thumbnail.length > 0 && (
@@ -8,10 +8,10 @@ const Card = (props) => {
       <h2>
         <a href={post.url}>{post.title}</a>
       </h2>
-      <p dangerouslySetInnerHTML={{ __html: post.selftext }} />
+      <p dangerouslySetInnerHTML={{__html: post.selftext}} />
       <span>{post.ups}</span>
     </article>
-  );
-};
+  )
+}
 
-export default Card;
+export default Card
