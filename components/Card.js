@@ -20,12 +20,7 @@ const Card = (props) => {
       <div className="card-content">
         {post.thumbnail.length > 0 && (
           <a href={post.url}>
-            <Img
-              className="card-image"
-              src={post.url}
-              alt={post.title}
-              cache="false"
-            />
+            <Img className="card-image" src={post.url} alt={post.title} />
           </a>
         )}
       </div>
