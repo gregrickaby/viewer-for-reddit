@@ -5,7 +5,7 @@ Displays images from a subreddit. https://reddit-image-viewer.now.sh/
 ## Features
 
 - Simple interface
-- Live search
+- Instant search
 - Lazy loading images
 - Infinite scroll
 - React Hooks
