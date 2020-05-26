@@ -3,7 +3,7 @@ import {useDebounce} from '@/lib/hooks'
 import Card from '@/components/Card'
 
 const Homepage = () => {
-  const [searchTerm, setSearchTerm] = useState('astrophotography')
+  const [searchTerm, setSearchTerm] = useState('itookapicture')
   const [results, setResults] = useState()
   const [loading, setLoading] = useState(true)
   const debouncedSearchTerm = useDebounce(searchTerm, 750)
@@ -18,7 +18,7 @@ const Homepage = () => {
         setResults(data)
         setLoading(false)
       } else {
-        setResults('astrophotography')
+        setResults('itookapicture')
       }
     }
     fetchData()
@@ -28,11 +28,12 @@ const Homepage = () => {
     <section className="content">
       <aside className="sidebar">
         <header className="header">
-          <h1 className="title">Reddit Viewer</h1>
+          <h1 className="title">Reddit Image Viewer</h1>
+          <span>r/</span>{' '}
           <input
             className="search-bar"
             type="text"
-            placeholder="astrophotography"
+            placeholder="itookapicture"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <p className="description">
