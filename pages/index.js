@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import {useDebounce} from '@/lib/hooks'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
+import NoResults from '@/components/NoResults'
 
 const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
@@ -45,12 +46,12 @@ const Homepage = () => {
       <main className="main wrap">
         {loading ? (
           <Spinner />
-        ) : typeof results.data.children == 'undefined' ? (
+        ) : typeof results.data == 'undefined' ? (
+          <NoResults />
+        ) : (
           results.data.children.map((post, index) => (
             <Card key={index} data={post} />
           ))
-        ) : (
-          <p className="no-results">No Results</p>
         )}
       </main>
     </>
