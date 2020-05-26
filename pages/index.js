@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react'
 import {useDebounce} from '@/lib/hooks'
 import Card from '@/components/Card'
+import Spinner from '@/components/Spinner'
 
 const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
@@ -43,7 +44,7 @@ const Homepage = () => {
 
       <main className="main wrap">
         {loading ? (
-          <p>Loading sub...</p>
+          <Spinner />
         ) : (
           results.data.children.map((post, index) => (
             <Card key={index} data={post} />

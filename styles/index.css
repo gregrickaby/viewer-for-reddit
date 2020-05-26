@@ -35,6 +35,41 @@
   @apply grid grid-cols-1 gap-4 p-4;
 }
 
+.sp {
+  height: 32px;
+  margin: 20px auto;
+  width: 32px;
+}
+
+.sp-clock {
+  border-radius: 50%;
+  border: 1px #000 solid;
+  position: relative;
+}
+
+.sp-clock::before {
+  animation: spClock 1s infinite linear;
+  border-left: 1px #000 solid;
+  content: '';
+  height: calc(50% - 2px);
+  position: absolute;
+  right: 15px;
+  top: 2px;
+  transform-origin: 0% 100%;
+  transform: rotate(0deg);
+  width: 1px;
+}
+
+@keyframes spClock {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
 /* Card
 ============================= */
 .card {
