@@ -35,6 +35,7 @@
   @apply grid grid-cols-1 gap-4 p-4;
 }
 
+/* Spinner */
 .sp {
   height: 32px;
   margin: 20px auto;
@@ -68,6 +69,10 @@
   to {
     transform: rotate(359deg);
   }
+}
+
+.no-results {
+  @apply text-xl text-center;
 }
 
 /* Card

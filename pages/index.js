@@ -45,10 +45,12 @@ const Homepage = () => {
       <main className="main wrap">
         {loading ? (
           <Spinner />
-        ) : (
+        ) : typeof results.data.children == 'undefined' ? (
           results.data.children.map((post, index) => (
             <Card key={index} data={post} />
           ))
+        ) : (
+          <p className="no-results">No Results</p>
         )}
       </main>
     </>
