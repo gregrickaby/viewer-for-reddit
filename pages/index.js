@@ -3,6 +3,7 @@ import {useDebounce} from '@/lib/hooks'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import NoResults from '@/components/NoResults'
+import SiteHead from '@/components/SiteHead'
 
 const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
@@ -13,6 +14,7 @@ const Homepage = () => {
   useEffect(() => {
     async function fetchData() {
       if (debouncedSearchTerm) {
+        // eslint-disable-next-line
         const response = await fetch(
           `https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`
         )
@@ -28,6 +30,7 @@ const Homepage = () => {
 
   return (
     <>
+      <SiteHead />
       <header className="site-header">
         <div className="wrap">
           <h1 className="site-title">Reddit Image Viewer</h1>
