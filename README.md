@@ -1,23 +1,26 @@
-# Next.js Reddit App
+# Reddit Image Viewer
 
-Display a subreddit using React Hooks and Next.js. https://nextjs-reddit.now.sh
+Displays images from a subreddit. https://reddit-image-viewer.now.sh/
 
 ## Features
 
 - Simple interface
 - Live search
 - Lazy loading images
+- Infinite scroll
+- React Hooks
+- Tailwind CSS
 
 ## Install
 
 Clone down this repo and install the dependencies.
 
 ```bash
-git clone git@github.com:gregrickaby/nextjs-reddit.git
+git clone git@github.com:gregrickaby/reddit-image-viewer.git
 ```
 
 ```bash
-cd nextjs-reddit
+cd reddit-image-viewer
 ```
 
 ```bash
