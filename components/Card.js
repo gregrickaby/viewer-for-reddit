@@ -3,32 +3,41 @@ import Img from 'react-cool-img'
 
 const Card = (props) => {
   const post = props.data.data
+  const date = new Date(post.created_utc * 1000)
+
   return (
-    <article className="p-4 border border-solid ">
-      <header className="flex space-around justify-between items-center">
-        <h2 className="text-2xl mb-4">
+    <article className="card">
+      <header className="card-header">
+        <h2 className="card-title">
           <a
-            className="hover:underline"
+            className="card-link"
             href={post.url}
             dangerouslySetInnerHTML={{__html: post.title}}
           />
         </h2>
-
-        <div className="flex space-x-2">
-          <span>{post.ups}&uarr;</span>
-          <span>{post.downs}&darr;</span>
-        </div>
       </header>
 
-      {post.thumbnail.length > 0 && (
-        <a href={post.url}>
-          <Img
-            className="object-cover object-center"
-            src={post.url}
-            alt={post.title}
-          />
-        </a>
-      )}
+      <div className="card-content">
+        {post.thumbnail.length > 0 && (
+          <a href={post.url}>
+            <Img
+              className="card-image"
+              src={post.url}
+              alt={post.title}
+              cache="false"
+            />
+          </a>
+        )}
+      </div>
+
+      <footer className="card-footer">
+        <div className="card-date">
+          Posted on {date.getMonth()}/{date.getDate()}/
+          {date.getFullYear().toString().slice(-2)}
+        </div>
+        <div className="card-votes">&uarr; {post.ups}</div>
+        <div className="card-comments">{post.num_comments} comments</div>
+      </footer>
     </article>
   )
 }
