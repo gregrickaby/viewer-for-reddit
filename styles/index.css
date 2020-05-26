@@ -1,3 +1,49 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.content {
+  @apply w-full;
+}
+
+.sidebar {
+  @apply text-lg;
+}
+
+.header {
+  @apply text-center mb-4;
+}
+
+.title {
+  @apply text-3xl mb-4;
+}
+
+.search-bar {
+  @apply border-solid border-2 border-gray-600 p-2 mb-2;
+
+  max-width: 70%;
+}
+
+.description {
+  @apply text-sm;
+}
+
+.main {
+  @apply grid grid-cols-1 gap-4;
+}
+
+@screen md {
+  .content {
+    @apply flex;
+  }
+
+  .sidebar {
+    @apply min-h-screen;
+
+    width: 246px;
+  }
+
+  .header {
+    @apply sticky top-0;
+  }
+}

@@ -25,22 +25,22 @@ const Homepage = () => {
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <section className="flex space-x-8">
-      <aside className="text-lg min-h-screen" style={{width: '246px'}}>
-        <div className="sticky top-0">
-          <h1 className="text-3xl mb-4">Reddit Viewer</h1>
+    <section className="content">
+      <aside className="sidebar">
+        <header className="header">
+          <h1 className="title">Reddit Viewer</h1>
           <input
-            className="border-solid border-2 border-gray-600 p-2 mb-2"
+            className="search-bar"
             type="text"
             placeholder="astrophotography"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <p className="text-sm">
+          <p className="description">
             <em>Enter the name of a subreddit</em>
           </p>
-        </div>
+        </header>
       </aside>
-      <main className="grid grid-cols-1 gap-4">
+      <main className="main">
         {loading ? (
           <p>Loading sub...</p>
         ) : (
