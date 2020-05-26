@@ -2,48 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-.content {
-  @apply w-full;
+/* Homepage
+============================= */
+.wrap {
+  @apply max-w-xl m-auto;
 }
 
-.sidebar {
-  @apply text-lg;
+/**
+ * Header area
+ */
+.site-header {
+  @apply flex flex-wrap sticky top-0 bg-white mb-8 pt-2 pb-6 text-center;
+
+  box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.25);
 }
 
-.header {
-  @apply text-center mb-4;
+.site-title {
+  @apply text-2xl mb-4;
 }
 
-.title {
-  @apply text-3xl mb-4;
-}
-
+/**
+ * Search
+ */
 .search-bar {
-  @apply border-solid border-2 border-gray-600 p-2 mb-2;
-
-  max-width: 70%;
+  @apply border-solid border border-black p-2;
 }
 
-.description {
-  @apply text-sm;
-}
-
+/**
+ * Main content area
+ */
 .main {
-  @apply grid grid-cols-1 gap-4;
+  @apply grid grid-cols-1 gap-4 p-4;
 }
 
-@screen md {
-  .content {
-    @apply flex;
-  }
+/* Card
+============================= */
+.card {
+  @apply p-4 mb-8 rounded-lg shadow-2xl;
+}
 
-  .sidebar {
-    @apply min-h-screen;
+.card-title {
+  @apply text-2xl mb-4 text-center;
+}
 
-    width: 246px;
-  }
+.card-link:hover {
+  @apply underline;
+}
 
-  .header {
-    @apply sticky top-0;
-  }
+.card-image {
+  @apply bg-gray-400;
+}
+
+.card-footer {
+  @apply flex flex-wrap justify-between mt-4 text-sm;
 }
