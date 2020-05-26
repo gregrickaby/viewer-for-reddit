@@ -9,6 +9,10 @@ const SiteHead = () => (
     />
     <meta httpEquiv="x-ua-compatible" content="ie=edge" />
     <meta name="description" content="View images from a subreddit." />
+    <link rel="dns-prefetch" href="//www.reddit.com" />
+    <link rel="dns-prefetch" href="//i.reddit.com" />
+    <link rel="dns-prefetch" href="//imgur.com" />
+    <link rel="dns-prefetch" href="//i.imgur.com" />
   </Head>
 )
 
