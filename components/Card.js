@@ -55,14 +55,27 @@ const Card = (props) => {
                 />
               )
             case 'link':
-              return (
-                // eslint-disable-next-line
-                <video
-                  src={post.url.replace('.gifv', '.mp4')} // Replace Imgur .gifv with .mp4.
-                  controls
-                  muted
-                ></video>
-              )
+              // Search for .gifv....
+              if (post.url.includes('gifv')) {
+                return (
+                  // eslint-disable-next-line
+                  <video
+                    src={post.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
+                    controls
+                    muted
+                  ></video>
+                )
+              } else {
+                // No .gifv?, then just display the thumbnail.
+                return (
+                  <Img
+                    className="card-image"
+                    src={post.thumbnail}
+                    alt={post.title}
+                  />
+                )
+              }
+              break
             default:
               break
           }
