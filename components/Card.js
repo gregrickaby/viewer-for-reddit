@@ -75,7 +75,6 @@ const Card = (props) => {
                   />
                 )
               }
-              break
             default:
               break
           }
