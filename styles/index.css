@@ -88,7 +88,11 @@
 }
 
 .card-image {
-  @apply bg-gray-400;
+  @apply m-auto bg-gray-400;
+}
+
+.card-embed iframe {
+  width: 32rem !important;
 }
 
 .card-footer {
