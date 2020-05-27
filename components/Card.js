@@ -4,7 +4,14 @@ import Img from 'react-cool-img'
 const Card = (props) => {
   const post = props.data.data
   const date = new Date(post.created_utc * 1000)
-  const permalink = `https://www.reddit.com${post.permalink}`
+
+  // Reddit encodes HTML, so decode it before using dangerouslySetInnerHTML.
+  // https://gomakethings.com/decoding-html-entities-with-vanilla-javascript/
+  const decodeHTML = (html) => {
+    const text = document.createElement('textarea') // eslint-disable-line no-undef
+    text.innerHTML = html
+    return text.value
+  }
 
   return (
     <article className="card">
@@ -12,7 +19,7 @@ const Card = (props) => {
         <h2 className="card-title">
           <a
             className="card-link"
-            href={post.url}
+            href={`https://www.reddit.com${post.permalink}`}
             dangerouslySetInnerHTML={{__html: post.title}}
           />
         </h2>
@@ -20,29 +27,42 @@ const Card = (props) => {
 
       <div className="card-content">
         {(() => {
-          // Determin the media type using post_hint
+          // Determin the media type using post_hint.
           switch (post.post_hint) {
             case 'image':
               return (
-                <Img className="card-image" src={post.url} alt={post.title} />
+                <a href={post.url}>
+                  <Img className="card-image" src={post.url} alt={post.title} />
+                </a>
               )
             case 'hosted:video':
               return (
+                // eslint-disable-next-line
                 <video
                   src={post.secure_media.reddit_video.fallback_url}
-                  autoPlay="true"
+                  controls
+                  muted
                 ></video>
               )
             case 'rich:video':
               return (
-                <div
-                  dangerouslySetInnerHTML={{__html: post.media_embed.content}}
+                <a
+                  src={post.url}
+                  className="card-embed"
+                  dangerouslySetInnerHTML={{
+                    __html: decodeHTML(post.media.oembed.html)
+                  }}
                 />
               )
-            case 'self':
-              return ''
             case 'link':
-              return ''
+              return (
+                // eslint-disable-next-line
+                <video
+                  src={post.url.replace('.gifv', '.mp4')} // Replace Imgur .gifv with .mp4.
+                  controls
+                  muted
+                ></video>
+              )
             default:
               break
           }
@@ -59,7 +79,9 @@ const Card = (props) => {
         </div>
         <div className="card-votes">&uarr; {post.ups}</div>
         <div className="card-comments">
-          <a href={permalink}>{post.num_comments} comments</a>
+          <a href={`https://www.reddit.com${post.permalink}`}>
+            {post.num_comments} comments
+          </a>
         </div>
       </footer>
     </article>
