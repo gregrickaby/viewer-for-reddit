@@ -12,9 +12,9 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "9.4.2",
+    "next": "9.4.4",
     "react": "16.13.1",
-    "react-cool-img": "^1.1.6",
+    "react-cool-img": "^1.1.7",
     "react-dom": "16.13.1"
   },
   "devDependencies": {
