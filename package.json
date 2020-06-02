@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "next": "9.4.4",
-    "react": "16.13.1",
+    "react": "0.0.0-experimental-d7382b6c4",
     "react-cool-img": "^1.2.0",
-    "react-dom": "16.13.1",
+    "react-dom": "0.0.0-experimental-d7382b6c4",
     "swr": "^0.2.2"
   },
   "devDependencies": {
