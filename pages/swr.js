@@ -15,7 +15,7 @@ const Posts = () => {
     data,
     error
   } = useSWR(
-    `https://www.reddit.com/r/${searchTerm}/.json?limit=5&show=all`,
+    `https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`,
     fetcher,
     {suspense: true}
   )
