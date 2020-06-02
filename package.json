@@ -16,7 +16,7 @@
     "react": "16.13.1",
     "react-cool-img": "^1.2.0",
     "react-dom": "16.13.1",
-    "react-window": "^1.8.5"
+    "swr": "^0.2.2"
   },
   "devDependencies": {
     "eslint": "^7.1.0",
