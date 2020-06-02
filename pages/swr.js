@@ -1,28 +1,57 @@
+import {Suspense, useState} from 'react'
 import useSWR from 'swr'
+
+import Card from '@/components/Card'
+import NoResults from '@/components/NoResults'
+import SiteHead from '@/components/SiteHead'
+import Spinner from '@/components/Spinner'
 
 const fetcher = (url) => fetch(url).then((r) => r.json()) // eslint-disable-line no-undef
 
-export default function IndexPage() {
-  const {data, error} = useSWR(
-    `https://www.reddit.com/r/itookapicture/.json?limit=5&show=all`,
-    fetcher
+const Posts = () => {
+  const [searchTerm, setSearchTerm] = useState('itookapicture')
+
+  const {
+    data,
+    error
+  } = useSWR(
+    `https://www.reddit.com/r/${searchTerm}/.json?limit=5&show=all`,
+    fetcher,
+    {suspense: true}
   )
-  if (error) return <div>Failed to load</div>
-  if (!data) return <div>loading subreddit...</div>
+  if (error) return <NoResults />
+
   return (
     <>
-      <h1>Reddit Viewer</h1>
-      {data.data.children.map((post, index) => (
-        <div key={index}>
-          <h2>
-            <a
-              href={`https://www.reddit.com${post.data.permalink}`}
-              dangerouslySetInnerHTML={{__html: post.data.title}}
+      <SiteHead />
+      <header className="site-header">
+        <div className="wrap">
+          <h1 className="site-title">Reddit Image Viewer</h1>
+          <div className="site-search">
+            <span>r/</span>{' '}
+            <input
+              className="search-bar"
+              type="text"
+              placeholder="itookapicture"
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </h2>
-          <img src={post.data.thumbnail} alt={post.data.title} />
+          </div>
         </div>
-      ))}
+      </header>
+
+      <main className="main wrap">
+        {data.data.children.map((post, index) => (
+          <Card key={index} data={post} />
+        ))}
+      </main>
     </>
+  )
+}
+
+export default function App() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <Posts />
+    </Suspense>
   )
 }
