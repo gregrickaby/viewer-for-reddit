@@ -18,6 +18,12 @@ const SiteHead = () => (
     <link rel="dns-prefetch" href="//b.thumbs.redditmedia.com" />
     <link rel="dns-prefetch" href="//imgur.com" />
     <link rel="dns-prefetch" href="//i.imgur.com" />
+    <link
+      rel="preload"
+      href="//www.reddit.com/r/itookapicture/.json?limit=200&show=all"
+      as="fetch"
+      crossOrigin="anonymous"
+    />
   </Head>
 )
 
