@@ -9,7 +9,7 @@ const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
   const [results, setResults] = useState()
   const [loading, setLoading] = useState(true)
-  const debouncedSearchTerm = useDebounce(searchTerm, 750)
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000)
 
   useEffect(() => {
     async function fetchData() {
