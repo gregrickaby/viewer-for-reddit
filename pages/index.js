@@ -5,6 +5,8 @@ import Spinner from '@/components/Spinner'
 import NoResults from '@/components/NoResults'
 import SiteHead from '@/components/SiteHead'
 
+const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
+
 const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
   const [results, setResults] = useState()
@@ -16,7 +18,8 @@ const Homepage = () => {
       if (debouncedSearchTerm) {
         // eslint-disable-next-line
         const response = await fetch(
-          `https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`
+          CORS_PROXY +
+            `https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`
         )
         const data = await response.json()
         setResults(data)
