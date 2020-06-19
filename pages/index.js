@@ -5,6 +5,7 @@ import Spinner from '@/components/Spinner'
 import NoResults from '@/components/NoResults'
 import SiteHead from '@/components/SiteHead'
 import BackToTop from 'react-easy-back-to-top'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
 
@@ -48,6 +49,7 @@ const Homepage = () => {
             />
           </div>
         </div>
+        <ThemeToggle />
       </header>
 
       <main className="main wrap">
