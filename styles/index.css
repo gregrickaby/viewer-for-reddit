@@ -41,7 +41,7 @@ body.dark-mode .site-header {
  * Header area
  */
 .site-header {
-  @apply flex flex-wrap items-start sticky top-0 mb-8 pt-2 pb-6 text-center;
+  @apply flex flex-wrap sticky top-0 mb-8 pt-2 pb-6 text-center;
 
   box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.25);
 }
@@ -131,7 +131,10 @@ body.dark-mode .site-header {
 /* Theme Toggle
 ============================== */
 .theme-toggle-wrap {
-  @apply flex items-center;
+  @apply flex items-center fixed;
+
+  top: 70px;
+  right: 10px;
 }
 
 .theme-toggle {
