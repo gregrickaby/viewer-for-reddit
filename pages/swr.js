@@ -1,32 +1,23 @@
-import {useState, useEffect} from 'react'
-import {useDebounce} from '@/lib/hooks'
+import {useState, Suspense} from 'react'
 import useSWR from 'swr'
 import Card from '@/components/Card'
+import Spinner from '@/components/Spinner'
 import NoResults from '@/components/NoResults'
 import SiteHead from '@/components/SiteHead'
-import Spinner from '@/components/Spinner'
 
 const fetcher = (url) => fetch(url).then((r) => r.json()) // eslint-disable-line no-undef
 
-const Posts = () => {
+const Profile = () => {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
-  const [results, setResults] = useState()
-  const [loading, setLoading] = useState(true)
-  const debouncedSearchTerm = useDebounce(searchTerm, 1000)
-  const apiUrl = `https://cors-anywhere.herokuapp.com/https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`
-  const {data, error} = useSWR(loading ? apiUrl : apiUrl, fetcher)
-
-  useEffect(() => {
-    async function fetchData() {
-      if (debouncedSearchTerm) {
-        setResults(data)
-        setLoading(false)
-      }
+  const {data, error} = useSWR(
+    `https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`,
+    fetcher,
+    {
+      suspense: true
     }
-    fetchData()
-  }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
-  if (error) return <NoResults />
+  if (error) return <h1>Error!</h1>
 
   return (
     <>
@@ -45,14 +36,13 @@ const Posts = () => {
           </div>
         </div>
       </header>
-
       <main className="main wrap">
-        {loading ? (
+        {!data ? (
           <Spinner />
-        ) : typeof results.data == 'undefined' ? (
+        ) : typeof data.data == 'undefined' ? (
           <NoResults />
         ) : (
-          results.data.children.map((post, index) => (
+          data.data.children.map((post, index) => (
             <Card key={index} data={post} />
           ))
         )}
@@ -61,4 +51,10 @@ const Posts = () => {
   )
 }
 
-export default Posts
+const Example = () => (
+  <Suspense fallback={<Spinner />}>
+    <Profile />
+  </Suspense>
+)
+
+export default Example
