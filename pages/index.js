@@ -44,7 +44,7 @@ const Homepage = () => {
             <input
               className="search-bar"
               type="text"
-              placeholder="itookapicture"
+              placeholder={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
