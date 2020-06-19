@@ -16,13 +16,13 @@
     "react": "0.0.0-experimental-d7382b6c4",
     "react-cool-img": "^1.2.0",
     "react-dom": "0.0.0-experimental-d7382b6c4",
-    "swr": "^0.2.2"
+    "swr": "^0.2.3"
   },
   "devDependencies": {
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.21.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-jsx-a11y": "^6.3.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.4",
