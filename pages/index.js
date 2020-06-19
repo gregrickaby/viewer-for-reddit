@@ -4,6 +4,7 @@ import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import NoResults from '@/components/NoResults'
 import SiteHead from '@/components/SiteHead'
+import BackToTop from 'react-easy-back-to-top'
 
 const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
 
@@ -59,6 +60,7 @@ const Homepage = () => {
             <Card key={index} data={post} />
           ))
         )}
+        <BackToTop text="&uarr;" transition="all 0.5s" padding="2px 8px" />
       </main>
     </>
   )

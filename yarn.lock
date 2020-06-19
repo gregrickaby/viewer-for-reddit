@@ -5655,7 +5655,7 @@ react-cool-img@^1.2.0:
   resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.0.tgz#3893c3cf4c7b844fd4f86a4e5037d8968f0d276d"
   integrity sha512-hPkTKAv0ua/Ds6z+0eON22JJy+ciPELnqSj67McWc+bFa2WH/EqjneAJTtk9IZKZmygecnbtd/eNWh9Pw8MKhw==
 
-react-dom@16.13.1:
+react-dom@16.13.1, react-dom@^16.12.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
   integrity sha512-81PIMmVLnCNLO/fFOQxdQkvEq/+Hfpv24XNJfpyZhTRfO0QcmQIF/PgCa1zCOj2w1hrn12MFLyaJ/G0+Mxtfag==
@@ -5664,6 +5664,15 @@ react-dom@16.13.1:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.19.1"
+
+react-easy-back-to-top@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-easy-back-to-top/-/react-easy-back-to-top-1.0.2.tgz#68f7eb314a538ca663032979be1bb79addc8de04"
+  integrity sha512-d05VF3YSeCgS0rpOV/BvU9FizsPefd6f2IyhSGuNhgs4hKbEmjoSPlp7m6LksEA4aRVNoXePETx1rjtZSJUhtA==
+  dependencies:
+    prop-types "^15.7.2"
+    react "^16.12.0"
+    react-dom "^16.12.0"
 
 react-is@16.13.1, react-is@^16.8.1:
   version "16.13.1"
@@ -5683,7 +5692,7 @@ react-window@^1.8.5:
     "@babel/runtime" "^7.0.0"
     memoize-one ">=3.1.1 <6"
 
-react@16.13.1:
+react@16.13.1, react@^16.12.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
