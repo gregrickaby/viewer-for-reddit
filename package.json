@@ -1,6 +1,17 @@
 {
   "name": "reddit-image-viewer",
+  "description": "Displays images from a subreddit. https://reddit-image-viewer.now.sh/",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gregrickaby/reddit-image-viewer.git"
+  },
+  "author": "Greg Rickaby <greg@gregrickaby.com>",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/gregrickaby/reddit-image-viewer/issues"
+  },
+  "homepage": "https://github.com/gregrickaby/reddit-image-viewer#readme",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -8,7 +19,7 @@
     "dev": "yarn clean && yarn lint && next dev",
     "develop": "yarn dev",
     "export": "next export",
-    "lint": "./node_modules/.bin/eslint ./ --fix || true",
+    "lint": "eslint ./ --fix || true",
     "start": "next start"
   },
   "dependencies": {
