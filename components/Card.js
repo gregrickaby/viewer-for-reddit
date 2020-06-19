@@ -32,7 +32,16 @@ const Card = (props) => {
             case 'image':
               return (
                 <a href={post.url}>
-                  <Img className="card-image" src={post.url} alt={post.title} />
+                  <Img
+                    alt={post.title}
+                    className="card-image"
+                    debounce={1000}
+                    error="error.png"
+                    height="544"
+                    src={post.url}
+                    placeholder="loading.gif"
+                    width="544"
+                  />
                 </a>
               )
             case 'hosted:video':
