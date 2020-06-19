@@ -2,6 +2,8 @@
 
 Displays images and other media from any subreddit. https://reddit-image-viewer.now.sh/
 
+![demo](https://dl.dropbox.com/s/0a0t84dwbh9hbkf/Kapture%202020-06-19%20at%2013.14.18.gif?dl=0)
+
 ## Features
 
 - Simple interface
