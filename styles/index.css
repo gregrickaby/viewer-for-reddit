@@ -76,7 +76,7 @@
 /* Card
 ============================= */
 .card {
-  @apply p-4 mb-8 rounded-lg shadow-2xl;
+  @apply p-4 mb-8 rounded-lg shadow-xl;
 }
 
 .card-title {
