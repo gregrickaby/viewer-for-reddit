@@ -4,7 +4,6 @@
 
 /* Body
 ============================= */
-
 body,
 .site-header {
   transition: background-color 0.3s ease;
@@ -155,7 +154,7 @@ body.dark-mode .site-header {
   bottom: 4px;
   content: '';
   left: 4px;
-  transition: 0.4s;
+  transition: 0.3s;
 }
 
 .theme-toggle input:checked + .theme-toggle-slider {
