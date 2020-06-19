@@ -5,7 +5,7 @@ Displays images and other media from any subreddit. https://reddit-image-viewer.
 ## Features
 
 - Simple interface
-- Dark mode toggle
+- Dark mode
 - Instant search
 - Lazy load media
 - Infinite scroll
