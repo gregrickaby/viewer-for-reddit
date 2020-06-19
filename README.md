@@ -1,19 +1,19 @@
 # Reddit Image Viewer
 
-Displays images from a subreddit. https://reddit-image-viewer.now.sh/
+Displays images and other media from any subreddit. https://reddit-image-viewer.now.sh/
 
 ## Features
 
 - Simple interface
+- Dark mode toggle
 - Instant search
-- Lazy loading images
+- Lazy load media
 - Infinite scroll
-- React Hooks
 - Tailwind CSS
 
 ## Install
 
-Clone down this repo and install the dependencies.
+Clone down this repo and install the dependencies:
 
 ```bash
 git clone git@github.com:gregrickaby/reddit-image-viewer.git
