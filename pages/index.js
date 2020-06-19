@@ -49,7 +49,6 @@ const Homepage = () => {
             />
           </div>
         </div>
-        <ThemeToggle />
       </header>
 
       <main className="main wrap">
@@ -62,6 +61,7 @@ const Homepage = () => {
             <Card key={index} data={post} />
           ))
         )}
+        <ThemeToggle />
         <BackToTop text="&uarr;" transition="all 0.5s" padding="2px 8px" />
       </main>
     </>
