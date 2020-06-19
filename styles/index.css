@@ -98,3 +98,10 @@
 .card-footer {
   @apply flex flex-wrap justify-between mt-4 text-sm;
 }
+
+@media (prefers-color-scheme: dark) {
+  body,
+  .site-header {
+    @apply bg-gray-900 text-white;
+  }
+}
