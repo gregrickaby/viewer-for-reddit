@@ -133,12 +133,12 @@ body.dark-mode .site-header {
 .theme-toggle-wrap {
   @apply flex items-center fixed;
 
-  top: 70px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
 }
 
 .theme-toggle {
-  @apply relative h-4 w-8;
+  @apply relative h-4 w-6;
 }
 
 .theme-toggle input {
@@ -156,20 +156,20 @@ body.dark-mode .site-header {
 
   bottom: 4px;
   content: '';
-  left: 4px;
+  left: 3px;
   transition: 0.3s;
+}
+
+.theme-toggle input:checked + .theme-toggle-slider::before {
+  transform: translateX(10px);
 }
 
 .theme-toggle input:checked + .theme-toggle-slider {
   @apply bg-green-600;
 }
 
-.theme-toggle input:checked + .theme-toggle-slider::before {
-  transform: translateX(16px);
-}
-
 .theme-toggle-icon {
-  @apply mr-1 ml-1;
+  @apply ml-1;
 }
 
 /* Media Queries
