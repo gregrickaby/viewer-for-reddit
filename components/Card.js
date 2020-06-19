@@ -6,11 +6,20 @@ const Card = (props) => {
   const date = new Date(post.created_utc * 1000)
 
   // Reddit encodes HTML, so decode it before using dangerouslySetInnerHTML.
+  // Plus, do a bunch of other clean ups.
   // https://gomakethings.com/decoding-html-entities-with-vanilla-javascript/
   const decodeHTML = (html) => {
     const text = document.createElement('textarea') // eslint-disable-line no-undef
     text.innerHTML = html
-    return text.value
+    const sanitize = text.value.replace(
+      /(class="([^"]+)")|(width="([^"]+)")|(height="([^"]+)")|(title="([^"]+)")|(scrolling="([^"]+)")|(allow="([^"]+)")|(allowfullscreen="([^"]+)")|(allowfullscreen)|(style="([^"]+)")/gi,
+      ''
+    )
+    const iframe = sanitize.replace(
+      /(><\/iframe>)/gi,
+      'width="512" height="442" loading=lazy></iframe>'
+    )
+    return iframe
   }
 
   return (
@@ -37,10 +46,9 @@ const Card = (props) => {
                     className="card-image"
                     debounce={1000}
                     error="error.png"
-                    height="544"
                     src={post.url}
                     placeholder="loading.gif"
-                    width="544"
+                    width="512"
                   />
                 </a>
               )
@@ -48,10 +56,15 @@ const Card = (props) => {
               return (
                 // eslint-disable-next-line
                 <video
-                  src={post.secure_media.reddit_video.fallback_url}
+                  className="card-video"
+                  autoPlay
                   controls
+                  loop
                   muted
-                ></video>
+                  playsInline
+                  src={post.secure_media.reddit_video.fallback_url}
+                  width="512"
+                />
               )
             case 'rich:video':
               return (
@@ -69,9 +82,14 @@ const Card = (props) => {
                 return (
                   // eslint-disable-next-line
                   <video
-                    src={post.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
+                    className="card-video"
+                    autoPlay
                     controls
+                    loop
                     muted
+                    playsInline
+                    src={post.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
+                    width="512"
                   ></video>
                 )
               } else {
