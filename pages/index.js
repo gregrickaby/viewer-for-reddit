@@ -48,6 +48,14 @@ const Homepage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          <nav className="flex justify-around mt-2">
+            <button onClick={() => setSearchTerm('aww')}>r/aww</button>
+            <button onClick={() => setSearchTerm('pics')}>r/pics</button>
+            <button onClick={() => setSearchTerm('gifs')}>r/gifs</button>
+            <button onClick={() => setSearchTerm('earthporn')}>
+              r/EarthPorn
+            </button>
+          </nav>
         </div>
       </header>
 
