@@ -8,7 +8,10 @@ const SiteHead = () => (
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-    <meta name="description" content="View images from a subreddit." />
+    <meta
+      name="description"
+      content="View images and media from any subreddit."
+    />
     <link rel="dns-prefetch" href="//www.reddit.com" />
     <link rel="dns-prefetch" href="//i.reddit.com" />
     <link rel="dns-prefetch" href="//i.redd.it.com" />
@@ -20,7 +23,7 @@ const SiteHead = () => (
     <link rel="dns-prefetch" href="//i.imgur.com" />
     <link
       rel="preload"
-      href="//www.reddit.com/r/itookapicture/.json?limit=200&show=all"
+      href="//cors-anywhere.herokuapp.com/https://www.reddit.com/r/itookapicture/.json?limit=200&show=all"
       as="fetch"
       crossOrigin="anonymous"
     />
