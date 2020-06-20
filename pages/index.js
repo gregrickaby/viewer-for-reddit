@@ -62,7 +62,7 @@ const Homepage = () => {
           ))
         )}
         <ThemeToggle />
-        <BackToTop text="&uarr;" transition="all 0.5s" padding="2px 8px" />
+        <BackToTop text="&uarr;" padding="4px 10px" />
       </main>
     </>
   )
