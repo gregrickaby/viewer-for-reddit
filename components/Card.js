@@ -112,7 +112,7 @@ const Card = (props) => {
         <div className="card-date">
           By <code>{post.author}</code> on{' '}
           <time>
-            {date.getMonth()}/{date.getDate()}/
+            {date.getMonth() + 1}/{date.getDate()}/
             {date.getFullYear().toString().slice(-2)}
           </time>
         </div>
