@@ -2,33 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-background: #fff;
+  --color-text: #1a202c;
+  --color-background-dark: #1a202c;
+  --color-text-dark: #fff;
+}
+
 /* Body
 ============================= */
 body,
 .site-header {
+  background-color: var(--color-background);
+  color: var(--color-text);
   transition: background-color 0.3s ease;
 }
 
-/**
- * Light Mode
- */
-body.light-mode {
-  @apply bg-white text-gray-900;
-}
-
-body.light-mode .site-header {
-  @apply bg-white;
-}
-
-/**
- * Dark Mode
- */
-body.dark-mode {
-  @apply bg-gray-900 text-white;
-}
-
+body.dark-mode,
 body.dark-mode .site-header {
-  @apply bg-gray-900;
+  background-color: var(--color-background-dark);
+  color: var(--color-text-dark);
 }
 
 /* Homepage
@@ -174,6 +167,3 @@ body.dark-mode .site-header {
 .theme-toggle-icon {
   @apply ml-1;
 }
-
-/* Media Queries
-============================== */
