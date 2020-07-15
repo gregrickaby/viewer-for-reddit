@@ -31,7 +31,7 @@ const Card = (props) => {
                     debounce={500}
                     error="error.png"
                     src={post.url}
-                    placeholder="loading.gif"
+                    placeholder="loading.svg"
                     width="512"
                   />
                 </a>
