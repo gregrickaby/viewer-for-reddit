@@ -20,7 +20,7 @@ const Card = (props) => {
 
       <div className="card-content">
         {(() => {
-          // Determin the media type using post_hint.
+          // Determine the media type using post_hint.
           switch (post.post_hint) {
             case 'image':
               return (
