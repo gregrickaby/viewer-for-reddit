@@ -60,40 +60,7 @@ body.dark-mode .site-header {
 
 .spinner,
 .no-results {
-  @apply text-xl text-center mb-4;
-}
-
-.no-results-image {
-  @apply m-auto;
-}
-
-/* Spinner animation */
-.sp {
-  @apply h-8 w-8 m-auto;
-}
-
-.sp-clock {
-  @apply relative mt-2 rounded-full border border-solid;
-}
-
-.sp-clock::before {
-  @apply absolute w-1 h-3 border-l border-solid rotate-0;
-
-  animation: spClock 1s infinite linear;
-  content: '';
-  right: 12px;
-  top: 2px;
-  transform-origin: 0% 100%;
-}
-
-@keyframes spClock {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
+  @apply flex flex-col justify-center items-center text-xl text-center mb-4;
 }
 
 /* Card
