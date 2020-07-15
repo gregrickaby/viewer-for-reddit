@@ -14,7 +14,7 @@ const Spinner = () => {
   return (
     <div className="spinner">
       <p>Loading sub...</p>
-      <div className="sp sp-clock"></div>
+      <img src="loading.svg" alt="loading" height="50" width="50" />
       {seconds > 5 && <CorsMessage />}
     </div>
   )
