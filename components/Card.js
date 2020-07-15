@@ -28,7 +28,7 @@ const Card = (props) => {
                   <Img
                     alt={post.title}
                     className="card-image"
-                    debounce={1000}
+                    debounce={500}
                     error="error.png"
                     src={post.url}
                     placeholder="loading.gif"
