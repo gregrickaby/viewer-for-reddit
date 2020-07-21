@@ -83,7 +83,8 @@ body.dark-mode .site-header {
   max-width: 512px;
 }
 
-.card-embed iframe {
+.card-video {
+  aspect-ratio: 16 / 9; /* stylelint-disable property-no-unknown */
 }
 
 .card-footer {
