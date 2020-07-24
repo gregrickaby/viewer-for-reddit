@@ -37,7 +37,7 @@ export default function Homepage() {
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
-   * HMenu item click handler.
+   * Menu item click handler.
    *
    * @param {string} searchTerm The search term.
    */
