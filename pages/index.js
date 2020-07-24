@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react'
 import {useDebounce} from '@/lib/hooks'
+import {scrollTop} from '@/lib/functions'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import NoResults from '@/components/NoResults'
@@ -13,7 +14,7 @@ export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
   const [results, setResults] = useState()
   const [loading, setLoading] = useState(true)
-  const debouncedSearchTerm = useDebounce(searchTerm, 1000)
+  const debouncedSearchTerm = useDebounce(searchTerm, 700)
 
   useEffect(() => {
     async function fetchData() {
@@ -24,14 +25,27 @@ export default function Homepage() {
             `https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`
         )
         const data = await response.json()
+        setSearchTerm(searchTerm)
         setResults(data)
         setLoading(false)
+        scrollTop()
       } else {
         setResults('itookapicture')
       }
     }
     fetchData()
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  /**
+   * HMenu item click handler.
+   *
+   * @param {string} searchTerm The search term.
+   */
+  function menuClick(searchTerm) {
+    setSearchTerm(searchTerm)
+    setLoading(true)
+    scrollTop()
+  }
 
   return (
     <>
@@ -45,16 +59,15 @@ export default function Homepage() {
               className="search-bar"
               type="text"
               placeholder={searchTerm}
+              value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <nav className="flex justify-around mt-2">
-            <button onClick={() => setSearchTerm('aww')}>r/aww</button>
-            <button onClick={() => setSearchTerm('pics')}>r/pics</button>
-            <button onClick={() => setSearchTerm('gifs')}>r/gifs</button>
-            <button onClick={() => setSearchTerm('earthporn')}>
-              r/EarthPorn
-            </button>
+            <button onClick={() => menuClick('aww')}>r/aww</button>
+            <button onClick={() => menuClick('pics')}>r/pics</button>
+            <button onClick={() => menuClick('gifs')}>r/gifs</button>
+            <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
           </nav>
         </div>
       </header>
