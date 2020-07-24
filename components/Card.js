@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import Img from 'react-cool-img'
 import {cleanIframe} from '@/lib/functions'
 
-const Card = (props) => {
+export default function Card(props) {
   const post = props.data.data
   const date = new Date(post.created_utc * 1000)
 
@@ -114,5 +114,3 @@ const Card = (props) => {
 Card.propTypes = {
   data: PropTypes.object
 }
-
-export default Card

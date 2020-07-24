@@ -1,6 +1,6 @@
 import useDarkMode from 'use-dark-mode'
 
-const ThemeToggle = () => {
+export default function ThemeToggle() {
   const darkMode = useDarkMode(false)
 
   return (
@@ -18,5 +18,3 @@ const ThemeToggle = () => {
     </div>
   )
 }
-
-export default ThemeToggle

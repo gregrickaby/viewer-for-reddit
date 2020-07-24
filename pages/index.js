@@ -9,7 +9,7 @@ import ThemeToggle from '@/components/ThemeToggle'
 
 const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
 
-const Homepage = () => {
+export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
   const [results, setResults] = useState()
   const [loading, setLoading] = useState(true)
@@ -75,5 +75,3 @@ const Homepage = () => {
     </>
   )
 }
-
-export default Homepage

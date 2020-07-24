@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import CorsMessage from './CorsMessage'
 
-const Spinner = () => {
+export default function Spinner() {
   const [seconds, setSeconds] = useState(1)
 
   useEffect(() => {
@@ -19,5 +19,3 @@ const Spinner = () => {
     </div>
   )
 }
-
-export default Spinner
