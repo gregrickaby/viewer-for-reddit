@@ -15,7 +15,7 @@ export default function Spinner() {
     <div className="spinner">
       <p>Loading sub...</p>
       <img src="loading.svg" alt="loading" height="50" width="50" />
-      {seconds > 5 && <CorsMessage />}
+      {seconds > 10 && <CorsMessage />}
     </div>
   )
 }
