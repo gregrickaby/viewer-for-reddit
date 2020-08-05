@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import {useDebounce} from '@/lib/hooks'
-import {scrollTop} from '@/lib/functions'
+import {scrollTop, shrinkHeader} from '@/lib/functions'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import NoResults from '@/components/NoResults'
@@ -46,6 +46,8 @@ export default function Homepage() {
     setLoading(true)
     scrollTop()
   }
+
+  shrinkHeader()
 
   return (
     <>
