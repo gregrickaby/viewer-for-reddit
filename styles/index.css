@@ -91,6 +91,22 @@ body.dark-mode .site-header {
   @apply flex flex-wrap justify-between mt-4 text-sm;
 }
 
+/* Shrink the header area.
+============================= */
+.site-header.shrink .search-bar,
+.site-header.shrink span,
+.site-header.shrink nav {
+  @apply hidden;
+}
+
+.site-header.shrink {
+  @apply pb-0;
+}
+
+.site-header.shrink .site-title {
+  @apply mb-2;
+}
+
 /* Theme Toggle
 ============================== */
 .theme-toggle-wrap {
