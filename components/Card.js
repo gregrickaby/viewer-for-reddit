@@ -32,6 +32,7 @@ export default function Card(props) {
                     error="error.png"
                     src={post.url}
                     placeholder="loading.svg"
+                    height="512"
                     width="512"
                   />
                 </a>
@@ -47,6 +48,7 @@ export default function Card(props) {
                   muted
                   playsInline
                   src={post.secure_media.reddit_video.fallback_url}
+                  height="512"
                   width="512"
                 />
               )
@@ -73,6 +75,7 @@ export default function Card(props) {
                     muted
                     playsInline
                     src={post.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
+                    height="512"
                     width="512"
                   ></video>
                 )
