@@ -57,16 +57,14 @@ export default function Homepage() {
           <h1 className="site-title">Reddit Image Viewer</h1>
           <div className="site-search">
             <span>r/</span>{' '}
-            <label>
-              View a sub-reddit
-              <input
-                className="search-bar"
-                type="text"
-                placeholder={searchTerm}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </label>
+            <input
+              className="search-bar"
+              type="text"
+              placeholder={searchTerm}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="View a sub-reddit"
+            />
           </div>
           <nav className="flex justify-around mt-2">
             <button onClick={() => menuClick('aww')}>r/aww</button>
