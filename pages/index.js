@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import {useDebounce} from '@/lib/hooks'
 import {scrollTop, shrinkHeader} from '@/lib/functions'
 import Card from '@/components/Card'
@@ -15,6 +15,7 @@ export default function Homepage() {
   const [results, setResults] = useState()
   const [loading, setLoading] = useState(true)
   const debouncedSearchTerm = useDebounce(searchTerm, 700)
+  const headerRef = useRef(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -32,6 +33,7 @@ export default function Homepage() {
       } else {
         setResults('itookapicture')
       }
+      shrinkHeader(headerRef)
     }
     fetchData()
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -47,12 +49,10 @@ export default function Homepage() {
     scrollTop()
   }
 
-  shrinkHeader()
-
   return (
     <>
       <SiteHead />
-      <header className="site-header">
+      <header ref={headerRef} className="site-header">
         <div className="wrap">
           <h1 className="site-title">Reddit Image Viewer</h1>
           <div className="site-search">
