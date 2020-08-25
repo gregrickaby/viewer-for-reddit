@@ -25,7 +25,7 @@
   "dependencies": {
     "next": "latest",
     "react": "16.13.1",
-    "react-cool-img": "^1.2.1",
+    "react-cool-img": "^1.2.2",
     "react-dom": "16.13.1",
     "react-easy-back-to-top": "^1.0.2",
     "use-dark-mode": "^2.3.1"
