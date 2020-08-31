@@ -4,7 +4,7 @@ Displays images and other media from any subreddit. https://reddit-image-viewer.
 
 ![demo](https://dl.dropbox.com/s/gw45g45cllhwo6y/Kapture%202020-06-19%20at%2013.20.38.gif?dl=0)
 
-## Features
+## ✨ Features
 
 - Simple interface
 - Instant search
@@ -12,26 +12,41 @@ Displays images and other media from any subreddit. https://reddit-image-viewer.
 - Dark mode
 - Infinite scroll
 
-## Install
+## App Development
 
-Clone down this repo and install the dependencies:
+### 🚀 Install
 
-```bash
-git clone git@github.com:gregrickaby/reddit-image-viewer.git
-```
+Use [create-next-app](https://www.npmjs.com/package/create-next-app) to install:
 
 ```bash
-cd reddit-image-viewer
+create-next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer/
 ```
 
-```bash
-yarn install
-```
+---
 
-## Development
+### 💻 Working with Next.js
 
-This will spin up a local server at http://localhost:3000
+Inside the app directory, you can run several commands.
+
+Start the development server:
 
 ```bash
 yarn dev
 ```
+
+Build the app for production:
+
+```bash
+yarn build
+```
+
+Run the built app in production mode:
+
+```bash
+yarn start
+```
+
+
+## :octocat: Contributing
+
+Feedback or contributions via Github [Issues](https://github.com/gregrickaby/nextjs-starter/issues) and [Pull Requests](https://github.com/gregrickaby/nextjs-starter/pulls) are welcome! 🍻
