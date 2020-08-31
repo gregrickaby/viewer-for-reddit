@@ -19,7 +19,7 @@ Displays images and other media from any subreddit. https://reddit-image-viewer.
 Use [create-next-app](https://www.npmjs.com/package/create-next-app) to install:
 
 ```bash
-create-next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer/
+npx create-next-app my-app --example https://github.com/gregrickaby/reddit-image-viewer/
 ```
 
 ---
