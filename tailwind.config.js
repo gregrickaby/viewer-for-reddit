@@ -6,6 +6,7 @@ module.exports = {
   variants: {},
   plugins: [],
   future: {
-    removeDeprecatedGapUtilities: true
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true
   }
 }
