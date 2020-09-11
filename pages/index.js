@@ -14,7 +14,7 @@ export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState('itookapicture')
   const [results, setResults] = useState()
   const [loading, setLoading] = useState(true)
-  const debouncedSearchTerm = useDebounce(searchTerm, 700)
+  const debouncedSearchTerm = useDebounce(searchTerm, 400)
   const headerRef = useRef(null)
 
   useEffect(() => {
