@@ -14,9 +14,9 @@ Displays images and other media from any subreddit.
 - Dark mode
 - Infinite scroll
 
-## App Development
+---
 
-### 🚀 Install
+## 🚀 Install
 
 Use [create-next-app](https://www.npmjs.com/package/create-next-app) to install:
 
@@ -26,7 +26,7 @@ yarn create next-app reddit-image-viewer --example https://github.com/gregrickab
 
 ---
 
-### 💻 Working with Next.js
+## 💻 Working with Next.js
 
 Inside the app directory, you can run several commands.
 
