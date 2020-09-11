@@ -1,6 +1,8 @@
 # Reddit Image Viewer
 
-Displays images and other media from any subreddit. https://reddit-image-viewer.now.sh/
+Displays images and other media from any subreddit. 
+
+👉 https://reddit-image-viewer.vercel.app/
 
 ![demo](https://dl.dropbox.com/s/gw45g45cllhwo6y/Kapture%202020-06-19%20at%2013.20.38.gif?dl=0)
 
@@ -19,7 +21,7 @@ Displays images and other media from any subreddit. https://reddit-image-viewer.
 Use [create-next-app](https://www.npmjs.com/package/create-next-app) to install:
 
 ```bash
-npx create-next-app my-app --example https://github.com/gregrickaby/reddit-image-viewer/
+yarn create next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer/
 ```
 
 ---
@@ -46,7 +48,8 @@ Run the built app in production mode:
 yarn start
 ```
 
+---
 
 ## :octocat: Contributing
 
-Feedback or contributions via Github [Issues](https://github.com/gregrickaby/nextjs-starter/issues) and [Pull Requests](https://github.com/gregrickaby/nextjs-starter/pulls) are welcome! 🍻
+Feedback or contributions via Github [Issues](https://github.com/gregrickaby/reddit-image-viewer/issues) and [Pull Requests](https://github.com/gregrickaby/reddit-image-viewer/pulls) are welcome! 🍻
