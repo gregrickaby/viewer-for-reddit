@@ -13,14 +13,11 @@
   },
   "homepage": "https://github.com/gregrickaby/reddit-image-viewer#readme",
   "private": true,
-  "scripts": {
-    "build": "next build",
-    "clean": "rm -rf .next",
-    "dev": "yarn clean && yarn lint && next dev",
-    "develop": "yarn dev",
-    "export": "next export",
-    "lint": "eslint ./ --fix || true",
-    "start": "next start"
+    "engines": {
+    "node": ">=10"
+  },
+  "resolutions": {
+    "webpack": "^5.0.0-beta.29"
   },
   "dependencies": {
     "next": "next@canary",
@@ -43,5 +40,14 @@
     "prop-types": "^15.7.2",
     "stylelint-config-standard": "^20.0.0",
     "tailwindcss": "^1.8.7"
+  },
+  "scripts": {
+    "build": "next build",
+    "clean": "rm -rf .next",
+    "dev": "yarn clean && yarn lint && next dev",
+    "develop": "yarn dev",
+    "export": "next export",
+    "lint": "eslint ./ --fix || true",
+    "start": "next start"
   }
 }
