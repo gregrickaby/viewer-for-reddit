@@ -23,7 +23,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "latest",
+    "next": "next@canary",
     "react": "16.13.1",
     "react-cool-img": "^1.2.3",
     "react-dom": "16.13.1",
