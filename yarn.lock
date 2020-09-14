@@ -2112,11 +2112,6 @@ core-js-pure@^3.0.0:
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.6.5.tgz#c79e75f5e38dbc85a662d91eea52b8256d53b813"
   integrity sha512-lacdXOimsiD0QyNf9BC/mxivNJ/ybBGJXQFKzRekp1WTHoVUWsUHEn+2T8GJAzzIhyOuXA+gOxCVN3l+5PLPUA==
 
-core-js@^3.6.5:
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.6.5.tgz#7395dc273af37fb2e50e9bd3d9fe841285231d1a"
-  integrity sha512-vZVEEwZoIsI+vPEuoF9Iqf5H7/M3eeQqWlQnYa8FSKKePuYTf5MWnxb5SDAzCa60b3JBRS5g9b+Dq7b1y/RCrA==
-
 core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
@@ -2649,10 +2644,10 @@ eslint-plugin-prettier@^3.1.4:
   dependencies:
     prettier-linter-helpers "^1.0.0"
 
-eslint-plugin-react-hooks@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.1.1.tgz#b37e1ff622b7800cd673901de32db1103d48411d"
-  integrity sha512-vFJNwsf4MLYS0lHYfz9LqxQ+GccYsGGeKPHDxgkIaKbAhNuTLnST+q44pt81MzJZyFU5K4XLF6WiCGv3Yb6tCg==
+eslint-plugin-react-hooks@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.1.2.tgz#2eb53731d11c95826ef7a7272303eabb5c9a271e"
+  integrity sha512-ykUeqkGyUGgwTtk78C0o8UG2fzwmgJ0qxBGPp2WqRKsTwcLuVf01kTDRAtOsd4u6whX2XOC8749n2vPydP82fg==
 
 eslint-plugin-react@^7.20.6:
   version "7.20.6"
@@ -5861,10 +5856,10 @@ webpack-sources@2.0.0-beta.10:
     source-list-map "^2.0.1"
     source-map "^0.6.1"
 
-webpack@4.44.1, webpack@^5.0.0-beta.28:
-  version "5.0.0-beta.29"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.0.0-beta.29.tgz#73ee7eb4a8603ade49f37c7417a1560871a79c90"
-  integrity sha512-uBVX3gDHTN3FnIqlrGmav5FRW7CujSN4aybLbAd8Uc1hTk+zXDmZAFJFa0pCzzWv7FkKyhdv0+q8BRL2OK7+xg==
+webpack@4.44.1, webpack@^5.0.0-beta.29:
+  version "5.0.0-beta.30"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.0.0-beta.30.tgz#11cf2d4ed1ec78eb836da2a7be7809e5e074e3eb"
+  integrity sha512-pOAAo71m6icygRrOPn/lQM4Ky8MN+9dDBwEU9Get285VBbmuZE6AFqizEEV692mYgUit/0+7vnjsnUr8xX2puA==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.45"
@@ -5874,7 +5869,6 @@ webpack@4.44.1, webpack@^5.0.0-beta.28:
     "@webassemblyjs/wasm-parser" "1.9.0"
     acorn "^7.4.0"
     chrome-trace-event "^1.0.2"
-    core-js "^3.6.5"
     enhanced-resolve "5.0.0-beta.10"
     eslint-scope "^5.1.0"
     events "^3.2.0"
