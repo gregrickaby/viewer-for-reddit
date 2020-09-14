@@ -39,7 +39,7 @@
     "prettier": "^2.1.1",
     "prop-types": "^15.7.2",
     "stylelint-config-standard": "^20.0.0",
-    "tailwindcss": "^1.8.7"
+    "tailwindcss": "^1.8.9"
   },
   "scripts": {
     "build": "next build",
