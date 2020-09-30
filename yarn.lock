@@ -5183,10 +5183,10 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-react-cool-img@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.3.tgz#db2d6e8b51653a1f11d1eae6d2bd610a887184e4"
-  integrity sha512-yyGMXcDlq5knDawIisR3RM5TXefglM80isunZDS1WAg4joVi1kjDwaN1Dln/3r8BEJLIU3b0MACDSOARQ/PkPA==
+react-cool-img@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.4.tgz#377bc0a2d933d4d25beab3b432e7e4d441ed9491"
+  integrity sha512-rGKWn/xJ8szekQnbEundrtHQ9P7jcMNs9jIp98fuWPZLh7u36DTMVTsDzce/2h5cRVyM7Hhj3K2e+iFcS4Tgqg==
 
 react-dom@16.13.1, react-dom@^16.12.0:
   version "16.13.1"
