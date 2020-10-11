@@ -23,10 +23,6 @@ Use [create-next-app](https://www.npmjs.com/package/create-next-app) to install:
 ```bash
 yarn create-next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer
 ```
-or
-```bash
-npx create-next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer
-```
 
 ---
 
