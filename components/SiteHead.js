@@ -24,7 +24,7 @@ export default function SiteHead() {
       <link rel="dns-prefetch" href="//i.imgur.com" />
       <link
         rel="preload"
-        href="//cors-anywhere.herokuapp.com/https://www.reddit.com/r/itookapicture/.json?limit=200&show=all"
+        href="//cors-anywhere.herokuapp.com/https://www.reddit.com/r/itookapicture/.json?limit=5"
         as="fetch"
         crossOrigin="anonymous"
       />
