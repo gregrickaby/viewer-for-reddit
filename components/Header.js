@@ -47,7 +47,6 @@ export default function Header() {
     scrollTop()
   }
 
-  
   return (
     <div>
       <header ref={headerRef} className="site-header">
