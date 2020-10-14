@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/gregrickaby/reddit-image-viewer#readme",
   "private": true,
-  "engines": {
+    "engines": {
     "node": ">=10"
   },
   "dependencies": {

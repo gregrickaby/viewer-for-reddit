@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: #fff;
+  --color-text: #1a202c;
+  --color-background-dark: #1a202c;
+  --color-text-dark: #fff;
+}
+
+/* Body
+============================= */
+body,
+.site-header {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode,
+body.dark-mode .site-header {
+  background-color: var(--color-background-dark);
+  color: var(--color-text-dark);
+}
+
+/* Homepage
+============================= */
+.wrap {
+  @apply max-w-xl m-auto;
+}
+
+/**
+ * Header area
+ */
+.site-header {
+  @apply flex flex-wrap sticky top-0 mb-8 pt-2 pb-6 text-center;
+
+  box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.25);
+  contain: content;
+  z-index: 9998;
+}
+
+.site-title {
+  @apply text-2xl mb-4;
+}
+
+/**
+ * Search
+ */
+.search-bar {
+  @apply border-solid border border-black p-2 text-gray-900;
+}
+
+/**
+ * Main content area
+ */
+.main {
+  @apply grid grid-cols-1 gap-4 p-4;
+}
+
+.spinner,
+.no-results {
+  @apply flex flex-col justify-center items-center text-xl text-center mb-4;
+}
+
+/* Card
+============================= */
+.card {
+  @apply p-4 mb-8 rounded-lg shadow-xl;
+
+  contain-intrinsic-size: 640px; /* stylelint-disable property-no-unknown */
+  contain: content;
+  content-visibility: auto;
+}
+
+.card-title {
+  @apply text-2xl mb-4 text-center;
+}
+
+.card-link:hover {
+  @apply underline;
+}
+
+.card-content {
+  @apply block m-auto overflow-hidden;
+
+  max-width: 512px;
+}
+
+.card-video {
+  aspect-ratio: 16 / 9; /* stylelint-disable property-no-unknown */
+}
+
+.card-footer {
+  @apply flex flex-wrap justify-between mt-4 text-sm;
+}
+
+/* Shrink the header area.
+============================= */
+.site-header.shrink .search-bar,
+.site-header.shrink span,
+.site-header.shrink nav {
+  @apply hidden;
+}
+
+.site-header.shrink {
+  @apply pb-0;
+}
+
+.site-header.shrink .site-title {
+  @apply mb-2;
+}
+
+/* Theme Toggle
+============================== */
+.theme-toggle-wrap {
+  @apply flex items-center fixed;
+
+  top: 5px;
+  right: 5px;
+  z-index: 9999;
+}
+
+.theme-toggle {
+  @apply relative h-4 w-6;
+}
+
+.theme-toggle input {
+  @apply hidden;
+}
+
+.theme-toggle-slider {
+  @apply bg-gray-500 top-0 right-0 bottom-0 left-0 absolute cursor-pointer rounded-lg;
+
+  transition: 0.4s;
+}
+
+.theme-toggle-slider::before {
+  @apply bg-white absolute h-2 w-2 rounded-lg;
+
+  bottom: 4px;
+  content: '';
+  left: 3px;
+  transition: 0.3s;
+}
+
+.theme-toggle input:checked + .theme-toggle-slider::before {
+  transform: translateX(10px);
+}
+
+.theme-toggle input:checked + .theme-toggle-slider {
+  @apply bg-green-600;
+}
+
+.theme-toggle-icon {
+  @apply ml-1;
+}
