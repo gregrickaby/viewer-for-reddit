@@ -1,6 +1,6 @@
 # Reddit Image Viewer
 
-Displays images and other media from any subreddit. 
+Displays images and other media from any subreddit.
 
 👉 https://reddit-image-viewer.vercel.app/
 
