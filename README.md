@@ -1,6 +1,6 @@
 # Reddit Image Viewer
 
-Displays images and other media from any subreddit. 
+Displays images and other media from any subreddit.
 
 👉 https://reddit-image-viewer.vercel.app/
 
@@ -16,24 +16,40 @@ Displays images and other media from any subreddit.
 
 ---
 
-## 🚀 Install
+## 🚀 Development
 
-Use [create-next-app](https://www.npmjs.com/package/create-next-app) to install:
+### Install
+
+Use [create-next-app](https://www.npmjs.com/package/create-next-app) to get up and running with either Yarn or NPX.
+
+**Yarn**
 
 ```bash
 yarn create next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer
 ```
 
+**NPX**
+
+```bash
+npx create-next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer
+```
+
 ---
 
-## 💻 Working with Next.js
+### 💻 Working with Next.js
 
-Inside the app directory, you can run several commands.
+Inside the `reddit-image-viewer` directory, you can run several commands.
 
 Start the development server:
 
 ```bash
 yarn dev
+```
+
+Format and lint your code:
+
+```bash
+yarn lint
 ```
 
 Build the app for production:
