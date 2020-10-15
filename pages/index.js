@@ -60,10 +60,13 @@ export default function Homepage() {
       setLastPost(data.after)
       setLoading(false)
       scrollTop()
-      // shrinkHeader(headerRef)
     }
     clearStates()
     loadPosts()
+    const headerShrinkRemover = shrinkHeader(headerRef)
+    return () => {
+      headerShrinkRemover()
+    }
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
