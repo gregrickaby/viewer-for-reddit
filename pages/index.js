@@ -3,49 +3,123 @@ import {useDebounce} from '@/lib/hooks'
 import {scrollTop, shrinkHeader} from '@/lib/functions'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
+import SpinnerLoadMore from '@/components/SpinnerLoadMore'
 import NoResults from '@/components/NoResults'
 import SiteHead from '@/components/SiteHead'
 import BackToTop from 'react-easy-back-to-top'
 import ThemeToggle from '@/components/ThemeToggle'
 
 const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
+const DEFAULT_SEARCH_TERM = 'itookapicture'
+const COUNT_ITEMS_PER_FETCH = 5
 
 export default function Homepage() {
-  const [searchTerm, setSearchTerm] = useState('itookapicture')
-  const [results, setResults] = useState()
+  const [searchTerm, setSearchTerm] = useState(DEFAULT_SEARCH_TERM)
   const [loading, setLoading] = useState(true)
+  const [results, setResults] = useState([])
+  const [lastPost, setLastPost] = useState(null)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [reachLoadMoreElement, setReachLoadMoreElement] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
+
   const headerRef = useRef(null)
+  const loadingMoreRef = useRef(null)
+
+  async function fetchData(term, after) {
+    const url =
+      CORS_PROXY +
+      `https://www.reddit.com/r/${term}/.json?limit=${COUNT_ITEMS_PER_FETCH}` +
+      (after ? `&after=${after}` : '')
+    // eslint-disable-next-line
+    const response = await fetch(url)
+    if (response.ok) {
+      const body = await response.json()
+      if (body.data && body.data.children) {
+        const postsContainImage = body.data.children.filter((post) => {
+          return post.data.post_hint && post.data.post_hint !== 'self'
+        })
+        return {
+          posts: postsContainImage,
+          after: body.data.after
+        }
+      }
+    }
+    return {posts: [], after: null}
+  }
+
+  async function clearStates() {
+    setResults([])
+    setLastPost(null)
+  }
 
   useEffect(() => {
-    async function fetchData() {
-      if (debouncedSearchTerm) {
-        // eslint-disable-next-line
-        const response = await fetch(
-          CORS_PROXY +
-            `https://www.reddit.com/r/${searchTerm}/.json?limit=200&show=all`
-        )
-        const data = await response.json()
-        setSearchTerm(searchTerm)
-        setResults(data)
-        setLoading(false)
-        scrollTop()
-      } else {
-        setResults('itookapicture')
+    async function loadPosts() {
+      if (!debouncedSearchTerm) {
+        setResults([])
+        return
       }
-      shrinkHeader(headerRef)
+      setLoading(true)
+      const data = await fetchData(searchTerm)
+      setResults(data.posts)
+      setLastPost(data.after)
+      setLoading(false)
+      scrollTop()
     }
-    fetchData()
+    clearStates()
+    loadPosts()
+    const headerShrinkRemover = shrinkHeader(headerRef)
+    return () => {
+      headerShrinkRemover()
+    }
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    async function handleLoadingMore(entities) {
+      const target = entities[0]
+      if (target.isIntersecting) {
+        setReachLoadMoreElement(true)
+      }
+    }
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    // eslint-disable-next-line
+    const observer = new IntersectionObserver(
+      handleLoadingMore,
+      observerOptions
+    )
+    if (loadingMoreRef.current) {
+      observer.observe(loadingMoreRef.current)
+    }
+    return () => {
+      observer.disconnect()
+    }
+  }, [loading]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setReachLoadMoreElement(false)
+    if (results.length === 0 || loading || loadingMore) {
+      return
+    }
+    setLoadingMore(true)
+    fetchData(searchTerm, lastPost).then((data) => {
+      if (data.posts.length > 0) {
+        setResults((prevResults) => [...prevResults, ...data.posts])
+      }
+      setLastPost(data.after)
+      setLoadingMore(false)
+    })
+  }, [reachLoadMoreElement]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Menu item click handler.
    *
    * @param {string} searchTerm The search term.
    */
-  function menuClick(searchTerm) {
-    setSearchTerm(searchTerm)
-    setLoading(true)
+  function menuClick(term) {
+    setSearchTerm(term)
     scrollTop()
   }
 
@@ -78,13 +152,12 @@ export default function Homepage() {
       <main className="main wrap">
         {loading ? (
           <Spinner />
-        ) : typeof results.data == 'undefined' ? (
+        ) : results.length === 0 ? (
           <NoResults />
         ) : (
-          results.data.children.map((post, index) => (
-            <Card key={index} data={post} />
-          ))
+          results.map((post, index) => <Card key={index} data={post} />)
         )}
+        <SpinnerLoadMore elementRef={loadingMoreRef} loading={loadingMore} />
         <ThemeToggle />
         <BackToTop text="&uarr;" padding="4px 10px" />
       </main>
