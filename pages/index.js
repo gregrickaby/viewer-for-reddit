@@ -9,6 +9,9 @@ import SiteHead from '@/components/SiteHead'
 import BackToTop from 'react-easy-back-to-top'
 import ThemeToggle from '@/components/ThemeToggle'
 
+/**
+ * Set global variables.
+ */
 const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
 const DEFAULT_SEARCH_TERM = 'itookapicture'
 const COUNT_ITEMS_PER_FETCH = 5
@@ -23,30 +26,52 @@ export default function Homepage() {
   const [reachLoadMoreElement, setReachLoadMoreElement] = useState(false)
   const [sortOption, setSortOption] = useState(0)
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
-
   const headerRef = useRef(null)
   const loadingMoreRef = useRef(null)
 
+  /**
+   * Fetch posts from Reddit.
+   *
+   * @param {string} term    The search term.
+   * @param {integer} after  The last item viewed.
+   */
   async function fetchData(term, after) {
     const url =
       CORS_PROXY +
       `https://www.reddit.com/r/${term}/${SORT_OPTIONS[sortOption]}/.json?limit=${COUNT_ITEMS_PER_FETCH}` +
       (after ? `&after=${after}` : '')
-    // eslint-disable-next-line
-    const response = await fetch(url)
-    if (response.ok) {
-      const body = await response.json()
-      if (body.data && body.data.children) {
-        const postsContainImage = body.data.children.filter((post) => {
-          return post.data.post_hint && post.data.post_hint !== 'self'
-        })
-        return {
-          posts: postsContainImage,
-          after: body.data.after
-        }
+
+    // Fetch data from Reddit.
+    const response = await fetch(url) // eslint-disable-line
+
+    // No response? Bail...
+    if (!response.ok) {
+      return {
+        posts: [],
+        after: null
       }
     }
-    return {posts: [], after: null}
+
+    // Convert response to JSON.
+    const body = await response.json()
+
+    // No data? Bail...
+    if (!body.data && !body.data.children) {
+      return {
+        posts: [],
+        after: null
+      }
+    }
+
+    // Filter out any "self" (aka text) posts.
+    const postsContainImage = body.data.children.filter((post) => {
+      return post.data.post_hint && post.data.post_hint !== 'self'
+    })
+
+    return {
+      posts: postsContainImage,
+      after: body.data.after
+    }
   }
 
   async function clearStates() {
@@ -146,7 +171,9 @@ export default function Homepage() {
               onChange={(e) => setSortOption(e.target.value)}
             >
               {SORT_OPTIONS.map((sortOption, index) => (
-                <option value={index}>{sortOption}</option>
+                <option key={index} value={index}>
+                  {sortOption}
+                </option>
               ))}
             </select>
           </div>
