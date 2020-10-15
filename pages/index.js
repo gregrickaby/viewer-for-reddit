@@ -12,6 +12,7 @@ import ThemeToggle from '@/components/ThemeToggle'
 const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
 const DEFAULT_SEARCH_TERM = 'itookapicture'
 const COUNT_ITEMS_PER_FETCH = 5
+const SORT_OPTIONS = ['hot', 'new', 'top', 'rising']
 
 export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState(DEFAULT_SEARCH_TERM)
@@ -20,6 +21,7 @@ export default function Homepage() {
   const [lastPost, setLastPost] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const [reachLoadMoreElement, setReachLoadMoreElement] = useState(false)
+  const [sortOption, setSortOption] = useState(0)
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
 
   const headerRef = useRef(null)
@@ -28,7 +30,7 @@ export default function Homepage() {
   async function fetchData(term, after) {
     const url =
       CORS_PROXY +
-      `https://www.reddit.com/r/${term}/.json?limit=${COUNT_ITEMS_PER_FETCH}` +
+      `https://www.reddit.com/r/${term}/${SORT_OPTIONS[sortOption]}/.json?limit=${COUNT_ITEMS_PER_FETCH}` +
       (after ? `&after=${after}` : '')
     // eslint-disable-next-line
     const response = await fetch(url)
@@ -71,7 +73,7 @@ export default function Homepage() {
     return () => {
       headerShrinkRemover()
     }
-  }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm, sortOption]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     async function handleLoadingMore(entities) {
@@ -139,6 +141,14 @@ export default function Homepage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               aria-label="View a sub-reddit"
             />
+            <select
+              className="sort-select"
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              {SORT_OPTIONS.map((sortOption, index) => (
+                <option value={index}>{sortOption}</option>
+              ))}
+            </select>
           </div>
           <nav className="flex justify-around mt-2">
             <button onClick={() => menuClick('aww')}>r/aww</button>

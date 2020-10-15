@@ -53,6 +53,14 @@ body.dark-mode .site-header {
 }
 
 /**
+ * Sort select
+ */
+
+.sort-select {
+  @apply border-solid border border-black p-2 ml-2 bg-white text-gray-900;
+}
+
+/**
  * Main content area
  */
 .main {
