@@ -3,6 +3,7 @@ import {useDebounce} from '@/lib/hooks'
 import {scrollTop, shrinkHeader} from '@/lib/functions'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
+import SpinnerLoadMore from '@/components/SpinnerLoadMore'
 import NoResults from '@/components/NoResults'
 import SiteHead from '@/components/SiteHead'
 import BackToTop from 'react-easy-back-to-top'
@@ -156,11 +157,7 @@ export default function Homepage() {
         ) : (
           results.map((post, index) => <Card key={index} data={post} />)
         )}
-        <div ref={loadingMoreRef} className="loadingMore">
-          <span style={{display: loadingMore ? 'block' : 'none'}}>
-            Loading...
-          </span>
-        </div>
+        <SpinnerLoadMore elementRef={loadingMoreRef} loading={loadingMore} />
         <ThemeToggle />
         <BackToTop text="&uarr;" padding="4px 10px" />
       </main>
