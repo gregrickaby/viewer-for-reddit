@@ -31,7 +31,7 @@
     "next": "latest",
     "react": "16.14.0",
     "react-cool-img": "^1.2.4",
-    "react-dom": "16.13.1",
+    "react-dom": "16.14.0",
     "react-easy-back-to-top": "^1.0.2",
     "react-loader-spinner": "^3.1.14",
     "use-dark-mode": "^2.3.1"
