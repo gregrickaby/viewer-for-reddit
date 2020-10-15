@@ -34,8 +34,11 @@ export default function Homepage() {
     if (response.ok) {
       const body = await response.json()
       if (body.data && body.data.children) {
+        const postsContainImage = body.data.children.filter((post) => {
+          return post.data.post_hint && post.data.post_hint !== 'self'
+        })
         return {
-          posts: body.data.children,
+          posts: postsContainImage,
           after: body.data.after
         }
       }
