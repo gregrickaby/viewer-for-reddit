@@ -52,8 +52,12 @@ body.dark-mode .site-header {
   @apply border-solid border border-black p-2 text-gray-900;
 }
 
+/**
+ * Sort select
+ */
+
 .sort-select {
-  @apply border-solid border p-2 ml-2;
+  @apply border-solid border border-black p-2 ml-2 bg-white text-gray-900;
 }
 
 /**
