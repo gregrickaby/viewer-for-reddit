@@ -16,6 +16,17 @@
   "engines": {
     "node": ">=10"
   },
+  "scripts": {
+    "build": "next build",
+    "clean": "rm -rf .next",
+    "dev": "yarn clean && yarn lint && next dev",
+    "develop": "yarn dev",
+    "format": "npx prettier --config=prettier.config.js '**/*.{js,jsx,ts,tsx,md,html,css,scss,json}' --write || true",
+    "lint": "yarn format && yarn lint:js && yarn lint:css",
+    "lint:css": "npx stylelint --config=stylelint.config.js '**/*.css' --fix || true",
+    "lint:js": "npx eslint --config=.eslintrc.js ./ --fix || true",
+    "start": "next start"
+  },
   "dependencies": {
     "next": "latest",
     "react": "16.13.1",
@@ -33,19 +44,18 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.4",
     "eslint-plugin-react-hooks": "^4.1.2",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.1.2",
     "prop-types": "^15.7.2",
+    "stylelint": "^13.7.2",
     "stylelint-config-standard": "^20.0.0",
-    "tailwindcss": "^1.8.13"
+    "tailwindcss": "^1.9.1"
   },
-  "scripts": {
-    "build": "next build",
-    "clean": "rm -rf .next",
-    "dev": "yarn clean && yarn lint && next dev",
-    "develop": "yarn dev",
-    "export": "next export",
-    "lint": "eslint ./ --fix || true",
-    "start": "next start"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
