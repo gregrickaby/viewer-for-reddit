@@ -14,8 +14,9 @@ const COUNT_ITEMS_PER_FETCH = 5
 
 export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState(DEFAULT_SEARCH_TERM)
-  const [results, setResults] = useState([])
   const [loading, setLoading] = useState(true)
+  const [results, setResults] = useState([])
+  const [lastPost, setLastPost] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
 
@@ -41,7 +42,13 @@ export default function Homepage() {
     return {posts: [], after: null}
   }
 
+  async function clearStates() {
+    setResults([])
+    setLastPost(null)
+  }
+
   useEffect(() => {
+    console.log(1)
     async function loadPosts() {
       if (!debouncedSearchTerm) {
         setResults([])
@@ -51,21 +58,57 @@ export default function Homepage() {
       const data = await fetchData(searchTerm)
       // setSearchTerm(searchTerm)
       setResults(data.posts)
+      setLastPost(data.after)
       setLoading(false)
       scrollTop()
       // shrinkHeader(headerRef)
     }
+    clearStates()
     loadPosts()
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    console.log(2)
+    async function handleLoadingMore(entities) {
+      const target = entities[0]
+      if (target.isIntersecting) {
+        console.log(3)
+        console.log(results)
+        console.log(loading)
+        if (results.length === 0 || loading) {
+          return
+        }
+        setLoadingMore(true)
+        const data = await fetchData(searchTerm, lastPost)
+        setResults((prevResults) => [...prevResults, ...data.posts])
+        setLastPost(data.after)
+        setLoadingMore(false)
+      }
+    }
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    const observer = new IntersectionObserver(
+      handleLoadingMore,
+      observerOptions
+    )
+    if (loadingMoreRef.current) {
+      observer.observe(loadingMoreRef.current)
+    }
+    return () => {
+      observer.disconnect()
+    }
+  }, [loadingMoreRef, results, loading])
 
   /**
    * Menu item click handler.
    *
    * @param {string} searchTerm The search term.
    */
-  function menuClick(searchTerm) {
-    setSearchTerm(searchTerm)
-    setLoading(true)
+  function menuClick(term) {
+    setSearchTerm(term)
     scrollTop()
   }
 
@@ -103,12 +146,10 @@ export default function Homepage() {
         ) : (
           results.map((post, index) => <Card key={index} data={post} />)
         )}
-        <div
-          ref={loadingMoreRef}
-          className="loadingMore"
-          style={{display: loadingMore ? 'block' : 'none'}}
-        >
-          Loading...
+        <div ref={loadingMoreRef} className="loadingMore">
+          <span style={{display: loadingMore ? 'block' : 'none'}}>
+            Loading...
+          </span>
         </div>
         <ThemeToggle />
         <BackToTop text="&uarr;" padding="4px 10px" />
