@@ -18,6 +18,7 @@ export default function Homepage() {
   const [results, setResults] = useState([])
   const [lastPost, setLastPost] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)
+  const [reachLoadMoreElement, setReachLoadMoreElement] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
 
   const headerRef = useRef(null)
@@ -48,7 +49,6 @@ export default function Homepage() {
   }
 
   useEffect(() => {
-    console.log(1)
     async function loadPosts() {
       if (!debouncedSearchTerm) {
         setResults([])
@@ -56,7 +56,6 @@ export default function Homepage() {
       }
       setLoading(true)
       const data = await fetchData(searchTerm)
-      // setSearchTerm(searchTerm)
       setResults(data.posts)
       setLastPost(data.after)
       setLoading(false)
@@ -68,21 +67,10 @@ export default function Homepage() {
   }, [debouncedSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    console.log(2)
     async function handleLoadingMore(entities) {
       const target = entities[0]
       if (target.isIntersecting) {
-        console.log(3)
-        console.log(results)
-        console.log(loading)
-        if (results.length === 0 || loading) {
-          return
-        }
-        setLoadingMore(true)
-        const data = await fetchData(searchTerm, lastPost)
-        setResults((prevResults) => [...prevResults, ...data.posts])
-        setLastPost(data.after)
-        setLoadingMore(false)
+        setReachLoadMoreElement(true)
       }
     }
     const observerOptions = {
@@ -90,6 +78,7 @@ export default function Homepage() {
       rootMargin: '0px',
       threshold: 1.0
     }
+    // eslint-disable-next-line
     const observer = new IntersectionObserver(
       handleLoadingMore,
       observerOptions
@@ -100,7 +89,22 @@ export default function Homepage() {
     return () => {
       observer.disconnect()
     }
-  }, [loadingMoreRef, results, loading])
+  }, [loading]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setReachLoadMoreElement(false)
+    if (results.length === 0 || loading || loadingMore) {
+      return
+    }
+    setLoadingMore(true)
+    fetchData(searchTerm, lastPost).then((data) => {
+      if (data.posts.length > 0) {
+        setResults((prevResults) => [...prevResults, ...data.posts])
+      }
+      setLastPost(data.after)
+      setLoadingMore(false)
+    })
+  }, [reachLoadMoreElement]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Menu item click handler.
