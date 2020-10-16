@@ -116,6 +116,7 @@ export default function Homepage() {
             />
             <select
               className="sort-select"
+              onBlur={(e) => setSortOption(e.target.value)}
               onChange={(e) => setSortOption(e.target.value)}
             >
               {config.SORT_OPTIONS.map((sortOption, index) => (

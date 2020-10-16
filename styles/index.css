@@ -57,7 +57,9 @@ body.dark-mode .site-header {
  */
 
 .sort-select {
-  @apply border-solid border border-black p-2 ml-2 bg-white text-gray-900;
+  @apply border-solid border border-black ml-2 bg-white text-gray-900;
+
+  padding: 10px;
 }
 
 /**
