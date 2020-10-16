@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from 'react'
 import {useDebounce} from '@/lib/hooks'
 import {scrollTop, shrinkHeader} from '@/lib/functions'
+import * as config from '@/lib/constants'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import SpinnerLoadMore from '@/components/SpinnerLoadMore'
@@ -9,16 +10,8 @@ import SiteHead from '@/components/SiteHead'
 import BackToTop from 'react-easy-back-to-top'
 import ThemeToggle from '@/components/ThemeToggle'
 
-/**
- * Set global variables.
- */
-const CORS_PROXY = `https://cors-anywhere.herokuapp.com/`
-const DEFAULT_SEARCH_TERM = 'itookapicture'
-const COUNT_ITEMS_PER_FETCH = 5
-const SORT_OPTIONS = ['hot', 'new', 'top', 'rising']
-
 export default function Homepage() {
-  const [searchTerm, setSearchTerm] = useState(DEFAULT_SEARCH_TERM)
+  const [searchTerm, setSearchTerm] = useState(config.DEFAULT_SEARCH_TERM)
   const [loading, setLoading] = useState(true)
   const [results, setResults] = useState([])
   const [lastPost, setLastPost] = useState(null)
@@ -37,8 +30,8 @@ export default function Homepage() {
    */
   async function fetchData(term, after) {
     const url =
-      CORS_PROXY +
-      `https://www.reddit.com/r/${term}/${SORT_OPTIONS[sortOption]}/.json?limit=${COUNT_ITEMS_PER_FETCH}` +
+      config.CORS_PROXY +
+      `https://www.reddit.com/r/${term}/${config.SORT_OPTIONS[sortOption]}/.json?limit=${config.COUNT_ITEMS_PER_FETCH}` +
       (after ? `&after=${after}` : '')
 
     // Fetch data from Reddit.
@@ -170,7 +163,7 @@ export default function Homepage() {
               className="sort-select"
               onChange={(e) => setSortOption(e.target.value)}
             >
-              {SORT_OPTIONS.map((sortOption, index) => (
+              {config.SORT_OPTIONS.map((sortOption, index) => (
                 <option key={index} value={index}>
                   {sortOption}
                 </option>
