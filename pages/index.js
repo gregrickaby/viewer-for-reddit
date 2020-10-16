@@ -1,6 +1,6 @@
 import {useState, useEffect, useRef} from 'react'
 import {useDebounce} from '@/lib/hooks'
-import {scrollTop, shrinkHeader} from '@/lib/functions'
+import {fetchData, scrollTop, shrinkHeader} from '@/lib/functions'
 import * as config from '@/lib/constants'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
@@ -22,51 +22,6 @@ export default function Homepage() {
   const headerRef = useRef(null)
   const loadingMoreRef = useRef(null)
 
-  /**
-   * Fetch posts from Reddit.
-   *
-   * @param {string} term    The search term.
-   * @param {integer} after  The last item viewed.
-   */
-  async function fetchData(term, after) {
-    const url =
-      config.CORS_PROXY +
-      `https://www.reddit.com/r/${term}/${config.SORT_OPTIONS[sortOption]}/.json?limit=${config.COUNT_ITEMS_PER_FETCH}` +
-      (after ? `&after=${after}` : '')
-
-    // Fetch data from Reddit.
-    const response = await fetch(url) // eslint-disable-line
-
-    // No response? Bail...
-    if (!response.ok) {
-      return {
-        posts: [],
-        after: null
-      }
-    }
-
-    // Convert response to JSON.
-    const body = await response.json()
-
-    // No data? Bail...
-    if (!body.data && !body.data.children) {
-      return {
-        posts: [],
-        after: null
-      }
-    }
-
-    // Filter out any "self" (aka text) posts.
-    const postsContainImage = body.data.children.filter((post) => {
-      return post.data.post_hint && post.data.post_hint !== 'self'
-    })
-
-    return {
-      posts: postsContainImage,
-      after: body.data.after
-    }
-  }
-
   async function clearStates() {
     setResults([])
     setLastPost(null)
@@ -79,7 +34,7 @@ export default function Homepage() {
         return
       }
       setLoading(true)
-      const data = await fetchData(searchTerm)
+      const data = await fetchData(searchTerm, lastPost, sortOption)
       setResults(data.posts)
       setLastPost(data.after)
       setLoading(false)
@@ -124,7 +79,7 @@ export default function Homepage() {
       return
     }
     setLoadingMore(true)
-    fetchData(searchTerm, lastPost).then((data) => {
+    fetchData(searchTerm, lastPost, sortOption).then((data) => {
       if (data.posts.length > 0) {
         setResults((prevResults) => [...prevResults, ...data.posts])
       }
