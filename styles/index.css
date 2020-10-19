@@ -109,6 +109,7 @@ body.dark-mode .site-header {
 /* Shrink the header area.
 ============================= */
 .site-header.shrink .search-bar,
+.site-header.shrink .sort-select,
 .site-header.shrink span,
 .site-header.shrink nav {
   @apply hidden;
