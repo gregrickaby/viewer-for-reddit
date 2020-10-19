@@ -22,17 +22,17 @@ export default function Homepage() {
   const headerRef = useRef(null)
   const loadingMoreRef = useRef(null)
 
-  async function clearStates() {
-    setResults([])
-    setLastPost(null)
-  }
-
+  /**
+   * Load posts from Reddit.
+   */
   useEffect(() => {
     async function loadPosts() {
+      // No search term? Bail...
       if (!debouncedSearchTerm) {
         setResults([])
         return
       }
+
       setLoading(true)
       const data = await fetchData(searchTerm, lastPost, sortOption)
       setResults(data.posts)
@@ -40,14 +40,20 @@ export default function Homepage() {
       setLoading(false)
       scrollTop()
     }
+
     clearStates()
     loadPosts()
     const headerShrinkRemover = shrinkHeader(headerRef)
+
+    // Run cleanup function.
     return () => {
       headerShrinkRemover()
     }
   }, [debouncedSearchTerm, sortOption]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  /**
+   * Handle infinite scroll.
+   */
   useEffect(() => {
     async function handleLoadingMore(entities) {
       const target = entities[0]
@@ -55,31 +61,47 @@ export default function Homepage() {
         setReachLoadMoreElement(true)
       }
     }
+
+    // Set Intersection Observer (IO) options.
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 1.0
+      threshold: 0.25
     }
-    // eslint-disable-next-line
-    const observer = new IntersectionObserver(
+
+    // Create IO instance.
+    const observer = new IntersectionObserver( // eslint-disable-line
       handleLoadingMore,
       observerOptions
     )
+
+    // Observe the current item.
     if (loadingMoreRef.current) {
       observer.observe(loadingMoreRef.current)
     }
+
+    // Run clean up function.
     return () => {
       observer.disconnect()
     }
   }, [loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  /**
+   * Handle posts pagination for Infinite Scroll.
+   */
   useEffect(() => {
     setReachLoadMoreElement(false)
+
+    // If we're not loading anything, bail...
     if (results.length === 0 || loading || loadingMore) {
       return
     }
+
     setLoadingMore(true)
+
+    // Fetch the next batch of posts.
     fetchData(searchTerm, lastPost, sortOption).then((data) => {
+      // If there are no more posts, bail.
       if (data.posts.length > 0) {
         setResults((prevResults) => [...prevResults, ...data.posts])
       }
@@ -89,7 +111,15 @@ export default function Homepage() {
   }, [reachLoadMoreElement]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
-   * Menu item click handler.
+   * Helper function to clear states.
+   */
+  async function clearStates() {
+    setResults([])
+    setLastPost(null)
+  }
+
+  /**
+   * Helper function to handle menu clicks.
    *
    * @param {string} searchTerm The search term.
    */
