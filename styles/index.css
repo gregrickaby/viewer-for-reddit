@@ -99,7 +99,7 @@ body.dark-mode .site-header {
 }
 
 .card-video {
-  aspect-ratio: 16 / 9; /* stylelint-disable property-no-unknown */
+  aspect-ratio: 16 / 9;
 }
 
 .card-footer {
