@@ -137,16 +137,28 @@ export default function Homepage() {
           <h1 className="site-title">Reddit Image Viewer</h1>
           <div className="site-search">
             <span>r/</span>{' '}
+            <label htmlFor="search" className="sr-only">
+              Start typing to display content from a sub reddit
+            </label>
             <input
+              aria-label="Start typing to display content from a sub reddit"
               className="search-bar"
-              type="text"
-              placeholder={searchTerm}
-              value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="View a sub-reddit"
+              name="search"
+              id="search"
+              placeholder={searchTerm}
+              tabIndex="0"
+              type="text"
+              value={searchTerm}
             />
+            <label htmlFor="sort" className="sr-only">
+              Sort the results
+            </label>
             <select
+              aria-label="Sort the results"
               className="sort-select"
+              name="sort"
+              id="sort"
               onBlur={(e) => setSortOption(e.target.value)}
               onChange={(e) => setSortOption(e.target.value)}
             >
