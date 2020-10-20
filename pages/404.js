@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import NotFound from '@/components/NoResults'
-import SiteHead from '@/components/SiteHead'
+import SiteHead from '@/components/Meta'
 
 export default function FourOhFour() {
   return (

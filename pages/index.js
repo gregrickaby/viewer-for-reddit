@@ -6,7 +6,7 @@ import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import SpinnerLoadMore from '@/components/SpinnerLoadMore'
 import NoResults from '@/components/NoResults'
-import SiteHead from '@/components/SiteHead'
+import SiteHead from '@/components/Meta'
 import BackToTop from '@/components/BackToTop'
 import ThemeToggle from '@/components/ThemeToggle'
 
