@@ -7,7 +7,7 @@ import Spinner from '@/components/Spinner'
 import SpinnerLoadMore from '@/components/SpinnerLoadMore'
 import NoResults from '@/components/NoResults'
 import SiteHead from '@/components/SiteHead'
-import BackToTop from 'react-easy-back-to-top'
+import BackToTop from '@/components/BackToTop'
 import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Homepage() {
@@ -176,7 +176,7 @@ export default function Homepage() {
         )}
         <SpinnerLoadMore elementRef={loadingMoreRef} loading={loadingMore} />
         <ThemeToggle />
-        <BackToTop text="&uarr;" padding="4px 10px" />
+        <BackToTop />
       </main>
     </>
   )

@@ -123,6 +123,12 @@ body.dark-mode .site-header {
   @apply mb-2;
 }
 
+/* Back To Top
+============================== */
+.back-to-top {
+  @apply fixed bottom-0 right-0 mr-10 mb-12 py-2 px-4 rounded-lg bg-black;
+}
+
 /* Theme Toggle
 ============================== */
 .theme-toggle-wrap {
