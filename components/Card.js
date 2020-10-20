@@ -4,7 +4,7 @@ import {cleanIframe} from '@/lib/functions'
 
 export default function Card(props) {
   const post = props.data.data
-  const date = new Date(post.created_utc * 1000)
+  const ups = post.ups.toLocaleString('en')
 
   return (
     <article className="card">
@@ -14,7 +14,7 @@ export default function Card(props) {
             className="card-link"
             href={`https://www.reddit.com${post.permalink}`}
             dangerouslySetInnerHTML={{__html: post.title}}
-          />
+          />{' '}
         </h2>
       </header>
 
@@ -31,7 +31,7 @@ export default function Card(props) {
                     debounce={500}
                     error="error.png"
                     src={post.url}
-                    placeholder="loading.svg"
+                    placeholder="img-loading.webp"
                     height="512"
                     width="512"
                   />
@@ -96,18 +96,15 @@ export default function Card(props) {
       </div>
 
       <footer className="card-footer">
-        <div className="card-date">
-          By <code>{post.author}</code> on{' '}
-          <time>
-            {date.getMonth() + 1}/{date.getDate()}/
-            {date.getFullYear().toString().slice(-2)}
-          </time>
-        </div>
-        <div className="card-votes">&uarr; {post.ups}</div>
+        <div className="card-votes">&uarr; {ups} ups</div>
         <div className="card-comments">
-          <a href={`https://www.reddit.com${post.permalink}`}>
-            {post.num_comments} comments
-          </a>
+          {post.num_comments >= 1 && (
+            <a href={`https://www.reddit.com${post.permalink}`}>
+              {post.num_comments <= 1
+                ? `${post.num_comments} comment`
+                : `${post.num_comments} comments`}
+            </a>
+          )}
         </div>
       </footer>
     </article>

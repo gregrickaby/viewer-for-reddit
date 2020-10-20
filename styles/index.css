@@ -24,6 +24,10 @@ body.dark-mode .site-header {
   color: var(--color-text-dark);
 }
 
+body.dark-mode .card {
+  @apply border-gray-700;
+}
+
 /* Homepage
 ============================= */
 .wrap {
@@ -77,15 +81,15 @@ body.dark-mode .site-header {
 /* Card
 ============================= */
 .card {
-  @apply p-4 mb-8 rounded-lg shadow-xl;
+  @apply p-4 mb-8 border-2 rounded-md shadow-xl;
 
-  contain-intrinsic-size: 640px; /* stylelint-disable property-no-unknown */
+  contain-intrinsic-size: 512px; /* stylelint-disable property-no-unknown */
   contain: content;
   content-visibility: auto;
 }
 
 .card-title {
-  @apply text-2xl mb-4 text-center;
+  @apply text-2xl mb-4 text-center leading-none;
 }
 
 .card-link:hover {
@@ -104,6 +108,10 @@ body.dark-mode .site-header {
 
 .card-footer {
   @apply flex flex-wrap justify-between mt-4 text-sm;
+
+  & a {
+    @apply underline;
+  }
 }
 
 /* Shrink the header area.
