@@ -83,7 +83,7 @@ body.dark-mode .card {
 .card {
   @apply p-4 mb-8 border-2 rounded-md shadow-xl;
 
-  contain-intrinsic-size: 512px; /* stylelint-disable property-no-unknown */
+  contain-intrinsic-size: 544px 1000px; /* stylelint-disable property-no-unknown */
   contain: content;
   content-visibility: auto;
 }
