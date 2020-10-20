@@ -51,7 +51,7 @@
     "prop-types": "^15.7.2",
     "stylelint": "^13.7.2",
     "stylelint-config-standard": "^20.0.0",
-    "tailwindcss": "^1.9.4"
+    "tailwindcss": "^1.9.5"
   },
   "husky": {
     "hooks": {
