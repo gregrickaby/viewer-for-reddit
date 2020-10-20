@@ -124,6 +124,7 @@ export default function Homepage() {
    * @param {string} searchTerm The search term.
    */
   function menuClick(term) {
+    setLastPost(null)
     setSearchTerm(term)
     scrollTop()
   }
