@@ -5,6 +5,7 @@ import {cleanIframe} from '@/lib/functions'
 export default function Card(props) {
   const post = props.data.data
   const ups = post.ups.toLocaleString('en')
+  const comments = post.num_comments.toLocaleString('en')
 
   return (
     <article className="card">
@@ -101,8 +102,8 @@ export default function Card(props) {
           {post.num_comments >= 1 && (
             <a href={`https://www.reddit.com${post.permalink}`}>
               {post.num_comments <= 1
-                ? `${post.num_comments} comment`
-                : `${post.num_comments} comments`}
+                ? `${comments} comment`
+                : `${comments} comments`}
             </a>
           )}
         </div>
