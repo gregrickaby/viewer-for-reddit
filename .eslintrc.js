@@ -3,7 +3,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true
     },
-    ecmaVersion: 9,
+    ecmaVersion: 2021,
     sourceType: 'module'
   },
   env: {
