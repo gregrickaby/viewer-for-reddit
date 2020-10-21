@@ -55,13 +55,19 @@ export default function SiteHead() {
       <meta name="twitter:url" content={config.siteUrl} />
       <meta name="twitter:title" content={config.siteName} />
       <meta name="twitter:description" content={config.siteDescription} />
-      <meta name="twitter:image" content="/favicon/social-share.jpg" />
+      <meta
+        name="twitter:image"
+        content={`${config.siteUrl}favicon/social-share.jpg`}
+      />
       <meta property="og:type" content="website" />
       <meta property="og:title" content={config.siteName} />
       <meta property="og:description" content={config.siteDescription} />
       <meta property="og:site_name" content={config.siteName} />
       <meta property="og:url" content={config.siteUrl} />
-      <meta property="og:image" content="/favicon/social-share.jpg" />
+      <meta
+        property="og:image"
+        content={`${config.siteUrl}favicon/social-share.jpg`}
+      />
       <script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-663BF7S0XK"
