@@ -14,12 +14,6 @@ export default function SiteHead() {
         content="View images and media from any subreddit."
       />
       <link rel="preconnect" href="//cors-anywhere.herokuapp.com" />
-      <link
-        rel="preload"
-        href="//cors-anywhere.herokuapp.com/https://www.reddit.com/r/itookapicture/.json?limit=5"
-        as="fetch"
-        crossOrigin="anonymous"
-      />
       <link rel="preconnect" href="//www.reddit.com" />
       <link rel="preconnect" href="//www.google-analytics.com" />
       <link rel="preconnect" href="//i.reddit.com" />
@@ -30,6 +24,21 @@ export default function SiteHead() {
       <link rel="preconnect" href="//b.thumbs.redditmedia.com" />
       <link rel="preconnect" href="//imgur.com" />
       <link rel="preconnect" href="//i.imgur.com" />
+      <link
+        as="fetch"
+        rel="prefetch"
+        href="//cors-anywhere.herokuapp.com/https://www.reddit.com/r/itookapicture/.json?limit=5"
+        crossOrigin="anonymous"
+      />
+      <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-663BF7S0XK"
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-663BF7S0XK');`
+        }}
+      />
     </Head>
   )
 }
