@@ -7,11 +7,11 @@ export default class MyDocument extends Document {
         <Head>
           <script
             async
-            src="https://www.googletagmanager.com/gtag/js?id=UA-1212017-88"
+            src="https://www.googletagmanager.com/gtag/js?id=G-663BF7S0XK"
           />
           <script
             dangerouslySetInnerHTML={{
-              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','UA-1212017-88');`
+              __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-663BF7S0XK');`
             }}
           />
         </Head>
