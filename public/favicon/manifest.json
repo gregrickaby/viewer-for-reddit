@@ -1,5 +1,14 @@
 {
   "name": "Reddit Image Viewer",
+  "short_name": "Reddit",
+  "start_url": "/",
+  "description": "Endlessly scroll images, gifs, and videos from any subreddit. Use the live search to switch between subreddits and sort by new, hot, rising, and top.",
+  "categories": ["entertainment"],
+  "lang": "en-US",
+  "theme_color": "#1a202c",
+  "background_color": "#1a202c",
+  "display": "standalone",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/favicon/android-icon-36x36.png",
