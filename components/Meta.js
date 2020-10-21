@@ -15,6 +15,7 @@ export default function SiteHead() {
       />
       <link rel="preconnect" href="//cors-anywhere.herokuapp.com" />
       <link rel="preconnect" href="//www.reddit.com" />
+      <link rel="preconnect" href="//www.googletagmanager.com" />
       <link rel="preconnect" href="//www.google-analytics.com" />
       <link rel="preconnect" href="//i.reddit.com" />
       <link rel="preconnect" href="//i.redd.it.com" />
