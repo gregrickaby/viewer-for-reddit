@@ -11,21 +11,41 @@ export default function SiteHead() {
       />
       <meta name="description" content={config.siteDescription} />
       <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-      <link rel="preconnect" href="//cors-anywhere.herokuapp.com" />
-      <link rel="preconnect" href="//www.reddit.com" />
-      <link rel="preconnect" href="//www.googletagmanager.com" />
-      <link rel="preconnect" href="//www.google-analytics.com" />
-      <link rel="preconnect" href="//i.reddit.com" />
-      <link rel="preconnect" href="//i.redd.it.com" />
-      <link rel="preconnect" href="//v.redd.it.com" />
-      <link rel="preconnect" href="//redditmedia.com" />
-      <link rel="preconnect" href="//a.thumbs.redditmedia.com" />
-      <link rel="preconnect" href="//b.thumbs.redditmedia.com" />
-      <link rel="preconnect" href="//imgur.com" />
-      <link rel="preconnect" href="//i.imgur.com" />
+      <link
+        rel="preconnect"
+        href="//cors-anywhere.herokuapp.com"
+        crossOrigin="anonymous"
+      />
+      <link rel="preconnect" href="//www.reddit.com" crossOrigin="anonymous" />
+      <link
+        rel="preconnect"
+        href="//www.googletagmanager.com"
+        crossOrigin="anonymous"
+      />
+      <link
+        rel="preconnect"
+        href="//www.google-analytics.com"
+        crossOrigin="anonymous"
+      />
+      <link rel="preconnect" href="//i.reddit.com" crossOrigin="anonymous" />
+      <link rel="preconnect" href="//i.redd.it.com" crossOrigin="anonymous" />
+      <link rel="preconnect" href="//v.redd.it.com" crossOrigin="anonymous" />
+      <link rel="preconnect" href="//redditmedia.com" crossOrigin="anonymous" />
+      <link
+        rel="preconnect"
+        href="//a.thumbs.redditmedia.com"
+        crossOrigin="anonymous"
+      />
+      <link
+        rel="preconnect"
+        href="//b.thumbs.redditmedia.com"
+        crossOrigin="anonymous"
+      />
+      <link rel="preconnect" href="//imgur.com" crossOrigin="anonymous" />
+      <link rel="preconnect" href="//i.imgur.com" crossOrigin="anonymous" />
       <link
         as="fetch"
-        rel="prefetch"
+        rel="preload"
         href="//cors-anywhere.herokuapp.com/https://www.reddit.com/r/itookapicture/.json?limit=5"
         crossOrigin="anonymous"
       />
@@ -68,10 +88,7 @@ export default function SiteHead() {
         property="og:image"
         content={`${config.siteUrl}favicon/social-share.jpg`}
       />
-      <script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-663BF7S0XK"
-      />
+      <script async src="//www.googletagmanager.com/gtag/js?id=G-663BF7S0XK" />
       <script
         dangerouslySetInnerHTML={{
           __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-663BF7S0XK');`
