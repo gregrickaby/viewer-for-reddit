@@ -29,33 +29,37 @@
   },
   "dependencies": {
     "next": "latest",
-    "react": "16.14.0",
+    "react": "17.0.0",
     "react-cool-img": "^1.2.4",
-    "react-dom": "16.14.0",
-    "react-easy-back-to-top": "^1.0.2",
+    "react-dom": "17.0.0",
     "react-loader-spinner": "^3.1.14",
     "use-dark-mode": "^2.3.1"
   },
   "devDependencies": {
     "eslint": "^7.11.0",
-    "eslint-config-prettier": "^6.12.0",
+    "eslint-config-prettier": "^6.13.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.21.4",
-    "eslint-plugin-react-hooks": "^4.1.2",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.0",
-    "lint-staged": "^10.4.0",
+    "lint-staged": "^10.4.2",
+    "postcss-flexbugs-fixes": "^4.2.1",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.1.2",
     "prop-types": "^15.7.2",
     "stylelint": "^13.7.2",
     "stylelint-config-standard": "^20.0.0",
-    "tailwindcss": "^1.9.2"
+    "tailwindcss": "^1.9.5"
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.true": "stylelint --fix"
   }
 }

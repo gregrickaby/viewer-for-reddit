@@ -3,12 +3,12 @@ import {useDebounce} from '@/lib/hooks'
 import {fetchData, scrollTop, shrinkHeader} from '@/lib/functions'
 import * as config from '@/lib/constants'
 import * as searchHistoryStorage from '@/lib/storage/history'
-import SiteHead from '@/components/SiteHead'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import SpinnerLoadMore from '@/components/SpinnerLoadMore'
 import NoResults from '@/components/NoResults'
-import BackToTop from 'react-easy-back-to-top'
+import SiteHead from '@/components/Meta'
+import BackToTop from '@/components/BackToTop'
 import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Homepage() {
@@ -56,10 +56,12 @@ export default function Homepage() {
 
   useEffect(() => {
     async function loadPosts() {
+      // No search term? Bail...
       if (!debouncedSearchTerm) {
         setResults([])
         return
       }
+
       setLoading(true)
       const data = await fetchData(searchTerm, lastPost, sortOption)
       setResults(data.posts)
@@ -68,14 +70,20 @@ export default function Homepage() {
       setLoading(false)
       scrollTop()
     }
+
     clearStates()
     loadPosts()
     const headerShrinkRemover = shrinkHeader(headerRef)
+
+    // Run cleanup function.
     return () => {
       headerShrinkRemover()
     }
   }, [debouncedSearchTerm, sortOption]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  /**
+   * Handle infinite scroll.
+   */
   useEffect(() => {
     async function handleLoadingMore(entities) {
       const target = entities[0]
@@ -83,31 +91,47 @@ export default function Homepage() {
         setReachLoadMoreElement(true)
       }
     }
+
+    // Set Intersection Observer (IO) options.
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 1.0
+      threshold: 0.25
     }
-    // eslint-disable-next-line
-    const observer = new IntersectionObserver(
+
+    // Create IO instance.
+    const observer = new IntersectionObserver( // eslint-disable-line
       handleLoadingMore,
       observerOptions
     )
+
+    // Observe the current item.
     if (loadingMoreRef.current) {
       observer.observe(loadingMoreRef.current)
     }
+
+    // Run clean up function.
     return () => {
       observer.disconnect()
     }
   }, [loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  /**
+   * Handle posts pagination for Infinite Scroll.
+   */
   useEffect(() => {
     setReachLoadMoreElement(false)
+
+    // If we're not loading anything, bail...
     if (results.length === 0 || loading || loadingMore) {
       return
     }
+
     setLoadingMore(true)
+
+    // Fetch the next batch of posts.
     fetchData(searchTerm, lastPost, sortOption).then((data) => {
+      // If there are no more posts, bail.
       if (data.posts.length > 0) {
         setResults((prevResults) => [...prevResults, ...data.posts])
       }
@@ -124,16 +148,28 @@ export default function Homepage() {
           <h1 className="site-title">Reddit Image Viewer</h1>
           <div className="site-search">
             <span>r/</span>{' '}
+            <label htmlFor="search" className="sr-only">
+              Start typing to display content from a sub reddit
+            </label>
             <input
+              aria-label="Start typing to display content from a sub reddit"
               className="search-bar"
-              type="text"
-              placeholder={searchTerm}
-              value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="View a sub-reddit"
+              name="search"
+              id="search"
+              placeholder={searchTerm}
+              tabIndex="0"
+              type="text"
+              value={searchTerm}
             />
+            <label htmlFor="sort" className="sr-only">
+              Sort the results
+            </label>
             <select
+              aria-label="Sort the results"
               className="sort-select"
+              name="sort"
+              id="sort"
               onBlur={(e) => setSortOption(e.target.value)}
               onChange={(e) => setSortOption(e.target.value)}
             >
@@ -172,7 +208,7 @@ export default function Homepage() {
         )}
         <SpinnerLoadMore elementRef={loadingMoreRef} loading={loadingMore} />
         <ThemeToggle />
-        <BackToTop text="&uarr;" padding="4px 10px" />
+        <BackToTop />
       </main>
     </>
   )
