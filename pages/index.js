@@ -2,16 +2,18 @@ import {useState, useEffect, useRef} from 'react'
 import {useDebounce} from '@/lib/hooks'
 import {fetchData, scrollTop, shrinkHeader} from '@/lib/functions'
 import * as config from '@/lib/constants'
+import * as searchHistoryStorage from '@/lib/storage/history'
+import SiteHead from '@/components/SiteHead'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import SpinnerLoadMore from '@/components/SpinnerLoadMore'
 import NoResults from '@/components/NoResults'
-import SiteHead from '@/components/SiteHead'
 import BackToTop from 'react-easy-back-to-top'
 import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState(config.DEFAULT_SEARCH_TERM)
+  const [searchHistory, setSearchHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [results, setResults] = useState([])
   const [lastPost, setLastPost] = useState(null)
@@ -22,10 +24,35 @@ export default function Homepage() {
   const headerRef = useRef(null)
   const loadingMoreRef = useRef(null)
 
-  async function clearStates() {
+  function clearStates() {
     setResults([])
     setLastPost(null)
   }
+
+  /**
+   * Save a search term to the session storage
+   * and update history state
+   *
+   * @param {string} searchTerm The search term.
+   */
+  function saveHistory(term) {
+    searchHistoryStorage.storeValue(term)
+    setSearchHistory(searchHistoryStorage.getAllSavedValue())
+  }
+
+  /**
+   * Menu item click handler.
+   *
+   * @param {string} searchTerm The search term.
+   */
+  function menuClick(term) {
+    setSearchTerm(term)
+    scrollTop()
+  }
+
+  useEffect(() => {
+    setSearchHistory(searchHistoryStorage.getAllSavedValue())
+  }, [])
 
   useEffect(() => {
     async function loadPosts() {
@@ -37,6 +64,7 @@ export default function Homepage() {
       const data = await fetchData(searchTerm, lastPost, sortOption)
       setResults(data.posts)
       setLastPost(data.after)
+      saveHistory(searchTerm)
       setLoading(false)
       scrollTop()
     }
@@ -88,16 +116,6 @@ export default function Homepage() {
     })
   }, [reachLoadMoreElement]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  /**
-   * Menu item click handler.
-   *
-   * @param {string} searchTerm The search term.
-   */
-  function menuClick(term) {
-    setSearchTerm(term)
-    scrollTop()
-  }
-
   return (
     <>
       <SiteHead />
@@ -131,6 +149,15 @@ export default function Homepage() {
             <button onClick={() => menuClick('pics')}>r/pics</button>
             <button onClick={() => menuClick('gifs')}>r/gifs</button>
             <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
+          </nav>
+          <nav className="flex justify-around mt-2">
+            <p>History</p>
+            {searchHistory &&
+              searchHistory.map((history, index) => (
+                <button key={index} onClick={() => menuClick(history)}>
+                  r/{history}
+                </button>
+              ))}
           </nav>
         </div>
       </header>
