@@ -1,4 +1,5 @@
 import {useState, useEffect, useRef} from 'react'
+import ReactModal from 'react-modal'
 import {useDebounce} from '@/lib/hooks'
 import {fetchData, scrollTop, shrinkHeader} from '@/lib/functions'
 import * as config from '@/lib/constants'
@@ -20,10 +21,15 @@ export default function Homepage() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [reachLoadMoreElement, setReachLoadMoreElement] = useState(false)
   const [sortOption, setSortOption] = useState(0)
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
   const headerRef = useRef(null)
   const loadingMoreRef = useRef(null)
 
+  /**
+   * Reset states to initial value.
+   *
+   */
   function clearStates() {
     setResults([])
     setLastPost(null)
@@ -31,7 +37,7 @@ export default function Homepage() {
 
   /**
    * Save a search term to the session storage
-   * and update history state
+   * and update history state.
    *
    * @param {string} searchTerm The search term.
    */
@@ -50,7 +56,28 @@ export default function Homepage() {
     scrollTop()
   }
 
-  function renderSearchHistoryNav(searchedList) {
+  /**
+   * Render examples as a HTML.
+   *
+   */
+  function renderExamples() {
+    return (
+      <nav className="flex justify-around mt-2">
+        <span className="headerNav">Examples</span>
+        <button onClick={() => menuClick('aww')}>r/aww</button>
+        <button onClick={() => menuClick('pics')}>r/pics</button>
+        <button onClick={() => menuClick('gifs')}>r/gifs</button>
+        <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
+      </nav>
+    )
+  }
+
+  /**
+   * Render a search history list as a HTML.
+   *
+   * @param {array} searchedList list of searched term histories
+   */
+  function renderSearchHistory(searchedList) {
     if (!searchedList || searchedList.length === 0) {
       return
     }
@@ -61,18 +88,47 @@ export default function Homepage() {
     )
     return (
       <nav className="flex justify-around mt-2">
-        <span className="inline-block bg-blue-900 text-white text-xs px-2 rounded-full">
-          History
-        </span>
+        <span className="headerNav">History</span>
         {searchedList
           .slice(0, config.MAX_HISTORY_IN_NAV)
           .map((history, index) => searchTermElement(history, index))}
         {searchedList.length > config.MAX_HISTORY_IN_NAV && (
-          <button className="inline-block bg-gray-900 text-white text-xs px-2 rounded-full">
+          <button
+            className="buttonSeeMore"
+            onClick={() => setShowHistoryModal(true)}
+          >
             ...
           </button>
         )}
       </nav>
+    )
+  }
+
+  function renderHistoryModal(showModal, searchedList) {
+    return (
+      <ReactModal isOpen={showModal} contentLabel="History Modal">
+        <div className="flex justify-between">
+          <span className="text-2xl">Search Term History</span>
+          <button
+            className="text-4xl"
+            onClick={() => setShowHistoryModal(false)}
+          >
+            ×
+          </button>
+        </div>
+        {searchedList.map((history, index) => (
+          <button
+            className="block"
+            key={index}
+            onClick={() => {
+              menuClick(history)
+              setShowHistoryModal(false)
+            }}
+          >
+            r/{history}
+          </button>
+        ))}
+      </ReactModal>
     )
   }
 
@@ -171,7 +227,11 @@ export default function Homepage() {
   return (
     <>
       <SiteHead />
-      <header ref={headerRef} className="site-header">
+      <header
+        ref={headerRef}
+        className="site-header"
+        style={{zIndex: showHistoryModal ? -1 : 9999}}
+      >
         <div className="wrap">
           <h1 className="site-title">Reddit Image Viewer</h1>
           <div className="site-search">
@@ -208,16 +268,11 @@ export default function Homepage() {
               ))}
             </select>
           </div>
-          <nav className="flex justify-around mt-2">
-            <button onClick={() => menuClick('aww')}>r/aww</button>
-            <button onClick={() => menuClick('pics')}>r/pics</button>
-            <button onClick={() => menuClick('gifs')}>r/gifs</button>
-            <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
-          </nav>
-          {renderSearchHistoryNav(searchHistory)}
+          {renderExamples()}
+          {renderSearchHistory(searchHistory)}
+          {renderHistoryModal(showHistoryModal, searchHistory)}
         </div>
       </header>
-
       <main className="main wrap">
         {loading ? (
           <Spinner />

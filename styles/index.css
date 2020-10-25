@@ -41,7 +41,6 @@ body.dark-mode .card {
 
   box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.25);
   contain: content;
-  z-index: 9998;
 }
 
 .site-title {
@@ -66,6 +65,18 @@ body.dark-mode .card {
 .no-results {
   @apply flex flex-col justify-center items-center text-xl text-center mb-4;
 }
+
+/* Navigation
+============================ */
+
+.headerNav {
+  @apply font-bold bg-blue-900 bg-opacity-25 p-2
+}
+
+.buttonSeeMore {
+  @apply inline-block bg-blue-900 bg-opacity-25 text-xs px-2 m-2 rounded-full
+}
+
 
 /* Card
 ============================= */
