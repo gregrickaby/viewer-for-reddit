@@ -63,7 +63,6 @@ export default function Homepage() {
   function renderExamples() {
     return (
       <nav className="flex justify-around mt-2">
-        <span className="headerNav">Examples</span>
         <button onClick={() => menuClick('aww')}>r/aww</button>
         <button onClick={() => menuClick('pics')}>r/pics</button>
         <button onClick={() => menuClick('gifs')}>r/gifs</button>
@@ -73,7 +72,8 @@ export default function Homepage() {
   }
 
   /**
-   * Render a search history list as a HTML.
+   * Render a list of used search terms as a HTML.
+   * It will be show "see more" button if the list has many terms
    *
    * @param {array} searchedList list of searched term histories
    */
@@ -81,17 +81,20 @@ export default function Homepage() {
     if (!searchedList || searchedList.length === 0) {
       return
     }
-    const searchTermElement = (history, index) => (
-      <button key={index} onClick={() => menuClick(history)} className="mx-1">
-        r/{history}
-      </button>
-    )
     return (
       <nav className="flex justify-around mt-2">
         <span className="headerNav">History</span>
         {searchedList
           .slice(0, config.MAX_HISTORY_IN_NAV)
-          .map((history, index) => searchTermElement(history, index))}
+          .map((history, index) => (
+            <button
+              key={index}
+              className="inline-block mx-1"
+              onClick={() => menuClick(history)}
+            >
+              r/{history}
+            </button>
+          ))}
         {searchedList.length > config.MAX_HISTORY_IN_NAV && (
           <button
             className="buttonSeeMore"
@@ -104,30 +107,44 @@ export default function Homepage() {
     )
   }
 
-  function renderHistoryModal(showModal, searchedList) {
+  /**
+   * Render a modal show full of used search terms list
+   *
+   * @param {array} searchedList list of searched term histories
+   * @param {boolean} showModal check modal showing
+   * @param {boolean} onCloseModal function to close the modal
+   */
+  function renderHistoryModal(searchedList, showModal, onCloseModal) {
     return (
-      <ReactModal isOpen={showModal} contentLabel="History Modal">
-        <div className="flex justify-between">
-          <span className="text-2xl">Search Term History</span>
-          <button
-            className="text-4xl"
-            onClick={() => setShowHistoryModal(false)}
-          >
-            ×
-          </button>
+      <ReactModal
+        isOpen={showModal}
+        onRequestClose={onCloseModal}
+        contentLabel="History Modal"
+        className="history modal"
+        overlayClassName="overlay"
+      >
+        <div className="modal-body">
+          <div className="modal-title flex justify-between">
+            <span className="text-2xl">Search Term History</span>
+            <button className="text-4xl" onClick={onCloseModal}>
+              ×
+            </button>
+          </div>
+          <div className="modal-content">
+            {searchedList.map((history, index) => (
+              <button
+                className="block"
+                key={index}
+                onClick={() => {
+                  menuClick(history)
+                  onCloseModal()
+                }}
+              >
+                r/{history}
+              </button>
+            ))}
+          </div>
         </div>
-        {searchedList.map((history, index) => (
-          <button
-            className="block"
-            key={index}
-            onClick={() => {
-              menuClick(history)
-              setShowHistoryModal(false)
-            }}
-          >
-            r/{history}
-          </button>
-        ))}
       </ReactModal>
     )
   }
@@ -270,7 +287,6 @@ export default function Homepage() {
           </div>
           {renderExamples()}
           {renderSearchHistory(searchHistory)}
-          {renderHistoryModal(showHistoryModal, searchHistory)}
         </div>
       </header>
       <main className="main wrap">
@@ -285,6 +301,9 @@ export default function Homepage() {
         <ThemeToggle />
         <BackToTop />
       </main>
+      {renderHistoryModal(searchHistory, showHistoryModal, () => {
+        setShowHistoryModal(false)
+      })}
     </>
   )
 }

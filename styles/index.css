@@ -182,3 +182,68 @@ body.dark-mode .card {
 .theme-toggle-icon {
   @apply ml-1;
 }
+
+/* Modal
+============================== */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #ccc;
+  background: #fff;
+  /* overflow: hidden; */
+  border-radius: 4px;
+  outline: none;
+  padding: 20px;
+}
+
+.modal-body {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.modal-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+/* History Modal
+============================== */
+
+.modal.history {
+  height: 80%;
+}
+
+
+/* Responsive
+============================== */
+
+@media only screen and (min-width : 321px) {
+  .history.modal {
+    width: 80%;
+  }
+}
+
+@media only screen and (min-width : 480px) {
+  .history.modal {
+    width: 60%;
+  }
+}
+
+@media only screen and (min-width : 1024px) {
+  .history.modal {
+    width: 40%;
+  }
+}
