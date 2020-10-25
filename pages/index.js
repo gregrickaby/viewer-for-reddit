@@ -50,7 +50,35 @@ export default function Homepage() {
     scrollTop()
   }
 
+  function renderSearchHistoryNav(searchedList) {
+    if (!searchedList || searchedList.length === 0) {
+      return
+    }
+    const searchTermElement = (history, index) => (
+      <button key={index} onClick={() => menuClick(history)} className="mx-1">
+        r/{history}
+      </button>
+    )
+    return (
+      <nav className="flex justify-around mt-2">
+        <span className="inline-block bg-blue-900 text-white text-xs px-2 rounded-full">
+          History
+        </span>
+        {searchedList
+          .slice(0, config.MAX_HISTORY_IN_NAV)
+          .map((history, index) => searchTermElement(history, index))}
+        {searchedList.length > config.MAX_HISTORY_IN_NAV && (
+          <button className="inline-block bg-gray-900 text-white text-xs px-2 rounded-full">
+            ...
+          </button>
+        )}
+      </nav>
+    )
+  }
+
   useEffect(() => {
+    // When page finishes loading, Search histories saved in session storage
+    // will be saved into state If an user use the same session in browser
     setSearchHistory(searchHistoryStorage.getAllSavedValue())
   }, [])
 
@@ -186,15 +214,7 @@ export default function Homepage() {
             <button onClick={() => menuClick('gifs')}>r/gifs</button>
             <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
           </nav>
-          <nav className="flex justify-around mt-2">
-            <p>History</p>
-            {searchHistory &&
-              searchHistory.map((history, index) => (
-                <button key={index} onClick={() => menuClick(history)}>
-                  r/{history}
-                </button>
-              ))}
-          </nav>
+          {renderSearchHistoryNav(searchHistory)}
         </div>
       </header>
 
