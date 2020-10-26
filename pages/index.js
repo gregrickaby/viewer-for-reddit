@@ -197,7 +197,7 @@ export default function Homepage() {
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 0.25
+      threshold: 0.1
     }
 
     // Create IO instance.

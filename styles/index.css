@@ -20,14 +20,18 @@ body,
   transition: background-color 0.3s ease;
 }
 
-body.dark-mode,
-body.dark-mode .site-header {
+body.dark-mode {
   background-color: var(--color-background-dark);
   color: var(--color-text-dark);
-}
 
-body.dark-mode .card {
-  @apply border-gray-700;
+  & .site-header {
+    background-color: var(--color-background-dark);
+    color: var(--color-text-dark);
+  }
+
+  & .card {
+    @apply border-gray-700;
+  }
 }
 
 /* Global
@@ -82,10 +86,6 @@ body.dark-mode .card {
 ============================= */
 .card {
   @apply p-4 mb-8 border-2 rounded-md shadow-xl;
-
-  contain-intrinsic-size: 544px 1000px; /* stylelint-disable-line */
-  contain: content;
-  content-visibility: auto; /* stylelint-disable-line */
 }
 
 .card-title {
@@ -136,6 +136,8 @@ body.dark-mode .card {
 ============================== */
 .back-to-top {
   @apply fixed bottom-0 right-0 mr-10 mb-12 py-2 px-4 rounded-lg bg-black;
+
+  color: var(--color-text-dark);
 }
 
 /* Theme Toggle
