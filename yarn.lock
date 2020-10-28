@@ -3081,10 +3081,10 @@ escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
-eslint-config-prettier@^6.14.0:
-  version "6.14.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-6.14.0.tgz#390e7863a8ae99970981933826476169285b3a27"
-  integrity sha512-DbVwh0qZhAC7CNDWcq8cBdK6FcVHiMTKmCypOPWeZkp9hJ8xYwTaWSa6bb6cjfi8KOeJy0e9a8Izxyx+O4+gCQ==
+eslint-config-prettier@^6.15.0:
+  version "6.15.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-6.15.0.tgz#7f93f6cb7d45a92f1537a70ecc06366e1ac6fed9"
+  integrity sha512-a1+kOYLR8wMGustcgAjdydMsQ2A/2ipRPwRKUmfYaSxc9ZPcrku080Ctl6zrZzZNs/U82MjSv+qKREkoq3bJaw==
   dependencies:
     get-stdin "^6.0.0"
 
@@ -6144,10 +6144,10 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-react-cool-img@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.4.tgz#377bc0a2d933d4d25beab3b432e7e4d441ed9491"
-  integrity sha512-rGKWn/xJ8szekQnbEundrtHQ9P7jcMNs9jIp98fuWPZLh7u36DTMVTsDzce/2h5cRVyM7Hhj3K2e+iFcS4Tgqg==
+react-cool-img@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.5.tgz#c2f64ba97fa074028371637843615985967de3fa"
+  integrity sha512-/ymvmKTiqcqJKSBRmshicIgk1l1Aobg8+sic1C7FLen01WcqtRzQjplG8PjZfLCippPHmCuZbJUZvdu9MegCow==
 
 react-dom@17.0.1:
   version "17.0.1"
