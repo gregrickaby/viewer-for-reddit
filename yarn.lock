@@ -4455,10 +4455,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lint-staged@^10.4.2:
-  version "10.4.2"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.4.2.tgz#9fee4635c4b5ddb845746f237c6d43494ccd21c1"
-  integrity sha512-OLCA9K1hS+Sl179SO6kX0JtnsaKj/MZalEhUj5yAgXsb63qPI/Gfn6Ua1KuZdbfkZNEu3/n5C/obYCu70IMt9g==
+lint-staged@^10.5.0:
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.5.0.tgz#c923c2447a84c595874f3de696778736227e7a7a"
+  integrity sha512-gjC9+HGkBubOF+Yyoj9pd52Qfm/kYB+dRX1UOgWjHKvSDYl+VHkZXlBMlqSZa2cH3Kp5/uNL480sV6e2dTgXSg==
   dependencies:
     chalk "^4.1.0"
     cli-truncate "^2.1.0"
@@ -6135,10 +6135,10 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-react-cool-img@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.4.tgz#377bc0a2d933d4d25beab3b432e7e4d441ed9491"
-  integrity sha512-rGKWn/xJ8szekQnbEundrtHQ9P7jcMNs9jIp98fuWPZLh7u36DTMVTsDzce/2h5cRVyM7Hhj3K2e+iFcS4Tgqg==
+react-cool-img@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.5.tgz#c2f64ba97fa074028371637843615985967de3fa"
+  integrity sha512-/ymvmKTiqcqJKSBRmshicIgk1l1Aobg8+sic1C7FLen01WcqtRzQjplG8PjZfLCippPHmCuZbJUZvdu9MegCow==
 
 react-dom@17.0.1:
   version "17.0.1"
