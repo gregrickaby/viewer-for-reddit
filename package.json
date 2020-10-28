@@ -30,7 +30,7 @@
   "dependencies": {
     "next": "latest",
     "react": "17.0.1",
-    "react-cool-img": "^1.2.4",
+    "react-cool-img": "^1.2.5",
     "react-dom": "17.0.1",
     "react-loader-spinner": "^3.1.14",
     "use-dark-mode": "^2.3.1"
