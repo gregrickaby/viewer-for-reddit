@@ -32,6 +32,10 @@ body.dark-mode {
   & .card {
     @apply border-gray-700;
   }
+
+  & .modal{
+    @apply bg-gray-900 border-black;
+  }
 }
 
 /* Global
@@ -74,13 +78,12 @@ body.dark-mode {
 ============================ */
 
 .headerNav {
-  @apply font-bold bg-blue-900 bg-opacity-25 p-2
+  @apply font-bold bg-blue-900 bg-opacity-25 p-2;
 }
 
 .buttonSeeMore {
-  @apply inline-block bg-blue-900 bg-opacity-25 text-xs px-2 m-2 rounded-full
+  @apply inline-block bg-blue-900 bg-opacity-25 text-xs px-2 m-2 rounded-full;
 }
-
 
 /* Card
 ============================= */
@@ -144,7 +147,6 @@ body.dark-mode {
 ============================== */
 .theme-toggle-wrap {
   @apply flex items-center fixed;
-
   top: 5px;
   right: 5px;
   z-index: 9999;
@@ -189,37 +191,24 @@ body.dark-mode {
 ============================== */
 
 .overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  @apply fixed inset-0 bg-black bg-opacity-75;
 }
 
 .modal {
-  position: fixed;
+  @apply fixed p-5 bg-white border-white border border-solid rounded outline-none;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 1px solid #ccc;
-  background: #fff;
-  /* overflow: hidden; */
-  border-radius: 4px;
-  outline: none;
-  padding: 20px;
+
+  & .modal-body {
+    @apply flex flex-col h-full;
+  }
+
+  & .modal-content {
+    @apply flex-auto overflow-y-auto;
+  }
 }
 
-.modal-body {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-}
-
-.modal-content {
-  flex: 1 1 auto;
-  overflow-y: auto;
-}
 
 /* History Modal
 ============================== */
@@ -228,23 +217,22 @@ body.dark-mode {
   height: 80%;
 }
 
-
 /* Responsive
 ============================== */
 
-@media only screen and (min-width : 321px) {
+@media only screen and (min-width: 321px) {
   .history.modal {
     width: 80%;
   }
 }
 
-@media only screen and (min-width : 480px) {
+@media only screen and (min-width: 480px) {
   .history.modal {
     width: 60%;
   }
 }
 
-@media only screen and (min-width : 1024px) {
+@media only screen and (min-width: 1024px) {
   .history.modal {
     width: 40%;
   }
