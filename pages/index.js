@@ -57,52 +57,22 @@ export default function Homepage() {
   }
 
   /**
-   * Render examples as a HTML.
+   * Render example search terms and a button opening the history modal as a HTML.
    *
    */
-  function renderExamples() {
+  function renderUsableSearchTerms() {
     return (
       <nav className="flex justify-around mt-2">
         <button onClick={() => menuClick('aww')}>r/aww</button>
         <button onClick={() => menuClick('pics')}>r/pics</button>
         <button onClick={() => menuClick('gifs')}>r/gifs</button>
         <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
-      </nav>
-    )
-  }
-
-  /**
-   * Render a list of used search terms as a HTML.
-   * It will be show "see more" button if the list has many terms
-   *
-   * @param {array} searchedList list of searched term histories
-   */
-  function renderSearchHistory(searchedList) {
-    if (!searchedList || searchedList.length === 0) {
-      return
-    }
-    return (
-      <nav className="flex justify-around mt-2">
-        <span className="headerNav">History</span>
-        {searchedList
-          .slice(0, config.MAX_HISTORY_IN_NAV)
-          .map((history, index) => (
-            <button
-              key={index}
-              className="inline-block mx-1"
-              onClick={() => menuClick(history)}
-            >
-              r/{history}
-            </button>
-          ))}
-        {searchedList.length > config.MAX_HISTORY_IN_NAV && (
-          <button
-            className="buttonSeeMore"
-            onClick={() => setShowHistoryModal(true)}
-          >
-            ...
-          </button>
-        )}
+        <button
+          className="modal-displaying-button"
+          onClick={() => setShowHistoryModal(true)}
+        >
+          History
+        </button>
       </nav>
     )
   }
@@ -247,7 +217,7 @@ export default function Homepage() {
       <header
         ref={headerRef}
         className="site-header"
-        style={{zIndex: showHistoryModal ? -1 : 9999}}
+        style={{zIndex: showHistoryModal ? 0 : 9999}}
       >
         <div className="wrap">
           <h1 className="site-title">Reddit Image Viewer</h1>
@@ -285,8 +255,7 @@ export default function Homepage() {
               ))}
             </select>
           </div>
-          {renderExamples()}
-          {renderSearchHistory(searchHistory)}
+          {renderUsableSearchTerms()}
         </div>
       </header>
       <main className="main wrap">

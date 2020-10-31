@@ -33,6 +33,10 @@ body.dark-mode {
     @apply border-gray-700;
   }
 
+  & .modal-displaying-button {
+    @apply bg-gray-800
+  }
+
   & .modal{
     @apply bg-gray-900 border-black;
   }
@@ -72,17 +76,6 @@ body.dark-mode {
 .spinner,
 .no-results {
   @apply flex flex-col justify-center items-center text-xl text-center mb-4;
-}
-
-/* Navigation
-============================ */
-
-.headerNav {
-  @apply font-bold bg-blue-900 bg-opacity-25 p-2;
-}
-
-.buttonSeeMore {
-  @apply inline-block bg-blue-900 bg-opacity-25 text-xs px-2 m-2 rounded-full;
 }
 
 /* Card
@@ -125,6 +118,7 @@ body.dark-mode {
 
   & .search-bar,
   & .sort-select,
+  & .modal-displaying-button,
   & span,
   & nav {
     @apply hidden;
@@ -192,6 +186,10 @@ body.dark-mode {
 
 .overlay {
   @apply fixed inset-0 bg-black bg-opacity-75;
+}
+
+.modal-displaying-button {
+  @apply p-2 bg-gray-400;
 }
 
 .modal {
