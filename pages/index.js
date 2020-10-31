@@ -57,30 +57,9 @@ export default function Homepage() {
   }
 
   /**
-   * Render example search terms and a button opening the history modal as a HTML.
-   *
-   */
-  function renderUsableSearchTerms() {
-    return (
-      <nav className="flex justify-around mt-2">
-        <button onClick={() => menuClick('aww')}>r/aww</button>
-        <button onClick={() => menuClick('pics')}>r/pics</button>
-        <button onClick={() => menuClick('gifs')}>r/gifs</button>
-        <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
-        <button
-          className="modal-displaying-button"
-          onClick={() => setShowHistoryModal(true)}
-        >
-          History
-        </button>
-      </nav>
-    )
-  }
-
-  /**
    * Render a modal show full of used search terms list
    *
-   * @param {array} searchedList list of searched term histories
+   * @param {array} searchedList list of used searched terms
    * @param {boolean} showModal check modal showing
    * @param {boolean} onCloseModal function to close the modal
    */
@@ -255,7 +234,18 @@ export default function Homepage() {
               ))}
             </select>
           </div>
-          {renderUsableSearchTerms()}
+          <nav className="flex justify-around mt-2">
+            <button onClick={() => menuClick('aww')}>r/aww</button>
+            <button onClick={() => menuClick('pics')}>r/pics</button>
+            <button onClick={() => menuClick('gifs')}>r/gifs</button>
+            <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
+            <button
+              className="modal-displaying-button"
+              onClick={() => setShowHistoryModal(true)}
+            >
+              History
+            </button>
+          </nav>
         </div>
       </header>
       <main className="main wrap">
