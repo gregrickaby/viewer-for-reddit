@@ -32,6 +32,14 @@ body.dark-mode {
   & .card {
     @apply border-gray-700;
   }
+
+  & .modal-displaying-button {
+    @apply bg-gray-800
+  }
+
+  & .modal{
+    @apply bg-gray-900 border-black;
+  }
 }
 
 /* Global
@@ -45,7 +53,6 @@ body.dark-mode {
 
   box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.25);
   contain: content;
-  z-index: 9998;
 }
 
 .site-title {
@@ -111,6 +118,7 @@ body.dark-mode {
 
   & .search-bar,
   & .sort-select,
+  & .modal-displaying-button,
   & span,
   & nav {
     @apply hidden;
@@ -133,7 +141,6 @@ body.dark-mode {
 ============================== */
 .theme-toggle-wrap {
   @apply flex items-center fixed;
-
   top: 5px;
   right: 5px;
   z-index: 9999;
@@ -172,4 +179,59 @@ body.dark-mode {
 
 .theme-toggle-icon {
   @apply ml-1;
+}
+
+/* Modal
+============================== */
+
+.overlay {
+  @apply fixed inset-0 bg-black bg-opacity-75;
+}
+
+.modal-displaying-button {
+  @apply p-2 bg-gray-400;
+}
+
+.modal {
+  @apply fixed p-5 bg-white border-white border border-solid rounded outline-none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  & .modal-body {
+    @apply flex flex-col h-full;
+  }
+
+  & .modal-content {
+    @apply flex-auto overflow-y-auto;
+  }
+}
+
+
+/* History Modal
+============================== */
+
+.modal.history {
+  height: 80%;
+}
+
+/* Responsive
+============================== */
+
+@media only screen and (min-width: 321px) {
+  .history.modal {
+    width: 80%;
+  }
+}
+
+@media only screen and (min-width: 480px) {
+  .history.modal {
+    width: 60%;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .history.modal {
+    width: 40%;
+  }
 }
