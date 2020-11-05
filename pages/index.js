@@ -22,7 +22,7 @@ export default function Homepage() {
   const [reachLoadMoreElement, setReachLoadMoreElement] = useState(false)
   const [sortOption, setSortOption] = useState(0)
   const [showHistoryModal, setShowHistoryModal] = useState(false)
-  const debouncedSearchTerm = useDebounce(searchTerm, 400)
+  const debouncedSearchTerm = useDebounce(searchTerm, 700)
   const headerRef = useRef(null)
   const loadingMoreRef = useRef(null)
 
@@ -57,11 +57,11 @@ export default function Homepage() {
   }
 
   /**
-   * Render a modal show full of used search terms list
+   * Render a modal show full of used search terms list.
    *
-   * @param {array} searchedList list of used searched terms
-   * @param {boolean} showModal check modal showing
-   * @param {boolean} onCloseModal function to close the modal
+   * @param {array} searchedList   List of used searched terms
+   * @param {boolean} showModal    Check modal showing
+   * @param {boolean} onCloseModal Function to close the modal
    */
   function renderHistoryModal(searchedList, showModal, onCloseModal) {
     return (
@@ -102,7 +102,7 @@ export default function Homepage() {
     // When page finishes loading, Search histories saved in session storage
     // will be saved into state If an user use the same session in browser
     setSearchHistory(searchHistoryStorage.getAllSavedValue())
-  }, [])
+  }, [debouncedSearchTerm])
 
   useEffect(() => {
     async function loadPosts() {
@@ -150,7 +150,7 @@ export default function Homepage() {
     }
 
     // Create IO instance.
-    const observer = new IntersectionObserver( // eslint-disable-line
+    const observer = new IntersectionObserver(
       handleLoadingMore,
       observerOptions
     )
@@ -164,7 +164,7 @@ export default function Homepage() {
     return () => {
       observer.disconnect()
     }
-  }, [loading]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loading])
 
   /**
    * Handle posts pagination for Infinite Scroll.
@@ -193,11 +193,7 @@ export default function Homepage() {
   return (
     <>
       <SiteHead />
-      <header
-        ref={headerRef}
-        className="site-header"
-        style={{zIndex: showHistoryModal ? 0 : 9999}}
-      >
+      <header ref={headerRef} className="site-header">
         <div className="wrap">
           <h1 className="site-title">Reddit Image Viewer</h1>
           <div className="site-search">
