@@ -1,6 +1,6 @@
 {
   "name": "reddit-image-viewer",
-  "description": "Displays images from a subreddit. https://reddit-image-viewer.now.sh/",
+  "description": "Displays images from a subreddit. https://reddit-image-viewer.vercel.app/",
   "version": "0.1.0",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   "homepage": "https://github.com/gregrickaby/reddit-image-viewer#readme",
   "private": true,
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "scripts": {
     "build": "next build",
@@ -60,7 +60,7 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.true": "stylelint --fix"
+    "*.js": "npx eslint --cache --fix",
+    "*.true": "npx stylelint --fix"
   }
 }
