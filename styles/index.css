@@ -141,6 +141,7 @@ body.dark-mode {
 ============================== */
 .theme-toggle-wrap {
   @apply flex items-center fixed;
+
   top: 5px;
   right: 5px;
   z-index: 9999;
@@ -194,6 +195,7 @@ body.dark-mode {
 
 .modal {
   @apply fixed p-5 bg-white border-white border border-solid rounded outline-none;
+
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
