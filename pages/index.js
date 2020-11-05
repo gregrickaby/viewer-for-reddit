@@ -28,7 +28,6 @@ export default function Homepage() {
 
   /**
    * Reset states to initial value.
-   *
    */
   function clearStates() {
     setResults([])
@@ -98,12 +97,16 @@ export default function Homepage() {
     )
   }
 
+  /**
+   *  Handle search history storage.
+   */
   useEffect(() => {
-    // When page finishes loading, Search histories saved in session storage
-    // will be saved into state If an user use the same session in browser
     setSearchHistory(searchHistoryStorage.getAllSavedValue())
   }, [debouncedSearchTerm])
 
+  /**
+   * Handle searches and loading posts.
+   */
   useEffect(() => {
     async function loadPosts() {
       // No search term? Bail...
@@ -167,7 +170,7 @@ export default function Homepage() {
   }, [loading])
 
   /**
-   * Handle posts pagination for Infinite Scroll.
+   * Handle posts pagination for infinite scroll.
    */
   useEffect(() => {
     setReachLoadMoreElement(false)
