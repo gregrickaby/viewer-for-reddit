@@ -34,10 +34,10 @@ body.dark-mode {
   }
 
   & .modal-displaying-button {
-    @apply bg-gray-800
+    @apply bg-gray-800;
   }
 
-  & .modal{
+  & .modal {
     @apply bg-gray-900 border-black;
   }
 }
@@ -206,7 +206,6 @@ body.dark-mode {
     @apply flex-auto overflow-y-auto;
   }
 }
-
 
 /* History Modal
 ============================== */
