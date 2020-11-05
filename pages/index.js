@@ -1,7 +1,9 @@
 import {useState, useEffect, useRef} from 'react'
+import ReactModal from 'react-modal'
 import {useDebounce} from '@/lib/hooks'
 import {fetchData, scrollTop, shrinkHeader} from '@/lib/functions'
 import * as config from '@/lib/constants'
+import * as searchHistoryStorage from '@/lib/storage/history'
 import Card from '@/components/Card'
 import Spinner from '@/components/Spinner'
 import SpinnerLoadMore from '@/components/SpinnerLoadMore'
@@ -12,19 +14,96 @@ import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState(config.DEFAULT_SEARCH_TERM)
+  const [searchHistory, setSearchHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [results, setResults] = useState([])
   const [lastPost, setLastPost] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const [reachLoadMoreElement, setReachLoadMoreElement] = useState(false)
   const [sortOption, setSortOption] = useState(0)
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
   const headerRef = useRef(null)
   const loadingMoreRef = useRef(null)
 
   /**
-   * Load posts from Reddit.
+   * Reset states to initial value.
+   *
    */
+  function clearStates() {
+    setResults([])
+    setLastPost(null)
+  }
+
+  /**
+   * Save a search term to the session storage
+   * and update history state.
+   *
+   * @param {string} searchTerm The search term.
+   */
+  function saveHistory(term) {
+    searchHistoryStorage.storeValue(term)
+    setSearchHistory(searchHistoryStorage.getAllSavedValue())
+  }
+
+  /**
+   * Menu item click handler.
+   *
+   * @param {string} searchTerm The search term.
+   */
+  function menuClick(term) {
+    setSearchTerm(term)
+    scrollTop()
+  }
+
+  /**
+   * Render a modal show full of used search terms list
+   *
+   * @param {array} searchedList list of used searched terms
+   * @param {boolean} showModal check modal showing
+   * @param {boolean} onCloseModal function to close the modal
+   */
+  function renderHistoryModal(searchedList, showModal, onCloseModal) {
+    return (
+      <ReactModal
+        isOpen={showModal}
+        onRequestClose={onCloseModal}
+        contentLabel="History Modal"
+        className="history modal"
+        overlayClassName="overlay"
+      >
+        <div className="modal-body">
+          <div className="modal-title flex justify-between">
+            <span className="text-2xl">Search Term History</span>
+            <button className="text-4xl" onClick={onCloseModal}>
+              ×
+            </button>
+          </div>
+          <div className="modal-content">
+            {searchedList.map((history, index) => (
+              <button
+                className="block"
+                key={index}
+                onClick={() => {
+                  menuClick(history)
+                  onCloseModal()
+                }}
+              >
+                r/{history}
+              </button>
+            ))}
+          </div>
+        </div>
+      </ReactModal>
+    )
+  }
+
+  useEffect(() => {
+    // When page finishes loading, Search histories saved in session storage
+    // will be saved into state If an user use the same session in browser
+    setSearchHistory(searchHistoryStorage.getAllSavedValue())
+  }, [])
+
   useEffect(() => {
     async function loadPosts() {
       // No search term? Bail...
@@ -37,6 +116,7 @@ export default function Homepage() {
       const data = await fetchData(searchTerm, lastPost, sortOption)
       setResults(data.posts)
       setLastPost(data.after)
+      saveHistory(searchTerm)
       setLoading(false)
       scrollTop()
     }
@@ -110,29 +190,14 @@ export default function Homepage() {
     })
   }, [reachLoadMoreElement]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  /**
-   * Helper function to clear states.
-   */
-  async function clearStates() {
-    setResults([])
-    setLastPost(null)
-  }
-
-  /**
-   * Helper function to handle menu clicks.
-   *
-   * @param {string} searchTerm The search term.
-   */
-  function menuClick(term) {
-    setLastPost(null)
-    setSearchTerm(term)
-    scrollTop()
-  }
-
   return (
     <>
       <SiteHead />
-      <header ref={headerRef} className="site-header">
+      <header
+        ref={headerRef}
+        className="site-header"
+        style={{zIndex: showHistoryModal ? 0 : 9999}}
+      >
         <div className="wrap">
           <h1 className="site-title">Reddit Image Viewer</h1>
           <div className="site-search">
@@ -174,10 +239,15 @@ export default function Homepage() {
             <button onClick={() => menuClick('pics')}>r/pics</button>
             <button onClick={() => menuClick('gifs')}>r/gifs</button>
             <button onClick={() => menuClick('earthporn')}>r/EarthPorn</button>
+            <button
+              className="modal-displaying-button"
+              onClick={() => setShowHistoryModal(true)}
+            >
+              History
+            </button>
           </nav>
         </div>
       </header>
-
       <main className="main wrap">
         {loading ? (
           <Spinner />
@@ -190,6 +260,9 @@ export default function Homepage() {
         <ThemeToggle />
         <BackToTop />
       </main>
+      {renderHistoryModal(searchHistory, showHistoryModal, () => {
+        setShowHistoryModal(false)
+      })}
     </>
   )
 }
