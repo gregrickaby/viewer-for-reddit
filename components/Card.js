@@ -40,7 +40,6 @@ export default function Card(props) {
               )
             case 'hosted:video':
               return (
-                // eslint-disable-next-line
                 <video
                   className="card-video"
                   autoPlay
@@ -67,7 +66,6 @@ export default function Card(props) {
               // Search for .gifv....
               if (post.url.includes('gifv')) {
                 return (
-                  // eslint-disable-next-line
                   <video
                     className="card-video"
                     autoPlay
