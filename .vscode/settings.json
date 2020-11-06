@@ -1,0 +1,15 @@
+{
+  // Enable format with prettier on save, configure import organizing.
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+
+  // Enable Emmet in JSX.
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  }
+}
