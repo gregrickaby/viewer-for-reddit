@@ -58,9 +58,9 @@ export default function Homepage() {
   /**
    * Render a modal show full of used search terms list.
    *
-   * @param {array} searchedList   List of used searched terms
-   * @param {boolean} showModal    Check modal showing
-   * @param {boolean} onCloseModal Function to close the modal
+   * @param {array} searchedList   List of used searched terms.
+   * @param {boolean} showModal    Check modal showing.
+   * @param {boolean} onCloseModal Function to close the modal.
    */
   function renderHistoryModal(searchedList, showModal, onCloseModal) {
     return (
