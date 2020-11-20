@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "gregrickaby",
+      "name": "Greg Rickaby",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/200280?v=4",
+      "profile": "http://gregrickaby.com",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "reddit-image-viewer",
+  "projectOwner": "gregrickaby",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
