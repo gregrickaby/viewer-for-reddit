@@ -9,7 +9,7 @@ Displays images and other media from any subreddit.
 
 ![demo](https://dl.dropbox.com/s/gw45g45cllhwo6y/Kapture%202020-06-19%20at%2013.20.38.gif?dl=0)
 
-## ✨ Features
+## Features ⭐️
 
 - Simple interface
 - Instant search
@@ -19,27 +19,23 @@ Displays images and other media from any subreddit.
 
 ---
 
-## 🚀 Development
+## Development 🚀
 
 ### Install
 
 Use [create-next-app](https://www.npmjs.com/package/create-next-app) to get up and running with either Yarn or NPX.
 
-**Yarn**
-
 ```bash
 yarn create next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer
-```
 
-**NPX**
+or
 
-```bash
 npx create-next-app reddit-image-viewer --example https://github.com/gregrickaby/reddit-image-viewer
 ```
 
 ---
 
-### 💻 Working with Next.js
+### Working with Next.js 💻
 
 Inside the `reddit-image-viewer` directory, you can run several commands.
 
@@ -69,13 +65,9 @@ yarn start
 
 ---
 
-## :octocat: Contributing
+## Contributors :octocat:
 
-Feedback or contributions via Github [Issues](https://github.com/gregrickaby/reddit-image-viewer/issues) and [Pull Requests](https://github.com/gregrickaby/reddit-image-viewer/pulls) are welcome! 🍻
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -93,4 +85,4 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Feedback or contributions via Github [Issues](https://github.com/gregrickaby/reddit-image-viewer/issues) and [Pull Requests](https://github.com/gregrickaby/reddit-image-viewer/pulls) are welcome! 🍻
