@@ -1,6 +1,6 @@
 # Reddit Image Viewer
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Displays images and other media from any subreddit.
@@ -83,6 +83,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="http://gregrickaby.com"><img src="https://avatars2.githubusercontent.com/u/200280?v=4" width="100px;" alt=""/><br /><sub><b>Greg Rickaby</b></sub></a><br /><a href="https://github.com/gregrickaby/reddit-image-viewer/commits?author=gregrickaby" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/icegotcha"><img src="https://avatars3.githubusercontent.com/u/32319739?v=4" width="100px;" alt=""/><br /><sub><b>Kotchakorn Wongwisutigul</b></sub></a><br /><a href="https://github.com/gregrickaby/reddit-image-viewer/commits?author=icegotcha" title="Code">💻</a></td>
   </tr>
 </table>
 
