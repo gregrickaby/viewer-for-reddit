@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
-import Img from 'react-cool-img'
 import {cleanIframe} from '@/lib/functions'
+import Image from 'next/image'
 
 export default function Card(props) {
   const post = props.data.data
@@ -21,20 +21,19 @@ export default function Card(props) {
 
       <div className="card-content">
         {(() => {
+          const [source] = post.preview.images
           // Determine the media type using post_hint.
           switch (post.post_hint) {
             case 'image':
               return (
                 <a href={post.url}>
-                  <Img
+                  <Image
                     alt={post.title}
                     className="card-image"
-                    debounce={500}
-                    error="error.png"
+                    height={source.source.height}
+                    layout="responsive"
                     src={post.url}
-                    placeholder="img-loading.webp"
-                    height="512"
-                    width="512"
+                    width={source.source.width}
                   />
                 </a>
               )
@@ -81,10 +80,12 @@ export default function Card(props) {
               } else {
                 // No .gifv?, then just display the thumbnail.
                 return (
-                  <Img
+                  <Image
                     className="card-image"
                     src={post.thumbnail}
                     alt={post.title}
+                    height="150"
+                    width="150"
                   />
                 )
               }
