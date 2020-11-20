@@ -5364,11 +5364,6 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-cool-img@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.5.tgz#c2f64ba97fa074028371637843615985967de3fa"
-  integrity sha512-/ymvmKTiqcqJKSBRmshicIgk1l1Aobg8+sic1C7FLen01WcqtRzQjplG8PjZfLCippPHmCuZbJUZvdu9MegCow==
-
 react-dom@17.0.1:
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.1.tgz#1de2560474ec9f0e334285662ede52dbc5426fc6"
