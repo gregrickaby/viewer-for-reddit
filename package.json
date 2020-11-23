@@ -32,7 +32,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-loader-spinner": "^3.1.14",
-    "react-modal": "^3.11.2",
+    "react-modal": "^3.12.1",
     "use-dark-mode": "^2.3.1"
   },
   "devDependencies": {
