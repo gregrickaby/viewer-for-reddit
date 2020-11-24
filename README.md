@@ -1,6 +1,9 @@
 # Reddit Image Viewer
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Displays images and other media from any subreddit.
@@ -83,6 +86,7 @@ Thanks to these wonderful people ([emoji key](https://allcontributors.org/docs/e
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Feedback or contributions via Github [Issues](https://github.com/gregrickaby/reddit-image-viewer/issues) and [Pull Requests](https://github.com/gregrickaby/reddit-image-viewer/pulls) are welcome! 🍻
