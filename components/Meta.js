@@ -17,16 +17,6 @@ export default function SiteHead() {
         crossOrigin="anonymous"
       />
       <link rel="preconnect" href="//www.reddit.com" crossOrigin="anonymous" />
-      <link
-        rel="preconnect"
-        href="//www.googletagmanager.com"
-        crossOrigin="anonymous"
-      />
-      <link
-        rel="preconnect"
-        href="//www.google-analytics.com"
-        crossOrigin="anonymous"
-      />
       <link rel="preconnect" href="//i.reddit.com" crossOrigin="anonymous" />
       <link rel="preconnect" href="//i.redd.it.com" crossOrigin="anonymous" />
       <link rel="preconnect" href="//v.redd.it.com" crossOrigin="anonymous" />
@@ -87,12 +77,6 @@ export default function SiteHead() {
       <meta
         property="og:image"
         content={`${config.siteUrl}favicon/social-share.jpg`}
-      />
-      <script async src="//www.googletagmanager.com/gtag/js?id=G-663BF7S0XK" />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-663BF7S0XK');`
-        }}
       />
     </Head>
   )
