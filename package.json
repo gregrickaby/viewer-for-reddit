@@ -36,7 +36,7 @@
     "use-dark-mode": "^2.3.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.2.0",
+    "autoprefixer": "^10.2.1",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
