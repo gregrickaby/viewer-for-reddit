@@ -46,7 +46,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.7",
     "lint-staged": "^10.5.3",
-    "postcss": "^8.2.3",
+    "postcss": "^8.2.4",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.2.1",
