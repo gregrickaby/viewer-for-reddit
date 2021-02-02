@@ -31,7 +31,7 @@
     "next": "10.0.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-loader-spinner": "^3.1.14",
+    "react-loader-spinner": "^4.0.0",
     "react-modal": "^3.12.1",
     "use-dark-mode": "^2.3.1"
   },
