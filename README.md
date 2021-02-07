@@ -6,9 +6,7 @@
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Anonymously browse images and media from any subreddit.
-
-👉 https://reddit-image-viewer.vercel.app/
+Anonymously browse images and media from any subreddit. https://reddit-image-viewer.vercel.app/
 
 ---
 
