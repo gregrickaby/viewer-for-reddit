@@ -6,11 +6,9 @@
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Displays images and other media from any subreddit.
+Anonymously browse images and media from any subreddit.
 
 👉 https://reddit-image-viewer.vercel.app/
-
-https://user-images.githubusercontent.com/200280/107154231-714e3280-6937-11eb-8068-4547c13d080f.mp4
 
 ---
 
