@@ -17,7 +17,8 @@ module.exports = {
       'media4.giphy.com',
       'media5.giphy.com',
       'live.staticflickr.com',
-      'cdn.embedly.com'
+      'cdn.embedly.com',
+      'earthsky.org'
     ]
   }
 }
