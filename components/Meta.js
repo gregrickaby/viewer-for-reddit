@@ -1,83 +1,40 @@
+import config from '@/functions/config'
 import Head from 'next/head'
-import config from 'site.config'
 
-export default function SiteHead() {
+export default function Meta() {
   return (
     <Head>
-      <title>{config.siteName}</title>
-      <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, shrink-to-fit=no"
-      />
-      <meta name="description" content={config.siteDescription} />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-      <link
-        rel="preconnect"
-        href="//cors-anywhere.herokuapp.com"
-        crossOrigin="anonymous"
-      />
+      <title>
+        {config?.siteTitle} - {config?.siteDescription}
+      </title>
+      <meta name="description" content={config?.siteDescription} />
+      <meta name="msapplication-TileColor" content="#fffff" />
+      <meta name="msapplication-config" content="/favicon/browserconfig?.xml" />
+      <meta name="theme-color" content="#fff" />
       <link rel="preconnect" href="//www.reddit.com" crossOrigin="anonymous" />
-      <link rel="preconnect" href="//i.reddit.com" crossOrigin="anonymous" />
-      <link rel="preconnect" href="//i.redd.it.com" crossOrigin="anonymous" />
-      <link rel="preconnect" href="//v.redd.it.com" crossOrigin="anonymous" />
-      <link rel="preconnect" href="//redditmedia.com" crossOrigin="anonymous" />
-      <link
-        rel="preconnect"
-        href="//a.thumbs.redditmedia.com"
-        crossOrigin="anonymous"
-      />
-      <link
-        rel="preconnect"
-        href="//b.thumbs.redditmedia.com"
-        crossOrigin="anonymous"
-      />
-      <link rel="preconnect" href="//imgur.com" crossOrigin="anonymous" />
-      <link rel="preconnect" href="//i.imgur.com" crossOrigin="anonymous" />
-      <link
-        as="fetch"
-        rel="preload"
-        href="//cors-anywhere.herokuapp.com/https://www.reddit.com/r/itookapicture/.json?limit=5"
-        crossOrigin="anonymous"
-      />
-      <meta name="msapplication-TileColor" content="#1a202c" />
-      <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
-      <meta name="theme-color" content="#1a202c" />
-      <link
-        rel="apple-touch-icon"
-        sizes="180x180"
-        href="/favicon/apple-icon.png"
-      />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="32x32"
-        href="/favicon/favicon-32x32.png"
-      />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="16x16"
-        href="/favicon/favicon-16x16.png"
-      />
-      <link rel="manifest" href="/favicon/manifest.json" />
       <link rel="shortcut icon" href="/favicon/favicon.ico" />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:url" content={config.siteUrl} />
-      <meta name="twitter:title" content={config.siteName} />
-      <meta name="twitter:description" content={config.siteDescription} />
-      <meta
-        name="twitter:image"
-        content={`${config.siteUrl}favicon/social-share.jpg`}
-      />
+      <link rel="apple-touch-icon" href="/favicon/icon.png" />
+      <link rel="icon" href="/favicon/icon.png" sizes="192x192" />
+      <meta name="msapplication-TileImage" content="/favicon/icon.png" />
       <meta property="og:type" content="website" />
-      <meta property="og:title" content={config.siteName} />
-      <meta property="og:description" content={config.siteDescription} />
-      <meta property="og:site_name" content={config.siteName} />
-      <meta property="og:url" content={config.siteUrl} />
+      <meta property="og:url" content={config?.siteUrl} />
       <meta
-        property="og:image"
-        content={`${config.siteUrl}favicon/social-share.jpg`}
+        property="og:title"
+        content={`${config?.siteTitle} - ${config?.siteDescription}`}
       />
+      <meta property="og:description" content={config?.siteDescription} />
+      <meta property="og:image" content="/social-share.jpg" />
+
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content={config?.siteUrl} />
+      <meta
+        property="twitter:title"
+        content={`${config?.siteTitle} - ${config?.siteDescription}`}
+      />
+      <meta property="twitter:description" content={config?.siteDescription} />
+      <meta property="twitter:image" content="/social-share.jpg" />
     </Head>
   )
 }

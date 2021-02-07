@@ -1,39 +1,37 @@
 import PropTypes from 'prop-types'
-import {cleanIframe} from '@/lib/functions'
+import cleanIframe from '@/functions/cleanIframe'
 import Image from 'next/image'
 
 export default function Card(props) {
-  const post = props.data.data
-  const ups = post.ups.toLocaleString('en')
-  const comments = post.num_comments.toLocaleString('en')
+  const ups = props?.ups.toLocaleString('en')
+  const comments = props?.num_comments.toLocaleString('en')
 
   return (
-    <article className="card">
-      <header className="card-header">
-        <h2 className="card-title">
+    <article className="space-y-4">
+      <header>
+        <h2 className="text-2xl text-center leading-none">
           <a
-            className="card-link"
-            href={`https://www.reddit.com${post.permalink}`}
-            dangerouslySetInnerHTML={{__html: post.title}}
-          />{' '}
+            href={`https://www.reddit.com${props?.permalink}`}
+            dangerouslySetInnerHTML={{__html: props?.title}}
+          />
         </h2>
       </header>
 
-      <div className="card-content">
+      <div className="overflow-hidden">
         {(() => {
-          const [source] = post.preview.images
-          // Determine the media type using post_hint.
-          switch (post.post_hint) {
+          const [source] = props?.preview.images
+          // Determine the media type using props?_hint.
+          switch (props?.post_hint) {
             case 'image':
               return (
-                <a href={post.url}>
+                <a href={props?.url} aria-label={props?.title}>
                   <Image
-                    alt={post.title}
+                    alt={props?.title}
                     className="card-image"
-                    height={source.source.height}
+                    height={source?.source?.height}
                     layout="responsive"
-                    src={post.url}
-                    width={source.source.width}
+                    src={props?.url}
+                    width={source?.source?.width}
                   />
                 </a>
               )
@@ -46,24 +44,25 @@ export default function Card(props) {
                   loop
                   muted
                   playsInline
-                  src={post.secure_media.reddit_video.fallback_url}
-                  height="512"
-                  width="512"
+                  src={props?.secure_media?.reddit_video?.fallback_url}
+                  height="640"
+                  width="640"
                 />
               )
             case 'rich:video':
               return (
                 <a
-                  src={post.url}
+                  aria-label={props?.title}
                   className="card-embed"
                   dangerouslySetInnerHTML={{
-                    __html: cleanIframe(post.media.oembed.html)
+                    __html: cleanIframe(props?.media?.oembed.html)
                   }}
+                  href={props?.url}
                 />
               )
             case 'link':
               // Search for .gifv....
-              if (post.url.includes('gifv')) {
+              if (props?.url.includes('gifv')) {
                 return (
                   <video
                     className="card-video"
@@ -72,9 +71,9 @@ export default function Card(props) {
                     loop
                     muted
                     playsInline
-                    src={post.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
-                    height="512"
-                    width="512"
+                    src={props?.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
+                    height="640"
+                    width="640"
                   ></video>
                 )
               } else {
@@ -82,10 +81,10 @@ export default function Card(props) {
                 return (
                   <Image
                     className="card-image"
-                    src={post.thumbnail}
-                    alt={post.title}
-                    height="150"
-                    width="150"
+                    src={props?.thumbnail}
+                    alt={props?.title}
+                    height="640"
+                    width="640"
                   />
                 )
               }
@@ -95,12 +94,12 @@ export default function Card(props) {
         })()}
       </div>
 
-      <footer className="card-footer">
-        <div className="card-votes">&uarr; {ups} ups</div>
-        <div className="card-comments">
-          {post.num_comments >= 1 && (
-            <a href={`https://www.reddit.com${post.permalink}`}>
-              {post.num_comments <= 1
+      <footer className="flex flex-wrap justify-between text-sm">
+        <div>&uarr; {ups} up votes</div>
+        <div>
+          {props?.num_comments >= 1 && (
+            <a href={`https://www.reddit.com${props?.permalink}`}>
+              {props?.num_comments <= 1
                 ? `${comments} comment`
                 : `${comments} comments`}
             </a>
@@ -112,5 +111,14 @@ export default function Card(props) {
 }
 
 Card.propTypes = {
-  data: PropTypes.object
+  media: PropTypes.object,
+  num_comments: PropTypes.number,
+  permalink: PropTypes.string,
+  post_hint: PropTypes.string,
+  preview: PropTypes.object,
+  secure_media: PropTypes.object,
+  thumbnail: PropTypes.string,
+  title: PropTypes.string,
+  ups: PropTypes.number,
+  url: PropTypes.string
 }
