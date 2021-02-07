@@ -18,7 +18,8 @@ module.exports = {
       'media5.giphy.com',
       'live.staticflickr.com',
       'cdn.embedly.com',
-      'earthsky.org'
+      'earthsky.org',
+      'raw.githubusercontent.com'
     ]
   }
 }
