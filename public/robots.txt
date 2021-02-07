@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://reddit-image-viewer.vercel.app
+
+# Sitemaps
+Sitemap: https://reddit-image-viewer.vercel.app/sitemap.xml
