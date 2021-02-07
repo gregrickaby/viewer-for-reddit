@@ -10,15 +10,7 @@ Displays images and other media from any subreddit.
 
 👉 https://reddit-image-viewer.vercel.app/
 
-![demo](https://dl.dropbox.com/s/gw45g45cllhwo6y/Kapture%202020-06-19%20at%2013.20.38.gif?dl=0)
-
-## Features ⭐️
-
-- Simple interface
-- Instant search
-- Lazy load media
-- Dark mode
-- Infinite scroll
+https://user-images.githubusercontent.com/200280/107154231-714e3280-6937-11eb-8068-4547c13d080f.mp4
 
 ---
 
