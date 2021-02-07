@@ -9,7 +9,8 @@ module.exports = {
       'b.thumbs.redditmedia.com',
       'i.imgur.com',
       'imgur.com',
-      'media.giphy.com'
+      'media.giphy.com',
+      'live.staticflickr.com'
     ]
   }
 }
