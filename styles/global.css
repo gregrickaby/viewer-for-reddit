@@ -46,7 +46,7 @@ a {
   @apply mb-8;
 
   height: 640px;
-  width: 640px;
+  max-width: 640px;
 }
 
 .animate {
