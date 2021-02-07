@@ -9,7 +9,7 @@ export default function Card(props) {
   return (
     <article className="space-y-4">
       <header>
-        <h2 className="text-2xl text-center leading-none">
+        <h2 className="text-2xl text-center">
           <a
             href={`https://www.reddit.com${props?.permalink}`}
             dangerouslySetInnerHTML={{__html: props?.title}}
@@ -45,7 +45,7 @@ export default function Card(props) {
                   muted
                   playsInline
                   src={props?.secure_media?.reddit_video?.fallback_url}
-                  height="640"
+                  height="480"
                   width="640"
                 />
               )
@@ -55,7 +55,7 @@ export default function Card(props) {
                   aria-label={props?.title}
                   className="card-embed"
                   dangerouslySetInnerHTML={{
-                    __html: cleanIframe(props?.media?.oembed.html)
+                    __html: cleanIframe(props?.media?.oembed?.html)
                   }}
                   href={props?.url}
                 />
@@ -72,7 +72,7 @@ export default function Card(props) {
                     muted
                     playsInline
                     src={props?.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
-                    height="640"
+                    height="480"
                     width="640"
                   ></video>
                 )
