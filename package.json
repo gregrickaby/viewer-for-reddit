@@ -1,7 +1,7 @@
 {
   "name": "reddit-image-viewer",
   "description": "Displays images from a subreddit. https://reddit-image-viewer.vercel.app/",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/reddit-image-viewer.git"
@@ -19,39 +19,42 @@
   "scripts": {
     "build": "next build",
     "clean": "rm -rf .next",
-    "dev": "yarn clean && yarn lint && next dev",
+    "deploy prod": "vercel --prod",
+    "deploy staging": "vercel",
+    "dev": "yarn clean && next dev",
     "develop": "yarn dev",
+    "export": "next export",
     "format": "npx prettier --config=prettier.config.js '**/*.{js,jsx,ts,tsx,md,html,css,scss,json}' --write || true",
     "lint": "yarn format && yarn lint:js && yarn lint:css",
     "lint:css": "npx stylelint --config=stylelint.config.js '**/*.css' --fix || true",
     "lint:js": "npx eslint --config=.eslintrc.js ./ --fix || true",
+    "postbuild": "next-sitemap",
     "start": "next start"
   },
   "dependencies": {
-    "next": "10.0.5",
+    "next": "latest",
     "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-loader-spinner": "^3.1.14",
-    "react-modal": "^3.12.1",
-    "use-dark-mode": "^2.3.1"
+    "react-dom": "17.0.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.2.1",
-    "eslint": "^7.17.0",
-    "eslint-config-prettier": "^7.1.0",
+    "autoprefixer": "^10.2.4",
+    "classnames": "^2.2.6",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^4.3.7",
-    "lint-staged": "^10.5.3",
-    "postcss": "^8.2.3",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.4",
+    "next-sitemap": "^1.4.17",
+    "postcss": "^8.2.5",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.2.1",
     "prop-types": "^15.7.2",
-    "stylelint": "^13.8.0",
+    "stylelint": "^13.9.0",
     "stylelint-config-standard": "^20.0.0",
     "tailwindcss": "^2.0.2"
   },
@@ -61,7 +64,8 @@
     }
   },
   "lint-staged": {
-    "*.js": "npx eslint --cache --fix",
-    "*.true": "npx stylelint --fix"
+    "*.{js,jsx,ts,tsx}": "npx eslint --config=.eslintrc.js --fix",
+    "*.{css,scss}": "npx stylelint --config=stylelint.config.js --fix",
+    "*.{md,html,json}": "npx prettier --config=prettier.config.js --write"
   }
 }
