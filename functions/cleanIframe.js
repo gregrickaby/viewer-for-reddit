@@ -14,7 +14,7 @@ export default function cleanIframe(html) {
       title="iframe"
       ${source}
       width="640"
-      height="640"
+      height="480"
       loading="lazy"
       allow="autoplay"
       referrerpolicy="no-referrer"
