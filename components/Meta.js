@@ -21,7 +21,7 @@ export default function Meta() {
       <meta property="og:description" content={config?.siteDescription} />
       <meta
         property="og:image"
-        content={`${config?.siteUrl}/social-share.jpg`}
+        content={`${config?.siteUrl}social-share.jpg`}
       />
       <meta property="twitter:card" content="summary_large_image" />
       <meta property="twitter:url" content={config?.siteUrl} />
@@ -32,7 +32,7 @@ export default function Meta() {
       <meta property="twitter:description" content={config?.siteDescription} />
       <meta
         property="twitter:image"
-        content={`${config?.siteUrl}/social-share.jpg`}
+        content={`${config?.siteUrl}social-share.jpg`}
       />
     </Head>
   )
