@@ -11,13 +11,7 @@ export async function fetchData(subreddit, lastPost) {
 
   // Attempt to fetch posts.
   const response = await fetch(
-    `https://oauth.reddit.com/r/${subreddit}/hot/.json?limit=10${after}`,
-    {
-      headers: {
-        Authorization: `bearer ${process.env.NEXT_PUBLIC_REDDIT_ACCESS_TOKEN}`,
-        'user-agent': 'reddit-image-viewer'
-      }
-    }
+    `https://www.reddit.com/r/${subreddit}/hot/.json?limit=5${after}`
   )
 
   // No response? Bail...
