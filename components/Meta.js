@@ -32,6 +32,11 @@ export default function Meta() {
         property="twitter:image"
         content={`${config?.siteUrl}social-share.jpg`}
       />
+
+      <meta
+        name="google-site-verification"
+        content={process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION}
+      />
     </Head>
   )
 }
