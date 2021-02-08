@@ -54,7 +54,11 @@ export default function Card(props) {
                 <a
                   aria-label={props?.title}
                   dangerouslySetInnerHTML={{
-                    __html: cleanIframe(props?.media?.oembed?.html)
+                    __html: cleanIframe({
+                      height: props?.media?.oembed?.height,
+                      html: props?.media?.oembed?.html,
+                      width: props?.media?.oembed?.width
+                    })
                   }}
                   href={props?.url}
                 />
