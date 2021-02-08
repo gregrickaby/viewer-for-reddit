@@ -5,18 +5,18 @@
  * @param {string}  html Raw HTML from reddit.
  * @return {string}      Clean <iframe> code.
  */
-export default function cleanIframe(html) {
+export default function cleanIframe({height, html, width}) {
   // Grab the src URL.
   const source = html.match(/(src="([^"]+)")/gi)
 
   return `<iframe
-      class="card-iframe"
-      title="iframe"
       ${source}
-      width="640"
-      height="480"
-      loading="lazy"
       allow="autoplay"
+      class="card-iframe"
+      height=${height}
+      loading="lazy"
       referrerpolicy="no-referrer"
+      title="iframe"
+      width=${width}
     />`
 }
