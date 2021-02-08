@@ -53,7 +53,6 @@ export default function Card(props) {
               return (
                 <a
                   aria-label={props?.title}
-                  className="card-embed"
                   dangerouslySetInnerHTML={{
                     __html: cleanIframe(props?.media?.oembed?.html)
                   }}
