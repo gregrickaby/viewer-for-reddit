@@ -39,9 +39,13 @@ export async function fetchData(subreddit, lastPost) {
     }
   }
 
-  // Filter out any "self" (aka text) posts.
+  // Filter out any self or stickied posts.
   const postsContainImage = json.data.children.filter((post) => {
-    return post.data.post_hint && post.data.post_hint !== 'self'
+    return (
+      post.data.post_hint &&
+      post.data.post_hint !== 'self' &&
+      post.data.stickied !== true
+    )
   })
 
   // Finally, return posts.
