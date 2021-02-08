@@ -4,8 +4,8 @@ export default function NoResults() {
   return (
     <div className="text-center text-2xl text-red-900 dark:text-red-500 m-auto space-y-4">
       <p>
-        Reddit is either down or something else is wrong. Please try your search
-        again.
+        Either the Reddit API is down or something else is wrong. Please try
+        your search again.
       </p>
       <div>
         <Image
