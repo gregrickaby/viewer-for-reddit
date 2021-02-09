@@ -33,16 +33,16 @@ export default function Search() {
           />
           <button className="border py-2 px-4 ml-1">Search</button>
         </div>
-        <label htmlFor="search" className="text-xs italic">
+        <label htmlFor="search" className="text-sm italic">
           Type the name of a subreddit and press enter.{' '}
           <button onClick={helpToggler}>
-            <span className="sr-only">Help</span>(?)
+            Help <span className="text-lg leading-none">&#9662;</span>
           </button>
           {toggleHelp && (
-            <p>
+            <p className="not-italic text-md mt-2">
               You can also combine subreddits. For example:{' '}
-              <span className="font-mono not-italic tracking-wide">
-                itookapicture+pics+gifs
+              <span className="font-mono tracking-wide">
+                all+popular+funny+aww+pics
               </span>
             </p>
           )}
