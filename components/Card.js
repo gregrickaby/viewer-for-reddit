@@ -80,16 +80,8 @@ export default function Card(props) {
                   ></video>
                 )
               } else {
-                // No .gifv?, then just display the thumbnail.
-                return (
-                  <Image
-                    className="card-image"
-                    src={props?.thumbnail}
-                    alt={props?.title}
-                    height="640"
-                    width="640"
-                  />
-                )
+                // No media? Return blank.
+                return <></>
               }
             default:
               break
@@ -97,7 +89,7 @@ export default function Card(props) {
         })()}
       </div>
 
-      <footer className="flex flex-wrap justify-between text-sm">
+      <footer className="flex flex-wrap justify-between text-sm border-b-2 pb-4">
         <div>&uarr; {ups} up votes</div>
         <div>
           {props?.num_comments >= 1 && (
