@@ -22,6 +22,7 @@ export default function Results({subreddit}) {
   function clearState() {
     setPosts([])
     setLastPost(null)
+    setClicked(false)
   }
 
   /**
