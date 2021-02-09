@@ -33,25 +33,19 @@ Inside the `reddit-image-viewer` directory, you can run several commands.
 Start the development server:
 
 ```bash
-yarn dev
+npm run dev
 ```
 
 Format and lint your code:
 
 ```bash
-yarn lint
+npm run lint
 ```
 
-Build the app for production:
+Build and test the app for production:
 
 ```bash
-yarn build
-```
-
-Run the built app in production mode:
-
-```bash
-yarn start
+npm run build && npm start
 ```
 
 ---
