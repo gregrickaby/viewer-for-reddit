@@ -3,15 +3,17 @@
  *
  * @param {string} subreddit The name of the subreddit.
  * @param {string} lastPost  The last post in the list.
+ * @param {string} sortBy    How to sort the posts.
  * @return {object}          Reddit posts.
  */
-export async function fetchData(subreddit, lastPost) {
+export async function fetchData({subreddit, lastPost, sortBy}) {
   // Create query string for after.
   const after = lastPost ? `&after=${lastPost}` : ''
+  const sort = sortBy ? sortBy : 'hot'
 
   // Attempt to fetch posts.
   const response = await fetch(
-    `https://www.reddit.com/r/${subreddit}/hot/.json?limit=5${after}`
+    `https://www.reddit.com/r/${subreddit}/${sort}/.json?limit=5${after}`
   )
 
   // No response? Bail...
