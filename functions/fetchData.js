@@ -13,7 +13,12 @@ export async function fetchData({subreddit, lastPost, sortBy}) {
 
   // Attempt to fetch posts.
   const response = await fetch(
-    `https://www.reddit.com/r/${subreddit}/${sort}/.json?limit=5${after}`
+    `https://oauth.reddit.com/r/${subreddit}/${sort}/.json?limit=5${after}`,
+    {
+      headers: {
+        Authorization: `Bearer: ${process.env.NEXT_PUBLIC_REDDIT_ACCESS_TOKEN}`
+      }
+    }
   )
 
   // No response? Bail...
