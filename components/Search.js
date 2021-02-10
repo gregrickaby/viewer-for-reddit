@@ -2,7 +2,8 @@ import {useState} from 'react'
 import Results from './Results'
 
 export default function Search() {
-  const [inputValue, setValue] = useState('itookapicture')
+  const [inputValue, setValue] = useState('pics')
+  const [sort, setSort] = useState('hot')
   const [subreddit, setSubreddit] = useState(inputValue)
   const [toggleHelp, setToggleHelp] = useState(false)
 
@@ -13,6 +14,11 @@ export default function Search() {
   function handleSearch(event) {
     event.preventDefault()
     setSubreddit(inputValue)
+  }
+
+  function handleSort(event) {
+    event.preventDefault()
+    setSort(event.target.value)
   }
 
   return (
@@ -31,6 +37,15 @@ export default function Search() {
             type="text"
             value={inputValue}
           />
+          <div className="">
+            <select value={sort} onChange={handleSort}>
+              <option value="hot">hot</option>
+              <option value="top">top</option>
+              <option value="new">new</option>
+              <option value="best">best</option>
+              <option value="rising">rising</option>
+            </select>
+          </div>
           <button className="border py-2 px-4 ml-1">Search</button>
         </div>
         <label htmlFor="search" className="text-sm italic">
@@ -48,7 +63,7 @@ export default function Search() {
           )}
         </label>
       </form>
-      <Results subreddit={subreddit} />
+      <Results subreddit={subreddit} sortBy={sort} />
     </>
   )
 }
