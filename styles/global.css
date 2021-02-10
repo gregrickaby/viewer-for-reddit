@@ -22,8 +22,14 @@ body {
   text-rendering: optimizeSpeed;
 }
 
+select {
+  -webkit-appearance: none;
+}
+
 input[type='text'] {
   @apply dark:text-black;
+
+  -webkit-appearance: none;
 }
 
 input[type='submit'] {

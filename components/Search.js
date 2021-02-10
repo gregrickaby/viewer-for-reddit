@@ -28,7 +28,7 @@ export default function Search() {
           <span className="mr-1 self-center">r/</span>
           <input
             autoCapitalize="none"
-            className="border-l border-t border-b w-full p-2"
+            className="border-t border-l border-b rounded-none w-full p-2 focus:outline-none"
             id="search"
             minLength="2"
             onChange={(e) => setValue(e.target.value.trim())}
@@ -38,7 +38,7 @@ export default function Search() {
             value={inputValue}
           />
           <select
-            className="border-t border-b p-4 text-black"
+            className="border-t border-r border-b rounded-none text-black dark:bg-white focus:outline-none"
             value={sort}
             onChange={handleSort}
           >
