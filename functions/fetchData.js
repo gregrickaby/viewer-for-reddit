@@ -11,15 +11,32 @@ export async function fetchData({subreddit, lastPost, sortBy}) {
   const after = lastPost ? `&after=${lastPost}` : ''
   const sort = sortBy ? sortBy : 'hot'
 
-  // Attempt to fetch posts.
-  const response = await fetch(
-    `https://oauth.reddit.com/r/${subreddit}/${sort}/.json?limit=5${after}`,
-    {
-      headers: {
-        Authorization: `Bearer: ${process.env.NEXT_PUBLIC_REDDIT_ACCESS_TOKEN}`
-      }
+  /**
+   * First we need to obtain an access token.
+   */
+  const response = await fetch(`https://www.reddit.com/api/v1/access_token`, {
+    method: 'POST',
+    body: `grant_type=client_credentials&client_id=${process.env.NEXT_PUBLIC_REDDIT_CLIENT_ID}&device_id=DO_NOT_TRACK_THIS_DEVICE`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `${process.env.NEXT_PUBLIC_REDDIT_CLIENT_ID}:${process.env.NEXT_PUBLIC_REDDIT_CLIENT_SECRET}`
     }
-  )
+  })
+    .then((resp) => {
+      console.log(resp)
+      return resp.json()
+    })
+    .then((data) => {
+      console.log('access_token', data)
+      return fetch(
+        `https://oauth.reddit.com/r/${subreddit}/${sort}/.json?limit=5${after}`,
+        {
+          headers: {
+            Authorization: `Bearer: ${data.access_token}`
+          }
+        }
+      )
+    })
 
   // No response? Bail...
   if (!response.ok) {
