@@ -38,7 +38,7 @@ export default function Search() {
             value={inputValue}
           />
           <select
-            className="border-t border-r border-b rounded-none text-black dark:bg-white focus:outline-none"
+            className="border-t border-b rounded-none text-gray-500 dark:bg-white focus:outline-none"
             value={sort}
             onChange={handleSort}
           >
