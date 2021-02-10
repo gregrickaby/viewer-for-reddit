@@ -6,7 +6,7 @@ import Card from './Card'
 import NoResults from './NoResults'
 import Skeleton from './Skeleton'
 
-export default function Results({subreddit}) {
+export default function Results({subreddit, sortBy}) {
   const [ref, inView] = useInView({
     rootMargin: '200px 0px'
   })
@@ -30,7 +30,7 @@ export default function Results({subreddit}) {
    */
   async function loadInitialPosts() {
     setLoading(true)
-    const data = await fetchData(subreddit)
+    const data = await fetchData({subreddit, sortBy})
     clearState()
     setPosts(data?.posts)
     setLastPost(data?.after)
@@ -42,7 +42,7 @@ export default function Results({subreddit}) {
    */
   async function loadMorePosts() {
     setLoadingMore(true)
-    const data = await fetchData(subreddit, lastPost)
+    const data = await fetchData({subreddit, lastPost, sortBy})
     setPosts((prevResults) => [...prevResults, ...data?.posts])
     setLastPost(data?.after)
     setLoadingMore(false)
@@ -51,7 +51,7 @@ export default function Results({subreddit}) {
 
   useEffect(() => {
     loadInitialPosts()
-  }, [subreddit])
+  }, [subreddit, sortBy])
 
   useEffect(() => {
     if (clicked) {
@@ -86,5 +86,6 @@ export default function Results({subreddit}) {
 }
 
 Results.propTypes = {
+  sortBy: PropTypes.string,
   subreddit: PropTypes.string.isRequired
 }
