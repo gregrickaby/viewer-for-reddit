@@ -28,7 +28,7 @@ export default function Search() {
           <span className="mr-1 self-center">r/</span>
           <input
             autoCapitalize="none"
-            className="border w-full p-2"
+            className="border-l border-t border-b w-full p-2"
             id="search"
             minLength="2"
             onChange={(e) => setValue(e.target.value.trim())}
@@ -37,16 +37,18 @@ export default function Search() {
             type="text"
             value={inputValue}
           />
-          <div className="">
-            <select value={sort} onChange={handleSort}>
-              <option value="hot">hot</option>
-              <option value="top">top</option>
-              <option value="new">new</option>
-              <option value="best">best</option>
-              <option value="rising">rising</option>
-            </select>
-          </div>
-          <button className="border py-2 px-4 ml-1">Search</button>
+          <select
+            className="border-t border-b p-4 text-black"
+            value={sort}
+            onChange={handleSort}
+          >
+            <option value="hot">hot</option>
+            <option value="top">top</option>
+            <option value="new">new</option>
+            <option value="best">best</option>
+            <option value="rising">rising</option>
+          </select>
+          <button className="border py-2 px-4">Search</button>
         </div>
         <label htmlFor="search" className="text-sm italic">
           Type the name of a subreddit and press enter.{' '}
