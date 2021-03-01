@@ -89,7 +89,7 @@ export default function Card(props) {
         })()}
       </div>
 
-      <footer className="flex flex-wrap justify-between text-sm border-b-2 pb-4">
+      <footer className="flex flex-wrap justify-between text-sm pb-4">
         <div>&uarr; {ups} up votes</div>
         <div>
           {props?.num_comments >= 1 && (
