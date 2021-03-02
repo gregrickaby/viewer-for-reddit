@@ -35,7 +35,8 @@
     "next": "latest",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "snoowrap": "^1.22.0"
+    "snoowrap": "^1.22.0",
+    "swr": "^0.4.2"
   },
   "devDependencies": {
     "@arkweid/lefthook": "^0.7.2",
