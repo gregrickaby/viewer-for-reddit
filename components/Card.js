@@ -25,15 +25,13 @@ export default function Card(props) {
             case 'image':
               return (
                 <a href={props?.url} aria-label={props?.title}>
-                  <img
+                  <Image
                     alt={props?.title}
                     className="card-image"
                     height={source?.source?.height}
                     layout="responsive"
-                    // src={props?.url}
-                    src={props.preview.images[0].source.url}
+                    src={props?.url}
                     width={source?.source?.width}
-                    loading="lazy"
                   />
                 </a>
               )

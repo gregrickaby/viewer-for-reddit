@@ -5,14 +5,5 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     }
-  },
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact"
-  },
-  "workbench.colorCustomizations": {
-    "titleBar.activeForeground": "#fbac3d",
-    "titleBar.inactiveForeground": "#fbac3dCC",
-    "titleBar.activeBackground": "#00342d",
-    "titleBar.inactiveBackground": "#00342dCC"
   }
 }

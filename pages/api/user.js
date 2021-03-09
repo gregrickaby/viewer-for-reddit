@@ -1,4 +1,4 @@
-import reddit from '@/api/connector'
+import reddit from 'lib/reddit/connector'
 
 export default function user(req, res) {
   const user = req.query.id
