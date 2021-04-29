@@ -1,4 +1,4 @@
-Closes [Link to Github ticket]
+Closes [Link to Github ticket]()
 
 ### Link
 
