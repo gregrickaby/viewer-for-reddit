@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import cleanIframe from '@/functions/cleanIframe'
-import Image from 'next/image'
 
 export default function Card(props) {
   const ups = props?.ups.toLocaleString('en')
@@ -25,11 +24,11 @@ export default function Card(props) {
             case 'image':
               return (
                 <a href={props?.url} aria-label={props?.title}>
-                  <Image
+                  <img
                     alt={props?.title}
                     className="card-image"
                     height={source?.source?.height}
-                    layout="responsive"
+                    loading="lazy"
                     src={props?.url}
                     width={source?.source?.width}
                   />
