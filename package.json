@@ -54,7 +54,7 @@
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.3.2",
     "prop-types": "^15.7.2",
-    "react-intersection-observer": "^8.32.0",
+    "react-intersection-observer": "^8.32.1",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "tailwindcss": "^2.2.7"
