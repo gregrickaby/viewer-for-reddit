@@ -1,4 +1,4 @@
-import reddit from 'lib/reddit/connector'
+import reddit from 'lib/reddit'
 
 export default function submission(req, res) {
   const submission = req.query.id
