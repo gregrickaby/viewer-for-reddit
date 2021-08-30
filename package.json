@@ -32,32 +32,31 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "latest",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "snoowrap": "^1.22.0",
-    "swr": "^0.4.2"
+    "next": "11.1.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@arkweid/lefthook": "^0.7.4",
-    "autoprefixer": "^10.2.5",
+    "@arkweid/lefthook": "^0.7.6",
+    "autoprefixer": "^10.3.3",
     "classnames": "^2.3.1",
-    "eslint": "^7.25.0",
+    "eslint": "^7.32.0",
+    "eslint-config-next": "^11.1.1",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.25.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "next-sitemap": "^1.6.38",
-    "postcss": "^8.2.13",
+    "next-sitemap": "^1.6.164",
+    "postcss": "^8.3.6",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^6.7.0",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.2",
     "prop-types": "^15.7.2",
-    "react-intersection-observer": "^8.31.1",
+    "react-intersection-observer": "^8.32.1",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
-    "tailwindcss": "^2.1.2"
+    "tailwindcss": "^2.2.9"
   }
 }
