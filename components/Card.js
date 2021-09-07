@@ -1,36 +1,37 @@
 import PropTypes from 'prop-types'
 import cleanIframe from '@/functions/cleanIframe'
 
-export default function Card(props) {
-  const ups = props?.ups.toLocaleString('en')
-  const comments = props?.num_comments.toLocaleString('en')
+export default function Card(post) {
+  const ups = post?.ups.toLocaleString('en')
+  const comments = post?.num_comments.toLocaleString('en')
 
   return (
     <article className="space-y-4">
       <header>
         <h2 className="text-2xl text-center">
           <a
-            href={`https://www.reddit.com${props?.permalink}`}
-            dangerouslySetInnerHTML={{__html: props?.title}}
+            href={`https://www.reddit.com${post?.permalink}`}
+            dangerouslySetInnerHTML={{__html: post?.title}}
           />
         </h2>
       </header>
 
       <div className="overflow-hidden">
         {(() => {
-          const [source] = props?.preview.images
-          // Determine the media type using props?_hint.
-          switch (props?.post_hint) {
+          const [images] = post?.preview?.images
+
+          // Determine the media type using post?_hint.
+          switch (post?.post_hint) {
             case 'image':
               return (
-                <a href={props?.url} aria-label={props?.title}>
+                <a href={post?.url} aria-label={post?.title}>
                   <img
-                    alt={props?.title}
+                    alt={post?.title}
                     className="card-image"
-                    height={source?.source?.height}
+                    height={images?.resolutions[3]?.height}
                     loading="lazy"
-                    src={props?.url}
-                    width={source?.source?.width}
+                    src={images?.resolutions[3]?.url}
+                    width={images?.resolutions[3]?.width}
                   />
                 </a>
               )
@@ -43,7 +44,7 @@ export default function Card(props) {
                   loop
                   muted
                   playsInline
-                  src={props?.secure_media?.reddit_video?.fallback_url}
+                  src={post?.secure_media?.reddit_video?.fallback_url}
                   height="480"
                   width="640"
                 />
@@ -51,20 +52,20 @@ export default function Card(props) {
             case 'rich:video':
               return (
                 <a
-                  aria-label={props?.title}
+                  aria-label={post?.title}
                   dangerouslySetInnerHTML={{
                     __html: cleanIframe({
-                      height: props?.media?.oembed?.height,
-                      html: props?.media?.oembed?.html,
-                      width: props?.media?.oembed?.width
+                      height: post?.media?.oembed?.height,
+                      html: post?.media?.oembed?.html,
+                      width: post?.media?.oembed?.width
                     })
                   }}
-                  href={props?.url}
+                  href={post?.url}
                 />
               )
             case 'link':
               // Search for .gifv....
-              if (props?.url.includes('gifv')) {
+              if (post?.url.includes('gifv')) {
                 return (
                   <video
                     className="card-video"
@@ -73,7 +74,7 @@ export default function Card(props) {
                     loop
                     muted
                     playsInline
-                    src={props?.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
+                    src={post?.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
                     height="480"
                     width="640"
                   ></video>
@@ -91,9 +92,9 @@ export default function Card(props) {
       <footer className="flex flex-wrap justify-between text-sm pb-4">
         <div>&uarr; {ups} up votes</div>
         <div>
-          {props?.num_comments >= 1 && (
-            <a href={`https://www.reddit.com${props?.permalink}`}>
-              {props?.num_comments <= 1
+          {post?.num_comments >= 1 && (
+            <a href={`https://www.reddit.com${post?.permalink}`}>
+              {post?.num_comments <= 1
                 ? `${comments} comment`
                 : `${comments} comments`}
             </a>
