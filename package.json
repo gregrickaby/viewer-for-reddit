@@ -48,7 +48,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.26.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "next-sitemap": "^1.6.168",
+    "next-sitemap": "^1.6.173",
     "postcss": "^8.3.8",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^6.7.0",
