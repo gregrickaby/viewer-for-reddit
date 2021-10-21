@@ -64,7 +64,7 @@ export default function DisplayOptions() {
             id="fontSelect"
             className="p-2 dark:text-gray-900"
             value={fontFamily}
-            onBlur={changeFont}
+            onChange={changeFont}
           >
             <option value="font-sans">sans-serif</option>
             <option value="font-serif">serif</option>
