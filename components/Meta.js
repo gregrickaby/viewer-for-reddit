@@ -10,7 +10,12 @@ export default function Meta() {
       <title>{config?.siteTitle}</title>
       <meta name="description" content={config?.siteDescription} />
 
-      <link rel="preconnect" href="//www.reddit.com" crossOrigin="anonymous" />
+      <link
+        rel="preconnect"
+        href="//oauth.reddit.com"
+        crossOrigin="anonymous"
+      />
+      <link rel="preconnect" href="//i.redd.it" crossOrigin="anonymous" />
       <link rel="shortcut icon" href="/favicon/favicon.ico" />
       <link rel="apple-touch-icon" href="/favicon/icon.png" />
       <link rel="icon" href="/favicon/icon.png" sizes="192x192" />
