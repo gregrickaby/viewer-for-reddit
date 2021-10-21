@@ -32,11 +32,14 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
 
+      - name: Install NPM 7
+        run: npm i -g npm@latest
+
       - name: Install dependencies
-        run: npm i --legacy-peer-deps --ignore-scripts --no-fund --no-audit --quiet
+        run: npm i
 
-      - name: Lint JavaScript
-        run: npx eslint ./ --config=.eslintrc.js --no-color --env-info
+      - name: Lint scripts
+        run: npx eslint '**/*.{js,ts,jsx,tsx}' --config=.eslintrc.js
 
-      - name: Lint CSS
-        run: npx stylelint '**/*.css' --config=stylelint.config.js --no-color --version
+      - name: Lint styles
+        run: npx stylelint '**/*.{css,scss}' --config=.stylelintrc.js
