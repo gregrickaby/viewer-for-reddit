@@ -40,7 +40,7 @@
     "@arkweid/lefthook": "^0.7.7",
     "autoprefixer": "^10.3.7",
     "classnames": "^2.3.1",
-    "eslint": "^7.3.2",
+    "eslint": "7.32.0",
     "eslint-config-next": "^11.1.2",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.2",
@@ -48,15 +48,15 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "next-sitemap": "^1.6.184",
-    "postcss": "^8.3.9",
+    "next-sitemap": "^1.6.192",
+    "postcss": "^8.3.11",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.4.1",
     "prop-types": "^15.7.2",
     "react-intersection-observer": "^8.32.1",
-    "stylelint": "^13.13.1",
-    "stylelint-config-standard": "^22.0.0",
+    "stylelint": "^14.0.0",
+    "stylelint-config-standard": "^23.0.0",
     "tailwindcss": "^2.2.17"
   }
 }
