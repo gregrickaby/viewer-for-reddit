@@ -51,13 +51,13 @@ export default function Results({subreddit, sortBy}) {
 
   useEffect(() => {
     loadInitialPosts()
-  }, [subreddit, sortBy])
+  }, [subreddit, sortBy]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (clicked) {
       loadMorePosts()
     }
-  }, [inView])
+  }, [inView]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return <Skeleton />

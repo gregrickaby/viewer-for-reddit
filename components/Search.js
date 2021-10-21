@@ -40,7 +40,7 @@ export default function Search() {
           <select
             className="px-1 border-t border-b rounded-none text-gray-500 dark:bg-white focus:outline-none"
             value={sort}
-            onChange={handleSort}
+            onBlur={handleSort}
           >
             <option value="hot">hot</option>
             <option value="top">top</option>
