@@ -48,7 +48,7 @@
     "next-sitemap": "^1.6.203",
     "postcss": "^8.4.4",
     "postcss-preset-env": "^7.0.1",
-    "prettier": "^2.5.0",
+    "prettier": "^2.5.1",
     "prop-types": "^15.7.2",
     "react-intersection-observer": "^8.32.5",
     "rimraf": "^3.0.2",
