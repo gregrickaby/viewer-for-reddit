@@ -50,7 +50,7 @@
     "postcss-preset-env": "^7.0.1",
     "prettier": "^2.5.0",
     "prop-types": "^15.7.2",
-    "react-intersection-observer": "^8.32.5",
+    "react-intersection-observer": "^8.33.0",
     "rimraf": "^3.0.2",
     "stylelint": "^14.1.0",
     "stylelint-config-standard": "^24.0.0",
