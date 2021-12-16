@@ -43,7 +43,7 @@ export default function Results({subreddit, sortBy}) {
   async function loadMorePosts() {
     setLoadingMore(true)
     const data = await fetchData({subreddit, lastPost, sortBy})
-    setPosts((prevResults) => [...prevResults, ...data?.posts])
+    setPosts((prevResults) => [...prevResults, ...data.posts])
     setLastPost(data?.after)
     setLoadingMore(false)
     setClicked(true)

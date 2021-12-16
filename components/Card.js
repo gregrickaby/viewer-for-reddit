@@ -18,7 +18,7 @@ export default function Card(props) {
 
       <div className="overflow-hidden">
         {(() => {
-          const [source] = props?.preview.images
+          const [source] = props.preview.images || []
           // Determine the media type using props?_hint.
           switch (props?.post_hint) {
             case 'image':
