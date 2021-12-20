@@ -33,7 +33,7 @@ export default function Search() {
             minLength="2"
             onChange={(e) => setValue(e.target.value.trim())}
             pattern="^[^~`^<>]+$"
-            placeholder="itookapicture"
+            placeholder="pics"
             type="text"
             value={inputValue}
           />
