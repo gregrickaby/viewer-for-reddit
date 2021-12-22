@@ -1,5 +1,5 @@
 /**
- * Fetch data from Reddit.
+ * Fetch data from internal Reddit API route.
  *
  * @param {number} limit    How many posts to fetch.
  * @param {string} lastPost  The last post in the list.
@@ -13,42 +13,12 @@ export async function fetchData({limit, lastPost, sortBy, subreddit}) {
   const sort = sortBy ? sortBy : 'hot'
   const sub = subreddit ? subreddit : 'pics'
 
-  // Attempt to fetch posts.
-  const response = await fetch(
-    `/api/reddit?sub=${sub}&sort=${sort}&limit=${number}&after=${after}`
-  )
-
-  // No response? Bail...
-  if (!response.ok) {
-    return {
-      posts: [],
-      after: null
-    }
-  }
-
-  // Convert response to JSON.
-  const json = await response.json()
-
-  // No data in the response? Bail...
-  if (!json.data && !json.data.children) {
-    return {
-      posts: [],
-      after: null
-    }
-  }
-
-  // Filter out any self or stickied posts.
-  const postsContainImage = json.data.children.filter((post) => {
-    return (
-      post.data.post_hint &&
-      post.data.post_hint !== 'self' &&
-      post.data.stickied !== true
+  try {
+    const response = await fetch(
+      `/api/reddit?sub=${sub}&sort=${sort}&limit=${number}&after=${after}`
     )
-  })
-
-  // Finally, return posts.
-  return {
-    posts: postsContainImage.map((post) => post?.data),
-    after: json?.data?.after
+    return await response.json()
+  } catch (error) {
+    console.error(error)
   }
 }
