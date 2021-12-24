@@ -45,7 +45,7 @@
     "postcss": "^8.4.5",
     "postcss-preset-env": "^7.1.0",
     "prettier": "^2.5.1",
-    "prop-types": "^15.7.2",
+    "prop-types": "^15.8.0",
     "react-intersection-observer": "^8.33.1",
     "rimraf": "^3.0.2",
     "stylelint": "^14.2.0",
