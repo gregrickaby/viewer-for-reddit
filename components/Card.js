@@ -2,27 +2,15 @@ import PropTypes from 'prop-types'
 import cleanIframe from '@/functions/cleanIframe'
 
 export default function Card(props) {
-  const votes = props?.upvotes.toLocaleString('en')
-  const comments = props?.comments.toLocaleString('en')
-
   return (
-    <article className="space-y-4">
-      <header>
-        <h2 className="text-2xl text-center">
-          <a
-            href={props?.permalink}
-            dangerouslySetInnerHTML={{__html: props?.title}}
-          />
-        </h2>
-      </header>
-
+    <article>
       <div className="overflow-hidden">
         {(() => {
           const [source] = props.images || []
           switch (props?.type) {
             case 'image':
               return (
-                <a href={props?.url} aria-label={props?.title}>
+                <a href={props?.permalink} aria-label={props?.title}>
                   <img
                     alt={props?.title}
                     className="card-image"
@@ -86,19 +74,6 @@ export default function Card(props) {
           }
         })()}
       </div>
-
-      <footer className="flex flex-wrap justify-between text-sm pb-4">
-        <div>&uarr; {votes} up votes</div>
-        <div>
-          {props?.comments >= 1 && (
-            <a href={props?.permalink}>
-              {props?.comments <= 1
-                ? `${comments} comment`
-                : `${comments} comments`}
-            </a>
-          )}
-        </div>
-      </footer>
     </article>
   )
 }
