@@ -1,10 +1,18 @@
 export default function Skeleton() {
   return (
-    <div className="space-y-12 text-center m-auto">
-      <h2 className="text-2xl">Loading Posts...</h2>
-      <div className="animate skeleton-bone"></div>
-      <div className="animate skeleton-bone"></div>
-      <div className="animate skeleton-bone"></div>
-    </div>
+    <>
+      <h2 className="text-center text-2xl mb-4">Loading...</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 place-items-center">
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+        <div className="animate w-[28rem] h-[28rem]"></div>
+      </div>
+    </>
   )
 }
