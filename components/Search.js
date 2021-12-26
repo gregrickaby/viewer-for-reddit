@@ -2,7 +2,7 @@ import {useState} from 'react'
 import Results from './Results'
 
 export default function Search() {
-  const [inputValue, setValue] = useState('pics')
+  const [inputValue, setValue] = useState('itookapicture')
   const [sort, setSort] = useState('hot')
   const [subreddit, setSubreddit] = useState(inputValue)
   const [toggleHelp, setToggleHelp] = useState(false)
@@ -23,7 +23,10 @@ export default function Search() {
 
   return (
     <>
-      <form className="text-lg m-auto text-center" onSubmit={handleSearch}>
+      <form
+        className="text-lg m-auto text-center max-w-lg"
+        onSubmit={handleSearch}
+      >
         <div className="flex">
           <span className="mr-1 self-center">r/</span>
           <input
@@ -65,7 +68,9 @@ export default function Search() {
           )}
         </label>
       </form>
-      <Results subreddit={subreddit} sortBy={sort} />
+      <main>
+        <Results subreddit={subreddit} sortBy={sort} />
+      </main>
     </>
   )
 }
