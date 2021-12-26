@@ -9,9 +9,9 @@
  */
 export async function fetchData({limit, lastPost, sortBy, subreddit}) {
   const after = lastPost ? lastPost : ''
-  const number = limit ? limit : '10'
+  const number = limit ? limit : '24'
   const sort = sortBy ? sortBy : 'hot'
-  const sub = subreddit ? subreddit : 'pics'
+  const sub = subreddit ? subreddit : 'itookapicture'
 
   try {
     const response = await fetch(

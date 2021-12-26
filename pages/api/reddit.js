@@ -7,8 +7,8 @@ export default async function reddit(req, res) {
   // Parse the request.
   const after = req.query.after ? req.query.after : ''
   const sort = req.query.sort ? req.query.sort : 'hot'
-  const sub = req.query.sub ? req.query.sub : 'pics'
-  const limit = req.query.limit ? req.query.limit : '10'
+  const sub = req.query.sub ? req.query.sub : 'itookapicture'
+  const limit = req.query.limit ? req.query.limit : '24'
 
   // Format the shape of the post data.
   function postShape(post) {
