@@ -5,6 +5,12 @@ import {useInView} from 'react-intersection-observer'
 import Card from './Card'
 import NoResults from './NoResults'
 import Skeleton from './Skeleton'
+import Masonry from 'react-masonry-css'
+const breakpointColumnsObj = {
+  default: 3,
+  1368: 2,
+  766: 1
+}
 
 export default function Results({subreddit, sortBy}) {
   const [ref, inView] = useInView({
@@ -64,12 +70,14 @@ export default function Results({subreddit, sortBy}) {
   }
 
   return (
-    <main className="space-y-12">
+    <>
       {posts?.length ? (
         <>
-          {posts.map((post, index) => (
-            <Card key={index} {...post} />
-          ))}
+          <Masonry breakpointCols={breakpointColumnsObj} className="flex">
+            {posts.map((post, index) => (
+              <Card key={index} {...post} />
+            ))}
+          </Masonry>
           <button
             ref={ref}
             className="animate flex m-auto py-2 px-4 text-white"
@@ -81,7 +89,7 @@ export default function Results({subreddit, sortBy}) {
       ) : (
         <NoResults />
       )}
-    </main>
+    </>
   )
 }
 
