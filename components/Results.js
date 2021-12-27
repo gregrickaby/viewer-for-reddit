@@ -80,7 +80,7 @@ export default function Results({subreddit, sortBy}) {
           </Masonry>
           <button
             ref={ref}
-            className="animate flex m-auto py-2 px-4 text-white"
+            className="animate flex mt-16 ml-auto mr-auto py-2 px-4 text-white"
             onClick={loadMorePosts}
           >
             {loadingMore ? <>Loading...</> : <>Load More Posts</>}
