@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types'
 import cleanIframe from '@/functions/cleanIframe'
+import {useSpring, animated} from 'react-spring'
 
 export default function Card(props) {
+  const spring = useSpring({to: {opacity: 1}, from: {opacity: 0}})
   return (
-    <article>
+    <animated.article style={spring}>
       <div className="overflow-hidden">
         {(() => {
           const [source] = props.images || []
@@ -74,7 +76,7 @@ export default function Card(props) {
           }
         })()}
       </div>
-    </article>
+    </animated.article>
   )
 }
 
