@@ -13,12 +13,7 @@ export default async function reddit(req, res) {
   // Format the shape of the post data.
   function postShape(post) {
     return {
-      title: post.title,
-      upvotes: post.ups,
-      nswf: post.over_18,
       type: post.post_hint,
-      posted_on: post.created_utc,
-      comments: post.num_comments,
       subreddit: `https://www.reddit.com/${post.subreddit_name_prefixed}`,
       permalink: `https://www.reddit.com${post.permalink}`,
       thumbnail: post.thumbnail,
