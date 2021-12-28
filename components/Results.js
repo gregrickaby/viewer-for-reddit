@@ -3,12 +3,10 @@ import PropTypes from 'prop-types'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
 import Card from './Card'
-import NoResults from './NoResults'
-import Skeleton from './Skeleton'
 import Masonry from 'react-masonry-css'
+import Skeleton from './Skeleton'
 const breakpointColumnsObj = {
-  default: 3,
-  1368: 2,
+  default: 2,
   766: 1
 }
 
@@ -71,24 +69,18 @@ export default function Results({subreddit, sortBy}) {
 
   return (
     <>
-      {posts?.length ? (
-        <>
-          <Masonry breakpointCols={breakpointColumnsObj} className="flex">
-            {posts.map((post, index) => (
-              <Card key={index} {...post} />
-            ))}
-          </Masonry>
-          <button
-            ref={ref}
-            className="animate flex mt-16 ml-auto mr-auto py-2 px-4 text-white"
-            onClick={loadMorePosts}
-          >
-            {loadingMore ? <>Loading...</> : <>Load More Posts</>}
-          </button>
-        </>
-      ) : (
-        <NoResults />
-      )}
+      <Masonry breakpointCols={breakpointColumnsObj} className="flex">
+        {posts.map((post, index) => (
+          <Card key={index} {...post} />
+        ))}
+      </Masonry>
+      <button
+        ref={ref}
+        className="animate flex mt-16 ml-auto mr-auto py-2 px-4 text-white"
+        onClick={loadMorePosts}
+      >
+        {loadingMore ? <>Loading...</> : <>Load More Posts</>}
+      </button>
     </>
   )
 }
