@@ -54,6 +54,13 @@
   }
 }
 
+.skeleton-bone {
+  @apply animate-pulse bg-zinc-300 dark:bg-zinc-900;
+
+  height: 450px;
+  width: 100%;
+}
+
 .animate {
   animation: shimmer 15s infinite linear;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
