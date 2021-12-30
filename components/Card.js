@@ -26,15 +26,13 @@ export default function Card(props) {
             case 'hosted:video':
               return (
                 <video
-                  className="card-video"
+                  className="w-full aspect-video"
                   autoPlay
                   controls
                   loop
                   muted
                   playsInline
                   src={props?.secure_media?.reddit_video?.fallback_url}
-                  height="480"
-                  width="640"
                 />
               )
             case 'rich:video':
@@ -43,9 +41,7 @@ export default function Card(props) {
                   aria-label={props?.title}
                   dangerouslySetInnerHTML={{
                     __html: cleanIframe({
-                      height: props?.media?.oembed?.height,
-                      html: props?.media?.oembed?.html,
-                      width: props?.media?.oembed?.width
+                      html: props?.media?.oembed?.html
                     })
                   }}
                   href={props?.url}
@@ -56,15 +52,13 @@ export default function Card(props) {
               if (props?.url.includes('gifv')) {
                 return (
                   <video
-                    className="card-video"
+                    className="w-full aspect-video"
                     autoPlay
                     controls
                     loop
                     muted
                     playsInline
                     src={props?.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
-                    height="480"
-                    width="640"
                   ></video>
                 )
               } else {

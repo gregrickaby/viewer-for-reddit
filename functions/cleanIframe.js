@@ -12,11 +12,9 @@ export default function cleanIframe({height, html, width}) {
   return `<iframe
       ${source}
       allow="autoplay"
-      class="card-iframe"
-      height=${height}
+      class="w-full aspect-video"
       loading="lazy"
       referrerpolicy="no-referrer"
       title="iframe"
-      width=${width}
     />`
 }
