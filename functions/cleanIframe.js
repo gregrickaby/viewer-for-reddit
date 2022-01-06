@@ -5,7 +5,7 @@
  * @param {string}  html Raw HTML from reddit.
  * @return {string}      Clean <iframe> code.
  */
-export default function cleanIframe({height, html, width}) {
+export default function cleanIframe({html}) {
   // Grab the src URL.
   const source = html.match(/(src="([^"]+)")/gi)
 
