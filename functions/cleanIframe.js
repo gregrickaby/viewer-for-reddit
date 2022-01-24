@@ -15,6 +15,7 @@ export default function cleanIframe({html}) {
       class="w-full aspect-video"
       loading="lazy"
       referrerpolicy="no-referrer"
+      sandbox="allow-scripts"
       title="iframe"
     />`
 }
