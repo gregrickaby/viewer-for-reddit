@@ -20,14 +20,11 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
 
-      - name: Update NPM
-        run: npm i -g npm@latest
-
       - name: Install dependencies
-        run: npm i --legacy-peer-deps
+        run: npm install --ignore-scripts
 
       - name: Lint scripts
-        run: npx eslint '**/*.{js,ts,jsx,tsx}' --config=.eslintrc.js
+        run: npm run lint:js
 
       - name: Lint styles
-        run: npx stylelint '**/*.{css,scss}' --config=.stylelintrc.js
+        run: npm run lint:css
