@@ -11,11 +11,11 @@ export default function cleanIframe({html}) {
 
   return `<iframe
       ${source}
-      allow="autoplay"
+      allow="autoplay fullscreen"
       class="w-full aspect-video"
       loading="lazy"
       referrerpolicy="no-referrer"
-      sandbox="allow-scripts"
+      sandbox="allow-scripts allow-same-origin allow-presentation"
       title="iframe"
     />`
 }

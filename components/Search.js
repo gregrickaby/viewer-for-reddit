@@ -24,14 +24,14 @@ export default function Search() {
   return (
     <>
       <form
-        className="text-lg m-auto text-center max-w-lg"
+        className="m-auto max-w-lg text-center text-lg"
         onSubmit={handleSearch}
       >
         <div className="flex">
           <span className="mr-1 self-center">r/</span>
           <input
             autoCapitalize="none"
-            className="border-t border-l border-b rounded-none w-full p-2 focus:outline-none"
+            className="w-full rounded-none border-t border-l border-b p-2 focus:outline-none"
             id="search"
             minLength="2"
             onChange={(e) => setValue(e.target.value.trim())}
@@ -41,7 +41,7 @@ export default function Search() {
             value={inputValue}
           />
           <select
-            className="px-1 border-t border-b rounded-none text-gray-500 dark:bg-white focus:outline-none"
+            className="rounded-none border-t border-b px-1 text-gray-500 focus:outline-none dark:bg-white"
             value={sort}
             onChange={handleSort}
           >
@@ -59,7 +59,7 @@ export default function Search() {
             Help <span className="text-lg leading-none">&#9662;</span>
           </button>
           {toggleHelp && (
-            <p className="not-italic text-md mt-2">
+            <p className="text-md mt-2 not-italic">
               You can also combine subreddits. For example:{' '}
               <span className="font-mono tracking-wide">
                 all+popular+funny+aww+pics

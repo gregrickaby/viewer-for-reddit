@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 export default function NoResults() {
   return (
-    <div className="text-center text-2xl text-red-900 dark:text-red-500 m-auto space-y-4">
+    <div className="m-auto space-y-4 text-center text-2xl text-red-900 dark:text-red-500">
       <p>
         Either the Reddit API is down or something else is wrong. Please try
         your search again.

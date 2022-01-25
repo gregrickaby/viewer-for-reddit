@@ -10,7 +10,7 @@ export default function IndexPage() {
   return (
     <>
       <Meta />
-      <div className="container max-w-full p-8 space-y-12">
+      <div className="container max-w-full space-y-12 p-8">
         <Header
           title={config?.siteTitle}
           description={config?.siteDescription}

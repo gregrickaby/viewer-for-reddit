@@ -26,7 +26,7 @@ export default function Card(props) {
             case 'hosted:video':
               return (
                 <video
-                  className="w-full aspect-video"
+                  className="aspect-video w-full"
                   autoPlay
                   controls
                   loop
@@ -52,7 +52,7 @@ export default function Card(props) {
               if (props?.url.includes('gifv')) {
                 return (
                   <video
-                    className="w-full aspect-video"
+                    className="aspect-video w-full"
                     autoPlay
                     controls
                     loop

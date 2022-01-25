@@ -45,8 +45,8 @@ export default function DisplayOptions() {
 
   return (
     <div
-      className={cn('flex items-center fixed top-0 right-0 p-2', {
-        'dark:bg-gray-900 bg-white': fontSelector
+      className={cn('fixed top-0 right-0 flex items-center p-2', {
+        'bg-white dark:bg-gray-900': fontSelector
       })}
     >
       <form onSubmit={toggleDisplayOptions}>
@@ -59,7 +59,7 @@ export default function DisplayOptions() {
       </form>
 
       {fontSelector && (
-        <div className="flex ml-2">
+        <div className="ml-2 flex">
           <select
             id="fontSelect"
             className="p-2 dark:text-gray-900"

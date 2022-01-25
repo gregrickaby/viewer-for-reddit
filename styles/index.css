@@ -24,7 +24,7 @@
     @apply dark:bg-gray-900 dark:text-gray-200;
 
     scroll-behavior: smooth;
-    text-rendering: optimizeSpeed;
+    text-rendering: optimizespeed;
   }
 
   select {
