@@ -1,4 +1,4 @@
-name: 'CodeQL'
+name: 'Security'
 
 on:
   schedule:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   analyze:
-    name: Analyze
+    name: Security Scan
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -34,3 +34,8 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
+
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.3.0
+        with:
+          target: 'https://reddit-image-viewer.vercel.app/'
