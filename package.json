@@ -41,7 +41,7 @@
     "postcss": "^8.4.6",
     "postcss-preset-env": "^7.3.1",
     "prettier": "^2.5.1",
-    "prettier-plugin-tailwindcss": "^0.1.4",
+    "prettier-plugin-tailwindcss": "^0.1.5",
     "prop-types": "^15.8.1",
     "react-intersection-observer": "^8.33.1",
     "react-masonry-css": "^1.0.16",
