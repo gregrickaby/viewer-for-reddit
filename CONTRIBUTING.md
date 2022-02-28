@@ -15,4 +15,4 @@ Found a bug you can fix? Fantastic! Patches are always welcome. Here's a few tip
 - Include the purpose of your PR. Be explicit about the issue your PR solves. Fill out the Pull Request template completely.
 - Reference any existing issues that relate to your PR. This allows everyone to easily see all related discussions.
 
-By contributing code, you grant its use under the [GNU General Public License v2 (or later)](https://github.com/gregrickaby/reddit-image-viewer/blob/main/LICENSE.md).
+By contributing code, you grant its use under the [MIT License](https://github.com/gregrickaby/reddit-image-viewer/blob/main/LICENSE.md).
