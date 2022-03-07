@@ -35,7 +35,7 @@
     "classnames": "^2.3.1",
     "eslint": "8.10.0",
     "eslint-config-next": "^12.1.0",
-    "eslint-config-prettier": "^8.4.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "next-sitemap": "^2.5.2",
     "postcss": "^8.4.7",
