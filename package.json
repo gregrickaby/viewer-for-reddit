@@ -40,7 +40,7 @@
     "next-sitemap": "^2.5.12",
     "postcss": "^8.4.12",
     "postcss-preset-env": "^7.4.3",
-    "prettier": "^2.6.0",
+    "prettier": "^2.6.1",
     "prettier-plugin-tailwindcss": "^0.1.8",
     "prop-types": "^15.8.1",
     "react-intersection-observer": "^8.33.1",
