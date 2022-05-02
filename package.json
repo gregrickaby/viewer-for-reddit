@@ -39,7 +39,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "next-sitemap": "^2.5.20",
     "postcss": "^8.4.12",
-    "postcss-preset-env": "^7.4.3",
+    "postcss-preset-env": "^7.4.4",
     "prettier": "^2.6.2",
     "prettier-plugin-tailwindcss": "^0.1.10",
     "prop-types": "^15.8.1",
