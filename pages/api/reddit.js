@@ -13,14 +13,15 @@ export default async function reddit(req, res) {
   // Format the shape of the post data.
   function postShape(post) {
     return {
-      type: post.post_hint,
-      subreddit: `https://www.reddit.com/${post.subreddit_name_prefixed}`,
-      permalink: `https://www.reddit.com${post.permalink}`,
-      thumbnail: post.thumbnail,
-      url: post.url,
       images: post.preview.images,
       media: post.media,
-      secure_media: post.secure_media
+      permalink: `https://www.reddit.com${post.permalink}`,
+      secure_media: post.secure_media,
+      subreddit: `https://www.reddit.com/${post.subreddit_name_prefixed}`,
+      thumbnail: post.thumbnail,
+      title: post.title,
+      type: post.post_hint,
+      url: post.url
     }
   }
 
