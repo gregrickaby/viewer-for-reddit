@@ -42,8 +42,10 @@ export default function Search() {
           />
           <select
             className="rounded-none border-t border-b px-1 text-gray-500 focus:outline-none dark:bg-white"
-            value={sort}
+            id="search"
+            name="search"
             onChange={handleSort}
+            value={sort}
           >
             <option value="hot">hot</option>
             <option value="top">top</option>
@@ -68,7 +70,7 @@ export default function Search() {
           )}
         </label>
       </form>
-      <main>
+      <main className="min-h-screen">
         <Results subreddit={subreddit} sortBy={sort} />
       </main>
     </>
