@@ -6,7 +6,7 @@ import Card from './Card'
 import Masonry from 'react-masonry-css'
 import Skeleton from './Skeleton'
 const breakpointColumnsObj = {
-  default: 2,
+  default: 3,
   766: 1
 }
 
@@ -14,7 +14,7 @@ export default function Results({subreddit, sortBy}) {
   const [ref, inView] = useInView({
     rootMargin: '200px 0px'
   })
-  const [loading, setLoading] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(null)
   const [posts, setPosts] = useState([])
   const [lastPost, setLastPost] = useState(null)
@@ -38,7 +38,9 @@ export default function Results({subreddit, sortBy}) {
     clearState()
     setPosts(data?.posts)
     setLastPost(data?.after)
-    setLoading(false)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
   }
 
   /**
@@ -69,7 +71,7 @@ export default function Results({subreddit, sortBy}) {
 
   return (
     <>
-      <Masonry breakpointCols={breakpointColumnsObj} className="flex">
+      <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-4">
         {posts.map((post, index) => (
           <Card key={index} {...post} />
         ))}
