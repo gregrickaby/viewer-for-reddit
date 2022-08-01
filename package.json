@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.0.5",
-    "autoprefixer": "^10.4.7",
+    "autoprefixer": "^10.4.8",
     "classnames": "^2.3.1",
     "eslint": "8.20.0",
     "eslint-config-next": "^12.2.3",
