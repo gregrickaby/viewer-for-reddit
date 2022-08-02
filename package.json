@@ -31,23 +31,23 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.0.5",
-    "autoprefixer": "^10.4.7",
+    "autoprefixer": "^10.4.8",
     "classnames": "^2.3.1",
-    "eslint": "8.20.0",
+    "eslint": "8.21.0",
     "eslint-config-next": "^12.2.3",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "next-sitemap": "^3.1.12",
+    "next-sitemap": "^3.1.15",
     "postcss": "^8.4.14",
     "postcss-preset-env": "^7.7.2",
     "prettier": "^2.7.1",
-    "prettier-plugin-tailwindcss": "^0.1.12",
+    "prettier-plugin-tailwindcss": "^0.1.13",
     "prop-types": "^15.8.1",
     "react-intersection-observer": "^9.4.0",
     "react-masonry-css": "^1.0.16",
     "rimraf": "^3.0.2",
     "stylelint": "^14.9.1",
     "stylelint-config-standard": "^26.0.0",
-    "tailwindcss": "^3.1.6"
+    "tailwindcss": "^3.1.7"
   }
 }
