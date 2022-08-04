@@ -4,7 +4,7 @@ const config = {
     'Anonymously browse images, videos, gifs, and other media from any subreddit.',
   siteUrl: 'https://reddit-image-viewer.vercel.app/',
   siteAuthor: '@gregrickaby',
-  authorUrl: 'https://gregrickaby.blog'
+  authorUrl: 'https://gregrickaby.com'
 }
 
 export default config
