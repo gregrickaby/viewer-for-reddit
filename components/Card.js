@@ -5,7 +5,6 @@ export default function Card(props) {
   return (
     <div className="overflow-hidden pb-4">
       {(() => {
-        const [source] = props.images || []
         switch (props?.type) {
           case 'image':
             return (
@@ -13,10 +12,10 @@ export default function Card(props) {
                 <img
                   alt={props?.title}
                   className="card-image"
-                  height={source?.source?.height}
+                  height={props?.images?.height}
                   loading="lazy"
-                  src={props?.url}
-                  width={source?.source?.width}
+                  src={props?.images?.url}
+                  width={props?.images?.width}
                 />
               </a>
             )
@@ -71,16 +70,14 @@ export default function Card(props) {
 }
 
 Card.propTypes = {
+  images: PropTypes.array,
   media: PropTypes.object,
-  nsfw: PropTypes.bool,
-  comments: PropTypes.number,
   permalink: PropTypes.string,
   preview: PropTypes.object,
   secure_media: PropTypes.object,
-  images: PropTypes.array,
   thumbnail: PropTypes.string,
   title: PropTypes.string,
   type: PropTypes.string,
-  upvotes: PropTypes.number,
+  ups: PropTypes.number,
   url: PropTypes.string
 }
