@@ -25,7 +25,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "12.2.3",
+    "next": "12.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
@@ -34,10 +34,10 @@
     "autoprefixer": "^10.4.8",
     "classnames": "^2.3.1",
     "eslint": "8.21.0",
-    "eslint-config-next": "^12.2.3",
+    "eslint-config-next": "^12.2.4",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "next-sitemap": "^3.1.15",
+    "next-sitemap": "^3.1.16",
     "postcss": "^8.4.14",
     "postcss-preset-env": "^7.7.2",
     "prettier": "^2.7.1",
