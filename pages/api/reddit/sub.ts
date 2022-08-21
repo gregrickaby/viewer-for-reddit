@@ -1,9 +1,11 @@
+import type {NextApiRequest, NextApiResponse} from 'next'
+
 /**
- * Query Reddit API.
+ * Query Reddit API for a sub-reddit.
  *
  * @see https://nextjs.org/docs/api-routes/introduction
  */
-export default async function reddit(req, res) {
+export default async function sub(req: NextApiRequest, res: NextApiResponse) {
   // Parse the request.
   const after = req.query.after ? req.query.after : ''
   const sort = req.query.sort ? req.query.sort : 'hot'
