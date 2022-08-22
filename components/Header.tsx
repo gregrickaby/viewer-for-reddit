@@ -1,5 +1,4 @@
 import {useSession, signIn, signOut} from 'next-auth/react'
-import {useSubs} from '~/lib/helpers'
 import {useState} from 'react'
 
 export default function Header() {
