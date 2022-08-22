@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           duration: 'permanent',
-          scope: 'identity mysubreddits history save vote'
+          scope: 'identity mysubreddits history save vote subscribe read flair'
         }
       }
     })
