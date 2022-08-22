@@ -1,3 +1,5 @@
+import useSWR from 'swr'
+
 /**
  * Generic fetcher for useSWR() package.
  */
@@ -20,4 +22,17 @@ export function cleanIframe({html}): string {
       sandbox="allow-scripts allow-same-origin allow-presentation"
       title="iframe"
     />`
+}
+
+export function useSubs(shouldFetch: boolean) {
+  const {data, error} = useSWR(
+    shouldFetch ? '/api/reddit/usersubs' : null,
+    fetcher
+  )
+
+  return {
+    subs: data,
+    isLoading: !error && !data,
+    isError: error
+  }
 }
