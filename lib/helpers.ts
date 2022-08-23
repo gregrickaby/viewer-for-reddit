@@ -24,14 +24,20 @@ export function cleanIframe({html}): string {
     />`
 }
 
-export function useSubs(shouldFetch: boolean) {
+/**
+ * Grab all the user's data from the API.
+ */
+export function useUserData(shouldFetch: boolean) {
   const {data, error} = useSWR(
-    shouldFetch ? '/api/reddit/usersubs' : null,
-    fetcher
+    shouldFetch ? '/api/reddit/userdata' : null,
+    fetcher,
+    {
+      revalidateOnFocus: false
+    }
   )
 
   return {
-    subs: data,
+    userData: data,
     isLoading: !error && !data,
     isError: error
   }
