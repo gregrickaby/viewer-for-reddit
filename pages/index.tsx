@@ -1,5 +1,17 @@
-import Layout from '~/components/Layout'
+import Layout from '~/components/Layout';
+import { useSubreddit } from '~/lib/helpers';
 
+/**
+ * Homepage component.
+ *
+ * This component displays the latest posts.
+ */
 export default function Homepage() {
-  return <Layout>Hello World.</Layout>
+  const { posts } = useSubreddit(true);
+
+  return (
+    <Layout>
+      <pre>{JSON.stringify(posts, null, 2)}</pre>
+    </Layout>
+  );
 }
