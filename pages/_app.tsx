@@ -4,6 +4,7 @@ import {useHotkeys, useLocalStorage} from '@mantine/hooks'
 import Head from 'next/head'
 import config from '~/lib/config'
 import {SessionProvider} from 'next-auth/react'
+import RedditProvider from '~/components/RedditProvider'
 
 export default function App(props: AppProps) {
   const {
@@ -76,7 +77,9 @@ export default function App(props: AppProps) {
             withGlobalStyles
             withNormalizeCSS
           >
-            <Component {...pageProps} />
+            <RedditProvider>
+              <Component {...pageProps} />
+            </RedditProvider>
           </MantineProvider>
         </ColorSchemeProvider>
       </SessionProvider>
