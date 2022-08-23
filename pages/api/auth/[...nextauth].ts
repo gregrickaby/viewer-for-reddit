@@ -1,6 +1,6 @@
-import RedditProvider from 'next-auth/providers/reddit'
-import NextAuth from 'next-auth'
-import type {NextAuthOptions} from 'next-auth'
+import RedditProvider from 'next-auth/providers/reddit';
+import NextAuth from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 
 /**
  * Set authorization options for Reddit Provider.
@@ -20,33 +20,33 @@ export const authOptions: NextAuthOptions = {
         return {
           id: profile.id,
           name: profile.name,
-          image: profile.snoovatar_img
-        }
+          image: profile.snoovatar_img,
+        };
       },
       authorization: {
         params: {
           duration: 'permanent',
-          scope: 'identity mysubreddits history save vote subscribe read flair'
-        }
-      }
-    })
+          scope: 'identity mysubreddits history save vote subscribe read flair',
+        },
+      },
+    }),
   ],
   callbacks: {
-    async jwt({token, account}) {
+    async jwt({ token, account }) {
       if (account) {
         // Append Reddit access token to the JWT session.
-        token.accessToken = account.access_token
+        token.accessToken = account.access_token; // eslint-disable-line no-param-reassign
       }
-      return token
+      return token;
     },
-    async session({session, token}) {
+    async session({ session, token }) {
       if (token) {
         // Append the access token to the current session.
-        session.accessToken = token.accessToken
+        session.accessToken = token.accessToken; // eslint-disable-line no-param-reassign
       }
-      return session
-    }
-  }
-}
+      return session;
+    },
+  },
+};
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);
