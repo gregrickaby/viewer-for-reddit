@@ -1,11 +1,11 @@
-import Header from '~/components/Header'
+import Header from '~/components/Header';
 
-export default function Layout({children}) {
+export default function Layout({ children }) {
   return (
     <>
       <Header />
       <main>{children}</main>
       <footer>Footer</footer>
     </>
-  )
+  );
 }

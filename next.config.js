@@ -2,14 +2,14 @@
 const nextConfig = {
   experimental: {
     images: {
-      allowFutureImage: true
-    }
+      allowFutureImage: true,
+    },
   },
   images: {
-    formats: ['image/avif', 'image/webp']
+    formats: ['image/avif', 'image/webp'],
   },
   reactStrictMode: true,
-  swcMinify: true
-}
+  swcMinify: true,
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
