@@ -1,24 +1,28 @@
-import {signIn, signOut, useSession} from 'next-auth/react'
-import {useRedditContext} from '~/components/RedditProvider'
+import { signIn, useSession } from 'next-auth/react';
+import { useRedditContext } from '~/components/RedditProvider';
+import { logOut } from '~/lib/helpers';
 
 export default function Header() {
-  const {data: session} = useSession()
-  const {isError, isLoading, userData} = useRedditContext()
+  const { app } = useRedditContext();
+  const { data: session } = useSession();
 
-  if (session && !isError && !isLoading) {
+  if (session) {
     return (
       <>
         Hello {session.user.name} <br />
-        <pre>{JSON.stringify(session, null, 2)}</pre>
-        <button onClick={() => signOut()}>Sign out</button>
-        {userData && <pre>{JSON.stringify(userData, null, 2)}</pre>}
+        <button onClick={() => logOut()} type="submit">
+          Sign out
+        </button>
+        <pre>{JSON.stringify(app, null, 2)}</pre>
       </>
-    )
+    );
   }
 
   return (
     <>
-      <button onClick={() => signIn()}>Sign in</button>
+      <button onClick={() => signIn()} type="submit">
+        Sign in
+      </button>
     </>
-  )
+  );
 }
