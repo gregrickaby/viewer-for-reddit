@@ -6,3 +6,8 @@ build/
 dist/
 node_modules/
 public/
+.eslintrc.js
+.prettierrc.js
+jest.config.js
+jest.setup.js
+next.config.js
