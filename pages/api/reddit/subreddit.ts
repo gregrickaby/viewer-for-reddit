@@ -28,7 +28,7 @@ export default async function subreddit(req: NextApiRequest, res: NextApiRespons
 
     res.status(200).json({
       posts: postsContainImage.map((post) => ({
-        images: post.data.preview.images[0].resolutions.pop(),
+        image: post.data.preview.images[0].resolutions.pop(),
         media: post.data.media,
         permalink: `https://www.reddit.com${post.data.permalink}`,
         secure_media: post.secure_media,
