@@ -34,8 +34,11 @@ export function logOut(): void {
 /**
  * Fetch a subreddit and return the data.
  */
-export function useSubreddit(shouldFetch: boolean) {
-  const { data, error } = useSWR(shouldFetch ? '/api/reddit/subreddit' : null, fetcher);
+export function useSubreddit(subreddit: string, shouldFetch: boolean) {
+  const { data, error } = useSWR(
+    shouldFetch ? `/api/reddit/subreddit?sub=${subreddit}` : null,
+    fetcher
+  );
 
   return {
     posts: data,
