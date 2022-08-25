@@ -21,6 +21,7 @@ export function cleanIframe({ html }): string {
       loading="lazy"
       referrerpolicy="no-referrer"
       sandbox="allow-scripts allow-same-origin allow-presentation"
+      style="aspect-ratio: 16/9; width: 100%;"
       title="iframe"
     />`;
 }
