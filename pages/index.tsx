@@ -8,6 +8,7 @@ import {
   Group,
   Header,
   Kbd,
+  LoadingOverlay,
   MediaQuery,
   Navbar,
   ScrollArea,
@@ -33,7 +34,7 @@ export default function Homepage() {
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
   const [search, setSearch] = useDebouncedState('itookapicture', 800);
-  const { posts } = useSubreddit(search, true);
+  const { posts, isLoading } = useSubreddit(search, true);
 
   return (
     <AppShell
@@ -128,7 +129,8 @@ export default function Homepage() {
         spacing={theme.spacing.xl * 2}
       >
         {posts &&
-          posts.posts.map((post, index) => (
+          !isLoading &&
+          posts?.posts?.map((post, index) => (
             <Card key={index} shadow="sm" p="lg" radius="md" withBorder>
               <Card.Section>
                 <Media {...post} />
@@ -155,6 +157,7 @@ export default function Homepage() {
             </Card>
           ))}
       </SimpleGrid>
+      <LoadingOverlay visible={isLoading} overlayOpacity={0} />
     </AppShell>
   );
 }
