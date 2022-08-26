@@ -48,12 +48,12 @@ export default async function userdata(req: NextApiRequest, res: NextApiResponse
     const friends = await friendsResponse.json();
 
     // Try and fetch user's multis.
-    const response = await fetch('https://oauth.reddit.com/api/multi/mine', {
+    const multisResponse = await fetch('https://oauth.reddit.com/api/multi/mine', {
       headers: {
         authorization: `Bearer ${session.accessToken}`,
       },
     });
-    const multis = await response.json();
+    const multis = await multisResponse.json();
 
     res.status(200).json({ subs, prefs, friends, multis });
   } catch (error) {
