@@ -7,8 +7,10 @@ import {
   Footer,
   Group,
   Header,
+  Kbd,
   MediaQuery,
   Navbar,
+  ScrollArea,
   SimpleGrid,
   Text,
   TextInput,
@@ -42,24 +44,6 @@ export default function Homepage() {
         },
       }}
       navbarOffsetBreakpoint="xl"
-      navbar={
-        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ sm: 200, lg: 300 }}>
-          {session && (
-            <>
-              Hello {session.user.name} <br />
-              <Button onClick={() => logOut()} type="submit">
-                Sign out
-              </Button>
-              <pre>{JSON.stringify(app, null, 2)}</pre>
-            </>
-          )}
-          {!session && (
-            <Button onClick={() => signIn()} type="submit">
-              Sign in
-            </Button>
-          )}
-        </Navbar>
-      }
       header={
         <Header height={60} p="xs">
           <Group position="apart">
@@ -73,16 +57,60 @@ export default function Homepage() {
               />
             </MediaQuery>
             <Title order={1} size="h3">
-              Reddit Image Viewer
+              Reddit Image Viewer <Kbd>alpha</Kbd>
             </Title>
             <TextInput
               autoComplete="off"
+              style={{ width: '33%' }}
               placeholder="itookapicture"
               aria-label="search for a subreddit"
               onChange={(event) => setSearch(event.currentTarget.value)}
             />
           </Group>
         </Header>
+      }
+      navbar={
+        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ sm: 200, lg: 300 }}>
+          {session && (
+            <>
+              <Navbar.Section grow component={ScrollArea} mt={16}>
+                <Title size="h3" mb={8}>
+                  Your Subreddits
+                </Title>
+                {app.subs
+                  .sort((a, b) => a.toLowerCase().localeCompare(b))
+                  .map((sub) => (
+                    <Text variant="link" key={sub} onClick={() => setSearch(sub)}>
+                      {sub.toLowerCase()}
+                    </Text>
+                  ))}
+              </Navbar.Section>
+              <Navbar.Section grow component={ScrollArea} mt={16}>
+                <Title size="h3" mb={8}>
+                  Your Multis
+                </Title>
+                {app.multis.map((multi) => (
+                  <Text key={multi.data.name}>{multi.data.name}</Text>
+                ))}
+                {app.multis[0].data.subreddits
+                  .sort((a, b) => a.name.toLowerCase().localeCompare(b.name))
+                  .map((sub) => (
+                    <Text variant="link" key={sub} onClick={() => setSearch(sub.name)}>
+                      {sub.name.toLowerCase()}
+                    </Text>
+                  ))}
+              </Navbar.Section>
+              <Navbar.Section>
+                <Group position="apart">
+                  <Text size={24}>Hello {session.user.name}</Text>
+                  <img src={session.user.image} alt={session.user.name} height={48} width={48} />
+                </Group>
+                <Button onClick={() => logOut()}>Sign out</Button>
+              </Navbar.Section>
+            </>
+          )}
+          {!session && <Button onClick={() => signIn()}>Sign in</Button>}
+        </Navbar>
       }
       footer={
         <Footer height={60} p="md">
