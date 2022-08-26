@@ -1,5 +1,8 @@
 import { cleanIframe } from '~/lib/helpers';
 
+/**
+ * Media component.
+ */
 export default function Media(props) {
   switch (props.type) {
     case 'image':
