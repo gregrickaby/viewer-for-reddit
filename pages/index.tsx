@@ -1,10 +1,7 @@
 import {
   AppShell,
-  Badge,
   Burger,
   Button,
-  Card,
-  Footer,
   Group,
   Header,
   Kbd,
@@ -12,7 +9,6 @@ import {
   MediaQuery,
   Navbar,
   ScrollArea,
-  SimpleGrid,
   Text,
   TextInput,
   Title,
@@ -21,9 +17,10 @@ import {
 import { useDebouncedState } from '@mantine/hooks';
 import { signIn, useSession } from 'next-auth/react';
 import { useState } from 'react';
-import Media from '~/components/Media';
+import { Masonry } from 'masonic';
 import { useRedditContext } from '~/components/RedditProvider';
 import { logOut, useSubreddit } from '~/lib/helpers';
+import { MasonryCard } from '~/components/MasonryCard';
 
 /**
  * Homepage component.
@@ -113,50 +110,16 @@ export default function Homepage() {
           {!session && <Button onClick={() => signIn()}>Sign in</Button>}
         </Navbar>
       }
-      footer={
-        <Footer height={60} p="md">
-          &copy; 2020-2022 Greg Rickaby
-        </Footer>
-      }
     >
-      <SimpleGrid
-        breakpoints={[
-          { maxWidth: 980, cols: 2, spacing: 'xl' },
-          { maxWidth: 755, cols: 1, spacing: 'xl' },
-        ]}
-        cols={3}
-        m={theme.spacing.xl * 2}
-        spacing={theme.spacing.xl * 2}
-      >
-        {posts &&
-          !isLoading &&
-          posts?.posts?.map((post, index) => (
-            <Card key={index} shadow="sm" p="lg" radius="md" withBorder>
-              <Card.Section>
-                <Media {...post} />
-              </Card.Section>
-
-              <Group position="apart" mt="md" mb="xs">
-                <Text weight={500}>{post.title}</Text>
-                <Badge color="green" variant="light">
-                  {post.ups}
-                </Badge>
-              </Group>
-
-              <Button
-                variant="light"
-                color="blue"
-                fullWidth
-                mt="md"
-                radius="md"
-                component="a"
-                href={post.permalink}
-              >
-                View Post
-              </Button>
-            </Card>
-          ))}
-      </SimpleGrid>
+      {!!posts?.posts && !isLoading && (
+        <Masonry
+          items={posts.posts}
+          render={MasonryCard}
+          columnGutter={16}
+          columnWidth={300}
+          overscanBy={1}
+        />
+      )}
       <LoadingOverlay visible={isLoading} overlayOpacity={0} />
     </AppShell>
   );
