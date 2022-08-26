@@ -6,7 +6,11 @@ import { ChildrenProps } from '~/lib/types';
 
 export interface RedditProviderProps {
   app: any;
+  sort: string;
+  subreddit: string;
   setApp: (app: {}) => void;
+  setSort: (sort: string) => void;
+  setSubreddit: (subreddit: string) => void;
 }
 
 // Create the RedditContext.
@@ -24,10 +28,19 @@ export default function RedditProvider({ children }: ChildrenProps) {
   const { data: session } = useSession();
   const { userData } = useUserData(!!session?.user?.name);
   const [app, setApp] = useLocalStorage({ key: 'riv-app' });
+  const [sort, setSort] = useLocalStorage({ key: 'riv-sort', defaultValue: 'hot' });
+  const [subreddit, setSubreddit] = useLocalStorage({
+    key: 'riv-subreddit',
+    defaultValue: 'itookapicture',
+  });
 
   const providerValues = {
     app,
     setApp,
+    setSort,
+    setSubreddit,
+    sort,
+    subreddit,
   };
 
   useEffect(() => {
