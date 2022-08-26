@@ -1,8 +1,10 @@
 import { Card, Group, Badge, Button, Text } from '@mantine/core';
-import Media from './Media';
+import Media from '~/components/Media';
 
 /**
  * Masonry Card component.
+ *
+ * @see https://github.com/jaredLunde/masonic#readme
  */
 export function MasonryCard({ index, data, width }) {
   return (
