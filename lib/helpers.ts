@@ -1,6 +1,15 @@
 import useSWR from 'swr';
 import { signOut } from 'next-auth/react';
 
+export interface SubredditProps {
+  after?: string;
+  lastPost?: string;
+  limit?: number;
+  shouldFetch?: boolean;
+  sort?: string;
+  subreddit?: string;
+}
+
 /**
  * Generic fetcher for useSWR() package.
  */
@@ -35,9 +44,19 @@ export function logOut(): void {
 /**
  * Fetch a subreddit and return the data.
  */
-export function useSubreddit(subreddit: string, shouldFetch: boolean) {
+export function useSubreddit({
+  limit,
+  lastPost,
+  sort,
+  subreddit,
+  shouldFetch,
+}: SubredditProps): any {
   const { data, error } = useSWR(
-    shouldFetch ? `/api/reddit/subreddit?sub=${subreddit}` : null,
+    shouldFetch
+      ? `/api/subreddit?sub=${subreddit || ''}&sort=${sort || ''}&limit=${limit || 24}&after=${
+          lastPost || ''
+        }`
+      : null,
     fetcher
   );
 
@@ -52,7 +71,7 @@ export function useSubreddit(subreddit: string, shouldFetch: boolean) {
  * Fetch user's data from the API.
  */
 export function useUserData(shouldFetch: boolean) {
-  const { data, error } = useSWR(shouldFetch ? '/api/reddit/userdata' : null, fetcher, {
+  const { data, error } = useSWR(shouldFetch ? '/api/userdata' : null, fetcher, {
     revalidateOnFocus: false,
   });
 
