@@ -1,37 +1,45 @@
 import {
+  Accordion,
   AppShell,
   Burger,
   Button,
   Group,
   Header,
   Kbd,
+  List,
   LoadingOverlay,
   MediaQuery,
   Navbar,
   ScrollArea,
+  Select,
   Text,
   TextInput,
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { useDebouncedState } from '@mantine/hooks';
-import { signIn, useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useDebouncedValue } from '@mantine/hooks';
 import { Masonry } from 'masonic';
+import { signIn, useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { MasonryCard } from '~/components/MasonryCard';
 import { useRedditContext } from '~/components/RedditProvider';
 import { logOut, useSubreddit } from '~/lib/helpers';
-import { MasonryCard } from '~/components/MasonryCard';
 
 /**
  * Homepage component.
  */
 export default function Homepage() {
-  const { app } = useRedditContext();
+  const { app, sort, setSort, setSubreddit, subreddit } = useRedditContext();
+  const theme = useMantineTheme();
   const { data: session } = useSession();
   const [opened, setOpened] = useState(false);
-  const theme = useMantineTheme();
-  const [search, setSearch] = useDebouncedState('itookapicture', 800);
-  const { posts, isLoading } = useSubreddit(search, true);
+  const [search, setSearch] = useState(subreddit);
+  const [debounced] = useDebouncedValue(search, 800);
+  const { posts, isLoading } = useSubreddit({ subreddit: debounced, sort, shouldFetch: true });
+
+  useEffect(() => {
+    setSubreddit(debounced);
+  }, [debounced]);
 
   return (
     <AppShell
@@ -43,67 +51,127 @@ export default function Homepage() {
       }}
       navbarOffsetBreakpoint="xl"
       header={
-        <Header height={60} p="xs">
-          <Group position="apart">
+        <Header height={78} p="lg">
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              height: '100%',
+              justifyContent: 'center',
+              gap: '12px',
+            }}
+          >
             <MediaQuery largerThan="xl" styles={{ display: 'none' }}>
               <Burger
                 opened={opened}
                 onClick={() => setOpened((o) => !o)}
-                size="sm"
+                size="md"
                 color={theme.colors.gray[6]}
-                mr="xl"
               />
             </MediaQuery>
-            <Title order={1} size="h3">
-              Reddit Image Viewer <Kbd>alpha</Kbd>
-            </Title>
             <TextInput
+              aria-label="subreddit for a subreddit"
               autoComplete="off"
-              style={{ width: '33%' }}
-              placeholder="itookapicture"
-              aria-label="search for a subreddit"
+              style={{ width: '100%' }}
               onChange={(event) => setSearch(event.currentTarget.value)}
+              placeholder="itookapicture"
+              value={search}
             />
-          </Group>
+            <Select
+              aria-label="Sort"
+              value={sort}
+              data={[
+                { value: 'hot', label: 'Hot' },
+                { value: 'top', label: 'Top' },
+                { value: 'rising', label: 'Rising' },
+                { value: 'new', label: 'New' },
+              ]}
+              onChange={setSort}
+            />
+          </div>
         </Header>
       }
       navbar={
-        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ sm: 200, lg: 300 }}>
+        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ sm: 350 }}>
           {session && (
             <>
-              <Navbar.Section grow component={ScrollArea} mt={16}>
-                <Title size="h3" mb={8}>
-                  Your Subreddits
-                </Title>
-                {app.subs
-                  .sort((a, b) => a.toLowerCase().localeCompare(b))
-                  .map((sub) => (
-                    <Text variant="link" key={sub} onClick={() => setSearch(sub)}>
-                      {sub.toLowerCase()}
-                    </Text>
-                  ))}
-              </Navbar.Section>
-              <Navbar.Section grow component={ScrollArea} mt={16}>
-                <Title size="h3" mb={8}>
-                  Your Multis
-                </Title>
-                {app.multis.map((multi) => (
-                  <Text key={multi.data.name}>{multi.data.name}</Text>
-                ))}
-                {app.multis[0].data.subreddits
-                  .sort((a, b) => a.name.toLowerCase().localeCompare(b.name))
-                  .map((sub) => (
-                    <Text variant="link" key={sub} onClick={() => setSearch(sub.name)}>
-                      {sub.name.toLowerCase()}
-                    </Text>
-                  ))}
-              </Navbar.Section>
               <Navbar.Section>
-                <Group position="apart">
-                  <Text size={24}>Hello {session.user.name}</Text>
-                  <img src={session.user.image} alt={session.user.name} height={48} width={48} />
+                <Title order={1} size="h3">
+                  Reddit Image Viewer <Kbd>beta</Kbd>
+                </Title>
+              </Navbar.Section>
+
+              <Navbar.Section grow component={ScrollArea}>
+                <Accordion defaultValue="subreddits">
+                  <Accordion.Item value="subreddits">
+                    <Accordion.Control pl="0">Your Subreddits</Accordion.Control>
+                    <Accordion.Panel>
+                      <List>
+                        {!!app.subs &&
+                          app.subs
+                            .sort((a, b) => a.toLowerCase().localeCompare(b))
+                            .map((sub, index) => (
+                              <List.Item key={index}>
+                                <Text
+                                  component="a"
+                                  onClick={() => setSearch(sub)}
+                                  style={{ cursor: 'pointer' }}
+                                  variant="link"
+                                >
+                                  {sub.toLowerCase()}
+                                </Text>
+                              </List.Item>
+                            ))}
+                      </List>
+                    </Accordion.Panel>
+                  </Accordion.Item>
+
+                  <Accordion.Item value="multis">
+                    <Accordion.Control pl="0">Your Multis</Accordion.Control>
+                    <Accordion.Panel>
+                      <Accordion pl="0">
+                        {!app.multies &&
+                          app.multis.map((multi, index) => (
+                            <Accordion.Item value={multi.data.name} key={index}>
+                              <Accordion.Control pl="0">{multi.data.name}</Accordion.Control>
+                              <Accordion.Panel>
+                                <List>
+                                  {multi.data.subreddits
+                                    .sort((a, b) => a.name.toLowerCase().localeCompare(b.name))
+                                    .map((sub) => (
+                                      <List.Item key={sub.name}>
+                                        <Text
+                                          component="a"
+                                          onClick={() => setSearch(sub.name)}
+                                          style={{ cursor: 'pointer' }}
+                                          variant="link"
+                                        >
+                                          {sub.name.toLowerCase()}
+                                        </Text>
+                                      </List.Item>
+                                    ))}
+                                </List>
+                              </Accordion.Panel>
+                            </Accordion.Item>
+                          ))}
+                      </Accordion>
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                </Accordion>
+              </Navbar.Section>
+
+              <Navbar.Section>
+                <Group position="apart" pt="md">
+                  <Text>Hello {session.user.name}</Text>
+                  <img
+                    alt={session.user.name}
+                    height={32}
+                    loading="lazy"
+                    src={session.user.image}
+                    width={32}
+                  />
+                  <Button onClick={() => logOut()}>Sign out</Button>
                 </Group>
-                <Button onClick={() => logOut()}>Sign out</Button>
               </Navbar.Section>
             </>
           )}
