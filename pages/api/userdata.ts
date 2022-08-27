@@ -55,7 +55,7 @@ export default async function userdata(req: NextApiRequest, res: NextApiResponse
     });
     const multis = await multisResponse.json();
 
-    res.status(200).json({ subs, prefs, friends, multis });
+    res.status(200).json({ subs, prefs, friends, multis, session });
   } catch (error) {
     res.status(500).json({ message: `${error}` });
   }
