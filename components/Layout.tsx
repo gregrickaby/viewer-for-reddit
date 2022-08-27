@@ -165,17 +165,6 @@ export default function Layout({ children }: ChildrenProps) {
       }
     >
       {children}
-      {scroll && scroll.y > 200 && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-          }}
-        >
-          <Button onClick={() => scrollTo({ y: 0 })}>Scroll to top</Button>
-        </div>
-      )}
     </AppShell>
   );
 }
