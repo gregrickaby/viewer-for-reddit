@@ -13,7 +13,11 @@ export default function Media(props) {
             height={props.image.height}
             loading="lazy"
             src={props.image.url}
-            style={{ width: '100%', height: 'auto' }}
+            style={{
+              objectFit: 'cover',
+              width: '100%',
+              height: 'auto',
+            }}
             width={props.image.width}
           />
         </a>
@@ -26,8 +30,10 @@ export default function Media(props) {
           loop
           muted
           playsInline
-          src={props.secure_media.reddit_video.fallback_url}
-          style={{ aspectRatio: '16/9', width: '100%' }}
+          src={props.media.reddit_video.fallback_url}
+          style={{
+            width: '100%',
+          }}
         />
       );
     case 'rich:video':
