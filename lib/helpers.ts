@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { signOut } from 'next-auth/react';
+import useSWR from 'swr';
 
 export interface SubredditProps {
   after?: string;
@@ -15,6 +15,35 @@ export interface SubredditProps {
  */
 export async function fetcher(url: string) {
   return fetch(url).then((res) => res.json());
+}
+
+/**
+ * Shape and trim the raw post response from subreddit.
+ */
+export function postResponseShaper(json: any): any {
+  // Filter out any self or stickied posts.
+  const postsContainImage = json.data.children.filter(
+    (post) => post.data.post_hint && post.data.stickied !== true
+  );
+
+  return {
+    posts: postsContainImage.map((post) => ({
+      id: post.data.id,
+      image: post.data.preview.images[0].resolutions.pop(),
+      media: post.data.media,
+      permalink: `https://www.reddit.com${post.data.permalink}`,
+      secure_media: post.secure_media,
+      nsfw: post.data.over_18,
+      spoiler: post.data.spoiler,
+      subreddit: post.data.subreddit,
+      thumbnail: post.data.thumbnail,
+      title: post.data.title,
+      type: post.data.post_hint,
+      ups: post.data.ups,
+      url: post.data.url,
+    })),
+    after: json?.data?.after,
+  };
 }
 
 /**
@@ -39,6 +68,19 @@ export function logOut(): void {
   localStorage.removeItem('riv-app');
   localStorage.removeItem('nextauth.message');
   signOut();
+}
+
+/**
+ * Fetch frontpage posts.
+ */
+export function useFrontpage() {
+  const { data, error } = useSWR(`/api/frontpage`, fetcher);
+
+  return {
+    posts: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
 }
 
 /**
