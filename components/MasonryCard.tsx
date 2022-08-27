@@ -1,4 +1,5 @@
-import { Card, Group, Badge, Button, Text } from '@mantine/core';
+import { Badge, Button, Card, Group, Text } from '@mantine/core';
+import { useRouter } from 'next/router';
 import Media from '~/components/Media';
 
 /**
@@ -7,16 +8,26 @@ import Media from '~/components/Media';
  * @see https://github.com/jaredLunde/masonic#readme
  */
 export function MasonryCard({ index, data, width }) {
+  const router = useRouter();
+
   return (
-    <Card key={index} shadow="sm" p="lg" radius="md" withBorder style={{ width }}>
+    <Card key={index} p="lg" radius="md" shadow="sm" style={{ width }} withBorder>
       <Card.Section>
         <Media {...data} />
       </Card.Section>
 
       <Group position="apart" mt="md" mb="xs">
         <Text weight={500}>{data.title}</Text>
-        <Badge color="green" variant="light">
-          {data.ups}
+        <Badge
+          color="dark"
+          variant="filled"
+          onClick={() => router.push(`/r/${data.subreddit}`)}
+          style={{ cursor: 'pointer' }}
+        >
+          r/{data.subreddit}
+        </Badge>
+        <Badge color="gray" variant="filled">
+          {new Intl.NumberFormat().format(data.ups)}
         </Badge>
       </Group>
 
