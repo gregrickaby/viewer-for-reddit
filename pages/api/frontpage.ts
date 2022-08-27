@@ -19,7 +19,7 @@ export default async function frontpage(req: NextApiRequest, res: NextApiRespons
   const sort = req.query.sort ? req.query.sort : 'hot';
   const limit = req.query.limit ? req.query.limit : '24';
 
-  if (session) {
+  if (session && session.accessToken) {
     try {
       const response = await fetch(
         `https://oauth.reddit.com/${sort}/?limit=${limit}&after=${after}&raw_json=1`,
