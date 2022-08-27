@@ -1,25 +1,29 @@
-import { AppProps } from 'next/app';
-import { MantineProvider, ColorSchemeProvider, ColorScheme } from '@mantine/core';
-import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import Head from 'next/head';
+import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
+import { useColorScheme, useHotkeys } from '@mantine/hooks';
 import { SessionProvider } from 'next-auth/react';
-import config from '~/lib/config';
+import { AppProps } from 'next/app';
+import Head from 'next/head';
+import { useState } from 'react';
 import RedditProvider from '~/components/RedditProvider';
+import config from '~/lib/config';
 
 export default function App(props: AppProps) {
   const {
     Component,
     pageProps: { session, ...pageProps },
   } = props;
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: 'riv-color-scheme',
-    defaultValue: 'light',
-    getInitialValueInEffect: true,
-  });
 
+  // Detect user's preferred color scheme.
+  const preferredColorScheme = useColorScheme();
+
+  // Set the color scheme for the app.
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(preferredColorScheme);
+
+  // Color scheme toggler.
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
+  // Bind key combination to color scheme toggle.
   useHotkeys([['mod+J', () => toggleColorScheme()]]);
 
   return (
@@ -31,7 +35,7 @@ export default function App(props: AppProps) {
         <title>{config?.siteTitle}</title>
         <meta name="description" content={config?.siteDescription} />
 
-        <link rel="preconnect" href="//reddit.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="//www.reddit.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="//oauth.reddit.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="//i.redd.it" crossOrigin="anonymous" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
