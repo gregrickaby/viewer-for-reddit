@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next';
 import Layout from '~/components/Layout';
 import { MasonryCard } from '~/components/MasonryCard';
 import NotFound from '~/components/NotFound';
+import { useRedditContext } from '~/components/RedditProvider';
 import { useSubreddit } from '~/lib/helpers';
 
 export interface SubredditProps {
@@ -13,7 +14,8 @@ export interface SubredditProps {
  * Subreddit component.
  */
 export default function Subreddit({ subreddit }) {
-  const { posts, isLoading } = useSubreddit({ subreddit, shouldFetch: true });
+  const { sort } = useRedditContext();
+  const { posts, isLoading } = useSubreddit({ subreddit, sort, shouldFetch: true });
 
   // Loading?
   if (isLoading) {
