@@ -16,7 +16,7 @@ export default function Frontpage() {
   }
 
   // No posts? Bail...
-  if (!posts && posts.posts.length === 0) {
+  if (!posts || posts.length === 0) {
     return (
       <Layout>
         <NotFound />
