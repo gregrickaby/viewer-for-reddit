@@ -7,38 +7,30 @@ import {
   Header,
   Kbd,
   List,
-  LoadingOverlay,
   MediaQuery,
   Navbar,
   ScrollArea,
-  Select,
   Text,
-  TextInput,
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { useDebouncedValue } from '@mantine/hooks';
 import { signIn, useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { useRedditContext } from '~/components/RedditProvider';
-import { logOut, useSubreddit } from '~/lib/helpers';
+import Search from '~/components/Search';
+import { logOut } from '~/lib/helpers';
 import { ChildrenProps } from '~/lib/types';
 
 /**
- * Homepage component.
+ * Layout component.
  */
 export default function Layout({ children }: ChildrenProps) {
-  const { app, sort, setSort, setSubreddit, subreddit } = useRedditContext();
+  const { app } = useRedditContext();
   const theme = useMantineTheme();
   const { data: session } = useSession();
   const [opened, setOpened] = useState(false);
-  const [search, setSearch] = useState(subreddit);
-  const [debounced] = useDebouncedValue(search, 800);
-  const { posts, isLoading } = useSubreddit({ subreddit: debounced, sort, shouldFetch: true });
-
-  useEffect(() => {
-    setSubreddit(debounced);
-  }, [debounced]);
+  const router = useRouter();
 
   return (
     <AppShell
@@ -53,40 +45,22 @@ export default function Layout({ children }: ChildrenProps) {
         <Header height={78} p="lg">
           <div
             style={{
-              display: 'flex',
               alignItems: 'center',
+              display: 'flex',
+              gap: '12px',
               height: '100%',
               justifyContent: 'center',
-              gap: '12px',
             }}
           >
             <MediaQuery largerThan="xl" styles={{ display: 'none' }}>
               <Burger
-                opened={opened}
-                onClick={() => setOpened((o) => !o)}
-                size="md"
                 color={theme.colors.gray[6]}
+                onClick={() => setOpened((o) => !o)}
+                opened={opened}
+                size="md"
               />
             </MediaQuery>
-            <TextInput
-              aria-label="subreddit for a subreddit"
-              autoComplete="off"
-              style={{ width: '100%' }}
-              onChange={(event) => setSearch(event.currentTarget.value)}
-              placeholder="itookapicture"
-              value={search}
-            />
-            <Select
-              aria-label="Sort"
-              value={sort}
-              data={[
-                { value: 'hot', label: 'Hot' },
-                { value: 'top', label: 'Top' },
-                { value: 'rising', label: 'Rising' },
-                { value: 'new', label: 'New' },
-              ]}
-              onChange={setSort}
-            />
+            <Search />
           </div>
         </Header>
       }
@@ -95,7 +69,12 @@ export default function Layout({ children }: ChildrenProps) {
           {session && (
             <>
               <Navbar.Section>
-                <Title order={1} size="h3">
+                <Title
+                  order={1}
+                  size="h3"
+                  onClick={() => router.push(`/`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   Reddit Image Viewer <Kbd>beta</Kbd>
                 </Title>
               </Navbar.Section>
@@ -113,7 +92,7 @@ export default function Layout({ children }: ChildrenProps) {
                               <List.Item key={index}>
                                 <Text
                                   component="a"
-                                  onClick={() => setSearch(sub)}
+                                  onClick={() => router.push(`/r/${sub}`)}
                                   style={{ cursor: 'pointer' }}
                                   variant="link"
                                 >
@@ -129,7 +108,7 @@ export default function Layout({ children }: ChildrenProps) {
                     <Accordion.Control pl="0">Your Multis</Accordion.Control>
                     <Accordion.Panel>
                       <Accordion pl="0">
-                        {!app.multies &&
+                        {app.multies > 0 &&
                           app.multis.map((multi, index) => (
                             <Accordion.Item value={multi.data.name} key={index}>
                               <Accordion.Control pl="0">{multi.data.name}</Accordion.Control>
@@ -141,7 +120,7 @@ export default function Layout({ children }: ChildrenProps) {
                                       <List.Item key={sub.name}>
                                         <Text
                                           component="a"
-                                          onClick={() => setSearch(sub.name)}
+                                          onClick={() => router.push(`/r/${sub.name}`)}
                                           style={{ cursor: 'pointer' }}
                                           variant="link"
                                         >
@@ -179,7 +158,6 @@ export default function Layout({ children }: ChildrenProps) {
       }
     >
       {children}
-      <LoadingOverlay visible={isLoading} overlayOpacity={0} />
     </AppShell>
   );
 }
