@@ -165,7 +165,7 @@ export default function Layout({ children }: ChildrenProps) {
       }
     >
       {children}
-      {scroll.y > 200 && (
+      {!scroll && scroll.y > 200 && (
         <div
           style={{
             position: 'fixed',
