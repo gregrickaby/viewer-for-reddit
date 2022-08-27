@@ -29,7 +29,7 @@ export default function Search() {
         onChange={(event) => setSearch(event.currentTarget.value.trim())}
         pattern="^[^~`^<>]+$"
         placeholder="Search Reddit"
-        style={{ flex: 1 }}
+        style={{ width: '100%' }}
       />
       <Select
         aria-label="sort posts"
