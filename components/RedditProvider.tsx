@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useLocalStorage } from '@mantine/hooks';
+import { useSession } from 'next-auth/react';
+import { createContext, useContext, useEffect } from 'react';
 import { useUserData } from '~/lib/helpers';
 import { ChildrenProps } from '~/lib/types';
 
