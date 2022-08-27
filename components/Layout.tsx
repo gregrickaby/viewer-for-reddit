@@ -32,6 +32,11 @@ export default function Layout({ children }: ChildrenProps) {
   const [opened, setOpened] = useState(false);
   const router = useRouter();
 
+  function navDrawerHandler(url: string) {
+    setOpened((o) => !o);
+    router.push(url);
+  }
+
   return (
     <AppShell
       padding="md"
@@ -72,7 +77,7 @@ export default function Layout({ children }: ChildrenProps) {
                 <Title
                   order={1}
                   size="h3"
-                  onClick={() => router.push(`/`)}
+                  onClick={() => navDrawerHandler('/')}
                   style={{ cursor: 'pointer' }}
                 >
                   Reddit Image Viewer <Kbd>beta</Kbd>
@@ -92,7 +97,7 @@ export default function Layout({ children }: ChildrenProps) {
                               <List.Item key={index}>
                                 <Text
                                   component="a"
-                                  onClick={() => router.push(`/r/${sub}`)}
+                                  onClick={() => navDrawerHandler(`/r/${sub}`)}
                                   style={{ cursor: 'pointer' }}
                                   variant="link"
                                 >
@@ -120,7 +125,7 @@ export default function Layout({ children }: ChildrenProps) {
                                       <List.Item key={sub.name}>
                                         <Text
                                           component="a"
-                                          onClick={() => router.push(`/r/${sub.name}`)}
+                                          onClick={() => navDrawerHandler(`/r/${sub.name}`)}
                                           style={{ cursor: 'pointer' }}
                                           variant="link"
                                         >
