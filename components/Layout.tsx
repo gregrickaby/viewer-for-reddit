@@ -14,6 +14,7 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
+import { useWindowScroll } from '@mantine/hooks';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -31,6 +32,7 @@ export default function Layout({ children }: ChildrenProps) {
   const { data: session } = useSession();
   const [opened, setOpened] = useState(false);
   const router = useRouter();
+  const [scroll, scrollTo] = useWindowScroll();
 
   function navDrawerHandler(url: string) {
     setOpened((o) => !o);
@@ -163,6 +165,17 @@ export default function Layout({ children }: ChildrenProps) {
       }
     >
       {children}
+      {scroll.y > 200 && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+          }}
+        >
+          <Button onClick={() => scrollTo({ y: 0 })}>Scroll to top</Button>
+        </div>
+      )}
     </AppShell>
   );
 }
