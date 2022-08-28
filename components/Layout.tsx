@@ -1,5 +1,4 @@
 import {
-  Accordion,
   AppShell,
   Avatar,
   Burger,
@@ -7,9 +6,9 @@ import {
   Group,
   Header,
   Kbd,
-  List,
   MediaQuery,
   Navbar,
+  NavLink,
   ScrollArea,
   Text,
   Title,
@@ -72,7 +71,7 @@ export default function Layout({ children }: ChildrenProps) {
         </Header>
       }
       navbar={
-        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ sm: 350 }}>
+        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ base: '85%' }}>
           {session && (
             <>
               <Navbar.Section>
@@ -87,62 +86,25 @@ export default function Layout({ children }: ChildrenProps) {
               </Navbar.Section>
 
               <Navbar.Section grow component={ScrollArea}>
-                <Accordion defaultValue="subreddits">
-                  <Accordion.Item value="subreddits">
-                    <Accordion.Control pl="0">Your Subreddits</Accordion.Control>
-                    <Accordion.Panel>
-                      <List>
-                        {!!app.subs &&
-                          app.subs
-                            .sort((a, b) => a.toLowerCase().localeCompare(b))
-                            .map((sub, index) => (
-                              <List.Item key={index}>
-                                <Text
-                                  component="a"
-                                  onClick={() => navDrawerHandler(`/r/${sub}`)}
-                                  style={{ cursor: 'pointer' }}
-                                  variant="link"
-                                >
-                                  {sub.toLowerCase()}
-                                </Text>
-                              </List.Item>
-                            ))}
-                      </List>
-                    </Accordion.Panel>
-                  </Accordion.Item>
-
-                  <Accordion.Item value="multis">
-                    <Accordion.Control pl="0">Your Multis</Accordion.Control>
-                    <Accordion.Panel>
-                      <Accordion pl="0">
-                        {app.multies > 0 &&
-                          app.multis.map((multi, index) => (
-                            <Accordion.Item value={multi.data.name} key={index}>
-                              <Accordion.Control pl="0">{multi.data.name}</Accordion.Control>
-                              <Accordion.Panel>
-                                <List>
-                                  {multi.data.subreddits
-                                    .sort((a, b) => a.name.toLowerCase().localeCompare(b.name))
-                                    .map((sub) => (
-                                      <List.Item key={sub.name}>
-                                        <Text
-                                          component="a"
-                                          onClick={() => navDrawerHandler(`/r/${sub.name}`)}
-                                          style={{ cursor: 'pointer' }}
-                                          variant="link"
-                                        >
-                                          {sub.name.toLowerCase()}
-                                        </Text>
-                                      </List.Item>
-                                    ))}
-                                </List>
-                              </Accordion.Panel>
-                            </Accordion.Item>
-                          ))}
-                      </Accordion>
-                    </Accordion.Panel>
-                  </Accordion.Item>
-                </Accordion>
+                <NavLink label="Your Communities" childrenOffset={4}>
+                  {app.subs.length > 0 &&
+                    app.subs
+                      .sort((a, b) => a.toLowerCase().localeCompare(b))
+                      .map((sub, index) => (
+                        <NavLink
+                          component="a"
+                          href={`/r/${sub}`}
+                          key={index}
+                          label={sub.toLowerCase()}
+                        />
+                      ))}
+                </NavLink>
+                <NavLink label="Custom Feeds" childrenOffset={4}>
+                  {app.multis.length > 0 &&
+                    app.multis.map((multi, index) => (
+                      <NavLink component="a" href="/" key={index} label={multi.data.name} />
+                    ))}
+                </NavLink>
               </Navbar.Section>
 
               <Navbar.Section>
