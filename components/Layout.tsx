@@ -1,6 +1,7 @@
 import {
   Accordion,
   AppShell,
+  Avatar,
   Burger,
   Button,
   Group,
@@ -14,11 +15,11 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { useWindowScroll } from '@mantine/hooks';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useRedditContext } from '~/components/RedditProvider';
+import ScrollToTop from '~/components/ScrollToTop';
 import Search from '~/components/Search';
 import { logOut } from '~/lib/helpers';
 import { ChildrenProps } from '~/lib/types';
@@ -32,7 +33,6 @@ export default function Layout({ children }: ChildrenProps) {
   const { data: session } = useSession();
   const [opened, setOpened] = useState(false);
   const router = useRouter();
-  const [scroll, scrollTo] = useWindowScroll();
 
   function navDrawerHandler(url: string) {
     setOpened((o) => !o);
@@ -147,14 +147,14 @@ export default function Layout({ children }: ChildrenProps) {
 
               <Navbar.Section>
                 <Group position="apart" pt="md">
-                  <Text>Hello {session.user.name}</Text>
-                  <img
+                  <Avatar
                     alt={session.user.name}
-                    height={32}
-                    loading="lazy"
+                    imageProps={{ loading: 'lazy' }}
+                    radius="xl"
+                    size="md"
                     src={session.user.image}
-                    width={32}
                   />
+                  <Text>Hello, {session.user.name}</Text>
                   <Button onClick={() => logOut()}>Sign out</Button>
                 </Group>
               </Navbar.Section>
@@ -165,17 +165,7 @@ export default function Layout({ children }: ChildrenProps) {
       }
     >
       {children}
-      {scroll && scroll.y > 200 && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-          }}
-        >
-          <Button onClick={() => scrollTo({ y: 0 })}>Scroll to top</Button>
-        </div>
-      )}
+      <ScrollToTop />
     </AppShell>
   );
 }
