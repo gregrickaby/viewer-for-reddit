@@ -5,7 +5,6 @@ import {
   Button,
   Group,
   Header,
-  Kbd,
   MediaQuery,
   Navbar,
   NavLink,
@@ -79,9 +78,13 @@ export default function Layout({ children }: ChildrenProps) {
                   order={1}
                   size="h3"
                   onClick={() => navDrawerHandler('/')}
-                  style={{ cursor: 'pointer' }}
+                  style={{
+                    cursor: 'pointer',
+                    marginLeft: theme.spacing.sm,
+                    paddingBottom: theme.spacing.md,
+                  }}
                 >
-                  Reddit Image Viewer <Kbd>beta</Kbd>
+                  Reddit Image Viewer
                 </Title>
               </Navbar.Section>
 
