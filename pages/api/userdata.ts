@@ -16,11 +16,6 @@ export default async function userdata(req: NextApiRequest, res: NextApiResponse
     res.status(401).json({ message: 'You must be logged in.' });
   }
 
-  // No access token? Bail...
-  if (!session.accessToken) {
-    res.status(401).json({ message: 'Missing access token.' });
-  }
-
   // Set fetch headers.
   const fetchHeaders = {
     headers: {

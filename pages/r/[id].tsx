@@ -21,7 +21,7 @@ export default function Subreddit({ subreddit }: SubredditProps) {
     data: posts,
     isLoading,
     error,
-  } = useSWR(`/api/subreddit?sub=${subreddit || ''}&sort=${sort || ''}`, fetcher);
+  } = useSWR(`/api/subreddit?subreddit=${subreddit}&sort=${sort}`, fetcher);
 
   // Update global loading state.
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function Subreddit({ subreddit }: SubredditProps) {
   }, [isLoading]);
 
   // If something goes wrong, bail...
-  if (!posts || !posts?.posts.length || error) {
+  if (!posts || !posts?.posts?.length || error) {
     return (
       <Layout>
         <NotFound />

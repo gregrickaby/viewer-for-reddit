@@ -12,7 +12,7 @@ import { fetcher } from '~/lib/helpers';
  */
 export default function Frontpage() {
   const { sort, setLoading } = useRedditContext();
-  const { data: posts, isLoading, error } = useSWR(`/api/frontpage?sort=${sort || ''}`, fetcher);
+  const { data: posts, isLoading, error } = useSWR(`/api/frontpage?sort=${sort}`, fetcher);
 
   // Update global loading state.
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Frontpage() {
   }, [isLoading]);
 
   // If something goes wrong, bail...
-  if (!posts || !posts?.posts.length || error) {
+  if (!posts || !posts?.posts?.length || error) {
     return (
       <Layout>
         <NotFound />

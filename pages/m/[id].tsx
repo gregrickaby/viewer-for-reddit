@@ -21,7 +21,7 @@ export default function Multis({ multiName }: MultiRedditProps) {
     data: posts,
     isLoading,
     error,
-  } = useSWR(`/api/multis?name=${multiName || ''}&sort=${sort || ''}`, fetcher);
+  } = useSWR(`/api/multis?multi=${multiName}&sort=${sort}`, fetcher);
 
   // Update global loading state.
   useEffect(() => {
