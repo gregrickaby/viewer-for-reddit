@@ -57,7 +57,8 @@ export function cleanIframe({ html }): string {
  */
 export function logOut(): void {
   localStorage.removeItem('riv-app');
-  localStorage.removeItem('riv-subreddit');
+  localStorage.removeItem('riv-sort');
+  localStorage.removeItem('riv-color-scheme');
   localStorage.removeItem('nextauth.message');
   signOut();
 }
