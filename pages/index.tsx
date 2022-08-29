@@ -1,13 +1,11 @@
 import { Masonry } from 'masonic';
 import { useEffect } from 'react';
-import useSWR, { preload } from 'swr';
+import useSWR from 'swr';
 import Layout from '~/components/Layout';
 import { MasonryCard } from '~/components/MasonryCard';
 import NotFound from '~/components/NotFound';
 import { useRedditContext } from '~/components/RedditProvider';
 import { fetcher } from '~/lib/helpers';
-
-preload('/api/frontpage', fetcher);
 
 /**
  * Frontpage component.

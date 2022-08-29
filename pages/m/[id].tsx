@@ -1,7 +1,7 @@
 import { Masonry } from 'masonic';
 import { GetServerSideProps } from 'next';
 import { useEffect } from 'react';
-import useSWR, { preload } from 'swr';
+import useSWR from 'swr';
 import Layout from '~/components/Layout';
 import { MasonryCard } from '~/components/MasonryCard';
 import NotFound from '~/components/NotFound';
@@ -11,8 +11,6 @@ import { fetcher } from '~/lib/helpers';
 export interface MultiRedditProps {
   multiName: string;
 }
-
-preload('/api/multis', fetcher);
 
 /**
  * Multis component.

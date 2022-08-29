@@ -1,7 +1,7 @@
 import { useLocalStorage } from '@mantine/hooks';
 import { useSession } from 'next-auth/react';
 import { createContext, useContext, useEffect, useState } from 'react';
-import useSWR, { preload } from 'swr';
+import useSWR from 'swr';
 import { fetcher } from '~/lib/helpers';
 import { ChildrenProps } from '~/lib/types';
 
@@ -21,8 +21,6 @@ const RedditContext = createContext({} as RedditProviderProps);
 
 // Create useRedditContext hook.
 export const useRedditContext = () => useContext(RedditContext);
-
-preload('/api/userdata', fetcher);
 
 /**
  * RedditProvider component.
