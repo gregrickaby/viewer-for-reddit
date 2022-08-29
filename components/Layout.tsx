@@ -18,7 +18,7 @@ import {
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { MdDarkMode } from 'react-icons/md';
+import { MdDarkMode, MdDynamicFeed, MdOutlineBookmarks } from 'react-icons/md';
 import { useRedditContext } from '~/components/RedditProvider';
 import ScrollToTop from '~/components/ScrollToTop';
 import Search from '~/components/Search';
@@ -30,51 +30,59 @@ import { ChildrenProps } from '~/lib/types';
  */
 export default function Layout({ children }: ChildrenProps) {
   const { app } = useRedditContext();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { toggleColorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
   const { data: session } = useSession();
-  const [opened, setOpened] = useState(false);
+  const [navBarOpen, setNavBarOpen] = useState(false);
   const router = useRouter();
 
   function navDrawerHandler(url: string) {
-    setOpened((o) => !o);
+    setNavBarOpen((o) => !o);
     router.push(url);
   }
 
   return (
     <AppShell
-      padding="md"
-      styles={{
-        main: {
-          background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
-        },
-      }}
-      navbarOffsetBreakpoint="xl"
+      padding={theme.spacing.xl}
+      navbarOffsetBreakpoint="md"
       header={
-        <Header height={78} p="lg">
+        <Header height={84} p={theme.spacing.lg}>
           <div
             style={{
               alignItems: 'center',
               display: 'flex',
-              gap: '12px',
+              gap: '16px',
               height: '100%',
-              justifyContent: 'center',
             }}
           >
-            <MediaQuery largerThan="xl" styles={{ display: 'none' }}>
+            <MediaQuery largerThan="md" styles={{ display: 'none' }}>
               <Burger
-                color={theme.colors.gray[6]}
-                onClick={() => setOpened((o) => !o)}
-                opened={opened}
+                color={theme.colors.blue[3]}
+                onClick={() => setNavBarOpen((o) => !o)}
+                opened={navBarOpen}
                 size="md"
               />
             </MediaQuery>
+            <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
+              <Title
+                onClick={() => navDrawerHandler('/')}
+                order={1}
+                size="h4"
+                style={{
+                  cursor: 'pointer',
+                  minWidth: 'fit-content',
+                }}
+              >
+                Reddit Image Viewer
+              </Title>
+            </MediaQuery>
             <Search />
             <ActionIcon
-              variant="outline"
-              color={colorScheme === 'dark' ? 'gray' : 'blue'}
+              color={theme.colors.blue[3]}
               onClick={() => toggleColorScheme()}
+              size="lg"
               title="Toggle color scheme"
+              variant="outline"
             >
               <MdDarkMode />
             </ActionIcon>
@@ -82,26 +90,17 @@ export default function Layout({ children }: ChildrenProps) {
         </Header>
       }
       navbar={
-        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ base: '300' }}>
+        <Navbar hiddenBreakpoint="md" hidden={!navBarOpen} width={{ base: '310' }}>
           {session && (
             <>
-              <Navbar.Section>
-                <Title
-                  order={1}
-                  size="h3"
-                  onClick={() => navDrawerHandler('/')}
-                  style={{
-                    cursor: 'pointer',
-                    marginLeft: theme.spacing.sm,
-                    paddingBottom: theme.spacing.md,
-                  }}
-                >
-                  Reddit Image Viewer
-                </Title>
-              </Navbar.Section>
-
               <Navbar.Section grow component={ScrollArea}>
-                <NavLink label="Your Communities" childrenOffset={4}>
+                <NavLink
+                  childrenOffset={8}
+                  defaultOpened
+                  icon={<MdOutlineBookmarks />}
+                  label="Your Communities"
+                  style={{ padding: theme.spacing.md }}
+                >
                   {app.subs &&
                     app.subs.length > 0 &&
                     app.subs
@@ -115,7 +114,12 @@ export default function Layout({ children }: ChildrenProps) {
                         />
                       ))}
                 </NavLink>
-                <NavLink label="Custom Feeds" childrenOffset={4}>
+                <NavLink
+                  childrenOffset={8}
+                  icon={<MdDynamicFeed />}
+                  label="Custom Feeds"
+                  style={{ padding: theme.spacing.md }}
+                >
                   {app.multis &&
                     app.multis.length > 0 &&
                     app.multis.map((multi, index) => (
@@ -129,8 +133,16 @@ export default function Layout({ children }: ChildrenProps) {
                 </NavLink>
               </Navbar.Section>
 
-              <Navbar.Section>
-                <Group position="apart" pt="md">
+              <Navbar.Section
+                style={{
+                  borderTop: `1px solid ${
+                    theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
+                  }`,
+
+                  padding: theme.spacing.sm,
+                }}
+              >
+                <Group position="apart">
                   <Avatar
                     alt={session.user.name}
                     imageProps={{ loading: 'lazy' }}
@@ -139,12 +151,18 @@ export default function Layout({ children }: ChildrenProps) {
                     src={session.user.image}
                   />
                   <Text>Hello, {session.user.name}</Text>
-                  <Button onClick={() => logOut()}>Sign out</Button>
+                  <Button variant="outline" onClick={() => logOut()}>
+                    Sign out
+                  </Button>
                 </Group>
               </Navbar.Section>
             </>
           )}
-          {!session && <Button onClick={() => signIn()}>Sign in</Button>}
+          {!session && (
+            <Button variant="outline" onClick={() => signIn()}>
+              Sign in
+            </Button>
+          )}
         </Navbar>
       }
     >

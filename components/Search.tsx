@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useRedditContext } from './RedditProvider';
 
 export default function Search() {
-  const { sort, setSubreddit, setSort } = useRedditContext();
+  const { sort, setSort } = useRedditContext();
   const [search, setSearch] = useDebouncedState('', 800);
   const router = useRouter();
 
@@ -14,7 +14,6 @@ export default function Search() {
    */
   useEffect(() => {
     if (search) {
-      setSubreddit(search);
       router.push(`/r/${search}`);
     }
   }, [search]);

@@ -1,5 +1,6 @@
-import { Badge, Button, Card, Group, Text } from '@mantine/core';
+import { Badge, Card, Group, Text, useMantineTheme } from '@mantine/core';
 import { useRouter } from 'next/router';
+import { MdArrowUpward } from 'react-icons/md';
 import Media from '~/components/Media';
 
 /**
@@ -9,39 +10,39 @@ import Media from '~/components/Media';
  */
 export function MasonryCard({ index, data, width }) {
   const router = useRouter();
+  const theme = useMantineTheme();
 
   return (
-    <Card key={index} p="lg" radius="md" shadow="sm" style={{ width }} withBorder>
+    <Card
+      key={index}
+      p={theme.spacing.sm}
+      radius={theme.spacing.md}
+      shadow="sm"
+      style={{ width }}
+      withBorder
+    >
       <Card.Section>
         <Media {...data} />
       </Card.Section>
 
-      <Group position="apart" mt="md" mb="xs">
-        <Text weight={500}>{data.title}</Text>
+      <Group position="apart" mt={theme.spacing.md}>
+        <Badge variant="outline">
+          <MdArrowUpward />
+          {new Intl.NumberFormat().format(data.ups)}
+        </Badge>
         <Badge
-          color="dark"
-          variant="filled"
+          color={theme.colors.blue[3]}
+          variant="outline"
           onClick={() => router.push(`/r/${data.subreddit}`)}
           style={{ cursor: 'pointer' }}
         >
           r/{data.subreddit}
         </Badge>
-        <Badge color="gray" variant="filled">
-          {new Intl.NumberFormat().format(data.ups)}
-        </Badge>
       </Group>
 
-      <Button
-        variant="light"
-        color="blue"
-        fullWidth
-        mt="md"
-        radius="md"
-        component="a"
-        href={data.permalink}
-      >
-        View Post
-      </Button>
+      <Text mt={theme.spacing.md} weight={700}>
+        {data.title}
+      </Text>
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import { LoadingOverlay } from '@mantine/core';
+import { LoadingOverlay, useMantineTheme } from '@mantine/core';
 import { Masonry } from 'masonic';
 import { GetServerSideProps } from 'next';
 import useSWR from 'swr';
@@ -17,6 +17,7 @@ export interface SubredditProps {
  */
 export default function Subreddit({ subreddit }: SubredditProps) {
   const { sort } = useRedditContext();
+  const theme = useMantineTheme();
   const {
     data: posts,
     isLoading,
@@ -47,8 +48,8 @@ export default function Subreddit({ subreddit }: SubredditProps) {
       <Masonry
         items={posts?.posts}
         render={MasonryCard}
-        columnGutter={64}
-        columnWidth={300}
+        columnGutter={theme.spacing.md}
+        columnWidth={350}
         overscanBy={2}
       />
     </Layout>

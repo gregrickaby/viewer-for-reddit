@@ -12,7 +12,9 @@ export default function NotFound() {
         Either the Reddit API is down, this content doesn&apos;t exist, or something else is wrong.
         Please try again.
       </Text>
-      <Image alt="404 not found" src={img} priority />
+      <div style={{ width: '100%', height: 'auto' }}>
+        <Image alt="404 not found" src={img} priority />
+      </div>
     </Stack>
   );
 }
