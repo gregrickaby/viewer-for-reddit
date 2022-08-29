@@ -37,10 +37,6 @@ export default function Layout({ children }: ChildrenProps) {
     router.push(url);
   }
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <AppShell
       padding="md"

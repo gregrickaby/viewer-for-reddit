@@ -1,19 +1,16 @@
 import { useLocalStorage } from '@mantine/hooks';
 import { useSession } from 'next-auth/react';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import useSWR from 'swr';
+import config from '~/lib/config';
 import { fetcher } from '~/lib/helpers';
 import { ChildrenProps } from '~/lib/types';
 
 export interface RedditProviderProps {
   app: any;
-  loading: boolean;
   sort: string;
-  subreddit: string;
   setApp: (app: {}) => void;
-  setLoading: (loading: boolean) => void;
   setSort: (sort: string) => void;
-  setSubreddit: (subreddit: string) => void;
 }
 
 // Create the RedditContext.
@@ -28,36 +25,39 @@ export const useRedditContext = () => useContext(RedditContext);
  * This component is used to hold global state and provide it to child components.
  */
 export default function RedditProvider({ children }: ChildrenProps) {
+  // Get the session from next-auth.
   const { data: session } = useSession();
-  const [loading, setLoading] = useState(true);
-  const { data: userData, error } = useSWR(session?.user?.name ? '/api/userdata' : null, fetcher, {
+
+  // Query the user's reddit account.
+  const {
+    data: userData,
+    isLoading,
+    error,
+  } = useSWR(session?.user?.name ? '/api/userdata' : null, fetcher, {
     revalidateOnFocus: false,
   });
+
+  // Set our local storage variables.
   const [app, setApp] = useLocalStorage({ key: 'riv-app' });
-  const [sort, setSort] = useLocalStorage({ key: 'riv-sort', defaultValue: 'hot' });
-  const [subreddit, setSubreddit] = useLocalStorage({
-    key: 'riv-subreddit',
-    defaultValue: 'itookapicture',
+  const [sort, setSort] = useLocalStorage({
+    key: 'riv-sort',
+    defaultValue: config.redditApi.sort,
   });
 
+  // Set the user data.
+  useEffect(() => {
+    if (userData && !isLoading && !error) {
+      setApp(userData);
+    }
+  }, [session]);
+
+  // Set the global state.
   const providerValues = {
     app,
-    loading,
     setApp,
-    setLoading,
     setSort,
-    setSubreddit,
     sort,
-    subreddit,
   };
-
-  useEffect(() => {
-    setLoading(true);
-    if (userData) {
-      setApp(userData);
-      setLoading(!error && !userData);
-    }
-  }, [userData]);
 
   return (
     <RedditContext.Provider value={providerValues as RedditProviderProps}>

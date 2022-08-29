@@ -1,6 +1,6 @@
+import { LoadingOverlay } from '@mantine/core';
 import { Masonry } from 'masonic';
 import { GetServerSideProps } from 'next';
-import { useEffect } from 'react';
 import useSWR from 'swr';
 import Layout from '~/components/Layout';
 import { MasonryCard } from '~/components/MasonryCard';
@@ -16,17 +16,21 @@ export interface MultiRedditProps {
  * Multis component.
  */
 export default function Multis({ multiName }: MultiRedditProps) {
-  const { sort, setLoading } = useRedditContext();
+  const { sort } = useRedditContext();
   const {
     data: posts,
     isLoading,
     error,
   } = useSWR(`/api/multis?multi=${multiName}&sort=${sort}`, fetcher);
 
-  // Update global loading state.
-  useEffect(() => {
-    setLoading(false);
-  }, [isLoading]);
+  // If loading, show an empty Layout.
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingOverlay overlayOpacity={0.3} visible={isLoading} />
+      </Layout>
+    );
+  }
 
   // If something goes wrong, bail...
   if (!posts || !posts?.posts?.length || error) {
