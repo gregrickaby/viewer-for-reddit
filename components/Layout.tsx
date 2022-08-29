@@ -26,7 +26,7 @@ import { ChildrenProps } from '~/lib/types';
  * Layout component.
  */
 export default function Layout({ children }: ChildrenProps) {
-  const { app } = useRedditContext();
+  const { app, loading } = useRedditContext();
   const theme = useMantineTheme();
   const { data: session } = useSession();
   const [opened, setOpened] = useState(false);
@@ -35,6 +35,10 @@ export default function Layout({ children }: ChildrenProps) {
   function navDrawerHandler(url: string) {
     setOpened((o) => !o);
     router.push(url);
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -90,7 +94,8 @@ export default function Layout({ children }: ChildrenProps) {
 
               <Navbar.Section grow component={ScrollArea}>
                 <NavLink label="Your Communities" childrenOffset={4}>
-                  {app.subs.length > 0 &&
+                  {app.subs &&
+                    app.subs.length > 0 &&
                     app.subs
                       .sort((a, b) => a.toLowerCase().localeCompare(b))
                       .map((sub, index) => (
@@ -103,9 +108,15 @@ export default function Layout({ children }: ChildrenProps) {
                       ))}
                 </NavLink>
                 <NavLink label="Custom Feeds" childrenOffset={4}>
-                  {app.multis.length > 0 &&
+                  {app.multis &&
+                    app.multis.length > 0 &&
                     app.multis.map((multi, index) => (
-                      <NavLink component="a" href="/" key={index} label={multi.data.name} />
+                      <NavLink
+                        component="a"
+                        href={`/m/${multi.data.name}`}
+                        key={index}
+                        label={multi.data.name}
+                      />
                     ))}
                 </NavLink>
               </Navbar.Section>
