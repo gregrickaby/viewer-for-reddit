@@ -1,14 +1,17 @@
 import { useLocalStorage } from '@mantine/hooks';
 import { useSession } from 'next-auth/react';
-import { createContext, useContext, useEffect } from 'react';
-import { useUserData } from '~/lib/helpers';
+import { createContext, useContext, useEffect, useState } from 'react';
+import useSWR, { preload } from 'swr';
+import { fetcher } from '~/lib/helpers';
 import { ChildrenProps } from '~/lib/types';
 
 export interface RedditProviderProps {
   app: any;
+  loading: boolean;
   sort: string;
   subreddit: string;
   setApp: (app: {}) => void;
+  setLoading: (loading: boolean) => void;
   setSort: (sort: string) => void;
   setSubreddit: (subreddit: string) => void;
 }
@@ -19,6 +22,8 @@ const RedditContext = createContext({} as RedditProviderProps);
 // Create useRedditContext hook.
 export const useRedditContext = () => useContext(RedditContext);
 
+preload('/api/userdata', fetcher);
+
 /**
  * RedditProvider component.
  *
@@ -26,7 +31,10 @@ export const useRedditContext = () => useContext(RedditContext);
  */
 export default function RedditProvider({ children }: ChildrenProps) {
   const { data: session } = useSession();
-  const { userData } = useUserData(!!session?.user?.name);
+  const [loading, setLoading] = useState(true);
+  const { data: userData, error } = useSWR(session?.user?.name ? '/api/userdata' : null, fetcher, {
+    revalidateOnFocus: false,
+  });
   const [app, setApp] = useLocalStorage({ key: 'riv-app' });
   const [sort, setSort] = useLocalStorage({ key: 'riv-sort', defaultValue: 'hot' });
   const [subreddit, setSubreddit] = useLocalStorage({
@@ -36,7 +44,9 @@ export default function RedditProvider({ children }: ChildrenProps) {
 
   const providerValues = {
     app,
+    loading,
     setApp,
+    setLoading,
     setSort,
     setSubreddit,
     sort,
@@ -44,8 +54,10 @@ export default function RedditProvider({ children }: ChildrenProps) {
   };
 
   useEffect(() => {
+    setLoading(true);
     if (userData) {
       setApp(userData);
+      setLoading(!error && !userData);
     }
   }, [userData]);
 
