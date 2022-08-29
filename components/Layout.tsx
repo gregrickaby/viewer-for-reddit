@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   AppShell,
   Avatar,
   Burger,
@@ -11,11 +12,13 @@ import {
   ScrollArea,
   Text,
   Title,
+  useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { MdDarkMode } from 'react-icons/md';
 import { useRedditContext } from '~/components/RedditProvider';
 import ScrollToTop from '~/components/ScrollToTop';
 import Search from '~/components/Search';
@@ -26,7 +29,8 @@ import { ChildrenProps } from '~/lib/types';
  * Layout component.
  */
 export default function Layout({ children }: ChildrenProps) {
-  const { app, loading } = useRedditContext();
+  const { app } = useRedditContext();
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
   const { data: session } = useSession();
   const [opened, setOpened] = useState(false);
@@ -66,6 +70,14 @@ export default function Layout({ children }: ChildrenProps) {
               />
             </MediaQuery>
             <Search />
+            <ActionIcon
+              variant="outline"
+              color={colorScheme === 'dark' ? 'gray' : 'blue'}
+              onClick={() => toggleColorScheme()}
+              title="Toggle color scheme"
+            >
+              <MdDarkMode />
+            </ActionIcon>
           </div>
         </Header>
       }
