@@ -1,21 +1,9 @@
 import { signOut } from 'next-auth/react';
-import useSWR from 'swr';
-
-export interface SubredditProps {
-  after?: string;
-  lastPost?: string;
-  limit?: number;
-  shouldFetch?: boolean;
-  sort?: string;
-  subreddit?: string;
-}
 
 /**
- * Generic fetcher for useSWR() package.
+ * Global fetcher function.
  */
-export async function fetcher(url: string) {
-  return fetch(url).then((res) => res.json());
-}
+export const fetcher = (resource, init) => fetch(resource, init).then((res) => res.json());
 
 /**
  * Shape and trim the raw post response from subreddit.
@@ -64,66 +52,12 @@ export function cleanIframe({ html }): string {
     />`;
 }
 
+/**
+ * Clear local storage and sign out.
+ */
 export function logOut(): void {
   localStorage.removeItem('riv-app');
+  localStorage.removeItem('riv-subreddit');
   localStorage.removeItem('nextauth.message');
   signOut();
-}
-
-/**
- * Fetch frontpage posts.
- */
-export function useFrontpage() {
-  const { data, error } = useSWR(`/api/frontpage`, fetcher);
-
-  return {
-    posts: data,
-    isLoading: !error && !data,
-    isError: error,
-  };
-}
-
-/**
- * Fetch a subreddit and return the data.
- */
-export function useSubreddit({
-  limit,
-  lastPost,
-  sort,
-  subreddit,
-  shouldFetch,
-}: SubredditProps): any {
-  const { data, error } = useSWR(
-    shouldFetch
-      ? `/api/subreddit?sub=${subreddit || ''}&sort=${sort || ''}&limit=${limit || 24}&after=${
-          lastPost || ''
-        }`
-      : null,
-    fetcher
-  );
-
-  return {
-    posts: data,
-    isLoading: !error && !data,
-    isError: error,
-  };
-}
-
-/**
- * Fetch user's data from the API.
- */
-export function useUserData(shouldFetch: boolean) {
-  const { data, error } = useSWR(shouldFetch ? '/api/userdata' : null, fetcher, {
-    revalidateOnFocus: false,
-  });
-
-  if (error) {
-    return {
-      userData: null,
-    };
-  }
-
-  return {
-    userData: data,
-  };
 }
