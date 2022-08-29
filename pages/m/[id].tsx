@@ -8,22 +8,22 @@ import NotFound from '~/components/NotFound';
 import { useRedditContext } from '~/components/RedditProvider';
 import { fetcher } from '~/lib/helpers';
 
-export interface SubredditProps {
-  subreddit: string;
+export interface MultiRedditProps {
+  multiName: string;
 }
 
-preload('/api/subreddit', fetcher);
+preload('/api/multis', fetcher);
 
 /**
- * Subreddit component.
+ * Multis component.
  */
-export default function Subreddit({ subreddit }: SubredditProps) {
+export default function Multis({ multiName }: MultiRedditProps) {
   const { sort, setLoading } = useRedditContext();
   const {
     data: posts,
     isLoading,
     error,
-  } = useSWR(`/api/subreddit?sub=${subreddit || ''}&sort=${sort || ''}`, fetcher);
+  } = useSWR(`/api/multis?name=${multiName || ''}&sort=${sort || ''}`, fetcher);
 
   // Update global loading state.
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function Subreddit({ subreddit }: SubredditProps) {
   }, [isLoading]);
 
   // If something goes wrong, bail...
-  if (!posts || !posts?.posts.length || error) {
+  if (!posts || !posts?.posts?.length || error) {
     return (
       <Layout>
         <NotFound />
@@ -54,10 +54,10 @@ export default function Subreddit({ subreddit }: SubredditProps) {
 }
 
 /**
- * Get the subreddit from the URL.
+ * Get the multi name from the URL.
  */
 export const getServerSideProps: GetServerSideProps = async (context) => ({
   props: {
-    subreddit: context.query.id,
+    multiName: context.query.id,
   },
 });

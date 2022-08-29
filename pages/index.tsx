@@ -1,22 +1,28 @@
 import { Masonry } from 'masonic';
+import { useEffect } from 'react';
+import useSWR, { preload } from 'swr';
 import Layout from '~/components/Layout';
 import { MasonryCard } from '~/components/MasonryCard';
 import NotFound from '~/components/NotFound';
-import { useFrontpage } from '~/lib/helpers';
+import { useRedditContext } from '~/components/RedditProvider';
+import { fetcher } from '~/lib/helpers';
+
+preload('/api/frontpage', fetcher);
 
 /**
  * Frontpage component.
  */
 export default function Frontpage() {
-  const { posts, isLoading } = useFrontpage();
+  const { sort, setLoading } = useRedditContext();
+  const { data: posts, isLoading, error } = useSWR(`/api/frontpage?sort=${sort || ''}`, fetcher);
 
-  // Loading?
-  if (isLoading) {
-    return <Layout>Loading frontpage...</Layout>;
-  }
+  // Update global loading state.
+  useEffect(() => {
+    setLoading(false);
+  }, [isLoading]);
 
-  // No posts? Bail...
-  if (!posts || posts.length === 0) {
+  // If something goes wrong, bail...
+  if (!posts || !posts?.posts.length || error) {
     return (
       <Layout>
         <NotFound />
@@ -28,7 +34,7 @@ export default function Frontpage() {
   return (
     <Layout>
       <Masonry
-        items={posts.posts}
+        items={posts?.posts}
         render={MasonryCard}
         columnGutter={64}
         columnWidth={300}
