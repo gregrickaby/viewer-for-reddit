@@ -4,6 +4,10 @@ const config = {
   siteUrl: 'https://reddit-image-viewer.vercel.app/',
   siteAuthor: '@gregrickaby',
   authorUrl: 'https://gregrickaby.com',
+  redditApi: {
+    limit: '100',
+    sort: 'hot',
+  },
 };
 
 export default config;
