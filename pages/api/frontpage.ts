@@ -19,6 +19,9 @@ export default async function frontpage(req: NextApiRequest, res: NextApiRespons
   const sort = req.query.sort ? req.query.sort : 'hot';
   const limit = req.query.limit ? req.query.limit : '24';
 
+  /**
+   * Fetch frontpage posts.
+   */
   if (session && session.accessToken) {
     try {
       const response = await fetch(
