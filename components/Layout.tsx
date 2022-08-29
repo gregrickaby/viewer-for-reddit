@@ -74,7 +74,7 @@ export default function Layout({ children }: ChildrenProps) {
         </Header>
       }
       navbar={
-        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ base: '85%' }}>
+        <Navbar p="md" hiddenBreakpoint="xl" hidden={!opened} width={{ base: '300' }}>
           {session && (
             <>
               <Navbar.Section>
