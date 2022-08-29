@@ -1,9 +1,8 @@
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
-import { useColorScheme, useHotkeys } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { useState } from 'react';
 import RedditProvider from '~/components/RedditProvider';
 import config from '~/lib/config';
 
@@ -13,11 +12,12 @@ export default function App(props: AppProps) {
     pageProps: { session, ...pageProps },
   } = props;
 
-  // Detect user's preferred color scheme.
-  const preferredColorScheme = useColorScheme();
-
-  // Set the color scheme for the app.
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(preferredColorScheme);
+  // Store the user's color scheme in local storage.
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: 'riv-color-scheme',
+    defaultValue: 'light',
+    getInitialValueInEffect: true,
+  });
 
   // Color scheme toggler.
   const toggleColorScheme = (value?: ColorScheme) =>
