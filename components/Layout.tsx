@@ -18,7 +18,7 @@ import {
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { MdDarkMode, MdDynamicFeed, MdOutlineBookmarks } from 'react-icons/md';
+import { MdDarkMode, MdDynamicFeed, MdHome, MdOutlineBookmarks } from 'react-icons/md';
 import { useRedditContext } from '~/components/RedditProvider';
 import ScrollToTop from '~/components/ScrollToTop';
 import Search from '~/components/Search';
@@ -94,6 +94,13 @@ export default function Layout({ children }: ChildrenProps) {
           {session && (
             <>
               <Navbar.Section grow component={ScrollArea}>
+                <NavLink
+                  component="a"
+                  href="/"
+                  icon={<MdHome />}
+                  label="Frontpage"
+                  style={{ padding: theme.spacing.md }}
+                />
                 <NavLink
                   childrenOffset={8}
                   defaultOpened
