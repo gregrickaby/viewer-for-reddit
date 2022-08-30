@@ -35,8 +35,8 @@ export default function App(props: AppProps) {
         <title>{config?.siteTitle}</title>
         <meta name="description" content={config?.siteDescription} />
 
-        <link rel="preload" href="https://www.reddit.com" as="fetch" crossOrigin="anonymous" />
-        <link rel="preload" href="https://oauth.reddit.com" as="fetch" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.reddit.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://oauth.reddit.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://i.redd.it" crossOrigin="anonymous" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon/icon.png" />
