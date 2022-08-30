@@ -76,17 +76,15 @@ const useStyles = createStyles((theme) => ({
 }));
 
 /**
- * Masonry Card component.
- *
- * @see https://github.com/jaredLunde/masonic#readme
+ * Card component.
  */
-export function MasonryCard({ index, data, width }) {
+export default function Card({ data }) {
   const { app } = useRedditContext();
   const { classes } = useStyles();
   const date = new Date(data.created * 1000).toLocaleDateString('en-US');
 
   return (
-    <div className={classes.card} key={index} style={{ width }}>
+    <div className={classes.card}>
       <div className={classes.cardLeft}>
         <div>
           <MdArrowUpward />
