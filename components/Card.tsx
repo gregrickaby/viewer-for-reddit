@@ -1,6 +1,12 @@
-import { createStyles, Text } from '@mantine/core';
+import { Button, createStyles, Text } from '@mantine/core';
 import Link from 'next/link';
-import { MdArrowDownward, MdArrowUpward } from 'react-icons/md';
+import { useState } from 'react';
+import {
+  MdArrowDownward,
+  MdArrowUpward,
+  MdBookmarkBorder,
+  MdChatBubbleOutline,
+} from 'react-icons/md';
 import Media from '~/components/Media';
 import { useRedditContext } from './RedditProvider';
 
@@ -29,12 +35,11 @@ const useStyles = createStyles((theme) => ({
   cardFooter: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     fontSize: theme.fontSizes.sm,
+    marginTop: theme.spacing.sm,
 
     a: {
       color: theme.colorScheme === 'dark' ? theme.colors.gray[6] : theme.colors.gray[2],
-      textDecoration: 'none',
     },
   },
   score: {
@@ -76,6 +81,34 @@ const useStyles = createStyles((theme) => ({
 }));
 
 /**
+ * Save Button component.
+ */
+function SaveButton({ id }: { id: string }) {
+  const [saved, setSaved] = useState(false);
+
+  // Save handler.
+  async function handleSave(contentId: string) {
+    await fetch(`/api/save?id=${contentId}&save=${!saved}`)
+      .then((res) => {
+        res.json();
+        setSaved(!saved);
+      })
+      .catch(() => setSaved(false));
+  }
+
+  return (
+    <Button
+      component="a"
+      onClick={() => handleSave(id)}
+      leftIcon={<MdBookmarkBorder />}
+      variant="subtle"
+    >
+      {saved ? 'Unsave' : 'Save'}
+    </Button>
+  );
+}
+
+/**
  * Card component.
  */
 export default function Card({ data }) {
@@ -115,9 +148,15 @@ export default function Card({ data }) {
           <Media {...data} />
         </div>
         <div className={classes.cardFooter}>
-          <div>
-            <a href={data.permalink}>{new Intl.NumberFormat().format(data.comments)} comments</a>
-          </div>
+          <Button
+            component="a"
+            href={data.permalink}
+            leftIcon={<MdChatBubbleOutline />}
+            variant="subtle"
+          >
+            {new Intl.NumberFormat().format(data.comments)} comments
+          </Button>
+          <SaveButton id={data.id} />
         </div>
       </div>
     </div>

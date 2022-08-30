@@ -17,7 +17,7 @@ export function postResponseShaper(json: any): any {
   return {
     posts: postsContainImage.map((post) => ({
       author: post.data.author,
-      id: post.data.id,
+      id: post.data.name,
       created: post.data.created_utc,
       comments: post.data.num_comments,
       image: post.data.preview.images[0].resolutions.pop(),
