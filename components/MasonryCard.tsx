@@ -1,6 +1,5 @@
 import { createStyles, Text } from '@mantine/core';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { MdArrowDownward, MdArrowUpward } from 'react-icons/md';
 import Media from '~/components/Media';
 
@@ -77,7 +76,6 @@ const useStyles = createStyles((theme) => ({
  * @see https://github.com/jaredLunde/masonic#readme
  */
 export function MasonryCard({ index, data, width }) {
-  const router = useRouter();
   const { classes } = useStyles();
   const date = new Date(data.created * 1000).toLocaleDateString('en-US');
 
