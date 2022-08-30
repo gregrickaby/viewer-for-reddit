@@ -130,7 +130,6 @@ export default function Layout({ children }: ChildrenProps) {
                 <NavLink
                   childrenOffset={8}
                   className={classes.navLink}
-                  defaultOpened
                   icon={<MdOutlineBookmarks />}
                   label="Your Communities"
                 >
@@ -143,7 +142,7 @@ export default function Layout({ children }: ChildrenProps) {
                           component="a"
                           href={`/r/${sub}`}
                           key={index}
-                          label={sub.toLowerCase()}
+                          label={`r/${sub.toLowerCase()}`}
                         />
                       ))}
                 </NavLink>
