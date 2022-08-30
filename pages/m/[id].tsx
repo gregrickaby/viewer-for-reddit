@@ -1,9 +1,8 @@
 import { LoadingOverlay } from '@mantine/core';
-import { Masonry } from 'masonic';
 import { GetServerSideProps } from 'next';
 import useSWR from 'swr';
+import Card from '~/components/Card';
 import Layout from '~/components/Layout';
-import { MasonryCard } from '~/components/MasonryCard';
 import NotFound from '~/components/NotFound';
 import { useRedditContext } from '~/components/RedditProvider';
 import { fetcher } from '~/lib/helpers';
@@ -44,13 +43,9 @@ export default function Multis({ multiName }: MultiRedditProps) {
   // Finally, render posts.
   return (
     <Layout>
-      <Masonry
-        items={posts?.posts}
-        render={MasonryCard}
-        columnGutter={64}
-        columnWidth={300}
-        overscanBy={2}
-      />
+      {posts?.posts.map((post) => (
+        <Card key={post.id} data={post} />
+      ))}
     </Layout>
   );
 }

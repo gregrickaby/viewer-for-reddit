@@ -1,9 +1,8 @@
-import { LoadingOverlay, useMantineTheme } from '@mantine/core';
-import { Masonry } from 'masonic';
+import { LoadingOverlay } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import useSWR from 'swr';
+import Card from '~/components/Card';
 import Layout from '~/components/Layout';
-import { MasonryCard } from '~/components/MasonryCard';
 import NotFound from '~/components/NotFound';
 import { useRedditContext } from '~/components/RedditProvider';
 import { fetcher } from '~/lib/helpers';
@@ -17,7 +16,6 @@ export interface SubredditProps {
  */
 export default function Subreddit({ subreddit }: SubredditProps) {
   const { sort } = useRedditContext();
-  const theme = useMantineTheme();
   const {
     data: posts,
     isLoading,
@@ -45,13 +43,9 @@ export default function Subreddit({ subreddit }: SubredditProps) {
   // Finally, render posts.
   return (
     <Layout>
-      <Masonry
-        items={posts?.posts}
-        render={MasonryCard}
-        columnGutter={theme.spacing.md}
-        columnWidth={350}
-        overscanBy={2}
-      />
+      {posts?.posts.map((post) => (
+        <Card key={post.id} data={post} />
+      ))}
     </Layout>
   );
 }
