@@ -1,10 +1,20 @@
-import { Select, TextInput } from '@mantine/core';
+import { createStyles, Select, TextInput } from '@mantine/core';
 import { useDebouncedState } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useRedditContext } from './RedditProvider';
 
+const useStyles = createStyles(() => ({
+  searchBar: {
+    width: '100%',
+  },
+}));
+
+/**
+ * Search component.
+ */
 export default function Search() {
+  const { classes } = useStyles();
   const { sort, setSort } = useRedditContext();
   const [search, setSearch] = useDebouncedState('', 800);
   const router = useRouter();
@@ -24,11 +34,11 @@ export default function Search() {
         aria-label="search reddit"
         autoCapitalize="none"
         autoComplete="off"
+        className={classes.searchBar}
         defaultValue={search}
         onChange={(event) => setSearch(event.currentTarget.value.trim())}
         pattern="^[^~`^<>]+$"
         placeholder="Search Reddit"
-        style={{ width: '100%' }}
       />
       <Select
         aria-label="sort posts"
