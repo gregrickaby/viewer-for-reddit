@@ -86,8 +86,7 @@ const useStyles = createStyles((theme) => ({
 function SaveButton({ id }: { id: string }) {
   const [saved, setSaved] = useState(false);
 
-  // Save handler.
-  async function handleSave(contentId: string) {
+  async function savePost(contentId: string) {
     await fetch(`/api/save?id=${contentId}&save=${!saved}`)
       .then((res) => {
         res.json();
@@ -99,7 +98,7 @@ function SaveButton({ id }: { id: string }) {
   return (
     <Button
       component="a"
-      onClick={() => handleSave(id)}
+      onClick={() => savePost(id)}
       leftIcon={<MdBookmarkBorder />}
       variant="subtle"
     >
