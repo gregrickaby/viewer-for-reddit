@@ -4,6 +4,7 @@ import {
   Avatar,
   Burger,
   Button,
+  createStyles,
   Group,
   Header,
   MediaQuery,
@@ -25,16 +26,51 @@ import Search from '~/components/Search';
 import { logOut } from '~/lib/helpers';
 import { ChildrenProps } from '~/lib/types';
 
+const useStyles = createStyles((theme) => ({
+  headerContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: '16px',
+    height: '100%',
+  },
+
+  logo: {
+    cursor: 'pointer',
+    minWidth: 'fit-content',
+  },
+
+  navLink: {
+    padding: theme.spacing.md,
+  },
+
+  navFooter: {
+    borderTop: `1px solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
+    }`,
+
+    padding: theme.spacing.sm,
+  },
+
+  feedContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing.xl,
+    margin: '0 auto',
+    maxWidth: '640px',
+  },
+}));
+
 /**
  * Layout component.
  */
 export default function Layout({ children }: ChildrenProps) {
   const { app } = useRedditContext();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const { classes } = useStyles();
   const { toggleColorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
-  const { data: session } = useSession();
   const [navBarOpen, setNavBarOpen] = useState(false);
-  const router = useRouter();
 
   function navDrawerHandler(url: string) {
     setNavBarOpen((o) => !o);
@@ -47,14 +83,7 @@ export default function Layout({ children }: ChildrenProps) {
       navbarOffsetBreakpoint="md"
       header={
         <Header height={84} p={theme.spacing.lg}>
-          <div
-            style={{
-              alignItems: 'center',
-              display: 'flex',
-              gap: '16px',
-              height: '100%',
-            }}
-          >
+          <div className={classes.headerContainer}>
             <MediaQuery largerThan="md" styles={{ display: 'none' }}>
               <Burger
                 color={theme.colors.blue[3]}
@@ -65,13 +94,10 @@ export default function Layout({ children }: ChildrenProps) {
             </MediaQuery>
             <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
               <Title
+                className={classes.logo}
                 onClick={() => navDrawerHandler('/')}
                 order={1}
                 size="h4"
-                style={{
-                  cursor: 'pointer',
-                  minWidth: 'fit-content',
-                }}
               >
                 Reddit Image Viewer
               </Title>
@@ -95,18 +121,18 @@ export default function Layout({ children }: ChildrenProps) {
             <>
               <Navbar.Section grow component={ScrollArea}>
                 <NavLink
+                  className={classes.navLink}
                   component="a"
                   href="/"
                   icon={<MdHome />}
                   label="Frontpage"
-                  style={{ padding: theme.spacing.md }}
                 />
                 <NavLink
                   childrenOffset={8}
+                  className={classes.navLink}
                   defaultOpened
                   icon={<MdOutlineBookmarks />}
                   label="Your Communities"
-                  style={{ padding: theme.spacing.md }}
                 >
                   {app.subs &&
                     app.subs.length > 0 &&
@@ -123,9 +149,9 @@ export default function Layout({ children }: ChildrenProps) {
                 </NavLink>
                 <NavLink
                   childrenOffset={8}
+                  className={classes.navLink}
                   icon={<MdDynamicFeed />}
                   label="Custom Feeds"
-                  style={{ padding: theme.spacing.md }}
                 >
                   {app.multis &&
                     app.multis.length > 0 &&
@@ -140,15 +166,7 @@ export default function Layout({ children }: ChildrenProps) {
                 </NavLink>
               </Navbar.Section>
 
-              <Navbar.Section
-                style={{
-                  borderTop: `1px solid ${
-                    theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
-                  }`,
-
-                  padding: theme.spacing.sm,
-                }}
-              >
+              <Navbar.Section className={classes.navFooter}>
                 <Group position="apart">
                   <Avatar
                     alt={session.user.name}
@@ -173,7 +191,7 @@ export default function Layout({ children }: ChildrenProps) {
         </Navbar>
       }
     >
-      {children}
+      <div className={classes.feedContainer}>{children}</div>
       <ScrollToTop />
     </AppShell>
   );
