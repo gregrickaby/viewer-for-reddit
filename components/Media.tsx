@@ -1,23 +1,34 @@
-import { cleanIframe } from '~/lib/helpers';
+import { createStyles } from '@mantine/core';
+import { useRedditContext } from './RedditProvider';
+
+const useStyles = createStyles(() => ({
+  image: {
+    height: 'auto',
+    objectFit: 'cover',
+    width: '100%',
+  },
+  video: {
+    width: '100%',
+  },
+}));
 
 /**
  * Media component.
  */
 export default function Media(props) {
+  const { app } = useRedditContext();
+  const { classes } = useStyles();
+
   switch (props.type) {
     case 'image':
       return (
-        <a href={props.permalink} aria-label={props.title}>
+        <a href={props.url} aria-label={props.title}>
           <img
             alt={props.title}
+            className={classes.image}
             height={props.image.height}
             loading="lazy"
             src={props.image.url}
-            style={{
-              objectFit: 'cover',
-              width: '100%',
-              height: 'auto',
-            }}
             width={props.image.width}
           />
         </a>
@@ -25,42 +36,45 @@ export default function Media(props) {
     case 'hosted:video':
       return (
         <video
-          autoPlay
+          autoPlay={app?.prefs?.video_autoplay}
+          className={classes.video}
           controls
-          loop
           muted
           playsInline
-          src={props.media.reddit_video.fallback_url}
-          style={{
-            width: '100%',
-          }}
-        />
+          poster={props.image.url}
+          preload="metadata"
+        >
+          <source src={props.media.reddit_video.fallback_url} type="video/mp4" />
+        </video>
       );
     case 'rich:video':
       return (
-        <a
-          aria-label={props.title}
-          dangerouslySetInnerHTML={{
-            __html: cleanIframe({
-              html: props.media.oembed.html,
-            }),
-          }}
-          href={props.url}
-        />
+        <a href={props.url} aria-label={props.title}>
+          <img
+            alt={props.title}
+            className={classes.image}
+            height={props.media.oembed.thumbnail_height}
+            loading="lazy"
+            src={props.media.oembed.thumbnail_url}
+            width={props.media.oembed.thumbnail_width}
+          />
+        </a>
       );
     case 'link':
       // Search for .gifv....
       if (props.url.includes('gifv')) {
         return (
           <video
-            autoPlay
+            autoPlay={app?.prefs?.video_autoplay}
+            className={classes.video}
             controls
-            loop
             muted
             playsInline
-            src={props.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
-            style={{ aspectRatio: '16/9', width: '100%' }}
-          />
+            poster={props.image.url}
+            preload="metadata"
+          >
+            <source src={props.url.replace('.gifv', '.mp4')} type="video/mp4" />
+          </video>
         );
       }
       // No media? Return blank.

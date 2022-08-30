@@ -2,6 +2,7 @@ import { createStyles, Text } from '@mantine/core';
 import Link from 'next/link';
 import { MdArrowDownward, MdArrowUpward } from 'react-icons/md';
 import Media from '~/components/Media';
+import { useRedditContext } from './RedditProvider';
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -38,21 +39,20 @@ const useStyles = createStyles((theme) => ({
   },
   score: {
     fontSize: theme.fontSizes.sm,
+    fontWeight: 700,
     lineHeight: 1,
     marginBottom: '6px',
   },
   subreddit: {
-    color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-    fontSize: theme.fontSizes.xs,
-    fontWeight: 700,
-
     a: {
-      color: theme.colorScheme === 'dark' ? theme.colors.gray[6] : theme.colors.gray[2],
+      color: theme.colorScheme === 'dark' ? theme.colors.gray[4] : theme.colors.gray[8],
+      fontSize: theme.fontSizes.xs,
+      fontWeight: 700,
       textDecoration: 'none',
     },
   },
   postedOn: {
-    color: theme.colorScheme === 'dark' ? theme.colors.gray[6] : theme.colors.gray[2],
+    color: theme.colors.gray[6],
     fontSize: theme.fontSizes.xs,
     fontWeight: 400,
   },
@@ -65,8 +65,13 @@ const useStyles = createStyles((theme) => ({
       fontSize: theme.fontSizes.lg,
       fontWeight: 500,
       textDecoration: 'none',
-      lineHeight: 1.5,
     },
+  },
+  nsfw: {
+    color: theme.colors.red[6],
+    fontSize: theme.fontSizes.xs,
+    fontWeight: 700,
+    marginLeft: theme.spacing.sm,
   },
 }));
 
@@ -76,6 +81,7 @@ const useStyles = createStyles((theme) => ({
  * @see https://github.com/jaredLunde/masonic#readme
  */
 export function MasonryCard({ index, data, width }) {
+  const { app } = useRedditContext();
   const { classes } = useStyles();
   const date = new Date(data.created * 1000).toLocaleDateString('en-US');
 
@@ -105,6 +111,7 @@ export function MasonryCard({ index, data, width }) {
           <Link href={data.permalink}>
             <a>{data.title}</a>
           </Link>
+          {app?.prefs?.label_nsfw && data.nsfw ? <span className={classes.nsfw}>NSFW</span> : null}
         </div>
         <div>
           <Media {...data} />
