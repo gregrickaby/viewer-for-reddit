@@ -1,9 +1,17 @@
 import { signOut } from 'next-auth/react';
 
 /**
- * Global fetcher function.
+ * Global fetcher function for useSWR.
  */
-export const fetcher = (resource, init) => fetch(resource, init).then((res) => res.json());
+export async function fetcher(url: RequestInfo, init?: RequestInit) {
+  const response = await fetch(url, init);
+
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
 
 /**
  * Shape and trim the raw post response from subreddit.

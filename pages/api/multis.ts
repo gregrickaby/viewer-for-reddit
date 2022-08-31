@@ -23,7 +23,7 @@ export default async function multis(req: NextApiRequest, res: NextApiResponse) 
   const session = await unstable_getServerSession(req, res, authOptions);
 
   // No session? Bail...
-  if (!session) {
+  if (!session || !session?.accessToken) {
     res.status(401).json({ message: 'You must be logged in.' });
   }
 
@@ -44,9 +44,15 @@ export default async function multis(req: NextApiRequest, res: NextApiResponse) 
         },
       }
     );
-    const json = await response.json();
-    res.status(200).json(postResponseShaper(json));
+
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    res.status(200).json(postResponseShaper(data));
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: `${error}` });
   }
 }

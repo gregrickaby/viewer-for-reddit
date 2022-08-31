@@ -19,34 +19,32 @@ export default async function frontpage(req: NextApiRequest, res: NextApiRespons
   const sort = req.query.sort ? req.query.sort : config.redditApi.sort;
   const limit = req.query.limit ? req.query.limit : config.redditApi.limit;
   const after = req.query.after ? req.query.after : '';
+  const redditUrl = session ? 'oauth.reddit.com' : 'www.reddit.com';
+  const headers = session?.accessToken
+    ? {
+        headers: {
+          authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    : {};
 
   /**
    * Fetch frontpage posts.
    */
-  if (session && session.accessToken) {
-    try {
-      const response = await fetch(
-        `https://oauth.reddit.com/${sort}/?limit=${limit}&after=${after}&raw_json=1`,
-        {
-          headers: {
-            authorization: `Bearer ${session.accessToken}`,
-          },
-        }
-      );
-      const json = await response.json();
-      res.status(200).json(postResponseShaper(json));
-    } catch (error) {
-      res.status(500).json({ message: `${error}` });
+  try {
+    const response = await fetch(
+      `https://${redditUrl}/${sort}/.json?limit=${limit}&after=${after}&raw_json=1`,
+      headers
+    );
+
+    if (!response.ok) {
+      throw new Error('The was an error fetching the frontpage.');
     }
-  } else {
-    try {
-      const response = await fetch(
-        `https://www.reddit.com/${sort}/.json?limit=${limit}&after=${after}&raw_json=1`
-      );
-      const json = await response.json();
-      res.status(200).json(postResponseShaper(json));
-    } catch (error) {
-      res.status(500).json({ message: `${error}` });
-    }
+
+    const data = await response.json();
+    res.status(200).json(postResponseShaper(data));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: `${error.message}` });
   }
 }
