@@ -1,4 +1,5 @@
 import { Button, createStyles, Text, UnstyledButton } from '@mantine/core';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { BiDownvote, BiUpvote } from 'react-icons/bi';
@@ -92,9 +93,15 @@ interface PostActionProps {
  * Save Button component.
  */
 function SaveButton({ id }: PostActionProps) {
+  const { data: session } = useSession();
   const [saved, setSaved] = useState(false);
 
   async function save() {
+    // No session? Bail...
+    if (!session) {
+      return;
+    }
+
     await fetch(`/api/postactions?id=${id}&action=${saved ? 'unsave' : 'save'}`)
       .then((res) => {
         res.json();
@@ -114,10 +121,16 @@ function SaveButton({ id }: PostActionProps) {
  * Vote Button component.
  */
 function Score({ id, score }) {
+  const { data: session } = useSession();
   const [voted, setVoted] = useState('');
   const { classes, cx } = useStyles();
 
   async function vote(voteType: 'upvote' | 'downvote') {
+    // No session? Bail...
+    if (!session) {
+      return;
+    }
+
     // If the user has already voted...
     if (voted) {
       // Undo the vote.
