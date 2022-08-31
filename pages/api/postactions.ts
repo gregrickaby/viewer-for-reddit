@@ -13,6 +13,7 @@ export default async function postactions(req: NextApiRequest, res: NextApiRespo
     res.status(400).json({
       message: 'Missing required query parameters.',
     });
+    return;
   }
 
   // Get session data.
@@ -21,6 +22,7 @@ export default async function postactions(req: NextApiRequest, res: NextApiRespo
   // No session? Bail...
   if (!session || !session?.accessToken) {
     res.status(401).json({ message: 'You must be logged in.' });
+    return;
   }
 
   // Set up API headers.
