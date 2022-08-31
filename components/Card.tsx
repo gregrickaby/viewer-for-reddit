@@ -1,14 +1,10 @@
-import { Button, createStyles, Text } from '@mantine/core';
+import { Button, createStyles, Text, UnstyledButton } from '@mantine/core';
 import Link from 'next/link';
 import { useState } from 'react';
-import {
-  MdArrowDownward,
-  MdArrowUpward,
-  MdBookmarkBorder,
-  MdChatBubbleOutline,
-} from 'react-icons/md';
+import { BiDownvote, BiUpvote } from 'react-icons/bi';
+import { MdBookmarkBorder, MdChatBubbleOutline } from 'react-icons/md';
 import Media from '~/components/Media';
-import { useRedditContext } from './RedditProvider';
+import { useRedditContext } from '~/components/RedditProvider';
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -23,9 +19,9 @@ const useStyles = createStyles((theme) => ({
     padding: theme.spacing.sm,
   },
   cardLeft: {
+    alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-    textAlign: 'center',
   },
   cardRight: {
     display: 'flex',
@@ -47,6 +43,14 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 700,
     lineHeight: 1,
     marginBottom: '6px',
+  },
+  upvote: {
+    color: '#ff4500',
+    fill: '#ff4500',
+  },
+  downvote: {
+    color: '#7193ff',
+    fill: '#7193ff',
   },
   subreddit: {
     a: {
@@ -80,14 +84,18 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+interface PostActionProps {
+  id: string;
+}
+
 /**
  * Save Button component.
  */
-function SaveButton({ id }: { id: string }) {
+function SaveButton({ id }: PostActionProps) {
   const [saved, setSaved] = useState(false);
 
-  async function savePost(contentId: string) {
-    await fetch(`/api/save?id=${contentId}&save=${!saved}`)
+  async function save() {
+    await fetch(`/api/postactions?id=${id}&action=${saved ? 'unsave' : 'save'}`)
       .then((res) => {
         res.json();
         setSaved(!saved);
@@ -96,14 +104,50 @@ function SaveButton({ id }: { id: string }) {
   }
 
   return (
-    <Button
-      component="a"
-      onClick={() => savePost(id)}
-      leftIcon={<MdBookmarkBorder />}
-      variant="subtle"
-    >
+    <Button component="a" onClick={() => save()} leftIcon={<MdBookmarkBorder />} variant="subtle">
       {saved ? 'Unsave' : 'Save'}
     </Button>
+  );
+}
+
+/**
+ * Vote Button component.
+ */
+function Score({ id, score }) {
+  const [voted, setVoted] = useState('');
+  const { classes, cx } = useStyles();
+
+  async function vote(voteType: 'upvote' | 'downvote') {
+    // If the user has already voted...
+    if (voted) {
+      // Undo the vote.
+      await fetch(`/api/postactions?id=${id}&action=unvote`)
+        .then(() => setVoted(''))
+        .catch((error) => console.error(error));
+    } else {
+      // Otherwise, cast a vote.
+      await fetch(`/api/postactions?id=${id}&action=${voteType}`)
+        .then(() => setVoted(voteType))
+        .catch((error) => console.error(error));
+    }
+  }
+
+  return (
+    <>
+      <UnstyledButton onClick={() => vote('upvote')}>
+        <BiUpvote className={voted === 'upvote' ? classes.upvote : ''} />
+      </UnstyledButton>
+      <div
+        className={cx(
+          classes.score,
+          voted === 'upvote' ? classes.upvote : '',
+          voted === 'downvote' ? classes.downvote : ''
+        )}
+      >{`${Math.floor(score / 100) / 10.0}k`}</div>
+      <UnstyledButton onClick={() => vote('downvote')}>
+        <BiDownvote className={voted === 'downvote' ? classes.downvote : ''} />
+      </UnstyledButton>
+    </>
   );
 }
 
@@ -118,13 +162,7 @@ export default function Card({ data }) {
   return (
     <div className={classes.card}>
       <div className={classes.cardLeft}>
-        <div>
-          <MdArrowUpward />
-        </div>
-        <div className={classes.score}>{new Intl.NumberFormat().format(data.ups)}</div>
-        <div>
-          <MdArrowDownward />
-        </div>
+        <Score id={data.id} score={data.ups} />
       </div>
       <div className={classes.cardRight}>
         <div className={classes.subreddit}>
