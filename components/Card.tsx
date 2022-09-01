@@ -175,7 +175,7 @@ export default function Card({ data }) {
   return (
     <div className={classes.card}>
       <div className={classes.cardLeft}>
-        <Score id={data.id} score={data.ups} />
+        <Score id={data.id} score={data.score} />
       </div>
       <div className={classes.cardRight}>
         <div className={classes.subreddit}>
