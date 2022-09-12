@@ -25,21 +25,21 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "^12.2.5",
+    "next": "^12.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.1.1",
-    "autoprefixer": "^10.4.8",
+    "autoprefixer": "^10.4.9",
     "classnames": "^2.3.1",
-    "eslint": "^8.23.0",
-    "eslint-config-next": "^12.2.5",
+    "eslint": "^8.23.1",
+    "eslint-config-next": "^12.3.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "next-sitemap": "^3.1.21",
+    "next-sitemap": "^3.1.22",
     "postcss": "^8.4.16",
-    "postcss-preset-env": "^7.8.0",
+    "postcss-preset-env": "^7.8.1",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
     "prop-types": "^15.8.1",
