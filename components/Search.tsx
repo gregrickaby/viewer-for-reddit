@@ -1,6 +1,9 @@
 import {useState} from 'react'
 import Results from './Results'
 
+/**
+ * Search component.
+ */
 export default function Search() {
   const [inputValue, setValue] = useState('itookapicture')
   const [sort, setSort] = useState('hot')
@@ -33,20 +36,14 @@ export default function Search() {
             autoCapitalize="none"
             className="w-full rounded-none border-t border-l border-b p-2 focus:outline-none"
             id="search"
-            minLength="2"
+            minLength={2}
             onChange={(e) => setValue(e.target.value.trim())}
             pattern="^[^~`^<>]+$"
             placeholder="pics"
             type="text"
             value={inputValue}
           />
-          <select
-            className="rounded-none border-t border-b px-1 text-gray-500 focus:outline-none dark:bg-white"
-            id="search"
-            name="search"
-            onChange={handleSort}
-            value={sort}
-          >
+          <select id="search" name="search" onChange={handleSort} value={sort}>
             <option value="hot">hot</option>
             <option value="top">top</option>
             <option value="new">new</option>

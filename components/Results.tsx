@@ -1,5 +1,4 @@
-import {fetchData} from 'functions/fetchData'
-import PropTypes from 'prop-types'
+import {fetchPosts} from '~/lib/helpers'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
 import Card from './Card'
@@ -10,15 +9,23 @@ const breakpointColumnsObj = {
   766: 1
 }
 
-export default function Results({subreddit, sortBy}) {
-  const [ref, inView] = useInView({
-    rootMargin: '200px 0px'
-  })
+interface ResultsProps {
+  subreddit: string
+  sortBy: string
+}
+
+/**
+ * Results component.
+ */
+export default function Results({subreddit, sortBy}: ResultsProps) {
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(null)
   const [posts, setPosts] = useState([])
   const [lastPost, setLastPost] = useState(null)
   const [clicked, setClicked] = useState(false)
+  const [ref, inView] = useInView({
+    rootMargin: '100px 0px'
+  })
 
   /**
    * Helper to force clear all state.
@@ -27,28 +34,27 @@ export default function Results({subreddit, sortBy}) {
     setPosts([])
     setLastPost(null)
     setClicked(false)
+    setLoadingMore(null)
   }
 
   /**
    * Get the initial set of posts.
    */
   async function loadInitialPosts() {
-    setLoading(true)
-    const data = await fetchData({subreddit, sortBy})
     clearState()
+    setLoading(true)
+    const data = await fetchPosts({subreddit, sortBy})
     setPosts(data?.posts)
     setLastPost(data?.after)
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+    setLoading(false)
   }
 
   /**
-   * Get more posts.
+   * Activate infinite scroll and get more posts.
    */
-  async function loadMorePosts() {
+  async function infiniteScroll() {
     setLoadingMore(true)
-    const data = await fetchData({subreddit, lastPost, sortBy})
+    const data = await fetchPosts({subreddit, lastPost, sortBy})
     setPosts((prevResults) => [...prevResults, ...data.posts])
     setLastPost(data?.after)
     setLoadingMore(false)
@@ -60,8 +66,8 @@ export default function Results({subreddit, sortBy}) {
   }, [subreddit, sortBy]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (clicked) {
-      loadMorePosts()
+    if (!loading && clicked) {
+      infiniteScroll()
     }
   }, [inView]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -79,15 +85,10 @@ export default function Results({subreddit, sortBy}) {
       <button
         ref={ref}
         className="animate mt-16 ml-auto mr-auto flex py-2 px-4 text-white"
-        onClick={loadMorePosts}
+        onClick={infiniteScroll}
       >
-        {loadingMore ? <>Loading...</> : <>Load More Posts</>}
+        {loadingMore ? <>Loading...</> : <>Load more</>}
       </button>
     </>
   )
-}
-
-Results.propTypes = {
-  sortBy: PropTypes.string,
-  subreddit: PropTypes.string.isRequired
 }

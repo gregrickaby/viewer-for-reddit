@@ -2,22 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: ComicNeue;
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/ComicNeue-Regular.woff2");
-}
-
-@font-face {
-  font-family: OpenDyslexic;
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OpenDyslexic-Regular.woff2");
-}
-
 @layer base {
   html,
   body {
@@ -31,13 +15,13 @@
     appearance: none;
   }
 
-  input[type="text"] {
+  input[type='text'] {
     @apply dark:text-black;
 
     appearance: none;
   }
 
-  input[type="submit"] {
+  input[type='submit'] {
     @apply bg-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200;
   }
 

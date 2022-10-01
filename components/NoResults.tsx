@@ -1,5 +1,8 @@
 import Image from 'next/image'
 
+/**
+ * No Results component.
+ */
 export default function NoResults() {
   return (
     <div className="m-auto space-y-4 text-center text-2xl text-red-900 dark:text-red-500">

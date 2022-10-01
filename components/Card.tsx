@@ -1,6 +1,8 @@
-import PropTypes from 'prop-types'
-import cleanIframe from '@/functions/cleanIframe'
+import {cleanIframe} from '~/lib/helpers'
 
+/**
+ * Card component.
+ */
 export default function Card(props) {
   return (
     <div className="overflow-hidden pb-4">
@@ -67,17 +69,4 @@ export default function Card(props) {
       })()}
     </div>
   )
-}
-
-Card.propTypes = {
-  images: PropTypes.array,
-  media: PropTypes.object,
-  permalink: PropTypes.string,
-  preview: PropTypes.object,
-  secure_media: PropTypes.object,
-  thumbnail: PropTypes.string,
-  title: PropTypes.string,
-  type: PropTypes.string,
-  ups: PropTypes.number,
-  url: PropTypes.string
 }
