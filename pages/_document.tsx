@@ -28,15 +28,14 @@ export default class MyDocument extends Document {
           <meta httpEquiv="x-ua-compatible" content="ie=edge" />
           <link
             rel="preconnect"
-            href="//oauth.reddit.com"
+            href="//preview.redd.it"
             crossOrigin="anonymous"
           />
-          <link rel="preconnect" href="//i.redd.it" crossOrigin="anonymous" />
           <link
             as="fetch"
-            crossOrigin="anonymous"
-            href="/api/reddit"
             rel="preload"
+            href="/api/reddit?sub=itookapicture&amp;sort=hot&amp;limit=24&amp;after="
+            crossOrigin="same-origin"
           />
           <link rel="shortcut icon" href="/favicon/favicon.ico" />
           <link rel="apple-touch-icon" href="/favicon/icon.png" />
