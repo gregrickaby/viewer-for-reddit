@@ -43,7 +43,13 @@ export default function Search() {
             type="text"
             value={inputValue}
           />
-          <select id="search" name="search" onChange={handleSort} value={sort}>
+          <select
+            id="search"
+            name="search"
+            className="rounded-none border-t border-b bg-zinc-900 px-1 focus:outline-none"
+            onChange={handleSort}
+            value={sort}
+          >
             <option value="hot">hot</option>
             <option value="top">top</option>
             <option value="new">new</option>

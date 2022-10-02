@@ -5,7 +5,7 @@
 @layer base {
   html,
   body {
-    @apply dark:bg-gray-900 dark:text-gray-200;
+    @apply dark:bg-zinc-900 dark:text-zinc-200;
 
     scroll-behavior: smooth;
     text-rendering: optimizespeed;
@@ -16,24 +16,20 @@
   }
 
   input[type='text'] {
-    @apply dark:text-black;
+    @apply bg-zinc-900 text-white;
 
     appearance: none;
   }
 
-  input[type='submit'] {
-    @apply bg-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200;
-  }
-
   a {
-    @apply dark:text-gray-200;
+    @apply dark:text-zinc-200;
 
     &:hover {
       @apply underline;
     }
 
     &:visited {
-      @apply dark:text-gray-600;
+      @apply dark:text-zinc-600;
     }
   }
 }
