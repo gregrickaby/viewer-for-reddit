@@ -1,11 +1,24 @@
+import {createStyles} from '@mantine/core'
 import {cleanIframe} from '~/lib/helpers'
+
+const useStyles = createStyles((theme) => ({
+  card: {
+    overflow: 'hidden',
+    paddingBottom: theme.spacing.xl
+  },
+  img: {
+    height: 'auto',
+    width: '100%'
+  }
+}))
 
 /**
  * Card component.
  */
 export default function Card(props) {
+  const {classes} = useStyles()
   return (
-    <div>
+    <div className={classes.card}>
       {(() => {
         switch (props?.type) {
           case 'image':
@@ -13,6 +26,7 @@ export default function Card(props) {
               <a href={props?.permalink} aria-label={props?.title}>
                 <img
                   alt={props?.title}
+                  className={classes.img}
                   height={props?.images?.height}
                   loading="lazy"
                   src={props?.images?.url}

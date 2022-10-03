@@ -1,20 +1,29 @@
+import {createStyles} from '@mantine/core'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
 import Masonry from 'react-masonry-css'
+import Card from '~/components/Card'
+import {useRedditContext} from '~/components/RedditProvider'
+import SkeletonWrapper from '~/components/SkeletonWrapper'
 import {fetchPosts} from '~/lib/helpers'
-import Card from './Card'
-import {useRedditContext} from './RedditProvider'
-import SkeletonWrapper from './SkeletonWrapper'
 const breakpointColumnsObj = {
   default: 3,
   766: 1
 }
+
+const useStyles = createStyles((theme) => ({
+  masonry: {
+    display: 'flex',
+    gap: theme.spacing.xl
+  }
+}))
 
 /**
  * Results component.
  */
 export default function Results() {
   const {subReddit, sort} = useRedditContext()
+  const {classes} = useStyles()
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(null)
   const [posts, setPosts] = useState([])
@@ -76,8 +85,7 @@ export default function Results() {
     <>
       <Masonry
         breakpointCols={breakpointColumnsObj}
-        style={{display: 'flex', gap: '16px'}}
-        className="my-masonry-grid"
+        className={classes.masonry}
       >
         {posts.map((post) => (
           <Card key={post.id} {...post} />

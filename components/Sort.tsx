@@ -1,5 +1,5 @@
 import {Select} from '@mantine/core'
-import {useRedditContext} from './RedditProvider'
+import {useRedditContext} from '~/components/RedditProvider'
 
 /**
  * Sort component.

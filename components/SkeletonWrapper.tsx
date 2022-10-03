@@ -23,6 +23,13 @@ export default function SkeletonWrapper() {
       <Skeleton height={640} mt={6} width={480} />
       <Skeleton height={640} mt={6} width={480} />
       <Skeleton height={640} mt={6} width={480} />
+      <Skeleton height={640} mt={6} width={480} />
+      <Skeleton height={640} mt={6} width={480} />
+      <Skeleton height={640} mt={6} width={480} />
+      <Skeleton height={640} mt={6} width={480} />
+      <Skeleton height={640} mt={6} width={480} />
+      <Skeleton height={640} mt={6} width={480} />
+      <Skeleton height={640} mt={6} width={480} />
     </>
   )
 }

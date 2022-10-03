@@ -3,8 +3,8 @@ import {useDebouncedValue} from '@mantine/hooks'
 import {IconSearch} from '@tabler/icons'
 import {useState} from 'react'
 import useSWR from 'swr'
+import {useRedditContext} from '~/components/RedditProvider'
 import {fetcher} from '~/lib/helpers'
-import {useRedditContext} from './RedditProvider'
 
 const useStyles = createStyles(() => ({
   searchBar: {
