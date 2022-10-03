@@ -1,69 +1,44 @@
+import {Autocomplete, createStyles} from '@mantine/core'
+import {useDebouncedValue} from '@mantine/hooks'
 import {useState} from 'react'
-import Results from './Results'
+import {IconSearch} from '@tabler/icons'
+import useSWR from 'swr'
+import {fetcher} from '~/lib/helpers'
+import {useRedditContext} from './RedditProvider'
+
+const useStyles = createStyles(() => ({
+  searchBar: {
+    width: '100%'
+  }
+}))
 
 /**
  * Search component.
+ *
+ * @see https://mantine.dev/core/autocomplete/
  */
 export default function Search() {
-  const [inputValue, setValue] = useState('itookapicture')
-  const [sort, setSort] = useState('hot')
-  const [subreddit, setSubreddit] = useState(inputValue)
-  const [toggleHelp, setToggleHelp] = useState(false)
-
-  function helpToggler() {
-    setToggleHelp((prev) => !prev)
-  }
-
-  function handleSearch(event) {
-    event.preventDefault()
-    setSubreddit(inputValue)
-  }
-
-  function handleSort(event) {
-    event.preventDefault()
-    setSort(event.target.value)
-  }
+  const {setSubreddit} = useRedditContext()
+  const {classes} = useStyles()
+  const [value, setValue] = useState('')
+  const [debounced] = useDebouncedValue(value, 200)
+  const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnMount: false
+  })
 
   return (
-    <>
-      <form onSubmit={handleSearch}>
-        <div>
-          <span>r/</span>
-          <input
-            autoCapitalize="none"
-            id="search"
-            minLength={2}
-            onChange={(e) => setValue(e.target.value.trim())}
-            pattern="^[^~`^<>]+$"
-            placeholder="pics"
-            type="text"
-            value={inputValue}
-          />
-          <select id="search" name="search" onChange={handleSort} value={sort}>
-            <option value="hot">hot</option>
-            <option value="top">top</option>
-            <option value="new">new</option>
-            <option value="best">best</option>
-            <option value="rising">rising</option>
-          </select>
-          <button>Search</button>
-        </div>
-        <label htmlFor="search">
-          Type the name of a subreddit and press enter.{' '}
-          <button onClick={helpToggler}>
-            Help <span>&#9662;</span>
-          </button>
-          {toggleHelp && (
-            <p>
-              You can also combine subreddits. For example:{' '}
-              <span>all+popular+funny+aww+pics</span>
-            </p>
-          )}
-        </label>
-      </form>
-      <main>
-        <Results subreddit={subreddit} sortBy={sort} />
-      </main>
-    </>
+    <Autocomplete
+      aria-label="Search"
+      icon={<IconSearch />}
+      className={classes.searchBar}
+      data={results ? results : []}
+      onChange={setValue}
+      onItemSubmit={setSubreddit}
+      placeholder="Search"
+      nothingFound="No subreddits found."
+      value={value}
+    />
   )
 }
