@@ -82,11 +82,7 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
           <Card key={index} {...post} />
         ))}
       </Masonry>
-      <button
-        ref={ref}
-        className="animate mt-16 ml-auto mr-auto flex py-2 px-4 text-white"
-        onClick={infiniteScroll}
-      >
+      <button ref={ref} onClick={infiniteScroll}>
         {loadingMore ? <>Loading...</> : <>Load more</>}
       </button>
     </>

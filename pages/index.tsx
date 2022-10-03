@@ -13,16 +13,16 @@ export default function Homepage() {
         <title>{config?.siteTitle}</title>
         <meta name="description" content={config?.siteDescription} />
       </Head>
-      <div className="container max-w-7xl space-y-12 p-8">
-        <header className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold">{config.siteTitle}</h1>
+      <div>
+        <header>
+          <h1>{config.siteTitle}</h1>
           <p>{config.siteDescription}</p>
         </header>
         <Search />
-        <footer className="py-4 text-center font-mono text-xs">
+        <footer>
           <p>
             website by{' '}
-            <a href={config.siteUrl} rel="noopener">
+            <a href={config.siteUrl} target="_blank" rel="noopener noreferrer">
               {config.siteAuthor}
             </a>
           </p>

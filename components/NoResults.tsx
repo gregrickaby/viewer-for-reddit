@@ -5,7 +5,7 @@ import Image from 'next/image'
  */
 export default function NoResults() {
   return (
-    <div className="m-auto space-y-4 text-center text-2xl text-red-900 dark:text-red-500">
+    <>
       <p>
         Either the Reddit API is down or something else is wrong. Please try
         your search again.
@@ -18,6 +18,6 @@ export default function NoResults() {
           width="426"
         />
       </div>
-    </div>
+    </>
   )
 }

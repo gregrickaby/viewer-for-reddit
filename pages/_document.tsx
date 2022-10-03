@@ -1,25 +1,15 @@
-import Document, {
-  DocumentContext,
-  Head,
-  Html,
-  Main,
-  NextScript
-} from 'next/document'
+import {createGetInitialProps} from '@mantine/next'
+import Document, {Head, Html, Main, NextScript} from 'next/document'
 import config from '~/lib/config'
 
-/**
- * Render a custom Document component.
- */
-export default class MyDocument extends Document {
-  static async getInitialProps(ctx: DocumentContext) {
-    const initialProps = await Document.getInitialProps(ctx)
+const getInitialProps = createGetInitialProps()
 
-    return initialProps
-  }
+export default class _Document extends Document {
+  static getInitialProps = getInitialProps
 
   render() {
     return (
-      <Html lang="en">
+      <Html>
         <Head>
           <meta httpEquiv="x-ua-compatible" content="ie=edge" />
           <link
