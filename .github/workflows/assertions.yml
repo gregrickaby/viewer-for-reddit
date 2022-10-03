@@ -23,8 +23,5 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Lint scripts
-        run: npm run lint:js
-
-      - name: Lint styles
-        run: npm run lint:css
+      - name: Lint
+        run: npm run lint
