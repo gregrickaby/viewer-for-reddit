@@ -2,7 +2,7 @@
   "name": "@gregrickaby/reddit-image-viewer",
   "private": true,
   "description": "Anonymously browse images, videos, gifs, and other media from any subreddit.",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/reddit-image-viewer.git"
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.1.1",
-    "@types/node": "^18.8.0",
+    "@types/node": "^18.8.1",
     "@types/react": "^18.0.21",
     "eslint": "^8.24.0",
     "eslint-config-next": "^12.3.1",
