@@ -1,11 +1,24 @@
+import {createStyles} from '@mantine/core'
 import {cleanIframe} from '~/lib/helpers'
+
+const useStyles = createStyles((theme) => ({
+  card: {
+    overflow: 'hidden',
+    paddingBottom: theme.spacing.xl
+  },
+  img: {
+    height: 'auto',
+    width: '100%'
+  }
+}))
 
 /**
  * Card component.
  */
 export default function Card(props) {
+  const {classes} = useStyles()
   return (
-    <div className="overflow-hidden pb-4">
+    <div className={classes.card}>
       {(() => {
         switch (props?.type) {
           case 'image':
@@ -13,7 +26,7 @@ export default function Card(props) {
               <a href={props?.permalink} aria-label={props?.title}>
                 <img
                   alt={props?.title}
-                  className="card-image"
+                  className={classes.img}
                   height={props?.images?.height}
                   loading="lazy"
                   src={props?.images?.url}
@@ -24,7 +37,6 @@ export default function Card(props) {
           case 'hosted:video':
             return (
               <video
-                className="aspect-video w-full"
                 autoPlay
                 controls
                 loop
@@ -50,7 +62,6 @@ export default function Card(props) {
             if (props?.url.includes('gifv')) {
               return (
                 <video
-                  className="aspect-video w-full"
                   autoPlay
                   controls
                   loop

@@ -1,23 +1,33 @@
-import {fetchPosts} from '~/lib/helpers'
+import {Button, createStyles} from '@mantine/core'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
-import Card from './Card'
 import Masonry from 'react-masonry-css'
-import Skeleton from './Skeleton'
+import Card from '~/components/Card'
+import {useRedditContext} from '~/components/RedditProvider'
+import SkeletonWrapper from '~/components/SkeletonWrapper'
+import {fetchPosts} from '~/lib/helpers'
 const breakpointColumnsObj = {
   default: 3,
   766: 1
 }
 
-interface ResultsProps {
-  subreddit: string
-  sortBy: string
-}
+const useStyles = createStyles((theme) => ({
+  masonry: {
+    display: 'flex',
+    gap: theme.spacing.xl
+  },
+  loadMore: {
+    display: 'flex',
+    margin: `${theme.spacing.xl}px auto`
+  }
+}))
 
 /**
  * Results component.
  */
-export default function Results({subreddit, sortBy}: ResultsProps) {
+export default function Results() {
+  const {subReddit, sort} = useRedditContext()
+  const {classes} = useStyles()
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(null)
   const [posts, setPosts] = useState([])
@@ -35,6 +45,7 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
     setLastPost(null)
     setClicked(false)
     setLoadingMore(null)
+    setLoading(false)
   }
 
   /**
@@ -43,7 +54,7 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
   async function loadInitialPosts() {
     clearState()
     setLoading(true)
-    const data = await fetchPosts({subreddit, sortBy})
+    const data = await fetchPosts({subReddit, sort})
     setPosts(data?.posts)
     setLastPost(data?.after)
     setLoading(false)
@@ -54,16 +65,17 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
    */
   async function infiniteScroll() {
     setLoadingMore(true)
-    const data = await fetchPosts({subreddit, lastPost, sortBy})
+    const data = await fetchPosts({subReddit, lastPost, sort})
     setPosts((prevResults) => [...prevResults, ...data.posts])
     setLastPost(data?.after)
     setLoadingMore(false)
     setClicked(true)
+    setLoading(false)
   }
 
   useEffect(() => {
     loadInitialPosts()
-  }, [subreddit, sortBy]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [subReddit, sort]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!loading && clicked) {
@@ -71,24 +83,23 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
     }
   }, [inView]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loading) {
-    return <Skeleton />
+  if (loading || !posts) {
+    return <SkeletonWrapper />
   }
 
   return (
     <>
-      <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-4">
-        {posts.map((post, index) => (
-          <Card key={index} {...post} />
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className={classes.masonry}
+      >
+        {posts.map((post) => (
+          <Card key={post.id} {...post} />
         ))}
       </Masonry>
-      <button
-        ref={ref}
-        className="animate mt-16 ml-auto mr-auto flex py-2 px-4 text-white"
-        onClick={infiniteScroll}
-      >
+      <Button className={classes.loadMore} ref={ref} onClick={infiniteScroll}>
         {loadingMore ? <>Loading...</> : <>Load more</>}
-      </button>
+      </Button>
     </>
   )
 }

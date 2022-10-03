@@ -34,7 +34,7 @@ interface RedditPost {
  */
 export default async function reddit(req: NextRequest) {
   // Get query params from request.
-  const after = new URL(req.url).searchParams.get('after') || null
+  const after = new URL(req.url).searchParams.get('after') || ''
   const limit = new URL(req.url).searchParams.get('limit') || '24'
   const sort = new URL(req.url).searchParams.get('sort') || 'hot'
   const sub = new URL(req.url).searchParams.get('sub') || 'itookapicture'
@@ -91,6 +91,7 @@ export default async function reddit(req: NextRequest) {
     // Create response shape.
     const data = {
       posts: postsContainImage.map((post) => ({
+        id: post.data.id,
         images: post.data.preview.images[0].resolutions.pop(),
         media: post.data.media,
         permalink: `https://www.reddit.com${post.data.permalink}`,
