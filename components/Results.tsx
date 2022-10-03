@@ -1,4 +1,4 @@
-import {createStyles} from '@mantine/core'
+import {Button, createStyles} from '@mantine/core'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
 import Masonry from 'react-masonry-css'
@@ -15,6 +15,10 @@ const useStyles = createStyles((theme) => ({
   masonry: {
     display: 'flex',
     gap: theme.spacing.xl
+  },
+  loadMore: {
+    display: 'flex',
+    margin: `${theme.spacing.xl}px auto`
   }
 }))
 
@@ -41,6 +45,7 @@ export default function Results() {
     setLastPost(null)
     setClicked(false)
     setLoadingMore(null)
+    setLoading(false)
   }
 
   /**
@@ -65,6 +70,7 @@ export default function Results() {
     setLastPost(data?.after)
     setLoadingMore(false)
     setClicked(true)
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -91,9 +97,9 @@ export default function Results() {
           <Card key={post.id} {...post} />
         ))}
       </Masonry>
-      <button ref={ref} onClick={infiniteScroll}>
+      <Button className={classes.loadMore} ref={ref} onClick={infiniteScroll}>
         {loadingMore ? <>Loading...</> : <>Load more</>}
-      </button>
+      </Button>
     </>
   )
 }

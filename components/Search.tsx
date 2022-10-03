@@ -38,6 +38,7 @@ export default function Search() {
       onChange={setValue}
       onItemSubmit={(value) => setSubreddit(value.value)}
       placeholder="Search for a sub"
+      size="lg"
       value={value}
     />
   )
