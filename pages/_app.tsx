@@ -1,6 +1,6 @@
 import {AppProps} from 'next/app'
-import Head from 'next/head'
 import {MantineProvider} from '@mantine/core'
+import RedditProvider from '~/components/RedditProvider'
 
 /**
  * App component.
@@ -16,7 +16,9 @@ export default function App(props: AppProps) {
         colorScheme: 'dark'
       }}
     >
-      <Component {...pageProps} />
+      <RedditProvider>
+        <Component {...pageProps} />
+      </RedditProvider>
     </MantineProvider>
   )
 }
