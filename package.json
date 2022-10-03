@@ -7,12 +7,16 @@
     "type": "git",
     "url": "git+https://github.com/gregrickaby/reddit-image-viewer.git"
   },
-  "author": "Greg Rickaby <greg@gregrickaby.com",
+  "author": "Greg Rickaby <greg@gregrickaby.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/gregrickaby/reddit-image-viewer/issues"
   },
   "homepage": "https://github.com/gregrickaby/reddit-image-viewer#readme",
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
+  },
   "scripts": {
     "build": "next build",
     "clean": "rimraf .next",
@@ -32,7 +36,7 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.1.1",
-    "@types/node": "18.7.23",
+    "@types/node": "18.8.0",
     "@types/react": "18.0.21",
     "autoprefixer": "^10.4.12",
     "classnames": "^2.3.2",
