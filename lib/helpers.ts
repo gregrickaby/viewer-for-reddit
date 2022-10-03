@@ -1,3 +1,16 @@
+/**
+ * Global fetcher function for useSWR.
+ */
+export async function fetcher(url: RequestInfo, init?: RequestInit) {
+  const response = await fetch(url, init)
+
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`)
+  }
+
+  return response.json()
+}
+
 interface FetchPostsProps {
   lastPost?: string
   limit?: number
