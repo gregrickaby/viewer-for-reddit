@@ -1,8 +1,9 @@
-import { createStyles, Select, TextInput } from '@mantine/core';
-import { useDebouncedState } from '@mantine/hooks';
+import { Autocomplete, createStyles } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { useRedditContext } from './RedditProvider';
+import { useState } from 'react';
+import { MdSavedSearch } from 'react-icons/md';
+import useSWR from 'swr';
+import { fetcher } from '~/lib/helpers';
 
 const useStyles = createStyles(() => ({
   searchBar: {
@@ -12,45 +13,30 @@ const useStyles = createStyles(() => ({
 
 /**
  * Search component.
+ *
+ * @see https://mantine.dev/core/autocomplete/
  */
 export default function Search() {
-  const { classes } = useStyles();
-  const { sort, setSort } = useRedditContext();
-  const [search, setSearch] = useDebouncedState('', 800);
   const router = useRouter();
-
-  /**
-   * Handle search input.
-   */
-  useEffect(() => {
-    if (search) {
-      router.push(`/r/${search}`);
-    }
-  }, [search]);
+  const { classes } = useStyles();
+  const [term, setTerm] = useState('');
+  const { data: results } = useSWR(`/api/search?term=${term}`, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnMount: false,
+  });
 
   return (
-    <>
-      <TextInput
-        aria-label="search reddit"
-        autoCapitalize="none"
-        autoComplete="off"
-        className={classes.searchBar}
-        defaultValue={search}
-        onChange={(event) => setSearch(event.currentTarget.value.trim())}
-        pattern="^[^~`^<>]+$"
-        placeholder="Search Reddit"
-      />
-      <Select
-        aria-label="sort posts"
-        value={sort}
-        data={[
-          { value: 'hot', label: 'Hot' },
-          { value: 'top', label: 'Top' },
-          { value: 'new', label: 'New' },
-          { value: 'rising', label: 'Rising' },
-        ]}
-        onChange={setSort}
-      />
-    </>
+    <Autocomplete
+      aria-label="Search"
+      icon={<MdSavedSearch />}
+      className={classes.searchBar}
+      data={results ? results : []}
+      onChange={setTerm}
+      onItemSubmit={(value) => router.push(`${value.url}`)}
+      placeholder="Search"
+      nothingFound="No subreddits found."
+      value={term}
+    />
   );
 }
