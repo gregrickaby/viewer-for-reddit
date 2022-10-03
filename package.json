@@ -26,9 +26,9 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
-    "@mantine/core": "^5.4.2",
-    "@mantine/hooks": "^5.4.2",
-    "@mantine/next": "^5.4.2",
+    "@mantine/core": "^5.5.0",
+    "@mantine/hooks": "^5.5.0",
+    "@mantine/next": "^5.5.0",
     "next": "^12.3.1",
     "next-auth": "^4.12.2",
     "react": "^18.2.0",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.1.1",
-    "@types/node": "^18.7.23",
+    "@types/node": "^18.8.0",
     "@types/react": "^18.0.21",
     "eslint": "^8.24.0",
     "eslint-config-airbnb": "^19.0.4",
