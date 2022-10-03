@@ -1,4 +1,5 @@
 import {createStyles} from '@mantine/core'
+import {IconBrandGithub} from '@tabler/icons'
 import Head from 'next/head'
 import BackToTop from '~/components/BackToTop'
 import Results from '~/components/Results'
@@ -9,13 +10,23 @@ import config from '~/lib/config'
 const useStyles = createStyles((theme) => ({
   container: {
     margin: '0 auto',
-    maxWidth: theme.breakpoints.xl,
+    maxWidth: theme.breakpoints.lg,
     padding: theme.spacing.xl
   },
   header: {
+    alignContent: 'center',
     display: 'flex',
     justifyContent: 'space-between',
-    alignContent: 'center'
+    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+      flexDirection: 'column',
+      textAlign: 'center'
+    }
+  },
+  title: {
+    margin: 0,
+    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+      lineHeight: 1
+    }
   },
   controls: {
     display: 'flex',
@@ -23,7 +34,19 @@ const useStyles = createStyles((theme) => ({
     marginBottom: theme.spacing.xl
   },
   main: {
-    marginTop: theme.spacing.xl
+    marginTop: theme.spacing.xl,
+    minHeight: '100vh'
+  },
+  footer: {
+    display: 'flex',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+    gap: theme.spacing.md,
+
+    a: {
+      color: theme.colors.dark[0]
+    }
   }
 }))
 
@@ -40,7 +63,7 @@ export default function Homepage() {
       </Head>
       <div className={classes.container}>
         <header className={classes.header}>
-          <h1>{config.siteTitle}</h1>
+          <h1 className={classes.title}>{config.siteTitle}</h1>
           <p>{config.siteDescription}</p>
         </header>
         <main className={classes.main}>
@@ -50,11 +73,24 @@ export default function Homepage() {
           </div>
           <Results />
         </main>
-        <footer>
+        <footer className={classes.footer}>
           <p>
             website by{' '}
-            <a href={config.siteUrl} target="_blank" rel="noopener noreferrer">
+            <a
+              href={config.authorUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {config.siteAuthor}
+            </a>
+          </p>
+          <p>
+            <a
+              href="https://github.com/gregrickaby/reddit-image-viewer"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <IconBrandGithub />
             </a>
           </p>
         </footer>
