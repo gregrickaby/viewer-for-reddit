@@ -24,7 +24,7 @@ export default async function search(req: NextRequest) {
       `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=6224f443-366f-48b7-9036-3a340e4df6df`,
       {
         headers: {
-          Authorization: `Bearer: ${process.env.REDDIT_ACCESS_TOKEN}`
+          authorization: `Bearer ${process.env.REDDIT_ACCESS_TOKEN}`
         }
       }
     )
