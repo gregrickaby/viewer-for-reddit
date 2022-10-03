@@ -1,7 +1,7 @@
 import {Autocomplete, createStyles} from '@mantine/core'
 import {useDebouncedValue} from '@mantine/hooks'
-import {useState} from 'react'
 import {IconSearch} from '@tabler/icons'
+import {useState} from 'react'
 import useSWR from 'swr'
 import {fetcher} from '~/lib/helpers'
 import {useRedditContext} from './RedditProvider'
@@ -30,14 +30,14 @@ export default function Search() {
 
   return (
     <Autocomplete
-      aria-label="Search"
-      icon={<IconSearch />}
+      aria-label="Search sub reddits"
       className={classes.searchBar}
       data={results ? results : []}
+      icon={<IconSearch />}
+      nothingFound="No subs found. Start typing to search."
       onChange={setValue}
-      onItemSubmit={setSubreddit}
-      placeholder="Search"
-      nothingFound="No subreddits found."
+      onItemSubmit={(value) => setSubreddit(value.value)}
+      placeholder="Search for a sub"
       value={value}
     />
   )

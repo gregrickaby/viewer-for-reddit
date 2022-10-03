@@ -14,8 +14,8 @@ export async function fetcher(url: RequestInfo, init?: RequestInit) {
 interface FetchPostsProps {
   lastPost?: string
   limit?: number
-  sortBy?: string
-  subreddit: string
+  sort?: string
+  subReddit: string
 }
 
 /**
@@ -24,18 +24,18 @@ interface FetchPostsProps {
 export async function fetchPosts({
   limit,
   lastPost,
-  sortBy,
-  subreddit
+  sort,
+  subReddit
 }: FetchPostsProps) {
   const after = lastPost ? lastPost : ''
   const number = limit ? limit : '24'
-  const sort = sortBy ? sortBy : 'hot'
-  const sub = subreddit ? subreddit : 'itookapicture'
+  const sortBy = sort ? sort : 'hot'
+  const sub = subReddit ? subReddit : 'itookapicture'
 
   try {
     // Try and fetch posts.
     const response = await fetch(
-      `/api/reddit?sub=${sub}&sort=${sort}&limit=${number}&after=${after}`,
+      `/api/reddit?sub=${sub}&sort=${sortBy}&limit=${number}&after=${after}`,
       {
         cache: 'default'
       }

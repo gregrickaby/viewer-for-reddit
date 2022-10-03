@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import BackToTop from '~/components/BackToTop'
+import Results from '~/components/Results'
 import Search from '~/components/Search'
+import Sort from '~/components/Sort'
 import config from '~/lib/config'
 
 /**
@@ -17,8 +19,10 @@ export default function Homepage() {
         <header>
           <h1>{config.siteTitle}</h1>
           <p>{config.siteDescription}</p>
+          <Search />
+          <Sort />
         </header>
-        <Search />
+        <Results />
         <footer>
           <p>
             website by{' '}

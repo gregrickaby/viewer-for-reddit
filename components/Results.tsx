@@ -1,23 +1,20 @@
-import {fetchPosts} from '~/lib/helpers'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
-import Card from './Card'
 import Masonry from 'react-masonry-css'
-import Skeleton from './Skeleton'
+import {fetchPosts} from '~/lib/helpers'
+import Card from './Card'
+import {useRedditContext} from './RedditProvider'
+import SkeletonWrapper from './SkeletonWrapper'
 const breakpointColumnsObj = {
   default: 3,
   766: 1
 }
 
-interface ResultsProps {
-  subreddit: string
-  sortBy: string
-}
-
 /**
  * Results component.
  */
-export default function Results({subreddit, sortBy}: ResultsProps) {
+export default function Results() {
+  const {subReddit, sort} = useRedditContext()
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(null)
   const [posts, setPosts] = useState([])
@@ -43,7 +40,7 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
   async function loadInitialPosts() {
     clearState()
     setLoading(true)
-    const data = await fetchPosts({subreddit, sortBy})
+    const data = await fetchPosts({subReddit, sort})
     setPosts(data?.posts)
     setLastPost(data?.after)
     setLoading(false)
@@ -54,7 +51,7 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
    */
   async function infiniteScroll() {
     setLoadingMore(true)
-    const data = await fetchPosts({subreddit, lastPost, sortBy})
+    const data = await fetchPosts({subReddit, lastPost, sort})
     setPosts((prevResults) => [...prevResults, ...data.posts])
     setLastPost(data?.after)
     setLoadingMore(false)
@@ -63,7 +60,7 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
 
   useEffect(() => {
     loadInitialPosts()
-  }, [subreddit, sortBy]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [subReddit, sort]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!loading && clicked) {
@@ -71,15 +68,19 @@ export default function Results({subreddit, sortBy}: ResultsProps) {
     }
   }, [inView]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loading) {
-    return <Skeleton />
+  if (loading || !posts) {
+    return <SkeletonWrapper />
   }
 
   return (
     <>
-      <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-4">
-        {posts.map((post, index) => (
-          <Card key={index} {...post} />
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        style={{display: 'flex', gap: '16px'}}
+        className="my-masonry-grid"
+      >
+        {posts.map((post) => (
+          <Card key={post.id} {...post} />
         ))}
       </Masonry>
       <button ref={ref} onClick={infiniteScroll}>

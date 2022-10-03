@@ -1,5 +1,4 @@
-import {useLocalStorage} from '@mantine/hooks'
-import {createContext, useContext} from 'react'
+import {createContext, useContext, useState} from 'react'
 import config from '~/lib/config'
 import {ChildrenProps} from '~/lib/types'
 
@@ -22,15 +21,8 @@ export const useRedditContext = () => useContext(RedditContext)
  * This component is used to hold global state and provide it to child components.
  */
 export default function RedditProvider({children}: ChildrenProps) {
-  // Set our local storage variables.
-  const [subReddit, setSubreddit] = useLocalStorage({
-    key: 'riv-subreddit',
-    defaultValue: config.redditApi.subReddit
-  })
-  const [sort, setSort] = useLocalStorage({
-    key: 'riv-sort',
-    defaultValue: config.redditApi.sort
-  })
+  const [sort, setSort] = useState(config.redditApi.sort)
+  const [subReddit, setSubreddit] = useState(config.redditApi.subReddit)
 
   // Set the global state.
   const providerValues = {

@@ -8,6 +8,7 @@ export interface Posts {
   after: string
   posts: [
     {
+      id: string
       images: []
       media: string
       permalink: string
