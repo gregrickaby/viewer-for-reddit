@@ -18,6 +18,7 @@ export default function Sort() {
         {value: 'rising', label: 'Rising'}
       ]}
       onChange={setSort}
+      size="lg"
     />
   )
 }
