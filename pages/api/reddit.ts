@@ -34,13 +34,19 @@ interface RedditPost {
  */
 export default async function reddit(req: NextRequest) {
   // Get query params from request.
-  const params = new URL(req.url).searchParams
+  const url = new URL(req.url)
+  const searchParams = new URLSearchParams(url.search)
 
-  // Parse and sanitize query params.
-  const after = encodeURI(params.get('after')) || ''
-  const sort = encodeURI(params.get('sort')) || 'hot'
-  const sub = encodeURI(params.get('sub')) || 'itookapicture'
-  const limit = parseInt(params.get('limit')) || 24
+  // Parse and sanitize params.
+  const unsanitized_after = searchParams.get('after').toString()
+  const unsanitized_limit = parseInt(searchParams.get('limit'))
+  const unsanitized_sort = searchParams.get('sort').toString()
+  const unsanitized_sub = searchParams.get('sub').toString()
+
+  const after = unsanitized_after || ''
+  const limit = unsanitized_limit || 24
+  const sort = unsanitized_sort || 'hot'
+  const sub = unsanitized_sub || 'itookapicture'
 
   try {
     // Attempt to fetch posts.

@@ -16,15 +16,17 @@ export const config = {
  */
 export default async function search(req: NextRequest) {
   // Get query params from request.
-  const params = new URL(req.url).searchParams
+  const url = new URL(req.url)
+  const params = new URLSearchParams(url.search)
 
-  // Parse and sanitize query params.
-  const term = encodeURI(params.get('term')) || ''
+  // Parse and sanitize params.
+  const unsanitized_term = params.get('term').toString()
+  const term = unsanitized_term || ''
 
   try {
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=6224f443-366f-48b7-9036-3a340e4df6df`,
+      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=6224f443-366f-48b7-9036-3a340e4df6df`,
       {
         headers: {
           authorization: `Bearer ${process.env.REDDIT_ACCESS_TOKEN}`
