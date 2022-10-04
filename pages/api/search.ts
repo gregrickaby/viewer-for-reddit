@@ -16,7 +16,10 @@ export const config = {
  */
 export default async function search(req: NextRequest) {
   // Get query params from request.
-  const term = new URL(req.url).searchParams.get('term') || ''
+  const params = new URL(req.url).searchParams
+
+  // Parse and sanitize query params.
+  const term = encodeURI(params.get('term')) || ''
 
   try {
     // Attempt to fetch subreddits.
