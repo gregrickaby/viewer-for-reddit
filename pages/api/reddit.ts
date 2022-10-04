@@ -34,18 +34,13 @@ interface RedditPost {
  */
 export default async function reddit(req: NextRequest) {
   // Get query params from request.
-  const searchParams = new URL(req.url).searchParams
+  const {searchParams} = new URL(req.url)
 
   // Parse and sanitize params.
-  const unsanitized_after = searchParams.get('after')
-  const unsanitized_limit = searchParams.get('limit')
-  const unsanitized_sort = searchParams.get('sort')
-  const unsanitized_sub = searchParams.get('sub')
-
-  const lastPost = encodeURI(unsanitized_after) || ''
-  const postLimit = parseInt(unsanitized_limit) || 24
-  const sortBy = encodeURI(unsanitized_sort) || 'hot'
-  const subReddit = encodeURI(unsanitized_sub) || 'itookapicture'
+  const lastPost = encodeURI(searchParams.get('after')) || ''
+  const postLimit = parseInt(searchParams.get('limit')) || 24
+  const sortBy = encodeURI(searchParams.get('sort')) || 'hot'
+  const subReddit = encodeURI(searchParams.get('sub')) || 'itookapicture'
 
   try {
     // Attempt to fetch posts.
@@ -118,7 +113,7 @@ export default async function reddit(req: NextRequest) {
     return new Response(JSON.stringify(data), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=1, stale-while-revalidate=59'
+        'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59'
       },
       status: 200,
       statusText: 'OK'
