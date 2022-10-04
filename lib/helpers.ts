@@ -73,10 +73,10 @@ export function cleanIframe({html}: CleanIframeProps) {
   return `<iframe
       ${source}
       allow="autoplay fullscreen"
-      class="w-full aspect-video"
       loading="lazy"
       referrerpolicy="no-referrer"
       sandbox="allow-scripts allow-same-origin allow-presentation"
+      style="height: auto; width: 100%;"
       title="iframe"
     />`
 }

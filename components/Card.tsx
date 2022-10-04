@@ -6,7 +6,11 @@ const useStyles = createStyles((theme) => ({
     overflow: 'hidden',
     paddingBottom: theme.spacing.xl
   },
-  img: {
+  image: {
+    height: 'auto',
+    width: '100%'
+  },
+  video: {
     height: 'auto',
     width: '100%'
   }
@@ -26,7 +30,7 @@ export default function Card(props) {
               <a href={props?.permalink} aria-label={props?.title}>
                 <img
                   alt={props?.title}
-                  className={classes.img}
+                  className={classes.image}
                   height={props?.images?.height}
                   loading="lazy"
                   src={props?.images?.url}
@@ -37,7 +41,7 @@ export default function Card(props) {
           case 'hosted:video':
             return (
               <video
-                autoPlay
+                className={classes.video}
                 controls
                 loop
                 muted
@@ -62,7 +66,7 @@ export default function Card(props) {
             if (props?.url.includes('gifv')) {
               return (
                 <video
-                  autoPlay
+                  className={classes.video}
                   controls
                   loop
                   muted
