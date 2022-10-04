@@ -42,15 +42,15 @@ export default async function reddit(req: NextRequest) {
   const unsanitized_sort = searchParams.get('sort')
   const unsanitized_sub = searchParams.get('sub')
 
-  const after = encodeURI(unsanitized_after) || ''
-  const limit = parseInt(unsanitized_limit) || 24
-  const sort = encodeURI(unsanitized_sort) || 'hot'
-  const sub = encodeURI(unsanitized_sub) || 'itookapicture'
+  const lastPost = encodeURI(unsanitized_after) || ''
+  const postLimit = parseInt(unsanitized_limit) || 24
+  const sortBy = encodeURI(unsanitized_sort) || 'hot'
+  const subReddit = encodeURI(unsanitized_sub) || 'itookapicture'
 
   try {
     // Attempt to fetch posts.
     const response = await fetch(
-      `https://oauth.reddit.com/r/${sub}/${sort}/.json?limit=${limit}&after=${after}&raw_json=1`,
+      `https://oauth.reddit.com/r/${subReddit}/${sortBy}/.json?limit=${postLimit}&after=${lastPost}&raw_json=1`,
       {
         headers: {
           Authorization: `Bearer: ${process.env.REDDIT_ACCESS_TOKEN}`
