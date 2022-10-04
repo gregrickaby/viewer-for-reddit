@@ -11,10 +11,13 @@ const useStyles = createStyles((theme) => ({
   container: {
     margin: '0 auto',
     maxWidth: theme.breakpoints.lg,
-    padding: theme.spacing.xl
+    padding: `0 ${theme.spacing.xl}px`,
+    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+      padding: theme.spacing.xl
+    }
   },
   header: {
-    alignContent: 'center',
+    alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
@@ -23,6 +26,7 @@ const useStyles = createStyles((theme) => ({
     }
   },
   title: {
+    fontSize: theme.fontSizes.xl,
     margin: 0,
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
       lineHeight: 1
@@ -34,15 +38,14 @@ const useStyles = createStyles((theme) => ({
     marginBottom: theme.spacing.xl
   },
   main: {
-    marginTop: theme.spacing.xl,
     minHeight: '100vh'
   },
   footer: {
+    alignItems: 'center',
     display: 'flex',
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
     gap: theme.spacing.md,
+    justifyContent: 'center',
+    textAlign: 'center',
 
     a: {
       color: theme.colors.dark[0]
