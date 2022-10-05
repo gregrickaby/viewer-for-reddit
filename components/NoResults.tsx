@@ -1,3 +1,4 @@
+import {Stack} from '@mantine/core'
 import Image from 'next/future/image'
 import notFound from '../public/not-found.webp'
 
@@ -6,12 +7,12 @@ import notFound from '../public/not-found.webp'
  */
 export default function NoResults() {
   return (
-    <>
+    <Stack align="center">
       <p>
         Either the Reddit API is down or something else is wrong. Please try
         your search again.
       </p>
-      <Image alt="404 not found" src={notFound} />
-    </>
+      <Image alt="404 not found" priority placeholder="blur" src={notFound} />
+    </Stack>
   )
 }
