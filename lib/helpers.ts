@@ -58,25 +58,3 @@ export async function fetchPosts({
     }
   }
 }
-
-interface CleanIframeProps {
-  html: string
-}
-
-/**
- * Replace the src attribute with a less terrible version.
- */
-export function cleanIframe({html}: CleanIframeProps) {
-  // Grab the src URL.
-  const source = html.match(/(src="([^"]+)")/gi)
-
-  return `<iframe
-      ${source}
-      allow="autoplay fullscreen"
-      loading="lazy"
-      referrerpolicy="no-referrer"
-      sandbox="allow-scripts allow-same-origin allow-presentation"
-      style="height: auto; width: 100%;"
-      title="iframe"
-    />`
-}
