@@ -64,7 +64,7 @@ export default async function search(req: NextRequest) {
     // Filter uneeded data to keep the payload small.
     const filtered = subs.data.children.map((sub) => {
       return {
-        over18: sub.data.over18 ? true : false,
+        over18: sub.data.over18 ? 'true' : 'false',
         url: sub.data.url ? sub.data.url : '',
         value: sub.data.display_name ? sub.data.display_name : ''
       }
