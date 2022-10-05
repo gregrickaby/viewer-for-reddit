@@ -6,8 +6,8 @@ Anonymously browse images, videos, gifs, and other media from any subreddit. [ht
 
 ## Contributing
 
-Feedback or contributions via Github [Issues](https://github.com/gregrickaby/reddit-image-viewer/issues) and [Pull Requests](https://github.com/gregrickaby/reddit-image-viewer/pulls) are welcome!
-
-Happy Reddit-ing! 🍻
+Please read the [contributing guide](/CONTRIBUTING.md) to get started.
 
 ---
+
+Happy Reddit-ing! 🍻
