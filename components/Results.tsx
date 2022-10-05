@@ -1,4 +1,5 @@
 import {Button, createStyles} from '@mantine/core'
+import dynamic from 'next/dynamic'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
 import Masonry from 'react-masonry-css'
@@ -6,6 +7,11 @@ import Card from '~/components/Card'
 import {useRedditContext} from '~/components/RedditProvider'
 import SkeletonWrapper from '~/components/SkeletonWrapper'
 import {fetchPosts} from '~/lib/helpers'
+
+const DynamicNoResults = dynamic(() => import('./NoResults'), {
+  ssr: false
+})
+
 const breakpointColumnsObj = {
   default: 3,
   766: 1
@@ -83,8 +89,12 @@ export default function Results() {
     }
   }, [inView]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loading || !posts) {
+  if (loading) {
     return <SkeletonWrapper />
+  }
+
+  if (!posts) {
+    return <DynamicNoResults />
   }
 
   return (
