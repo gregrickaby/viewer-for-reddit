@@ -1,5 +1,5 @@
 import {createStyles} from '@mantine/core'
-import {cleanIframe} from '~/lib/helpers'
+import {Post} from '~/lib/types'
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -19,18 +19,19 @@ const useStyles = createStyles((theme) => ({
 /**
  * Card component.
  */
-export default function Card(props) {
+export default function Card(props: Post) {
   const {classes} = useStyles()
   return (
     <div className={classes.card}>
       {(() => {
-        switch (props?.type) {
+        switch (props?.post_hint) {
           case 'image':
             return (
-              <a href={props?.permalink} aria-label={props?.title}>
+              <a href={props?.permalink}>
                 <img
                   alt={props?.title}
                   className={classes.image}
+                  data-hint="image"
                   height={props?.images?.height}
                   loading="lazy"
                   src={props?.images?.url}
@@ -43,23 +44,56 @@ export default function Card(props) {
               <video
                 className={classes.video}
                 controls
-                loop
-                muted
+                crossOrigin="anonymous"
+                data-hint="hosted:video"
+                height={props?.media?.reddit_video?.height}
                 playsInline
-                src={props?.secure_media?.reddit_video?.fallback_url}
-              />
+                poster={props?.images?.url}
+                preload="metadata"
+                width={props?.media?.reddit_video?.width}
+              >
+                <source
+                  src={props?.media?.reddit_video?.hls_url}
+                  type="application/vnd.apple.mpegURL"
+                />
+              </video>
             )
           case 'rich:video':
-            return (
-              <a
-                aria-label={props?.title}
-                dangerouslySetInnerHTML={{
-                  __html: cleanIframe({
-                    html: props?.media?.oembed?.html
-                  })
+            return props?.video_preview ? (
+              <video
+                className={classes.video}
+                controls
+                crossOrigin="anonymous"
+                data-hint="rich:video"
+                height={props?.video_preview?.height}
+                muted
+                playsInline
+                poster={props?.images?.url}
+                preload="metadata"
+                width={props?.video_preview?.width}
+              >
+                <source
+                  src={props?.video_preview?.fallback_url}
+                  type="video/mp4"
+                />
+              </video>
+            ) : (
+              <div
+                style={{
+                  height: props?.secure_media_embed?.height,
+                  width: props?.secure_media_embed?.width
                 }}
-                href={props?.url}
-              />
+              >
+                <iframe
+                  allow="fullscreen"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  sandbox="allow-scripts allow-same-origin allow-presentation"
+                  src={props?.secure_media_embed?.media_domain_url}
+                  style={{border: 'none', height: '100%', width: '100%'}}
+                  title="iframe"
+                />
+              </div>
             )
           case 'link':
             // Search for .gifv....
@@ -68,11 +102,18 @@ export default function Card(props) {
                 <video
                   className={classes.video}
                   controls
-                  loop
+                  crossOrigin="anonymous"
+                  data-hint="link"
                   muted
                   playsInline
-                  src={props?.url.replace('.gifv', '.mp4')} // Replace .gifv with .mp4.
-                ></video>
+                  poster={props?.images?.url}
+                  preload="metadata"
+                >
+                  <source
+                    src={props?.url.replace('.gifv', '.mp4')}
+                    type="video/mp4"
+                  />
+                </video>
               )
             } else {
               // No media? Return blank.
