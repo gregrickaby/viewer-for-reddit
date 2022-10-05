@@ -21,7 +21,7 @@ export default function Search() {
   const {setSubreddit} = useRedditContext()
   const {classes} = useStyles()
   const [value, setValue] = useState('')
-  const [debounced] = useDebouncedValue(value, 200)
+  const [debounced] = useDebouncedValue(value, 300)
   const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
