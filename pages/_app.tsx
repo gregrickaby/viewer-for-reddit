@@ -1,24 +1,34 @@
+import {ColorScheme, ColorSchemeProvider, MantineProvider} from '@mantine/core'
+import {useColorScheme, useHotkeys, useLocalStorage} from '@mantine/hooks'
 import {AppProps} from 'next/app'
-import {MantineProvider} from '@mantine/core'
 import RedditProvider from '~/components/RedditProvider'
 
 /**
- * App component.
+ * Custom App component.
  */
-export default function App(props: AppProps) {
-  const {Component, pageProps} = props
+export default function App({Component, pageProps}: AppProps) {
+  const preferredColorScheme = useColorScheme()
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: 'riv-color-scheme',
+    defaultValue: preferredColorScheme,
+    getInitialValueInEffect: true
+  })
+
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'))
+
+  useHotkeys([['mod+j', () => toggleColorScheme()]])
 
   return (
-    <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        colorScheme: 'dark'
-      }}
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
     >
-      <RedditProvider>
-        <Component {...pageProps} />
-      </RedditProvider>
-    </MantineProvider>
+      <MantineProvider theme={{colorScheme}} withGlobalStyles withNormalizeCSS>
+        <RedditProvider>
+          <Component {...pageProps} />
+        </RedditProvider>
+      </MantineProvider>
+    </ColorSchemeProvider>
   )
 }
