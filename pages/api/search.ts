@@ -1,6 +1,4 @@
 import type {NextRequest} from 'next/server'
-import * as siteConfig from '~/lib/config'
-import {getCache} from '~/lib/helpers'
 
 export const config = {
   runtime: 'experimental-edge'
@@ -23,16 +21,54 @@ export default async function search(req: NextRequest) {
   // Parse and sanitize params.
   const term = encodeURI(searchParams.get('term')) || 'itookapicture'
 
-  // Set up token URL.
-  const getTokenURL = `${process.env.VERCEL_URL}/api/token?authorization_key=${process.env.AUTHORIZATION_KEY}`
-
   try {
+    // Generate random device ID.
+    // @see https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+    const array = new Uint32Array(24)
+    const deviceId = self.crypto.getRandomValues(array)
+
+    // Try and fetch a new access token.
+    const tokenResponse = await fetch(
+      `https://www.reddit.com/api/v1/access_token?grant_type=client_credentials&device_id=${deviceId}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json charset=UTF-8',
+          'User-Agent': 'reddit-image-viewer/* by Greg Rickaby',
+          Authorization: `Basic ${btoa(
+            `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
+          )}`
+        }
+      }
+    )
+
+    // Bad response? Bail...
+    if (tokenResponse.status != 200) {
+      return new Response(
+        JSON.stringify({
+          error: `${tokenResponse.statusText}`
+        }),
+        {
+          status: tokenResponse.status,
+          statusText: tokenResponse.statusText
+        }
+      )
+    }
+
     // Get the access token.
-    const token = await getCache(siteConfig.default.tokenCacheName, getTokenURL)
+    const token = await tokenResponse.json()
 
     // Issue with token? Bail...
     if (token.error) {
-      throw new Error(token.error)
+      return new Response(
+        JSON.stringify({
+          error: token.error
+        }),
+        {
+          status: token.status,
+          statusText: token.statusText
+        }
+      )
     }
 
     // Attempt to fetch subreddits.
