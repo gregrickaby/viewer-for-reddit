@@ -48,9 +48,16 @@ npx create-next-app --example https://github.com/gregrickaby/reddit-image-viewer
 
 ### ENV Variables
 
-In order to authenticate with the Reddit API, you'll need an OAuth2 access token. For development purposes, a temporary token should be fine.
+In order to authenticate with the Reddit API, you'll need to [create a Reddit app](https://github.com/reddit-archive/reddit/wiki/OAuth2):
 
-1. Generate a temporary anonymous token at <https://not-an-aardvark.github.io/reddit-oauth-helper/> (the first field at the top of the page)
+1. Visit <https://www.reddit.com/prefs/apps>
+   1. Name: `My App`
+   2. Type `script`
+   3. Description: `My App Description`
+   4. About URL: `https://example.com`
+   5. Redirect URI: `https://my-app.vercel.app`
+
+Take note of the `client id` and `secret` values. You will need these in a moment.
 
 2. Create an `.env` file in the root of the project:
 
@@ -60,11 +67,29 @@ cp .env.example .env
 
 3. Add your token to the `.env` file:
 
-```bash
-REDDIT_ACCESS_TOKEN="YOUR-TOKEN-HERE"
+```text
+# Used to protect the `/api/token` endpoint from brute force attacks
+# Can be any random string.
+AUTHORIZATION_KEY="ANY-RANDOM-STRING-HERE"
+
+# Your Reddit Client ID
+# Get one here: https://www.reddit.com/prefs/apps
+REDDIT_CLIENT_ID="YOUR-TOKEN-HERE"
+
+# Your Reddit Client Secret
+# Get one here: https://www.reddit.com/prefs/apps
+REDDIT_CLIENT_SECRET="YOUR-TOKEN-HERE"
+
+# Used on production to verify the site with Google Webmaster Tools.
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION="YOUR-TOKEN-HERE"
+
+# The URL of the site.
+# This is a system ENV on Vercel-- you don't need to set it on Vercel.
+# https://vercel.com/docs/concepts/projects/environment-variables#system-environment-variables
+VERCEL_URL="http://localhost:3000"
 ```
 
-> If you want to generate a permanent token for Reddit, visit <https://www.reddit.com/prefs/apps/> to create an app, then follow the instructions <https://github.com/reddit-archive/reddit/wiki/OAuth2>. Also, the `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only used on Production. You can leave it as is.
+> The `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only used on Production. You can leave it as is.
 
 ---
 
