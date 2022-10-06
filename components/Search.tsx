@@ -24,6 +24,8 @@ const useStyles = createStyles(() => ({
 export default function Search({searchState, setSearchState}: Props) {
   const {setSubreddit} = useRedditContext()
   const {classes} = useStyles()
+
+  // if the search term gets set to an empty string, then by default will fetch itookapicture
   const [debounced] = useDebouncedValue(
     `${searchState === '' ? 'itookapicture' : searchState}`,
     300

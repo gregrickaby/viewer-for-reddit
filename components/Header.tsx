@@ -29,6 +29,7 @@ const useStyles = createStyles((theme) => ({
 export default function Header({setSearchState, searchState}: Props) {
   const {classes} = useStyles()
 
+  // resets the search bar to an empty string (nothing)
   const handleClick = () => {
     setSearchState('')
   }

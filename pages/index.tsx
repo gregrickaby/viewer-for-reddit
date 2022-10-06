@@ -32,6 +32,7 @@ const useStyles = createStyles((theme) => ({
  * Homepage component.
  */
 export default function Homepage() {
+  // value, setValue is the search bar input state
   const [value, setValue] = useState('')
   const {classes} = useStyles()
   return (
