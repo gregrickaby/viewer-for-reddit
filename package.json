@@ -13,10 +13,6 @@
     "url": "https://github.com/gregrickaby/reddit-image-viewer/issues"
   },
   "homepage": "https://github.com/gregrickaby/reddit-image-viewer#readme",
-  "engines": {
-    "node": ">=16",
-    "npm": ">=8"
-  },
   "scripts": {
     "build": "next build",
     "clean": "rimraf .next",
@@ -42,7 +38,7 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.1.1",
-    "@types/node": "^18.8.2",
+    "@types/node": "^18.8.3",
     "@types/react": "^18.0.21",
     "eslint": "^8.24.0",
     "eslint-config-next": "^12.3.1",
