@@ -8,6 +8,7 @@ Here are the ways to get involved with this project:
   - [Git Workflow](#git-workflow)
   - [ENV Variables](#env-variables)
   - [NPM Scripts](#npm-scripts)
+  - [Vercel CLI](#vercel-cli)
 - [Legal Stuff](#legal-stuff)
 
 ## Issues & Discussions
@@ -68,10 +69,6 @@ cp .env.example .env
 3. Add your token to the `.env` file:
 
 ```text
-# Used to protect the `/api/token` endpoint from brute force attacks
-# Can be any random string.
-AUTHORIZATION_KEY="ANY-RANDOM-STRING-HERE"
-
 # Your Reddit Client ID
 # Get one here: https://www.reddit.com/prefs/apps
 REDDIT_CLIENT_ID="YOUR-TOKEN-HERE"
@@ -82,14 +79,9 @@ REDDIT_CLIENT_SECRET="YOUR-TOKEN-HERE"
 
 # Used on production to verify the site with Google Webmaster Tools.
 NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION="YOUR-TOKEN-HERE"
-
-# The URL of the site.
-# This is a system ENV on Vercel-- you don't need to set it on Vercel.
-# https://vercel.com/docs/concepts/projects/environment-variables#system-environment-variables
-VERCEL_URL="http://localhost:3000"
 ```
 
-> The `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only used on Production. You can leave it as is.
+> The `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only needed on Production. You can leave it as is for local development.
 
 ---
 
@@ -100,6 +92,30 @@ There are a few NPM scripts available:
 - `npm run dev` - Starts the development server
 - `npm run lint` - Runs ESLint and Prettier
 - `npm run build && npm start` - Builds the app for production and starts the server. This is great for catching bugs locally prior to a deployment.
+
+---
+
+### Vercel CLI
+
+I've found that running `vercel` locally is a great way to verify Edge Functions and Middleware are working as expected.
+
+To install the [Vercel CLI](https://vercel.com/docs/cli), run:
+
+```bash
+npm i -g vercel
+```
+
+Then, pull down the ENV variables from Vercel:
+
+```bash
+vercel env pull
+```
+
+Finally, start a Vercel development server locally:
+
+```bash
+vercel dev
+```
 
 ---
 
