@@ -1,4 +1,6 @@
 import type {NextRequest} from 'next/server'
+import * as siteConfig from '~/lib/config'
+import {getCache} from '~/lib/helpers'
 
 export const config = {
   runtime: 'experimental-edge'
@@ -19,15 +21,26 @@ export default async function search(req: NextRequest) {
   const {searchParams} = new URL(req.url)
 
   // Parse and sanitize params.
-  const term = encodeURI(searchParams.get('term')) || ''
+  const term = encodeURI(searchParams.get('term')) || 'itookapicture'
+
+  // Set up token URL.
+  const getTokenURL = `${process.env.VERCEL_URL}/api/token?authorization_key=${process.env.AUTHORIZATION_KEY}`
 
   try {
+    // Get the access token.
+    const token = await getCache(siteConfig.default.tokenCacheName, getTokenURL)
+
+    // Issue with token? Bail...
+    if (token.error) {
+      throw new Error(token.error)
+    }
+
     // Attempt to fetch subreddits.
     const response = await fetch(
       `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=6224f443-366f-48b7-9036-3a340e4df6df`,
       {
         headers: {
-          authorization: `Bearer ${process.env.REDDIT_ACCESS_TOKEN}`
+          authorization: `Bearer ${token.access_token}`
         }
       }
     )
@@ -74,7 +87,7 @@ export default async function search(req: NextRequest) {
     return new Response(JSON.stringify(filtered), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=1, stale-while-revalidate=59'
+        'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59'
       },
       status: 200,
       statusText: 'OK'
