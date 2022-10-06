@@ -1,24 +1,34 @@
-# Contributing
+# Contributing <!-- omit in toc -->
 
 Here are the ways to get involved with this project:
 
-- [Contributing](#contributing)
-  - [Submitting issues](#submitting-issues)
-  - [Contributing code](#contributing-code)
-    - [Git Workflow](#git-workflow)
-    - [ENV Variables](#env-variables)
-    - [NPM Scripts](#npm-scripts)
-  - [Legal Stuff](#legal-stuff)
+- [Issues & Discussions](#issues--discussions)
+- [Contributing Code](#contributing-code)
+  - [Install Locally](#install-locally)
+  - [Git Workflow](#git-workflow)
+  - [ENV Variables](#env-variables)
+  - [NPM Scripts](#npm-scripts)
+- [Legal Stuff](#legal-stuff)
 
-## Submitting issues
+## Issues & Discussions
 
-Before submitting your issue, make sure it has not been mentioned earlier. You can search through the [existing issues](https://github.com/gregrickaby/reddit-image-viewer/issues).
+Before submitting your issue, make sure it has not been mentioned earlier. You can search through the [existing issues](https://github.com/gregrickaby/reddit-image-viewer/issues) or active [discussions](https://github.com/gregrickaby/reddit-image-viewer/discussions).
 
 ---
 
-## Contributing code
+## Contributing Code
 
 Found a bug you can fix? Fantastic! Patches are always welcome.
+
+---
+
+### Install Locally
+
+Use `npx` and `create-next-app` to install the project locally:
+
+```bash
+npx create-next-app --example https://github.com/gregrickaby/reddit-image-viewer reddit-image-viewer
+```
 
 ---
 
