@@ -48,7 +48,6 @@ export default function Card(props: Post) {
                 data-hint="hosted:video"
                 height={props?.media?.reddit_video?.height}
                 playsInline
-                poster={props?.images?.url}
                 preload="metadata"
                 width={props?.media?.reddit_video?.width}
               >
@@ -68,7 +67,6 @@ export default function Card(props: Post) {
                 height={props?.video_preview?.height}
                 muted
                 playsInline
-                poster={props?.images?.url}
                 preload="metadata"
                 width={props?.video_preview?.width}
               >
@@ -106,7 +104,6 @@ export default function Card(props: Post) {
                   data-hint="link"
                   muted
                   playsInline
-                  poster={props?.images?.url}
                   preload="metadata"
                 >
                   <source
