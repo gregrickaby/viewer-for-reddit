@@ -53,8 +53,8 @@ export default function Card(props: Post) {
                 width={props?.media?.reddit_video?.width}
               >
                 <source
-                  src={props?.media?.reddit_video?.hls_url}
-                  type="application/vnd.apple.mpegURL"
+                  src={props?.media?.reddit_video?.fallback_url}
+                  type="video/mp4"
                 />
               </video>
             )
