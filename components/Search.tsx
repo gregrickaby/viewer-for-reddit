@@ -1,10 +1,14 @@
 import {Autocomplete, createStyles} from '@mantine/core'
 import {useDebouncedValue} from '@mantine/hooks'
 import {IconSearch} from '@tabler/icons'
-import {useState} from 'react'
 import useSWR from 'swr'
 import {useRedditContext} from '~/components/RedditProvider'
 import {fetcher} from '~/lib/helpers'
+
+interface Props {
+  setSearchState: React.Dispatch<React.SetStateAction<string>>
+  searchState: string
+}
 
 const useStyles = createStyles(() => ({
   searchBar: {
@@ -17,16 +21,22 @@ const useStyles = createStyles(() => ({
  *
  * @see https://mantine.dev/core/autocomplete/
  */
-export default function Search() {
+export default function Search({searchState, setSearchState}: Props) {
   const {setSubreddit} = useRedditContext()
   const {classes} = useStyles()
-  const [value, setValue] = useState('')
-  const [debounced] = useDebouncedValue(value, 300)
+  const [debounced] = useDebouncedValue(
+    `${searchState === '' ? 'itookapicture' : searchState}`,
+    300
+  )
   const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnMount: false
   })
+
+  const handleChange = (string: string) => {
+    setSearchState(string)
+  }
 
   return (
     <Autocomplete
@@ -35,11 +45,11 @@ export default function Search() {
       data={results ? results : []}
       icon={<IconSearch />}
       nothingFound="No subs found. Start typing to search."
-      onChange={setValue}
+      onChange={handleChange}
       onItemSubmit={(value) => setSubreddit(value.value)}
       placeholder="Search for a sub"
       size="lg"
-      value={value}
+      value={searchState}
     />
   )
 }
