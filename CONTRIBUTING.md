@@ -6,6 +6,7 @@ Here are the ways to get involved with this project:
   - [Submitting issues](#submitting-issues)
   - [Contributing code](#contributing-code)
     - [Git Workflow](#git-workflow)
+    - [ENV Variables](#env-variables)
   - [Legal Stuff](#legal-stuff)
 
 ## Submitting issues
@@ -18,6 +19,8 @@ Before submitting your issue, make sure it has not been mentioned earlier. You c
 
 Found a bug you can fix? Fantastic! Patches are always welcome.
 
+---
+
 ### Git Workflow
 
 1. Fork the repo and create a feature/patch branch off `main`
@@ -28,6 +31,30 @@ Found a bug you can fix? Fantastic! Patches are always welcome.
 6. Your PR must pass automated assertions and deploy to Vercel successfully
 7. After peer review, the PR will be merged back into `main`
 8. Repeat ♻️
+
+---
+
+### ENV Variables
+
+In order to authenticate with Reddit, you'll need an OAuth2 access token. For development purposes, a temporary token should be fine.
+
+1. Generate a temporary anonymous token at <https://not-an-aardvark.github.io/reddit-oauth-helper/> (the first field at the top of the page)
+
+2. Create an `.env` file in the root of the project:
+
+```bash
+cp .env.example .env
+```
+
+3. Add your token to the `.env` file:
+
+```bash
+REDDIT_ACCESS_TOKEN="YOUR-TOKEN-HERE"
+```
+
+> If you want to generate a permanent token for Reddit, visit <https://www.reddit.com/prefs/apps/> to create an app, then follow the instructions <https://github.com/reddit-archive/reddit/wiki/OAuth2>
+
+> The `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only used on Production. You can leave it as is.
 
 ---
 
