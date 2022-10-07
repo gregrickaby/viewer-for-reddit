@@ -13,7 +13,9 @@ export interface RedditProviderProps {
 const RedditContext = createContext({} as RedditProviderProps)
 
 // Create useRedditContext hook.
-export const useRedditContext = () => useContext(RedditContext)
+export function useRedditContext() {
+  return useContext(RedditContext)
+}
 
 /**
  * RedditProvider component.

@@ -14,8 +14,9 @@ export default function App({Component, pageProps}: AppProps) {
     getInitialValueInEffect: true
   })
 
-  const toggleColorScheme = (value?: ColorScheme) =>
+  function toggleColorScheme(value?: ColorScheme) {
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'))
+  }
 
   useHotkeys([['mod+j', () => toggleColorScheme()]])
 
