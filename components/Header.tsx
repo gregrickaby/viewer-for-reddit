@@ -1,10 +1,6 @@
 import {createStyles} from '@mantine/core'
 import config from '~/lib/config'
-
-interface Props {
-  setSearchState: React.Dispatch<React.SetStateAction<string>>
-  searchState: string
-}
+import {useRedditContext} from './RedditProvider'
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -26,12 +22,13 @@ const useStyles = createStyles((theme) => ({
   }
 }))
 
-export default function Header({setSearchState, searchState}: Props) {
+export default function Header() {
   const {classes} = useStyles()
+  const {setSearchInput, setSubreddit} = useRedditContext()
 
-  // resets the search bar to an empty string (nothing)
   const handleClick = () => {
-    setSearchState('')
+    setSearchInput('')
+    setSubreddit('itookapicture')
   }
 
   return (
