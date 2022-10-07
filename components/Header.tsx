@@ -26,7 +26,7 @@ export default function Header() {
   const {classes} = useStyles()
   const {setSearchInput, setSubreddit} = useRedditContext()
 
-  const handleClick = () => {
+  function handleClick() {
     setSearchInput('')
     setSubreddit('itookapicture')
   }
