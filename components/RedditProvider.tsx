@@ -1,12 +1,14 @@
-import {createContext, useContext, useState} from 'react'
+import { createContext, useContext, useState } from 'react'
 import config from '~/lib/config'
-import {ChildrenProps} from '~/lib/types'
+import { ChildrenProps } from '~/lib/types'
 
 export interface RedditProviderProps {
   sort: string
   subReddit: any
   setSort: (sort: string) => void
   setSubreddit: (subReddit: {}) => void
+  searchInput: (string)
+  setSearchInput: (searchInput: string) => void
 }
 
 // Create the RedditContext.
@@ -25,13 +27,16 @@ export function useRedditContext() {
 export default function RedditProvider({children}: ChildrenProps) {
   const [sort, setSort] = useState(config.redditApi.sort)
   const [subReddit, setSubreddit] = useState(config.redditApi.subReddit)
+  const [searchInput, setSearchInput] = useState('')
 
   // Set the global state.
   const providerValues = {
     subReddit,
     setSubreddit,
     setSort,
-    sort
+    sort,
+    searchInput,
+    setSearchInput
   }
 
   return (

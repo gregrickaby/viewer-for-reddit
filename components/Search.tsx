@@ -1,7 +1,6 @@
 import {Autocomplete, createStyles} from '@mantine/core'
 import {useDebouncedValue} from '@mantine/hooks'
 import {IconSearch} from '@tabler/icons'
-import {useState} from 'react'
 import useSWR from 'swr'
 import {useRedditContext} from '~/components/RedditProvider'
 import {fetcher} from '~/lib/helpers'
@@ -18,28 +17,32 @@ const useStyles = createStyles(() => ({
  * @see https://mantine.dev/core/autocomplete/
  */
 export default function Search() {
-  const {setSubreddit} = useRedditContext()
+  const {setSubreddit, searchInput, setSearchInput} = useRedditContext()
   const {classes} = useStyles()
-  const [value, setValue] = useState('')
-  const [debounced] = useDebouncedValue(value, 300)
+
+  const [debounced] = useDebouncedValue(searchInput, 300)
   const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnMount: false
   })
 
+  function handleChange(string: string) {
+    setSearchInput(string)
+  }
+
   return (
     <Autocomplete
-      aria-label="Search sub reddits"
+      aria-label="Search sub-reddits"
       className={classes.searchBar}
       data={results ? results : []}
       icon={<IconSearch />}
       nothingFound="No subs found. Start typing to search."
-      onChange={setValue}
+      onChange={handleChange}
       onItemSubmit={(value) => setSubreddit(value.value)}
       placeholder="Search for a sub"
       size="lg"
-      value={value}
+      value={searchInput}
     />
   )
 }
