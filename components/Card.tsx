@@ -48,13 +48,12 @@ export default function Card(props: Post) {
                 data-hint="hosted:video"
                 height={props?.media?.reddit_video?.height}
                 playsInline
-                poster={props?.images?.url}
                 preload="metadata"
                 width={props?.media?.reddit_video?.width}
               >
                 <source
-                  src={props?.media?.reddit_video?.hls_url}
-                  type="application/vnd.apple.mpegURL"
+                  src={props?.media?.reddit_video?.fallback_url}
+                  type="video/mp4"
                 />
               </video>
             )
@@ -68,7 +67,6 @@ export default function Card(props: Post) {
                 height={props?.video_preview?.height}
                 muted
                 playsInline
-                poster={props?.images?.url}
                 preload="metadata"
                 width={props?.video_preview?.width}
               >
@@ -102,11 +100,9 @@ export default function Card(props: Post) {
                 <video
                   className={classes.video}
                   controls
-                  crossOrigin="anonymous"
                   data-hint="link"
                   muted
                   playsInline
-                  poster={props?.images?.url}
                   preload="metadata"
                 >
                   <source

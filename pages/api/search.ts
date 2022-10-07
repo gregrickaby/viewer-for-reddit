@@ -19,15 +19,64 @@ export default async function search(req: NextRequest) {
   const {searchParams} = new URL(req.url)
 
   // Parse and sanitize params.
-  const term = encodeURI(searchParams.get('term')) || ''
+  const term = encodeURI(searchParams.get('term')) || 'itookapicture'
 
   try {
+    // Generate random device ID.
+    // @see https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+    const array = new Uint32Array(24)
+    const deviceId = self.crypto.getRandomValues(array)
+
+    // Try and fetch a new access token.
+    const tokenResponse = await fetch(
+      `https://www.reddit.com/api/v1/access_token?grant_type=client_credentials&device_id=${deviceId}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json charset=UTF-8',
+          'User-Agent': 'reddit-image-viewer/* by Greg Rickaby',
+          Authorization: `Basic ${btoa(
+            `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
+          )}`
+        }
+      }
+    )
+
+    // Bad response? Bail...
+    if (tokenResponse.status != 200) {
+      return new Response(
+        JSON.stringify({
+          error: `${tokenResponse.statusText}`
+        }),
+        {
+          status: tokenResponse.status,
+          statusText: tokenResponse.statusText
+        }
+      )
+    }
+
+    // Get the access token.
+    const token = await tokenResponse.json()
+
+    // Issue with token? Bail...
+    if (token.error) {
+      return new Response(
+        JSON.stringify({
+          error: token.error
+        }),
+        {
+          status: token.status,
+          statusText: token.statusText
+        }
+      )
+    }
+
     // Attempt to fetch subreddits.
     const response = await fetch(
       `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=6224f443-366f-48b7-9036-3a340e4df6df`,
       {
         headers: {
-          authorization: `Bearer ${process.env.REDDIT_ACCESS_TOKEN}`
+          authorization: `Bearer ${token.access_token}`
         }
       }
     )
@@ -74,7 +123,7 @@ export default async function search(req: NextRequest) {
     return new Response(JSON.stringify(filtered), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=1, stale-while-revalidate=59'
+        'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59'
       },
       status: 200,
       statusText: 'OK'
