@@ -1,4 +1,5 @@
 import {createStyles} from '@mantine/core'
+import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
 
 const useStyles = createStyles((theme) => ({
@@ -13,6 +14,11 @@ const useStyles = createStyles((theme) => ({
   video: {
     height: 'auto',
     width: '100%'
+  },
+  blurred: {
+    height: 'auto',
+    width: '100%',
+    filter: 'blur(8px)'
   }
 }))
 
@@ -21,6 +27,7 @@ const useStyles = createStyles((theme) => ({
  */
 export default function Card(props: Post) {
   const {classes} = useStyles()
+  const {blurNSFW} = useRedditContext()
   return (
     <div className={classes.card}>
       {(() => {
@@ -30,7 +37,9 @@ export default function Card(props: Post) {
               <a href={props?.permalink}>
                 <img
                   alt={props?.title}
-                  className={classes.image}
+                  className={
+                    props.over_18 && blurNSFW ? classes.blurred : classes.image
+                  }
                   data-hint="image"
                   height={props?.images?.height}
                   loading="lazy"
@@ -42,7 +51,9 @@ export default function Card(props: Post) {
           case 'hosted:video':
             return (
               <video
-                className={classes.video}
+                className={
+                  props.over_18 && blurNSFW ? classes.blurred : classes.video
+                }
                 controls
                 crossOrigin="anonymous"
                 data-hint="hosted:video"
@@ -60,7 +71,9 @@ export default function Card(props: Post) {
           case 'rich:video':
             return props?.video_preview ? (
               <video
-                className={classes.video}
+                className={
+                  props.over_18 && blurNSFW ? classes.blurred : classes.video
+                }
                 controls
                 crossOrigin="anonymous"
                 data-hint="rich:video"
@@ -98,7 +111,9 @@ export default function Card(props: Post) {
             if (props?.url.includes('gifv')) {
               return (
                 <video
-                  className={classes.video}
+                  className={
+                    props.over_18 && blurNSFW ? classes.blurred : classes.video
+                  }
                   controls
                   data-hint="link"
                   muted
