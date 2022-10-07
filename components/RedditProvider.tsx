@@ -1,14 +1,14 @@
-import {createContext, useContext, useState} from 'react'
+import { createContext, useContext, useState } from 'react'
 import config from '~/lib/config'
-import {ChildrenProps} from '~/lib/types'
+import { ChildrenProps } from '~/lib/types'
 
 export interface RedditProviderProps {
   sort: string
   subReddit: any
   setSort: (sort: string) => void
   setSubreddit: (subReddit: {}) => void
-  searchInput: string
-  setSearchInput: React.Dispatch<React.SetStateAction<string>>
+  searchInput: (string)
+  setSearchInput: (searchInput: string) => void
 }
 
 // Create the RedditContext.
