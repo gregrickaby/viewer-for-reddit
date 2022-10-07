@@ -1,5 +1,4 @@
 import {createStyles} from '@mantine/core'
-import {useState} from 'react'
 import BackToTop from '~/components/BackToTop'
 import Footer from '~/components/Footer'
 import Header from '~/components/Header'
@@ -32,17 +31,15 @@ const useStyles = createStyles((theme) => ({
  * Homepage component.
  */
 export default function Homepage() {
-  // value, setValue is the search bar input state
-  const [value, setValue] = useState('')
   const {classes} = useStyles()
   return (
     <>
       <Meta />
       <div className={classes.container}>
-        <Header setSearchState={setValue} searchState={value} />
+        <Header />
         <main className={classes.main}>
           <div className={classes.search}>
-            <Search searchState={value} setSearchState={setValue} />
+            <Search />
             <Sort />
             <Settings />
           </div>

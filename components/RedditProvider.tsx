@@ -7,6 +7,8 @@ export interface RedditProviderProps {
   subReddit: any
   setSort: (sort: string) => void
   setSubreddit: (subReddit: {}) => void
+  searchInput: string
+  setSearchInput: React.Dispatch<React.SetStateAction<string>>
 }
 
 // Create the RedditContext.
@@ -23,13 +25,16 @@ export const useRedditContext = () => useContext(RedditContext)
 export default function RedditProvider({children}: ChildrenProps) {
   const [sort, setSort] = useState(config.redditApi.sort)
   const [subReddit, setSubreddit] = useState(config.redditApi.subReddit)
+  const [searchInput, setSearchInput] = useState('')
 
   // Set the global state.
   const providerValues = {
     subReddit,
     setSubreddit,
     setSort,
-    sort
+    sort,
+    searchInput,
+    setSearchInput
   }
 
   return (
