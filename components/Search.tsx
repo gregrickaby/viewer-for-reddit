@@ -27,7 +27,7 @@ export default function Search() {
     revalidateOnMount: false
   })
 
-  const handleChange = (string: string) => {
+  function handleChange(string: string) {
     setSearchInput(string)
   }
 
