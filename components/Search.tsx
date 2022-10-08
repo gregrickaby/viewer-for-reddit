@@ -1,6 +1,13 @@
-import {Autocomplete, createStyles} from '@mantine/core'
+import {
+  Autocomplete,
+  Badge,
+  createStyles,
+  Group,
+  SelectItemProps
+} from '@mantine/core'
 import {useDebouncedValue} from '@mantine/hooks'
 import {IconSearch} from '@tabler/icons'
+import {forwardRef} from 'react'
 import useSWR from 'swr'
 import {useRedditContext} from '~/components/RedditProvider'
 import {fetcher} from '~/lib/helpers'
@@ -10,6 +17,22 @@ const useStyles = createStyles(() => ({
     width: '100%'
   }
 }))
+
+interface ItemProps extends SelectItemProps {
+  over18: string
+}
+
+const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
+  ({value, over18, ...others}: ItemProps, ref) => (
+    <div ref={ref} {...others}>
+      <Group noWrap position={'apart'}>
+        {value}
+        {over18.toLowerCase() === 'true' && <Badge color="red">NSFW</Badge>}
+      </Group>
+    </div>
+  )
+)
+AutoCompleteItem.displayName = 'AutoCompleteItem'
 
 /**
  * Search component.
@@ -43,6 +66,7 @@ export default function Search() {
       placeholder="Search for a sub"
       size="lg"
       value={searchInput}
+      itemComponent={AutoCompleteItem}
     />
   )
 }

@@ -1,14 +1,17 @@
-import { createContext, useContext, useState } from 'react'
+import {useLocalStorage} from '@mantine/hooks'
+import {createContext, useContext, useState} from 'react'
 import config from '~/lib/config'
-import { ChildrenProps } from '~/lib/types'
+import {ChildrenProps} from '~/lib/types'
 
 export interface RedditProviderProps {
   sort: string
   subReddit: any
   setSort: (sort: string) => void
   setSubreddit: (subReddit: {}) => void
-  searchInput: (string)
+  searchInput: string
   setSearchInput: (searchInput: string) => void
+  blurNSFW: boolean
+  setBlurNSFW: (blur: boolean) => void
 }
 
 // Create the RedditContext.
@@ -28,6 +31,10 @@ export default function RedditProvider({children}: ChildrenProps) {
   const [sort, setSort] = useState(config.redditApi.sort)
   const [subReddit, setSubreddit] = useState(config.redditApi.subReddit)
   const [searchInput, setSearchInput] = useState('')
+  const [blurNSFW, setBlurNSFW] = useLocalStorage({
+    key: 'nsfwblur',
+    defaultValue: true
+  })
 
   // Set the global state.
   const providerValues = {
@@ -36,7 +43,9 @@ export default function RedditProvider({children}: ChildrenProps) {
     setSort,
     sort,
     searchInput,
-    setSearchInput
+    setSearchInput,
+    blurNSFW,
+    setBlurNSFW
   }
 
   return (
