@@ -31,8 +31,7 @@ const useStyles = createStyles((theme) => ({
 /**
  * Results component.
  */
-export default function Results(props) {
-  const {blurNSFW} = props
+export default function Results() {
   const {subReddit, sort} = useRedditContext()
   const {classes} = useStyles()
   const [loading, setLoading] = useState(true)
@@ -105,7 +104,7 @@ export default function Results(props) {
         className={classes.masonry}
       >
         {posts.map((post) => (
-          <Card key={post.id} {...post} blurNSFW={blurNSFW} />
+          <Card key={post.id} {...post} />
         ))}
       </Masonry>
       <Button className={classes.loadMore} ref={ref} onClick={infiniteScroll}>

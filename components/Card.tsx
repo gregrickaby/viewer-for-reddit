@@ -16,9 +16,9 @@ const useStyles = createStyles((theme) => ({
     width: '100%'
   },
   blurred: {
+    filter: 'blur(8px)',
     height: 'auto',
-    width: '100%',
-    filter: 'blur(8px)'
+    width: '100%'
   }
 }))
 

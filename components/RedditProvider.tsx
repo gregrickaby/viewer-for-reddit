@@ -4,14 +4,14 @@ import config from '~/lib/config'
 import {ChildrenProps} from '~/lib/types'
 
 export interface RedditProviderProps {
-  sort: string
-  subReddit: any
+  blurNSFW: boolean
+  searchInput: string
+  setBlurNSFW: (blurNSFW: boolean) => void
+  setSearchInput: (searchInput: string) => void
   setSort: (sort: string) => void
   setSubreddit: (subReddit: {}) => void
-  searchInput: string
-  setSearchInput: (searchInput: string) => void
-  blurNSFW: boolean
-  setBlurNSFW: (blur: boolean) => void
+  sort: string
+  subReddit: any
 }
 
 // Create the RedditContext.
@@ -32,20 +32,20 @@ export default function RedditProvider({children}: ChildrenProps) {
   const [subReddit, setSubreddit] = useState(config.redditApi.subReddit)
   const [searchInput, setSearchInput] = useState('')
   const [blurNSFW, setBlurNSFW] = useLocalStorage({
-    key: 'nsfwblur',
-    defaultValue: true
+    key: 'riv-nsfwblur',
+    defaultValue: false
   })
 
   // Set the global state.
   const providerValues = {
-    subReddit,
-    setSubreddit,
-    setSort,
-    sort,
-    searchInput,
-    setSearchInput,
     blurNSFW,
-    setBlurNSFW
+    searchInput,
+    setBlurNSFW,
+    setSearchInput,
+    setSort,
+    setSubreddit,
+    sort,
+    subReddit
   }
 
   return (
