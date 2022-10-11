@@ -39,8 +39,8 @@ export default function Settings() {
           className={classes.swtich}
         />
         <Switch
-          aria-label="Blue NSFW images."
-          label="Blur NSFW images."
+          aria-label="Blur NSFW images"
+          label="Blur NSFW images"
           checked={blurNSFW}
           offLabel="OFF"
           onChange={(event) => setBlurNSFW(event.currentTarget.checked)}

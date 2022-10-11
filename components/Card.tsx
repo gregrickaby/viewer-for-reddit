@@ -7,18 +7,12 @@ const useStyles = createStyles((theme) => ({
     overflow: 'hidden',
     paddingBottom: theme.spacing.xl
   },
-  image: {
-    height: 'auto',
-    width: '100%'
-  },
-  video: {
+  media: {
     height: 'auto',
     width: '100%'
   },
   blurred: {
-    filter: 'blur(8px)',
-    height: 'auto',
-    width: '100%'
+    filter: 'blur(8px)'
   }
 }))
 
@@ -26,7 +20,7 @@ const useStyles = createStyles((theme) => ({
  * Card component.
  */
 export default function Card(props: Post) {
-  const {classes} = useStyles()
+  const {classes, cx} = useStyles()
   const {blurNSFW} = useRedditContext()
   return (
     <div className={classes.card}>
@@ -37,9 +31,10 @@ export default function Card(props: Post) {
               <a href={props?.permalink}>
                 <img
                   alt={props?.title}
-                  className={
-                    props.over_18 && blurNSFW ? classes.blurred : classes.image
-                  }
+                  className={cx(
+                    classes.media,
+                    props.over_18 && blurNSFW ? classes.blurred : null
+                  )}
                   data-hint="image"
                   height={props?.images?.height}
                   loading="lazy"
@@ -51,9 +46,10 @@ export default function Card(props: Post) {
           case 'hosted:video':
             return (
               <video
-                className={
-                  props.over_18 && blurNSFW ? classes.blurred : classes.video
-                }
+                className={cx(
+                  classes.media,
+                  props.over_18 && blurNSFW ? classes.blurred : null
+                )}
                 controls
                 crossOrigin="anonymous"
                 data-hint="hosted:video"
@@ -71,9 +67,10 @@ export default function Card(props: Post) {
           case 'rich:video':
             return props?.video_preview ? (
               <video
-                className={
-                  props.over_18 && blurNSFW ? classes.blurred : classes.video
-                }
+                className={cx(
+                  classes.media,
+                  props.over_18 && blurNSFW ? classes.blurred : null
+                )}
                 controls
                 crossOrigin="anonymous"
                 data-hint="rich:video"
@@ -111,9 +108,10 @@ export default function Card(props: Post) {
             if (props?.url.includes('gifv')) {
               return (
                 <video
-                  className={
-                    props.over_18 && blurNSFW ? classes.blurred : classes.video
-                  }
+                  className={cx(
+                    (classes.media,
+                    {[classes.blurred]: props.over_18 && blurNSFW})
+                  )}
                   controls
                   data-hint="link"
                   muted
