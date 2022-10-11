@@ -22,12 +22,15 @@ interface ItemProps extends SelectItemProps {
   over18: string
 }
 
+/**
+ * Dropdown item component.
+ */
 const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
   ({value, over18, ...others}: ItemProps, ref) => (
     <div ref={ref} {...others}>
-      <Group noWrap position={'apart'}>
+      <Group noWrap position="apart">
         {value}
-        {over18.toLowerCase() === 'true' && <Badge color="red">NSFW</Badge>}
+        {over18 && <Badge color="red">NSFW</Badge>}
       </Group>
     </div>
   )
@@ -42,7 +45,6 @@ AutoCompleteItem.displayName = 'AutoCompleteItem'
 export default function Search() {
   const {setSubreddit, searchInput, setSearchInput} = useRedditContext()
   const {classes} = useStyles()
-
   const [debounced] = useDebouncedValue(searchInput, 300)
   const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
     revalidateIfStale: false,
@@ -50,6 +52,9 @@ export default function Search() {
     revalidateOnMount: false
   })
 
+  /**
+   * Handle search input change.
+   */
   function handleChange(string: string) {
     setSearchInput(string)
   }
@@ -60,13 +65,13 @@ export default function Search() {
       className={classes.searchBar}
       data={results ? results : []}
       icon={<IconSearch />}
+      itemComponent={AutoCompleteItem}
       nothingFound="No subs found. Start typing to search."
       onChange={handleChange}
       onItemSubmit={(value) => setSubreddit(value.value)}
       placeholder="Search for a sub"
       size="lg"
       value={searchInput}
-      itemComponent={AutoCompleteItem}
     />
   )
 }
