@@ -4,6 +4,13 @@ export interface ChildrenProps {
   children: React.ReactNode
 }
 
+export interface FetchPostsProps {
+  lastPost?: string
+  limit?: number
+  sort?: string
+  subReddit: string
+}
+
 export interface Post {
   id: string
   images: {

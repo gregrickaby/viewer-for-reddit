@@ -1,3 +1,5 @@
+import {FetchPostsProps} from '~/lib/types'
+
 /**
  * Global fetcher function for useSWR.
  */
@@ -9,13 +11,6 @@ export async function fetcher(url: RequestInfo, init?: RequestInit) {
   }
 
   return response.json()
-}
-
-interface FetchPostsProps {
-  lastPost?: string
-  limit?: number
-  sort?: string
-  subReddit: string
 }
 
 /**
