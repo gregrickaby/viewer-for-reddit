@@ -1,7 +1,6 @@
 import {
-  Button,
+  ActionIcon,
   createStyles,
-  Group,
   Modal,
   Switch,
   useMantineColorScheme
@@ -11,7 +10,6 @@ import {useState} from 'react'
 import {useRedditContext} from '~/components/RedditProvider'
 
 const useStyles = createStyles(() => ({
-  settings: {},
   swtich: {
     ':not(:last-of-type)': {
       marginBottom: '0.5rem'
@@ -27,39 +25,36 @@ export default function Settings() {
 
   return (
     <>
+      <ActionIcon
+        aria-label="open settings"
+        onClick={() => setOpened(true)}
+        size="lg"
+        variant="transparent"
+      >
+        <IconSettings size={48} />
+      </ActionIcon>
       <Modal onClose={() => setOpened(false)} opened={opened} title="Settings">
         <Switch
           aria-label="Toggle between light and dark theme."
-          label="Toggle Dark Theme (⌘+J)"
           checked={colorScheme === 'dark'}
+          className={classes.swtich}
+          label="Toggle Dark Theme (⌘+J)"
           offLabel="OFF"
           onChange={() => toggleColorScheme()}
           onLabel="ON"
           size="lg"
-          className={classes.swtich}
         />
         <Switch
           aria-label="Blur NSFW images"
-          label="Blur NSFW images"
           checked={blurNSFW}
+          className={classes.swtich}
+          label="Blur NSFW images"
           offLabel="OFF"
           onChange={(event) => setBlurNSFW(event.currentTarget.checked)}
           onLabel="ON"
           size="lg"
-          className={classes.swtich}
         />
       </Modal>
-
-      <Group className={classes.settings}>
-        <Button
-          aria-label="open settings"
-          color="gray"
-          onClick={() => setOpened(true)}
-          variant="subtle"
-        >
-          <IconSettings />
-        </Button>
-      </Group>
     </>
   )
 }

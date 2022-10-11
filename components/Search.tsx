@@ -14,7 +14,7 @@ import {fetcher} from '~/lib/helpers'
 
 const useStyles = createStyles(() => ({
   searchBar: {
-    width: '100%'
+    flex: 1
   }
 }))
 
@@ -69,7 +69,7 @@ export default function Search() {
       nothingFound="No subs found. Start typing to search."
       onChange={handleChange}
       onItemSubmit={(value) => setSubreddit(value.value)}
-      placeholder="Search for a sub"
+      placeholder="Search"
       size="lg"
       value={searchInput}
     />

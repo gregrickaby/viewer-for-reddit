@@ -18,6 +18,7 @@ const useStyles = createStyles((theme) => ({
     }
   },
   search: {
+    alignItems: 'center',
     display: 'flex',
     gap: theme.spacing.md,
     marginBottom: theme.spacing.xl
