@@ -9,8 +9,7 @@ const config = {
     limit: '100',
     sort: 'hot',
     subReddit: 'itookapicture'
-  },
-  tokenCacheName: 'token'
+  }
 }
 
 export default config
