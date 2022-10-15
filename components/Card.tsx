@@ -1,6 +1,7 @@
 import {createStyles} from '@mantine/core'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
+import HlsPlayer from './HlsPlayer'
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -51,14 +52,15 @@ export default function Card(props: Post) {
             )
           case 'hosted:video':
             return (
-              <video
+              <HlsPlayer
                 className={cx(
                   classes.media,
                   props.over_18 && blurNSFW ? classes.blurred : null
                 )}
+                src={props?.media?.reddit_video?.hls_url}
                 controls
                 crossOrigin="anonymous"
-                data-hint="hosted:video"
+                dataHint="hosted:video"
                 height={props?.media?.reddit_video?.height}
                 playsInline
                 preload="metadata"
@@ -68,18 +70,19 @@ export default function Card(props: Post) {
                   src={props?.media?.reddit_video?.fallback_url}
                   type="video/mp4"
                 />
-              </video>
+              </HlsPlayer>
             )
           case 'rich:video':
             return props?.video_preview ? (
-              <video
+              <HlsPlayer
                 className={cx(
                   classes.media,
                   props.over_18 && blurNSFW ? classes.blurred : null
                 )}
+                src={props?.video_preview?.hls_url}
                 controls
                 crossOrigin="anonymous"
-                data-hint="rich:video"
+                dataHint="rich:video"
                 height={props?.video_preview?.height}
                 muted
                 playsInline
@@ -90,7 +93,7 @@ export default function Card(props: Post) {
                   src={props?.video_preview?.fallback_url}
                   type="video/mp4"
                 />
-              </video>
+              </HlsPlayer>
             ) : (
               <div
                 style={{
@@ -113,13 +116,13 @@ export default function Card(props: Post) {
             // Search for .gifv....
             if (props?.url.includes('gifv')) {
               return (
-                <video
+                <HlsPlayer
                   className={cx(
                     (classes.media,
-                    {[classes.blurred]: props.over_18 && blurNSFW})
+                      {[classes.blurred]: props.over_18 && blurNSFW})
                   )}
                   controls
-                  data-hint="link"
+                  dataHint="link"
                   muted
                   playsInline
                   preload="metadata"
@@ -128,7 +131,7 @@ export default function Card(props: Post) {
                     src={props?.url.replace('.gifv', '.mp4')}
                     type="video/mp4"
                   />
-                </video>
+                </HlsPlayer>
               )
             } else {
               // No media? Return blank.
