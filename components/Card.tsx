@@ -9,7 +9,13 @@ const useStyles = createStyles((theme) => ({
   },
   media: {
     height: 'auto',
-    width: '100%'
+    width: '100%',
+    filter: 'brightness(0.85)',
+    transition: 'all 0.25s ease-in',
+
+    ':hover': {
+      filter: 'brightness(1.25)'
+    }
   },
   blurred: {
     filter: 'blur(8px)'
