@@ -15,11 +15,8 @@ export const config = {
  * @see https://nextjs.org/docs/api-reference/edge-runtime
  */
 export default async function search(req: NextRequest) {
-  // Get query params from request.
-  const {searchParams} = new URL(req.url)
-
-  // Parse and sanitize params.
-  const term = encodeURI(searchParams.get('term')) || 'itookapicture'
+  // Parse and sanitize query params from request.
+  const term = req.nextUrl.searchParams.get('term') || 'itookapicture'
 
   try {
     // Generate random device ID.
@@ -111,13 +108,15 @@ export default async function search(req: NextRequest) {
     }
 
     // Filter uneeded data to keep the payload small.
-    const filtered = subs.data.children.map((sub) => {
-      return {
-        over18: sub.data.over18 ? 'true' : 'false',
-        url: sub.data.url ? sub.data.url : '',
-        value: sub.data.display_name ? sub.data.display_name : ''
+    const filtered = subs.data.children.map(
+      (sub: {data: {over18?: string; url?: string; display_name?: string}}) => {
+        return {
+          over18: sub.data.over18 ? 'true' : 'false',
+          url: sub.data.url ? sub.data.url : '',
+          value: sub.data.display_name ? sub.data.display_name : ''
+        }
       }
-    })
+    )
 
     // Send the response.
     return new Response(JSON.stringify(filtered), {

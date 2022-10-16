@@ -7,6 +7,7 @@ import Card from '~/components/Card'
 import {useRedditContext} from '~/components/RedditProvider'
 import SkeletonWrapper from '~/components/SkeletonWrapper'
 import {fetchPosts} from '~/lib/helpers'
+import {Post} from '~/lib/types'
 
 const DynamicNoResults = dynamic(() => import('./NoResults'), {
   ssr: false
@@ -35,8 +36,8 @@ export default function Results() {
   const {subReddit, sort} = useRedditContext()
   const {classes} = useStyles()
   const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(null)
-  const [posts, setPosts] = useState([])
+  const [loadingMore, setLoadingMore] = useState<boolean | null>(null)
+  const [posts, setPosts] = useState<Post[]>([])
   const [lastPost, setLastPost] = useState(null)
   const [clicked, setClicked] = useState(false)
   const [ref, inView] = useInView({
@@ -60,7 +61,7 @@ export default function Results() {
   async function loadInitialPosts() {
     clearState()
     setLoading(true)
-    const data = await fetchPosts({subReddit, sort})
+    const data = await fetchPosts({subReddit, sort, lastPost: null})
     setPosts(data?.posts)
     setLastPost(data?.after)
     setLoading(false)
