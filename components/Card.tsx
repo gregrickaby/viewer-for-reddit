@@ -119,7 +119,7 @@ export default function Card(props: Post) {
                 <HlsPlayer
                   className={cx(
                     (classes.media,
-                      {[classes.blurred]: props.over_18 && blurNSFW})
+                    {[classes.blurred]: props.over_18 && blurNSFW})
                   )}
                   controls
                   dataHint="link"

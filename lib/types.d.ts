@@ -5,7 +5,7 @@ export interface ChildrenProps {
 }
 
 export interface FetchPostsProps {
-  lastPost?: string
+  lastPost: string | null
   limit?: number
   sort?: string
   subReddit: string

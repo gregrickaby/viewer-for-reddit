@@ -33,14 +33,11 @@ interface RedditPost {
  * @see https://nextjs.org/docs/api-reference/edge-runtime
  */
 export default async function reddit(req: NextRequest) {
-  // Get query params from request.
-  const {searchParams} = new URL(req.url)
-
-  // Parse and sanitize params.
-  const lastPost = encodeURI(searchParams.get('after')) || ''
-  const postLimit = parseInt(searchParams.get('limit')) || 24
-  const sortBy = encodeURI(searchParams.get('sort')) || 'hot'
-  const subReddit = encodeURI(searchParams.get('sub')) || 'itookapicture'
+  // Parse and sanitize query params from request.
+  const lastPost = req.nextUrl.searchParams.get('after') || ''
+  const postLimit = req.nextUrl.searchParams.get('limit') || 24
+  const sortBy = req.nextUrl.searchParams.get('sort') || 'hot'
+  const subReddit = req.nextUrl.searchParams.get('sub') || 'itookapicture'
 
   try {
     // Generate random device ID.
@@ -119,7 +116,7 @@ export default async function reddit(req: NextRequest) {
     const json = (await response.json()) as RedditAPIResponse
 
     // No data in the response? Bail...
-    if (!json.data && !json.data.children.length) {
+    if (!json.data || !json.data.children.length) {
       return new Response(
         JSON.stringify({
           error: `No data returned from Reddit.`
