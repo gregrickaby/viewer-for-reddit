@@ -35,6 +35,7 @@ export default function Card(props: Post) {
         switch (props?.post_hint) {
           case 'image':
             return (
+              <>
               <a href={props?.permalink}>
                 <img
                   alt={props?.title}
@@ -49,9 +50,12 @@ export default function Card(props: Post) {
                   width={props?.images?.width}
                 />
               </a>
+                <a href={props?.permalink}>{props.title}</a>
+              </>
             )
           case 'hosted:video':
             return (
+              <>
               <HlsPlayer
                 className={cx(
                   classes.media,
@@ -71,9 +75,12 @@ export default function Card(props: Post) {
                   type="video/mp4"
                 />
               </HlsPlayer>
+                <a href={props?.permalink}>{props.title}</a>
+              </>
             )
           case 'rich:video':
             return props?.video_preview ? (
+              <>
               <HlsPlayer
                 className={cx(
                   classes.media,
@@ -94,7 +101,10 @@ export default function Card(props: Post) {
                   type="video/mp4"
                 />
               </HlsPlayer>
+                <a href={props?.permalink}>{props.title}</a>
+              </>
             ) : (
+              <>
               <div
                 style={{
                   height: props?.secure_media_embed?.height,
@@ -111,11 +121,14 @@ export default function Card(props: Post) {
                   title="iframe"
                 />
               </div>
+                <a href={props?.permalink}>{props.title}</a>
+              </>
             )
           case 'link':
             // Search for .gifv....
             if (props?.url.includes('gifv')) {
               return (
+                <>
                 <HlsPlayer
                   className={cx(
                     (classes.media,
@@ -132,6 +145,8 @@ export default function Card(props: Post) {
                     type="video/mp4"
                   />
                 </HlsPlayer>
+                  <a href={props?.permalink}>{props.title}</a>
+                </>
               )
             } else {
               // No media? Return blank.
