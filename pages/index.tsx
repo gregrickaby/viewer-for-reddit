@@ -33,6 +33,7 @@ const useStyles = createStyles((theme) => ({
  */
 export default function Homepage() {
   const {classes} = useStyles()
+
   return (
     <>
       <Meta />

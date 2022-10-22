@@ -6,6 +6,11 @@ export interface HlsPlayerProps
   dataHint?: any
 }
 
+/**
+ * HlsPlayer component.
+ *
+ * @see https://github.com/video-dev/hls.js/
+ */
 export default function HlsPlayer(props: HlsPlayerProps) {
   const videoRef = useRef<HTMLMediaElement>(null)
 
@@ -27,14 +32,14 @@ export default function HlsPlayer(props: HlsPlayerProps) {
     <video
       className={props.className}
       controls={props.controls}
-      data-hint={props.dataHint}
       crossOrigin={props.crossOrigin}
+      data-hint={props.dataHint}
       height={props.height}
       muted={props.muted}
       playsInline={props.playsInline}
       preload={props.preload}
-      width={props.width}
       ref={videoRef as LegacyRef<HTMLVideoElement>}
+      width={props.width}
     >
       {props.children}
     </video>

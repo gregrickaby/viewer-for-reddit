@@ -22,6 +22,9 @@ const useStyles = createStyles((theme) => ({
   }
 }))
 
+/**
+ * Header component.
+ */
 export default function Header() {
   const {classes} = useStyles()
   const {setSearchInput, setSubreddit} = useRedditContext()

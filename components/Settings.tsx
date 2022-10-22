@@ -17,6 +17,9 @@ const useStyles = createStyles(() => ({
   }
 }))
 
+/**
+ * Settings component.
+ */
 export default function Settings() {
   const {classes} = useStyles()
   const [opened, setOpened] = useState(false)

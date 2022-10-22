@@ -33,7 +33,8 @@ export default function RedditProvider({children}: ChildrenProps) {
   const [searchInput, setSearchInput] = useState('')
   const [blurNSFW, setBlurNSFW] = useLocalStorage({
     key: 'riv-nsfwblur',
-    defaultValue: false
+    defaultValue: false,
+    getInitialValueInEffect: true
   })
 
   // Set the global state.

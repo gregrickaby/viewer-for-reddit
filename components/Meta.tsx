@@ -1,6 +1,9 @@
 import Head from 'next/head'
 import config from '~/lib/config'
 
+/**
+ * Meta component.
+ */
 export default function Meta() {
   return (
     <Head>

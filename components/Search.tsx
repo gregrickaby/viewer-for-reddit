@@ -47,7 +47,7 @@ export default function Search() {
   const {classes} = useStyles()
   const [debounced] = useDebouncedValue(searchInput, 300)
   const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
-    revalidateIfStale: false,
+    revalidateIfStale: true,
     revalidateOnFocus: false,
     revalidateOnMount: false
   })

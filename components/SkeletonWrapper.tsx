@@ -15,6 +15,7 @@ const useStyles = createStyles((theme) => ({
  */
 export default function SkeletonWrapper() {
   const {classes} = useStyles()
+
   return (
     <div className={classes.wrapper}>
       <Skeleton height={373} width={373} />

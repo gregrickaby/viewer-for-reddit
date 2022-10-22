@@ -1,18 +1,20 @@
 import {createStyles} from '@mantine/core'
+import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
-import HlsPlayer from './HlsPlayer'
 
 const useStyles = createStyles((theme) => ({
   card: {
     overflow: 'hidden',
-    paddingBottom: theme.spacing.xl
+    paddingBottom: theme.spacing.xl,
+    textAlign: 'center'
   },
   media: {
-    height: 'auto',
-    width: '100%',
     filter: 'brightness(0.85)',
-    transition: 'all 0.25s ease-in',
+    height: 'auto',
+    marginBottom: theme.spacing.sm,
+    transition: 'filter 0.3s ease-in-out',
+    width: '100%',
 
     ':hover': {
       cursor: 'pointer',
@@ -21,6 +23,13 @@ const useStyles = createStyles((theme) => ({
   },
   blurred: {
     filter: 'blur(8px)'
+  },
+  link: {
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+
+    ':hover': {
+      textDecoration: 'none'
+    }
   }
 }))
 
@@ -30,6 +39,7 @@ const useStyles = createStyles((theme) => ({
 export default function Card(props: Post) {
   const {classes, cx} = useStyles()
   const {blurNSFW} = useRedditContext()
+
   return (
     <div className={classes.card}>
       {(() => {
@@ -50,6 +60,9 @@ export default function Card(props: Post) {
                     src={props?.images?.url}
                     width={props?.images?.width}
                   />
+                </a>
+                <a className={classes.link} href={props?.permalink}>
+                  {props.title}
                 </a>
               </>
             )
@@ -75,7 +88,9 @@ export default function Card(props: Post) {
                     type="video/mp4"
                   />
                 </HlsPlayer>
-                <a href={props?.permalink}>{props.title}</a>
+                <a className={classes.link} href={props?.permalink}>
+                  {props.title}
+                </a>
               </>
             )
           case 'rich:video':
@@ -101,7 +116,9 @@ export default function Card(props: Post) {
                     type="video/mp4"
                   />
                 </HlsPlayer>
-                <a href={props?.permalink}>{props.title}</a>
+                <a className={classes.link} href={props?.permalink}>
+                  {props.title}
+                </a>
               </>
             ) : (
               <>
@@ -121,7 +138,9 @@ export default function Card(props: Post) {
                     title="iframe"
                   />
                 </div>
-                <a href={props?.permalink}>{props.title}</a>
+                <a className={classes.link} href={props?.permalink}>
+                  {props.title}
+                </a>
               </>
             )
           case 'link':
@@ -145,7 +164,9 @@ export default function Card(props: Post) {
                       type="video/mp4"
                     />
                   </HlsPlayer>
-                  <a href={props?.permalink}>{props.title}</a>
+                  <a className={classes.link} href={props?.permalink}>
+                    {props.title}
+                  </a>
                 </>
               )
             } else {

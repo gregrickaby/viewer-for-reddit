@@ -13,12 +13,13 @@ const useStyles = createStyles((theme) => ({
 }))
 
 /**
- * Back to top button component.
+ * Back To Top component.
  */
 export default function BackToTop() {
   const [scroll, scrollTo] = useWindowScroll()
   const {classes} = useStyles()
 
+  // Only show the button if the user has scrolled down 100px.
   if (scroll.y < 100) {
     return <></>
   }

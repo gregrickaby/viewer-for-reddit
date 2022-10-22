@@ -11,7 +11,7 @@ const useStyles = createStyles((theme) => ({
     textAlign: 'center',
 
     a: {
-      color: theme.colors.dark[0]
+      color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black
     }
   }
 }))
