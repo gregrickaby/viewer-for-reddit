@@ -26,11 +26,11 @@ interface ItemProps extends SelectItemProps {
  * Dropdown item component.
  */
 const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
-  ({value, over18, ...others}: ItemProps, ref) => (
+  ({value, over_18, ...others}: ItemProps, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap position="apart">
         {value}
-        {over18 && <Badge color="red">NSFW</Badge>}
+        {over_18 && <Badge color="red">NSFW</Badge>}
       </Group>
     </div>
   )

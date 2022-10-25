@@ -111,7 +111,7 @@ export default async function search(req: NextRequest) {
     const filtered = subs.data.children.map(
       (sub: {data: {over18?: string; url?: string; display_name?: string}}) => {
         return {
-          over18: sub.data.over18 ? true : false,
+          over_18: sub.data.over18 ? true : false,
           url: sub.data.url ? sub.data.url : '',
           value: sub.data.display_name ? sub.data.display_name : ''
         }
