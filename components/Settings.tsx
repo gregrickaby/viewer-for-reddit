@@ -51,10 +51,10 @@ export default function Settings() {
           size="lg"
         />
         <Switch
-          aria-label="Blur NSFW Images"
+          aria-label="Blur NSFW Media"
           checked={blurNSFW}
           className={classes.swtich}
-          label="Blur NSFW Images (⌘+B)"
+          label="Blur NSFW Media (⌘+B)"
           offLabel="OFF"
           onChange={(event) => setBlurNSFW(event.currentTarget.checked)}
           onLabel="ON"
