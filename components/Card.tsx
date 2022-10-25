@@ -1,35 +1,26 @@
-import {createStyles} from '@mantine/core'
+import {Badge, createStyles} from '@mantine/core'
 import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
 
 const useStyles = createStyles((theme) => ({
+  blurred: {
+    filter: 'blur(60px)'
+  },
   card: {
     overflow: 'hidden',
     paddingBottom: theme.spacing.xl,
     textAlign: 'center'
   },
+  link: {
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+    textDecoration: 'none'
+  },
   media: {
-    filter: 'brightness(0.85)',
     height: 'auto',
     marginBottom: theme.spacing.sm,
     transition: 'filter 0.3s ease-in-out',
-    width: '100%',
-
-    ':hover': {
-      cursor: 'pointer',
-      filter: 'brightness(1)'
-    }
-  },
-  blurred: {
-    filter: 'blur(8px)'
-  },
-  link: {
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-
-    ':hover': {
-      textDecoration: 'none'
-    }
+    width: '100%'
   }
 }))
 
@@ -47,39 +38,54 @@ export default function Card(props: Post) {
           case 'image':
             return (
               <>
-                <a href={props?.permalink}>
+                <a
+                  className={classes.link}
+                  href={props?.permalink}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
                   <img
                     alt={props?.title}
-                    className={cx(
-                      classes.media,
-                      props.over_18 && blurNSFW ? classes.blurred : null
-                    )}
+                    className={classes.media}
                     data-hint="image"
-                    height={props?.images?.height}
+                    height={
+                      props?.over_18 && blurNSFW
+                        ? props?.images?.obfuscated?.height
+                        : props?.images?.cropped?.height
+                    }
                     loading="lazy"
-                    src={props?.images?.url}
-                    width={props?.images?.width}
+                    src={
+                      props?.over_18 && blurNSFW
+                        ? props?.images?.obfuscated?.url
+                        : props?.images?.cropped?.url
+                    }
+                    width={
+                      props?.over_18 && blurNSFW
+                        ? props?.images?.obfuscated?.width
+                        : props?.images?.cropped?.width
+                    }
                   />
-                </a>
-                <a className={classes.link} href={props?.permalink}>
-                  {props.title}
-                </a>
+                  {props?.title}
+                </a>{' '}
+                {props?.over_18 && <Badge color="red">NSFW</Badge>}
               </>
             )
           case 'hosted:video':
             return (
               <>
                 <HlsPlayer
-                  className={cx(
-                    classes.media,
-                    props.over_18 && blurNSFW ? classes.blurred : null
-                  )}
+                  className={classes.media}
                   src={props?.media?.reddit_video?.hls_url}
                   controls
                   crossOrigin="anonymous"
                   dataHint="hosted:video"
                   height={props?.media?.reddit_video?.height}
                   playsInline
+                  poster={
+                    props?.over_18 && blurNSFW
+                      ? props?.images?.obfuscated?.url
+                      : props?.images?.cropped?.url
+                  }
                   preload="metadata"
                   width={props?.media?.reddit_video?.width}
                 >
@@ -88,8 +94,14 @@ export default function Card(props: Post) {
                     type="video/mp4"
                   />
                 </HlsPlayer>
-                <a className={classes.link} href={props?.permalink}>
-                  {props.title}
+                <a
+                  className={classes.link}
+                  href={props?.permalink}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {props.title}{' '}
+                  {props?.over_18 && <Badge color="red">NSFW</Badge>}
                 </a>
               </>
             )
@@ -97,10 +109,7 @@ export default function Card(props: Post) {
             return props?.video_preview ? (
               <>
                 <HlsPlayer
-                  className={cx(
-                    classes.media,
-                    props.over_18 && blurNSFW ? classes.blurred : null
-                  )}
+                  className={classes.media}
                   src={props?.video_preview?.hls_url}
                   controls
                   crossOrigin="anonymous"
@@ -108,6 +117,11 @@ export default function Card(props: Post) {
                   height={props?.video_preview?.height}
                   muted
                   playsInline
+                  poster={
+                    props?.over_18 && blurNSFW
+                      ? props?.images?.obfuscated?.url
+                      : props?.images?.cropped?.url
+                  }
                   preload="metadata"
                   width={props?.video_preview?.width}
                 >
@@ -116,8 +130,14 @@ export default function Card(props: Post) {
                     type="video/mp4"
                   />
                 </HlsPlayer>
-                <a className={classes.link} href={props?.permalink}>
-                  {props.title}
+                <a
+                  className={classes.link}
+                  href={props?.permalink}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {props.title}{' '}
+                  {props?.over_18 && <Badge color="red">NSFW</Badge>}
                 </a>
               </>
             ) : (
@@ -127,9 +147,13 @@ export default function Card(props: Post) {
                     height: props?.secure_media_embed?.height,
                     width: props?.secure_media_embed?.width
                   }}
+                  data-hint="rich:video-embed"
                 >
                   <iframe
                     allow="fullscreen"
+                    className={cx(classes.media, {
+                      [classes.blurred]: props?.over_18 && blurNSFW
+                    })}
                     loading="lazy"
                     referrerPolicy="no-referrer"
                     sandbox="allow-scripts allow-same-origin allow-presentation"
@@ -138,8 +162,14 @@ export default function Card(props: Post) {
                     title="iframe"
                   />
                 </div>
-                <a className={classes.link} href={props?.permalink}>
-                  {props.title}
+                <a
+                  className={classes.link}
+                  href={props?.permalink}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {props.title}{' '}
+                  {props?.over_18 && <Badge color="red">NSFW</Badge>}
                 </a>
               </>
             )
@@ -149,10 +179,9 @@ export default function Card(props: Post) {
               return (
                 <>
                   <HlsPlayer
-                    className={cx(
-                      (classes.media,
-                      {[classes.blurred]: props.over_18 && blurNSFW})
-                    )}
+                    className={cx(classes.media, {
+                      [classes.blurred]: props?.over_18 && blurNSFW
+                    })}
                     controls
                     dataHint="link"
                     muted
@@ -164,8 +193,14 @@ export default function Card(props: Post) {
                       type="video/mp4"
                     />
                   </HlsPlayer>
-                  <a className={classes.link} href={props?.permalink}>
-                    {props.title}
+                  <a
+                    className={classes.link}
+                    href={props?.permalink}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {props.title}{' '}
+                    {props?.over_18 && <Badge color="red">NSFW</Badge>}
                   </a>
                 </>
               )
