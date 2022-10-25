@@ -14,9 +14,21 @@ export interface FetchPostsProps {
 export interface Post {
   id: string
   images: {
-    height: number
-    url: string
-    width: number
+    original: {
+      height: number
+      url: string
+      width: number
+    }
+    cropped: {
+      height: number
+      url: string
+      width: number
+    }
+    obfuscated: {
+      height: number
+      url: string
+      width: number
+    }
   }
   media: {
     reddit_video: {
