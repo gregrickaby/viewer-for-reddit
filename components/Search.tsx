@@ -19,7 +19,7 @@ const useStyles = createStyles(() => ({
 }))
 
 interface ItemProps extends SelectItemProps {
-  over18: string
+  over_18: boolean
 }
 
 /**
