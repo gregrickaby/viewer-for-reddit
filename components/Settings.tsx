@@ -5,6 +5,7 @@ import {
   Switch,
   useMantineColorScheme
 } from '@mantine/core'
+import {useHotkeys} from '@mantine/hooks'
 import {IconSettings} from '@tabler/icons'
 import {useState} from 'react'
 import {useRedditContext} from '~/components/RedditProvider'
@@ -25,6 +26,8 @@ export default function Settings() {
   const [opened, setOpened] = useState(false)
   const {colorScheme, toggleColorScheme} = useMantineColorScheme()
   const {blurNSFW, setBlurNSFW} = useRedditContext()
+
+  useHotkeys([['mod+b', () => setBlurNSFW(!blurNSFW)]])
 
   return (
     <>
@@ -48,10 +51,10 @@ export default function Settings() {
           size="lg"
         />
         <Switch
-          aria-label="Blur NSFW images"
+          aria-label="Blur NSFW Images"
           checked={blurNSFW}
           className={classes.swtich}
-          label="Blur NSFW images"
+          label="Blur NSFW Images (⌘+B)"
           offLabel="OFF"
           onChange={(event) => setBlurNSFW(event.currentTarget.checked)}
           onLabel="ON"
