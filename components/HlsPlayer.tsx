@@ -37,6 +37,7 @@ export default function HlsPlayer(props: HlsPlayerProps) {
       height={props.height}
       muted={props.muted}
       playsInline={props.playsInline}
+      poster={props.poster}
       preload={props.preload}
       ref={videoRef as LegacyRef<HTMLVideoElement>}
       width={props.width}
