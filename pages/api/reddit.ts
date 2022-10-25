@@ -141,7 +141,12 @@ export default async function reddit(req: NextRequest) {
     const data = {
       posts: postsContainImage.map((post) => ({
         id: post.data.id,
-        images: post.data.preview.images[0].resolutions.pop(),
+        images: {
+          original: post.data.preview.images[0].source,
+          cropped: post.data.preview.images[0].resolutions.pop(),
+          obfuscated:
+            post.data.preview.images[0]?.variants?.obfuscated?.resolutions?.pop()
+        },
         media: post.data.media,
         video_preview: post.data.preview.reddit_video_preview,
         over_18: post.data.over_18,
