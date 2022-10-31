@@ -27,7 +27,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
-    "@mantine/core": "^5.6.2",
+    "@mantine/core": "^5.6.3",
     "@mantine/hooks": "^5.6.2",
     "@mantine/next": "^5.6.2",
     "@tabler/icons": "^1.108.0",
