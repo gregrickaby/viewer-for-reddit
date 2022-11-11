@@ -18,7 +18,8 @@ const useStyles = createStyles((theme) => ({
     },
 
     '& > *': {
-      marginBottom: theme.spacing.xl
+      marginBottom: theme.spacing.xl,
+      marginTop: theme.spacing.xl
     }
   },
 
