@@ -107,71 +107,39 @@ export default function Card(props: Post) {
             )
           case 'rich:video':
             return props?.video_preview ? (
-              <>
-                <HlsPlayer
-                  className={classes.media}
-                  src={props?.video_preview?.hls_url}
-                  controls
-                  crossOrigin="anonymous"
-                  dataHint="rich:video"
-                  height={props?.video_preview?.height}
-                  muted
-                  playsInline
-                  poster={
-                    props?.over_18 && blurNSFW
-                      ? props?.images?.obfuscated?.url
-                      : props?.images?.cropped?.url
-                  }
-                  preload="metadata"
-                  width={props?.video_preview?.width}
-                >
-                  <source
-                    src={props?.video_preview?.fallback_url}
-                    type="video/mp4"
-                  />
-                </HlsPlayer>
-                <a
-                  className={classes.link}
-                  href={props?.permalink}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {props.title}{' '}
-                  {props?.over_18 && <Badge color="red">NSFW</Badge>}
-                </a>
-              </>
+              <video
+                className={classes.media}
+                controls
+                crossOrigin="anonymous"
+                data-hint="rich:video"
+                height={props?.video_preview?.height}
+                muted
+                playsInline
+                preload="metadata"
+                width={props?.video_preview?.width}
+              >
+                <source
+                  src={props?.video_preview?.fallback_url}
+                  type="video/mp4"
+                />
+              </video>
             ) : (
-              <>
-                <div
-                  style={{
-                    height: props?.secure_media_embed?.height,
-                    width: props?.secure_media_embed?.width
-                  }}
-                  data-hint="rich:video-embed"
-                >
-                  <iframe
-                    allow="fullscreen"
-                    className={cx(classes.media, {
-                      [classes.blurred]: props?.over_18 && blurNSFW
-                    })}
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    sandbox="allow-scripts allow-same-origin allow-presentation"
-                    src={props?.secure_media_embed?.media_domain_url}
-                    style={{border: 'none', height: '100%', width: '100%'}}
-                    title="iframe"
-                  />
-                </div>
-                <a
-                  className={classes.link}
-                  href={props?.permalink}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {props.title}{' '}
-                  {props?.over_18 && <Badge color="red">NSFW</Badge>}
-                </a>
-              </>
+              <div
+                style={{
+                  height: props?.secure_media_embed?.height,
+                  width: props?.secure_media_embed?.width
+                }}
+              >
+                <iframe
+                  allow="fullscreen"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  sandbox="allow-scripts allow-same-origin allow-presentation"
+                  src={props?.secure_media_embed?.media_domain_url}
+                  style={{border: 'none', height: '100%', width: '100%'}}
+                  title="iframe"
+                />
+              </div>
             )
           case 'link':
             // Search for .gifv....
