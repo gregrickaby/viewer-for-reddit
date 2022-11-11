@@ -1,11 +1,10 @@
-import {Button, createStyles} from '@mantine/core'
+import {ActionIcon, createStyles, useMantineColorScheme} from '@mantine/core'
 import {useWindowScroll} from '@mantine/hooks'
 import {IconArrowUp} from '@tabler/icons'
 
 const useStyles = createStyles((theme) => ({
   backToTop: {
     bottom: '24px',
-    paddingRight: 0,
     position: 'fixed',
     right: '24px',
     zIndex: 100
@@ -18,6 +17,7 @@ const useStyles = createStyles((theme) => ({
 export default function BackToTop() {
   const [scroll, scrollTo] = useWindowScroll()
   const {classes} = useStyles()
+  const {colorScheme} = useMantineColorScheme()
 
   // Only show the button if the user has scrolled down 100px.
   if (scroll.y < 100) {
@@ -25,12 +25,16 @@ export default function BackToTop() {
   }
 
   return (
-    <Button
+    <ActionIcon
       aria-label="Scroll to top"
       className={classes.backToTop}
-      leftIcon={<IconArrowUp />}
+      color={colorScheme === 'dark' ? 'gray' : 'dark'}
+      variant="filled"
       onClick={() => scrollTo({y: 0})}
       tabIndex={0}
-    />
+      size="xl"
+    >
+      <IconArrowUp />
+    </ActionIcon>
   )
 }

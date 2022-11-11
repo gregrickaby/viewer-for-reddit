@@ -25,7 +25,14 @@ export default function App({Component, pageProps}: AppProps) {
       colorScheme={colorScheme}
       toggleColorScheme={toggleColorScheme}
     >
-      <MantineProvider theme={{colorScheme}} withGlobalStyles withNormalizeCSS>
+      <MantineProvider
+        theme={{
+          colorScheme,
+          primaryColor: colorScheme === 'dark' ? 'gray' : 'dark'
+        }}
+        withGlobalStyles
+        withNormalizeCSS
+      >
         <RedditProvider>
           <Component {...pageProps} />
         </RedditProvider>
