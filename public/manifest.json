@@ -1,0 +1,15 @@
+{
+  "short_name": "Reddit Image Viewer",
+  "name": "Reddit Image Viewer",
+  "description": "Anonymously browse images, videos, gifs, and other media from any subreddit.",
+  "icons": [{
+    "src": "/icons/icon.png",
+    "type": "image/png",
+    "sizes": "192x192"
+  }],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff",
+  "theme_color": "#fff"
+}
