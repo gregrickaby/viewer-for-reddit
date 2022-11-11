@@ -7,15 +7,18 @@ const useStyles = createStyles((theme) => ({
   blurred: {
     filter: 'blur(60px)'
   },
+
   card: {
     overflow: 'hidden',
     paddingBottom: theme.spacing.xl,
     textAlign: 'center'
   },
+
   link: {
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
     textDecoration: 'none'
   },
+
   media: {
     height: 'auto',
     marginBottom: theme.spacing.sm,

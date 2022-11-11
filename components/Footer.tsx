@@ -4,14 +4,22 @@ import config from '~/lib/config'
 
 const useStyles = createStyles((theme) => ({
   footer: {
-    alignItems: 'center',
     display: 'flex',
-    gap: theme.spacing.md,
-    justifyContent: 'center',
+    flexDirection: 'column',
+    fontFamily: theme.fontFamilyMonospace,
+    fontSize: theme.fontSizes.sm,
     textAlign: 'center',
 
+    p: {
+      marginBottom: 0
+    },
+
     a: {
-      color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black
+      color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+
+      '&:hover': {
+        textDecoration: 'none'
+      }
     }
   }
 }))
@@ -25,15 +33,16 @@ export default function Footer() {
     <footer className={classes.footer}>
       <p>
         website by{' '}
-        <a href={config.authorUrl} target="_blank" rel="noopener noreferrer">
+        <a href={config.authorUrl} rel="author">
           {config.siteAuthor}
         </a>
       </p>
       <p>
         <a
+          aria-label="View source code on GitHub"
           href="https://github.com/gregrickaby/reddit-image-viewer"
-          target="_blank"
           rel="noopener noreferrer"
+          target="_blank"
         >
           <IconBrandGithub />
         </a>

@@ -23,6 +23,7 @@ const useStyles = createStyles((theme) => ({
     display: 'flex',
     gap: theme.spacing.xl
   },
+
   loadMore: {
     display: 'flex',
     margin: `${theme.spacing.xl}px auto`
