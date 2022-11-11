@@ -6,7 +6,6 @@ import Meta from '~/components/Meta'
 import Results from '~/components/Results'
 import Search from '~/components/Search'
 import Settings from '~/components/Settings'
-import Sort from '~/components/Sort'
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -19,8 +18,7 @@ const useStyles = createStyles((theme) => ({
     },
 
     '& > *': {
-      marginBottom: theme.spacing.xl,
-      marginTop: theme.spacing.xl
+      marginBottom: theme.spacing.xl
     }
   },
 
@@ -50,7 +48,6 @@ export default function Homepage() {
         <main className={classes.main}>
           <div className={classes.search}>
             <Search />
-            <Sort />
             <Settings />
           </div>
           <Results />

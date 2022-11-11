@@ -1,7 +1,7 @@
 import {
   ActionIcon,
-  createStyles,
   Modal,
+  Stack,
   Switch,
   useMantineColorScheme
 } from '@mantine/core'
@@ -9,20 +9,12 @@ import {useHotkeys} from '@mantine/hooks'
 import {IconSettings} from '@tabler/icons'
 import {useState} from 'react'
 import {useRedditContext} from '~/components/RedditProvider'
-
-const useStyles = createStyles(() => ({
-  swtich: {
-    ':not(:last-of-type)': {
-      marginBottom: '0.5rem'
-    }
-  }
-}))
+import Sort from '~/components/Sort'
 
 /**
  * Settings component.
  */
 export default function Settings() {
-  const {classes} = useStyles()
   const [opened, setOpened] = useState(false)
   const {colorScheme, toggleColorScheme} = useMantineColorScheme()
   const {blurNSFW, setBlurNSFW} = useRedditContext()
@@ -39,27 +31,34 @@ export default function Settings() {
       >
         <IconSettings size={48} />
       </ActionIcon>
-      <Modal onClose={() => setOpened(false)} opened={opened} title="Settings">
-        <Switch
-          aria-label="Toggle between light and dark theme."
-          checked={colorScheme === 'dark'}
-          className={classes.swtich}
-          label="Toggle Dark Theme (⌘+J)"
-          offLabel="OFF"
-          onChange={() => toggleColorScheme()}
-          onLabel="ON"
-          size="lg"
-        />
-        <Switch
-          aria-label="Blur NSFW Media"
-          checked={blurNSFW}
-          className={classes.swtich}
-          label="Blur NSFW Media (⌘+B)"
-          offLabel="OFF"
-          onChange={(event) => setBlurNSFW(event.currentTarget.checked)}
-          onLabel="ON"
-          size="lg"
-        />
+
+      <Modal
+        closeButtonLabel="close settings"
+        onClose={() => setOpened(false)}
+        opened={opened}
+        title="Settings"
+      >
+        <Stack justify="space-between">
+          <Sort />
+          <Switch
+            aria-label="Toggle between light and dark theme."
+            checked={colorScheme === 'dark'}
+            label="Dark Theme (⌘+J)"
+            offLabel="OFF"
+            onChange={() => toggleColorScheme()}
+            onLabel="ON"
+            size="lg"
+          />
+          <Switch
+            aria-label="Blur NSFW Media"
+            checked={blurNSFW}
+            label="Blur NSFW Media (⌘+B)"
+            offLabel="OFF"
+            onChange={(event) => setBlurNSFW(event.currentTarget.checked)}
+            onLabel="ON"
+            size="lg"
+          />
+        </Stack>
       </Modal>
     </>
   )
