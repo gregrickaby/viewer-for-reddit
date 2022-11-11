@@ -3,7 +3,7 @@ import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles((theme, {blurNSFW}) => ({
   blurred: {
     filter: 'blur(60px)'
   },
@@ -24,6 +24,10 @@ const useStyles = createStyles((theme) => ({
     marginBottom: theme.spacing.sm,
     transition: 'filter 0.3s ease-in-out',
     width: '100%'
+  },
+
+  richVideo: {
+    filter: blurNSFW ? 'blur(60px)' : ''
   }
 }))
 
@@ -31,8 +35,8 @@ const useStyles = createStyles((theme) => ({
  * Card component.
  */
 export default function Card(props: Post) {
-  const {classes, cx} = useStyles()
   const {blurNSFW} = useRedditContext()
+  const {classes, cx} = useStyles({blurNSFW})
 
   return (
     <div className={classes.card}>
@@ -110,27 +114,33 @@ export default function Card(props: Post) {
             )
           case 'rich:video':
             return props?.video_preview ? (
-              <video
-                className={classes.media}
-                controls
-                crossOrigin="anonymous"
-                data-hint="rich:video"
-                height={props?.video_preview?.height}
-                muted
-                playsInline
-                poster={
-                  props?.over_18 && blurNSFW
-                    ? props?.images?.obfuscated?.url
-                    : props?.images?.cropped?.url
-                }
-                preload="metadata"
-                width={props?.video_preview?.width}
-              >
-                <source
-                  src={props?.video_preview?.fallback_url}
-                  type="video/mp4"
-                />
-              </video>
+              <>
+                <video
+                  className={cx(classes.media, classes.richVideo)}
+                  controls
+                  crossOrigin="anonymous"
+                  data-hint="rich:video"
+                  height={props?.video_preview?.height}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  width={props?.video_preview?.width}
+                >
+                  <source
+                    src={props?.video_preview?.fallback_url}
+                    type="video/mp4"
+                  />
+                </video>
+                <a
+                  className={classes.link}
+                  href={props?.permalink}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {props.title}{' '}
+                  {props?.over_18 && <Badge color="red">NSFW</Badge>}
+                </a>
+              </>
             ) : (
               <div
                 style={{
@@ -147,6 +157,15 @@ export default function Card(props: Post) {
                   style={{border: 'none', height: '100%', width: '100%'}}
                   title="iframe"
                 />
+                <a
+                  className={classes.link}
+                  href={props?.permalink}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {props.title}{' '}
+                  {props?.over_18 && <Badge color="red">NSFW</Badge>}
+                </a>
               </div>
             )
           case 'link':
