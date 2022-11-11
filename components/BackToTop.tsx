@@ -4,9 +4,9 @@ import {IconArrowUp} from '@tabler/icons'
 
 const useStyles = createStyles((theme) => ({
   backToTop: {
-    bottom: '24px',
+    bottom: '12px',
     position: 'fixed',
-    right: '24px',
+    right: '12px',
     zIndex: 100
   }
 }))
@@ -26,7 +26,7 @@ export default function BackToTop() {
 
   return (
     <ActionIcon
-      aria-label="Scroll to top"
+      aria-label="scroll to top"
       className={classes.backToTop}
       color={colorScheme === 'dark' ? 'gray' : 'dark'}
       onClick={() => scrollTo({y: 0})}
