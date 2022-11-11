@@ -3,7 +3,11 @@ import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
 
-const useStyles = createStyles((theme, {blurNSFW}) => ({
+interface BlurProps {
+  blurNSFW: boolean
+}
+
+const useStyles = createStyles((theme, {blurNSFW}: BlurProps) => ({
   blurred: {
     filter: 'blur(60px)'
   },
