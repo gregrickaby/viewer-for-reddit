@@ -118,6 +118,11 @@ export default function Card(props: Post) {
                 height={props?.video_preview?.height}
                 muted
                 playsInline
+                poster={
+                  props?.over_18 && blurNSFW
+                    ? props?.images?.obfuscated?.url
+                    : props?.images?.cropped?.url
+                }
                 preload="metadata"
                 width={props?.video_preview?.width}
               >
