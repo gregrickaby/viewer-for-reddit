@@ -29,10 +29,10 @@ export default function BackToTop() {
       aria-label="Scroll to top"
       className={classes.backToTop}
       color={colorScheme === 'dark' ? 'gray' : 'dark'}
-      variant="filled"
       onClick={() => scrollTo({y: 0})}
-      tabIndex={0}
       size="xl"
+      tabIndex={0}
+      variant="filled"
     >
       <IconArrowUp />
     </ActionIcon>
