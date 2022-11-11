@@ -41,7 +41,6 @@ export default function Meta() {
       <link rel="icon" href="/icons/icon.png" sizes="192x192" />
       <link rel="apple-touch-icon" href="/icons/icon.png" />
       <link rel="manifest" href="/manifest.json" />
-      <meta name="theme-color" content="#ffffff" />
 
       <meta
         name="google-site-verification"
