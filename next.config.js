@@ -1,2 +1,7 @@
 /** @type {import('next').NextConfig} */
-module.exports = {}
+module.exports = {
+  reactStrictMode: true,
+  images: {
+    formats: ['image/avif', 'image/webp']
+  }
+}
