@@ -13,16 +13,24 @@ const useStyles = createStyles((theme) => ({
     margin: '0 auto',
     maxWidth: theme.breakpoints.lg,
     padding: `0 ${theme.spacing.xl}px`,
+
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
       padding: theme.spacing.xl
+    },
+
+    '& > *': {
+      marginBottom: theme.spacing.xl,
+      marginTop: theme.spacing.xl
     }
   },
+
   search: {
     alignItems: 'center',
     display: 'flex',
     gap: theme.spacing.md,
     marginBottom: theme.spacing.xl
   },
+
   main: {
     minHeight: '100vh'
   }

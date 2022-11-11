@@ -7,15 +7,18 @@ const useStyles = createStyles((theme) => ({
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
+
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
       flexDirection: 'column',
       textAlign: 'center'
     }
   },
+
   title: {
     fontSize: theme.fontSizes.xl,
     cursor: 'pointer',
     margin: 0,
+
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
       lineHeight: 1
     }
