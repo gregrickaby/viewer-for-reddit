@@ -1,27 +1,31 @@
-import {createStyles} from '@mantine/core'
+import {createStyles, Title} from '@mantine/core'
+import {useRedditContext} from '~/components/RedditProvider'
 import config from '~/lib/config'
-import {useRedditContext} from './RedditProvider'
 
 const useStyles = createStyles((theme) => ({
   header: {
     alignItems: 'center',
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'space-between',
+    textAlign: 'center',
 
-    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-      flexDirection: 'column',
-      textAlign: 'center'
+    [`@media (min-width: ${theme.breakpoints.sm}px)`]: {
+      flexDirection: 'row'
     }
   },
 
   title: {
-    fontSize: theme.fontSizes.xl,
     cursor: 'pointer',
-    margin: 0,
+    fontSize: theme.fontSizes.xl,
 
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-      lineHeight: 1
+      marginBottom: theme.spacing.md
     }
+  },
+
+  subTitle: {
+    fontSize: theme.fontSizes.sm
   }
 }))
 
@@ -32,6 +36,9 @@ export default function Header() {
   const {classes} = useStyles()
   const {setSearchInput, setSubreddit} = useRedditContext()
 
+  /**
+   * Title click handler.
+   */
   function handleClick() {
     setSearchInput('')
     setSubreddit('itookapicture')
@@ -39,10 +46,12 @@ export default function Header() {
 
   return (
     <header className={classes.header}>
-      <h1 onClick={handleClick} className={classes.title}>
+      <Title className={classes.title} onClick={handleClick} order={1}>
         {config.siteTitle}
-      </h1>
-      <p>{config.siteDescription}</p>
+      </Title>
+      <Title className={classes.subTitle} order={2}>
+        {config.siteDescription}
+      </Title>
     </header>
   )
 }
