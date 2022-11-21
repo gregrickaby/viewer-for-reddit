@@ -27,28 +27,28 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
-    "@mantine/core": "^5.7.2",
-    "@mantine/hooks": "^5.7.2",
-    "@mantine/next": "^5.7.2",
-    "@tabler/icons": "^1.111.0",
+    "@mantine/core": "^5.8.2",
+    "@mantine/hooks": "^5.8.2",
+    "@mantine/next": "^5.8.2",
+    "@tabler/icons": "^1.112.0",
     "hls.js": "^1.2.7",
-    "next": "^13.0.3",
+    "next": "^13.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-intersection-observer": "^9.4.0",
+    "react-intersection-observer": "^9.4.1",
     "react-masonry-css": "^1.0.16",
     "swr": "^2.0.0-rc.0"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^1.2.0",
+    "@evilmartians/lefthook": "^1.2.1",
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
-    "eslint": "^8.27.0",
-    "eslint-config-next": "^13.0.3",
+    "eslint": "^8.28.0",
+    "eslint-config-next": "^13.0.4",
     "eslint-config-prettier": "^8.5.0",
-    "next-sitemap": "^3.1.31",
+    "next-sitemap": "^3.1.32",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.3"
   }
 }
