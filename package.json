@@ -40,7 +40,7 @@
     "swr": "^2.0.0-rc.3"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^1.2.3",
+    "@evilmartians/lefthook": "^1.2.4",
     "@types/node": "^18.11.10",
     "@types/react": "^18.0.25",
     "eslint": "^8.28.0",
