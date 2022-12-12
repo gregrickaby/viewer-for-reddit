@@ -122,7 +122,7 @@ export default async function search(req: NextRequest) {
     return new Response(JSON.stringify(filtered), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, s-maxage=1, stale-while-revalidate=59'
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60'
       },
       status: 200,
       statusText: 'OK'
