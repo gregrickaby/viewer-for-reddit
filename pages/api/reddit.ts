@@ -2,7 +2,7 @@ import type {NextRequest} from 'next/server'
 import {Posts} from '~/lib/types'
 
 export const config = {
-  runtime: 'experimental-edge'
+  runtime: 'edge'
 }
 
 interface RedditAPIResponse {
