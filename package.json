@@ -27,9 +27,9 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
-    "@mantine/core": "^5.9.6",
-    "@mantine/hooks": "^5.9.6",
-    "@mantine/next": "^5.9.6",
+    "@mantine/core": "^5.10.0",
+    "@mantine/hooks": "^5.10.0",
+    "@mantine/next": "^5.10.0",
     "@tabler/icons": "^1.119.0",
     "hls.js": "^1.2.9",
     "next": "^13.1.1",
@@ -45,8 +45,8 @@
     "@types/react": "^18.0.26",
     "eslint": "^8.31.0",
     "eslint-config-next": "^13.1.1",
-    "eslint-config-prettier": "^8.5.0",
-    "next-sitemap": "^3.1.43",
+    "eslint-config-prettier": "^8.6.0",
+    "next-sitemap": "^3.1.44",
     "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.4"
