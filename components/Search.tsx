@@ -6,7 +6,7 @@ import {
   SelectItemProps
 } from '@mantine/core'
 import {useDebouncedValue} from '@mantine/hooks'
-import {IconSearch} from '@tabler/icons'
+import {IconSearch} from '@tabler/icons-react'
 import {forwardRef} from 'react'
 import useSWR from 'swr'
 import {useRedditContext} from '~/components/RedditProvider'

@@ -6,7 +6,7 @@ import {
   useMantineColorScheme
 } from '@mantine/core'
 import {useHotkeys} from '@mantine/hooks'
-import {IconSettings} from '@tabler/icons'
+import {IconSettings} from '@tabler/icons-react'
 import {useState} from 'react'
 import {useRedditContext} from '~/components/RedditProvider'
 import Sort from '~/components/Sort'

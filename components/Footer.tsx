@@ -1,5 +1,5 @@
 import {createStyles} from '@mantine/core'
-import {IconBrandGithub} from '@tabler/icons'
+import {IconBrandGithub} from '@tabler/icons-react'
 import config from '~/lib/config'
 
 const useStyles = createStyles((theme) => ({
