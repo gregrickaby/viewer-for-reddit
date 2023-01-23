@@ -16,6 +16,7 @@ export default function Meta() {
         as="fetch"
         rel="preload"
         href="/api/reddit?sub=itookapicture&amp;sort=hot&amp;limit=24&amp;after="
+        crossOrigin="anonymous"
       />
 
       <meta property="og:title" content={config?.siteTitle} />
