@@ -21,7 +21,8 @@ const breakpointColumnsObj = {
 const useStyles = createStyles((theme) => ({
   masonry: {
     display: 'flex',
-    gap: theme.spacing.xl
+    gap: theme.spacing.xl,
+    minHeight: '100vh'
   },
 
   loadMore: {
@@ -105,8 +106,8 @@ export default function Results() {
         breakpointCols={breakpointColumnsObj}
         className={classes.masonry}
       >
-        {posts.map((post) => (
-          <Card key={post.id} {...post} />
+        {posts.map((post, index) => (
+          <Card key={post.id} {...post} index={index} />
         ))}
       </Masonry>
       <Button className={classes.loadMore} ref={ref} onClick={infiniteScroll}>
