@@ -12,6 +12,7 @@ export interface FetchPostsProps {
 }
 
 export interface Post {
+  index: number
   id: string
   images: {
     original: {
