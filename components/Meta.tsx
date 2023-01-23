@@ -11,20 +11,11 @@ export default function Meta() {
       <meta name="description" content={config?.siteDescription} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-      <link rel="preconnect" href="//i.imgur.com" crossOrigin="anonymous" />
       <link rel="preconnect" href="//preview.redd.it" crossOrigin="anonymous" />
-      <link rel="preconnect" href="//v.redd.it" crossOrigin="anonymous" />
-      <link
-        rel="preconnect"
-        href="//external-preview.redd.it"
-        crossOrigin="anonymous"
-      />
-
       <link
         as="fetch"
         rel="preload"
         href="/api/reddit?sub=itookapicture&amp;sort=hot&amp;limit=24&amp;after="
-        crossOrigin="same-origin"
       />
 
       <meta property="og:title" content={config?.siteTitle} />
