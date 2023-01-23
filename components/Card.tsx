@@ -1,4 +1,5 @@
 import {Badge, createStyles} from '@mantine/core'
+import {useViewportSize} from '@mantine/hooks'
 import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
@@ -41,6 +42,22 @@ const useStyles = createStyles((theme, {blurNSFW}: BlurProps) => ({
 export default function Card(props: Post) {
   const {blurNSFW} = useRedditContext()
   const {classes, cx} = useStyles({blurNSFW})
+  const {width} = useViewportSize()
+
+  /**
+   * Decide whether to lazy load an image or not.
+   *
+   * @returns string - 'lazy' or 'eager'
+   */
+  function maybeLazyLoad() {
+    // For desktop, eager load the first 6 images.
+    if (width > 768) {
+      return props.index > 5 ? 'lazy' : 'eager'
+    }
+
+    // For mobile, eager load the first image.
+    return props.index > 0 ? 'lazy' : 'eager'
+  }
 
   return (
     <div className={classes.card}>
@@ -59,12 +76,13 @@ export default function Card(props: Post) {
                     alt={props?.title}
                     className={classes.media}
                     data-hint="image"
+                    decoding="async"
                     height={
                       props?.over_18 && blurNSFW
                         ? props?.images?.obfuscated?.height
                         : props?.images?.cropped?.height
                     }
-                    loading="lazy"
+                    loading={maybeLazyLoad()}
                     src={
                       props?.over_18 && blurNSFW
                         ? props?.images?.obfuscated?.url
