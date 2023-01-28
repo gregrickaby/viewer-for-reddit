@@ -1,5 +1,6 @@
 import {Badge, createStyles} from '@mantine/core'
 import {useViewportSize} from '@mantine/hooks'
+import Head from 'next/head'
 import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
@@ -45,6 +46,47 @@ export default function Card(props: Post) {
   const {width} = useViewportSize()
 
   /**
+   * Try and preload the first image.
+   *
+   * @returns JSX.Element
+   */
+  function maybePreLoad() {
+    if (width > 768 && props.index < 3) {
+      return (
+        <Head>
+          <link
+            rel="preload"
+            as="image"
+            href={
+              props?.over_18 && blurNSFW
+                ? props?.images?.obfuscated?.url
+                : props?.images?.cropped?.url
+            }
+            crossOrigin="anonymous"
+          />
+        </Head>
+      )
+    }
+
+    if (props.index === 0) {
+      return (
+        <Head>
+          <link
+            rel="preload"
+            as="image"
+            href={
+              props?.over_18 && blurNSFW
+                ? props?.images?.obfuscated?.url
+                : props?.images?.cropped?.url
+            }
+            crossOrigin="anonymous"
+          />
+        </Head>
+      )
+    }
+  }
+
+  /**
    * Decide whether to lazy load an image or not.
    *
    * @returns string - 'lazy' or 'eager'
@@ -66,6 +108,7 @@ export default function Card(props: Post) {
           case 'image':
             return (
               <>
+                {maybePreLoad()}
                 <a
                   className={classes.link}
                   href={props?.permalink}
