@@ -1,6 +1,5 @@
 import {Badge, createStyles} from '@mantine/core'
 import {useViewportSize} from '@mantine/hooks'
-import Head from 'next/head'
 import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
@@ -26,6 +25,7 @@ const useStyles = createStyles((theme, {blurNSFW}: BlurProps) => ({
   },
 
   media: {
+    backgroundColor: 'var(--placeholder)',
     height: 'auto',
     marginBottom: theme.spacing.sm,
     transition: 'filter 0.3s ease-in-out',
@@ -44,47 +44,6 @@ export default function Card(props: Post) {
   const {blurNSFW} = useRedditContext()
   const {classes, cx} = useStyles({blurNSFW})
   const {width} = useViewportSize()
-
-  /**
-   * Try and preload the first image.
-   *
-   * @returns JSX.Element
-   */
-  function maybePreLoad() {
-    if (width > 768 && props.index < 3) {
-      return (
-        <Head>
-          <link
-            rel="preload"
-            as="image"
-            href={
-              props?.over_18 && blurNSFW
-                ? props?.images?.obfuscated?.url
-                : props?.images?.cropped?.url
-            }
-            crossOrigin="use-credentials"
-          />
-        </Head>
-      )
-    }
-
-    if (props.index === 0) {
-      return (
-        <Head>
-          <link
-            rel="preload"
-            as="image"
-            href={
-              props?.over_18 && blurNSFW
-                ? props?.images?.obfuscated?.url
-                : props?.images?.cropped?.url
-            }
-            crossOrigin="anonymous"
-          />
-        </Head>
-      )
-    }
-  }
 
   /**
    * Decide whether to lazy load an image or not.
@@ -108,7 +67,6 @@ export default function Card(props: Post) {
           case 'image':
             return (
               <>
-                {maybePreLoad()}
                 <a
                   className={classes.link}
                   href={props?.permalink}
@@ -131,6 +89,7 @@ export default function Card(props: Post) {
                         ? props?.images?.obfuscated?.url
                         : props?.images?.cropped?.url
                     }
+                    style={{'--placeholder': '#a0a0a0'} as any}
                     width={
                       props?.over_18 && blurNSFW
                         ? props?.images?.obfuscated?.width
@@ -148,6 +107,7 @@ export default function Card(props: Post) {
                 <HlsPlayer
                   className={classes.media}
                   src={props?.media?.reddit_video?.hls_url}
+                  style={{'--placeholder': '#a0a0a0'} as any}
                   controls
                   crossOrigin="anonymous"
                   dataHint="hosted:video"
@@ -189,6 +149,7 @@ export default function Card(props: Post) {
                   muted
                   playsInline
                   preload="metadata"
+                  style={{'--placeholder': '#a0a0a0'} as any}
                   width={props?.video_preview?.width}
                 >
                   <source
@@ -247,6 +208,7 @@ export default function Card(props: Post) {
                     muted
                     playsInline
                     preload="metadata"
+                    style={{'--placeholder': '#a0a0a0'} as any}
                   >
                     <source
                       src={props?.url.replace('.gifv', '.mp4')}
