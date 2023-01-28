@@ -66,7 +66,9 @@ export default function Results() {
     const data = await fetchPosts({subReddit, sort, lastPost: null})
     setPosts(data?.posts)
     setLastPost(data?.after)
-    setLoading(false)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
   }
 
   /**
