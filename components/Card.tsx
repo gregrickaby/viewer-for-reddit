@@ -25,6 +25,7 @@ const useStyles = createStyles((theme, {blurNSFW}: BlurProps) => ({
   },
 
   media: {
+    backgroundColor: 'var(--placeholder)',
     height: 'auto',
     marginBottom: theme.spacing.sm,
     transition: 'filter 0.3s ease-in-out',
@@ -88,6 +89,7 @@ export default function Card(props: Post) {
                         ? props?.images?.obfuscated?.url
                         : props?.images?.cropped?.url
                     }
+                    style={{'--placeholder': '#dee2e6'} as any}
                     width={
                       props?.over_18 && blurNSFW
                         ? props?.images?.obfuscated?.width
@@ -105,6 +107,7 @@ export default function Card(props: Post) {
                 <HlsPlayer
                   className={classes.media}
                   src={props?.media?.reddit_video?.hls_url}
+                  style={{'--placeholder': '#dee2e6'} as any}
                   controls
                   crossOrigin="anonymous"
                   dataHint="hosted:video"
@@ -146,6 +149,7 @@ export default function Card(props: Post) {
                   muted
                   playsInline
                   preload="metadata"
+                  style={{'--placeholder': '#dee2e6'} as any}
                   width={props?.video_preview?.width}
                 >
                   <source
@@ -204,6 +208,7 @@ export default function Card(props: Post) {
                     muted
                     playsInline
                     preload="metadata"
+                    style={{'--placeholder': '#dee2e6'} as any}
                   >
                     <source
                       src={props?.url.replace('.gifv', '.mp4')}

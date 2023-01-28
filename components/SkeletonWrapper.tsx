@@ -1,4 +1,5 @@
 import {createStyles, Skeleton} from '@mantine/core'
+import {useViewportSize} from '@mantine/hooks'
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -15,33 +16,27 @@ const useStyles = createStyles((theme) => ({
  */
 export default function SkeletonWrapper() {
   const {classes} = useStyles()
+  const {width} = useViewportSize()
 
+  // For tablet and above, show 6 skeletons in a grid.
+  if (width > 768) {
+    return (
+      <div className={classes.wrapper}>
+        <Skeleton height={490} radius={0} width={368} />
+        <Skeleton height={490} radius={0} width={368} />
+        <Skeleton height={490} radius={0} width={368} />
+        <Skeleton height={490} radius={0} width={368} />
+        <Skeleton height={490} radius={0} width={368} />
+        <Skeleton height={490} radius={0} width={368} />
+      </div>
+    )
+  }
+
+  // For mobile, show 2 skeletons without a grid.
   return (
-    <div className={classes.wrapper}>
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-      <Skeleton height={373} width={373} />
-    </div>
+    <>
+      <Skeleton height={490} radius={0} width={342} />
+      <Skeleton height={490} radius={0} width={342} />
+    </>
   )
 }
