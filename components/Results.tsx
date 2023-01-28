@@ -66,9 +66,7 @@ export default function Results() {
     const data = await fetchPosts({subReddit, sort, lastPost: null})
     setPosts(data?.posts)
     setLastPost(data?.after)
-    setTimeout(() => {
-      setLoading(false)
-    }, 750)
+    setLoading(false)
   }
 
   /**
@@ -81,9 +79,7 @@ export default function Results() {
     setLastPost(data?.after)
     setLoadingMore(false)
     setClicked(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 750)
+    setLoading(false)
   }
 
   useEffect(() => {
