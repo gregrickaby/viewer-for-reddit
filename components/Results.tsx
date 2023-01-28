@@ -68,7 +68,7 @@ export default function Results() {
     setLastPost(data?.after)
     setTimeout(() => {
       setLoading(false)
-    }, 1000)
+    }, 750)
   }
 
   /**
@@ -81,7 +81,9 @@ export default function Results() {
     setLastPost(data?.after)
     setLoadingMore(false)
     setClicked(true)
-    setLoading(false)
+    setTimeout(() => {
+      setLoading(false)
+    }, 750)
   }
 
   useEffect(() => {
