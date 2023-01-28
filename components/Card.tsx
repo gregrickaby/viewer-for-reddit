@@ -62,7 +62,7 @@ export default function Card(props: Post) {
                 ? props?.images?.obfuscated?.url
                 : props?.images?.cropped?.url
             }
-            crossOrigin="anonymous"
+            crossOrigin="use-credentials"
           />
         </Head>
       )
