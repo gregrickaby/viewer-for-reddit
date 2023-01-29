@@ -1,7 +1,30 @@
-/** Global types only. */
-
 export interface ChildrenProps {
   children: React.ReactNode
+}
+
+export interface GetPostsProps {
+  lastPost?: string | null
+  limit?: number
+  sortBy?: string
+  subReddit?: string
+}
+
+export interface RedditAPIResponse {
+  kind: string
+  data: {
+    modhash: string
+    dist: number
+    children: RedditPost[]
+    after: string
+    before: string
+  }
+}
+
+export interface RedditPost {
+  kind: string
+  data: {
+    [key: string]: any
+  }
 }
 
 export interface FetchPostsProps {
