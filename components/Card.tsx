@@ -3,21 +3,34 @@
 import {Post} from '@/lib/types'
 import {useRedditContext} from './RedditContext'
 
+/**
+ * Card component.
+ */
 export default function Card() {
   const {posts} = useRedditContext()
 
   return (
-    <div>
+    <>
       {!!posts.posts &&
         !!posts.posts.length &&
-        posts.posts.map((post: Post) => (
-          <div key={post.id}>
+        posts.posts.map((post: Post, index: number) => (
+          <article key={post.id}>
+            <h3>
+              <a href={post.permalink}>{post.title}</a>
+            </h3>
             <a href={post.permalink}>
-              <img src={post.thumbnail} alt={post.title} />
-              <h3>{post.title}</h3>
+              <img
+                alt={post.title}
+                decoding="async"
+                height={post.images.cropped.height}
+                loading={index < 1 ? 'eager' : 'lazy'}
+                src={post.images.cropped.url}
+                width={post.images.cropped.width}
+                style={{backgroundColor: '#434343'}}
+              />
             </a>
-          </div>
+          </article>
         ))}
-    </div>
+    </>
   )
 }

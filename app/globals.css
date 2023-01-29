@@ -34,11 +34,29 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+h3 {
+  margin-bottom: 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
