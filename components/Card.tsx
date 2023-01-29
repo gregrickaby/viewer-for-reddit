@@ -15,9 +15,9 @@ export default function Card() {
         !!posts.posts.length &&
         posts.posts.map((post: Post, index: number) => (
           <article key={post.id}>
-            <h3>
+            <h2>
               <a href={post.permalink}>{post.title}</a>
-            </h3>
+            </h2>
             <a href={post.permalink}>
               <img
                 alt={post.title}
