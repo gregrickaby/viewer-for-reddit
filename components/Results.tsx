@@ -5,7 +5,6 @@ import {useInView} from 'react-intersection-observer'
 import Masonry from 'react-masonry-css'
 import Card from '~/components/Card'
 import {useRedditContext} from '~/components/RedditProvider'
-import SkeletonWrapper from '~/components/SkeletonWrapper'
 import {fetchPosts} from '~/lib/helpers'
 import {Post} from '~/lib/types'
 
@@ -91,10 +90,6 @@ export default function Results() {
       infiniteScroll()
     }
   }, [inView]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (loading) {
-    return <SkeletonWrapper />
-  }
 
   if (!posts) {
     return <DynamicNoResults />
