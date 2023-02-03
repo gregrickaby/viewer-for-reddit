@@ -43,9 +43,10 @@ AutoCompleteItem.displayName = 'AutoCompleteItem'
  * @see https://mantine.dev/core/autocomplete/
  */
 export default function Search() {
-  const {setSubreddit, searchInput, setSearchInput} = useRedditContext()
+  const {setSubreddit, searchInput, setSearchInput, subReddit} =
+    useRedditContext()
   const {classes} = useStyles()
-  const [debounced] = useDebouncedValue(searchInput, 300)
+  const [debounced] = useDebouncedValue(searchInput, 400)
   const {data: beforeSearch} = useSWR(`/api/preSearch?limit=5`, fetcher)
   const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
     revalidateIfStale: true,
@@ -70,7 +71,7 @@ export default function Search() {
       nothingFound="No subs found. Start typing to search."
       onChange={handleChange}
       onItemSubmit={(value) => setSubreddit(value.value)}
-      placeholder="Search"
+      placeholder={subReddit}
       size="lg"
       value={searchInput}
     />
