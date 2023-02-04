@@ -1,4 +1,5 @@
 import type {NextRequest} from 'next/server'
+import siteConfig from '~/lib/config'
 import {Posts} from '~/lib/types'
 
 export const config = {
@@ -35,9 +36,12 @@ interface RedditPost {
 export default async function reddit(req: NextRequest) {
   // Parse and sanitize query params from request.
   const lastPost = req.nextUrl.searchParams.get('after') || ''
-  const postLimit = req.nextUrl.searchParams.get('limit') || 25
-  const sortBy = req.nextUrl.searchParams.get('sort') || 'hot'
-  const subReddit = req.nextUrl.searchParams.get('sub') || 'itookapicture'
+  const postLimit =
+    req.nextUrl.searchParams.get('limit') || siteConfig.redditApi.limit
+  const sortBy =
+    req.nextUrl.searchParams.get('sort') || siteConfig.redditApi.sort
+  const subReddit =
+    req.nextUrl.searchParams.get('sub') || siteConfig.redditApi.subReddit
 
   try {
     // Generate random device ID.

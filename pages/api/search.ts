@@ -1,4 +1,5 @@
 import type {NextRequest} from 'next/server'
+import siteConfig from '~/lib/config'
 
 export const config = {
   runtime: 'edge'
@@ -16,7 +17,8 @@ export const config = {
  */
 export default async function search(req: NextRequest) {
   // Parse and sanitize query params from request.
-  const term = req.nextUrl.searchParams.get('term') || 'itookapicture'
+  const term =
+    req.nextUrl.searchParams.get('term') || siteConfig.redditApi.subReddit
 
   try {
     // Generate random device ID.
@@ -70,7 +72,7 @@ export default async function search(req: NextRequest) {
 
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=6224f443-366f-48b7-9036-3a340e4df6df`,
+      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=${deviceId}`,
       {
         headers: {
           authorization: `Bearer ${token.access_token}`

@@ -1,3 +1,4 @@
+import config from '~/lib/config'
 import {FetchPostsProps} from '~/lib/types'
 
 /**
@@ -23,9 +24,9 @@ export async function fetchPosts({
   subReddit
 }: FetchPostsProps) {
   const after = lastPost ? lastPost : ''
-  const number = limit ? limit : '25'
-  const sortBy = sort ? sort : 'hot'
-  const sub = subReddit ? subReddit : 'itookapicture'
+  const number = limit ? limit : config.redditApi.limit
+  const sortBy = sort ? sort : config.redditApi.sort
+  const sub = subReddit ? subReddit : config.redditApi.subReddit
 
   try {
     // Try and fetch posts.

@@ -6,7 +6,7 @@ const config = {
   siteAuthor: '@gregrickaby',
   authorUrl: 'https://gregrickaby.com',
   redditApi: {
-    limit: '100',
+    limit: '25',
     sort: 'hot',
     subReddit: 'itookapicture'
   }
