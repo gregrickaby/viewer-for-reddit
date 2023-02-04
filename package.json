@@ -2,7 +2,7 @@
   "name": "@gregrickaby/reddit-image-viewer",
   "private": true,
   "description": "Anonymously browse images, videos, gifs, and other media from any subreddit.",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/reddit-image-viewer.git"
