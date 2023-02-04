@@ -36,7 +36,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.4.1",
-    "react-masonry-css": "^1.0.16",
     "swr": "^2.0.3"
   },
   "devDependencies": {
