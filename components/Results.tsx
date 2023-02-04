@@ -1,9 +1,16 @@
-import {Button, createStyles} from '@mantine/core'
+import {
+  AspectRatio,
+  Badge,
+  Button,
+  Card,
+  createStyles,
+  SimpleGrid,
+  Text
+} from '@mantine/core'
 import dynamic from 'next/dynamic'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
-import Masonry from 'react-masonry-css'
-import Card from '~/components/Card'
+import Media from '~/components/Media'
 import {useRedditContext} from '~/components/RedditProvider'
 import {fetchPosts} from '~/lib/helpers'
 import {Post} from '~/lib/types'
@@ -12,16 +19,24 @@ const DynamicNoResults = dynamic(() => import('./NoResults'), {
   ssr: false
 })
 
-const breakpointColumnsObj = {
-  default: 3,
-  766: 1
-}
-
 const useStyles = createStyles((theme) => ({
-  masonry: {
-    display: 'flex',
-    gap: theme.spacing.xl,
-    minHeight: '100vh'
+  card: {
+    backgroundColor:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[5]
+        : theme.colors.gray[2],
+    textAlign: 'center',
+
+    '&:hover': {
+      backgroundColor:
+        theme.colorScheme === 'dark'
+          ? theme.colors.dark[4]
+          : theme.colors.gray[3]
+    }
+  },
+
+  title: {
+    fontWeight: 700
   },
 
   loadMore: {
@@ -97,17 +112,37 @@ export default function Results() {
 
   return (
     <>
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className={classes.masonry}
+      <SimpleGrid
+        cols={3}
+        breakpoints={[
+          {maxWidth: 1024, cols: 2, spacing: 'md'},
+          {maxWidth: 600, cols: 1, spacing: 'sm'}
+        ]}
       >
         {posts.map((post, index) => (
-          <Card key={post.id} {...post} index={index} />
+          <Card
+            className={classes.card}
+            component="a"
+            href={post.permalink}
+            key={post.title}
+            p="sm"
+            radius="sm"
+          >
+            <AspectRatio ratio={3 / 2}>
+              <Media key={post.id} {...post} index={index} />
+            </AspectRatio>
+            {post?.over_18 && <Badge color="red">NSFW</Badge>}
+            <Text className={classes.title} mt={8}>
+              {post.title}
+            </Text>
+          </Card>
         ))}
-      </Masonry>
-      <Button className={classes.loadMore} ref={ref} onClick={infiniteScroll}>
-        {loadingMore ? <>Loading...</> : <>Load more</>}
-      </Button>
+      </SimpleGrid>
+      {!loading && (
+        <Button className={classes.loadMore} ref={ref} onClick={infiniteScroll}>
+          {loadingMore ? <>Loading...</> : <>Load more</>}
+        </Button>
+      )}
     </>
   )
 }
