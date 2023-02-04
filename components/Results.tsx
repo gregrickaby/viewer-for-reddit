@@ -131,10 +131,11 @@ export default function Results() {
             <AspectRatio ratio={3 / 2}>
               <Media key={post.id} {...post} index={index} />
             </AspectRatio>
-            {post?.over_18 && <Badge color="red">NSFW</Badge>}
-            <Text className={classes.title} mt={8}>
-              {post.title}
-            </Text>
+            <Card.Section p="md">
+              <Text className={classes.title} mt={8}>
+                {post.title} {post?.over_18 && <Badge color="red">NSFW</Badge>}
+              </Text>
+            </Card.Section>
           </Card>
         ))}
       </SimpleGrid>
