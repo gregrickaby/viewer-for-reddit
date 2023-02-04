@@ -183,5 +183,7 @@ export default function Media(props: Post) {
           <source src={props?.video_preview?.fallback_url} type="video/mp4" />
         </HlsPlayer>
       )
+    default:
+      return <></>
   }
 }
