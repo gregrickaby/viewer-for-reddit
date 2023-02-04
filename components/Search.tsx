@@ -68,7 +68,7 @@ export default function Search() {
       data={results ? results : beforeSearch ? beforeSearch : []}
       icon={<IconSearch />}
       itemComponent={AutoCompleteItem}
-      nothingFound="No subs found. Start typing to search."
+      nothingFound="No subs found. Try searching for something else."
       onChange={handleChange}
       onItemSubmit={(value) => setSubreddit(value.value)}
       placeholder={subReddit}
