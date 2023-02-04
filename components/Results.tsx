@@ -113,8 +113,9 @@ export default function Results() {
   return (
     <>
       <SimpleGrid
-        cols={3}
+        cols={4}
         breakpoints={[
+          {maxWidth: 1280, cols: 3, spacing: 'md'},
           {maxWidth: 1024, cols: 2, spacing: 'md'},
           {maxWidth: 600, cols: 1, spacing: 'sm'}
         ]}
