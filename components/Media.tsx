@@ -4,22 +4,20 @@ import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
 
-interface BlurProps {
+interface StylesProps {
+  props: Post
   blurNSFW: boolean
 }
 
-const useStyles = createStyles((theme, {blurNSFW}: BlurProps) => ({
-  blurred: {
-    filter: 'blur(60px)'
-  },
-
+const useStyles = createStyles((theme, {props, blurNSFW}: StylesProps) => ({
   media: {
     backgroundColor:
       theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.dark[0]
   },
 
-  richVideo: {
-    filter: blurNSFW ? 'blur(60px)' : ''
+  // For media that doesn't contain an obfuscated image, blur.
+  blur: {
+    filter: props?.over_18 && blurNSFW ? 'blur(10px)' : 'none'
   }
 }))
 
@@ -28,18 +26,18 @@ const useStyles = createStyles((theme, {blurNSFW}: BlurProps) => ({
  */
 export default function Media(props: Post) {
   const {blurNSFW} = useRedditContext()
-  const {classes, cx} = useStyles({blurNSFW})
+  const {classes, cx} = useStyles({props, blurNSFW})
   const {width} = useViewportSize()
 
   /**
-   * Decide whether to lazy load an image or not.
+   * Decide whether to lazy load media.
    *
    * @returns string - 'lazy' or 'eager'
    */
   function maybeLazyLoad() {
-    // For desktop, eager load the first 6 images.
+    // For desktop, eager load the first 9 images.
     if (width > 768) {
-      return props.index > 5 ? 'lazy' : 'eager'
+      return props.index > 8 ? 'lazy' : 'eager'
     }
 
     // For mobile, eager load the first image.
@@ -79,7 +77,7 @@ export default function Media(props: Post) {
           src={props?.media?.reddit_video?.hls_url}
           controls
           crossOrigin="anonymous"
-          dataHint="hosted:video"
+          data-hint="hosted:video"
           height={props?.media?.reddit_video?.height}
           playsInline
           poster={
@@ -99,13 +97,18 @@ export default function Media(props: Post) {
     case 'rich:video':
       return props?.video_preview ? (
         <video
-          className={cx(classes.media, classes.richVideo)}
+          className={classes.media}
           controls
           crossOrigin="anonymous"
           data-hint="rich:video"
           height={props?.video_preview?.height}
           muted
           playsInline
+          poster={
+            props?.over_18 && blurNSFW
+              ? props?.images?.obfuscated?.url
+              : props?.images?.cropped?.url
+          }
           preload="metadata"
           width={props?.video_preview?.width}
         >
@@ -120,7 +123,9 @@ export default function Media(props: Post) {
         >
           <iframe
             allow="fullscreen"
-            loading="lazy"
+            className={cx(classes.media, classes.blur)}
+            data-hint="rich:video-iframe"
+            loading={maybeLazyLoad()}
             referrerPolicy="no-referrer"
             sandbox="allow-scripts allow-same-origin allow-presentation"
             src={props?.secure_media_embed?.media_domain_url}
@@ -134,13 +139,16 @@ export default function Media(props: Post) {
       if (props?.url.includes('gifv')) {
         return (
           <HlsPlayer
-            className={cx(classes.media, {
-              [classes.blurred]: props?.over_18 && blurNSFW
-            })}
+            className={classes.media}
             controls
-            dataHint="link"
+            data-hint="link"
             muted
             playsInline
+            poster={
+              props?.over_18 && blurNSFW
+                ? props?.images?.obfuscated?.url
+                : props?.images?.cropped?.url
+            }
             preload="metadata"
           >
             <source
