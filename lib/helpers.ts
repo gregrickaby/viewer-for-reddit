@@ -23,7 +23,7 @@ export async function fetchPosts({
   subReddit
 }: FetchPostsProps) {
   const after = lastPost ? lastPost : ''
-  const number = limit ? limit : '24'
+  const number = limit ? limit : '25'
   const sortBy = sort ? sort : 'hot'
   const sub = subReddit ? subReddit : 'itookapicture'
 
