@@ -125,7 +125,7 @@ export default function Results() {
             className={classes.card}
             component="a"
             href={post.permalink}
-            key={post.title}
+            key={index}
             p="sm"
             radius="sm"
           >
