@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  createStyles,
   Modal,
   Stack,
   Switch,
@@ -11,6 +12,16 @@ import {useState} from 'react'
 import {useRedditContext} from '~/components/RedditProvider'
 import Sort from '~/components/Sort'
 
+const useStyles = createStyles((theme) => ({
+  settings: {
+    '@media (max-width: 766px)': {
+      position: 'absolute',
+      top: theme.spacing.md,
+      right: theme.spacing.md
+    }
+  }
+}))
+
 /**
  * Settings component.
  */
@@ -18,6 +29,7 @@ export default function Settings() {
   const [opened, setOpened] = useState(false)
   const {colorScheme, toggleColorScheme} = useMantineColorScheme()
   const {blurNSFW, setBlurNSFW} = useRedditContext()
+  const {classes} = useStyles()
 
   useHotkeys([['mod+b', () => setBlurNSFW(!blurNSFW)]])
 
@@ -25,6 +37,7 @@ export default function Settings() {
     <>
       <ActionIcon
         aria-label="open settings"
+        className={classes.settings}
         onClick={() => setOpened(true)}
         size="lg"
         variant="transparent"
