@@ -12,15 +12,15 @@ import useSWR from 'swr'
 import {useRedditContext} from '~/components/RedditProvider'
 import {fetcher} from '~/lib/helpers'
 
+interface ItemProps extends SelectItemProps {
+  over_18: boolean
+}
+
 const useStyles = createStyles(() => ({
   searchBar: {
     flex: 1
   }
 }))
-
-interface ItemProps extends SelectItemProps {
-  over_18: boolean
-}
 
 /**
  * Dropdown item component.
