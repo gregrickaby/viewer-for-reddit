@@ -87,7 +87,7 @@ export default function Media(props: Post) {
           src={props?.media?.reddit_video?.hls_url}
           controls
           crossOrigin="anonymous"
-          data-hint="hosted:video"
+          dataHint="hosted:video"
           height={props?.media?.reddit_video?.height}
           playsInline
           poster={
@@ -106,11 +106,11 @@ export default function Media(props: Post) {
       )
     case 'rich:video':
       return props?.video_preview ? (
-        <video
+        <HlsPlayer
           className={classes.media}
           controls
           crossOrigin="anonymous"
-          data-hint="rich:video"
+          dataHint="rich:video"
           height={props?.video_preview?.height}
           muted
           playsInline
@@ -123,7 +123,7 @@ export default function Media(props: Post) {
           width={props?.video_preview?.width}
         >
           <source src={props?.video_preview?.fallback_url} type="video/mp4" />
-        </video>
+        </HlsPlayer>
       ) : (
         <div
           style={{
@@ -145,33 +145,43 @@ export default function Media(props: Post) {
         </div>
       )
     case 'link':
-      // Search for .gifv....
-      if (props?.url.includes('gifv')) {
-        return (
-          <HlsPlayer
-            className={classes.media}
-            controls
-            data-hint="link"
-            muted
-            playsInline
-            poster={
-              props?.over_18 && blurNSFW
-                ? props?.images?.obfuscated?.url
-                : props?.images?.cropped?.url
-            }
-            preload="metadata"
-          >
-            <source
-              src={props?.url.replace('.gifv', '.mp4')}
-              type="video/mp4"
-            />
-          </HlsPlayer>
-        )
-      } else {
-        // No media? Return blank.
-        return <></>
-      }
-    default:
-      return <></>
+      // Search for .gifv and use the mp4 version.
+      return props?.url.includes('gifv') ? (
+        <HlsPlayer
+          className={classes.media}
+          controls
+          dataHint="link:gifv"
+          muted
+          playsInline
+          poster={
+            props?.over_18 && blurNSFW
+              ? props?.images?.obfuscated?.url
+              : props?.images?.cropped?.url
+          }
+          preload="metadata"
+        >
+          <source src={props?.url.replace('.gifv', '.mp4')} type="video/mp4" />
+        </HlsPlayer>
+      ) : (
+        // Otherwise, just play the video.
+        <HlsPlayer
+          className={classes.media}
+          controls
+          crossOrigin="anonymous"
+          dataHint="link"
+          height={props?.video_preview?.height}
+          muted
+          playsInline
+          poster={
+            props?.over_18 && blurNSFW
+              ? props?.images?.obfuscated?.url
+              : props?.images?.cropped?.url
+          }
+          preload="metadata"
+          width={props?.video_preview?.width}
+        >
+          <source src={props?.video_preview?.fallback_url} type="video/mp4" />
+        </HlsPlayer>
+      )
   }
 }
