@@ -26,7 +26,7 @@ const useStyles = createStyles((theme, {props, blurNSFW}: StylesProps) => ({
  */
 export default function Media(props: Post) {
   const {blurNSFW} = useRedditContext()
-  const {classes, cx} = useStyles({props, blurNSFW})
+  const {classes, cx, theme} = useStyles({props, blurNSFW})
   const {width} = useViewportSize()
 
   /**
@@ -35,13 +35,23 @@ export default function Media(props: Post) {
    * @returns string - 'lazy' or 'eager'
    */
   function maybeLazyLoad() {
-    // For desktop, eager load the first 9 images.
-    if (width > 768) {
+    // For large desktop, eager load the first 12 images.
+    if (width > theme.breakpoints.lg) {
+      return props.index > 11 ? 'lazy' : 'eager'
+    }
+
+    // For small desktop, eager load the first 9 images.
+    if (width > theme.breakpoints.md) {
       return props.index > 8 ? 'lazy' : 'eager'
     }
 
-    // For mobile, eager load the first image.
-    return props.index > 0 ? 'lazy' : 'eager'
+    // For tablet, eager load the first 6 images.
+    if (width > theme.breakpoints.md) {
+      return props.index > 5 ? 'lazy' : 'eager'
+    }
+
+    // For mobile, eager load the first 2 images.
+    return props.index > 1 ? 'lazy' : 'eager'
   }
 
   switch (props?.post_hint) {
