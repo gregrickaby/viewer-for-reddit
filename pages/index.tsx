@@ -5,7 +5,6 @@ import Header from '~/components/Header'
 import Meta from '~/components/Meta'
 import Results from '~/components/Results'
 import Search from '~/components/Search'
-import Settings from '~/components/Settings'
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -49,7 +48,6 @@ export default function Homepage() {
         <main className={classes.main}>
           <div className={classes.search}>
             <Search />
-            <Settings />
           </div>
           <Results />
         </main>

@@ -1,5 +1,6 @@
 import {createStyles, Title} from '@mantine/core'
 import {useRedditContext} from '~/components/RedditProvider'
+import Settings from '~/components/Settings'
 import config from '~/lib/config'
 
 const useStyles = createStyles((theme) => ({
@@ -52,6 +53,7 @@ export default function Header() {
       <Title className={classes.subTitle} order={2}>
         {config.siteDescription}
       </Title>
+      <Settings />
     </header>
   )
 }
