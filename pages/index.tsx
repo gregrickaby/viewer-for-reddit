@@ -9,7 +9,7 @@ import Search from '~/components/Search'
 const useStyles = createStyles((theme) => ({
   container: {
     margin: '0 auto',
-    maxWidth: theme.breakpoints.lg,
+    maxWidth: theme.breakpoints.xl,
     padding: `0 ${theme.spacing.xl}px`,
 
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
