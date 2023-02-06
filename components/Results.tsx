@@ -129,7 +129,7 @@ export default function Results() {
             p="sm"
             radius="sm"
           >
-            <AspectRatio ratio={3 / 2}>
+            <AspectRatio ratio={1 / 1}>
               <Media key={post.id} {...post} index={index} />
             </AspectRatio>
             <Card.Section p="md">
