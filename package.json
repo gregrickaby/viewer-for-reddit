@@ -1,7 +1,7 @@
 {
   "name": "@gregrickaby/reddit-image-viewer",
   "private": true,
-  "description": "Anonymously browse images, videos, gifs, and other media from any subreddit.",
+  "description": "Anonymously browse images, videos, gifs, and other media from Reddit.",
   "version": "3.5.0",
   "repository": {
     "type": "git",
@@ -40,12 +40,12 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.2.8",
-    "@types/node": "^18.11.19",
+    "@types/node": "^18.13.0",
     "@types/react": "^18.0.27",
     "eslint": "^8.33.0",
     "eslint-config-next": "^13.1.6",
     "eslint-config-prettier": "^8.6.0",
-    "next-sitemap": "^3.1.49",
+    "next-sitemap": "^3.1.50",
     "prettier": "^2.8.3",
     "rimraf": "^4.1.2",
     "typescript": "^4.9.5"

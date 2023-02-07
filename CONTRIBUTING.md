@@ -2,7 +2,8 @@
 
 Here are the ways to get involved with this project:
 
-- [Issues & Discussions](#issues--discussions)
+- [Issues \& Discussions](#issues--discussions)
+- [Reddit API](#reddit-api)
 - [Contributing Code](#contributing-code)
   - [Install Locally](#install-locally)
   - [Git Workflow](#git-workflow)
@@ -17,9 +18,15 @@ Before submitting your issue, make sure it has not been mentioned earlier. You c
 
 ---
 
+## Reddit API
+
+Please review the [Reddit API Documentation and Rules](https://github.com/reddit-archive/reddit/wiki/API) before submitting a patch. Also, this project is not affiliated with Reddit in any way.
+
+---
+
 ## Contributing Code
 
-Found a bug you can fix? Fantastic! Patches are always welcome.
+Found a bug you can fix? Fantastic! Patches are always welcome. Please follow the steps below to get started.
 
 ---
 

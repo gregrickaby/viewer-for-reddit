@@ -56,7 +56,7 @@ export default async function reddit(req: NextRequest) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json charset=UTF-8',
-          'User-Agent': 'reddit-image-viewer/* by Greg Rickaby',
+          'User-Agent': siteConfig.userAgent,
           Authorization: `Basic ${btoa(
             `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
           )}`
