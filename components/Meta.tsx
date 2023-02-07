@@ -15,7 +15,7 @@ export default function Meta() {
       <link
         as="fetch"
         rel="preload"
-        href="/api/reddit?sub=itookapicture&amp;sort=hot&amp;limit=24&amp;after="
+        href={`/api/reddit?sub=${config.redditApi.subReddit}&amp;sort=${config.redditApi.sort}&amp;limit=${config.redditApi.limit}&amp;after=`}
         crossOrigin="anonymous"
       />
 

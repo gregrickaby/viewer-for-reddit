@@ -7,17 +7,29 @@ const useStyles = createStyles((theme) => ({
   header: {
     alignItems: 'center',
     display: 'flex',
+    justifyContent: 'center',
+
+    '@media (min-width: 770px)': {
+      justifyContent: 'space-between'
+    }
+  },
+
+  titleWrap: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: theme.spacing.lg,
     flexDirection: 'column',
     justifyContent: 'space-between',
     textAlign: 'center',
 
-    [`@media (min-width: ${theme.breakpoints.sm}px)`]: {
+    '@media (min-width: 770px)': {
       flexDirection: 'row'
     }
   },
 
   title: {
     cursor: 'pointer',
+    flex: '0 0 1',
     fontSize: theme.fontSizes.xl,
 
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
@@ -26,6 +38,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   subTitle: {
+    flex: '1',
     fontSize: theme.fontSizes.sm
   }
 }))
@@ -47,12 +60,14 @@ export default function Header() {
 
   return (
     <header className={classes.header}>
-      <Title className={classes.title} onClick={handleClick} order={1}>
-        {config.siteTitle}
-      </Title>
-      <Title className={classes.subTitle} order={2}>
-        {config.siteDescription}
-      </Title>
+      <div className={classes.titleWrap}>
+        <Title className={classes.title} onClick={handleClick} order={1}>
+          {config.siteTitle}
+        </Title>
+        <Title className={classes.subTitle} order={2}>
+          {config.siteDescription}
+        </Title>
+      </div>
       <Settings />
     </header>
   )

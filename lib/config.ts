@@ -1,10 +1,11 @@
 const config = {
-  siteTitle: 'Reddit Image Viewer',
+  siteTitle: 'Viewer for Reddit',
   siteDescription:
-    'Anonymously browse images, videos, gifs, and other media from any subreddit.',
+    'Anonymously browse images, videos, gifs, and other media from Reddit.',
   siteUrl: 'https://reddit-image-viewer.vercel.app/',
   siteAuthor: '@gregrickaby',
   authorUrl: 'https://gregrickaby.com',
+  userAgent: 'web-app:reddit-image-viewer:* (by @gregrickaby)',
   redditApi: {
     limit: '24',
     sort: 'hot',
