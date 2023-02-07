@@ -14,7 +14,7 @@ import Sort from '~/components/Sort'
 
 const useStyles = createStyles((theme) => ({
   settings: {
-    '@media (max-width: 766px)': {
+    '@media (max-width: 770px)': {
       position: 'absolute',
       top: theme.spacing.md,
       right: theme.spacing.md
