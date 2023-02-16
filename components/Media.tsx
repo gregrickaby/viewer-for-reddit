@@ -36,17 +36,17 @@ export default function Media(props: Post) {
    */
   function maybeLazyLoad() {
     // For large desktop, eager load the first 12 images.
-    if (width > theme.breakpoints.lg) {
+    if (width > 1200) {
       return props.index > 11 ? 'lazy' : 'eager'
     }
 
     // For small desktop, eager load the first 9 images.
-    if (width > theme.breakpoints.md) {
+    if (width > 1024) {
       return props.index > 8 ? 'lazy' : 'eager'
     }
 
     // For tablet, eager load the first 6 images.
-    if (width > theme.breakpoints.md) {
+    if (width > 768) {
       return props.index > 5 ? 'lazy' : 'eager'
     }
 

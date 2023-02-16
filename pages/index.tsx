@@ -10,9 +10,9 @@ const useStyles = createStyles((theme) => ({
   container: {
     margin: '0 auto',
     maxWidth: theme.breakpoints.xl,
-    padding: `0 ${theme.spacing.xl}px`,
+    padding: `0 ${theme.spacing.xl}`,
 
-    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+    [`@media (max-width: ${theme.breakpoints.sm})`]: {
       padding: theme.spacing.xl
     },
 

@@ -41,7 +41,7 @@ const useStyles = createStyles((theme) => ({
 
   loadMore: {
     display: 'flex',
-    margin: `${theme.spacing.xl}px auto`
+    margin: `calc(${theme.spacing.xl} * 2) auto`
   }
 }))
 
@@ -115,9 +115,9 @@ export default function Results() {
       <SimpleGrid
         cols={4}
         breakpoints={[
-          {maxWidth: 1280, cols: 3, spacing: 'md'},
-          {maxWidth: 1024, cols: 2, spacing: 'md'},
-          {maxWidth: 600, cols: 1, spacing: 'sm'}
+          {maxWidth: '80rem', cols: 3, spacing: 'md'},
+          {maxWidth: '64rem', cols: 2, spacing: 'md'},
+          {maxWidth: '37.5rem', cols: 1, spacing: 'sm'}
         ]}
       >
         {posts.map((post, index) => (
