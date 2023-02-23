@@ -84,7 +84,6 @@ export default function Media(props: Post) {
       return (
         <HlsPlayer
           className={classes.media}
-          src={props?.media?.reddit_video?.hls_url}
           controls
           crossOrigin="anonymous"
           dataHint="hosted:video"
@@ -96,6 +95,7 @@ export default function Media(props: Post) {
               : props?.images?.cropped?.url
           }
           preload="metadata"
+          src={props?.video_preview?.hls_url}
           width={props?.media?.reddit_video?.width}
         >
           <source
@@ -120,6 +120,7 @@ export default function Media(props: Post) {
               : props?.images?.cropped?.url
           }
           preload="metadata"
+          src={props?.video_preview?.hls_url}
           width={props?.video_preview?.width}
         >
           <source src={props?.video_preview?.fallback_url} type="video/mp4" />
@@ -150,6 +151,7 @@ export default function Media(props: Post) {
         <HlsPlayer
           className={classes.media}
           controls
+          crossOrigin="anonymous"
           dataHint="link:gifv"
           muted
           playsInline
@@ -158,6 +160,7 @@ export default function Media(props: Post) {
               ? props?.images?.obfuscated?.url
               : props?.images?.cropped?.url
           }
+          src={props?.video_preview?.hls_url}
           preload="metadata"
         >
           <source src={props?.url.replace('.gifv', '.mp4')} type="video/mp4" />
@@ -178,6 +181,7 @@ export default function Media(props: Post) {
               : props?.images?.cropped?.url
           }
           preload="metadata"
+          src={props?.video_preview?.hls_url}
           width={props?.video_preview?.width}
         >
           <source src={props?.video_preview?.fallback_url} type="video/mp4" />
