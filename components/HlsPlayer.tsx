@@ -3,7 +3,7 @@ import {LegacyRef, useEffect, useRef, VideoHTMLAttributes} from 'react'
 
 export interface HlsPlayerProps
   extends Omit<VideoHTMLAttributes<HTMLVideoElement>, 'data-hint'> {
-  dataHint?: any
+  dataHint?: string
 }
 
 /**
