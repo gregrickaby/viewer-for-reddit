@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   createStyles,
+  Flex,
   SimpleGrid
 } from '@mantine/core'
 import dynamic from 'next/dynamic'
@@ -36,11 +37,6 @@ const useStyles = createStyles((theme) => ({
       borderBottom: '1px solid transparent',
       textDecoration: 'none'
     }
-  },
-
-  loadMore: {
-    display: 'flex',
-    margin: `${theme.spacing.xl}px auto`
   }
 }))
 
@@ -133,9 +129,11 @@ export default function Results() {
         ))}
       </SimpleGrid>
       {!loading && (
-        <Button className={classes.loadMore} ref={ref} onClick={infiniteScroll}>
-          {loadingMore ? <>Loading...</> : <>Load more</>}
-        </Button>
+        <Flex justify="center" align="center" p="xl">
+          <Button ref={ref} onClick={infiniteScroll}>
+            {loadingMore ? <>Loading...</> : <>Load more</>}
+          </Button>
+        </Flex>
       )}
     </>
   )
