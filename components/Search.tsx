@@ -11,6 +11,7 @@ import {forwardRef} from 'react'
 import useSWR from 'swr'
 import {useRedditContext} from '~/components/RedditProvider'
 import {fetcher} from '~/lib/helpers'
+import Settings from './Settings'
 
 interface ItemProps extends SelectItemProps {
   over_18: boolean
@@ -18,7 +19,7 @@ interface ItemProps extends SelectItemProps {
 
 const useStyles = createStyles(() => ({
   searchBar: {
-    flex: 1
+    flexBasis: '100%'
   }
 }))
 
@@ -57,23 +58,26 @@ export default function Search() {
   /**
    * Handle search input change.
    */
-  function handleChange(string: string) {
+  function handleSearch(string: string) {
     setSearchInput(string)
   }
 
   return (
-    <Autocomplete
-      aria-label="Search sub-reddits"
-      className={classes.searchBar}
-      data={results ? results : beforeSearch ? beforeSearch : []}
-      icon={<IconSearch />}
-      itemComponent={AutoCompleteItem}
-      nothingFound="No subs found. Try searching for something else."
-      onChange={handleChange}
-      onItemSubmit={(value) => setSubreddit(value.value)}
-      placeholder={subReddit}
-      size="lg"
-      value={searchInput}
-    />
+    <>
+      <Autocomplete
+        aria-label="Search sub-reddits"
+        className={classes.searchBar}
+        data={results ? results : beforeSearch ? beforeSearch : []}
+        icon={<IconSearch />}
+        itemComponent={AutoCompleteItem}
+        nothingFound="No subs found. Try searching for something else."
+        onChange={handleSearch}
+        onItemSubmit={(value) => setSubreddit(value.value)}
+        placeholder={subReddit}
+        size="lg"
+        value={searchInput}
+      />
+      <Settings />
+    </>
   )
 }
