@@ -13,7 +13,7 @@ import Sort from '~/components/Sort'
 
 const useStyles = createStyles((theme) => ({
   settings: {
-    '@media (max-width: 770px)': {
+    [`@media (max-width: ${theme.breakpoints.sm})`]: {
       position: 'absolute',
       top: theme.spacing.md,
       right: theme.spacing.md
