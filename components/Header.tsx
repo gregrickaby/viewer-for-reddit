@@ -1,45 +1,28 @@
 import {createStyles, Title} from '@mantine/core'
 import {useRedditContext} from '~/components/RedditProvider'
-import Settings from '~/components/Settings'
 import config from '~/lib/config'
 
 const useStyles = createStyles((theme) => ({
   header: {
     alignItems: 'center',
     display: 'flex',
-    justifyContent: 'center',
-
-    '@media (min-width: 770px)': {
-      justifyContent: 'space-between'
-    }
-  },
-
-  titleWrap: {
-    alignItems: 'center',
-    display: 'flex',
-    gap: theme.spacing.lg,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    textAlign: 'center',
-
-    '@media (min-width: 770px)': {
-      flexDirection: 'row'
-    }
+    justifyContent: 'center'
   },
 
   title: {
-    cursor: 'pointer',
-    flex: '0 0 1',
-    fontSize: theme.fontSizes.xl,
-
-    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-      marginBottom: theme.spacing.md
-    }
+    cursor: 'pointer'
   },
 
   subTitle: {
-    flex: '1',
-    fontSize: theme.fontSizes.sm
+    border: 0,
+    clip: 'rect(0, 0, 0, 0)',
+    height: '1px',
+    margin: '-1px',
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    whiteSpace: 'nowrap',
+    width: '1px'
   }
 }))
 
@@ -51,24 +34,21 @@ export default function Header() {
   const {setSearchInput, setSubreddit} = useRedditContext()
 
   /**
-   * Title click handler.
+   * Reset the search input and subreddit.
    */
-  function handleClick() {
-    setSearchInput('')
-    setSubreddit('itookapicture')
+  function resetSearch() {
+    setSearchInput(config?.redditApi?.subReddit)
+    setSubreddit(config?.redditApi?.subReddit)
   }
 
   return (
     <header className={classes.header}>
-      <div className={classes.titleWrap}>
-        <Title className={classes.title} onClick={handleClick} order={1}>
-          {config.siteTitle}
-        </Title>
-        <Title className={classes.subTitle} order={2}>
-          {config.siteDescription}
-        </Title>
-      </div>
-      <Settings />
+      <Title className={classes.title} onClick={resetSearch} order={1}>
+        {config.siteTitle}
+      </Title>
+      <Title className={classes.subTitle} order={2}>
+        {config.siteDescription}
+      </Title>
     </header>
   )
 }
