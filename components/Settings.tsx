@@ -6,9 +6,8 @@ import {
   Switch,
   useMantineColorScheme
 } from '@mantine/core'
-import {useHotkeys} from '@mantine/hooks'
+import {useDisclosure, useHotkeys} from '@mantine/hooks'
 import {IconSettings} from '@tabler/icons-react'
-import {useState} from 'react'
 import {useRedditContext} from '~/components/RedditProvider'
 import Sort from '~/components/Sort'
 
@@ -26,7 +25,7 @@ const useStyles = createStyles((theme) => ({
  * Settings component.
  */
 export default function Settings() {
-  const [opened, setOpened] = useState(false)
+  const [opened, {open, close}] = useDisclosure(false)
   const {colorScheme, toggleColorScheme} = useMantineColorScheme()
   const {blurNSFW, setBlurNSFW} = useRedditContext()
   const {classes} = useStyles()
@@ -38,7 +37,7 @@ export default function Settings() {
       <ActionIcon
         aria-label="open settings"
         className={classes.settings}
-        onClick={() => setOpened(true)}
+        onClick={open}
         size="lg"
         variant="transparent"
       >
@@ -46,9 +45,10 @@ export default function Settings() {
       </ActionIcon>
 
       <Modal
-        closeButtonLabel="close settings"
-        onClose={() => setOpened(false)}
+        closeButtonProps={{'aria-label': 'close settings'}}
+        onClose={close}
         opened={opened}
+        padding="xl"
         title="Settings"
       >
         <Stack justify="space-between">
