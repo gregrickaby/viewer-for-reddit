@@ -1,4 +1,11 @@
-import {ActionIcon, createStyles, useMantineColorScheme} from '@mantine/core'
+import {
+  Affix,
+  Button,
+  createStyles,
+  rem,
+  Transition,
+  useMantineColorScheme
+} from '@mantine/core'
 import {useWindowScroll} from '@mantine/hooks'
 import {IconArrowUp} from '@tabler/icons-react'
 
@@ -19,22 +26,19 @@ export default function BackToTop() {
   const {classes} = useStyles()
   const {colorScheme} = useMantineColorScheme()
 
-  // Only show the button if the user has scrolled down 100px.
-  if (scroll.y < 100) {
-    return <></>
-  }
-
   return (
-    <ActionIcon
-      aria-label="scroll to top"
-      className={classes.backToTop}
-      color={colorScheme === 'dark' ? 'gray' : 'dark'}
-      onClick={() => scrollTo({y: 0})}
-      size="xl"
-      tabIndex={0}
-      variant="filled"
-    >
-      <IconArrowUp />
-    </ActionIcon>
+    <Affix position={{bottom: rem(20), right: rem(20)}}>
+      <Transition transition="slide-up" mounted={scroll.y > 0}>
+        {(transitionStyles) => (
+          <Button
+            leftIcon={<IconArrowUp size="1rem" />}
+            style={transitionStyles}
+            onClick={() => scrollTo({y: 0})}
+          >
+            Scroll to top
+          </Button>
+        )}
+      </Transition>
+    </Affix>
   )
 }
