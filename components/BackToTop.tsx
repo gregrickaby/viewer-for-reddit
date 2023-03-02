@@ -1,11 +1,4 @@
-import {
-  Affix,
-  Button,
-  createStyles,
-  rem,
-  Transition,
-  useMantineColorScheme
-} from '@mantine/core'
+import {Affix, Button, createStyles, rem, Transition} from '@mantine/core'
 import {useWindowScroll} from '@mantine/hooks'
 import {IconArrowUp} from '@tabler/icons-react'
 
@@ -23,8 +16,6 @@ const useStyles = createStyles((theme) => ({
  */
 export default function BackToTop() {
   const [scroll, scrollTo] = useWindowScroll()
-  const {classes} = useStyles()
-  const {colorScheme} = useMantineColorScheme()
 
   return (
     <Affix position={{bottom: rem(20), right: rem(20)}}>
