@@ -1,11 +1,10 @@
 import {
+  Anchor,
   AspectRatio,
-  Badge,
   Button,
   Card,
   createStyles,
-  SimpleGrid,
-  Text
+  SimpleGrid
 } from '@mantine/core'
 import dynamic from 'next/dynamic'
 import {useEffect, useState} from 'react'
@@ -25,18 +24,18 @@ const useStyles = createStyles((theme) => ({
       theme.colorScheme === 'dark'
         ? theme.colors.dark[5]
         : theme.colors.gray[2],
-    textAlign: 'center',
-
-    '&:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[4]
-          : theme.colors.gray[3]
-    }
+    textAlign: 'center'
   },
 
   title: {
-    fontWeight: 700
+    borderBottom: `1px solid ${theme.colors.gray[6]}`,
+    textDecoration: 'none',
+    textTransform: 'capitalize',
+
+    '&:hover': {
+      borderBottom: '1px solid transparent',
+      textDecoration: 'none'
+    }
   },
 
   loadMore: {
@@ -121,21 +120,14 @@ export default function Results() {
         ]}
       >
         {posts.map((post, index) => (
-          <Card
-            className={classes.card}
-            component="a"
-            href={post.permalink}
-            key={index}
-            p="sm"
-            radius="sm"
-          >
+          <Card className={classes.card} key={index}>
             <AspectRatio ratio={1 / 1}>
               <Media key={post.id} {...post} index={index} />
             </AspectRatio>
             <Card.Section p="md">
-              <Text className={classes.title} mt={8}>
-                {post.title} {post?.over_18 && <Badge color="red">NSFW</Badge>}
-              </Text>
+              <Anchor className={classes.title} href={post.permalink} mt={8}>
+                {post.title}
+              </Anchor>
             </Card.Section>
           </Card>
         ))}
