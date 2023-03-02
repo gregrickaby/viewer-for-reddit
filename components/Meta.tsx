@@ -7,20 +7,16 @@ import config from '~/lib/config'
 export default function Meta() {
   return (
     <Head>
-      <title>{config?.siteTitle}</title>
-      <meta name="description" content={config?.siteDescription} />
+      <title>
+        {config?.siteTitle} - {config?.siteDescription}
+      </title>
+      <meta name="description" content={config?.metaDescription} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 
       <link rel="preconnect" href="//preview.redd.it" crossOrigin="anonymous" />
-      <link
-        as="fetch"
-        rel="preload"
-        href={`/api/reddit?sub=${config.redditApi.subReddit}&amp;sort=${config.redditApi.sort}&amp;limit=${config.redditApi.limit}&amp;after=`}
-        crossOrigin="anonymous"
-      />
 
       <meta property="og:title" content={config?.siteTitle} />
-      <meta property="og:description" content={config?.siteDescription} />
+      <meta property="og:description" content={config?.metaDescription} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={config?.siteUrl} />
       <meta

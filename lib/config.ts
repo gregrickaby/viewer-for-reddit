@@ -1,6 +1,7 @@
 const config = {
   siteTitle: 'Viewer for Reddit',
-  siteDescription:
+  siteDescription: 'Anonymously browse Reddit',
+  metaDescription:
     'Anonymously browse images, videos, gifs, and other media from Reddit.',
   siteUrl: 'https://reddit-image-viewer.vercel.app/',
   siteAuthor: '@gregrickaby',

@@ -1,6 +1,6 @@
-# Anonymous Viewer for Reddit
+# Viewer for Reddit
 
-Anonymously browse images, videos, gifs, and other media from Reddit. [https://reddit-image-viewer.vercel.app/](https://reddit-image-viewer.vercel.app/)
+Anonymously browse Reddit. [https://reddit-image-viewer.vercel.app/](https://reddit-image-viewer.vercel.app/)
 
 ---
 
