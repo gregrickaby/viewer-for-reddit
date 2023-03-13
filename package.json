@@ -43,7 +43,7 @@
     "@types/node": "^18.14.6",
     "@types/react": "^18.0.28",
     "eslint": "^8.35.0",
-    "eslint-config-next": "^13.2.3",
+    "eslint-config-next": "^13.2.4",
     "eslint-config-prettier": "^8.7.0",
     "next-sitemap": "^4.0.5",
     "prettier": "^2.8.4",
