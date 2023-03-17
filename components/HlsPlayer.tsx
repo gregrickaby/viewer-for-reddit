@@ -40,11 +40,13 @@ export default function HlsPlayer(props: HlsPlayerProps) {
 
   return (
     <video
+      autoPlay
       className={props.className}
       controls={props.controls}
       crossOrigin={props.crossOrigin}
       data-hint={props.dataHint}
       height={props.height}
+      loop
       muted={props.muted}
       playsInline={props.playsInline}
       poster={props.poster}

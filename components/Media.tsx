@@ -83,11 +83,13 @@ export default function Media(props: Post) {
     case 'hosted:video':
       return (
         <HlsPlayer
+          autoPlay
           className={classes.media}
           controls
           crossOrigin="anonymous"
           dataHint="hosted:video"
           height={props?.media?.reddit_video?.height}
+          loop
           playsInline
           poster={
             props?.over_18 && blurNSFW
@@ -107,11 +109,13 @@ export default function Media(props: Post) {
     case 'rich:video':
       return props?.video_preview ? (
         <HlsPlayer
+          autoPlay
           className={classes.media}
           controls
           crossOrigin="anonymous"
           dataHint="rich:video"
           height={props?.video_preview?.height}
+          loop
           muted
           playsInline
           poster={
@@ -149,10 +153,12 @@ export default function Media(props: Post) {
       // Search for .gifv and use the mp4 version.
       return props?.url.includes('gifv') ? (
         <HlsPlayer
+          autoPlay
           className={classes.media}
           controls
           crossOrigin="anonymous"
           dataHint="link:gifv"
+          loop
           muted
           playsInline
           poster={
@@ -168,11 +174,13 @@ export default function Media(props: Post) {
       ) : (
         // Otherwise, just play the video.
         <HlsPlayer
+          autoPlay
           className={classes.media}
           controls
           crossOrigin="anonymous"
           dataHint="link"
           height={props?.video_preview?.height}
+          loop
           muted
           playsInline
           poster={
