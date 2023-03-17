@@ -1,6 +1,6 @@
 // @see https://github.com/iamvishnusankar/next-sitemap
 module.exports = {
-  siteUrl: 'https://reddit-image-viewer.vercel.app',
+  siteUrl: 'https://redditviewer.vercel.app',
   generateRobotsTxt: true,
   changefreq: 'daily'
 }

@@ -14,7 +14,7 @@ Here are the ways to get involved with this project:
 
 ## Issues & Discussions
 
-Before submitting your issue, make sure it has not been mentioned earlier. You can search through the [existing issues](https://github.com/gregrickaby/reddit-image-viewer/issues) or active [discussions](https://github.com/gregrickaby/reddit-image-viewer/discussions).
+Before submitting your issue, make sure it has not been mentioned earlier. You can search through the [existing issues](https://github.com/gregrickaby/viewer-for-reddit/issues) or active [discussions](https://github.com/gregrickaby/viewer-for-reddit/discussions).
 
 ---
 
@@ -35,20 +35,21 @@ Found a bug you can fix? Fantastic! Patches are always welcome. Please follow th
 Use `npx` and `create-next-app` to install the project locally:
 
 ```bash
-npx create-next-app --example https://github.com/gregrickaby/reddit-image-viewer reddit-image-viewer
+npx create-next-app --example https://github.com/gregrickaby/viewer-for-reddit viewer-for-reddit
 ```
 
 ---
 
 ### Git Workflow
 
-1. Fork the repo and create a feature/patch branch off `main`
+1. Fork the repo and create a `feature/` or `hotfix/` branch off `main`
 2. Work locally adhering to coding standards
 3. Run `npm run lint`
 4. Make sure the app builds locally with `npm run build && npm run start`
-5. Push your code, open a PR, and fill out the PR template
-6. After peer review, the PR will be merged back into `main`
-7. Repeat ♻️
+5. Push your code to Github and open your PR (note: Your PR will be deployed to Vercel for QA after approval)
+6. Fill out the PR template and request a peer review
+7. After peer review, the PR will be merged back into `main`
+8. Repeat ♻️
 
 > Your PR must pass automated assertions, deploy to Vercel successfully, and pass a peer review before it can be merged.
 
@@ -70,10 +71,10 @@ Take note of the `client id` and `secret` values. You will need these in a momen
 2. Create an `.env` file in the root of the project:
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
-3. Add your token to the `.env` file:
+3. Add your token to the `.env.local` file:
 
 ```text
 # Your Reddit Client ID
@@ -88,7 +89,7 @@ REDDIT_CLIENT_SECRET="YOUR-TOKEN-HERE"
 NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION="YOUR-TOKEN-HERE"
 ```
 
-> The `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only needed on Production. You can leave it as is for local development.
+> The `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only needed on Production. You can leave it as-is for local development.
 
 ---
 
@@ -128,6 +129,6 @@ vercel dev
 
 ## Legal Stuff
 
-This repo is maintained by [Greg Rickaby](https://gregrickaby.com/). By contributing code you grant its use under the [MIT](https://github.com/gregrickaby/reddit-image-viewer/blob/main/LICENSE).
+This repo is maintained by [Greg Rickaby](https://gregrickaby.com/). By contributing code you grant its use under the [MIT](https://github.com/gregrickaby/viewer-for-reddit/blob/main/LICENSE).
 
 ---

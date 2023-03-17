@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://reddit-image-viewer.vercel.app
+Host: https://redditviewer.vercel.app
 
 # Sitemaps
-Sitemap: https://reddit-image-viewer.vercel.app/sitemap.xml
+Sitemap: https://redditviewer.vercel.app/sitemap.xml
