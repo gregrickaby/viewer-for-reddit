@@ -25,7 +25,7 @@ const useStyles = createStyles((theme, {props, blurNSFW}: StylesProps) => ({
  * Card component.
  */
 export default function Media(props: Post) {
-  const {blurNSFW} = useRedditContext()
+  const {autoPlay, blurNSFW} = useRedditContext()
   const {classes, cx, theme} = useStyles({props, blurNSFW})
   const {width} = useViewportSize()
 
@@ -83,7 +83,7 @@ export default function Media(props: Post) {
     case 'hosted:video':
       return (
         <HlsPlayer
-          autoPlay
+          autoPlay={autoPlay}
           className={classes.media}
           controls
           crossOrigin="anonymous"
@@ -109,7 +109,7 @@ export default function Media(props: Post) {
     case 'rich:video':
       return props?.video_preview ? (
         <HlsPlayer
-          autoPlay
+          autoPlay={autoPlay}
           className={classes.media}
           controls
           crossOrigin="anonymous"
@@ -153,7 +153,7 @@ export default function Media(props: Post) {
       // Search for .gifv and use the mp4 version.
       return props?.url.includes('gifv') ? (
         <HlsPlayer
-          autoPlay
+          autoPlay={autoPlay}
           className={classes.media}
           controls
           crossOrigin="anonymous"
@@ -174,7 +174,7 @@ export default function Media(props: Post) {
       ) : (
         // Otherwise, just play the video.
         <HlsPlayer
-          autoPlay
+          autoPlay={autoPlay}
           className={classes.media}
           controls
           crossOrigin="anonymous"

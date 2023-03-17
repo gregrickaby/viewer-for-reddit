@@ -27,9 +27,10 @@ const useStyles = createStyles((theme) => ({
 export default function Settings() {
   const [opened, {open, close}] = useDisclosure(false)
   const {colorScheme, toggleColorScheme} = useMantineColorScheme()
-  const {blurNSFW, setBlurNSFW} = useRedditContext()
+  const {autoPlay, blurNSFW, setAutoplay, setBlurNSFW} = useRedditContext()
   const {classes} = useStyles()
 
+  useHotkeys([['mod+i', () => setAutoplay(!autoPlay)]])
   useHotkeys([['mod+b', () => setBlurNSFW(!blurNSFW)]])
 
   return (
@@ -53,6 +54,15 @@ export default function Settings() {
       >
         <Stack justify="space-between">
           <Sort />
+          <Switch
+            aria-label="Toggle between light and dark theme."
+            checked={autoPlay}
+            label="Auto Play Media (⌘+I)"
+            offLabel="OFF"
+            onChange={(event) => setAutoplay(event.currentTarget.checked)}
+            onLabel="ON"
+            size="lg"
+          />
           <Switch
             aria-label="Toggle between light and dark theme."
             checked={colorScheme === 'dark'}

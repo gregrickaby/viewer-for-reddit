@@ -40,7 +40,7 @@ export default function HlsPlayer(props: HlsPlayerProps) {
 
   return (
     <video
-      autoPlay
+      autoPlay={props.autoPlay}
       className={props.className}
       controls={props.controls}
       crossOrigin={props.crossOrigin}

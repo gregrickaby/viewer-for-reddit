@@ -4,8 +4,10 @@ import config from '~/lib/config'
 import {ChildrenProps} from '~/lib/types'
 
 export interface RedditProviderProps {
+  autoPlay: boolean
   blurNSFW: boolean
   searchInput: string
+  setAutoplay: (autoPlay: boolean) => void
   setBlurNSFW: (blurNSFW: boolean) => void
   setSearchInput: (searchInput: string) => void
   setSort: (sort: string) => void
@@ -31,16 +33,23 @@ export default function RedditProvider({children}: ChildrenProps) {
   const [sort, setSort] = useState(config.redditApi.sort)
   const [subReddit, setSubreddit] = useState(config.redditApi.subReddit)
   const [searchInput, setSearchInput] = useState('')
+  const [autoPlay, setAutoplay] = useLocalStorage({
+    key: 'vfr-autoplay',
+    defaultValue: true,
+    getInitialValueInEffect: true
+  })
   const [blurNSFW, setBlurNSFW] = useLocalStorage({
-    key: 'riv-nsfwblur',
+    key: 'vfr-nsfwblur',
     defaultValue: false,
     getInitialValueInEffect: true
   })
 
   // Set the global state.
   const providerValues = {
+    autoPlay,
     blurNSFW,
     searchInput,
+    setAutoplay,
     setBlurNSFW,
     setSearchInput,
     setSort,
