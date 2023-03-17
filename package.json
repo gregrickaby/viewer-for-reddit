@@ -2,7 +2,7 @@
   "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
   "description": "Anonymously browse Reddit",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
