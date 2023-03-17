@@ -1,6 +1,6 @@
 # Viewer for Reddit
 
-Anonymously browse Reddit. [https://reddit-image-viewer.vercel.app/](https://reddit-image-viewer.vercel.app/)
+Anonymously browse Reddit. [https://redditviewer.vercel.app/](https://redditviewer.vercel.app/)
 
 ---
 
