@@ -9,7 +9,7 @@ const config = {
   userAgent: 'web-app:viewer-for-reddit:* (by @gregrickaby)',
   redditApi: {
     limit: '24',
-    sort: 'hot',
+    sort: 'top',
     subReddit: 'itookapicture'
   }
 }

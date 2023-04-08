@@ -1,6 +1,6 @@
-import type {NextRequest} from 'next/server'
+import type { NextRequest } from 'next/server'
 import siteConfig from '~/lib/config'
-import {Posts} from '~/lib/types'
+import { Posts } from '~/lib/types'
 
 export const config = {
   runtime: 'edge'
@@ -95,7 +95,7 @@ export default async function reddit(req: NextRequest) {
 
     // Attempt to fetch posts.
     const response = await fetch(
-      `https://oauth.reddit.com/r/${subReddit}/${sortBy}/.json?limit=${postLimit}&after=${lastPost}&raw_json=1`,
+      `https://oauth.reddit.com/r/${subReddit}/${sortBy}/.json?limit=${postLimit}&t=week&after=${lastPost}&raw_json=1`,
       {
         headers: {
           Authorization: `Bearer: ${token.access_token}`

@@ -1,16 +1,16 @@
 import {
-  Autocomplete,
   Badge,
-  createStyles,
   Group,
-  SelectItemProps
+  MultiSelect,
+  SelectItem,
+  SelectItemProps,
+  createStyles
 } from '@mantine/core'
-import {useDebouncedValue} from '@mantine/hooks'
-import {IconSearch} from '@tabler/icons-react'
-import {forwardRef} from 'react'
+import { useDebouncedValue } from '@mantine/hooks'
+import { forwardRef } from 'react'
 import useSWR from 'swr'
-import {useRedditContext} from '~/components/RedditProvider'
-import {fetcher} from '~/lib/helpers'
+import { useRedditContext } from '~/components/RedditProvider'
+import { fetcher } from '~/lib/helpers'
 import Settings from './Settings'
 
 interface ItemProps extends SelectItemProps {
@@ -38,6 +38,14 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
 )
 AutoCompleteItem.displayName = 'AutoCompleteItem'
 
+let storedData:  (string | SelectItem)[] =[{label: 'gif', value: 'gif'}];
+
+function storeValue(values:any){
+  storedData =  values.map((value:any) =>{
+    return {value: value, label: value};
+  })     
+}
+
 /**
  * Search component.
  *
@@ -59,23 +67,49 @@ export default function Search() {
    * Handle search input change.
    */
   function handleSearch(string: string) {
-    setSearchInput(string)
+    console.log('handleSearch',string);
+    if (string !== undefined && string.length > 0) setSearchInput(string);
   }
+  
+   function getData(): (string | SelectItem)[] {
+    if (results) return [...storedData,...results.map((i:{value: string; label: string}) => {return {value: i.value, label: i.value}})]
+    if (beforeSearch) return [...storedData,...beforeSearch.map((i:{value: string; label: string}) => {return {value: i.value, label: i.value}})]
+    return ['Empty'];
+   }
 
+   
   return (
     <>
-      <Autocomplete
+      {/* <MultiSelect
         aria-label="Search sub-reddits"
         className={classes.searchBar}
         data={results ? results : beforeSearch ? beforeSearch : []}
         icon={<IconSearch />}
-        itemComponent={AutoCompleteItem}
         nothingFound="No subs found. Try searching for something else."
         onChange={handleSearch}
-        onItemSubmit={(value) => setSubreddit(value.value)}
+        // onChange={(value) => setSubreddit(value[0])}
         placeholder={subReddit}
         size="lg"
-        value={searchInput}
+        // value={[searchInput]}
+      /> */}
+      <MultiSelect 
+      aria-label="Search sub-reddits"
+      className={classes.searchBar}
+      clearSearchOnChange
+      clearSearchOnBlur
+      data={getData()}
+      // data={results ? results : beforeSearch ? beforeSearch : data}
+      label="Your favorite frameworks/libraries"
+      nothingFound="Nothing found" 
+      onChange={(values) => { 
+        storeValue(values); 
+        setSubreddit(encodeURI(values.join('%2B')));
+        setSearchInput('');
+      }}
+      onSearchChange={handleSearch}
+      placeholder="Pick all that you like"
+      searchable
+      searchValue ={searchInput}
       />
       <Settings />
     </>
