@@ -70,20 +70,34 @@ export default function Search() {
     setSearchInput(string);
   }
   
-   function getData(): (string | SelectItem)[] {
-    if (results) return [...storedData,...results.map((i:{value: string; label: string}) => {return {value: i.value, label: i.value}})]
-    if (beforeSearch) return [...storedData,...beforeSearch.map((i:{value: string; label: string}) => {return {value: i.value, label: i.value}})]
-    return ['Empty'];
-   }
+  
+  /**
+   * get item data to populate typeahead
+  */
+  function formatItems(i:{value: string; label: string}){
+    return {value: i.value, label: i.value}
+  } 
 
+  function getData(): (string | SelectItem)[] {
+    let itemOptions; 
+    if (results){
+      itemOptions = [...storedData,...results.map(formatItems)];
+    } else if (beforeSearch){
+      itemOptions = [...storedData,...beforeSearch.map(formatItems)];
+    }else {
+      itemOptions = ['Empty'];
+    }
+    return itemOptions;
+  }
    
   return (
     <>
       <MultiSelect 
       aria-label="Search sub-reddits"
       className={classes.searchBar}
-      clearSearchOnChange
+      clearable
       clearSearchOnBlur
+      clearSearchOnChange
       data={getData()}
       hoverOnSearchChange
       nothingFound="No subs found. Try searching for something else."
