@@ -38,6 +38,9 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
 )
 AutoCompleteItem.displayName = 'AutoCompleteItem'
 
+/**
+ * Stores items selected by multi select
+ */
 let storedData:  (string | SelectItem)[] =[{label: 'gif', value: 'gif'}];
 
 function storeValue(values:any){
@@ -49,7 +52,7 @@ function storeValue(values:any){
 /**
  * Search component.
  *
- * @see https://mantine.dev/core/autocomplete/
+ * @see https://mantine.dev/core/multi-select/
  */
 export default function Search() {
   const {setSubreddit, searchInput, setSearchInput, subReddit} =
@@ -70,9 +73,8 @@ export default function Search() {
     setSearchInput(string);
   }
   
-  
   /**
-   * get item data to populate typeahead
+   * get item data to populate typeahead and combine with already selected items
   */
   function formatItems(i:{value: string; label: string}){
     return {value: i.value, label: i.value}
