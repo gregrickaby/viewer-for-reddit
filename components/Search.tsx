@@ -67,8 +67,7 @@ export default function Search() {
    * Handle search input change.
    */
   function handleSearch(string: string) {
-    console.log('handleSearch',string);
-    if (string !== undefined && string.length > 0) setSearchInput(string);
+    setSearchInput(string);
   }
   
    function getData(): (string | SelectItem)[] {
@@ -80,27 +79,14 @@ export default function Search() {
    
   return (
     <>
-      {/* <MultiSelect
-        aria-label="Search sub-reddits"
-        className={classes.searchBar}
-        data={results ? results : beforeSearch ? beforeSearch : []}
-        icon={<IconSearch />}
-        nothingFound="No subs found. Try searching for something else."
-        onChange={handleSearch}
-        // onChange={(value) => setSubreddit(value[0])}
-        placeholder={subReddit}
-        size="lg"
-        // value={[searchInput]}
-      /> */}
       <MultiSelect 
       aria-label="Search sub-reddits"
       className={classes.searchBar}
       clearSearchOnChange
       clearSearchOnBlur
       data={getData()}
-      // data={results ? results : beforeSearch ? beforeSearch : data}
-      label="Your favorite frameworks/libraries"
-      nothingFound="Nothing found" 
+      hoverOnSearchChange
+      nothingFound="No subs found. Try searching for something else."
       onChange={(values) => { 
         storeValue(values); 
         setSubreddit(encodeURI(values.join('%2B')));
@@ -109,7 +95,7 @@ export default function Search() {
       onSearchChange={handleSearch}
       placeholder="Pick all that you like"
       searchable
-      searchValue ={searchInput}
+      searchValue = {searchInput}
       />
       <Settings />
     </>
