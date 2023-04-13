@@ -6,11 +6,11 @@ import {
   SelectItemProps,
   createStyles
 } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
-import { forwardRef } from 'react'
+import {useDebouncedValue} from '@mantine/hooks'
+import {forwardRef} from 'react'
 import useSWR from 'swr'
-import { useRedditContext } from '~/components/RedditProvider'
-import { fetcher } from '~/lib/helpers'
+import {useRedditContext} from '~/components/RedditProvider'
+import {fetcher} from '~/lib/helpers'
 import Settings from './Settings'
 
 interface ItemProps extends SelectItemProps {
@@ -41,12 +41,12 @@ AutoCompleteItem.displayName = 'AutoCompleteItem'
 /**
  * Stores items selected by multi select
  */
-let storedData:  (string | SelectItem)[] =[{label: 'gif', value: 'gif'}];
+let storedData: (string | SelectItem)[] = [{label: 'gif', value: 'gif'}]
 
-function storeValue(values:any){
-  storedData =  values.map((value:any) =>{
-    return {value: value, label: value};
-  })     
+function storeValue(values: any) {
+  storedData = values.map((value: any) => {
+    return {value: value, label: value}
+  })
 }
 
 /**
@@ -70,48 +70,48 @@ export default function Search() {
    * Handle search input change.
    */
   function handleSearch(string: string) {
-    setSearchInput(string);
+    setSearchInput(string)
   }
-  
+
   /**
    * get item data to populate typeahead and combine with already selected items
-  */
-  function formatItems(i:{value: string; label: string}){
+   */
+  function formatItems(i: {value: string; label: string}) {
     return {value: i.value, label: i.value}
-  } 
+  }
 
   function getData(): (string | SelectItem)[] {
-    let itemOptions; 
-    if (results){
-      itemOptions = [...storedData,...results.map(formatItems)];
-    } else if (beforeSearch){
-      itemOptions = [...storedData,...beforeSearch.map(formatItems)];
-    }else {
-      itemOptions = ['Empty'];
+    let itemOptions
+    if (results) {
+      itemOptions = [...storedData, ...results.map(formatItems)]
+    } else if (beforeSearch) {
+      itemOptions = [...storedData, ...beforeSearch.map(formatItems)]
+    } else {
+      itemOptions = ['Empty']
     }
-    return itemOptions;
+    return itemOptions
   }
-   
+
   return (
     <>
-      <MultiSelect 
-      aria-label="Search sub-reddits"
-      className={classes.searchBar}
-      clearable
-      clearSearchOnBlur
-      clearSearchOnChange
-      data={getData()}
-      hoverOnSearchChange
-      nothingFound="No subs found. Try searching for something else."
-      onChange={(values) => { 
-        storeValue(values); 
-        setSubreddit(encodeURI(values.join('%2B')));
-        setSearchInput('');
-      }}
-      onSearchChange={handleSearch}
-      placeholder="Pick all that you like"
-      searchable
-      searchValue = {searchInput}
+      <MultiSelect
+        aria-label="Search sub-reddits"
+        className={classes.searchBar}
+        clearable
+        clearSearchOnBlur
+        clearSearchOnChange
+        data={getData()}
+        hoverOnSearchChange
+        nothingFound="No subs found. Try searching for something else."
+        onChange={(values) => {
+          storeValue(values)
+          setSubreddit(encodeURI(values.join('%2B')))
+          setSearchInput('')
+        }}
+        onSearchChange={handleSearch}
+        placeholder="Pick all that you like"
+        searchable
+        searchValue={searchInput}
       />
       <Settings />
     </>

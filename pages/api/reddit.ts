@@ -1,6 +1,6 @@
-import type { NextRequest } from 'next/server'
+import type {NextRequest} from 'next/server'
 import siteConfig from '~/lib/config'
-import { Posts } from '~/lib/types'
+import {Posts} from '~/lib/types'
 
 export const config = {
   runtime: 'edge'
