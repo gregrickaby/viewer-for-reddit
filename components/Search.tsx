@@ -39,14 +39,15 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
 AutoCompleteItem.displayName = 'AutoCompleteItem'
 
 /**
- * Stores items selected by multi select
+ * Stores items selected by multi select.
  */
-let storedData: (string | SelectItem)[] = [{label: 'gif', value: 'gif'}]
+let storedData: Array<SelectItem> = [{label: 'gif', value: 'gif'}]
 
-function storeValue(values: any) {
-  storedData = values.map((value: any) => {
-    return {value: value, label: value}
-  })
+/**
+ * Store values selected by multi select.
+ */
+function storeValue(values: Array<string>): void {
+  storedData = values.map((value) => ({value, label: value}))
 }
 
 /**
@@ -74,22 +75,23 @@ export default function Search() {
   }
 
   /**
-   * get item data to populate typeahead and combine with already selected items
+   * Get item data to populate typeahead and combine with already selected items.
    */
   function formatItems(i: {value: string; label: string}) {
     return {value: i.value, label: i.value}
   }
 
-  function getData(): (string | SelectItem)[] {
-    let itemOptions
+  /**
+   * Get data for typeahead.
+   */
+  function getData(): Array<string | SelectItem> {
     if (results) {
-      itemOptions = [...storedData, ...results.map(formatItems)]
+      return [...storedData, ...results.map(formatItems)]
     } else if (beforeSearch) {
-      itemOptions = [...storedData, ...beforeSearch.map(formatItems)]
+      return [...storedData, ...beforeSearch.map(formatItems)]
     } else {
-      itemOptions = ['Empty']
+      return ['Empty']
     }
-    return itemOptions
   }
 
   return (
@@ -109,7 +111,7 @@ export default function Search() {
           setSearchInput('')
         }}
         onSearchChange={handleSearch}
-        placeholder="Pick all that you like"
+        placeholder="Search and select sub-reddits"
         searchable
         searchValue={searchInput}
       />
