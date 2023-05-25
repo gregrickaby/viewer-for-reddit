@@ -41,7 +41,7 @@
   "devDependencies": {
     "@evilmartians/lefthook": "^1.4.1",
     "@types/node": "^20.2.3",
-    "@types/react": "^18.2.6",
+    "@types/react": "^18.2.7",
     "eslint": "^8.41.0",
     "eslint-config-next": "^13.4.3",
     "eslint-config-prettier": "^8.8.0",
