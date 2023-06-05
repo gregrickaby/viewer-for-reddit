@@ -30,7 +30,7 @@
     "@mantine/core": "^6.0.13",
     "@mantine/hooks": "^6.0.13",
     "@mantine/next": "^6.0.13",
-    "@tabler/icons-react": "^2.20.0",
+    "@tabler/icons-react": "^2.21.0",
     "hls.js": "^1.4.4",
     "next": "^13.4.4",
     "react": "^18.2.0",
