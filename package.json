@@ -31,7 +31,7 @@
     "@mantine/hooks": "^6.0.17",
     "@mantine/next": "^6.0.17",
     "@tabler/icons-react": "^2.26.0",
-    "hls.js": "^1.4.9",
+    "hls.js": "^1.4.10",
     "next": "^13.4.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
