@@ -1,9 +1,10 @@
 import {
   ActionIcon,
-  createStyles,
+  Flex,
   Modal,
   Stack,
   Switch,
+  createStyles,
   useMantineColorScheme
 } from '@mantine/core'
 import {useDisclosure, useHotkeys} from '@mantine/hooks'
@@ -81,6 +82,23 @@ export default function Settings() {
             onLabel="ON"
             size="lg"
           />
+          <Flex
+            gap="md"
+            justify="center"
+            align="center"
+            direction="column"
+            wrap="wrap"
+          >
+            Thank you for using the Reddit Viewer app! Would you consider
+            sponsoring further development for just $5?
+            <iframe
+              src="https://github.com/sponsors/gregrickaby/button"
+              title="Sponsor gregrickaby"
+              height="32"
+              width="114"
+              style={{border: '0', borderRadius: '6px'}}
+            />
+          </Flex>
         </Stack>
       </Modal>
     </>
