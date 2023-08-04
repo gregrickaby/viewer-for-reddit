@@ -11,6 +11,7 @@ import {useDisclosure, useHotkeys} from '@mantine/hooks'
 import {IconSettings} from '@tabler/icons-react'
 import {useRedditContext} from '~/components/RedditProvider'
 import Sort from '~/components/Sort'
+import config from '~/lib/config'
 
 const useStyles = createStyles((theme) => ({
   settings: {
@@ -89,7 +90,7 @@ export default function Settings() {
             direction="column"
             wrap="wrap"
           >
-            Thank you for using the Reddit Viewer app! Would you consider
+            Thank you for using {config.siteTitle}! Would you consider
             sponsoring further development for just $5?
             <iframe
               src="https://github.com/sponsors/gregrickaby/button"
