@@ -29,13 +29,11 @@ const useStyles = createStyles((theme) => ({
   },
 
   title: {
-    borderBottom: `1px solid ${theme.colors.gray[6]}`,
     textDecoration: 'none',
     textTransform: 'capitalize',
 
     '&:hover': {
-      borderBottom: '1px solid transparent',
-      textDecoration: 'none'
+      textDecoration: 'underline'
     }
   }
 }))
