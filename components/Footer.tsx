@@ -40,7 +40,7 @@ export default function Footer() {
       <p>
         <a
           aria-label="View source code on GitHub"
-          href="https://github.com/gregrickaby/reddit-image-viewer"
+          href={config.githubUrl}
           rel="noopener noreferrer"
           target="_blank"
         >
