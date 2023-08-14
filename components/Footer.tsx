@@ -33,7 +33,11 @@ export default function Footer() {
     <footer className={classes.footer}>
       <p>
         website by{' '}
-        <a href={config.authorUrl} rel="author">
+        <a
+          aria-label="visit the author's homepage"
+          href={config.authorUrl}
+          rel="author"
+        >
           {config.siteAuthor}
         </a>
       </p>

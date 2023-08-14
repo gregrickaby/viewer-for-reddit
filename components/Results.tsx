@@ -128,7 +128,11 @@ export default function Results() {
       </SimpleGrid>
       {!loading && (
         <Flex justify="center" align="center" p="xl">
-          <Button aria-label="load more" ref={ref} onClick={infiniteScroll}>
+          <Button
+            aria-label="load more posts"
+            ref={ref}
+            onClick={infiniteScroll}
+          >
             {loadingMore ? <>Loading...</> : <>Load more</>}
           </Button>
         </Flex>
