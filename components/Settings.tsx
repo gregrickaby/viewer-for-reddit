@@ -57,7 +57,7 @@ export default function Settings() {
         <Stack justify="space-between">
           <Sort />
           <Switch
-            aria-label="Toggle between light and dark theme."
+            aria-label="toggle between light and dark theme."
             checked={autoPlay}
             label="Auto Play Media (⌘+I)"
             offLabel="OFF"
@@ -66,7 +66,7 @@ export default function Settings() {
             size="lg"
           />
           <Switch
-            aria-label="Toggle between light and dark theme."
+            aria-label="toggle between light and dark theme."
             checked={colorScheme === 'dark'}
             label="Dark Theme (⌘+J)"
             offLabel="OFF"
@@ -75,7 +75,7 @@ export default function Settings() {
             size="lg"
           />
           <Switch
-            aria-label="Blur NSFW Media"
+            aria-label="blur NSFW Media"
             checked={blurNSFW}
             label="Blur NSFW Media (⌘+B)"
             offLabel="OFF"

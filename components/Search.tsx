@@ -97,7 +97,7 @@ export default function Search() {
   return (
     <>
       <MultiSelect
-        aria-label="Search sub-reddits"
+        aria-label="search sub-reddits"
         className={classes.searchBar}
         clearable
         clearSearchOnBlur
