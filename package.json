@@ -36,13 +36,13 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.5.2",
-    "swr": "^2.2.0"
+    "swr": "^2.2.1"
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.4.8",
-    "@types/node": "^20.4.9",
+    "@types/node": "^20.5.0",
     "@types/react": "^18.2.20",
-    "eslint": "^8.46.0",
+    "eslint": "^8.47.0",
     "eslint-config-next": "^13.4.13",
     "eslint-config-prettier": "^9.0.0",
     "next-sitemap": "^4.2.2",
