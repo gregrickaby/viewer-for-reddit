@@ -23,8 +23,8 @@ const useStyles = createStyles((theme) => ({
   card: {
     backgroundColor:
       theme.colorScheme === 'dark'
-        ? theme.colors.dark[5]
-        : theme.colors.gray[2],
+        ? theme.colors.dark[8]
+        : theme.colors.gray[1],
     textAlign: 'center'
   },
 
@@ -106,16 +106,15 @@ export default function Results() {
   return (
     <>
       <SimpleGrid
-        cols={4}
+        cols={3}
         breakpoints={[
-          {maxWidth: 1280, cols: 3, spacing: 'md'},
           {maxWidth: 1024, cols: 2, spacing: 'md'},
           {maxWidth: 600, cols: 1, spacing: 'sm'}
         ]}
       >
         {posts.map((post, index) => (
           <Card className={classes.card} key={index}>
-            <AspectRatio ratio={1 / 1}>
+            <AspectRatio ratio={3 / 2}>
               <Media key={post.id} {...post} index={index} />
             </AspectRatio>
             <Card.Section p="md">
