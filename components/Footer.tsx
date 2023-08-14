@@ -39,7 +39,7 @@ export default function Footer() {
       </p>
       <p>
         <a
-          aria-label="View source code on GitHub"
+          aria-label="view source code on github"
           href={config.githubUrl}
           rel="noopener noreferrer"
           target="_blank"
