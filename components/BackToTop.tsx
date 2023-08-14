@@ -22,6 +22,7 @@ export default function BackToTop() {
       <Transition transition="slide-up" mounted={scroll.y > 0}>
         {(transitionStyles) => (
           <Button
+            aria-label="scroll to top"
             leftIcon={<IconArrowUp size="1rem" />}
             style={transitionStyles}
             onClick={() => scrollTo({y: 0})}
