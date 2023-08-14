@@ -26,8 +26,8 @@ export default function Meta() {
 
       <link rel="canonical" href={config?.siteUrl} />
       <link rel="icon" href="/favicon.ico" sizes="any" />
-      <link rel="icon" href="/icons/icon.png" sizes="192x192" />
-      <link rel="apple-touch-icon" href="/icons/icon.png" />
+      <link rel="icon" href="/icon.png" sizes="192x192" />
+      <link rel="apple-touch-icon" href="/icon.png" />
       <link rel="manifest" href="/manifest.json" />
 
       <meta

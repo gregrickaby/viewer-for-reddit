@@ -4,6 +4,19 @@ export interface ChildrenProps {
   children: React.ReactNode
 }
 
+export interface RedditProviderProps {
+  autoPlay: boolean
+  blurNSFW: boolean
+  searchInput: string
+  setAutoplay: (autoPlay: boolean) => void
+  setBlurNSFW: (blurNSFW: boolean) => void
+  setSearchInput: (searchInput: string) => void
+  setSort: (sort: string) => void
+  setSubreddit: (subReddit: {}) => void
+  sort: string
+  subReddit: any
+}
+
 export interface FetchPostsProps {
   lastPost: string | null
   limit?: number

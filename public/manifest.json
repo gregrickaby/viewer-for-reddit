@@ -3,7 +3,7 @@
   "name": "Viewer for Reddit",
   "description": "Anonymously browse images, videos, gifs, and other media from any subreddit.",
   "icons": [{
-    "src": "/icons/icon.png",
+    "src": "icon.png",
     "type": "image/png",
     "sizes": "192x192"
   }],

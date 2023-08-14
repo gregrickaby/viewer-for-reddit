@@ -1,20 +1,7 @@
 import {useLocalStorage} from '@mantine/hooks'
 import {createContext, useContext, useState} from 'react'
 import config from '~/lib/config'
-import {ChildrenProps} from '~/lib/types'
-
-export interface RedditProviderProps {
-  autoPlay: boolean
-  blurNSFW: boolean
-  searchInput: string
-  setAutoplay: (autoPlay: boolean) => void
-  setBlurNSFW: (blurNSFW: boolean) => void
-  setSearchInput: (searchInput: string) => void
-  setSort: (sort: string) => void
-  setSubreddit: (subReddit: {}) => void
-  sort: string
-  subReddit: any
-}
+import {ChildrenProps, RedditProviderProps} from '~/lib/types'
 
 // Create the RedditContext.
 const RedditContext = createContext({} as RedditProviderProps)
