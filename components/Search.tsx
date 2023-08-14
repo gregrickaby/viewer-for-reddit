@@ -114,6 +114,7 @@ export default function Search() {
         placeholder="Search and select sub-reddits"
         searchable
         searchValue={searchInput}
+        size="lg"
       />
       <Settings />
     </>
