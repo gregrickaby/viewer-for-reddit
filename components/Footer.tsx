@@ -34,7 +34,7 @@ export default function Footer() {
       <p>
         website by{' '}
         <a
-          aria-label="visit the author's homepage"
+          aria-label={`visit ${config.siteAuthor} website`}
           href={config.authorUrl}
           rel="author"
         >
