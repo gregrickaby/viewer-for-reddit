@@ -2,7 +2,7 @@
   "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
   "description": "Anonymously browse Reddit",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
@@ -32,18 +32,18 @@
     "@mantine/next": "^6.0.19",
     "@tabler/icons-react": "^2.30.0",
     "hls.js": "^1.4.10",
-    "next": "^13.4.13",
+    "next": "^13.4.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.5.2",
     "swr": "^2.2.1"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^1.4.8",
+    "@evilmartians/lefthook": "^1.4.9",
     "@types/node": "^20.5.0",
     "@types/react": "^18.2.20",
     "eslint": "^8.47.0",
-    "eslint-config-next": "^13.4.13",
+    "eslint-config-next": "^13.4.16",
     "eslint-config-prettier": "^9.0.0",
     "next-sitemap": "^4.2.2",
     "prettier": "^3.0.1",
