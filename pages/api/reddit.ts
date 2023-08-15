@@ -1,5 +1,6 @@
 import type {NextRequest} from 'next/server'
 import siteConfig from '~/lib/config'
+import {getMediumImage} from '~/lib/helpers'
 import {Posts} from '~/lib/types'
 
 export const config = {
@@ -147,9 +148,10 @@ export default async function reddit(req: NextRequest) {
         id: post.data.id,
         images: {
           original: post.data.preview.images[0].source,
-          cropped: post.data.preview.images[0].resolutions.pop(),
-          obfuscated:
-            post.data.preview.images[0]?.variants?.obfuscated?.resolutions?.pop()
+          cropped: getMediumImage(post.data.preview.images[0].resolutions),
+          obfuscated: getMediumImage(
+            post.data.preview.images[0]?.variants?.obfuscated?.resolutions
+          )
         },
         media: post.data.media,
         video_preview: post.data.preview.reddit_video_preview,

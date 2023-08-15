@@ -24,25 +24,19 @@ export interface FetchPostsProps {
   subReddit: string
 }
 
+export interface ImageAsset {
+  url: string
+  width: number
+  height: number
+}
+
 export interface Post {
   index: number
   id: string
   images: {
-    original: {
-      height: number
-      url: string
-      width: number
-    }
-    cropped: {
-      height: number
-      url: string
-      width: number
-    }
-    obfuscated: {
-      height: number
-      url: string
-      width: number
-    }
+    original: ImageAsset
+    cropped: ImageAsset
+    obfuscated: ImageAsset
   }
   media: {
     reddit_video: {
