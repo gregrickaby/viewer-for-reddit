@@ -35,23 +35,23 @@ export default function Media(props: Post) {
    * @returns string - 'lazy' or 'eager'
    */
   function maybeLazyLoad() {
-    // For large desktop, eager load the first 12 images.
+    // For large desktop, eager load the first 6 images.
     if (width > 1200) {
-      return props.index > 11 ? 'lazy' : 'eager'
+      return props.index > 6 ? 'lazy' : 'eager'
     }
 
-    // For small desktop, eager load the first 9 images.
+    // For small desktop, eager load the first 4 images.
     if (width > 1024) {
-      return props.index > 8 ? 'lazy' : 'eager'
+      return props.index > 4 ? 'lazy' : 'eager'
     }
 
     // For tablet, eager load the first 6 images.
     if (width > 768) {
-      return props.index > 5 ? 'lazy' : 'eager'
+      return props.index > 6 ? 'lazy' : 'eager'
     }
 
-    // For mobile, eager load the first 2 images.
-    return props.index > 1 ? 'lazy' : 'eager'
+    // For mobile, eager load the first 3 images.
+    return props.index > 3 ? 'lazy' : 'eager'
   }
 
   switch (props?.post_hint) {
