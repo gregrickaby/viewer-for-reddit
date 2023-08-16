@@ -46,7 +46,7 @@
     "eslint-config-next": "^13.4.16",
     "eslint-config-prettier": "^9.0.0",
     "next-sitemap": "^4.2.2",
-    "prettier": "^3.0.1",
+    "prettier": "^3.0.2",
     "rimraf": "^5.0.1",
     "typescript": "^5.1.6"
   }
