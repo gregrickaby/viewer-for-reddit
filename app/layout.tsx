@@ -1,6 +1,7 @@
 import {ColorSchemeScript, MantineProvider} from '@mantine/core'
 import '@mantine/core/styles.css'
 import Meta from '~/components/Meta'
+import RedditProvider from '~/components/RedditProvider'
 import config from '~/lib/config'
 import {theme} from '../theme'
 
@@ -9,6 +10,9 @@ export const metadata = {
   description: config.siteDescription
 }
 
+/**
+ * Root layout component.
+ */
 export default function RootLayout({children}: {children: any}) {
   return (
     <html lang="en">
@@ -23,7 +27,7 @@ export default function RootLayout({children}: {children: any}) {
       </head>
       <body>
         <MantineProvider theme={theme} defaultColorScheme="auto">
-          {children}
+          <RedditProvider>{children}</RedditProvider>
         </MantineProvider>
       </body>
     </html>
