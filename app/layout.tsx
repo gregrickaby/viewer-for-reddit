@@ -1,10 +1,12 @@
 import {ColorSchemeScript, MantineProvider} from '@mantine/core'
 import '@mantine/core/styles.css'
+import Meta from '~/components/Meta'
+import config from '~/lib/config'
 import {theme} from '../theme'
 
 export const metadata = {
-  title: 'Viewer for Reddit',
-  description: 'Anonymously browse Reddit'
+  title: `${config.siteName} - ${config.siteDescription}`,
+  description: config.siteDescription
 }
 
 export default function RootLayout({children}: {children: any}) {
@@ -17,6 +19,7 @@ export default function RootLayout({children}: {children: any}) {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
+        <Meta />
       </head>
       <body>
         <MantineProvider theme={theme}>{children}</MantineProvider>

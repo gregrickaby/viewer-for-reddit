@@ -1,5 +1,5 @@
 const config = {
-  siteTitle: 'Viewer for Reddit',
+  siteName: 'Viewer for Reddit',
   siteDescription: 'Anonymously browse Reddit',
   metaDescription:
     'Anonymously browse images, videos, gifs, and other media from Reddit.',
