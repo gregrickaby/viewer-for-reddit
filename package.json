@@ -2,7 +2,7 @@
   "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
   "description": "Anonymously browse Reddit",
-  "version": "3.9.0",
+  "version": "4.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
@@ -25,27 +25,28 @@
     "type-check": "tsc"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/server": "^11.11.0",
-    "@mantine/core": "^6.0.21",
-    "@mantine/hooks": "^6.0.21",
-    "@mantine/next": "^6.0.21",
+    "@mantine/core": "7.0.0",
+    "@mantine/hooks": "7.0.0",
     "@tabler/icons-react": "^2.34.0",
     "hls.js": "^1.4.12",
-    "next": "^13.4.19",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "next": "13.5.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-intersection-observer": "^9.5.2",
     "swr": "^2.2.2"
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.4.11",
-    "@types/node": "^20.6.2",
-    "@types/react": "^18.2.21",
+    "@types/node": "20.6.3",
+    "@types/react": "18.2.22",
+    "@types/react-dom": "18.2.7",
     "eslint": "^8.49.0",
-    "eslint-config-next": "^13.4.19",
+    "eslint-config-next": "^13.5.1",
     "eslint-config-prettier": "^9.0.0",
     "next-sitemap": "^4.2.3",
+    "postcss": "^8.4.30",
+    "postcss-preset-mantine": "1.7.0",
+    "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.0.3",
     "rimraf": "^5.0.1",
     "typescript": "^5.2.2"
