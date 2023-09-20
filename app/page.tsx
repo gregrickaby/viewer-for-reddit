@@ -4,7 +4,7 @@ import Header from '~/components/Header'
 import Meta from '~/components/Meta'
 import Results from '~/components/Results'
 import Search from '~/components/Search'
-import classes from '~/page.module.css'
+import classes from './page.module.css'
 
 /**
  * Home page component.
