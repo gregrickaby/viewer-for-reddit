@@ -1,0 +1,17 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+  font-size: 0.875rem;
+  text-align: center;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  a {
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}

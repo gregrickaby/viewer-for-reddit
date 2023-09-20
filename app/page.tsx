@@ -1,3 +1,4 @@
+import Footer from '~/components/Footer'
 import Header from '~/components/Header'
 
 export default function HomePage() {
@@ -7,6 +8,7 @@ export default function HomePage() {
       <main>
         <p>Home page</p>
       </main>
+      <Footer />
     </>
   )
 }
