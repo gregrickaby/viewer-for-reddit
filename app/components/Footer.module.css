@@ -10,6 +10,8 @@
   }
 
   a {
+    color: var(--mantine-color-anchor);
+
     &:hover {
       text-decoration: none;
     }
