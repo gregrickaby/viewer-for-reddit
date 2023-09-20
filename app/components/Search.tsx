@@ -8,6 +8,11 @@ import classes from '~/components/Search.module.css'
 import Settings from '~/components/Settings'
 import {fetcher} from '~/lib/helpers'
 
+interface ItemType {
+  value: string
+  label: string
+}
+
 /**
  * Search component.
  *
@@ -43,14 +48,23 @@ export default function Search() {
    *
    * If there are results, return them, otherwise return the before search data.
    */
-  function getData(): Array<string> {
+  function getData(): Array<ItemType> {
+    let items: Array<ItemType> = []
+
     if (results) {
-      return [...results.map(formatItems)]
+      items = results
     } else if (beforeSearch) {
-      return [...beforeSearch.map(formatItems)]
-    } else {
-      return ['Empty']
+      items = beforeSearch
     }
+
+    // Filter out items with empty or null values.
+    const filteredItems = items
+      .map(formatItems)
+      .filter((item: ItemType) => item.value && item.value.trim() !== '')
+
+    return filteredItems.length
+      ? filteredItems
+      : [{value: 'Empty', label: 'Empty'}]
   }
 
   return (
@@ -62,7 +76,7 @@ export default function Search() {
         defaultValue={[subReddit]}
         nothingFoundMessage="No subs found. Try searching for something else."
         onChange={(values) => {
-          setSubreddit(encodeURI(values.join('%2B')))
+          setSubreddit(encodeURIComponent(values.join('+')))
           setSearchInput('')
         }}
         onSearchChange={handleSearch}
