@@ -1,7 +1,7 @@
 import type {NextRequest} from 'next/server'
-import siteConfig from '~/app/lib/config'
-import {getMediumImage} from '~/app/lib/helpers'
-import {Posts} from '~/app/lib/types'
+import siteConfig from '~/lib/config'
+import {getMediumImage} from '~/lib/helpers'
+import {Posts} from '~/lib/types'
 
 export const config = {
   runtime: 'edge'

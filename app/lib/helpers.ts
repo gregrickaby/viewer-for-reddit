@@ -1,5 +1,5 @@
-import config from '~/app/lib/config'
-import {FetchPostsProps, ImageAsset} from '~/app/lib/types'
+import config from '~/lib/config'
+import {FetchPostsProps, ImageAsset} from '~/lib/types'
 
 /**
  * Global fetcher function for useSWR.

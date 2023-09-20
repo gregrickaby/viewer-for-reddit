@@ -1,5 +1,5 @@
 import type {NextRequest} from 'next/server'
-import siteConfig from '~/app/lib/config'
+import siteConfig from '~/lib/config'
 
 export const config = {
   runtime: 'edge'

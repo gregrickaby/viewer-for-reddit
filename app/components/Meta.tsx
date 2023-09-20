@@ -8,7 +8,7 @@ export default function Meta() {
     <>
       <link rel="preconnect" href="//preview.redd.it" crossOrigin="anonymous" />
 
-      <meta property="og:title" content={config?.siteTitle} />
+      <meta property="og:title" content={config?.siteName} />
       <meta property="og:description" content={config?.metaDescription} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={config?.siteUrl} />
