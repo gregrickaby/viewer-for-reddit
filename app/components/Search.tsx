@@ -17,16 +17,12 @@ export default function Search() {
   const {setSubreddit, searchInput, setSearchInput, subReddit} =
     useRedditContext()
   const [debounced] = useDebouncedValue(searchInput, 800)
-  const {data: beforeSearch} = useSWR(`/api/reddit/preSearch?limit=5`, fetcher)
-  const {data: results} = useSWR(
-    `/api/reddit/search?term=${debounced}`,
-    fetcher,
-    {
-      revalidateIfStale: true,
-      revalidateOnFocus: false,
-      revalidateOnMount: false
-    }
-  )
+  const {data: beforeSearch} = useSWR(`/api/preSearch?limit=5`, fetcher)
+  const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
+    revalidateIfStale: true,
+    revalidateOnFocus: false,
+    revalidateOnMount: false
+  })
 
   /**
    * Handle search input change.
