@@ -1,6 +1,10 @@
 import BackToTop from '~/components/BackToTop'
 import Footer from '~/components/Footer'
 import Header from '~/components/Header'
+import Meta from '~/components/Meta'
+import Results from '~/components/Results'
+import Search from '~/components/Search'
+import classes from './page.module.css'
 
 /**
  * Home page component.
@@ -8,11 +12,17 @@ import Header from '~/components/Header'
 export default function HomePage() {
   return (
     <>
-      <Header />
-      <main>
-        <p>Home page</p>
-      </main>
-      <Footer />
+      <Meta />
+      <div className={classes.container}>
+        <Header />
+        <main className={classes.main}>
+          <div className={classes.search}>
+            <Search />
+          </div>
+          <Results />
+        </main>
+        <Footer />
+      </div>
       <BackToTop />
     </>
   )
