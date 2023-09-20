@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import config from '~/lib/config'
 
 /**
@@ -6,16 +5,15 @@ import config from '~/lib/config'
  */
 export default function Meta() {
   return (
-    <Head>
-      <title>
-        {config?.siteTitle} - {config?.siteDescription}
-      </title>
-      <meta name="description" content={config?.metaDescription} />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    <>
+      <link rel="shortcut icon" href="/favicon.ico" />
+      <meta
+        name="viewport"
+        content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
+      />
       <link rel="preconnect" href="//preview.redd.it" crossOrigin="anonymous" />
 
-      <meta property="og:title" content={config?.siteTitle} />
+      <meta property="og:title" content={config?.siteName} />
       <meta property="og:description" content={config?.metaDescription} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={config?.siteUrl} />
@@ -34,6 +32,6 @@ export default function Meta() {
         name="google-site-verification"
         content={process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION}
       />
-    </Head>
+    </>
   )
 }

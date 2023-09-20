@@ -1,17 +1,13 @@
-import {createStyles, Group, Select, Text} from '@mantine/core'
-import {useRedditContext} from '~/components/RedditProvider'
+'use client'
 
-const useStyles = createStyles(() => ({
-  select: {
-    maxWidth: 110
-  }
-}))
+import {Group, Select, Text} from '@mantine/core'
+import {useRedditContext} from '~/components/RedditProvider'
+import classes from '~/components/Sort.module.css'
 
 /**
  * Sort component.
  */
 export default function Sort() {
-  const {classes} = useStyles()
   const {sort, setSort} = useRedditContext()
 
   return (

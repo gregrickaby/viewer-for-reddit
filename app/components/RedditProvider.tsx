@@ -1,3 +1,5 @@
+'use client'
+
 import {useLocalStorage} from '@mantine/hooks'
 import {createContext, useContext, useState} from 'react'
 import config from '~/lib/config'

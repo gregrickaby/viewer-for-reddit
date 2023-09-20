@@ -1,0 +1,12 @@
+.card {
+  text-align: center;
+}
+
+.title {
+  text-decoration: none;
+  text-transform: capitalize;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

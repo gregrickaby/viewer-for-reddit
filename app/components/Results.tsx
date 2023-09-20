@@ -1,49 +1,26 @@
+'use client'
+
 import {
   Anchor,
   AspectRatio,
   Button,
   Card,
-  createStyles,
   Flex,
   SimpleGrid
 } from '@mantine/core'
-import dynamic from 'next/dynamic'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
 import Media from '~/components/Media'
 import {useRedditContext} from '~/components/RedditProvider'
+import classes from '~/components/Results.module.css'
 import {fetchPosts} from '~/lib/helpers'
 import {Post} from '~/lib/types'
-
-const DynamicNoResults = dynamic(() => import('./NoResults'), {
-  ssr: false
-})
-
-const useStyles = createStyles((theme) => ({
-  card: {
-    backgroundColor:
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[8]
-        : theme.colors.gray[1],
-    textAlign: 'center'
-  },
-
-  title: {
-    textDecoration: 'none',
-    textTransform: 'capitalize',
-
-    '&:hover': {
-      textDecoration: 'underline'
-    }
-  }
-}))
 
 /**
  * Results component.
  */
 export default function Results() {
   const {subReddit, sort} = useRedditContext()
-  const {classes} = useStyles()
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState<boolean | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
@@ -99,19 +76,9 @@ export default function Results() {
     }
   }, [inView]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!posts) {
-    return <DynamicNoResults />
-  }
-
   return (
     <>
-      <SimpleGrid
-        cols={3}
-        breakpoints={[
-          {maxWidth: 1024, cols: 2, spacing: 'md'},
-          {maxWidth: 600, cols: 1, spacing: 'sm'}
-        ]}
-      >
+      <SimpleGrid cols={{base: 1, sm: 3, lg: 3}}>
         {posts.map((post, index) => (
           <Card className={classes.card} key={index}>
             <AspectRatio ratio={3 / 2}>

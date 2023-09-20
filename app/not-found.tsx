@@ -1,11 +1,13 @@
+'use client'
+
 import {Stack} from '@mantine/core'
 import Image from 'next/image'
 import notFound from '../public/not-found.webp'
 
 /**
- * No Results component.
+ * 404 Not Found component.
  */
-export default function NoResults() {
+export default function NotFound() {
   return (
     <Stack align="center">
       <p>

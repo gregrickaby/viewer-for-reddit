@@ -1,33 +1,19 @@
-import {createStyles} from '@mantine/core'
+'use client'
+
 import {useViewportSize} from '@mantine/hooks'
 import HlsPlayer from '~/components/HlsPlayer'
 import {useRedditContext} from '~/components/RedditProvider'
 import {Post} from '~/lib/types'
-
-interface StylesProps {
-  props: Post
-  blurNSFW: boolean
-}
-
-const useStyles = createStyles((theme, {props, blurNSFW}: StylesProps) => ({
-  media: {
-    backgroundColor:
-      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.dark[0]
-  },
-
-  // For media that doesn't contain an obfuscated image, blur.
-  blur: {
-    filter: props?.over_18 && blurNSFW ? 'blur(10px)' : 'none'
-  }
-}))
 
 /**
  * Card component.
  */
 export default function Media(props: Post) {
   const {autoPlay, blurNSFW} = useRedditContext()
-  const {classes, cx, theme} = useStyles({props, blurNSFW})
   const {width} = useViewportSize()
+  const maybeBlur = {
+    filter: props?.over_18 && blurNSFW ? 'blur(10px)' : 'none'
+  }
 
   /**
    * Decide whether to lazy load media.
@@ -59,7 +45,7 @@ export default function Media(props: Post) {
       return (
         <img
           alt={props?.title}
-          className={classes.media}
+          style={maybeBlur}
           data-hint="image"
           decoding="async"
           height={
@@ -84,7 +70,7 @@ export default function Media(props: Post) {
       return (
         <HlsPlayer
           autoPlay={autoPlay}
-          className={classes.media}
+          style={maybeBlur}
           controls
           crossOrigin="anonymous"
           dataHint="hosted:video"
@@ -110,7 +96,7 @@ export default function Media(props: Post) {
       return props?.video_preview ? (
         <HlsPlayer
           autoPlay={autoPlay}
-          className={classes.media}
+          style={maybeBlur}
           controls
           crossOrigin="anonymous"
           dataHint="rich:video"
@@ -138,13 +124,17 @@ export default function Media(props: Post) {
         >
           <iframe
             allow="fullscreen"
-            className={cx(classes.media, classes.blur)}
             data-hint="rich:video-iframe"
             loading={maybeLazyLoad()}
             referrerPolicy="no-referrer"
             sandbox="allow-scripts allow-same-origin allow-presentation"
             src={props?.secure_media_embed?.media_domain_url}
-            style={{border: 'none', height: '100%', width: '100%'}}
+            style={{
+              border: 'none',
+              height: '100%',
+              width: '100%',
+              ...maybeBlur
+            }}
             title="iframe"
           />
         </div>
@@ -154,7 +144,7 @@ export default function Media(props: Post) {
       return props?.url.includes('gifv') ? (
         <HlsPlayer
           autoPlay={autoPlay}
-          className={classes.media}
+          style={maybeBlur}
           controls
           crossOrigin="anonymous"
           dataHint="link:gifv"
@@ -175,7 +165,7 @@ export default function Media(props: Post) {
         // Otherwise, just play the video.
         <HlsPlayer
           autoPlay={autoPlay}
-          className={classes.media}
+          style={maybeBlur}
           controls
           crossOrigin="anonymous"
           dataHint="link"

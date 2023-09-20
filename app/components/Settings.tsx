@@ -1,27 +1,19 @@
+'use client'
+
 import {
   ActionIcon,
   Flex,
   Modal,
   Stack,
   Switch,
-  createStyles,
   useMantineColorScheme
 } from '@mantine/core'
 import {useDisclosure, useHotkeys} from '@mantine/hooks'
 import {IconSettings} from '@tabler/icons-react'
 import {useRedditContext} from '~/components/RedditProvider'
+import classes from '~/components/Settings.module.css'
 import Sort from '~/components/Sort'
 import config from '~/lib/config'
-
-const useStyles = createStyles((theme) => ({
-  settings: {
-    [`@media (max-width: ${theme.breakpoints.sm})`]: {
-      position: 'absolute',
-      top: theme.spacing.md,
-      right: theme.spacing.md
-    }
-  }
-}))
 
 /**
  * Settings component.
@@ -30,7 +22,6 @@ export default function Settings() {
   const [opened, {open, close}] = useDisclosure(false)
   const {colorScheme, toggleColorScheme} = useMantineColorScheme()
   const {autoPlay, blurNSFW, setAutoplay, setBlurNSFW} = useRedditContext()
-  const {classes} = useStyles()
 
   useHotkeys([['mod+i', () => setAutoplay(!autoPlay)]])
   useHotkeys([['mod+b', () => setBlurNSFW(!blurNSFW)]])
@@ -68,7 +59,7 @@ export default function Settings() {
           <Switch
             aria-label="toggle between light and dark theme."
             checked={colorScheme === 'dark'}
-            label="Dark Theme (⌘+J)"
+            label="Toggle Theme (⌘+J)"
             offLabel="OFF"
             onChange={() => toggleColorScheme()}
             onLabel="ON"
@@ -90,8 +81,8 @@ export default function Settings() {
             direction="column"
             wrap="wrap"
           >
-            Thank you for using {config.siteTitle}! Would you consider
-            sponsoring further development for just $5?
+            Thank you for using {config.siteName}! Would you consider sponsoring
+            further development for just $5?
             <iframe
               src="https://github.com/sponsors/gregrickaby/button"
               title="Sponsor gregrickaby"

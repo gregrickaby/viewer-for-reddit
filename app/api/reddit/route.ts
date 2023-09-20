@@ -1,11 +1,8 @@
-import type {NextRequest} from 'next/server'
-import siteConfig from '~/lib/config'
+import config from '~/lib/config'
 import {getMediumImage} from '~/lib/helpers'
 import {Posts} from '~/lib/types'
 
-export const config = {
-  runtime: 'edge'
-}
+export const runtime = 'edge'
 
 interface RedditAPIResponse {
   kind: string
@@ -31,18 +28,34 @@ interface RedditPost {
  * @example
  * /api/reddit?sub=itookapicture&sort=hot&limit=24&after=t3_9x9j4d
  *
- * @see https://nextjs.org/docs/api-routes/edge-api-routes
- * @see https://nextjs.org/docs/api-reference/edge-runtime
+ * @see https://nextjs.org/docs/app/building-your-application/routing/route-handlers
+ * @see https://nextjs.org/docs/pages/api-reference/edge
  */
-export default async function reddit(req: NextRequest) {
+export async function GET(request: Request) {
+  // Get query params from request.
+  const {searchParams} = new URL(request.url)
+
+  // Parse params.
+  const unsanitizedParams = {
+    postLimit: searchParams.get('limit') || '',
+    sortBy: searchParams.get('sort') || '',
+    subReddit: searchParams.get('sub') || '',
+    lastPost: searchParams.get('after') || ''
+  }
+
   // Parse and sanitize query params from request.
-  const lastPost = req.nextUrl.searchParams.get('after') || ''
-  const postLimit =
-    req.nextUrl.searchParams.get('limit') || siteConfig.redditApi.limit
-  const sortBy =
-    req.nextUrl.searchParams.get('sort') || siteConfig.redditApi.sort
-  const subReddit =
-    req.nextUrl.searchParams.get('sub') || siteConfig.redditApi.subReddit
+  const postLimit = unsanitizedParams.postLimit
+    ? encodeURIComponent(unsanitizedParams.postLimit)
+    : config.redditApi.limit
+  const sortBy = unsanitizedParams.sortBy
+    ? encodeURIComponent(unsanitizedParams.sortBy)
+    : config.redditApi.sort
+  const subReddit = unsanitizedParams.subReddit
+    ? encodeURIComponent(unsanitizedParams.subReddit)
+    : config.redditApi.subReddit
+  const lastPost = unsanitizedParams.lastPost
+    ? encodeURIComponent(unsanitizedParams.lastPost)
+    : ''
 
   try {
     // Generate random device ID.
@@ -57,7 +70,7 @@ export default async function reddit(req: NextRequest) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json charset=UTF-8',
-          'User-Agent': siteConfig.userAgent,
+          'User-Agent': config.userAgent,
           Authorization: `Basic ${btoa(
             `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
           )}`
