@@ -5,8 +5,8 @@ import {useDebouncedValue} from '@mantine/hooks'
 import useSWR from 'swr'
 import {useRedditContext} from '~/components/RedditProvider'
 import classes from '~/components/Search.module.css'
+import Settings from '~/components/Settings'
 import {fetcher} from '~/lib/helpers'
-import Settings from './Settings'
 
 /**
  * Search component.
@@ -40,6 +40,8 @@ export default function Search() {
 
   /**
    * Get data for typeahead.
+   *
+   * If there are results, return them, otherwise return the before search data.
    */
   function getData(): Array<string> {
     if (results) {
@@ -57,6 +59,12 @@ export default function Search() {
         aria-label="search sub-reddits"
         className={classes.searchbar}
         data={getData()}
+        defaultValue={[subReddit]}
+        nothingFoundMessage="No subs found. Try searching for something else."
+        onChange={(values) => {
+          setSubreddit(encodeURI(values.join('%2B')))
+          setSearchInput('')
+        }}
         onSearchChange={handleSearch}
         placeholder="Search and select sub-reddits"
         searchable
