@@ -59,7 +59,7 @@ export default function Settings() {
           <Switch
             aria-label="toggle between light and dark theme."
             checked={colorScheme === 'dark'}
-            label="Dark Theme (⌘+J)"
+            label="Toggle Theme (⌘+J)"
             offLabel="OFF"
             onChange={() => toggleColorScheme()}
             onLabel="ON"

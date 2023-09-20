@@ -6,6 +6,11 @@ import config from '~/lib/config'
 export default function Meta() {
   return (
     <>
+      <link rel="shortcut icon" href="/favicon.ico" />
+      <meta
+        name="viewport"
+        content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
+      />
       <link rel="preconnect" href="//preview.redd.it" crossOrigin="anonymous" />
 
       <meta property="og:title" content={config?.siteName} />
