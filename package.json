@@ -49,6 +49,8 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.0.3",
     "rimraf": "^5.0.1",
+    "stylelint": "^15.10.3",
+    "stylelint-config-standard": "^34.0.0",
     "typescript": "^5.2.2"
   }
 }
