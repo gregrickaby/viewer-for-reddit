@@ -1,4 +1,5 @@
 'use client'
+
 import Hls from 'hls.js'
 import {LegacyRef, useEffect, useRef, VideoHTMLAttributes} from 'react'
 
