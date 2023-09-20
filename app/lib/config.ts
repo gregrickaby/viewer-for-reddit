@@ -9,6 +9,7 @@ const config = {
   userAgent: 'web-app:viewer-for-reddit:* (by Greg Rickaby)',
   githubUrl: 'https://github.com/gregrickaby/viewer-for-reddit',
   redditApi: {
+    preSearchLimit: '5',
     limit: '24',
     sort: 'hot',
     subReddit: 'itookapicture'
