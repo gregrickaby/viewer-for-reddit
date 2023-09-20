@@ -55,7 +55,7 @@ export default function Search() {
     <>
       <MultiSelect
         aria-label="search sub-reddits"
-        className={classes.searchBar}
+        className={classes.searchbar}
         data={getData()}
         onSearchChange={handleSearch}
         placeholder="Search and select sub-reddits"

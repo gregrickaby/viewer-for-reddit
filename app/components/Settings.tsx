@@ -11,6 +11,7 @@ import {
 import {useDisclosure, useHotkeys} from '@mantine/hooks'
 import {IconSettings} from '@tabler/icons-react'
 import {useRedditContext} from '~/components/RedditProvider'
+import classes from '~/components/Settings.module.css'
 import Sort from '~/components/Sort'
 import config from '~/lib/config'
 
@@ -29,6 +30,7 @@ export default function Settings() {
     <>
       <ActionIcon
         aria-label="open settings"
+        className={classes.settings}
         onClick={open}
         size="lg"
         variant="transparent"
