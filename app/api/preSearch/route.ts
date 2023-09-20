@@ -1,24 +1,28 @@
-import type {NextRequest} from 'next/server'
-import siteConfig from '~/lib/config'
+import config from '~/lib/config'
 
-export const config = {
-  runtime: 'edge'
-}
+export const runtime = 'edge'
 
 /**
- * Search Reddit API.
+ * Popular Subreddit Reddit API.
  *
  * @example
- * /api/search?term=itookapicture
+ * /api/preSearch?limit=5
  *
- * @see https://www.reddit.com/dev/api#GET_api_subreddit_autocomplete_v2
- * @see https://nextjs.org/docs/api-routes/edge-api-routes
- * @see https://nextjs.org/docs/api-reference/edge-runtime
+ * @see https://www.reddit.com/dev/api#GET_subreddits_{where}
+ * @see https://nextjs.org/docs/app/building-your-application/routing/route-handlers
+ * @see https://nextjs.org/docs/pages/api-reference/edge
  */
-export default async function search(req: NextRequest) {
+export async function GET(request: Request) {
+  // Get query params from request.
+  const {searchParams} = new URL(request.url)
+
+  // Parse params.
+  const unsanitizedLimit = searchParams.get('limit') || ''
+
   // Parse and sanitize query params from request.
-  const term =
-    req.nextUrl.searchParams.get('term') || siteConfig.redditApi.subReddit
+  const limit = unsanitizedLimit
+    ? encodeURIComponent(unsanitizedLimit)
+    : config.redditApi.preSearchLimit
 
   try {
     // Generate random device ID.
@@ -33,7 +37,7 @@ export default async function search(req: NextRequest) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json charset=UTF-8',
-          'User-Agent': siteConfig.userAgent,
+          'User-Agent': config.userAgent,
           Authorization: `Basic ${btoa(
             `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
           )}`
@@ -72,7 +76,7 @@ export default async function search(req: NextRequest) {
 
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=${deviceId}`,
+      `https://oauth.reddit.com/subreddits/popular?limit=${limit}`,
       {
         headers: {
           authorization: `Bearer ${token.access_token}`
