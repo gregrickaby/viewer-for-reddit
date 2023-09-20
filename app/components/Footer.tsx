@@ -1,6 +1,6 @@
 import {IconBrandGithub} from '@tabler/icons-react'
+import classes from '~/components/Footer.module.css'
 import config from '~/lib/config'
-import classes from './Footer.module.css'
 
 /**
  * Footer component.
