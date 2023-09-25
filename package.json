@@ -25,23 +25,23 @@
     "type-check": "tsc"
   },
   "dependencies": {
-    "@mantine/core": "7.0.0",
-    "@mantine/hooks": "7.0.0",
-    "@tabler/icons-react": "^2.34.0",
+    "@mantine/core": "7.0.1",
+    "@mantine/hooks": "7.0.1",
+    "@tabler/icons-react": "^2.35.0",
     "hls.js": "^1.4.12",
-    "next": "13.5.2",
+    "next": "13.5.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-intersection-observer": "^9.5.2",
-    "swr": "^2.2.2"
+    "swr": "^2.2.4"
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.5.0",
-    "@types/node": "20.6.3",
+    "@types/node": "20.6.5",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
-    "eslint": "^8.49.0",
-    "eslint-config-next": "^13.5.2",
+    "eslint": "^8.50.0",
+    "eslint-config-next": "^13.5.3",
     "eslint-config-prettier": "^9.0.0",
     "next-sitemap": "^4.2.3",
     "postcss": "^8.4.30",
