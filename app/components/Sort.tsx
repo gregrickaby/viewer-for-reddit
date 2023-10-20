@@ -10,6 +10,12 @@ import classes from '~/components/Sort.module.css'
 export default function Sort() {
   const {sort, setSort} = useRedditContext()
 
+  function sortHandler(value: string | null) {
+    if (value !== null) {
+      setSort(value)
+    }
+  }
+
   return (
     <Group>
       <Select
@@ -22,7 +28,7 @@ export default function Sort() {
           {value: 'new', label: 'New'},
           {value: 'rising', label: 'Rising'}
         ]}
-        onChange={setSort}
+        onChange={sortHandler}
       />
       <Text size="lg">Sort Results</Text>
     </Group>
