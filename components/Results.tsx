@@ -1,5 +1,6 @@
 'use client'
 
+import LoadingCard from '@/components/LoadingCard'
 import Media from '@/components/Media'
 import {useRedditContext} from '@/components/RedditProvider'
 import classes from '@/components/Results.module.css'
@@ -79,18 +80,22 @@ export default function Results() {
   return (
     <>
       <SimpleGrid cols={{base: 1, sm: 3, lg: 3}}>
-        {posts.map((post, index) => (
-          <Card className={classes.card} key={index}>
-            <AspectRatio ratio={3 / 2}>
-              <Media key={post.id} {...post} index={index} />
-            </AspectRatio>
-            <Card.Section p="md">
-              <Anchor className={classes.title} href={post.permalink} mt={8}>
-                {post.title}
-              </Anchor>
-            </Card.Section>
-          </Card>
-        ))}
+        {loading &&
+          // loop over and display 24 LoadingCard components
+          [...Array(24)].map((_, index) => <LoadingCard key={index} />)}
+        {!loading &&
+          posts.map((post, index) => (
+            <Card className={classes.card} key={index}>
+              <AspectRatio ratio={3 / 2}>
+                <Media key={post.id} {...post} index={index} />
+              </AspectRatio>
+              <Card.Section p="md">
+                <Anchor className={classes.title} href={post.permalink} mt={8}>
+                  {post.title}
+                </Anchor>
+              </Card.Section>
+            </Card>
+          ))}
       </SimpleGrid>
       {!loading && (
         <Flex justify="center" align="center" p="xl">
