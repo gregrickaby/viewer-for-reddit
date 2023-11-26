@@ -52,8 +52,6 @@ export const metadata: Metadata = {
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport
  */
 export const viewport: Viewport = {
-  minimumScale: 1,
-  userScalable: false,
   themeColor: [
     {media: '(prefers-color-scheme: light)', color: 'white'},
     {media: '(prefers-color-scheme: dark)', color: 'black'}
