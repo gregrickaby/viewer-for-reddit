@@ -1,9 +1,9 @@
 'use client'
 
+import config from '@/lib/config'
+import {ChildrenProps, RedditProviderProps} from '@/lib/types'
 import {useLocalStorage} from '@mantine/hooks'
 import {createContext, useContext, useState} from 'react'
-import config from '~/lib/config'
-import {ChildrenProps, RedditProviderProps} from '~/lib/types'
 
 // Create the RedditContext.
 const RedditContext = createContext({} as RedditProviderProps)

@@ -1,12 +1,12 @@
 'use client'
 
+import {useRedditContext} from '@/components/RedditProvider'
+import classes from '@/components/Search.module.css'
+import Settings from '@/components/Settings'
+import {fetcher} from '@/lib/functions'
 import {MultiSelect} from '@mantine/core'
 import {useDebouncedValue} from '@mantine/hooks'
 import useSWR from 'swr'
-import {useRedditContext} from '~/components/RedditProvider'
-import classes from '~/components/Search.module.css'
-import Settings from '~/components/Settings'
-import {fetcher} from '~/lib/helpers'
 
 interface ItemType {
   value: string

@@ -1,9 +1,9 @@
 'use client'
 
+import HlsPlayer from '@/components/HlsPlayer'
+import {useRedditContext} from '@/components/RedditProvider'
+import {Post} from '@/lib/types'
 import {useViewportSize} from '@mantine/hooks'
-import HlsPlayer from '~/components/HlsPlayer'
-import {useRedditContext} from '~/components/RedditProvider'
-import {Post} from '~/lib/types'
 
 /**
  * Card component.

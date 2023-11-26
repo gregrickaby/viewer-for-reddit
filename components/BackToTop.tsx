@@ -1,9 +1,9 @@
 'use client'
 
+import classes from '@/components/BackToTop.module.css'
 import {Affix, Button, rem, Transition} from '@mantine/core'
 import {useWindowScroll} from '@mantine/hooks'
 import {IconArrowUp} from '@tabler/icons-react'
-import classes from '~/components/BackToTop.module.css'
 
 /**
  * Back To Top component.

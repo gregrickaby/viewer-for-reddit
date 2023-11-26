@@ -1,5 +1,10 @@
 'use client'
 
+import Media from '@/components/Media'
+import {useRedditContext} from '@/components/RedditProvider'
+import classes from '@/components/Results.module.css'
+import {fetchPosts} from '@/lib/functions'
+import {Post} from '@/lib/types'
 import {
   Anchor,
   AspectRatio,
@@ -10,11 +15,6 @@ import {
 } from '@mantine/core'
 import {useEffect, useState} from 'react'
 import {useInView} from 'react-intersection-observer'
-import Media from '~/components/Media'
-import {useRedditContext} from '~/components/RedditProvider'
-import classes from '~/components/Results.module.css'
-import {fetchPosts} from '~/lib/helpers'
-import {Post} from '~/lib/types'
 
 /**
  * Results component.

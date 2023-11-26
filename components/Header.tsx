@@ -1,9 +1,9 @@
 'use client'
 
+import classes from '@/components/Header.module.css'
+import {useRedditContext} from '@/components/RedditProvider'
+import config from '@/lib/config'
 import {Title} from '@mantine/core'
-import classes from '~/components/Header.module.css'
-import {useRedditContext} from '~/components/RedditProvider'
-import config from '~/lib/config'
 
 /**
  * Header component.

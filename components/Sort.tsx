@@ -1,8 +1,8 @@
 'use client'
 
+import {useRedditContext} from '@/components/RedditProvider'
+import classes from '@/components/Sort.module.css'
 import {Group, Select, Text} from '@mantine/core'
-import {useRedditContext} from '~/components/RedditProvider'
-import classes from '~/components/Sort.module.css'
 
 /**
  * Sort component.
