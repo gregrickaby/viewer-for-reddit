@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   // Parse and sanitize query params from request.
   const term = unsanitizedTerm
-    ? encodeURIComponent(unsanitizedTerm)
+    ? encodeURIComponent(unsanitizedTerm).trim()
     : config.redditApi.subReddit
 
   try {
