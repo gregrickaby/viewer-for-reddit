@@ -1,7 +1,5 @@
 import config from '@/lib/config'
 
-export const runtime = 'edge'
-
 /**
  * Popular Subreddit Reddit API.
  *

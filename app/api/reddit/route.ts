@@ -2,8 +2,6 @@ import config from '@/lib/config'
 import {getMediumImage} from '@/lib/functions'
 import {Posts} from '@/lib/types'
 
-export const runtime = 'edge'
-
 interface RedditAPIResponse {
   kind: string
   data: {
