@@ -17,18 +17,7 @@ export const runtime = 'edge'
  * @see https://nextjs.org/docs/app/building-your-application/routing/route-handlers
  * @see https://nextjs.org/docs/pages/api-reference/edge
  */
-export async function GET(request: Request) {
-  // Get query params from request.
-  const {searchParams} = new URL(request.url)
-
-  // Parse params.
-  const unsanitizedLimit = searchParams.get('limit') || ''
-
-  // Parse and sanitize query params from request.
-  const limit = unsanitizedLimit
-    ? encodeURIComponent(unsanitizedLimit)
-    : config.redditApi.preSearchLimit
-
+export async function GET() {
   try {
     // Generate random device ID.
     // @see https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
@@ -46,7 +35,8 @@ export async function GET(request: Request) {
           Authorization: `Basic ${btoa(
             `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
           )}`
-        }
+        },
+        next: {revalidate: 3600}
       }
     )
 
@@ -81,11 +71,12 @@ export async function GET(request: Request) {
 
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/subreddits/popular?limit=${limit}`,
+      `https://oauth.reddit.com/subreddits/popular?limit=${config.redditApi.preSearchLimit}`,
       {
         headers: {
           authorization: `Bearer ${token.access_token}`
-        }
+        },
+        next: {revalidate: 3600}
       }
     )
 
@@ -130,14 +121,7 @@ export async function GET(request: Request) {
     )
 
     // Send the response.
-    return new Response(JSON.stringify(filtered), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=300, stale-while-revalidate'
-      },
-      status: 200,
-      statusText: 'OK'
-    })
+    return new Response(JSON.stringify(filtered))
   } catch (error) {
     // Issue? Leave a message and bail.
     console.error(error)
