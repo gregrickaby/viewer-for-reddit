@@ -31,10 +31,7 @@ export async function fetchPosts({
   try {
     // Try and fetch posts.
     const response = await fetch(
-      `/api/reddit?sub=${sub}&sort=${sortBy}&limit=${number}&after=${after}`,
-      {
-        cache: 'default'
-      }
+      `/api/reddit?sub=${sub}&sort=${sortBy}&limit=${number}&after=${after}`
     )
 
     // Bad response? Bail...
