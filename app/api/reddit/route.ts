@@ -21,6 +21,13 @@ interface RedditPost {
 }
 
 /**
+ * Route segment config.
+ *
+ * @see https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+ */
+export const runtime = 'edge'
+
+/**
  * Query Reddit API.
  *
  * @example
