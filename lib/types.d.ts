@@ -77,3 +77,11 @@ export interface Posts {
   after: string
   posts: Post[]
 }
+
+export interface TokenProps {
+  token?: string
+  type?: string
+  expires?: number
+  scope?: string
+  error?: string
+}
