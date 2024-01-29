@@ -14,7 +14,6 @@ const config = {
     sort: 'hot',
     subReddit: 'itookapicture'
   },
-  deviceId: self.crypto.getRandomValues(new Uint32Array(24)),
   cacheTtl: 3600
 }
 
