@@ -76,7 +76,7 @@ export async function GET(request: Request) {
 
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=${deviceId}`,
+      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=${config.deviceId}`,
       {
         headers: {
           authorization: `Bearer ${token.access_token}`
