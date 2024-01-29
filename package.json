@@ -25,10 +25,10 @@
     "type-check": "tsc"
   },
   "dependencies": {
-    "@mantine/core": "7.4.2",
-    "@mantine/hooks": "7.4.2",
+    "@mantine/core": "7.5.0",
+    "@mantine/hooks": "7.5.0",
     "@tabler/icons-react": "^2.46.0",
-    "hls.js": "^1.5.1",
+    "hls.js": "^1.5.2",
     "next": "14.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -36,8 +36,8 @@
     "swr": "^2.2.4"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^1.6.0",
-    "@types/node": "20.11.5",
+    "@evilmartians/lefthook": "^1.6.1",
+    "@types/node": "20.11.10",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
     "eslint": "^8.56.0",
