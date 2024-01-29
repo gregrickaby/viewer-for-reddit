@@ -1,5 +1,5 @@
 import config from '@/lib/config'
-import {FetchPostsProps, ImageAsset} from '@/lib/types'
+import {FetchPostsProps, ImageAsset, TokenProps} from '@/lib/types'
 
 /**
  * Global fetcher function for useSWR.
@@ -12,6 +12,66 @@ export async function fetcher(url: RequestInfo, init?: RequestInit) {
   }
 
   return response.json()
+}
+
+/**
+ * Generate Reddit oAuth Token for application.
+ *
+ * @see https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
+ */
+export async function fetchToken(): Promise<TokenProps> {
+  try {
+    // Try and fetch a new access token.
+    const tokenResponse = await fetch(
+      `https://www.reddit.com/api/v1/access_token?grant_type=client_credentials&device_id=DO_NOT_TRACK_THIS_DEVICE`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': config.userAgent,
+          'Cache-Control': 'no-cache',
+          Authorization: `Basic ${btoa(
+            `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
+          )}`
+        },
+        next: {
+          tags: ['token'],
+          revalidate: 86400 // Reddit access tokens expire after 24 hours.
+        }
+      }
+    )
+
+    // Bad response? Bail...
+    if (tokenResponse.status != 200) {
+      return {
+        error: `${tokenResponse.statusText}`
+      }
+    }
+
+    // Get the access token.
+    const token = await tokenResponse.json()
+
+    // Issue with token? Bail...
+    if (token.error) {
+      return {
+        error: token.error
+      }
+    }
+
+    // Return token.
+    return {
+      token: token.access_token,
+      type: token.token_type,
+      expires: token.expires_in,
+      scope: token.scope
+    }
+  } catch (error) {
+    // Issue? Leave a message and bail.
+    console.error(error)
+    return {
+      error: `${error}`
+    }
+  }
 }
 
 /**
