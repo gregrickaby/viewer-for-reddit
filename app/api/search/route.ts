@@ -1,4 +1,5 @@
 import config from '@/lib/config'
+import {fetchToken} from '@/lib/functions'
 
 /**
  * Route segment config.
@@ -30,56 +31,15 @@ export async function GET(request: Request) {
     : config.redditApi.subReddit
 
   try {
-    // Try and fetch a new access token.
-    const tokenResponse = await fetch(
-      `https://www.reddit.com/api/v1/access_token?grant_type=client_credentials&device_id=${config.deviceId}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json charset=UTF-8',
-          'User-Agent': config.userAgent,
-          Authorization: `Basic ${btoa(
-            `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
-          )}`
-        }
-      }
-    )
-
-    // Bad response? Bail...
-    if (tokenResponse.status != 200) {
-      return new Response(
-        JSON.stringify({
-          error: `${tokenResponse.statusText}`
-        }),
-        {
-          status: tokenResponse.status,
-          statusText: tokenResponse.statusText
-        }
-      )
-    }
-
     // Get the access token.
-    const token = await tokenResponse.json()
-
-    // Issue with token? Bail...
-    if (token.error) {
-      return new Response(
-        JSON.stringify({
-          error: token.error
-        }),
-        {
-          status: token.status,
-          statusText: token.statusText
-        }
-      )
-    }
+    const {token} = await fetchToken()
 
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true&search_query_id=${config.deviceId}`,
+      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${term}&limit=10&include_over_18=true&include_profiles=true&typeahead_active=true`,
       {
         headers: {
-          authorization: `Bearer ${token.access_token}`
+          authorization: `Bearer ${token}`
         }
       }
     )
@@ -126,14 +86,15 @@ export async function GET(request: Request) {
 
     // Send the response.
     return new Response(JSON.stringify(filtered), {
+      status: 200,
+      statusText: 'OK',
       headers: {
+        'X-Robots-Tag': 'noindex',
         'Content-Type': 'application/json',
         'Cache-Control': `public, s-maxage=${config.cacheTtl}`,
         'CDN-Cache-Control': `public, s-maxage=${config.cacheTtl}`,
         'Vercel-CDN-Cache-Control': `public, s-maxage=${config.cacheTtl}`
-      },
-      status: 200,
-      statusText: 'OK'
+      }
     })
   } catch (error) {
     // Issue? Leave a message and bail.

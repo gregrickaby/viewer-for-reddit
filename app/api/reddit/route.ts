@@ -1,5 +1,5 @@
 import config from '@/lib/config'
-import {getMediumImage} from '@/lib/functions'
+import {fetchToken, getMediumImage} from '@/lib/functions'
 import {Posts} from '@/lib/types'
 
 interface RedditAPIResponse {
@@ -63,56 +63,15 @@ export async function GET(request: Request) {
     : ''
 
   try {
-    // Try and fetch a new access token.
-    const tokenResponse = await fetch(
-      `https://www.reddit.com/api/v1/access_token?grant_type=client_credentials&device_id=${config.deviceId}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json charset=UTF-8',
-          'User-Agent': config.userAgent,
-          Authorization: `Basic ${btoa(
-            `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
-          )}`
-        }
-      }
-    )
-
-    // Bad response? Bail...
-    if (tokenResponse.status != 200) {
-      return new Response(
-        JSON.stringify({
-          error: `${tokenResponse.statusText}`
-        }),
-        {
-          status: tokenResponse.status,
-          statusText: tokenResponse.statusText
-        }
-      )
-    }
-
     // Get the access token.
-    const token = await tokenResponse.json()
-
-    // Issue with token? Bail...
-    if (token.error) {
-      return new Response(
-        JSON.stringify({
-          error: token.error
-        }),
-        {
-          status: token.status,
-          statusText: token.statusText
-        }
-      )
-    }
+    const {token} = await fetchToken()
 
     // Attempt to fetch posts.
     const response = await fetch(
       `https://oauth.reddit.com/r/${subReddit}/${sortBy}/.json?limit=${postLimit}&after=${lastPost}&raw_json=1`,
       {
         headers: {
-          Authorization: `Bearer: ${token.access_token}`
+          Authorization: `Bearer: ${token}`
         }
       }
     )
