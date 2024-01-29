@@ -19,14 +19,9 @@ export const runtime = 'edge'
  */
 export async function GET() {
   try {
-    // Generate random device ID.
-    // @see https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
-    const array = new Uint32Array(24)
-    const deviceId = self.crypto.getRandomValues(array)
-
     // Try and fetch a new access token.
     const tokenResponse = await fetch(
-      `https://www.reddit.com/api/v1/access_token?grant_type=client_credentials&device_id=${deviceId}`,
+      `https://www.reddit.com/api/v1/access_token?grant_type=client_credentials&device_id=${config.deviceId}`,
       {
         method: 'POST',
         headers: {
@@ -121,7 +116,16 @@ export async function GET() {
     )
 
     // Send the response.
-    return new Response(JSON.stringify(filtered))
+    return new Response(JSON.stringify(filtered), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': `public, s-maxage=${config.cacheTtl}`,
+        'CDN-Cache-Control': `public, s-maxage=${config.cacheTtl}`,
+        'Vercel-CDN-Cache-Control': `public, s-maxage=${config.cacheTtl}`
+      },
+      status: 200,
+      statusText: 'OK'
+    })
   } catch (error) {
     // Issue? Leave a message and bail.
     console.error(error)
