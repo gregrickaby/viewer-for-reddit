@@ -12,7 +12,7 @@ export const runtime = 'edge'
  * Popular Subreddit Reddit API.
  *
  * @example
- * /api/preSearch?limit=5
+ * /api/popular?limit=5
  *
  * @see https://www.reddit.com/dev/api#GET_subreddits_{where}
  * @see https://nextjs.org/docs/app/building-your-application/routing/route-handlers
@@ -25,7 +25,7 @@ export async function GET() {
 
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/subreddits/popular?limit=${config.redditApi.preSearchLimit}`,
+      `https://oauth.reddit.com/subreddits/popular?limit=${config.redditApi.popularLimit}`,
       {
         headers: {
           authorization: `Bearer ${token}`
