@@ -71,7 +71,7 @@ Take note of the `client id` and `secret` values. You will need these in a momen
 2. Create an `.env` file in the root of the project:
 
 ```bash
-cp .env.sample .env.local
+cp .env.example .env.local
 ```
 
 3. Add your token to the `.env.local` file:
