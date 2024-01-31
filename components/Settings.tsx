@@ -32,7 +32,7 @@ export default function Settings() {
         aria-label="open settings"
         className={classes.settings}
         onClick={open}
-        size="lg"
+        size={48}
         variant="transparent"
       >
         <IconSettings size={48} />
