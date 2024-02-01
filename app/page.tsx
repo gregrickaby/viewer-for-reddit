@@ -1,9 +1,9 @@
+import classes from '@/app/Page.module.css'
 import BackToTop from '@/components/BackToTop'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Results from '@/components/Results'
 import Search from '@/components/Search'
-import classes from './Page.module.css'
 
 /**
  * Homepage component.
