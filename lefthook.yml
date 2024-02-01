@@ -6,10 +6,10 @@ pre-commit:
   commands:
     eslint:
       glob: '*.{js,jsx,ts,tsx}'
-      run: npx eslint {staged_files} --fix
+      run: npx eslint {staged_files} --ignore-path .gitignore --fix
     stylelint:
-      glob: '*.{css,scss}'
-      run: npx stylelint {staged_files} --fix
+      glob: '*.css'
+      run: npx stylelint {staged_files} --ignore-path .gitignore --fix
     prettier:
-      glob: '*.{md,html,json,yml}'
-      run: npx prettier {staged_files} --write
+      glob: '.'
+      run: npx prettier {staged_files} --ignore-path .gitignore --write
