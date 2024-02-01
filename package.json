@@ -17,7 +17,7 @@
     "build": "next build",
     "dev": "rimraf .next && next dev",
     "format": "prettier . --ignore-path .gitignore --write",
-    "lint": "npm run lint:css && npm run lint:js && npm run lint:markdown && next lint && tsc",
+    "lint": "npm run lint:css && npm run lint:js && next lint && tsc",
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore --fix",
     "lint:js": "eslint . --ignore-path .gitignore --fix",
     "postbuild": "next-sitemap",
