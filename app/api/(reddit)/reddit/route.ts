@@ -1,24 +1,6 @@
 import config from '@/lib/config'
 import {fetchToken, getMediumImage} from '@/lib/functions'
-import {Posts} from '@/lib/types'
-
-interface RedditAPIResponse {
-  kind: string
-  data: {
-    modhash: string
-    dist: number
-    children: RedditPost[]
-    after: string
-    before: string
-  }
-}
-
-interface RedditPost {
-  kind: string
-  data: {
-    [key: string]: any
-  }
-}
+import {Posts, RedditAPIResponse} from '@/lib/types'
 
 /**
  * Route segment config.

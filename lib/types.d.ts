@@ -85,3 +85,21 @@ export interface TokenProps {
   scope?: string
   error?: string
 }
+
+export interface RedditAPIResponse {
+  kind: string
+  data: {
+    modhash: string
+    dist: number
+    children: RedditPost[]
+    after: string
+    before: string
+  }
+}
+
+export interface RedditPost {
+  kind: string
+  data: {
+    [key: string]: any
+  }
+}
