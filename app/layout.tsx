@@ -1,7 +1,7 @@
 import PreloadResources from '@/components/PreloadResources'
 import RedditProvider from '@/components/RedditProvider'
 import config from '@/lib/config'
-import {theme} from '@/theme'
+import theme from '@/lib/theme'
 import {ColorSchemeScript, MantineProvider} from '@mantine/core'
 import '@mantine/core/styles.css'
 import {Metadata, Viewport} from 'next'
