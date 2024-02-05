@@ -26,7 +26,7 @@
   "dependencies": {
     "@mantine/core": "7.5.1",
     "@mantine/hooks": "7.5.1",
-    "@tabler/icons-react": "^2.46.0",
+    "@tabler/icons-react": "^2.47.0",
     "hls.js": "^1.5.3",
     "next": "14.1.0",
     "react": "18.2.0",
@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.6.1",
-    "@types/node": "20.11.15",
-    "@types/react": "18.2.51",
+    "@types/node": "20.11.16",
+    "@types/react": "18.2.53",
     "@types/react-dom": "18.2.18",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
@@ -46,7 +46,7 @@
     "postcss": "^8.4.33",
     "postcss-preset-mantine": "1.13.0",
     "postcss-simple-vars": "^7.0.1",
-    "prettier": "^3.2.4",
+    "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "stylelint": "^16.2.1",
     "stylelint-config-standard": "^36.0.0",
