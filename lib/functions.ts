@@ -29,14 +29,13 @@ export async function fetchToken(): Promise<TokenProps> {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': config.userAgent,
-          'Cache-Control': 'no-cache',
           Authorization: `Basic ${btoa(
             `${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`
           )}`
         },
         next: {
           tags: ['token'],
-          revalidate: 86400 // Reddit access tokens expire after 24 hours.
+          revalidate: config.cacheTtl
         }
       }
     )
