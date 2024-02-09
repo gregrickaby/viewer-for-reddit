@@ -41,7 +41,7 @@ export default function BackToTop() {
   return (
     <button
       aria-label={buttonText}
-      className="button fixed bottom-8 right-8"
+      className="button fixed bottom-8 right-6"
       onClick={scrollToTop}
     >
       <IconArrowUp height="32" width="32" />

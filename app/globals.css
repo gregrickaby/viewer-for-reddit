@@ -17,7 +17,7 @@
   }
 
   input {
-    @apply w-full outline-1 dark:outline-zinc-900;
+    @apply h-16 w-full text-xl outline-1 dark:outline-zinc-900;
   }
 
   button,
