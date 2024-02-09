@@ -128,6 +128,7 @@ export default function Search() {
                     className={`m-0 flex items-center justify-start gap-2 p-1 hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-800 ${selectedIndex === index ? 'bg-zinc-300 dark:bg-zinc-800' : ''}`}
                     href={data.url || ''}
                     onClick={resetSearch}
+                    prefetch={false}
                   >
                     <span className="ml-3">{data.display_name}</span>
                     {data.over18 && (
