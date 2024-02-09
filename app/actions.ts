@@ -9,6 +9,13 @@ import {
 } from '@/lib/types'
 
 /**
+ * The runtime environment.
+ *
+ * @see https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes
+ */
+export const runtime = 'edge'
+
+/**
  * Fetch a Reddit oAuth token.
  *
  * @see https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
