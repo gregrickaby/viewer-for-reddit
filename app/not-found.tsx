@@ -2,7 +2,7 @@ import Image from 'next/image'
 import notFound from '../public/not-found.webp'
 
 /**
- * The 404 page.
+ * The 404 component.
  */
 export default function NotFound() {
   return (
