@@ -44,4 +44,17 @@
       width: calc(100% + 48vw);
     }
   }
+
+  .tooltip-container {
+    @apply relative inline-block cursor-pointer;
+
+    .tooltip-text {
+      @apply hidden w-24 rounded bg-black p-4 text-sm text-white;
+      @apply absolute right-0 z-10 mt-4 w-[200px] opacity-0 transition-opacity duration-300;
+    }
+  }
+
+  .tooltip-container:hover .tooltip-text {
+    @apply block opacity-100;
+  }
 }
