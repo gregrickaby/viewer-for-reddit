@@ -5,7 +5,7 @@
  */
 export default function Home() {
   return (
-    <p className="animate-pulse text-center">
+    <p className="text-center">
       To get started, try searching for a subreddit.
     </p>
   )
