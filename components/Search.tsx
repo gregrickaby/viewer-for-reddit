@@ -90,7 +90,7 @@ export default function Search() {
   }, [pathname, initialSubreddit])
 
   return (
-    <div className="relative flex items-center pb-8">
+    <div className="relative flex items-center">
       <input
         aria-label="search"
         autoCapitalize="none"

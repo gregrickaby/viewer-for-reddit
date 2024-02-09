@@ -8,6 +8,7 @@ import {useEffect, useState} from 'react'
  */
 export default function BackToTop() {
   const [showButton, setShowButton] = useState(false)
+  const buttonText = 'Go back to the top of the page'
 
   useEffect(() => {
     // Handle scroll event.
@@ -39,11 +40,12 @@ export default function BackToTop() {
 
   return (
     <button
-      onClick={scrollToTop}
+      aria-label={buttonText}
       className="button fixed bottom-8 right-8"
-      aria-label="Back to top"
+      onClick={scrollToTop}
     >
-      <IconArrowUp height="24" width="24" />
+      <IconArrowUp height="32" width="32" />
+      <span className="sr-only">{buttonText}</span>
     </button>
   )
 }

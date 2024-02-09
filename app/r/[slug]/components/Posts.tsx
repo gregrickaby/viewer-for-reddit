@@ -21,7 +21,7 @@ export default function Posts(posts: RedditPostResponse) {
         700: 2,
         500: 1
       }}
-      className="flex gap-12"
+      className="mb-12 flex gap-12"
       columnClassName="flex flex-col gap-12 not-prose"
     >
       {posts.data.children.length > 0 &&
@@ -30,7 +30,10 @@ export default function Posts(posts: RedditPostResponse) {
             className="flex flex-col gap-4 rounded border p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-700"
             key={data.id}
           >
-            <a className="block leading-tight" href={data.permalink}>
+            <a
+              className="block text-sm leading-tight lg:text-base"
+              href={data.permalink}
+            >
               {data.title}
             </a>
             <Media {...data} />
