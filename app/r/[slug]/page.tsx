@@ -7,12 +7,21 @@ import type {Metadata} from 'next'
 import Link from 'next/link'
 
 /**
- * Generate metadata for the single subreddit route.
+ * Generate metadata.
+ *
+ * @see https://nextjs.org/docs/app/api-reference/functions/generate-metadata
  */
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   return {
     title: `${config.siteName} - ${params.slug}`,
-    description: `The latest posts from the r/${params.slug} subreddit`
+    description: `The latest posts from the ${params.slug} subreddit`,
+    alternates: {
+      canonical: `${config.siteUrl}r/${params.slug}`
+    },
+    openGraph: {
+      description: `The latest posts from the ${params.slug} subreddit`,
+      url: `${config.siteUrl}r/${params.slug}`
+    }
   }
 }
 
