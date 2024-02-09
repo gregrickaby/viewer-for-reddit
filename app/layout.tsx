@@ -6,6 +6,13 @@ import config from '@/lib/config'
 import type {Metadata, Viewport} from 'next'
 
 /**
+ * The runtime environment.
+ *
+ * @see https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes
+ */
+export const runtime = 'edge'
+
+/**
  * Generate metadata.
  *
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-metadata
