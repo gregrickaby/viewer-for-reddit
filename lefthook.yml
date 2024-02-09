@@ -1,12 +1,15 @@
 # Refer for explanation to following link:
-# https://github.com/Arkweid/lefthook/blob/master/docs/full_guide.md
+# https://github.com/evilmartians/lefthook/blob/master/docs/usage.md
 
 pre-commit:
   parallel: true
   commands:
     eslint:
       glob: '*.{js,jsx,ts,tsx}'
-      run: npx eslint {staged_files} --config=.eslintrc.js --fix
+      run: npx eslint {staged_files} --ignore-path .gitignore --fix
+    stylelint:
+      glob: '*.css'
+      run: npx stylelint {staged_files} --ignore-path .gitignore --fix
     prettier:
-      glob: '*.{md,html,json,yml}'
-      run: npx prettier {staged_files} --config=prettierrc.js --write
+      glob: '.'
+      run: npx prettier {staged_files} --ignore-path .gitignore --write

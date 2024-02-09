@@ -2,29 +2,32 @@ name: Assertions
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
   workflow_dispatch:
 
 jobs:
-  lint:
+  assertions:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm i
+      - name: Copy .env
+        run: cp .env.example .env
 
-      - name: Lint scripts
-        run: npm run lint:js
+      - name: Install Dependencies
+        run: npm ci --ignore-scripts
 
-      - name: Lint styles
-        run: npm run lint:css
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build

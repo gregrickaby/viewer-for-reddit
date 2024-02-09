@@ -1,60 +1,52 @@
 {
-  "name": "@gregrickaby/reddit-image-viewer",
+  "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
-  "description": "Anonymously browse images, videos, gifs, and other media from any subreddit.",
-  "version": "3.0.0",
+  "description": "Anonymously browse Reddit",
+  "version": "5.0.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gregrickaby/reddit-image-viewer.git"
+    "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
   },
-  "author": "Greg Rickaby <gregrickaby@gmail.com>",
+  "author": "Greg Rickaby <greg@gregrickaby.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gregrickaby/reddit-image-viewer/issues"
+    "url": "https://github.com/gregrickaby/viewer-for-reddit/issues"
   },
-  "homepage": "https://github.com/gregrickaby/reddit-image-viewer#readme",
+  "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
     "build": "next build",
     "dev": "rimraf .next && next dev",
-    "format": "npx prettier '**/*.{js,jsx,ts,tsx,md,mdx,html,css,scss,json,yml}' --config=.prettierrc.js --write || true",
-    "lint": "npm run format && npm run lint:js && npm run lint:md && npm run type-check",
-    "lint:js": "npx eslint '**/*.{js,ts,jsx,tsx}' --fix || true && next lint",
-    "lint:md": "npx markdownlint '**/*.{md,mdx}' --fix",
-    "start": "next start",
-    "type-check": "tsc"
+    "format": "prettier  '**/*.{tsx,js,ts,md,css,json,yml}' --ignore-path .gitignore --cache --write",
+    "lint": "npm run lint:css && npm run lint:js && next lint && tsc",
+    "lint:css": "stylelint '**/*.css' --ignore-path .gitignore --fix",
+    "lint:js": "eslint . --ignore-path .gitignore --fix",
+    "start": "next start"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.4",
-    "@emotion/server": "^11.10.0",
-    "@mantine/core": "^5.5.1",
-    "@mantine/hooks": "^5.5.1",
-    "@mantine/next": "^5.5.1",
-    "next": "^12.3.1",
-    "next-auth": "^4.12.2",
+    "@tabler/icons-react": "^2.47.0",
+    "hls.js": "^1.5.4",
+    "next": "^14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.4.0",
-    "swr": "^2.0.0-beta.6"
+    "react-masonry-css": "^1.0.16"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^1.1.1",
-    "@types/node": "^18.8.0",
-    "@types/react": "^18.0.21",
-    "eslint": "^8.24.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-mantine": "^2.0.0",
-    "eslint-config-next": "^12.3.1",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.6.1",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.31.8",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "markdownlint": "^0.26.2",
-    "markdownlint-cli": "^0.32.2",
-    "prettier": "^2.7.1",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.8.4"
+    "@evilmartians/lefthook": "^1.6.1",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/node": "^20.11.17",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "postcss": "^8.4.35",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "rimraf": "^5.0.5",
+    "stylelint": "^16.2.1",
+    "stylelint-config-standard": "^36.0.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
   }
 }

@@ -1,6 +1,0 @@
-*.min.*
-PULL_REQUEST_TEMPLATE.md
-build/
-dist/
-node_modules/
-public/
