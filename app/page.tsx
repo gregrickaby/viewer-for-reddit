@@ -1,27 +1,12 @@
-import classes from '@/app/Page.module.css'
-import BackToTop from '@/components/BackToTop'
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import Results from '@/components/Results'
-import Search from '@/components/Search'
-
 /**
- * Homepage component.
+ * The home page route.
+ *
+ * @see https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#pages
  */
-export default function HomePage() {
+export default function Home() {
   return (
-    <>
-      <div className={classes.container}>
-        <Header />
-        <main className={classes.main}>
-          <div className={classes.search}>
-            <Search />
-          </div>
-          <Results />
-        </main>
-        <Footer />
-      </div>
-      <BackToTop />
-    </>
+    <p className="text-center">
+      To get started, try searching for a subreddit.
+    </p>
   )
 }

@@ -1,16 +1,11 @@
 'use client'
 
+import {HlsPlayerProps} from '@/lib/types'
 import Hls from 'hls.js'
-import {LegacyRef, useEffect, useRef, VideoHTMLAttributes} from 'react'
-
-// Allow the data-hint prop on the VideoHTMLAttributes interface.
-export interface HlsPlayerProps
-  extends Omit<VideoHTMLAttributes<HTMLVideoElement>, 'data-hint'> {
-  dataHint?: string
-}
+import {LegacyRef, useEffect, useRef} from 'react'
 
 /**
- * HlsPlayer component.
+ * The HlsPlayer component.
  *
  * @see https://github.com/video-dev/hls.js/
  */

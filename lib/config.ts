@@ -10,9 +10,9 @@ const config = {
   githubUrl: 'https://github.com/gregrickaby/viewer-for-reddit',
   redditApi: {
     popularLimit: '5',
-    limit: '24',
-    sort: 'hot',
-    subReddit: 'itookapicture'
+    limit: '50',
+    sortBy: 'hot',
+    sub: 'itookapicture'
   },
   cacheTtl: 3600
 }

@@ -1,20 +1,19 @@
-import PreloadResources from '@/components/PreloadResources'
-import RedditProvider from '@/components/RedditProvider'
+import '@/app/globals.css'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import Search from '@/components/Search'
 import config from '@/lib/config'
-import theme from '@/lib/theme'
-import {ColorSchemeScript, MantineProvider} from '@mantine/core'
-import '@mantine/core/styles.css'
-import {Metadata, Viewport} from 'next'
+import type {Metadata, Viewport} from 'next'
 
 /**
- * Setup metadata.
+ * Generate metadata.
  *
- * @see https://nextjs.org/docs/app/building-your-application/optimizing/metadata
+ * @see https://nextjs.org/docs/app/api-reference/functions/generate-metadata
  */
 export const metadata: Metadata = {
   metadataBase: new URL(config.siteUrl),
   title: `${config.siteName} - ${config.siteDescription}`,
-  description: config.siteDescription,
+  description: config.metaDescription,
   robots: 'follow, index',
   alternates: {
     canonical: config.siteUrl
@@ -40,40 +39,36 @@ export const metadata: Metadata = {
     apple: '/icon.png',
     shortcut: '/icon.png'
   },
-  other: {
-    'google-site-verification':
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || ''
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || ''
   }
 }
 
 /**
  * Setup viewport.
  *
- * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport#the-viewport-object
  */
 export const viewport: Viewport = {
-  themeColor: [
-    {media: '(prefers-color-scheme: light)', color: 'white'},
-    {media: '(prefers-color-scheme: dark)', color: '#1a1b1e'}
-  ]
+  colorScheme: 'dark',
+  themeColor: '#18181b'
 }
 
 /**
- * Root layout component.
- *
- * @see https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required
+ * The root layout.
  */
-export default function RootLayout({children}: {children: any}) {
+export default function RootLayout({
+  children
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html lang="en">
-      <head>
-        <PreloadResources />
-        <ColorSchemeScript />
-      </head>
       <body>
-        <MantineProvider theme={theme} defaultColorScheme="auto">
-          <RedditProvider>{children}</RedditProvider>
-        </MantineProvider>
+        <Header />
+        <Search />
+        <main className="main">{children}</main>
+        <Footer />
       </body>
     </html>
   )

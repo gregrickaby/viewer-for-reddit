@@ -1,91 +1,147 @@
 'use client'
 
-import {useRedditContext} from '@/components/RedditProvider'
-import classes from '@/components/Search.module.css'
-import Settings from '@/components/Settings'
-import {fetcher} from '@/lib/functions'
-import {MultiSelect} from '@mantine/core'
-import {useDebouncedValue} from '@mantine/hooks'
-import useSWR from 'swr'
+import {fetchSearchResults} from '@/app/actions'
+import {RedditSearchResponse} from '@/lib/types'
+import {IconX} from '@tabler/icons-react'
+import Link from 'next/link'
+import {usePathname, useRouter} from 'next/navigation'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
-interface ItemType {
-  value: string
-  label: string
+/**
+ * Debounce a callback.
+ */
+function useDebounce(callback: () => void, delay: number, dependencies: any[]) {
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      callback()
+    }, delay)
+
+    return () => clearTimeout(handler)
+  }, [delay, ...dependencies]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 /**
- * Search component.
- *
- * @see https://mantine.dev/core/multi-select/
+ * The search component.
  */
 export default function Search() {
-  const {setSubreddit, searchInput, setSearchInput, subReddit} =
-    useRedditContext()
-  const [debounced] = useDebouncedValue(searchInput, 800)
-  const {data: beforeSearch} = useSWR(`/api/popular?limit=5`, fetcher)
-  const {data: results} = useSWR(`/api/search?term=${debounced}`, fetcher, {
-    revalidateIfStale: true,
-    revalidateOnFocus: false,
-    revalidateOnMount: false
-  })
+  const router = useRouter()
+  const pathname = usePathname()
+  const initialSubreddit = pathname.split('/r/')[1]
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  /**
-   * Handle search input change.
-   */
-  function handleSearch(string: string) {
-    setSearchInput(string)
+  const [query, setQuery] = useState(initialSubreddit || '')
+  const [results, setResults] = useState<RedditSearchResponse>({})
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(0)
+
+  const searchInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputQuery = e.target.value.trim()
+    setQuery(inputQuery)
+    setSelectedIndex(0)
+    setIsDrawerOpen(!!inputQuery)
   }
 
-  /**
-   * Get item data to populate typeahead and combine with already selected items.
-   */
-  function formatItems(i: {value: string; label: string}) {
-    return {value: i.value, label: i.value}
+  const performSearch = useCallback(async () => {
+    if (query.length < 2) return
+    const results = await fetchSearchResults(query)
+    setResults(results)
+  }, [query])
+
+  useDebounce(performSearch, 500, [query])
+
+  const resetSearch = () => {
+    setQuery('')
+    setResults({})
+    setIsDrawerOpen(false)
+    setSelectedIndex(0)
   }
 
-  /**
-   * Get data for typeahead.
-   *
-   * If there are results, return them, otherwise return the before search data.
-   */
-  function getData(): Array<ItemType> {
-    let items: Array<ItemType> = []
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isDrawerOpen) return
+      const itemCount = results?.data?.children?.length || 0
 
-    if (results) {
-      items = results
-    } else if (beforeSearch) {
-      items = beforeSearch
+      if (e.key === 'ArrowDown') {
+        setSelectedIndex((prevIndex) => (prevIndex + 1) % itemCount)
+        e.preventDefault()
+      } else if (e.key === 'ArrowUp') {
+        setSelectedIndex((prevIndex) => (prevIndex - 1 + itemCount) % itemCount)
+        e.preventDefault()
+      } else if (e.key === 'Enter' && itemCount > 0) {
+        const selectedResult = results?.data?.children[selectedIndex]
+        if (selectedResult) {
+          router.push(selectedResult.data.url)
+          resetSearch()
+        }
+        e.preventDefault()
+      }
     }
 
-    // Filter out items with empty or null values.
-    const filteredItems = items
-      .map(formatItems)
-      .filter((item: ItemType) => item.value && item.value.trim() !== '')
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isDrawerOpen, results, selectedIndex, router])
 
-    return filteredItems.length
-      ? filteredItems
-      : [{value: 'Empty', label: 'Empty'}]
-  }
+  useEffect(() => {
+    if (pathname === '/' || !initialSubreddit) {
+      setQuery('')
+    } else {
+      setQuery(initialSubreddit)
+    }
+  }, [pathname, initialSubreddit])
 
   return (
-    <>
-      <MultiSelect
-        aria-label="search sub-reddits"
-        className={classes.searchbar}
-        data={getData()}
-        defaultValue={[subReddit]}
-        nothingFoundMessage="No subs found. Try searching for something else."
-        onChange={(values) => {
-          setSubreddit(encodeURIComponent(values.join('+')))
-          setSearchInput('')
-        }}
-        onSearchChange={handleSearch}
-        placeholder="Search and select sub-reddits"
-        searchable
-        searchValue={searchInput}
-        size="lg"
+    <div className="relative flex items-center">
+      <input
+        aria-label="search"
+        autoCapitalize="none"
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck="false"
+        autoFocus
+        className="w-full rounded bg-zinc-100 px-4 py-2 outline-none dark:bg-zinc-800 dark:text-zinc-400"
+        name="search"
+        onChange={searchInputHandler}
+        placeholder="Search subreddits"
+        ref={inputRef}
+        type="search"
+        value={query}
       />
-      <Settings />
-    </>
+
+      {query.length > 0 && (
+        <button
+          aria-label="clear search"
+          className="absolute right-2 z-10 rounded bg-zinc-400 p-1 font-mono text-xs text-zinc-200 transition-all duration-300 ease-in-out hover:bg-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
+          onClick={resetSearch}
+          type="reset"
+        >
+          <IconX />
+        </button>
+      )}
+
+      {isDrawerOpen && results && (
+        <ul className="absolute left-0 top-16 z-50 m-0 w-full list-none rounded-b bg-zinc-200 p-0 dark:bg-zinc-700">
+          {results?.data?.children?.map(
+            ({data}, index) =>
+              data.display_name && (
+                <li className="m-0 p-0" key={data.id}>
+                  <Link
+                    className={`m-0 flex items-center justify-start gap-2 p-1 hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-800 ${selectedIndex === index ? 'bg-zinc-300 dark:bg-zinc-800' : ''}`}
+                    href={data.url || ''}
+                    onClick={resetSearch}
+                    prefetch={false}
+                  >
+                    <span className="ml-3">{data.display_name}</span>
+                    {data.over18 && (
+                      <span className="mt-1 font-mono text-xs font-extralight text-red-600">
+                        NSFW
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              )
+          )}
+        </ul>
+      )}
+    </div>
   )
 }
