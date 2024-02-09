@@ -1,18 +1,15 @@
-import {Stack} from '@mantine/core'
 import Image from 'next/image'
 import notFound from '../public/not-found.webp'
 
 /**
- * 404 Not Found component.
+ * The 404 page.
  */
 export default function NotFound() {
   return (
-    <Stack align="center">
-      <p>
-        Either the Reddit API is down or something else is wrong. Please try
-        your search again.
-      </p>
-      <Image alt="404 not found" priority placeholder="blur" src={notFound} />
-    </Stack>
+    <div className="flex flex-col items-center justify-center space-y-4">
+      <h1 className="mb-0">404 - Not Found</h1>
+      <Image alt="Not Found" src={notFound} priority />
+      <p>The page you&apos;re looking for cannot be found.</p>
+    </div>
   )
 }
