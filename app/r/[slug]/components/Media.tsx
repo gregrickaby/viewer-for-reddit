@@ -1,6 +1,21 @@
 import HlsPlayer from '@/app/r/[slug]/components/HlsPlayer'
-import {getMediumImage} from '@/lib/functions'
-import {RedditPost} from '@/lib/types'
+import {RedditPost, ImageAsset} from '@/lib/types'
+
+/**
+ * Pluck out a medium sized image.
+ */
+function getMediumImage(images: ImageAsset[]): ImageAsset | null {
+  // If there are no images, return null.
+  if (!Array.isArray(images) || images.length === 0) {
+    return null
+  }
+
+  // Try to find an image with 640px resolution.
+  const mediumSize = images.find((res) => res.width === 640)
+
+  // Return the medium sized image; otherwise, return the highest resolution.
+  return mediumSize || images[images.length - 1]
+}
 
 /**
  * The media component.
