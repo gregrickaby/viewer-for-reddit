@@ -5,6 +5,7 @@ import config from '@/lib/config'
 import {PageProps} from '@/lib/types'
 import type {Metadata} from 'next'
 import Link from 'next/link'
+import BossButton from '@/app/r/[slug]/components/BossButton'
 
 /**
  * Generate metadata.
@@ -52,14 +53,17 @@ export default async function Page(props: PageProps) {
 
   return (
     <div className="text-center">
-      <h2>{slug}</h2>
+      <h2 className="mt-0">
+        Viewing <span className="italic">{slug}</span>
+      </h2>
       <Posts {...posts} />
       <Link
-        className="button hover"
+        className="button"
         href={{pathname: `/r/${slug}`, query: {after: posts.data.after}}}
       >
         Load More
       </Link>
+      <BossButton />
       <BackToTop />
     </div>
   )
