@@ -81,10 +81,6 @@ cp .env.example .env.local
 # Get one here: https://www.reddit.com/prefs/apps
 REDDIT_CLIENT_ID="YOUR-TOKEN-HERE"
 
-# Your Reddit Client Secret
-# Get one here: https://www.reddit.com/prefs/apps
-REDDIT_CLIENT_SECRET="YOUR-TOKEN-HERE"
-
 # Search Secret
 NEXT_PUBLIC_SEARCH_SECRET="ANY-RANDOM-STRING-HERE"
 
