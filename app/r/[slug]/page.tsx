@@ -52,7 +52,7 @@ export default async function Page(props: PageProps) {
   }
 
   return (
-    <div className="text-center">
+    <div className="posts relative text-center">
       <h2 className="mt-0">
         Viewing <span className="italic">{slug}</span>
       </h2>
