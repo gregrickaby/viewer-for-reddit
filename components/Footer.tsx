@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="text-center font-mono text-xs">
       <p>
-        Website by{' '}
+        Created and maintained by{' '}
         <a
           aria-label={`visit ${config.siteAuthor} website`}
           href={config.authorUrl}
