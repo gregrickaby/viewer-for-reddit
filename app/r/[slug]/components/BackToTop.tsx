@@ -27,6 +27,9 @@ export default function BackToTop() {
     return () => window.removeEventListener('scroll', scrollHandler)
   }, [])
 
+  /**
+   * Scroll to the top of the page.
+   */
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
