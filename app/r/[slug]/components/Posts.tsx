@@ -32,7 +32,8 @@ export default function Posts(posts: RedditPostResponse) {
           >
             <a
               className="block text-sm leading-tight lg:text-base"
-              href={data.permalink}
+              href={`https://www.reddit.com${data.permalink}`}
+              rel="noopener noreferrer"
             >
               {data.title}
             </a>
