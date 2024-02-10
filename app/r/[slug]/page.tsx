@@ -60,6 +60,7 @@ export default async function Page(props: PageProps) {
       <Link
         className="button"
         href={{pathname: `/r/${slug}`, query: {after: posts.data.after}}}
+        prefetch={true}
       >
         Load More
       </Link>
