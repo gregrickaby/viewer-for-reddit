@@ -20,7 +20,7 @@ export default function BackToTop() {
       }
     }
 
-    // Add event listener for scroll.
+    // Add event listener.
     window.addEventListener('scroll', scrollHandler)
 
     // Clean up event listener.
@@ -46,6 +46,7 @@ export default function BackToTop() {
       aria-label={buttonText}
       className="button fixed bottom-8 right-6"
       onClick={scrollToTop}
+      title={buttonText}
     >
       <IconArrowUp height="32" width="32" />
       <span className="sr-only">{buttonText}</span>
