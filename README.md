@@ -1,6 +1,10 @@
 # Viewer for Reddit
 
-Anonymously browse Reddit. [https://redditviewer.vercel.app/](https://redditviewer.vercel.app/)
+🙈 Anonymously browse Reddit [https://redditviewer.vercel.app/](https://redditviewer.vercel.app/)
+
+With a focus on privacy, there's no tracking or logging of your
+activity—aside from the minimal server logs (maintained for operational
+integrity). Enjoy a clean, fast, and untracked browsing experience.
 
 ---
 
@@ -9,5 +13,3 @@ Anonymously browse Reddit. [https://redditviewer.vercel.app/](https://redditview
 Please read the [contributing guide](/CONTRIBUTING.md) to get started.
 
 ---
-
-Happy Reddit-ing! 🍻
