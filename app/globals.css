@@ -30,16 +30,13 @@
     @apply no-underline hover:underline;
   }
 
-  .main {
-    @apply relative;
-
-    /* Breakout of the container for larger screens. */
+  .posts {
     @media screen and (width >= 768px) {
       left: -12vw;
       width: calc(100% + 24vw);
     }
 
-    @media screen and (width >= 1920px) {
+    @media screen and (width >= 1440px) {
       left: -24vw;
       width: calc(100% + 48vw);
     }
