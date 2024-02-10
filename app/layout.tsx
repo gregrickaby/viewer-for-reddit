@@ -67,7 +67,7 @@ export default function RootLayout({
       <body>
         <Header />
         <Search />
-        <main className="main">{children}</main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>
