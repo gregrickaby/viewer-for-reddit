@@ -43,7 +43,7 @@ export default function HlsPlayer(props: HlsPlayerProps) {
       crossOrigin={props.crossOrigin}
       data-hint={props.dataHint}
       height={props.height}
-      loop
+      loop={props.loop}
       muted={props.muted}
       playsInline={props.playsInline}
       poster={props.poster}
