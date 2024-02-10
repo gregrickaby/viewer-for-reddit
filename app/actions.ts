@@ -52,7 +52,7 @@ export async function fetchToken(): Promise<RedditTokenResponse> {
       access_token: data.access_token
     }
   } catch (error) {
-    console.error('Exception thrown in fetchToken()')
+    console.error(`Exception thrown in fetchToken(): ${error}`)
     return {error: `${error}`}
   }
 }
@@ -95,7 +95,7 @@ export async function fetchSearchResults(
     // Return the search results.
     return data
   } catch (error) {
-    console.error('Exception thrown in fetchSearchResults()')
+    console.error(`Exception thrown in fetchSearchResults(): ${error}`)
     return {error: `${error}`}
   }
 }
@@ -156,7 +156,7 @@ export async function fetchSubredditPosts(
       }
     }
   } catch (error) {
-    console.error('Exception thrown in fetchSubredditPosts()')
+    console.error(`Exception thrown in fetchSubredditPosts(): ${error}`)
     return {error: `${error}`}
   }
 }
