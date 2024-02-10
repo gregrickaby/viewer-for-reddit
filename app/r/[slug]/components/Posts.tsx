@@ -17,9 +17,9 @@ export default function Posts(posts: RedditPostResponse) {
     <Masonry
       breakpointCols={{
         default: 4,
-        1024: 3,
-        700: 2,
-        500: 1
+        1660: 3,
+        1024: 2,
+        768: 1
       }}
       className="mb-12 flex gap-12"
       columnClassName="flex flex-col gap-12 not-prose"
@@ -27,11 +27,11 @@ export default function Posts(posts: RedditPostResponse) {
       {posts.data.children.length > 0 &&
         posts.data.children.map(({data}) => (
           <div
-            className="flex flex-col gap-4 rounded border p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-700"
+            className="flex flex-col gap-4 rounded border p-6 pt-4 shadow-xl dark:border-zinc-800 dark:bg-zinc-700"
             key={data.id}
           >
             <a
-              className="block text-sm leading-tight lg:text-base"
+              className="block text-sm leading-none lg:text-base"
               href={`https://www.reddit.com${data.permalink}`}
               rel="noopener noreferrer"
             >
