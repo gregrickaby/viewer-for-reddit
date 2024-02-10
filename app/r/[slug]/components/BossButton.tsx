@@ -14,36 +14,35 @@ export default function BossButton() {
     'The boss button. Click or press Escape to quickly navigate to DuckDuckGo.'
 
   useEffect(() => {
-    // Do not show on small screens.
-    if (window.innerWidth < 1024) {
-      setShowButton(false)
-      return
+    // On initial load, show the button if the viewport is wider than 768px.
+    if (window.innerWidth > 768) {
+      setShowButton(true)
     }
 
-    // Handle the keydown event.
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        router.push('https://duckduckgo.com/')
-      }
-    }
-
-    // Handle the scroll event.
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
+    // Handle viewport changes.
+    const resizeHandler = () => {
+      if (window.innerWidth > 768) {
         setShowButton(true)
       } else {
         setShowButton(false)
       }
     }
 
-    // Add event listeners.
-    window.addEventListener('scroll', handleScroll)
-    window.addEventListener('keydown', handleKeyDown)
+    // Handle the keydown event.
+    const keydownHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        router.push('https://duckduckgo.com/')
+      }
+    }
 
-    // Cleanup the event listeners.
+    // Add event listener.
+    window.addEventListener('keydown', keydownHandler)
+    window.addEventListener('resize', resizeHandler)
+
+    // Cleanup the event listener.
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('keydown', keydownHandler)
+      window.removeEventListener('resize', resizeHandler)
     }
   }, [router])
 
@@ -56,9 +55,9 @@ export default function BossButton() {
       aria-label={buttonText}
       className="fixed right-6 top-8 z-10"
       onClick={() => router.push('https://duckduckgo.com/')}
+      title={buttonText}
     >
       <IconDoorExit aria-hidden="true" height="32" width="32" />
-      <span className="tooltip-text sr-only">{buttonText}</span>
     </button>
   )
 }
