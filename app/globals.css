@@ -23,7 +23,7 @@
   button,
   .button {
     @apply leading-tight no-underline;
-    @apply hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-700;
+    @apply hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-600;
   }
 
   a {
