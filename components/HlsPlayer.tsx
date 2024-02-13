@@ -35,6 +35,42 @@ export default function HlsPlayer(props: HlsPlayerProps) {
     }
   }, [props.src, videoRef])
 
+  /**
+   * Pause this video if another starts playing.
+   */
+  useEffect(() => {
+    const video = videoRef.current
+
+    // Dispatch a custom event whenever a video starts playing.
+    const playHandler = () => {
+      window.dispatchEvent(new CustomEvent('videoPlayed', {detail: {video}}))
+    }
+
+    if (video) {
+      // Listen for native event.
+      video.addEventListener('play', playHandler)
+
+      // Set up the custom event.
+      const pauseIfNotCurrent = (event: Event) => {
+        const customEvent = event as CustomEvent<{video: HTMLVideoElement}>
+
+        // Pause this video if another starts playing.
+        if (customEvent.detail.video !== video) {
+          video.pause()
+        }
+      }
+
+      // Add the event listener.
+      window.addEventListener('videoPlayed', pauseIfNotCurrent)
+
+      // Clean up the event listeners.
+      return () => {
+        video.removeEventListener('play', playHandler)
+        window.removeEventListener('videoPlayed', pauseIfNotCurrent)
+      }
+    }
+  }, [])
+
   return (
     <video
       autoPlay={props.autoPlay}
@@ -43,6 +79,7 @@ export default function HlsPlayer(props: HlsPlayerProps) {
       crossOrigin={props.crossOrigin}
       data-hint={props.dataHint}
       height={props.height}
+      id={props.id}
       loop={props.loop}
       muted={props.muted}
       playsInline={props.playsInline}
