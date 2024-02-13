@@ -14,7 +14,6 @@ import {
  * @see https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
  */
 export async function fetchToken(): Promise<RedditTokenResponse> {
-  'use server'
   try {
     // Fetch the Reddit oAuth token.
     const response = await fetch(
