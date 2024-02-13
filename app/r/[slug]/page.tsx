@@ -51,6 +51,16 @@ export default async function Page(props: PageProps) {
     )
   }
 
+  // No media? Bail.
+  if (!posts.data.children.length) {
+    return (
+      <div className="text-center">
+        <h2>No media found</h2>
+        <p>Try a different subreddit.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="posts relative text-center">
       <h2 className="mt-0">
