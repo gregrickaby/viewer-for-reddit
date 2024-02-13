@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Search from '@/components/Search'
 import config from '@/lib/config'
 import type {Metadata, Viewport} from 'next'
+import {Suspense} from 'react'
 
 /**
  * Generate metadata.
@@ -61,7 +62,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header />
-        <Search />
+        <Suspense>
+          <Search />
+        </Suspense>
         <main>{children}</main>
         <Footer />
       </body>
