@@ -1,4 +1,4 @@
-import {fetchSubredditPosts} from '@/lib/functions'
+import {fetchSubredditPosts} from '@/lib/actions'
 import BackToTop from '@/components/BackToTop'
 import Posts from '@/components/Posts'
 import config from '@/lib/config'

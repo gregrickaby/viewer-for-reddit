@@ -1,21 +1,11 @@
 import HlsPlayer from '@/components/HlsPlayer'
-import {RedditPost, ImageAsset} from '@/lib/types'
+import {RedditPost} from '@/lib/types'
+import {getMediumImage} from '@/lib/functions'
 
 /**
  * The media component.
  */
 export default function Media(post: RedditPost) {
-  /**
-   * Helper function to get the medium sized image.
-   */
-  const getMediumImage = (images: ImageAsset[]): ImageAsset | null => {
-    if (!Array.isArray(images) || images.length === 0) {
-      return null
-    }
-    const mediumSize = images.find((res) => res.width === 640)
-    return mediumSize || images[images.length - 1]
-  }
-
   // Set the medium image asset.
   const mediumImageAsset = getMediumImage(post.preview.images[0].resolutions)
 
