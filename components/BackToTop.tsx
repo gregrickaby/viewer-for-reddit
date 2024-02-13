@@ -13,6 +13,7 @@ export default function BackToTop() {
   useEffect(() => {
     // Handle scroll event.
     const scrollHandler = () => {
+      // If the user has scrolled down 200px, show the button.
       if (window.scrollY > 200) {
         setShowButton(true)
       } else {
@@ -37,6 +38,7 @@ export default function BackToTop() {
     })
   }
 
+  // No button? Bail.
   if (!showButton) {
     return null
   }

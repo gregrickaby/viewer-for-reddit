@@ -2,9 +2,8 @@
 
 import {fetchSearchResults} from '@/lib/actions'
 import {RedditSearchResponse} from '@/lib/types'
-import {IconX} from '@tabler/icons-react'
 import Link from 'next/link'
-import {usePathname, useRouter} from 'next/navigation'
+import {usePathname, useRouter, useSearchParams} from 'next/navigation'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import config from '@/lib/config'
 
@@ -25,75 +24,122 @@ function useDebounce(callback: () => void, delay: number, dependencies: any[]) {
  * The search component.
  */
 export default function Search() {
+  // Setup the router, path, and search params.
   const router = useRouter()
   const pathname = usePathname()
-  const initialSubreddit = pathname.split('/r/')[1]
+  const searchParams = useSearchParams()
+
+  // Setup the initial subreddit, sort, and input ref.
+  const initialSubreddit = pathname.split('/r/')[1] || ''
+  const initialSort = searchParams.get('sort') || config.redditApi.sort
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [query, setQuery] = useState(initialSubreddit || '')
-  const [searchFilter, setSearchFilter] = useState(config.redditApi.sort)
+  // Setup component state.
+  const [query, setQuery] = useState(initialSubreddit)
+  const [sort, setSort] = useState(initialSort)
   const [results, setResults] = useState<RedditSearchResponse>({})
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
 
+  // Search input field handler.
   const searchInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputQuery = e.target.value.trim()
-    setQuery(inputQuery)
+    // Get the input value.
+    let inputValue = e.target.value
+
+    // Trim the input value.
+    inputValue = inputValue.trim()
+
+    // Set component state.
+    setQuery(inputValue)
     setSelectedIndex(0)
-    setIsDrawerOpen(!!inputQuery)
+    setIsDrawerOpen(!!inputValue)
   }
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSearchFilter(e.target.value)
-    if (query.length > 0) {
-      router.push(`${pathname}?sort=${e.target.value}`)
-    }
-  }
+  // Sort select field handler.
+  const sortSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // Set the sort value.
+    const sortValue = e.target.value
 
-  const performSearch = useCallback(async () => {
+    // Set component state.
+    setSort(sortValue)
+
+    // If there's no query, return.
     if (query.length < 2) return
+
+    // If there is a query, push the route with the sort value.
+    router.push(`${pathname}?sort=${e.target.value}`)
+  }
+
+  // Setup the search query.
+  const searchQuery = useCallback(async () => {
+    // If there's no query, return.
+    if (query.length < 2) return
+
+    // Fetch the search results.
     const results = await fetchSearchResults(query)
+
+    // Set component state.
     setResults(results)
   }, [query])
 
-  useDebounce(performSearch, 500, [query])
+  // Debounce the search query.
+  useDebounce(searchQuery, 500, [query])
 
+  // Reset all component state.
   const resetSearch = () => {
     setQuery('')
     setResults({})
     setIsDrawerOpen(false)
     setSelectedIndex(0)
-    setSearchFilter(config.redditApi.sort)
+    setSort(config.redditApi.sort)
   }
 
+  // Keyboard event handlers.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // If the drawer is not open, return.
       if (!isDrawerOpen) return
+
+      // Setup the item count.
       const itemCount = results?.data?.children?.length || 0
 
+      // Handle the down arrow key event.
       if (e.key === 'ArrowDown') {
+        // If the selected index is the last item, set the selected index to 0.
         setSelectedIndex((prevIndex) => (prevIndex + 1) % itemCount)
         e.preventDefault()
+
+        // Handle the up arrow key event.
       } else if (e.key === 'ArrowUp') {
+        // If the selected index is the first item, set the selected index to the last item.
         setSelectedIndex((prevIndex) => (prevIndex - 1 + itemCount) % itemCount)
         e.preventDefault()
+
+        // Handle the enter key event.
       } else if (e.key === 'Enter' && itemCount > 0) {
+        // Get the selected result.
         const selectedResult = results?.data?.children[selectedIndex]
+
+        // If the selected result exists, push the route and reset the search.
         if (selectedResult) {
-          router.push(`${selectedResult.data.url}?sort=${searchFilter}`)
+          router.push(`${selectedResult.data.url}?sort=${sort}`)
           resetSearch()
         }
         e.preventDefault()
       }
     }
 
+    // Add the event listener.
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isDrawerOpen, results, selectedIndex, router, searchFilter])
 
+    // Cleanup the event listener.
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isDrawerOpen, results, selectedIndex, router, sort])
+
+  // If we're on the homepage, reset the search query.
   useEffect(() => {
     if (pathname === '/' || !initialSubreddit) {
-      setQuery('')
+      resetSearch()
     } else {
       setQuery(initialSubreddit)
     }
@@ -117,22 +163,11 @@ export default function Search() {
         value={query}
       />
 
-      {query.length > 0 && (
-        <button
-          aria-label="clear search"
-          className="absolute right-28 z-10 rounded bg-zinc-400 p-1 font-mono text-xs text-zinc-200 transition-all duration-300 ease-in-out hover:bg-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
-          onClick={resetSearch}
-          type="reset"
-        >
-          <IconX />
-        </button>
-      )}
-
       <div className="select-wrapper">
         <select
           className="ml-2 h-16 w-24 appearance-none rounded px-4 py-2 outline-none"
-          onChange={handleFilterChange}
-          value={searchFilter}
+          onChange={sortSelectHandler}
+          value={sort}
         >
           <option value="hot">Hot</option>
           <option value="new">New</option>
@@ -151,7 +186,9 @@ export default function Search() {
                     className={`m-0 flex items-center justify-start gap-2 p-1 hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-800 ${selectedIndex === index ? 'bg-zinc-300 dark:bg-zinc-800' : ''}`}
                     href={{
                       pathname: data.url,
-                      query: {sort: searchFilter}
+                      query: {
+                        sort
+                      }
                     }}
                     onClick={resetSearch}
                     prefetch={false}

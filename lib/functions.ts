@@ -4,10 +4,15 @@ import {ImageAsset} from '@/lib/types'
  * Helper function to get the medium sized image.
  */
 export function getMediumImage(images: ImageAsset[]): ImageAsset | null {
+  // If there are no images, return null.
   if (!Array.isArray(images) || images.length === 0) {
     return null
   }
+
+  // Find the medium sized image.
   const mediumSize = images.find((res) => res.width === 640)
+
+  // Return the medium size, or the last image if not found.
   return mediumSize || images[images.length - 1]
 }
 
@@ -15,24 +20,29 @@ export function getMediumImage(images: ImageAsset[]): ImageAsset | null {
  * Helper function to get the time in "___ ago" format.
  */
 export function getTimeAgo(timestampInSeconds: number): string {
-  const secondsElapsed = Date.now() / 1000 - timestampInSeconds
-  const minutesElapsed = Math.floor(secondsElapsed / 60)
-  const hoursElapsed = Math.floor(secondsElapsed / 3600)
-  const daysElapsed = Math.floor(secondsElapsed / 86400)
-  const monthsElapsed = Math.floor(secondsElapsed / 2592000)
-  const yearsElapsed = Math.floor(secondsElapsed / 31536000)
+  // Constants for time conversions.
+  const SECOND = 1
+  const MINUTE = 60 * SECOND
+  const HOUR = 60 * MINUTE
+  const DAY = 24 * HOUR
+  const MONTH = 30 * DAY
+  const YEAR = 12 * MONTH
 
-  if (minutesElapsed < 1) {
+  // Calculate elapsed time.
+  const elapsedSeconds = Math.floor(Date.now() / 1000 - timestampInSeconds)
+
+  // Return the appropriate string.
+  if (elapsedSeconds < MINUTE) {
     return 'just now'
-  } else if (minutesElapsed < 60) {
-    return `${minutesElapsed}m ago`
-  } else if (hoursElapsed < 24) {
-    return `${hoursElapsed}h ago`
-  } else if (daysElapsed < 30) {
-    return `${daysElapsed}d ago`
-  } else if (monthsElapsed < 12) {
-    return `${monthsElapsed}mo ago`
+  } else if (elapsedSeconds < HOUR) {
+    return `${Math.floor(elapsedSeconds / MINUTE)}m ago`
+  } else if (elapsedSeconds < DAY) {
+    return `${Math.floor(elapsedSeconds / HOUR)}h ago`
+  } else if (elapsedSeconds < MONTH) {
+    return `${Math.floor(elapsedSeconds / DAY)}d ago`
+  } else if (elapsedSeconds < YEAR) {
+    return `${Math.floor(elapsedSeconds / MONTH)}mo ago`
   } else {
-    return `${yearsElapsed}y ago`
+    return `${Math.floor(elapsedSeconds / YEAR)}y ago`
   }
 }

@@ -35,11 +35,11 @@ export default function BossButton() {
       }
     }
 
-    // Add event listener.
+    // Add event listeners.
     window.addEventListener('keydown', keydownHandler)
     window.addEventListener('resize', resizeHandler)
 
-    // Cleanup the event listener.
+    // Cleanup the event listeners.
     return () => {
       window.removeEventListener('keydown', keydownHandler)
       window.removeEventListener('resize', resizeHandler)
