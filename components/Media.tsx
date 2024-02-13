@@ -31,8 +31,9 @@ export default function Media(post: RedditPost) {
       return (
         <a
           aria-label="view full image"
-          href={`https://www.reddit.com${post.permalink}`}
+          href={post.url}
           rel="noopener noreferrer"
+          target="_blank"
         >
           <img
             alt={post.title || 'reddit image'}
