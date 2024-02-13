@@ -39,6 +39,7 @@ export default function Media(post: RedditPost) {
             alt={post.title || 'reddit image'}
             data-hint="image"
             decoding="async"
+            id={post.id}
             height={mediumImageAsset?.height}
             loading="lazy"
             src={mediumImageAsset?.url}
@@ -56,6 +57,7 @@ export default function Media(post: RedditPost) {
           {...hlsDefaults}
           dataHint="hosted:video"
           height={post.media?.reddit_video?.height}
+          id={post.id}
           src={post.video_preview?.hls_url}
           width={post.media?.reddit_video?.width}
         >
@@ -78,6 +80,7 @@ export default function Media(post: RedditPost) {
           {...hlsDefaults}
           dataHint="rich:video"
           height={post.preview.reddit_video_preview.height}
+          id={post.id}
           src={post.preview.reddit_video_preview.hls_url}
           width={post.preview.reddit_video_preview.width}
         >
@@ -92,6 +95,7 @@ export default function Media(post: RedditPost) {
           <iframe
             allow="fullscreen"
             data-hint="rich:video-iframe"
+            id={post.id}
             loading="lazy"
             referrerPolicy="no-referrer"
             sandbox="allow-scripts allow-same-origin allow-presentation"
@@ -117,6 +121,7 @@ export default function Media(post: RedditPost) {
         <HlsPlayer
           {...hlsDefaults}
           dataHint="link:gifv"
+          id={post.id}
           poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
         >
@@ -128,6 +133,7 @@ export default function Media(post: RedditPost) {
           {...hlsDefaults}
           dataHint="link"
           height={post.video_preview?.height}
+          id={post.id}
           poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
