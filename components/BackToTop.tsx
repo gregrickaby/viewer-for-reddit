@@ -10,27 +10,20 @@ export default function BackToTop() {
   const [showButton, setShowButton] = useState(false)
   const buttonText = 'Go back to the top of the page'
 
+  // Effect to handle scroll events.
   useEffect(() => {
-    // Handle scroll event.
+    // Scroll event handler.
     const scrollHandler = () => {
-      // If the user has scrolled down 200px, show the button.
-      if (window.scrollY > 200) {
-        setShowButton(true)
-      } else {
-        setShowButton(false)
-      }
+      setShowButton(window.scrollY > 200)
     }
 
     // Add event listener.
     window.addEventListener('scroll', scrollHandler)
 
-    // Clean up event listener.
+    // Cleanup event listener.
     return () => window.removeEventListener('scroll', scrollHandler)
   }, [])
 
-  /**
-   * Scroll to the top of the page.
-   */
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -38,12 +31,7 @@ export default function BackToTop() {
     })
   }
 
-  // No button? Bail.
-  if (!showButton) {
-    return null
-  }
-
-  return (
+  return showButton ? (
     <button
       aria-label={buttonText}
       className="button fixed bottom-8 right-6"
@@ -53,5 +41,5 @@ export default function BackToTop() {
       <IconArrowUp height="32" width="32" />
       <span className="sr-only">{buttonText}</span>
     </button>
-  )
+  ) : null
 }

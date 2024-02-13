@@ -14,7 +14,7 @@ export default function HlsPlayer(props: HlsPlayerProps) {
   const videoRef = useRef<HTMLMediaElement>(null)
 
   /**
-   * Initialize Hls.js.
+   * Effect for initializing Hls.js.
    *
    * @see https://github.com/video-dev/hls.js/#embedding-hlsjs
    */
@@ -36,7 +36,7 @@ export default function HlsPlayer(props: HlsPlayerProps) {
   }, [props.src, videoRef])
 
   /**
-   * Pause this video if another starts playing.
+   * Effect for pausing.
    */
   useEffect(() => {
     const video = videoRef.current

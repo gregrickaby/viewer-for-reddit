@@ -13,6 +13,7 @@ export default function BossButton() {
   const buttonText =
     'The boss button. Click or press Escape to quickly navigate to DuckDuckGo.'
 
+  // Effect for the boss button.
   useEffect(() => {
     // On initial load, show the button if the viewport is wider than 768px.
     if (window.innerWidth > 768) {
@@ -46,11 +47,7 @@ export default function BossButton() {
     }
   }, [router])
 
-  if (!showButton) {
-    return null
-  }
-
-  return (
+  return showButton ? (
     <button
       aria-label={buttonText}
       className="fixed right-6 top-8 z-10"
@@ -59,5 +56,5 @@ export default function BossButton() {
     >
       <IconDoorExit aria-hidden="true" height="32" width="32" />
     </button>
-  )
+  ) : null
 }
