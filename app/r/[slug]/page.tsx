@@ -1,11 +1,11 @@
-import {fetchSubredditPosts} from '@/app/actions'
-import BackToTop from '@/app/r/[slug]/components/BackToTop'
-import Posts from '@/app/r/[slug]/components/Posts'
+import {fetchSubredditPosts} from '@/lib/functions'
+import BackToTop from '@/components/BackToTop'
+import Posts from '@/components/Posts'
 import config from '@/lib/config'
 import {PageProps} from '@/lib/types'
 import type {Metadata} from 'next'
 import Link from 'next/link'
-import BossButton from '@/app/r/[slug]/components/BossButton'
+import BossButton from '@/components/BossButton'
 
 /**
  * Generate metadata.
