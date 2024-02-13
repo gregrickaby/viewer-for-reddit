@@ -6,6 +6,7 @@ import {IconX} from '@tabler/icons-react'
 import Link from 'next/link'
 import {usePathname, useRouter} from 'next/navigation'
 import {useCallback, useEffect, useRef, useState} from 'react'
+import config from '@/lib/config'
 
 /**
  * Debounce a callback.
@@ -30,6 +31,7 @@ export default function Search() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [query, setQuery] = useState(initialSubreddit || '')
+  const [searchFilter, setSearchFilter] = useState(config.redditApi.sort)
   const [results, setResults] = useState<RedditSearchResponse>({})
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -39,6 +41,11 @@ export default function Search() {
     setQuery(inputQuery)
     setSelectedIndex(0)
     setIsDrawerOpen(!!inputQuery)
+  }
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSearchFilter(e.target.value)
+    router.push(`${pathname}?sort=${e.target.value}`)
   }
 
   const performSearch = useCallback(async () => {
@@ -54,6 +61,7 @@ export default function Search() {
     setResults({})
     setIsDrawerOpen(false)
     setSelectedIndex(0)
+    setSearchFilter(config.redditApi.sort)
   }
 
   useEffect(() => {
@@ -70,7 +78,7 @@ export default function Search() {
       } else if (e.key === 'Enter' && itemCount > 0) {
         const selectedResult = results?.data?.children[selectedIndex]
         if (selectedResult) {
-          router.push(selectedResult.data.url)
+          router.push(`${selectedResult.data.url}?sort=${searchFilter}`)
           resetSearch()
         }
         e.preventDefault()
@@ -79,7 +87,7 @@ export default function Search() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isDrawerOpen, results, selectedIndex, router])
+  }, [isDrawerOpen, results, selectedIndex, router, searchFilter])
 
   useEffect(() => {
     if (pathname === '/' || !initialSubreddit) {
@@ -110,13 +118,26 @@ export default function Search() {
       {query.length > 0 && (
         <button
           aria-label="clear search"
-          className="absolute right-2 z-10 rounded bg-zinc-400 p-1 font-mono text-xs text-zinc-200 transition-all duration-300 ease-in-out hover:bg-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
+          className="absolute right-28 z-10 rounded bg-zinc-400 p-1 font-mono text-xs text-zinc-200 transition-all duration-300 ease-in-out hover:bg-zinc-600 dark:bg-zinc-700 dark:text-zinc-400"
           onClick={resetSearch}
           type="reset"
         >
           <IconX />
         </button>
       )}
+
+      <div className="select-wrapper">
+        <select
+          className="ml-2 h-16 appearance-none rounded px-4 py-2 outline-none"
+          onChange={handleFilterChange}
+          value={searchFilter}
+        >
+          <option value="hot">Hot</option>
+          <option value="new">New</option>
+          <option value="top">Top</option>
+          <option value="rising">Rising</option>
+        </select>
+      </div>
 
       {isDrawerOpen && results && (
         <ul className="absolute left-0 top-16 z-50 m-0 w-full list-none rounded-b bg-zinc-200 p-0 dark:bg-zinc-700">
@@ -126,7 +147,10 @@ export default function Search() {
                 <li className="m-0 p-0" key={data.id}>
                   <Link
                     className={`m-0 flex items-center justify-start gap-2 p-1 hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-800 ${selectedIndex === index ? 'bg-zinc-300 dark:bg-zinc-800' : ''}`}
-                    href={data.url || ''}
+                    href={{
+                      pathname: data.url,
+                      query: {sort: searchFilter}
+                    }}
                     onClick={resetSearch}
                     prefetch={false}
                   >

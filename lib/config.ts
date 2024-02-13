@@ -11,7 +11,7 @@ const config = {
   redditApi: {
     popularLimit: '5',
     limit: '50',
-    sortBy: 'hot',
+    sort: 'hot',
     sub: 'itookapicture'
   },
   cacheTtl: 3600

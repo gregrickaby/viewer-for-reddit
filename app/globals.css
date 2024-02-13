@@ -20,6 +20,16 @@
     @apply h-16 w-full text-xl outline-1 dark:outline-zinc-900;
   }
 
+  .select-wrapper {
+    @apply relative inline-block;
+  }
+
+  .select-wrapper::after {
+    @apply pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-sm;
+
+    content: '▼';
+  }
+
   button,
   .button {
     @apply leading-tight no-underline;

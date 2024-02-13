@@ -127,14 +127,14 @@ export interface ImageAsset {
 
 export interface FetchSubredditProps {
   slug: string
-  sortBy: string
+  sort: string
   limit: number | string
   after: string
 }
 
 export interface PageProps {
   params: {slug: string}
-  searchParams: {before: string; after: string; limit: number; sortBy: string}
+  searchParams: {before: string; after: string; limit: number; sort: string}
 }
 
 export interface HlsPlayerProps

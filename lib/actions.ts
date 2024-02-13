@@ -109,14 +109,14 @@ export async function fetchSubredditPosts(
 ): Promise<RedditPostResponse> {
   try {
     // Destructure props.
-    const {slug, sortBy, limit, after} = props
+    const {slug, sort, limit, after} = props
 
     // Fetch the Reddit oAuth token.
     const {access_token} = await fetchToken()
 
     // Fetch the subreddit posts.
     const response = await fetch(
-      `https://oauth.reddit.com/r/${slug}/${sortBy}/.json?limit=${limit}&after=${after}&raw_json=1`,
+      `https://oauth.reddit.com/r/${slug}/${sort}/.json?limit=${limit}&after=${after}&raw_json=1`,
       {
         headers: {
           'User-Agent': config.userAgent,

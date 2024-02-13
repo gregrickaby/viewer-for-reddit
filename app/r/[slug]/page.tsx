@@ -35,11 +35,11 @@ export default async function Page(props: PageProps) {
 
   // Get the search parameters.
   const limit = props.searchParams.limit || config.redditApi.limit
-  const sortBy = props.searchParams.sortBy || config.redditApi.sortBy
+  const sort = props.searchParams.sort || config.redditApi.sort
   let after = props.searchParams.after || ''
 
   // Fetch the subreddit posts.
-  const posts = await fetchSubredditPosts({slug, sortBy, limit, after})
+  const posts = await fetchSubredditPosts({slug, sort, limit, after})
 
   // Error? Bail.
   if (posts.error || !posts.data) {
