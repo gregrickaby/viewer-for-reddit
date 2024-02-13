@@ -1,21 +1,25 @@
 'use client'
 
 import {fetchSearchResults} from '@/lib/actions'
+import config from '@/lib/config'
 import {RedditSearchResponse} from '@/lib/types'
 import Link from 'next/link'
 import {usePathname, useRouter, useSearchParams} from 'next/navigation'
-import {useCallback, useEffect, useRef, useState} from 'react'
-import config from '@/lib/config'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 /**
  * Debounce a callback.
  */
 function useDebounce(callback: () => void, delay: number, dependencies: any[]) {
+  // Effect for the debounced callback.
   useEffect(() => {
+    // Setup the timeout handler.
     const handler = setTimeout(() => {
+      // Call the callback.
       callback()
     }, delay)
 
+    // Cleanup the timeout handler.
     return () => clearTimeout(handler)
   }, [delay, ...dependencies]) // eslint-disable-line react-hooks/exhaustive-deps
 }
@@ -26,11 +30,14 @@ function useDebounce(callback: () => void, delay: number, dependencies: any[]) {
 export default function Search() {
   // Setup the router, path, and search params.
   const router = useRouter()
-  const pathname = usePathname()
+  const pathName = usePathname()
   const searchParams = useSearchParams()
 
   // Setup the initial subreddit, sort, and input ref.
-  const initialSubreddit = pathname.split('/r/')[1] || ''
+  const initialSubreddit = useMemo(
+    () => pathName.split('/r/')[1] || '',
+    [pathName]
+  )
   const initialSort = searchParams.get('sort') || config.redditApi.sort
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -42,33 +49,36 @@ export default function Search() {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   // Search input field handler.
-  const searchInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Get the input value.
-    let inputValue = e.target.value
+  const searchInputHandler = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Get the input value.
+      const inputValue = e.target.value.trim()
 
-    // Trim the input value.
-    inputValue = inputValue.trim()
-
-    // Set component state.
-    setQuery(inputValue)
-    setSelectedIndex(0)
-    setIsDrawerOpen(!!inputValue)
-  }
+      // Set component state.
+      setQuery(inputValue)
+      setSelectedIndex(0)
+      setIsDrawerOpen(inputValue !== '')
+    },
+    []
+  )
 
   // Sort select field handler.
-  const sortSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // Set the sort value.
-    const sortValue = e.target.value
+  const sortSelectHandler = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      // Set the sort value.
+      const sortValue = e.target.value.trim()
 
-    // Set component state.
-    setSort(sortValue)
+      // Set component state.
+      setSort(sortValue)
 
-    // If there's no query, return.
-    if (query.length < 2) return
+      // If the sort value hasn't changed or there's no query, return.
+      if (sort === sortValue || query.length < 2) return
 
-    // If there is a query, push the route with the sort value.
-    router.push(`${pathname}?sort=${e.target.value}`)
-  }
+      // Push the route with the new sort value.
+      router.push(`${pathName}?sort=${sortValue}`)
+    },
+    [query, sort, pathName, router]
+  )
 
   // Setup the search query.
   const searchQuery = useCallback(async () => {
@@ -86,15 +96,15 @@ export default function Search() {
   useDebounce(searchQuery, 500, [query])
 
   // Reset all component state.
-  const resetSearch = () => {
+  const resetSearch = useCallback(() => {
     setQuery('')
     setResults({})
     setIsDrawerOpen(false)
     setSelectedIndex(0)
     setSort(config.redditApi.sort)
-  }
+  }, [])
 
-  // Keyboard event handlers.
+  // Effect for handling keyboard events.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // If the drawer is not open, return.
@@ -134,16 +144,23 @@ export default function Search() {
 
     // Cleanup the event listener.
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isDrawerOpen, results, selectedIndex, router, sort])
+  }, [isDrawerOpen, results, selectedIndex, router, sort, resetSearch])
 
-  // If we're on the homepage, reset the search query.
+  // Effect for handling the initial subreddit and focus.
   useEffect(() => {
-    if (pathname === '/' || !initialSubreddit) {
+    // If the input ref doesn't exist, return.
+    if (!inputRef.current) return
+
+    // Focus the input field.
+    inputRef.current.focus()
+
+    // If the path is the root or there's no initial subreddit, reset the search.
+    if (pathName === '/' || !initialSubreddit) {
       resetSearch()
     } else {
       setQuery(initialSubreddit)
     }
-  }, [pathname, initialSubreddit])
+  }, [pathName, initialSubreddit, resetSearch])
 
   return (
     <div className="relative flex items-center">
@@ -165,6 +182,7 @@ export default function Search() {
 
       <div className="select-wrapper">
         <select
+          aria-label="sort"
           className="ml-2 h-16 w-24 appearance-none rounded px-4 py-2 outline-none"
           onChange={sortSelectHandler}
           value={sort}
