@@ -130,7 +130,7 @@ export default function Search() {
 
       <div className="select-wrapper">
         <select
-          className="ml-2 h-16 appearance-none rounded px-4 py-2 outline-none"
+          className="ml-2 h-16 w-24 appearance-none rounded px-4 py-2 outline-none"
           onChange={handleFilterChange}
           value={searchFilter}
         >
