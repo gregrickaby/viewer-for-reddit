@@ -18,12 +18,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: config.siteUrl
   },
-  manifest: '/manifest.json',
   openGraph: {
-    title: config.siteName,
     description: config.metaDescription,
-    type: 'website',
     locale: 'en_US',
+    title: config.siteName,
+    type: 'website',
     url: config.siteUrl,
     images: [
       {
@@ -34,11 +33,7 @@ export const metadata: Metadata = {
       }
     ]
   },
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/icon.png',
-    shortcut: '/icon.png'
-  },
+  manifest: '/manifest.webmanifest',
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || ''
   }
