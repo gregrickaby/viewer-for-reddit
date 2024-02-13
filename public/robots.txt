@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://redditviewer.vercel.app
-
-# Sitemaps
-Sitemap: https://redditviewer.vercel.app/sitemap.xml
