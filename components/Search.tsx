@@ -1,6 +1,6 @@
 'use client'
 
-import {fetchSearchResults} from '@/app/actions'
+import {fetchSearchResults} from '@/lib/actions'
 import {RedditSearchResponse} from '@/lib/types'
 import {IconX} from '@tabler/icons-react'
 import Link from 'next/link'

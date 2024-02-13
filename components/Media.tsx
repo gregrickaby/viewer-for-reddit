@@ -1,4 +1,4 @@
-import HlsPlayer from '@/app/r/[slug]/components/HlsPlayer'
+import HlsPlayer from '@/components/HlsPlayer'
 import {RedditPost, ImageAsset} from '@/lib/types'
 
 /**
@@ -65,7 +65,6 @@ export default function Media(post: RedditPost) {
           {...hlsDefaults}
           dataHint="hosted:video"
           height={post.media?.reddit_video?.height}
-          poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
           width={post.media?.reddit_video?.width}
         >
@@ -88,7 +87,6 @@ export default function Media(post: RedditPost) {
           {...hlsDefaults}
           dataHint="rich:video"
           height={post.preview.reddit_video_preview.height}
-          poster={mediumImageAsset?.url}
           src={post.preview.reddit_video_preview.hls_url}
           width={post.preview.reddit_video_preview.width}
         >

@@ -1,6 +1,6 @@
 'use client'
 
-import Media from '@/app/r/[slug]/components/Media'
+import Media from '@/components/Media'
 import {RedditPostResponse} from '@/lib/types'
 import Masonry from 'react-masonry-css'
 
