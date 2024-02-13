@@ -128,7 +128,7 @@ export interface ImageAsset {
 export interface FetchSubredditProps {
   slug: string
   sort: string
-  limit: number | string
+  limit: number
   after: string
 }
 
