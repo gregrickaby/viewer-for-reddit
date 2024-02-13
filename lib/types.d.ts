@@ -97,6 +97,9 @@ export interface RedditPost {
   score: number
   subreddit: string
   thumbnail: string
+  created_utc: number
+  num_comments: number
+  subreddit_name_prefixed: string
   secure_media_embed: {
     content: string
     height: number
