@@ -45,7 +45,9 @@ export default function Search() {
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSearchFilter(e.target.value)
-    router.push(`${pathname}?sort=${e.target.value}`)
+    if (query.length > 0) {
+      router.push(`${pathname}?sort=${e.target.value}`)
+    }
   }
 
   const performSearch = useCallback(async () => {
