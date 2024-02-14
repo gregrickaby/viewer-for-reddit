@@ -9,7 +9,7 @@ export default async function About({slug}: {slug: string}) {
   const {data} = await fetchSubredditAbout(slug)
 
   return data ? (
-    <header className="mx-auto mb-8 flex max-w-3xl flex-col items-center gap-4 text-left">
+    <header className="mx-auto mb-14 flex max-w-3xl flex-col items-center gap-4 text-left">
       <div className="flex gap-4">
         <img
           alt={data?.display_name}
