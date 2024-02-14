@@ -31,19 +31,17 @@ export default function Search() {
   // Setup the router, path, and search params.
   const router = useRouter()
   const pathName = usePathname()
-  const searchParams = useSearchParams()
 
-  // Setup the initial subreddit, sort, and input ref.
+  // Setup the initial subreddit and input ref.
   const initialSubreddit = useMemo(
     () => pathName.split('/r/')[1] || '',
     [pathName]
   )
-  const initialSort = searchParams.get('sort') || config.redditApi.sort
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Setup component state.
   const [query, setQuery] = useState(initialSubreddit)
-  const [sort, setSort] = useState(initialSort)
+  const [sort, setSort] = useState(config.redditApi.sort)
   const [results, setResults] = useState<RedditSearchResponse>({})
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -165,13 +163,12 @@ export default function Search() {
   return (
     <div className="relative flex items-center">
       <input
-        aria-label="search"
+        aria-label="search for subreddits"
         autoCapitalize="none"
         autoComplete="off"
         autoCorrect="off"
         spellCheck="false"
         autoFocus
-        className="w-full rounded bg-zinc-100 px-4 py-2 outline-none dark:bg-zinc-800 dark:text-zinc-400"
         name="search"
         onChange={searchInputHandler}
         placeholder="Search subreddits"
@@ -180,10 +177,9 @@ export default function Search() {
         value={query}
       />
 
-      <div className="select-wrapper">
+      <div className="select-container">
         <select
-          aria-label="sort"
-          className="ml-2 h-16 w-24 appearance-none rounded px-4 py-2 outline-none"
+          aria-label="sort posts"
           onChange={sortSelectHandler}
           value={sort}
         >
