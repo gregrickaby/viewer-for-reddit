@@ -217,7 +217,7 @@ export async function fetchSubredditAbout(
       throw new Error('Failed to fetch Reddit oAuth Token.')
     }
 
-    // Validate and sanitize the slug param.
+    // Validate and sanitize the slug prop.
     slug = slug && slug.replace(/[^a-zA-Z0-9_]/g, '')
 
     // Fetch the subreddit about.

@@ -1,6 +1,6 @@
 import HlsPlayer from '@/components/HlsPlayer'
-import {RedditPost} from '@/lib/types'
 import {getMediumImage} from '@/lib/functions'
+import {RedditPost} from '@/lib/types'
 
 /**
  * The media component.

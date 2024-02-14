@@ -48,8 +48,8 @@ export function getTimeAgo(timestampInSeconds: number): string {
 }
 
 /**
- * Helper function to format a number.
+ * Helper function to format a number with commas.
  */
-export async function formatNumber(number: number): Promise<string> {
+export function formatNumber(number: number): string {
   return new Intl.NumberFormat('en-US').format(number)
 }
