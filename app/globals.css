@@ -26,6 +26,10 @@
   .button {
     @apply leading-tight no-underline;
     @apply hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-700;
+
+    &:hover {
+      @apply cursor-pointer;
+    }
   }
 
   select {
