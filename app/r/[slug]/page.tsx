@@ -2,7 +2,7 @@ import About from '@/components/About'
 import BackToTop from '@/components/BackToTop'
 import BossButton from '@/components/BossButton'
 import Posts from '@/components/Posts'
-import {fetchSubredditAbout, fetchSubredditPosts} from '@/lib/actions'
+import {fetchSubredditPosts} from '@/lib/actions'
 import config from '@/lib/config'
 import {PageProps} from '@/lib/types'
 import type {Metadata} from 'next'
@@ -41,10 +41,9 @@ export default async function Page(props: PageProps) {
 
   // Fetch the subreddit posts.
   const posts = await fetchSubredditPosts({slug, sort, limit, after})
-  const about = await fetchSubredditAbout(slug)
 
   // Error? Bail.
-  if (posts.error || !posts.data || !about.data) {
+  if (posts.error || !posts.data) {
     return (
       <div className="text-center">
         <h2>Uh oh!</h2>
@@ -65,7 +64,7 @@ export default async function Page(props: PageProps) {
 
   return (
     <div className="posts relative text-center">
-      <About {...about} />
+      <About slug={slug} />
       <Posts {...posts} />
       <Link
         className="button"
