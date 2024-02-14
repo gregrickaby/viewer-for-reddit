@@ -90,6 +90,7 @@ export interface RedditPost {
       type: string
     }
   }
+  author: string
   over_18: boolean
   permalink: string
   post_hint: string
