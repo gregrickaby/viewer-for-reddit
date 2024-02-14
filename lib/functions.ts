@@ -46,3 +46,10 @@ export function getTimeAgo(timestampInSeconds: number): string {
     return `${Math.floor(elapsedSeconds / YEAR)}y ago`
   }
 }
+
+/**
+ * Helper function to format a number.
+ */
+export async function formatNumber(number: number): Promise<string> {
+  return new Intl.NumberFormat('en-US').format(number)
+}
