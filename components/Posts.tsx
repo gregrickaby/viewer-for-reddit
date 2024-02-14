@@ -9,19 +9,14 @@ import Masonry from 'react-masonry-css'
 /**
  * The posts component.
  */
-export default function Posts(posts: RedditPostResponse) {
-  // No posts? Bail.
-  if (posts.error || !posts.data || posts.data.children.length === 0) {
-    return null
-  }
-
-  return (
+export default function Posts({data}: RedditPostResponse) {
+  return data && data.children.length > 0 ? (
     <Masonry
       breakpointCols={{default: 4, 1660: 3, 1024: 2, 768: 1}}
       className="mb-12 flex gap-12"
       columnClassName="flex flex-col gap-12 not-prose"
     >
-      {posts.data.children.map(({data}) => (
+      {data.children.map(({data}) => (
         <article
           className="flex flex-col gap-4 rounded border p-6 pt-4 text-sm shadow-xl dark:border-zinc-800 dark:bg-zinc-700"
           key={data.id}
@@ -60,5 +55,5 @@ export default function Posts(posts: RedditPostResponse) {
         </article>
       ))}
     </Masonry>
-  )
+  ) : null
 }
