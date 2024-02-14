@@ -15,7 +15,10 @@ export default function About({data}: RedditAboutResponse) {
           src={data?.icon_img}
         />
         <div className="flex flex-col items-start gap-1">
-          <h2 className="m-0 p-0 capitalize leading-none">{data?.title}</h2>
+          <h2
+            className="m-0 p-0 capitalize leading-none"
+            dangerouslySetInnerHTML={{__html: data?.title}}
+          ></h2>
           <div className="text-left leading-tight text-zinc-500">
             r/{data?.display_name} - {data?.public_description}
           </div>
