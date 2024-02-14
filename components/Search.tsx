@@ -4,7 +4,7 @@ import {fetchSearchResults} from '@/lib/actions'
 import config from '@/lib/config'
 import {RedditSearchResponse} from '@/lib/types'
 import Link from 'next/link'
-import {usePathname, useRouter, useSearchParams} from 'next/navigation'
+import {usePathname, useRouter} from 'next/navigation'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 /**
