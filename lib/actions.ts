@@ -3,6 +3,7 @@
 import config from '@/lib/config'
 import {
   FetchSubredditProps,
+  RedditAboutResponse,
   RedditPostResponse,
   RedditSearchResponse,
   RedditTokenResponse
@@ -67,6 +68,11 @@ export async function fetchSearchResults(
     // Get the access token.
     const {access_token} = await fetchToken()
 
+    // No token? Bail.
+    if (!access_token) {
+      throw new Error('Failed to fetch Reddit oAuth Token.')
+    }
+
     // Validate and sanitize the query.
     query = query && query.replace(/[^a-zA-Z0-9_]/g, '')
 
@@ -75,7 +81,9 @@ export async function fetchSearchResults(
       `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${query}&limit=10&include_over_18=true&include_profiles=false&typeahead_active=true&search_query_id=DO_NOT_TRACK`,
       {
         headers: {
-          authorization: `Bearer ${access_token}`
+          'Content-Type': 'application/json',
+          'User-Agent': config.userAgent,
+          Authorization: `Bearer ${access_token}`
         },
         next: {
           revalidate: config.cacheTtl
@@ -105,6 +113,8 @@ export async function fetchSearchResults(
 
 /**
  * Fetch subreddit posts.
+ *
+ * @see
  */
 export async function fetchSubredditPosts(
   props: FetchSubredditProps
@@ -112,6 +122,11 @@ export async function fetchSubredditPosts(
   try {
     // Fetch the Reddit oAuth token.
     const {access_token} = await fetchToken()
+
+    // No token? Bail.
+    if (!access_token) {
+      throw new Error('Failed to fetch Reddit oAuth Token.')
+    }
 
     // Destructure props.
     let {slug, sort, limit, after} = props
@@ -141,11 +156,12 @@ export async function fetchSubredditPosts(
       `https://oauth.reddit.com/r/${slug}/${sort}/.json?limit=${limit}&after=${after}&raw_json=1`,
       {
         headers: {
+          'Content-Type': 'application/json',
           'User-Agent': config.userAgent,
-          authorization: `Bearer ${access_token}`
+          Authorization: access_token
         },
         next: {
-          tags: [slug],
+          tags: [`posts-${slug}-${sort}-${limit}-${after}`],
           revalidate: config.cacheTtl
         }
       }
@@ -180,6 +196,63 @@ export async function fetchSubredditPosts(
     }
   } catch (error) {
     console.error(`Exception thrown in fetchSubredditPosts(): ${error}`)
+    return {error: `${error}`}
+  }
+}
+
+/**
+ * Fetch subreddit about information.
+ *
+ * @see https://www.reddit.com/dev/api/oauth#GET_r_{subreddit}_about
+ */
+export async function fetchSubredditAbout(
+  slug: string
+): Promise<RedditAboutResponse> {
+  try {
+    // Fetch the Reddit oAuth token.
+    const {access_token} = await fetchToken()
+
+    // No token? Bail.
+    if (!access_token) {
+      throw new Error('Failed to fetch Reddit oAuth Token.')
+    }
+
+    // Validate and sanitize the slug param.
+    slug = slug && slug.replace(/[^a-zA-Z0-9_]/g, '')
+
+    // Fetch the subreddit about.
+    const response = await fetch(
+      `https://oauth.reddit.com/r/${slug}/about/.json`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': config.userAgent,
+          Authorization: access_token
+        },
+        next: {
+          tags: [`about-${slug}`],
+          revalidate: config.cacheTtl
+        }
+      }
+    )
+
+    // Bad response? Bail.
+    if (!response.ok) {
+      throw new Error(` ${response.statusText}: /r/${slug}`)
+    }
+
+    // Parse the response.
+    const data = (await response.json()) as RedditAboutResponse
+
+    // If the response is empty, bail.
+    if (!data.data) {
+      throw new Error('Failed to parse subreddit about response.')
+    }
+
+    // Return the about.
+    return data
+  } catch (error) {
+    console.error(`Exception thrown in fetchSubredditAbout(): ${error}`)
     return {error: `${error}`}
   }
 }

@@ -1,11 +1,12 @@
-import {fetchSubredditPosts} from '@/lib/actions'
+import About from '@/components/About'
 import BackToTop from '@/components/BackToTop'
+import BossButton from '@/components/BossButton'
 import Posts from '@/components/Posts'
+import {fetchSubredditAbout, fetchSubredditPosts} from '@/lib/actions'
 import config from '@/lib/config'
 import {PageProps} from '@/lib/types'
 import type {Metadata} from 'next'
 import Link from 'next/link'
-import BossButton from '@/components/BossButton'
 
 /**
  * Generate metadata.
@@ -14,7 +15,7 @@ import BossButton from '@/components/BossButton'
  */
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   return {
-    title: `${config.siteName} - ${params.slug}`,
+    title: `${config.siteName} - r/${params.slug}`,
     description: `The latest posts from the ${params.slug} subreddit`,
     alternates: {
       canonical: `${config.siteUrl}r/${params.slug}`
@@ -40,9 +41,10 @@ export default async function Page(props: PageProps) {
 
   // Fetch the subreddit posts.
   const posts = await fetchSubredditPosts({slug, sort, limit, after})
+  const about = await fetchSubredditAbout(slug)
 
   // Error? Bail.
-  if (posts.error || !posts.data) {
+  if (posts.error || !posts.data || !about.data) {
     return (
       <div className="text-center">
         <h2>Uh oh!</h2>
@@ -52,7 +54,7 @@ export default async function Page(props: PageProps) {
   }
 
   // No media? Bail.
-  if (!posts.data.children.length) {
+  if (posts.data.children.length === 0) {
     return (
       <div className="text-center">
         <h2>No media found</h2>
@@ -63,9 +65,7 @@ export default async function Page(props: PageProps) {
 
   return (
     <div className="posts relative text-center">
-      <h2 className="mt-0">
-        Viewing <span className="italic">{slug}</span>
-      </h2>
+      <About {...about} />
       <Posts {...posts} />
       <Link
         className="button"

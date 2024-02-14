@@ -119,6 +119,24 @@ export interface RedditPost {
   url: string
 }
 
+export interface RedditAboutResponse {
+  kind?: string
+  data?: {
+    accounts_active: number
+    community_icon: string
+    created_utc: number
+    display_name: string
+    header_img: string
+    icon_img: string
+    over18: boolean
+    public_description: string
+    subscribers: number
+    title: string
+    url: string
+  }
+  error?: string
+}
+
 export interface ImageAsset {
   url: string
   width: number
@@ -135,6 +153,10 @@ export interface FetchSubredditProps {
 export interface PageProps {
   params: {slug: string}
   searchParams: {before: string; after: string; limit: number; sort: string}
+}
+
+export interface AboutProps {
+  about: RedditAboutResponse
 }
 
 export interface HlsPlayerProps
