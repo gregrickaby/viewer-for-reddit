@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^2.47.0",
-    "hls.js": "^1.5.4",
+    "hls.js": "^1.5.5",
     "next": "^14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
