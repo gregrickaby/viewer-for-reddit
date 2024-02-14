@@ -21,53 +21,51 @@ export default function HlsPlayer(props: HlsPlayerProps) {
   useEffect(() => {
     const video = videoRef.current
 
-    if (props.src !== undefined && video !== null) {
-      // First check for native browser HLS support.
+    if (!video || props.src === undefined) return
+
+    const loadHls = () => {
       if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = props.src
-
-        // If no native HLS support, check if HLS.js is supported.
       } else if (Hls.isSupported()) {
         const hls = new Hls()
         hls.loadSource(props.src)
         hls.attachMedia(video)
       }
     }
+
+    loadHls()
   }, [props.src, videoRef])
 
   /**
-   * Effect for pausing.
+   * Effect for pausing videos.
+   *
+   * If a user starts a video, pause all other videos.
    */
   useEffect(() => {
+    // Get the video element.
     const video = videoRef.current
 
-    // Dispatch a custom event whenever a video starts playing.
-    const playHandler = () => {
-      window.dispatchEvent(new CustomEvent('videoPlayed', {detail: {video}}))
+    // No video? Bail.
+    if (!video) return
+
+    const handlePause = () => {
+      // Get all videos.
+      const videos = document.querySelectorAll('video')
+
+      // Loop through all videos.
+      videos.forEach((v) => {
+        if (v !== video && !v.paused) {
+          v.pause() // Pause all other videos.
+        }
+      })
     }
 
-    if (video) {
-      // Listen for native event.
-      video.addEventListener('play', playHandler)
+    // Add event listener.
+    video.addEventListener('play', handlePause)
 
-      // Set up the custom event.
-      const pauseIfNotCurrent = (event: Event) => {
-        const customEvent = event as CustomEvent<{video: HTMLVideoElement}>
-
-        // Pause this video if another starts playing.
-        if (customEvent.detail.video !== video) {
-          video.pause()
-        }
-      }
-
-      // Add the event listener.
-      window.addEventListener('videoPlayed', pauseIfNotCurrent)
-
-      // Clean up the event listeners.
-      return () => {
-        video.removeEventListener('play', playHandler)
-        window.removeEventListener('videoPlayed', pauseIfNotCurrent)
-      }
+    // Cleanup event listener.
+    return () => {
+      video.removeEventListener('play', handlePause)
     }
   }, [])
 

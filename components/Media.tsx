@@ -6,8 +6,13 @@ import {getMediumImage} from '@/lib/functions'
  * The media component.
  */
 export default function Media(post: RedditPost) {
+  // No post? Bail.
+  if (!post) {
+    return null
+  }
+
   // Set the medium image asset.
-  const mediumImageAsset = getMediumImage(post.preview.images[0].resolutions)
+  const mediumImageAsset = getMediumImage(post.preview?.images[0]?.resolutions)
 
   // Set HLS player defaults.
   const hlsDefaults = {
@@ -20,13 +25,8 @@ export default function Media(post: RedditPost) {
     preload: 'metadata'
   }
 
-  /**
-   * Determine the media type and render the appropriate component.
-   */
+  // Determine the media type and render the appropriate component.
   switch (post.post_hint) {
-    /**
-     * Image.
-     */
     case 'image':
       return (
         <a
@@ -48,103 +48,43 @@ export default function Media(post: RedditPost) {
         </a>
       )
 
-    /**
-     * Hosted video.
-     */
     case 'hosted:video':
+    case 'rich:video':
+      const videoPreview =
+        post.preview?.reddit_video_preview || post.media?.reddit_video
       return (
         <HlsPlayer
           {...hlsDefaults}
-          dataHint="hosted:video"
-          height={post.media?.reddit_video?.height}
+          dataHint={post.post_hint}
+          height={videoPreview?.height}
           id={post.id}
-          src={post.video_preview?.hls_url}
-          width={post.media?.reddit_video?.width}
+          src={videoPreview?.hls_url}
+          width={videoPreview?.width}
         >
-          <source
-            src={post.media?.reddit_video?.fallback_url}
-            type="video/mp4"
-          />
+          <source src={videoPreview?.fallback_url} type="video/mp4" />
         </HlsPlayer>
       )
 
-    /**
-     * Rich video.
-     *
-     * This can either be a video or an iframe.
-     */
-    case 'rich:video':
-      // Iframes are evil. Try to use video preview first.
-      return post.preview.reddit_video_preview ? (
-        <HlsPlayer
-          {...hlsDefaults}
-          dataHint="rich:video"
-          height={post.preview.reddit_video_preview.height}
-          id={post.id}
-          src={post.preview.reddit_video_preview.hls_url}
-          width={post.preview.reddit_video_preview.width}
-        >
-          <source
-            src={post.preview.reddit_video_preview.fallback_url}
-            type="video/mp4"
-          />
-        </HlsPlayer>
-      ) : (
-        // Otherwise, fallback to the iframe, but sandbox the heck out of it.
-        <div className="w-64">
-          <iframe
-            allow="fullscreen"
-            data-hint="rich:video-iframe"
-            id={post.id}
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            sandbox="allow-scripts allow-same-origin allow-presentation"
-            src={post.secure_media_embed?.media_domain_url}
-            style={{
-              border: 'none',
-              height: '100%',
-              width: '100%'
-            }}
-            title="iframe"
-          />
-        </div>
-      )
-
-    /**
-     * Links to Giphy or other gif hosting services.
-     *
-     * Convert these to MP4s for the HLS player.
-     */
     case 'link':
-      // If the URL is a gifv...
-      return post.url.includes('gifv') ? (
+      const isGifv = post.url?.includes('gifv')
+      const videoUrl = isGifv
+        ? post.url?.replace('.gifv', '.mp4')
+        : post.video_preview?.fallback_url
+      return (
         <HlsPlayer
           {...hlsDefaults}
-          dataHint="link:gifv"
-          id={post.id}
-          poster={mediumImageAsset?.url}
-          src={post.video_preview?.hls_url}
-        >
-          <source src={post.url.replace('.gifv', '.mp4')} type="video/mp4" />
-        </HlsPlayer>
-      ) : (
-        // Otherwise, just play the video.
-        <HlsPlayer
-          {...hlsDefaults}
-          dataHint="link"
+          dataHint={isGifv ? 'link:gifv' : 'link'}
           height={post.video_preview?.height}
           id={post.id}
           poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
         >
-          <source src={post.video_preview?.fallback_url} type="video/mp4" />
+          <source src={videoUrl} type="video/mp4" />
         </HlsPlayer>
       )
 
-    /**
-     * Nothing matched.
-     */
+    // Nothing matched.
     default:
       return <p>Unsupported or missing media content.</p>
   }

@@ -10,7 +10,9 @@ export default function BackToTop() {
   const [showButton, setShowButton] = useState(false)
   const buttonText = 'Go back to the top of the page'
 
-  // Effect to handle scroll events.
+  /**
+   * Effect for showing the back to top button.
+   */
   useEffect(() => {
     // Scroll event handler.
     const scrollHandler = () => {

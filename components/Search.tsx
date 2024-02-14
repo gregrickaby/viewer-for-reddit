@@ -28,7 +28,7 @@ function useDebounce(callback: () => void, delay: number, dependencies: any[]) {
  * The search component.
  */
 export default function Search() {
-  // Setup the router, path, and search params.
+  // Setup the router and path.
   const router = useRouter()
   const pathName = usePathname()
 
@@ -46,7 +46,9 @@ export default function Search() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
 
-  // Search input field handler.
+  /**
+   * Search input field handler.
+   */
   const searchInputHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       // Get the input value.
@@ -60,7 +62,9 @@ export default function Search() {
     []
   )
 
-  // Sort select field handler.
+  /**
+   * Sort select field handler.
+   */
   const sortSelectHandler = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       // Set the sort value.
@@ -78,7 +82,9 @@ export default function Search() {
     [query, sort, pathName, router]
   )
 
-  // Setup the search query.
+  /**
+   * Setup the search query.
+   */
   const searchQuery = useCallback(async () => {
     // If there's no query, return.
     if (query.length < 2) return
@@ -93,7 +99,9 @@ export default function Search() {
   // Debounce the search query.
   useDebounce(searchQuery, 500, [query])
 
-  // Reset all component state.
+  /**
+   * Reset the search.
+   */
   const resetSearch = useCallback(() => {
     setQuery('')
     setResults({})
@@ -102,7 +110,9 @@ export default function Search() {
     setSort(config.redditApi.sort)
   }, [])
 
-  // Effect for handling keyboard events.
+  /**
+   * Effect for handling keyboard events.
+   */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // If the drawer is not open, return.
@@ -144,7 +154,9 @@ export default function Search() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isDrawerOpen, results, selectedIndex, router, sort, resetSearch])
 
-  // Effect for handling the initial subreddit and focus.
+  /**
+   * Effect for setting the initial focus and query.
+   */
   useEffect(() => {
     // If the input ref doesn't exist, return.
     if (!inputRef.current) return

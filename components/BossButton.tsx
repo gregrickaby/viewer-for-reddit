@@ -13,7 +13,9 @@ export default function BossButton() {
   const buttonText =
     'The boss button. Click or press Escape to quickly navigate to DuckDuckGo.'
 
-  // Effect for the boss button.
+  /**
+   * Effect for showing the boss button.
+   */
   useEffect(() => {
     // On initial load, show the button if the viewport is wider than 768px.
     if (window.innerWidth > 768) {
