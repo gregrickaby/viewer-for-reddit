@@ -52,7 +52,10 @@ export default function Search() {
   const searchInputHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       // Get the input value.
-      const inputValue = e.target.value.trim()
+      let inputValue = e.target.value.trim()
+
+      // Validate and sanitize the input value.
+      inputValue = inputValue && inputValue.replace(/[^a-zA-Z0-9_]/g, '')
 
       // Set component state.
       setQuery(inputValue)
@@ -67,8 +70,11 @@ export default function Search() {
    */
   const sortSelectHandler = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      // Set the sort value.
-      const sortValue = e.target.value.trim()
+      // Get the sort value.
+      let sortValue = e.target.value.trim()
+
+      // Validate and sanitize the sort value.
+      sortValue = sortValue && sortValue.replace(/[^a-zA-Z0-9_]/g, '')
 
       // Set component state.
       setSort(sortValue)
