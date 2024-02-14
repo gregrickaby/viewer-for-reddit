@@ -10,6 +10,7 @@ import {useEffect, useState} from 'react'
 export default function BossButton() {
   const [showButton, setShowButton] = useState(false)
   const router = useRouter()
+  const redirectUrl = 'https://duckduckgo.com/'
   const buttonText =
     'The boss button. Click or press Escape to quickly navigate to DuckDuckGo.'
 
@@ -18,23 +19,17 @@ export default function BossButton() {
    */
   useEffect(() => {
     // On initial load, show the button if the viewport is wider than 768px.
-    if (window.innerWidth > 768) {
-      setShowButton(true)
-    }
+    setShowButton(window.innerWidth > 768)
 
     // Handle viewport changes.
     const resizeHandler = () => {
-      if (window.innerWidth > 768) {
-        setShowButton(true)
-      } else {
-        setShowButton(false)
-      }
+      setShowButton(window.innerWidth > 768)
     }
 
     // Handle the keydown event.
     const keydownHandler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        router.push('https://duckduckgo.com/')
+        router.push(redirectUrl)
       }
     }
 
@@ -53,10 +48,11 @@ export default function BossButton() {
     <button
       aria-label={buttonText}
       className="fixed right-6 top-8 z-10"
-      onClick={() => router.push('https://duckduckgo.com/')}
+      onClick={() => router.push(redirectUrl)}
       title={buttonText}
     >
       <IconDoorExit aria-hidden="true" height="32" width="32" />
+      <span className="sr-only">{buttonText}</span>
     </button>
   ) : null
 }
