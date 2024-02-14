@@ -62,9 +62,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header />
-        <Suspense>
-          <Search />
-        </Suspense>
+        <Search />
         <main>{children}</main>
         <Footer />
       </body>
