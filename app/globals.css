@@ -24,12 +24,9 @@
 
   button,
   .button {
-    @apply leading-tight no-underline;
-    @apply hover:bg-zinc-300 hover:no-underline dark:hover:bg-zinc-700;
-
-    &:hover {
-      @apply cursor-pointer;
-    }
+    @apply relative overflow-hidden px-5 py-2.5 leading-tight;
+    @apply transition-all duration-300;
+    @apply hover:cursor-pointer hover:no-underline hover:ring-2 hover:ring-neutral-800 hover:ring-offset-2;
   }
 
   select {
