@@ -1,10 +1,10 @@
 {
   "recommendations": [
-    "mikestead.dotenv",
     "EditorConfig.EditorConfig",
     "bradlc.vscode-tailwindcss",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "stylelint.vscode-stylelint"
+    "stylelint.vscode-stylelint",
+    "sonarsource.sonarlint-vscode"
   ]
 }
