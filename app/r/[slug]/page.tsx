@@ -30,7 +30,7 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 /**
  * The single subreddit route.
  */
-export default async function Page(props: PageProps) {
+export default async function Page(props: Readonly<PageProps>) {
   // Get the params.
   const slug = props.params.slug || config.redditApi.sub
 

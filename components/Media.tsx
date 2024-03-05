@@ -5,7 +5,7 @@ import {RedditPost} from '@/lib/types'
 /**
  * The media component.
  */
-export default function Media(post: RedditPost) {
+export default function Media(post: Readonly<RedditPost>) {
   // No post? Bail.
   if (!post) {
     return null
@@ -27,7 +27,7 @@ export default function Media(post: RedditPost) {
 
   // Determine the media type and render the appropriate component.
   switch (post.post_hint) {
-    case 'image':
+    case 'image': {
       return (
         <a
           aria-label="view full image"
@@ -47,9 +47,10 @@ export default function Media(post: RedditPost) {
           />
         </a>
       )
+    }
 
     case 'hosted:video':
-    case 'rich:video':
+    case 'rich:video': {
       const videoPreview =
         post.preview?.reddit_video_preview || post.media?.reddit_video
       return (
@@ -64,8 +65,9 @@ export default function Media(post: RedditPost) {
           <source src={videoPreview?.fallback_url} type="video/mp4" />
         </HlsPlayer>
       )
+    }
 
-    case 'link':
+    case 'link': {
       const isGifv = post.url?.includes('gifv')
       const videoUrl = isGifv
         ? post.url?.replace('.gifv', '.mp4')
@@ -83,6 +85,7 @@ export default function Media(post: RedditPost) {
           <source src={videoUrl} type="video/mp4" />
         </HlsPlayer>
       )
+    }
 
     // Nothing matched.
     default:

@@ -55,7 +55,7 @@ export default function Search() {
       let inputValue = e.target.value.trim()
 
       // Validate and sanitize the input value.
-      inputValue = inputValue && inputValue.replace(/[^a-zA-Z0-9_]/g, '')
+      inputValue = inputValue?.replace(/\W/g, '')
 
       // Set component state.
       setQuery(inputValue)
@@ -74,7 +74,7 @@ export default function Search() {
       let sortValue = e.target.value.trim()
 
       // Validate and sanitize the sort value.
-      sortValue = sortValue && sortValue.replace(/[^a-zA-Z0-9_]/g, '')
+      sortValue = sortValue?.replace(/\W/g, '')
 
       // Set component state.
       setSort(sortValue)
@@ -91,16 +91,21 @@ export default function Search() {
   /**
    * Setup the search query.
    */
-  const searchQuery = useCallback(async () => {
-    // If there's no query, return.
+  const searchQuery = useCallback(() => {
+    // No query? Bail.
     if (query.length < 2) return
 
-    // Fetch the search results.
-    const results = await fetchSearchResults(query)
+    // Fetch and set the search results.
+    const fetchAndSetResults = async () => {
+      const results = await fetchSearchResults(query)
+      setResults(results)
+    }
 
-    // Set component state.
-    setResults(results)
-  }, [query])
+    // Call the fetch and resolve the promise.
+    fetchAndSetResults().catch((error) => {
+      console.error('Failed to fetch search results:', error)
+    })
+  }, [query, setResults])
 
   // Debounce the search query.
   useDebounce(searchQuery, 500, [query])
@@ -125,7 +130,7 @@ export default function Search() {
       if (!isDrawerOpen) return
 
       // Setup the item count.
-      const itemCount = results?.data?.children?.length || 0
+      const itemCount = results?.data?.children?.length ?? 0
 
       // Handle the down arrow key event.
       if (e.key === 'ArrowDown') {

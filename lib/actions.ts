@@ -74,7 +74,7 @@ export async function fetchSearchResults(
     }
 
     // Validate and sanitize the query.
-    query = query && query.replace(/[^a-zA-Z0-9_]/g, '')
+    query = query?.replace(/\W/g, '')
 
     // Attempt to fetch subreddits.
     const response = await fetch(
@@ -132,7 +132,7 @@ export async function fetchSubredditPosts(
     let {slug, sort, limit, after} = props
 
     // Validate and sanitize the slug param.
-    slug = slug && slug.replace(/[^a-zA-Z0-9_]/g, '')
+    slug = slug?.replace(/\W/g, '')
 
     // Validate the sort param.
     if (!['hot', 'new', 'top', 'rising'].includes(sort)) {
@@ -147,7 +147,7 @@ export async function fetchSubredditPosts(
     }
 
     // Validate the after param.
-    if (after && !after.match(/^[a-zA-Z0-9_]+$/)) {
+    if (RegExp(/w/).exec(after)) {
       throw new Error('Invalid after parameter. Must be alphanumeric.')
     }
 
@@ -218,7 +218,7 @@ export async function fetchSubredditAbout(
     }
 
     // Validate and sanitize the slug prop.
-    slug = slug && slug.replace(/[^a-zA-Z0-9_]/g, '')
+    slug = slug?.replace(/\W/g, '')
 
     // Fetch the subreddit about.
     const response = await fetch(

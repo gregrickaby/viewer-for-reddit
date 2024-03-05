@@ -9,7 +9,7 @@ import {LegacyRef, useEffect, useRef} from 'react'
  *
  * @see https://github.com/video-dev/hls.js/
  */
-export default function HlsPlayer(props: HlsPlayerProps) {
+export default function HlsPlayer(props: Readonly<HlsPlayerProps>) {
   // Create a ref to the video element.
   const videoRef = useRef<HTMLMediaElement>(null)
 
