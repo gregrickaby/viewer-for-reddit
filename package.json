@@ -26,7 +26,7 @@
     "@tabler/icons-react": "^3.2.0",
     "hls.js": "^1.5.8",
     "html-entities": "^2.5.2",
-    "next": "^14.2.1",
+    "next": "^14.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-masonry-css": "^1.0.16"
@@ -39,7 +39,7 @@
     "@types/react-dom": "^18.2.25",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.1",
+    "eslint-config-next": "14.2.2",
     "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
