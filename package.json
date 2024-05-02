@@ -16,14 +16,14 @@
   "scripts": {
     "build": "next build",
     "dev": "rimraf .next && next dev",
-    "format": "prettier  '**/*.{tsx,js,ts,md,css,json,yml}' --ignore-path .gitignore --cache --write",
+    "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .gitignore --cache --write",
     "lint": "npm run lint:css && npm run lint:js && next lint && tsc",
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore --fix",
     "lint:js": "eslint . --ignore-path .gitignore --fix",
     "start": "next start"
   },
   "dependencies": {
-    "@tabler/icons-react": "^3.2.0",
+    "@tabler/icons-react": "^3.3.0",
     "hls.js": "^1.5.8",
     "html-entities": "^2.5.2",
     "next": "^14.2.3",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@evilmartians/lefthook": "^1.6.10",
     "@tailwindcss/typography": "^0.5.13",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.8",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
@@ -45,7 +45,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "rimraf": "^5.0.5",
-    "stylelint": "^16.4.0",
+    "stylelint": "^16.5.0",
     "stylelint-config-standard": "^36.0.0",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5"
