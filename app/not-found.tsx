@@ -1,7 +1,5 @@
+import notFound from '@/public/not-found.webp'
 import Image from 'next/image'
-import notFound from '../public/not-found.webp'
-
-export const runtime = 'edge'
 
 /**
  * The 404 component.
