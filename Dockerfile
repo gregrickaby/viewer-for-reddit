@@ -8,6 +8,16 @@ RUN apk add --no-cache libc6-compat
 # Create and change to the app directory.
 WORKDIR /app
 
+# Declare build arguments.
+ARG REDDIT_CLIENT_ID
+ARG REDDIT_CLIENT_SECRET
+
+# Set environment variable.
+ENV REDDIT_CLIENT_ID=$REDDIT_CLIENT_ID
+ENV REDDIT_CLIENT_SECRET=$REDDIT_CLIENT_SECRET
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV PORT 3000
+
 # Install dependencies based on the preferred package manager.
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
@@ -32,10 +42,6 @@ RUN chown nextjs:nodejs /app
 
 # Copy local code to the container image.
 COPY . .
-
-# Set environment variables for production.
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV PORT 3000
 
 # Expose the port the app runs on.
 EXPOSE 3000
