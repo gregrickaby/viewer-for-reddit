@@ -9,8 +9,8 @@ const nextConfig = {
           permanent: true
         },
         {
-          source: '/r',
-          destination: '/',
+          source: '/r/:path*',
+          destination: 'https://reddit-viewer.com/r/:path*',
           permanent: true
         }
       ]
