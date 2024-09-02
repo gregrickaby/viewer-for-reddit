@@ -14,13 +14,13 @@
   },
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
-    "build": "rimraf .next && next build",
+    "build": "next build",
     "dev": "rimraf .next && next dev",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .gitignore --cache --write",
     "lint": "npm run lint:css && npm run lint:js && next lint && tsc",
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore --fix",
     "lint:js": "eslint . --ignore-path .gitignore --fix",
-    "start": "next start -p 3000"
+    "start": "next start"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.14.0",
@@ -39,7 +39,7 @@
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.7",
+    "eslint-config-next": "^14.2.7",
     "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.4.44",
     "prettier": "^3.3.3",
