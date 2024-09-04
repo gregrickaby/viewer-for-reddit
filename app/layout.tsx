@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Search from '@/components/Search'
 import config from '@/lib/config'
 import type {Metadata, Viewport} from 'next'
+import Script from 'next/script'
 
 /**
  * Generate metadata.
@@ -64,6 +65,7 @@ export default function RootLayout({
         <Search />
         <main>{children}</main>
         <Footer />
+        <Script id="newrelic" strategy="afterInteractive" src="/newrelic.js" />
       </body>
     </html>
   )
