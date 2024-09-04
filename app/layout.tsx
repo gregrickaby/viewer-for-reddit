@@ -65,7 +65,13 @@ export default function RootLayout({
         <Search />
         <main>{children}</main>
         <Footer />
-        <Script id="newrelic" strategy="afterInteractive" src="/newrelic.js" />
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            id="newrelic"
+            strategy="afterInteractive"
+            src="/newrelic.js"
+          />
+        )}
       </body>
     </html>
   )

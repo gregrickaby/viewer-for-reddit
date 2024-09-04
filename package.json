@@ -14,18 +14,19 @@
   },
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
-    "build": "next build",
     "dev": "rimraf .next && next dev",
+    "build": "next build",
+    "start": "NODE_OPTIONS='-r newrelic' next start",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
     "lint": "npm run lint:css && npm run lint:js && next lint && tsc",
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore --fix",
-    "lint:js": "eslint . --ignore-path .eslintignore --fix",
-    "start": "next start"
+    "lint:js": "eslint . --ignore-path .eslintignore --fix"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.14.0",
     "hls.js": "^1.5.15",
     "html-entities": "^2.5.2",
+    "newrelic": "^12.3.0",
     "next": "^14.2.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -34,6 +35,7 @@
   "devDependencies": {
     "@evilmartians/lefthook": "^1.7.15",
     "@tailwindcss/typography": "^0.5.15",
+    "@types/newrelic": "^9.14.4",
     "@types/node": "^22.5.2",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
