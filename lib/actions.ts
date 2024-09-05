@@ -67,7 +67,7 @@ export async function fetchToken(): Promise<RedditTokenResponse> {
 
     // If the response is empty, bail.
     if (!data.access_token) {
-      throw new Error(data.error || 'No access token in response')
+      throw new Error(data.error ?? 'No access token in response')
     }
 
     return data
@@ -176,7 +176,7 @@ export async function fetchSubredditPosts(
     }
 
     // Validate after param (ensure it's alphanumeric or empty).
-    if (after && !/^[a-zA-Z0-9_]+$/.test(after)) {
+    if (after && !/^\w+$/.test(after)) {
       throw new Error(`Invalid after parameter. Must be alphanumeric. ${after}`)
     }
 
@@ -213,7 +213,7 @@ export async function fetchSubredditPosts(
     // Bad response? Bail.
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch subreddit posts. ${response.statusText} | Rate Limit Used: ${rateLimitUsed}, Remaining: ${rateLimitRemaining}, Resets in: ${rateLimitReset} seconds`
+        `Failed to fetch subreddit posts. ${response.statusText} | ${slug} | Rate Limit Used: ${rateLimitUsed}, Remaining: ${rateLimitRemaining}, Resets in: ${rateLimitReset} seconds`
       )
     }
     // Parse the response.
