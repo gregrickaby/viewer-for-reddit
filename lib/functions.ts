@@ -53,3 +53,16 @@ export function getTimeAgo(timestampInSeconds: number): string {
 export function formatNumber(number: number): string {
   return new Intl.NumberFormat('en-US').format(number)
 }
+
+/**
+ * Log an error to the console.
+ *
+ * @param error Error to log.
+ */
+export function logError(error: unknown): void {
+  if (error instanceof Error) {
+    console.error(`Error: ${error.message}`)
+  } else {
+    console.error(`Error: ${String(error)}`)
+  }
+}
