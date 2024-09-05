@@ -53,7 +53,7 @@ export async function fetchToken(): Promise<RedditTokenResponse> {
       },
       next: {
         tags: ['token'],
-        revalidate: config.cacheTtl
+        revalidate: 86400 // 24 hours.
       }
     })
 
@@ -117,7 +117,7 @@ export async function fetchSearchResults(
       },
       next: {
         tags: [`search-${query}`],
-        revalidate: config.cacheTtl
+        revalidate: 86400 // 24 hours.
       }
     })
 
