@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.14.0",
+    "dotenv": "^16.4.5",
     "hls.js": "^1.5.15",
     "html-entities": "^2.5.2",
     "newrelic": "^12.3.1",
