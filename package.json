@@ -23,6 +23,7 @@
     "lint:js": "eslint . --ignore-path .eslintignore --fix"
   },
   "dependencies": {
+    "@newrelic/browser-agent": "^1.265.0",
     "@tabler/icons-react": "^3.14.0",
     "dotenv": "^16.4.5",
     "hls.js": "^1.5.15",
