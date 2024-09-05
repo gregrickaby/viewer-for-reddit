@@ -68,8 +68,8 @@ export default function RootLayout({
         {process.env.NODE_ENV === 'production' && (
           <Script
             id="newrelic"
-            strategy="afterInteractive"
             src="/newrelic.js"
+            strategy="afterInteractive"
           />
         )}
       </body>

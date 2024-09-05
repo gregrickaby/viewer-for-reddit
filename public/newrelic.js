@@ -1,4 +1,4 @@
-;window.NREUM||(NREUM={});NREUM.init={distributed_tracing:{enabled:true},privacy:{cookies_enabled:true},ajax:{deny_list:["bam.nr-data.net"]}};
+;window.NREUM||(NREUM={});NREUM.init={distributed_tracing:{enabled:true,exclude_newrelic_header:true},privacy:{cookies_enabled:true},ajax:{deny_list:["bam.nr-data.net"]}};
 
 ;NREUM.loader_config={accountID:"4664841",trustKey:"4664841",agentID:"594513302",licenseKey:"NRJS-e89650cac1f09a45fc1",applicationID:"594513302"};
 ;NREUM.info={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",licenseKey:"NRJS-e89650cac1f09a45fc1",applicationID:"594513302",sa:1};
