@@ -65,7 +65,12 @@ export default function RootLayout({
         <Search />
         <main>{children}</main>
         <Footer />
-        {process.env.NODE_ENV === 'production' && <NewRelic />}
+        {process.env.NODE_ENV === 'production' && (
+          <NewRelic
+            appId={config.newRelicAppId}
+            licenseKey={config.newRelicLicenseKey}
+          />
+        )}
       </body>
     </html>
   )

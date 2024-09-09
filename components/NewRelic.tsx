@@ -3,6 +3,11 @@
 import {logError} from '@/lib/functions'
 import {useEffect} from 'react'
 
+export interface NewRelicProps {
+  appId: string
+  licenseKey: string
+}
+
 /**
  * Initialize the New Relic Browser Agent.
  *
@@ -13,24 +18,12 @@ import {useEffect} from 'react'
  *
  * @see https://github.com/newrelic/newrelic-browser-agent
  */
-async function initNewRelic() {
+async function initNewRelic({appId, licenseKey}: Readonly<NewRelicProps>) {
   try {
     // Dynamically import the New Relic Browser Agent.
     const {BrowserAgent} = await import(
       '@newrelic/browser-agent/loaders/browser-agent'
     )
-
-    // Get environment variables.
-    const browserAppId = process.env.NEXT_PUBLIC_NEW_RELIC_BROWSER_APP_ID
-    const browserLicenseKey =
-      process.env.NEXT_PUBLIC_NEW_RELIC_BROWSER_LICENSE_KEY
-
-    // No variables? Bail.
-    if (!browserAppId || !browserLicenseKey) {
-      throw new Error(
-        `New Relic config error: ${!browserAppId ? 'Browser App ID' : 'Browser License Key'} is missing.`
-      )
-    }
 
     // Init the agent.
     new BrowserAgent({
@@ -41,16 +34,16 @@ async function initNewRelic() {
       },
       loader_config: {
         accountID: '4664841',
-        agentID: browserAppId,
-        applicationID: browserAppId,
-        licenseKey: browserLicenseKey,
+        agentID: appId,
+        applicationID: appId,
+        licenseKey: licenseKey,
         trustKey: '4664841'
       },
       info: {
-        applicationID: browserAppId,
+        applicationID: appId,
         beacon: 'bam.nr-data.net',
         errorBeacon: 'bam.nr-data.net',
-        licenseKey: browserLicenseKey,
+        licenseKey: licenseKey,
         sa: 1
       }
     })
@@ -62,14 +55,17 @@ async function initNewRelic() {
 /**
  * New Relic Browser Agent snippet.
  */
-export default function NewRelic() {
+export default function NewRelic({appId, licenseKey}: Readonly<NewRelicProps>) {
   useEffect(() => {
-    // Only run in the browser.
-    if (typeof window === 'undefined') return
+    // If we're missing the required props, or this is not the browser, bail.
+    if (!appId || !licenseKey || typeof window === 'undefined') return
 
     // Initialize the New Relic Browser Agent.
-    initNewRelic()
-  }, [])
+    initNewRelic({
+      appId,
+      licenseKey
+    })
+  }, [appId, licenseKey])
 
   return null
 }

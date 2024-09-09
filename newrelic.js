@@ -1,25 +1,21 @@
 'use strict'
 
-require('dotenv').config({
-  path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local'
-})
+/**
+ * Load environment variables from .env file
+ */
+import {loadEnvConfig} from '@next/env'
+const projectDir = process.cwd()
+loadEnvConfig(projectDir)
 
 /**
- * New Relic agent configuration.
+ * New Relic Agent configuration.
+ *
+ * @see https://docs.newrelic.com/docs/apm/agents/nodejs-agent/installation-configuration/nodejs-agent-configuration/
  */
 exports.config = {
-  /**
-   * Array of application names.
-   */
   app_name: [process.env.NEW_RELIC_APP_NAME],
-  /**
-   * Your New Relic license key.
-   */
   license_key: process.env.NEW_RELIC_LICENSE_KEY,
   logging: {
-    /**
-     * Level at which to log.
-     */
     level: 'info'
   },
   allow_all_headers: true,
