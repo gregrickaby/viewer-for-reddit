@@ -5,6 +5,7 @@ import NewRelic from '@/components/NewRelic'
 import Search from '@/components/Search'
 import config from '@/lib/config'
 import type {Metadata, Viewport} from 'next'
+import NextTopLoader from 'nextjs-toploader'
 
 /**
  * Generate metadata.
@@ -61,6 +62,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <NextTopLoader />
         <Header />
         <Search />
         <main>{children}</main>
