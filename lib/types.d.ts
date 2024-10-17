@@ -79,6 +79,7 @@ export interface RedditPost {
       width: number
     }
     oembed: {
+      provider_name: string
       provider_url: string
       title: string
       height: number
