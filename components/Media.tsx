@@ -37,6 +37,7 @@ export default function Media(post: Readonly<RedditPost>) {
         >
           <img
             alt={post.title || 'reddit image'}
+            crossOrigin="anonymous"
             data-hint="image"
             decoding="async"
             id={post.id}
@@ -78,7 +79,6 @@ export default function Media(post: Readonly<RedditPost>) {
           dataHint={isGifv ? 'link:gifv' : 'link'}
           height={post.video_preview?.height}
           id={post.id}
-          poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
         >
