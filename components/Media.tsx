@@ -2,6 +2,16 @@ import HlsPlayer from '@/components/HlsPlayer'
 import {getMediumImage} from '@/lib/functions'
 import {RedditPost} from '@/lib/types'
 
+// Set HLS player defaults.
+const hlsDefaults = {
+  autoPlay: false,
+  controls: true,
+  loop: true,
+  muted: true,
+  playsInline: true,
+  preload: 'metadata'
+}
+
 /**
  * The media component.
  */
@@ -13,16 +23,6 @@ export default function Media(post: Readonly<RedditPost>) {
 
   // Set the medium image asset.
   const mediumImageAsset = getMediumImage(post.preview?.images[0]?.resolutions)
-
-  // Set HLS player defaults.
-  const hlsDefaults = {
-    autoPlay: false,
-    controls: true,
-    loop: true,
-    muted: true,
-    playsInline: true,
-    preload: 'metadata'
-  }
 
   // Determine the media type and render the appropriate component.
   switch (post.post_hint) {
@@ -58,6 +58,7 @@ export default function Media(post: Readonly<RedditPost>) {
           dataHint={post.post_hint}
           height={videoPreview?.height}
           id={post.id}
+          poster={mediumImageAsset?.url}
           src={videoPreview?.hls_url}
           width={videoPreview?.width}
         >
@@ -77,6 +78,7 @@ export default function Media(post: Readonly<RedditPost>) {
           dataHint={isGifv ? 'link:gifv' : 'link'}
           height={post.video_preview?.height}
           id={post.id}
+          poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
         >

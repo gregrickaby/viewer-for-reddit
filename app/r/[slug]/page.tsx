@@ -5,7 +5,6 @@ import Posts from '@/components/Posts'
 import {fetchSubredditPosts} from '@/lib/actions'
 import config from '@/lib/config'
 import {PageProps} from '@/lib/types'
-import type {Metadata} from 'next'
 import Link from 'next/link'
 
 /**
@@ -13,7 +12,8 @@ import Link from 'next/link'
  *
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-metadata
  */
-export async function generateMetadata({params}: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps) {
+  const params = await props.params
   return {
     title: `${config.siteName} - r/${params.slug}`,
     description: `The latest posts from the ${params.slug} subreddit`,
@@ -32,12 +32,12 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
  */
 export default async function Page(props: Readonly<PageProps>) {
   // Get the params.
-  const slug = props.params.slug || config.redditApi.sub
+  const slug = (await props.params).slug || config.redditApi.sub
 
   // Get the search parameters.
-  const limit = props.searchParams.limit || config.redditApi.limit
-  const sort = props.searchParams.sort || config.redditApi.sort
-  let after = props.searchParams.after || ''
+  const limit = (await props.searchParams).limit || config.redditApi.limit
+  const sort = (await props.searchParams).sort || config.redditApi.sort
+  let after = (await props.searchParams).after || ''
 
   // Fetch the subreddit posts.
   const posts = await fetchSubredditPosts({slug, sort, limit, after})

@@ -51,6 +51,7 @@ export async function fetchToken(): Promise<RedditTokenResponse> {
           `${clientId}:${clientSecret}`
         ).toString('base64')}`
       },
+      cache: 'force-cache',
       next: {
         tags: ['token'],
         revalidate: 86400 // 24 hours.
@@ -115,6 +116,7 @@ export async function fetchSearchResults(
         'User-Agent': config.userAgent,
         Authorization: `Bearer ${access_token}`
       },
+      cache: 'force-cache',
       next: {
         tags: [`search-${query}`],
         revalidate: 86400 // 24 hours.
@@ -199,6 +201,7 @@ export async function fetchSubredditPosts(
         'User-Agent': config.userAgent,
         Authorization: `Bearer ${access_token}`
       },
+      cache: 'force-cache',
       next: {
         tags: [`posts-${slug}-${sort}-${limit}-${after}`],
         revalidate: config.cacheTtl
@@ -278,6 +281,7 @@ export async function fetchSubredditAbout(
         'User-Agent': config.userAgent,
         Authorization: `Bearer ${access_token}`
       },
+      cache: 'force-cache',
       next: {
         tags: [`about-${slug}`],
         revalidate: 86400 // 24 hours.

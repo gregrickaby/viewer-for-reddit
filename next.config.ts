@@ -24,6 +24,7 @@ const nextConfig = {
       ]
     }
   },
+  expireTime: 3600,
   logging: {
     fetches: {
       fullUrl: true

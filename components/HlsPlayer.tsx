@@ -2,7 +2,7 @@
 
 import {HlsPlayerProps} from '@/lib/types'
 import Hls from 'hls.js'
-import {LegacyRef, useEffect, useRef} from 'react'
+import {Ref, useEffect, useRef} from 'react'
 
 /**
  * The HlsPlayer component.
@@ -83,7 +83,7 @@ export default function HlsPlayer(props: Readonly<HlsPlayerProps>) {
       playsInline={props.playsInline}
       poster={props.poster}
       preload={props.preload}
-      ref={videoRef as LegacyRef<HTMLVideoElement>}
+      ref={videoRef as Ref<HTMLVideoElement>}
       width={props.width}
     >
       {props.children}
