@@ -1,4 +1,5 @@
 import {ImageAsset} from '@/lib/types'
+import sanitizeHtml from 'sanitize-html'
 
 /**
  * Helper function to get the medium sized image.
@@ -85,4 +86,19 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
       func(...args)
     }, delay)
   }
+}
+
+/**
+ * Sanitize text with sanitize-html and remove any HTML or encoded entities.
+ *
+ * @param text - The text to sanitize.
+ */
+export function sanitizeText(text: string): string {
+  return sanitizeHtml(text, {
+    allowedTags: [], // No HTML tags allowed
+    allowedAttributes: {}, // No attributes allowed
+    parser: {
+      decodeEntities: true // Decode HTML entities
+    }
+  })
 }
