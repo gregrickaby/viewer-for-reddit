@@ -23,7 +23,7 @@
     "lint:js": "eslint . --ignore-path .eslintignore --fix"
   },
   "dependencies": {
-    "@newrelic/browser-agent": "^1.268.0",
+    "@newrelic/browser-agent": "^1.269.0",
     "@tabler/icons-react": "^3.19.0",
     "hls.js": "^1.5.16",
     "html-entities": "^2.5.2",
@@ -35,10 +35,10 @@
     "react-masonry-css": "^1.0.16"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^1.7.18",
+    "@evilmartians/lefthook": "^1.7.21",
     "@tailwindcss/typography": "^0.5.15",
     "@types/newrelic": "^9.14.5",
-    "@types/node": "^22.7.5",
+    "@types/node": "^22.7.6",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
