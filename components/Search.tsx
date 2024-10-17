@@ -203,6 +203,7 @@ export default function Search() {
       <div className="select-container">
         <select
           aria-label="sort posts"
+          name="sort"
           onChange={sortSelectHandler}
           value={sort}
         >
