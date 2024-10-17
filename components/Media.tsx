@@ -1,28 +1,35 @@
-import HlsPlayer from '@/components/HlsPlayer'
 import {getMediumImage} from '@/lib/functions'
 import {RedditPost} from '@/lib/types'
+import dynamic from 'next/dynamic'
+import {Suspense, useMemo} from 'react'
+
+// Dynamic imports.
+const HlsPlayer = dynamic(() => import('@/components/HlsPlayer'))
+const YouTubePlayer = dynamic(() => import('@/components/YouTubePlayer'))
+
+// Set HLS player defaults.
+const hlsDefaults = {
+  autoPlay: false,
+  controls: true,
+  loop: true,
+  muted: true,
+  playsInline: true,
+  preload: 'none'
+}
 
 /**
  * The media component.
  */
 export default function Media(post: Readonly<RedditPost>) {
-  // No post? Bail.
-  if (!post) {
-    return null
-  }
-
   // Set the medium image asset.
-  const mediumImageAsset = getMediumImage(post.preview?.images[0]?.resolutions)
+  const mediumImageAsset = useMemo(() => {
+    return getMediumImage(post.preview?.images[0]?.resolutions) || null
+  }, [post.preview?.images])
 
-  // Set HLS player defaults.
-  const hlsDefaults = {
-    autoPlay: false,
-    controls: true,
-    loop: true,
-    muted: true,
-    playsInline: true,
-    preload: 'metadata'
-  }
+  // Get the YouTube video ID.
+  const youtubeVideoId = useMemo(() => {
+    return /embed\/([a-zA-Z0-9_-]+)/.exec(post.media?.oembed?.html)?.[1]
+  }, [post.media?.oembed])
 
   // Determine the media type and render the appropriate component.
   switch (post.post_hint) {
@@ -50,19 +57,34 @@ export default function Media(post: Readonly<RedditPost>) {
 
     case 'hosted:video':
     case 'rich:video': {
+      // Get the Reddit-hosted video preview.
       const videoPreview =
         post.preview?.reddit_video_preview || post.media?.reddit_video
+
+      // Determine if the media is a YouTube video.
+      const isYouTube = post.media?.oembed?.provider_name === 'YouTube'
+
+      // Render a YouTube video.
+      if (isYouTube && youtubeVideoId) {
+        return (
+          <Suspense fallback={<div>Loading YouTube...</div>}>
+            <YouTubePlayer videoId={youtubeVideoId} />
+          </Suspense>
+        )
+      }
+
+      // Render a reddit-hosted video.
       return (
         <HlsPlayer
           {...hlsDefaults}
           dataHint={post.post_hint}
+          fallbackUrl={videoPreview?.fallback_url}
           height={videoPreview?.height}
           id={post.id}
+          poster={mediumImageAsset?.url}
           src={videoPreview?.hls_url}
           width={videoPreview?.width}
-        >
-          <source src={videoPreview?.fallback_url} type="video/mp4" />
-        </HlsPlayer>
+        />
       )
     }
 
@@ -75,13 +97,13 @@ export default function Media(post: Readonly<RedditPost>) {
         <HlsPlayer
           {...hlsDefaults}
           dataHint={isGifv ? 'link:gifv' : 'link'}
+          fallbackUrl={videoUrl}
           height={post.video_preview?.height}
           id={post.id}
+          poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
-        >
-          <source src={videoUrl} type="video/mp4" />
-        </HlsPlayer>
+        />
       )
     }
 
