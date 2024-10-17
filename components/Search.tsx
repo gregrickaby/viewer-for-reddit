@@ -2,27 +2,11 @@
 
 import {fetchSearchResults} from '@/lib/actions'
 import config from '@/lib/config'
+import {debounce} from '@/lib/functions'
 import {RedditSearchResponse} from '@/lib/types'
 import Link from 'next/link'
 import {usePathname, useRouter} from 'next/navigation'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-
-/**
- * Debounce a callback.
- */
-function useDebounce(callback: () => void, delay: number, dependencies: any[]) {
-  // Effect for the debounced callback.
-  useEffect(() => {
-    // Setup the timeout handler.
-    const handler = setTimeout(() => {
-      // Call the callback.
-      callback()
-    }, delay)
-
-    // Cleanup the timeout handler.
-    return () => clearTimeout(handler)
-  }, [delay, ...dependencies]) // eslint-disable-line react-hooks/exhaustive-deps
-}
 
 /**
  * The search component.
@@ -89,26 +73,32 @@ export default function Search() {
   )
 
   /**
-   * Setup the search query.
+   * Setup the search query with debouncing.
+   * Debounces the search query using the reusable debounce function.
    */
-  const searchQuery = useCallback(() => {
-    // No query? Bail.
-    if (query.length < 2) return
+  const searchQuery = useCallback(
+    debounce(() => {
+      // No query? Bail.
+      if (query.length < 2) return
 
-    // Fetch and set the search results.
-    const fetchAndSetResults = async () => {
-      const results = await fetchSearchResults(query)
-      setResults(results)
-    }
+      // Fetch and set the search results.
+      const fetchAndSetResults = async () => {
+        const results = await fetchSearchResults(query)
+        setResults(results)
+      }
 
-    // Call the fetch and resolve the promise.
-    fetchAndSetResults().catch((error) => {
-      console.error('Failed to fetch search results:', error)
-    })
-  }, [query, setResults])
+      // Call the fetch and resolve the promise.
+      fetchAndSetResults().catch((error) => {
+        console.error('Failed to fetch search results:', error)
+      })
+    }, 500),
+    [query]
+  )
 
-  // Debounce the search query.
-  useDebounce(searchQuery, 500, [query])
+  // Trigger the debounced search query when the `query` state changes.
+  useEffect(() => {
+    searchQuery()
+  }, [query, searchQuery])
 
   /**
    * Reset the search.
