@@ -18,7 +18,7 @@ import Masonry from 'react-masonry-css'
 export default function Posts({data}: RedditPostResponse) {
   return data && data.children.length > 0 ? (
     <Masonry
-      breakpointCols={{default: 4, 1660: 3, 1024: 2, 768: 1}}
+      breakpointCols={{default: 3, 1024: 2, 768: 1}}
       className="mb-12 flex gap-12"
       columnClassName="flex flex-col gap-12 not-prose"
     >
