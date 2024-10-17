@@ -18,7 +18,6 @@ export default function Media(post: Readonly<RedditPost>) {
   const hlsDefaults = {
     autoPlay: false,
     controls: true,
-    crossOrigin: 'anonymous',
     loop: true,
     muted: true,
     playsInline: true,
@@ -37,7 +36,6 @@ export default function Media(post: Readonly<RedditPost>) {
         >
           <img
             alt={post.title || 'reddit image'}
-            crossOrigin="anonymous"
             data-hint="image"
             decoding="async"
             id={post.id}
