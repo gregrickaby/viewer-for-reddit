@@ -2,57 +2,48 @@
 
 import {IconDoorExit} from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo} from 'react'
 
 /**
  * The boss button component.
  */
 export default function BossButton() {
-  const [showButton, setShowButton] = useState(false)
   const router = useRouter()
-  const redirectUrl = 'https://duckduckgo.com/'
-  const buttonText =
-    'The boss button. Click or press Escape to quickly navigate to DuckDuckGo.'
+
+  // Redirect URL and button text
+  const redirectUrl = useMemo(() => 'https://duckduckgo.com/', [])
+  const buttonText = useMemo(
+    () =>
+      'The boss button. Click or press Escape to quickly navigate to DuckDuckGo.',
+    []
+  )
 
   /**
-   * Effect for showing the boss button.
+   * Effect for handling keyboard event.
    */
   useEffect(() => {
-    // On initial load, show the button if the viewport is wider than 768px.
-    setShowButton(window.innerWidth > 768)
-
-    // Handle viewport changes.
-    const resizeHandler = () => {
-      setShowButton(window.innerWidth > 768)
-    }
-
-    // Handle the keydown event.
     const keydownHandler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         router.push(redirectUrl)
       }
     }
 
-    // Add event listeners.
+    // Add the keydown event listener.
     window.addEventListener('keydown', keydownHandler)
-    window.addEventListener('resize', resizeHandler)
 
-    // Cleanup the event listeners.
-    return () => {
-      window.removeEventListener('keydown', keydownHandler)
-      window.removeEventListener('resize', resizeHandler)
-    }
-  }, [router])
+    // Cleanup the event listener.
+    return () => window.removeEventListener('keydown', keydownHandler)
+  }, [router, redirectUrl])
 
-  return showButton ? (
+  return (
     <button
       aria-label={buttonText}
-      className="fixed right-6 top-8 z-10"
+      className="boss-button fixed right-6 top-8 z-10 hidden md:block"
       onClick={() => router.push(redirectUrl)}
       title={buttonText}
     >
       <IconDoorExit aria-hidden="true" height="32" width="32" />
       <span className="sr-only">{buttonText}</span>
     </button>
-  ) : null
+  )
 }

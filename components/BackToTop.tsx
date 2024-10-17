@@ -1,23 +1,24 @@
 'use client'
 
+import {debounce} from '@/lib/functions'
 import {IconArrowUp} from '@tabler/icons-react'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 /**
  * The back to top component.
  */
 export default function BackToTop() {
   const [showButton, setShowButton] = useState(false)
-  const buttonText = 'Go back to the top of the page'
+  const buttonText = useMemo(() => 'Go back to the top of the page', [])
 
   /**
    * Effect for showing the back to top button.
    */
   useEffect(() => {
     // Scroll event handler.
-    const scrollHandler = () => {
+    const scrollHandler = debounce(() => {
       setShowButton(window.scrollY > 200)
-    }
+    }, 200)
 
     // Add event listener.
     window.addEventListener('scroll', scrollHandler)
