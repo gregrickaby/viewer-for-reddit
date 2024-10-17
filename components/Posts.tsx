@@ -1,7 +1,7 @@
 'use client'
 
 import Media from '@/components/Media'
-import {formatNumber, getTimeAgo} from '@/lib/functions'
+import {formatNumber, getTimeAgo, sanitizeText} from '@/lib/functions'
 import {RedditPostResponse} from '@/lib/types'
 import {
   IconArrowUp,
@@ -9,20 +9,30 @@ import {
   IconMessage,
   IconUser
 } from '@tabler/icons-react'
-import {decode} from 'html-entities'
+import {useMemo} from 'react'
 import Masonry from 'react-masonry-css'
 
 /**
  * The posts component.
  */
-export default function Posts({data}: RedditPostResponse) {
-  return data && data.children.length > 0 ? (
+export default function Posts(props: Readonly<RedditPostResponse>) {
+  // Define the breakpoint columns.
+  const breakpointCols = useMemo(
+    () => ({
+      default: 3,
+      1024: 2,
+      768: 1
+    }),
+    []
+  )
+
+  return (
     <Masonry
-      breakpointCols={{default: 3, 1024: 2, 768: 1}}
+      breakpointCols={breakpointCols}
       className="mb-12 flex gap-12"
       columnClassName="flex flex-col gap-12 not-prose"
     >
-      {data.children.map(({data}) => (
+      {props?.data?.children.map(({data}) => (
         <article
           className="flex flex-col gap-4 rounded border p-6 pt-4 text-sm shadow-xl dark:border-zinc-800 dark:bg-zinc-700"
           key={data.id}
@@ -40,22 +50,25 @@ export default function Posts({data}: RedditPostResponse) {
                 className="text-base font-bold leading-tight"
                 href={`https://www.reddit.com${data.permalink}`}
                 rel="noopener noreferrer"
+                target="_blank"
               >
-                {decode(data.title)}
+                {sanitizeText(data.title)}
               </a>
               <div className="flex gap-2 text-xs">
                 <a
                   className="flex items-center gap-1"
-                  href={`https://www.reddit.com/u/${decode(data.author)}`}
+                  href={`https://www.reddit.com/u/${sanitizeText(data.author)}`}
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   <IconUser height={16} width={16} />
-                  u/{decode(data.author)}
+                  u/{sanitizeText(data.author)}
                 </a>
                 <a
                   className="flex items-center gap-1"
                   href={`https://www.reddit.com${data.permalink}`}
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   <IconMessage height={16} width={16} />
                   {formatNumber(data.num_comments)}
@@ -71,5 +84,5 @@ export default function Posts({data}: RedditPostResponse) {
         </article>
       ))}
     </Masonry>
-  ) : null
+  )
 }
