@@ -79,7 +79,6 @@ export default function HlsPlayer(props: Readonly<HlsPlayerProps>) {
       className: props.className,
       controls: props.controls,
       crossOrigin: props.crossOrigin,
-      dataHint: props.dataHint,
       height: props.height,
       id: props.id,
       loop: props.loop,
