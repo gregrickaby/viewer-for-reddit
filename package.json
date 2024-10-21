@@ -25,7 +25,7 @@
   "dependencies": {
     "@newrelic/browser-agent": "^1.269.0",
     "@tabler/icons-react": "^3.19.0",
-    "hls.js": "^1.5.16",
+    "hls.js": "^1.5.17",
     "newrelic": "^12.5.1",
     "next": "^14.2.15",
     "nextjs-toploader": "^3.7.15",
@@ -35,10 +35,10 @@
     "sanitize-html": "^2.13.1"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^1.7.21",
+    "@evilmartians/lefthook": "^1.7.22",
     "@tailwindcss/typography": "^0.5.15",
     "@types/newrelic": "^9.14.5",
-    "@types/node": "^22.7.6",
+    "@types/node": "^22.7.7",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/sanitize-html": "^2.13.0",
