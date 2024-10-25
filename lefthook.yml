@@ -6,7 +6,7 @@ pre-commit:
   commands:
     eslint:
       glob: '*.{js,jsx,ts,tsx}'
-      run: npx eslint {staged_files} --ignore-path .eslintignore --fix
+      run: npx eslint {staged_files} --fix
     stylelint:
       glob: '*.css'
       run: npx stylelint {staged_files} --ignore-path .gitignore --fix

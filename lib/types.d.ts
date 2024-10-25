@@ -153,8 +153,13 @@ export interface FetchSubredditProps {
 }
 
 export interface PageProps {
-  params: {slug: string}
-  searchParams: {before: string; after: string; limit: number; sort: string}
+  params: Promise<{slug: string}>
+  searchParams: Promise<{
+    before: string
+    after: string
+    limit: number
+    sort: string
+  }>
 }
 
 export interface AboutProps {
