@@ -38,15 +38,14 @@ export default function YouTubePlayer({videoId}: Readonly<{videoId: string}>) {
       threshold: 0.25
     })
 
-    if (videoRef.current) {
-      observer.observe(videoRef.current)
+    const currentVideoRef = videoRef.current
+    if (currentVideoRef) {
+      observer.observe(currentVideoRef)
     }
 
     // Cleanup the observer on unmount.
-    return () => {
-      if (videoRef.current) {
-        observer.disconnect()
-      }
+    if (currentVideoRef) {
+      observer.disconnect()
     }
   }, [])
 
