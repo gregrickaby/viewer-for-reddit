@@ -1,6 +1,7 @@
 'use server'
 
 import config from '@/lib/config'
+import {logError} from '@/lib/functions'
 import {
   FetchSubredditProps,
   RedditAboutResponse,
@@ -72,7 +73,7 @@ export async function fetchToken(): Promise<RedditTokenResponse> {
 
     return data
   } catch (error) {
-    console.error(`Exception thrown in fetchToken(): ${error}`)
+    logError(`Exception thrown in fetchToken(): ${error}`)
     return {error: `${error}`}
   }
 }
@@ -137,7 +138,7 @@ export async function fetchSearchResults(
     // Return the search results.
     return data
   } catch (error) {
-    console.error(`Exception thrown in fetchSearchResults(): ${error}`)
+    logError(`Exception thrown in fetchSearchResults(): ${error}`)
     return {error: `${error}`}
   }
 }
@@ -216,6 +217,7 @@ export async function fetchSubredditPosts(
         `Failed to fetch subreddit posts. ${response.statusText} | ${slug} | Rate Limit Used: ${rateLimitUsed}, Remaining: ${rateLimitRemaining}, Resets in: ${rateLimitReset} seconds`
       )
     }
+
     // Parse the response.
     const data: RedditPostResponse = await response.json()
 
@@ -242,7 +244,7 @@ export async function fetchSubredditPosts(
       }
     }
   } catch (error) {
-    console.error(`Exception thrown in fetchSubredditPosts(): ${error}`)
+    logError(`Exception thrown in fetchSubredditPosts(): ${error}`)
     return {error: `${error}`}
   }
 }
@@ -300,7 +302,7 @@ export async function fetchSubredditAbout(
     // Return the about information.
     return data
   } catch (error) {
-    console.error(`Exception thrown in fetchSubredditAbout(): ${error}`)
+    logError(`Exception thrown in fetchSubredditAbout(): ${error}`)
     return {error: `${error}`}
   }
 }
