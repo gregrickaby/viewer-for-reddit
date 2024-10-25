@@ -73,25 +73,20 @@ export default function Search() {
   )
 
   /**
-   * Setup the search query with debouncing.
-   * Debounces the search query using the reusable debounce function.
+   * Debounced search query.
    */
-  const searchQuery = useCallback(
-    debounce(() => {
-      // No query? Bail.
-      if (query.length < 2) return
+  const searchQuery = useMemo(
+    () =>
+      debounce(async () => {
+        // If the query is less than 2 characters, return.
+        if (query.length < 2) return
 
-      // Fetch and set the search results.
-      const fetchAndSetResults = async () => {
-        const results = await fetchSearchResults(query)
-        setResults(results)
-      }
+        // Fetch the search results.
+        const response = await fetchSearchResults(query)
 
-      // Call the fetch and resolve the promise.
-      fetchAndSetResults().catch((error) => {
-        console.error('Failed to fetch search results:', error)
-      })
-    }, 500),
+        // Set the search results.
+        setResults(response)
+      }, 300),
     [query]
   )
 
