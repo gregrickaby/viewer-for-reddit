@@ -26,7 +26,7 @@ Please review the [Reddit API Documentation and Rules](https://github.com/reddit
 
 ## Contributing Code
 
-Found a bug you can fix? Fantastic! Patches are always welcome. Please follow the steps below to get started.
+Found a bug you can fix? Fantastic! Pull requests are always welcome. Please follow the steps below to get started.
 
 ---
 
