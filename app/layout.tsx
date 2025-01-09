@@ -1,7 +1,6 @@
 import '@/app/globals.css'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import NewRelic from '@/components/NewRelic'
 import Search from '@/components/Search'
 import config from '@/lib/config'
 import type {Metadata, Viewport} from 'next'
@@ -67,12 +66,6 @@ export default function RootLayout({
         <Search />
         <main>{children}</main>
         <Footer />
-        {process.env.NODE_ENV === 'production' && (
-          <NewRelic
-            appId={config.newRelicAppId}
-            licenseKey={config.newRelicLicenseKey}
-          />
-        )}
       </body>
     </html>
   )

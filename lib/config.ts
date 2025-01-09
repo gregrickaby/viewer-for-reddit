@@ -13,9 +13,7 @@ const config = {
     sort: 'hot',
     sub: 'itookapicture'
   },
-  cacheTtl: 3600,
-  newRelicAppId: process.env.NEW_RELIC_BROWSER_APP_ID!,
-  newRelicLicenseKey: process.env.NEW_RELIC_BROWSER_LICENSE_KEY!
+  cacheTtl: 3600
 }
 
 export default config
