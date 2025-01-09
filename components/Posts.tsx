@@ -9,8 +9,12 @@ import {
   IconMessage,
   IconUser
 } from '@tabler/icons-react'
-import {useMemo} from 'react'
+import dynamic from 'next/dynamic'
+import React, {useMemo} from 'react'
 import Masonry from 'react-masonry-css'
+
+// Lazy load the AdSense component.
+const AdSense = dynamic(() => import('@/components/AdSense'), {ssr: false})
 
 /**
  * The posts component.
@@ -32,56 +36,64 @@ export default function Posts(props: Readonly<RedditPostResponse>) {
       className="mb-12 flex gap-12"
       columnClassName="flex flex-col gap-12 not-prose"
     >
-      {props?.data?.children.map(({data}) => (
-        <article
-          className="flex flex-col gap-4 rounded border p-6 pt-4 text-sm shadow-xl dark:border-zinc-800 dark:bg-zinc-700"
-          key={data.id}
-        >
-          <header className="flex gap-4 text-left">
-            <div className="flex flex-col items-center gap-0">
-              <IconArrowUp height={18} width={18} />
-              <span className="text-base font-bold">
-                {formatNumber(data.score)}
-              </span>
-            </div>
+      {props?.data?.children.map(({data}, index) => (
+        <React.Fragment key={data.id}>
+          <article
+            className="flex flex-col gap-4 rounded border p-6 pt-4 text-sm shadow-xl dark:border-zinc-800 dark:bg-zinc-700"
+            key={data.id}
+          >
+            <header className="flex gap-4 text-left">
+              <div className="flex flex-col items-center gap-0">
+                <IconArrowUp height={18} width={18} />
+                <span className="text-base font-bold">
+                  {formatNumber(data.score)}
+                </span>
+              </div>
 
-            <div className="flex flex-col gap-1">
-              <a
-                className="text-base font-bold leading-tight"
-                href={`https://www.reddit.com${data.permalink}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {sanitizeText(data.title)}
-              </a>
-              <div className="flex gap-2 text-xs">
+              <div className="flex flex-col gap-1">
                 <a
-                  className="flex items-center gap-1"
-                  href={`https://www.reddit.com/u/${sanitizeText(data.author)}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <IconUser height={16} width={16} />
-                  u/{sanitizeText(data.author)}
-                </a>
-                <a
-                  className="flex items-center gap-1"
+                  className="text-base font-bold leading-tight"
                   href={`https://www.reddit.com${data.permalink}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  <IconMessage height={16} width={16} />
-                  {formatNumber(data.num_comments)}
+                  {sanitizeText(data.title)}
                 </a>
-                <time className="flex items-center gap-1">
-                  <IconClock height={16} width={16} />
-                  {getTimeAgo(data.created_utc)}
-                </time>
+                <div className="flex gap-2 text-xs">
+                  <a
+                    className="flex items-center gap-1"
+                    href={`https://www.reddit.com/u/${sanitizeText(data.author)}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <IconUser height={16} width={16} />
+                    u/{sanitizeText(data.author)}
+                  </a>
+                  <a
+                    className="flex items-center gap-1"
+                    href={`https://www.reddit.com${data.permalink}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <IconMessage height={16} width={16} />
+                    {formatNumber(data.num_comments)}
+                  </a>
+                  <time className="flex items-center gap-1">
+                    <IconClock height={16} width={16} />
+                    {getTimeAgo(data.created_utc)}
+                  </time>
+                </div>
               </div>
+            </header>
+            <Media {...data} />
+          </article>
+
+          {(index + 1) % 10 === 0 && (
+            <div className="my-8" key={`ad-${index}`}>
+              <AdSense />
             </div>
-          </header>
-          <Media {...data} />
-        </article>
+          )}
+        </React.Fragment>
       ))}
     </Masonry>
   )
