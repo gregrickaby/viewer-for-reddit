@@ -1,5 +1,5 @@
 import {fetchSubredditAbout} from '@/lib/actions'
-import {decode} from 'html-entities'
+import {sanitizeText} from '@/lib/functions'
 
 /**
  * The about component.
@@ -19,7 +19,7 @@ export default async function About({slug}: {slug: string}) {
         />
         <div className="flex flex-col items-start gap-1">
           <h2 className="m-0 p-0 capitalize leading-none">
-            {decode(data?.title)}
+            {sanitizeText(data?.title)}
           </h2>
           <div className="text-left leading-tight">
             <a
@@ -29,7 +29,7 @@ export default async function About({slug}: {slug: string}) {
             >
               r/{data?.display_name}
             </a>{' '}
-            - {decode(data?.public_description)}
+            - {sanitizeText(data?.public_description)}
           </div>
         </div>
       </div>
