@@ -67,12 +67,14 @@ export default function RootLayout({
         <Search />
         <main>{children}</main>
         <Footer />
-        <Script
-          async={true}
-          crossOrigin="anonymous"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1715669502587007"
-          strategy="beforeInteractive"
-        />
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            async
+            crossOrigin="anonymous"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.GOOGLE_ADSENSE}`}
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   )
