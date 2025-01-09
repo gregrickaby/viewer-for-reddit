@@ -69,8 +69,9 @@ export default function RootLayout({
         <Footer />
         <Script
           async={true}
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1715669502587007"
           crossOrigin="anonymous"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1715669502587007"
+          strategy="beforeInteractive"
         />
       </body>
     </html>
