@@ -37,7 +37,10 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.webmanifest',
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? ''
+    google: process.env.GOOGLE_SITE_VERIFICATION ?? ''
+  },
+  other: {
+    'google-adsense-account': process.env.GOOGLE_ADSENSE ?? ''
   }
 }
 
