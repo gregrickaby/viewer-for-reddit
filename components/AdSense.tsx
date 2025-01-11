@@ -22,7 +22,7 @@ export default function AdSense() {
       className="adsbygoogle"
       style={{display: 'block'}}
       data-ad-client="ca-pub-1715669502587007"
-      data-ad-slot="1111111111"
+      data-ad-slot="5519230653"
       data-ad-format="auto"
       data-full-width-responsive="true"
     ></ins>
