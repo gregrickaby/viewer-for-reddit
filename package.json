@@ -16,16 +16,16 @@
   "scripts": {
     "dev": "rimraf .next && next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
     "lint": "npm run lint:css && npm run lint:js && next lint && tsc",
     "lint:css": "stylelint '**/*.css' --ignore-path .gitignore --fix",
     "lint:js": "eslint . --fix"
   },
   "dependencies": {
-    "@tabler/icons-react": "^3.28.1",
-    "hls.js": "^1.5.19",
-    "next": "^15.1.5",
+    "@tabler/icons-react": "^3.29.0",
+    "hls.js": "^1.5.20",
+    "next": "^15.1.6",
     "nextjs-toploader": "^3.7.15",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -35,25 +35,24 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
-    "@evilmartians/lefthook": "^1.10.8",
+    "@evilmartians/lefthook": "^1.10.10",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/node": "^22.10.7",
-    "@types/react": "^19.0.7",
+    "@types/node": "^22.10.10",
+    "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/sanitize-html": "^2.13.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.18.0",
-    "eslint-config-next": "^15.1.5",
+    "eslint-config-next": "^15.1.6",
     "eslint-config-prettier": "^10.0.1",
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",
-    "prettier-plugin-tailwindcss": "^0.6.10",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "rimraf": "^6.0.1",
     "sharp": "^0.33.5",
     "stylelint": "^16.13.2",
     "stylelint-config-standard": "^37.0.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3"
-  },
-  "packageManager": "yarn@1.22.22"
+  }
 }
