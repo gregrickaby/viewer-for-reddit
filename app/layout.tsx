@@ -4,7 +4,6 @@ import Header from '@/components/Header'
 import Search from '@/components/Search'
 import config from '@/lib/config'
 import type {Metadata, Viewport} from 'next'
-import Script from 'next/script'
 import NextTopLoader from 'nextjs-toploader'
 
 /**
@@ -38,9 +37,6 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION ?? ''
-  },
-  other: {
-    'google-adsense-account': process.env.GOOGLE_ADSENSE ?? ''
   }
 }
 
@@ -70,14 +66,6 @@ export default function RootLayout({
         <Search />
         <main>{children}</main>
         <Footer />
-        {process.env.NODE_ENV === 'production' && (
-          <Script
-            async
-            crossOrigin="anonymous"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.GOOGLE_ADSENSE}`}
-            strategy="afterInteractive"
-          />
-        )}
       </body>
     </html>
   )

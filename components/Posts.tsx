@@ -9,12 +9,8 @@ import {
   IconMessage,
   IconUser
 } from '@tabler/icons-react'
-import dynamic from 'next/dynamic'
 import React, {useMemo} from 'react'
 import Masonry from 'react-masonry-css'
-
-// Lazy load the AdSense component.
-const AdSense = dynamic(() => import('@/components/AdSense'), {ssr: false})
 
 /**
  * The posts component.
@@ -87,12 +83,6 @@ export default function Posts(props: Readonly<RedditPostResponse>) {
             </header>
             <Media {...data} />
           </article>
-
-          {(index + 1) % 10 === 0 && (
-            <div className="my-8" key={`ad-${index}`}>
-              <AdSense />
-            </div>
-          )}
         </React.Fragment>
       ))}
     </Masonry>
