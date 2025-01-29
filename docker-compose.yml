@@ -1,20 +1,20 @@
 services:
   reddit-viewer:
-    container_name: "reddit-viewer"
+    container_name: 'reddit-viewer'
     build: .
     restart: always
     ports:
-      - "3000:3000"
+      - '3000:3000'
     networks:
-      - "default"
+      - 'default'
     labels:
-      "traefik.enable": "true" # Enable Traefik
-      "traefik.http.routers.node-project.rule": "Host(`${DOMAIN}`)" # Host rule
-      "traefik.http.routers.node-project.entrypoints": "websecure" # Use the 'websecure' entrypoint
-      "traefik.http.routers.node-project.tls.certresolver": "le" # Let's Encrypt
-      "traefik.http.services.node-project.loadbalancer.server.port": "3000" # Port exposed by the container
+      'traefik.enable': 'true' # Enable Traefik
+      'traefik.http.routers.node-project.rule': 'Host(`${DOMAIN}`)' # Host rule
+      'traefik.http.routers.node-project.entrypoints': 'websecure' # Use the 'websecure' entrypoint
+      'traefik.http.routers.node-project.tls.certresolver': 'le' # Let's Encrypt
+      'traefik.http.services.node-project.loadbalancer.server.port': '3000' # Port exposed by the container
 
 networks:
   default:
-    name: "web"
+    name: 'web'
     external: true
