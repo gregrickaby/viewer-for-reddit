@@ -1,6 +1,6 @@
 services:
   reddit-viewer:
-    container_name: 'reddit-viewer'
+    container_name: 'nextjs'
     build: .
     restart: always
     ports:
@@ -13,6 +13,13 @@ services:
       'traefik.http.routers.node-project.entrypoints': 'websecure' # Use the 'websecure' entrypoint
       'traefik.http.routers.node-project.tls.certresolver': 'le' # Let's Encrypt
       'traefik.http.services.node-project.loadbalancer.server.port': '3000' # Port exposed by the container
+    healthcheck:
+      test:
+        ['CMD', 'wget', '--spider', '-q', 'http://127.0.0.1:3000/api/health']
+      interval: '30s'
+      timeout: '10s'
+      retries: 3
+      start_period: '5s'
 
 networks:
   default:
