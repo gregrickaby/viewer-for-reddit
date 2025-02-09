@@ -3,13 +3,7 @@
     {
       "source": "/r/:path*",
       "destination": "/",
-      "permanent": true,
-      "has": [
-        {
-          "type": "query",
-          "key": "*"
-        }
-      ]
+      "permanent": true
     }
   ]
 }
