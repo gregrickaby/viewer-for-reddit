@@ -1,6 +1,6 @@
 {
   "name": "@gregrickaby/viewer-for-reddit",
-  "description": "The Ultimate Mobile Reddit App: Dynamic, TikTok-Style, Fast & Tracking-Free!",
+  "description": "The ultimate Reddit app: dynamic, TikTok-style, fast & tracking-free!",
   "version": "6.0.0",
   "private": true,
   "type": "module",
@@ -60,7 +60,7 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "rimraf": "^6.0.1",
     "tailwindcss": "^4.0.5",
-    "typescript": "~5.7.3",
+    "typescript": "^5.7.3",
     "typescript-eslint": "^8.23.0",
     "vite": "^6.1.0",
     "vite-plugin-vercel": "^9.0.4",
