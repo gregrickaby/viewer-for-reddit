@@ -1,5 +1,4 @@
-# Refer for explanation to following link:
-# https://github.com/evilmartians/lefthook/blob/master/docs/usage.md
+$schema: 'https://json.schemastore.org/lefthook.json'
 
 pre-commit:
   parallel: true
@@ -7,9 +6,6 @@ pre-commit:
     eslint:
       glob: '*.{js,jsx,ts,tsx}'
       run: npx eslint {staged_files} --fix
-    stylelint:
-      glob: '*.css'
-      run: npx stylelint {staged_files} --ignore-path .gitignore --fix
     prettier:
       glob: '*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}'
       run: npx prettier {staged_files} --ignore-path .prettierignore --write

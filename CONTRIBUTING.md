@@ -128,6 +128,6 @@ vercel dev
 
 ## Legal Stuff
 
-This repo is maintained by [Greg Rickaby](https://gregrickaby.com/). By contributing code you grant its use under the [MIT](https://github.com/gregrickaby/viewer-for-reddit/blob/main/LICENSE).
+This project is maintained by [Greg Rickaby](https://gregrickaby.com/). By contributing code you grant its use under the [MIT](https://github.com/gregrickaby/viewer-for-reddit/blob/main/LICENSE).
 
 ---

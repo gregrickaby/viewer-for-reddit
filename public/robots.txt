@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://reddit-viewer.com/sitemap.xml
