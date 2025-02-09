@@ -1,3 +1,5 @@
 {
-  "routes": [{ "src": "/r/(.*)", "dest": "/index.html" }]
+  "redirects": [
+    { "source": "/r/:path*", "destination": "/", "permanent": true }
+  ]
 }
