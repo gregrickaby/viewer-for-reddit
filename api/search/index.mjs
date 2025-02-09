@@ -1,5 +1,9 @@
 export default async function handler(req, res) {
   try {
+    // Set default response headers.
+    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('X-Robots-Tag', 'noindex')
+
     // Retrieve the OAuth token from the Authorization header.
     const authHeader = req.headers['authorization']
     if (!authHeader || typeof authHeader !== 'string') {
@@ -62,7 +66,9 @@ export default async function handler(req, res) {
     const data = await redditResponse.json()
     return res.status(200).json(data)
   } catch (error) {
-    console.error('Error in /api/search/index.ts:', error)
+    console.error('Error in /api/search', error)
+    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('X-Robots-Tag', 'noindex')
     return res.status(500).json({ error: 'Internal Server Error' })
   }
 }
