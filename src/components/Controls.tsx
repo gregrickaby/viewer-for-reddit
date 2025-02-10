@@ -80,8 +80,12 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
     >
       <div className="flex min-w-22 flex-col items-center gap-6 p-4">
         {/* Home button. */}
-        <Tooltip label="Go to Popular">
-          <button className={buttonStyles} onClick={handleHome}>
+        <Tooltip label="Go to r/Popular">
+          <button
+            aria-label="show popular posts"
+            className={buttonStyles}
+            onClick={handleHome}
+          >
             <IconHome />
           </button>
         </Tooltip>
@@ -89,6 +93,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         {/* Search button. */}
         <Tooltip label="Search">
           <button
+            aria-label="view search"
             className={buttonStyles}
             onClick={() => dispatch(toggleSearch())}
           >
@@ -97,8 +102,9 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         </Tooltip>
 
         {/* Recent button. */}
-        <Tooltip label="Recent Searchs">
+        <Tooltip label="Recent Searches">
           <button
+            aria-label="view recent searches"
             className={buttonStyles}
             onClick={() => dispatch(toggleRecent())}
           >
@@ -109,6 +115,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         {/* Settings button. */}
         <Tooltip label="Settings">
           <button
+            aria-label="view settings"
             className={buttonStyles}
             onClick={() => dispatch(toggleSettings())}
           >
@@ -119,6 +126,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         {/* Mute button. */}
         <Tooltip label={mute ? 'Unmute' : 'Mute'}>
           <button
+            aria-label={mute ? 'unmute audio' : 'mute audio'}
             className={buttonStyles}
             onClick={() => dispatch(toggleMute())}
           >
@@ -132,6 +140,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         {/* Upvotes button. */}
         <Tooltip label="Upvotes">
           <button
+            aria-label="view post on reddit.com"
             className={`flex flex-col items-center gap-1 ${buttonStyles}`}
             onClick={() => window.open(postUrl, '_blank')}
           >
@@ -143,6 +152,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         {/* Comments button. */}
         <Tooltip label="Comments">
           <button
+            aria-label="view comments on reddit.com"
             className={`flex flex-col items-center gap-1 ${buttonStyles}`}
             onClick={() => window.open(postUrl, '_blank')}
           >
