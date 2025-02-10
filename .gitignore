@@ -12,6 +12,7 @@ dist
 dist-ssr
 dev-dist
 *.local
+.vercel
 
 # Editor directories and files
 !.vscode/extensions.json
@@ -22,6 +23,3 @@ dev-dist
 *.njsproj
 *.sln
 *.sw?
-.env
-.env.local
-.vercel
