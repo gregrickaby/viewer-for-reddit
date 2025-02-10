@@ -61,12 +61,13 @@ export function Search() {
       <div className="relative">
         {/* Search input. */}
         <input
-          autoFocus
+          aria-label="Search subreddits"
           autoCapitalize="none"
           autoComplete="off"
           autoCorrect="off"
-          enterKeyHint="search"
+          autoFocus
           className="w-full rounded border p-3 pr-8 outline-none focus:border-zinc-400 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:focus:border-zinc-500"
+          enterKeyHint="search"
           onChange={handleSearchInput}
           placeholder="Search subreddits..."
           spellCheck={false}

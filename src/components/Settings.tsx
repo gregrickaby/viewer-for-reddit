@@ -35,6 +35,7 @@ export default function Settings() {
       <div className="flex items-center justify-between">
         <span>Enable Dark Mode</span>
         <button
+          aria-label="Toggle dark mode"
           aria-pressed={darkMode}
           onClick={() => dispatch(toggleDarkMode())}
           className={`${
@@ -53,6 +54,7 @@ export default function Settings() {
       <div className="flex items-center justify-between">
         <span>Allow NSFW Content</span>
         <button
+          aria-label="Toggle NSFW content"
           aria-pressed={enableNsfw}
           className={`${
             enableNsfw ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-500'
@@ -114,7 +116,7 @@ export default function Settings() {
         </button>
 
         <button
-          aria-label="About"
+          aria-label="View About"
           className="text-center text-white"
           onClick={() => {
             dispatch(toggleAbout())

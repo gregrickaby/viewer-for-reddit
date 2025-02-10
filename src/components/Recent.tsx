@@ -43,7 +43,7 @@ export default function Recent() {
       ))}
 
       <button
-        aria-label="Reset all settings"
+        aria-label="Clear search history"
         className="mt-8 flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         onClick={() => {
           if (confirm('Are you sure? This will clear your search history!')) {

@@ -56,14 +56,15 @@ export function SubredditItem({
 
   return (
     <button
+      aria-label={`Select r/${subreddit.display_name}`}
       className="flex w-full items-center rounded p-2 text-left hover:bg-zinc-100 dark:hover:bg-zinc-700"
       onClick={handleSelect}
     >
       <div className="mr-2 flex-shrink-0">
         {subreddit.icon_img ? (
           <img
-            src={subreddit.icon_img}
             alt={`r/${subreddit.display_name} icon`}
+            src={subreddit.icon_img}
             className="h-6 w-6 rounded-full object-cover"
             loading="lazy"
           />

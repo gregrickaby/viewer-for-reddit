@@ -51,6 +51,7 @@ export function Modal({
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-bold">{title}</h2>
           <button
+            aria-label={`Close ${title} modal`}
             className="absolute top-6 right-6 hover:cursor-pointer"
             onClick={onClose}
           >

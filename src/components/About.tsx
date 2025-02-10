@@ -26,16 +26,16 @@ export default function About() {
         <div className="flex items-center gap-2 border-t border-white/10 pt-4">
           &copy; 2000-{new Date().getFullYear()}
           <a
-            className="underline hover:no-underline"
             aria-label="visit the author's website"
+            className="underline hover:no-underline"
             href="https://gregrickaby.com"
             rel="author"
           >
             Greg Rickaby
           </a>
           <a
-            className="ml-auto"
             aria-label="view source code on github"
+            className="ml-auto"
             href="https://github.com/gregrickaby/viewer-for-reddit"
             rel="noopener noreferrer"
             target="_blank"
