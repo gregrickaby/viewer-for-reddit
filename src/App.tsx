@@ -89,7 +89,7 @@ export default function App() {
         onClose={function handleCloseAbout() {
           dispatch(toggleAbout())
         }}
-        title="About"
+        title="About Reddit Viewer"
       >
         <Suspense fallback={<IconSpinner />}>
           <About />

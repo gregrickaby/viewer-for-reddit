@@ -37,7 +37,7 @@ export function Modal({
   if (!isOpen) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] flex items-start justify-center lg:items-center">
+    <div className="fixed inset-0 z-[99999] flex items-start justify-center">
       {/* Semi-transparent backdrop .*/}
       <div
         aria-hidden="true"

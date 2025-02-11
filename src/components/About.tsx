@@ -5,45 +5,65 @@ import { IconGithub } from '../icons/Github'
  */
 export default function About() {
   return (
-    <>
-      <div className="flex flex-col gap-6 text-white/90">
-        <p>
-          The Ultimate Mobile Reddit App: Dynamic, TikTok-Style, Fast &
-          Tracking-Free!
-        </p>
-        <p>
-          Inspired by short-form content, this app redefines what Reddit could
-          be with a mobile-friendly, TikTok-style layout—letting you
-          effortlessly scroll through posts, watch videos, and explore threads
-          in a fast, engaging flow.
-        </p>
+    <div className="flex flex-col gap-6">
+      <p>It's the ultimate Reddit app!</p>
+      <p>
+        Inspired by short-form content, this app redefines what Reddit could be
+        with a mobile-friendly, TikTok-style layout—letting you effortlessly
+        scroll through posts, watch videos, and explore threads in a fast,
+        engaging flow.
+      </p>
 
-        <p>
-          With a focus on privacy, there's no tracking or logging of your
-          activity. No ads, no cookies, no analytics, no data collection.
-        </p>
+      <p>
+        With a focus on privacy, there's no tracking or logging of your
+        activity. No ads, no cookies, no analytics, no data collection.
+      </p>
 
-        <div className="flex items-center gap-2 border-t border-white/10 pt-4">
-          &copy; 2000-{new Date().getFullYear()}
+      <p className="flex items-center gap-2">
+        Enjoying the app?{' '}
+        <a
+          aria-label="buy the author a coffee"
+          className="flex items-center gap-1 font-bold underline"
+          href="https://www.buymeacoffee.com/gregrickaby"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Buy me a coffee!
+          <img
+            alt="buy me a coffe"
+            height="16"
+            src="/buymeacoffee.png"
+            width="16"
+          />
+        </a>
+      </p>
+
+      <footer className="flex items-center justify-between border-t pt-4">
+        <p>
+          Made with ❤️ by{' '}
           <a
             aria-label="visit the author's website"
-            className="underline hover:no-underline"
+            className="underline"
             href="https://gregrickaby.com"
-            rel="author"
+            rel="author noopener noreferrer"
+            target="_blank"
           >
             Greg Rickaby
           </a>
+        </p>
+        <p>
           <a
             aria-label="view source code on github"
-            className="ml-auto"
+            className="flex items-center gap-1 underline"
             href="https://github.com/gregrickaby/viewer-for-reddit"
             rel="noopener noreferrer"
             target="_blank"
           >
             <IconGithub />
+            View the source code
           </a>
-        </div>
-      </div>
-    </>
+        </p>
+      </footer>
+    </div>
   )
 }
