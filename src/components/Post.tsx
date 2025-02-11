@@ -86,7 +86,7 @@ export const Post = memo(function Post({
 
         {/* Gradient overlay */}
         {post.data.post_hint && (
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 to-transparent" />
         )}
 
         {/* Post Meta */}
@@ -94,7 +94,7 @@ export const Post = memo(function Post({
           {/* Current Sub */}
           <button
             aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
-            className="flex items-center gap-1 pb-2 text-xs font-semibold"
+            className="flex items-center gap-1 pb-3 text-xs font-semibold"
             onClick={handleSubRedditClick}
           >
             <IconReddit />
@@ -104,6 +104,7 @@ export const Post = memo(function Post({
           {/* Post Author */}
           <div className="flex items-center gap-1 text-xs">
             <a
+              aria-label="view author profile"
               className="flex items-center gap-1"
               href={`https://www.reddit.com/u/${sanitizeText(post.data.author)}`}
               rel="noopener noreferrer"
@@ -117,9 +118,10 @@ export const Post = memo(function Post({
           </div>
 
           {/* Post Title */}
-          <h2 className="line-clamp-4 overflow-hidden text-ellipsis">
+          <h2 className="line-clamp-5 overflow-hidden text-ellipsis">
             <a
-              className="text-xl font-bold"
+              aria-label="view post on reddit"
+              className="text-xl leading-6 font-bold"
               href={`https://reddit.com${post.data.permalink}`}
               rel="noopener noreferrer"
               target="_blank"
