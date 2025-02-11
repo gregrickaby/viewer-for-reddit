@@ -7,7 +7,7 @@ import type { RedditResponse, RedditSearchResponse } from '../../types/reddit'
  * This service provides public access to Reddit API endpoints.
  */
 export const publicApi = createApi({
-  reducerPath: 'redditApi',
+  reducerPath: 'publicApi',
   tagTypes: ['Posts', 'Subreddits'],
   baseQuery: fetchBaseQuery({ baseUrl: 'https://www.reddit.com' }),
   endpoints: (builder) => ({
