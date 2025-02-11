@@ -18,7 +18,6 @@ const STORAGE_KEY = 'redditViewer'
  */
 export function getInitialSettings(): UserSettings {
   return {
-    authToken: '',
     currentSort: 'hot',
     currentSubreddit: 'aww',
     darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,

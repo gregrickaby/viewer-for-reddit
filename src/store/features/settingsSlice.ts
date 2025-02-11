@@ -128,16 +128,6 @@ export const settingsSlice = createSlice({
     toggleAppLoading: (state) => {
       state.isAppLoading = !state.isAppLoading
       saveSettings(state)
-    },
-
-    // Set auth token from the Reddit API.
-    setToken: (state, action: PayloadAction<string>) => {
-      state.authToken = action.payload
-    },
-
-    // Logout by clearing token.
-    logout: (state) => {
-      state.authToken = null
     }
   }
 })
@@ -147,11 +137,9 @@ export const {
   addRecentSubreddit,
   clearRecentSubreddits,
   closeAllModals,
-  logout,
   resetSettings,
   setCurrentSubreddit,
   setSortingOption,
-  setToken,
   toggleAbout,
   toggleAppLoading,
   toggleDarkMode,

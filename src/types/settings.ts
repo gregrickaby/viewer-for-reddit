@@ -20,5 +20,4 @@ export interface UserSettings {
   showSearch: boolean // Search modal visibility
   showAbout: boolean // About modal visibility
   isAppLoading: boolean // Loading state for the app
-  authToken: string | null // Reddit API access token
 }

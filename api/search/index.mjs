@@ -1,74 +1,160 @@
+/**
+ * Reddit API Configuration.
+ *
+ * @typedef {Object} Config
+ * @property {number} TOKEN_BUFFER_TIME - Buffer time before token expiration (ms)
+ * @property {number} REQUEST_LIMIT - Maximum requests per token
+ * @property {string} USER_AGENT - User agent string for Reddit API
+ * @property {string} REDDIT_TOKEN_URL - Reddit OAuth token endpoint
+ * @property {string} REDDIT_SEARCH_URL - Reddit search API endpoint
+ */
+const CONFIG = {
+  TOKEN_BUFFER_TIME: 60000, // 1 minute in ms
+  REQUEST_LIMIT: 950,
+  USER_AGENT: 'web-app:viewer-for-reddit:v1.0.0 (by Greg Rickaby)',
+  REDDIT_TOKEN_URL: 'https://www.reddit.com/api/v1/access_token',
+  REDDIT_SEARCH_URL: 'https://oauth.reddit.com/api/subreddit_autocomplete_v2'
+}
+
+/**
+ * Token cache for Reddit API.
+ * Stores the current token, its expiration time, and request count.
+ *
+ * @type {{ token: string | null, expiresAt: number, requestCount: number }}
+ */
+let tokenCache = {
+  token: null,
+  expiresAt: 0,
+  requestCount: 0
+}
+
+/**
+ * Checks if the cached token is still valid.
+ * A token is considered valid if:
+ * 1. It exists
+ * 2. It's not expired (with buffer time)
+ * 3. Request count hasn't exceeded limit
+ *
+ * @returns {boolean} True if token is valid, false otherwise
+ */
+function isTokenValid() {
+  return (
+    tokenCache.token &&
+    Date.now() < tokenCache.expiresAt - CONFIG.TOKEN_BUFFER_TIME &&
+    tokenCache.requestCount < CONFIG.REQUEST_LIMIT
+  )
+}
+
+/**
+ * Fetches a new access token from Reddit.
+ *
+ * @param {string} clientId - Reddit API client ID
+ * @param {string} clientSecret - Reddit API client secret
+ * @returns {Promise<{ access_token: string, expires_in: number }>} Token response
+ * @throws {Error} If token fetch fails
+ */
+async function getRedditToken(clientId, clientSecret) {
+  const response = await fetch(CONFIG.REDDIT_TOKEN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': CONFIG.USER_AGENT,
+      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`
+    },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      scope: 'read'
+    })
+  })
+
+  const data = await response.json()
+  if (!data.access_token) throw new Error('Failed to get Reddit token')
+
+  return data
+}
+
+/**
+ * Search API request handler.
+ * Handles subreddit search requests by:
+ * 1. Validating API key
+ * 2. Managing Reddit OAuth token
+ * 3. Proxying search requests to Reddit
+ * 4. Transforming and returning results
+ *
+ * @param {import('next').NextApiRequest} req - Incoming request
+ * @param {import('next').NextApiResponse} res - Server response
+ * @returns {Promise<void>}
+ */
 export default async function handler(req, res) {
   try {
-    // Set default response headers.
-    res.setHeader('Content-Type', 'application/json')
-    res.setHeader('X-Robots-Tag', 'noindex')
-
-    // Retrieve the OAuth token from the Authorization header.
-    const authHeader = req.headers['authorization']
-    if (!authHeader || typeof authHeader !== 'string') {
-      return res.status(401).json({ error: 'Unauthorized: missing token' })
-    }
-    // Remove the "Bearer " prefix if present.
-    const token = authHeader.replace(/^Bearer\s+/i, '')
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized: missing token' })
+    // Validate environment and API key.
+    const { REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, VITE_API_KEY } = process.env
+    if (!REDDIT_CLIENT_ID || !REDDIT_CLIENT_SECRET || !VITE_API_KEY) {
+      throw new Error('Missing environment variables')
     }
 
-    // Parse the query parameters from the request URL.
-    // Construct a full URL using a base if necessary.
-    const baseUrl = `http://${req.headers.host}`
-    const urlObj = new URL(req.url || '', baseUrl)
-
-    // Retrieve required 'query' parameter.
-    const query = urlObj.searchParams.get('query')
-    if (!query) {
-      return res.status(400).json({ error: 'Missing search query parameter' })
+    // API key validation.
+    if (req.headers['x-api-key'] !== VITE_API_KEY) {
+      return res.status(401).json({ error: 'Invalid API key' })
     }
 
-    // Extract additional optional parameters.
-    const include_over_18 =
-      urlObj.searchParams.get('include_over_18') || 'false'
-    const include_profiles =
-      urlObj.searchParams.get('include_profiles') || 'false'
-    const typeahead_active =
-      urlObj.searchParams.get('typeahead_active') || 'false'
-    const search_query_id =
-      urlObj.searchParams.get('search_query_id') || 'DO_NOT_TRACK'
-
-    // Build the target URL for Reddit's autocomplete v2 endpoint.
-    const targetUrl = new URL(
-      'https://oauth.reddit.com/api/subreddit_autocomplete_v2'
-    )
-    targetUrl.searchParams.append('query', query)
-    targetUrl.searchParams.append('include_over_18', include_over_18)
-    targetUrl.searchParams.append('include_profiles', include_profiles)
-    targetUrl.searchParams.append('typeahead_active', typeahead_active)
-    targetUrl.searchParams.append('search_query_id', search_query_id)
-    targetUrl.searchParams.append('raw_json', '1')
-
-    // Make the GET request to Reddit's API using the token.
-    const redditResponse = await fetch(targetUrl.toString(), {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'User-Agent': 'web-app:viewer-for-reddit:v1.0.0 (by /u/yourusername)'
+    // Token management: Get existing or fetch new token.
+    let access_token = isTokenValid() ? tokenCache.token : null
+    if (!access_token) {
+      const data = await getRedditToken(REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET)
+      tokenCache = {
+        token: data.access_token,
+        expiresAt: Date.now() + data.expires_in * 1000,
+        requestCount: 0
       }
+      access_token = data.access_token
+    }
+
+    // Parse and validate search query parameters.
+    const params = new URL(req.url, `http://${req.headers.host}`).searchParams
+    const query = params.get('query')?.trim()
+    if (!query) {
+      return res.status(400).json({ error: 'Missing or empty query' })
+    }
+
+    // Track API usage.
+    tokenCache.requestCount++
+
+    // Construct search parameters for Reddit API.
+    const searchParams = new URLSearchParams({
+      query, // Search term
+      raw_json: '1', // Get raw JSON response
+      include_over_18: params.get('include_over_18') || 'false', // NSFW content flag
+      include_profiles: 'false', // Exclude user profiles
+      typeahead_active: 'true' // Enable autocomplete
     })
 
-    // If Reddit returns an error, forward it.
-    if (!redditResponse.ok) {
-      const errorData = await redditResponse.json()
-      return res.status(redditResponse.status).json(errorData)
+    // Make authenticated request to Reddit's search API.
+    const searchResponse = await fetch(
+      `${CONFIG.REDDIT_SEARCH_URL}?${searchParams}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          'User-Agent': CONFIG.USER_AGENT
+        }
+      }
+    )
+
+    // Handle Reddit API errors.
+    if (!searchResponse.ok) {
+      throw new Error(`Reddit API error: ${searchResponse.status}`)
     }
 
-    // Parse and return the successful JSON response.
-    const data = await redditResponse.json()
+    // Return successful response.
+    const data = await searchResponse.json()
     return res.status(200).json(data)
   } catch (error) {
-    console.error('Error in /api/search', error)
-    res.setHeader('Content-Type', 'application/json')
-    res.setHeader('X-Robots-Tag', 'noindex')
-    return res.status(500).json({ error: 'Internal Server Error' })
+    // Detailed error logging in development.
+    console.error('[Search API Error]:', error.message)
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message:
+        process.env.NODE_ENV === 'development' ? error.message : undefined
+    })
   }
 }

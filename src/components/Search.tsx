@@ -33,11 +33,15 @@ export function Search() {
   }, [debouncedSetQuery])
 
   // Fetch subreddits based on the debounced query.
-  const { data: results = [], isFetching: isFetchingSearch } =
-    useSearchSubredditsQuery(
-      { query: debouncedQuery, enableNsfw },
-      { skip: debouncedQuery.length < 3 }
-    )
+  const {
+    data: results = [],
+    isFetching,
+    isSuccess,
+    isError
+  } = useSearchSubredditsQuery(
+    { query: debouncedQuery, enableNsfw },
+    { skip: debouncedQuery.length < 3 }
+  )
 
   /**
    * Handle search input change.
@@ -55,6 +59,9 @@ export function Search() {
     },
     [debouncedSetQuery]
   )
+
+  // Helper to determine if search is active
+  const isSearching = debouncedQuery.length >= 3
 
   return (
     <>
@@ -77,26 +84,35 @@ export function Search() {
 
         {/* Spinner icon when fetching search results. */}
         <div className="absolute top-1/2 right-2 -translate-y-1/2">
-          {isFetchingSearch && <IconSpinner />}
+          {isFetching && <IconSpinner />}
         </div>
       </div>
 
       <div className="mt-2 max-h-[45vh] space-y-1 overflow-y-auto overscroll-contain lg:max-h-[38vh]">
-        {/* Display search results or popular subreddits. */}
-        {debouncedQuery.length > 0 ? (
-          debouncedQuery.length < 3 ? (
-            <div className="p-4 text-center text-sm text-zinc-500">
-              Please enter at least 3 characters to search
-            </div>
-          ) : results.length > 0 ? (
-            results.map((subreddit) => (
-              <SubredditItem key={subreddit.id} subreddit={subreddit} />
-            ))
-          ) : (
-            <div className="p-4 text-center text-sm text-zinc-500">
-              No subreddits found. Try searching again.
-            </div>
-          )
+        {debouncedQuery.length > 0 && debouncedQuery.length < 3 ? (
+          <div className="p-4 text-center text-sm text-zinc-500">
+            Please enter at least 3 characters to search
+          </div>
+        ) : isSearching ? (
+          <>
+            {isFetching ? (
+              <div className="p-4 text-center text-sm text-zinc-500">
+                Searching subreddits...
+              </div>
+            ) : isError ? (
+              <div className="p-4 text-center text-sm text-zinc-500">
+                Failed to fetch subreddits. Please try again.
+              </div>
+            ) : isSuccess && results.length === 0 ? (
+              <div className="p-4 text-center text-sm text-zinc-500">
+                No subreddits found. Try searching again.
+              </div>
+            ) : (
+              results.map((subreddit) => (
+                <SubredditItem key={subreddit.id} subreddit={subreddit} />
+              ))
+            )}
+          </>
         ) : (
           <PopularSubreddits />
         )}
