@@ -2,7 +2,7 @@ import debounce from 'debounce'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { IconSpinner } from '../icons/Spinner'
 import { useAppSelector } from '../store/hooks'
-import { useSearchSubredditsQuery } from '../store/services/redditApi'
+import { useSearchSubredditsQuery } from '../store/services/privateApi'
 import { PopularSubreddits } from './Popular'
 import { SubredditItem } from './SubredditItem'
 

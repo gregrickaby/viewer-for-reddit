@@ -2,7 +2,7 @@ import debounce from 'debounce'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { IconSpinner } from '../icons/Spinner'
-import { useGetPopularSubredditsQuery } from '../store/services/redditApi'
+import { useGetPopularSubredditsQuery } from '../store/services/publicApi'
 import { SubredditItem } from './SubredditItem'
 
 /**

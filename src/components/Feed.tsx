@@ -3,7 +3,7 @@ import { useInView } from 'react-intersection-observer'
 import { IconSpinner } from '../icons/Spinner'
 import { toggleAppLoading, toggleSearch } from '../store/features/settingsSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { useGetSubredditPostsQuery } from '../store/services/redditApi'
+import { useGetSubredditPostsQuery } from '../store/services/publicApi'
 import { Post } from './Post'
 
 /**
