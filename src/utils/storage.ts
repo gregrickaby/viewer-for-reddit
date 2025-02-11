@@ -21,12 +21,11 @@ export function getInitialSettings(): UserSettings {
     currentSort: 'hot',
     currentSubreddit: 'aww',
     darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
-    enableNsfw: false,
+    enableNsfw: true,
     isAppLoading: true,
     isMuted: true,
     likedPosts: {},
     recentSubreddits: [],
-    // Modal states are always reset to false on load.
     showAbout: false,
     showRecent: false,
     showSearch: false,
