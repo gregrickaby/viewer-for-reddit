@@ -119,6 +119,7 @@ export interface RedditPost {
   permalink: string
   subreddit: string
   subreddit_name_prefixed: string
+  subreddit_subscribers: number
   url: string
 
   // Post metadata.
@@ -175,11 +176,11 @@ export interface RedditResponse {
  * Subreddit information
  */
 export interface RedditSubreddit {
-  id: string
+  id?: string
   display_name: string
-  icon_img: string
+  icon_img?: string
   subscribers: number
-  public_description: string
+  public_description?: string
   over18: boolean
 }
 
