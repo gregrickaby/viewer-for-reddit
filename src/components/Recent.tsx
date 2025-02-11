@@ -44,15 +44,15 @@ export default function Recent() {
 
       <button
         aria-label="Clear search history"
-        className="mt-8 flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+        className="mt-8 flex-1 rounded bg-red-400 px-4 py-2 text-white hover:bg-red-600"
         onClick={() => {
-          if (confirm('Are you sure? This will clear your search history!')) {
+          if (confirm('Are you sure? This will clear your viewing history!')) {
             dispatch(clearRecentSubreddits())
             dispatch(toggleRecent())
           }
         }}
       >
-        Clear History
+        Clear Viewing History
       </button>
     </div>
   )

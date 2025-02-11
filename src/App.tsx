@@ -78,7 +78,7 @@ export default function App() {
         onClose={function handleCloseRecent() {
           dispatch(toggleRecent())
         }}
-        title="Recent Searches"
+        title="Viewing History"
       >
         <Recent />
       </Modal>
