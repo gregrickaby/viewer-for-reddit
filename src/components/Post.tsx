@@ -85,10 +85,12 @@ export const Post = memo(function Post({
         </div>
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 to-transparent" />
+        {post.data.post_hint && (
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 to-transparent" />
+        )}
 
         {/* Post Meta */}
-        <div className="absolute right-0 bottom-5 left-0 z-20 flex w-9/12 flex-col gap-2 p-4 text-white">
+        <div className="absolute right-0 bottom-5 left-0 z-20 flex w-9/12 flex-col gap-2 p-4">
           {/* Current Sub */}
           <button
             aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
@@ -115,7 +117,7 @@ export const Post = memo(function Post({
           </div>
 
           {/* Post Title */}
-          <h2 className="line-clamp-3 overflow-hidden text-ellipsis">
+          <h2 className="line-clamp-4 overflow-hidden text-ellipsis">
             <a
               className="text-xl font-bold"
               href={`https://reddit.com${post.data.permalink}`}

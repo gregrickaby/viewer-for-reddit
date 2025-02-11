@@ -3,6 +3,7 @@ import { IconComments } from '../icons/Comments'
 import { IconHistory } from '../icons/History'
 import { IconHome } from '../icons/Home'
 import { IconMute } from '../icons/Mute'
+import { IconPopular } from '../icons/Popular'
 import { IconSearch } from '../icons/Search'
 import { IconSettings } from '../icons/Settings'
 import { IconSpeaker } from '../icons/Speaker'
@@ -51,24 +52,27 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
    * Dispatches actions to toggle the loading state and set the current subreddit to popular.
    * Uses delays to ensure smooth transitions.
    */
-  const handleHome = useCallback(() => {
-    // Show loading state immediately.
-    dispatch(toggleAppLoading())
-    // Switch to popular.
-    dispatch(setCurrentSubreddit('all'))
-    // Reset API state after a short delay.
-    setTimeout(() => {
-      dispatch(publicApi.util.resetApiState())
-      // Hide loading state after another delay.
+  const handleClick = useCallback(
+    (sub: string) => {
+      // Show loading state immediately.
+      dispatch(toggleAppLoading())
+      // Switch to popular.
+      dispatch(setCurrentSubreddit(sub))
+      // Reset API state after a short delay.
       setTimeout(() => {
-        dispatch(toggleAppLoading())
-      }, 500)
-    }, 300)
-  }, [dispatch])
+        dispatch(publicApi.util.resetApiState())
+        // Hide loading state after another delay.
+        setTimeout(() => {
+          dispatch(toggleAppLoading())
+        }, 500)
+      }, 300)
+    },
+    [dispatch]
+  )
 
   // Common button styles.
   const buttonStyles =
-    'transition-all hover:scale-110 text-center text-white hover:text-white/90 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+    'transition-all hover:scale-110 text-center hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
 
   return (
     <div
@@ -84,9 +88,20 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
           <button
             aria-label="show all posts"
             className={buttonStyles}
-            onClick={handleHome}
+            onClick={() => handleClick('all')}
           >
             <IconHome />
+          </button>
+        </Tooltip>
+
+        {/* Popular button. */}
+        <Tooltip label="r/popular">
+          <button
+            aria-label="show popular posts"
+            className={buttonStyles}
+            onClick={() => handleClick('popular')}
+          >
+            <IconPopular />
           </button>
         </Tooltip>
 
@@ -135,7 +150,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         </Tooltip>
 
         {/* Divider */}
-        <div></div>
+        <div className="py-8"></div>
 
         {/* Upvotes button. */}
         <Tooltip label="Upvotes">
