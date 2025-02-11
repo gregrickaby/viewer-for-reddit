@@ -1,7 +1,7 @@
 /**
- * The up icon.
+ * The time icon.
  */
-export function IconUp() {
+export function IconTime() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -13,12 +13,11 @@ export function IconUp() {
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="icon icon-tabler icons-tabler-outline icon-tabler-arrow-up"
+      className="icon icon-tabler icons-tabler-outline icon-tabler-clock"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M12 5l0 14" />
-      <path d="M18 11l-6 -6" />
-      <path d="M6 11l6 -6" />
+      <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+      <path d="M12 7v5l3 3" />
     </svg>
   )
 }

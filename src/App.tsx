@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
+import { Controls } from './components/Controls'
 import { ErrorFallback } from './components/ErrorFallback'
 import { Feed } from './components/Feed'
 import { Modal } from './components/Modal'
@@ -47,6 +48,8 @@ export default function App() {
           <Feed />
         </ErrorBoundary>
       </main>
+
+      <Controls />
 
       {/* Settings Modal. */}
       <Modal

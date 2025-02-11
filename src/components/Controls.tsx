@@ -1,5 +1,4 @@
 import { useCallback } from 'react'
-import { IconComments } from '../icons/Comments'
 import { IconHistory } from '../icons/History'
 import { IconHome } from '../icons/Home'
 import { IconMute } from '../icons/Mute'
@@ -7,7 +6,6 @@ import { IconPopular } from '../icons/Popular'
 import { IconSearch } from '../icons/Search'
 import { IconSettings } from '../icons/Settings'
 import { IconSpeaker } from '../icons/Speaker'
-import { IconUp } from '../icons/Up'
 import {
   setCurrentSubreddit,
   toggleAppLoading,
@@ -18,34 +16,19 @@ import {
 } from '../store/features/settingsSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { publicApi } from '../store/services/publicApi'
-import type { RedditPost } from '../types/reddit'
-import { formatNumber } from '../utils/numbers'
 import { Tooltip } from './Tooltip'
-
-/**
- * ControlsProps interface.
- */
-interface ControlsProps {
-  /* Required. Reddit post data */
-  post: RedditPost
-  /* Optional. Is current post */
-  isCurrent?: boolean
-}
 
 /**
  * Controls Component.
  *
  * @param {RedditPost} post - Reddit post data
  */
-export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
+export function Controls() {
   // Get dispatch function.
   const dispatch = useAppDispatch()
 
   // Get mute state.
   const mute = useAppSelector((state) => state.settings.isMuted)
-
-  // Construct the post URL for external links.
-  const postUrl = `https://reddit.com${post.permalink}`
 
   /**
    * Home button handler.
@@ -72,17 +55,11 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
 
   // Common button styles.
   const buttonStyles =
-    'transition-all hover:scale-110 text-center hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+    'rounded-xl bg-white/50 dark:bg-black/70 p-1.5 text-black dark:text-white hover:scale-110 hover:box-shadow-lg'
 
   return (
-    <div
-      className={`fixed right-0 bottom-5 z-[100] transition-opacity duration-200 lg:right-10 ${
-        isCurrent
-          ? 'pointer-events-auto opacity-100'
-          : 'pointer-events-none opacity-0'
-      }`}
-    >
-      <div className="flex min-w-22 flex-col items-center gap-6 p-4">
+    <div className="fixed right-3 bottom-18 z-[100] transition-opacity duration-200 lg:right-10">
+      <div className="flex flex-col items-center gap-6">
         {/* Home button. */}
         <Tooltip label="r/all">
           <button
@@ -151,30 +128,6 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
 
         {/* Divider */}
         <div className="py-8"></div>
-
-        {/* Upvotes button. */}
-        <Tooltip label="Upvotes">
-          <button
-            aria-label="view post on reddit.com"
-            className={`flex flex-col items-center gap-1 ${buttonStyles}`}
-            onClick={() => window.open(postUrl, '_blank')}
-          >
-            <IconUp />
-            <span className="text-sm">{formatNumber(post.ups)}</span>
-          </button>
-        </Tooltip>
-
-        {/* Comments button. */}
-        <Tooltip label="Comments">
-          <button
-            aria-label="view comments on reddit.com"
-            className={`flex flex-col items-center gap-1 ${buttonStyles}`}
-            onClick={() => window.open(postUrl, '_blank')}
-          >
-            <IconComments />
-            <span className="text-sm">{formatNumber(post.num_comments)}</span>
-          </button>
-        </Tooltip>
       </div>
     </div>
   )

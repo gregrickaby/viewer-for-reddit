@@ -1,5 +1,8 @@
 import { memo, useCallback } from 'react'
+import { IconComments } from '../icons/Comments'
 import { IconReddit } from '../icons/Reddit'
+import { IconTime } from '../icons/Time'
+import { IconUp } from '../icons/Up'
 import { IconUser } from '../icons/User'
 import {
   addRecentSubreddit,
@@ -7,9 +10,8 @@ import {
 } from '../store/features/settingsSlice'
 import { useAppDispatch } from '../store/hooks'
 import type { RedditChild } from '../types/reddit'
-import { formatTimeAgo } from '../utils/numbers'
+import { formatNumber, formatTimeAgo } from '../utils/numbers'
 import { sanitizeText } from '../utils/sanitizeText'
-import { Controls } from './Controls'
 import { Media } from './Media'
 
 interface PostProps {
@@ -36,13 +38,11 @@ interface PostProps {
  *
  * @param {PostProps} props - Component props.
  * @param {RedditChild} props.post - Reddit post data.
- * @param {(node?: Element | null) => void} [props.observerRef] - Callback ref for intersection observer.
  * @param {boolean} [props.isCurrent=false] - Indicates if the post is currently in view.
  */
 export const Post = memo(function Post({
   post,
-  observerRef,
-  isCurrent = false
+  observerRef
 }: Readonly<PostProps>) {
   // Get the dispatch function.
   const dispatch = useAppDispatch()
@@ -84,13 +84,8 @@ export const Post = memo(function Post({
           <Media post={post.data} />
         </div>
 
-        {/* Gradient overlay */}
-        {post.data.post_hint && (
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 to-transparent" />
-        )}
-
         {/* Post Meta */}
-        <div className="absolute right-0 bottom-5 left-0 z-20 flex w-9/12 flex-col gap-2 p-4">
+        <div className="absolute right-0 bottom-0 z-20 flex min-h-48 w-full flex-col items-start justify-end gap-2 bg-gradient-to-t from-black/95 to-transparent p-6">
           {/* Current Sub */}
           <button
             aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
@@ -114,14 +109,27 @@ export const Post = memo(function Post({
               {sanitizeText(post.data.author)}
             </a>
             <span>&middot;</span>
-            <time>{formatTimeAgo(post.data.created_utc)}</time>
+            <time className="flex items-center gap-1">
+              <IconTime />
+              {formatTimeAgo(post.data.created_utc)}
+            </time>
+            <span>&middot;</span>
+            <span className="flex items-center gap-1">
+              <IconComments />
+              {formatNumber(post.data.num_comments)}
+            </span>
+            <span>&middot;</span>
+            <span className="flex items-center gap-1">
+              <IconUp />
+              {formatNumber(post.data.ups)}
+            </span>
           </div>
 
           {/* Post Title */}
-          <h2 className="line-clamp-5 overflow-hidden text-ellipsis">
+          <h2 className="max-w-70 overflow-hidden lg:max-w-full">
             <a
               aria-label="view post on reddit"
-              className="text-xl leading-6 font-bold"
+              className="line-clamp-5 text-xl leading-6 font-bold text-ellipsis"
               href={`https://reddit.com${post.data.permalink}`}
               rel="noopener noreferrer"
               target="_blank"
@@ -130,9 +138,6 @@ export const Post = memo(function Post({
             </a>
           </h2>
         </div>
-
-        {/* Post Controls */}
-        <Controls post={post.data} isCurrent={isCurrent} />
       </div>
     </article>
   )
