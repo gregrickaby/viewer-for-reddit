@@ -1,6 +1,8 @@
 import { memo, useCallback } from 'react'
 import { IconReddit } from '../icons/Reddit'
 import { IconUser } from '../icons/User'
+import { setCurrentSubreddit } from '../store/features/settingsSlice'
+import { useAppDispatch } from '../store/hooks'
 import type { RedditChild } from '../types/reddit'
 import { formatTimeAgo } from '../utils/numbers'
 import { sanitizeText } from '../utils/sanitizeText'
@@ -39,6 +41,10 @@ export const Post = memo(function Post({
   observerRef,
   isCurrent = false
 }: Readonly<PostProps>) {
+  // Get the dispatch function.
+  const dispatch = useAppDispatch()
+
+  // Set a ref for the current post.
   const setRef = useCallback(
     (node: Element | null) => {
       if (observerRef) observerRef(node)
@@ -63,10 +69,17 @@ export const Post = memo(function Post({
 
         {/* Post Meta */}
         <div className="absolute right-0 bottom-5 left-0 z-20 flex w-9/12 flex-col gap-2 p-4 text-white">
-          <div className="flex items-center gap-1 pb-2 text-xs font-semibold">
+          {/* Current Sub */}
+          <button
+            aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
+            className="flex items-center gap-1 pb-2 text-xs font-semibold"
+            onClick={() => dispatch(setCurrentSubreddit(post.data.subreddit))}
+          >
             <IconReddit />
             {post.data.subreddit_name_prefixed}
-          </div>
+          </button>
+
+          {/* Post Author */}
           <div className="flex items-center gap-1 text-xs">
             <a
               className="flex items-center gap-1"
@@ -81,6 +94,7 @@ export const Post = memo(function Post({
             <time>{formatTimeAgo(post.data.created_utc)}</time>
           </div>
 
+          {/* Post Title */}
           <h2 className="line-clamp-3 overflow-hidden text-ellipsis">
             <a
               className="text-xl font-bold"
@@ -93,7 +107,7 @@ export const Post = memo(function Post({
           </h2>
         </div>
 
-        {/* Always show Controls */}
+        {/* Post Controls */}
         <Controls post={post.data} isCurrent={isCurrent} />
       </div>
     </article>
