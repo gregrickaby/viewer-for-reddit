@@ -22,7 +22,7 @@ export default function Recent() {
   if (recentSubreddits.length === 0) {
     return (
       <div className="flex flex-col gap-4 p-4 text-center text-zinc-500">
-        You don't have any search history yet.
+        You don't have any viewing history yet.
         <button
           aria-label="Search for subreddits"
           className="mt-8 flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
