@@ -147,7 +147,7 @@ export const Media = memo(function MediaContent({
       <div className="absolute inset-0 flex">
         <div className="z-50 max-w-[77%] overflow-y-auto py-8 pl-4 lg:w-full">
           <div
-            className="line-clamp-24"
+            className="line-clamp-20"
             dangerouslySetInnerHTML={{ __html: sanitizeText(post.selftext) }}
           />
         </div>
