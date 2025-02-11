@@ -55,7 +55,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
     // Show loading state immediately.
     dispatch(toggleAppLoading())
     // Switch to popular.
-    dispatch(setCurrentSubreddit('popular'))
+    dispatch(setCurrentSubreddit('all'))
     // Reset API state after a short delay.
     setTimeout(() => {
       dispatch(publicApi.util.resetApiState())
@@ -80,9 +80,9 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
     >
       <div className="flex min-w-22 flex-col items-center gap-6 p-4">
         {/* Home button. */}
-        <Tooltip label="Go to r/Popular">
+        <Tooltip label="r/all">
           <button
-            aria-label="show popular posts"
+            aria-label="show all posts"
             className={buttonStyles}
             onClick={handleHome}
           >
