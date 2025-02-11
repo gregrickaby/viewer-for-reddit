@@ -46,7 +46,7 @@ export function Modal({
       />
 
       {/* Modal content container. */}
-      <div className="relative z-50 w-full max-w-3xl rounded-b-lg bg-white p-6 text-black shadow-xl dark:bg-zinc-900 dark:text-white">
+      <div className="relative z-50 w-full max-w-xl rounded-b-lg bg-white p-6 text-black shadow-xl dark:bg-zinc-900 dark:text-white">
         {/* Modal header with title and close button. */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-bold">{title}</h2>
