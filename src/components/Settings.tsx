@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useMemo } from 'react'
 import {
   resetSettings,
@@ -38,14 +39,16 @@ export default function Settings() {
           aria-label="Toggle dark mode"
           aria-pressed={darkMode}
           onClick={() => dispatch(toggleDarkMode())}
-          className={`${
+          className={clsx(
+            'relative inline-flex h-6 w-11 rounded-full transition-colors',
             darkMode ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-500'
-          } relative inline-flex h-6 w-11 rounded-full transition-colors`}
+          )}
         >
           <span
-            className={`${
+            className={clsx(
+              'mt-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
               darkMode ? 'translate-x-6' : 'translate-x-1'
-            } mt-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+            )}
           />
         </button>
       </div>
@@ -56,15 +59,17 @@ export default function Settings() {
         <button
           aria-label="Toggle NSFW content"
           aria-pressed={enableNsfw}
-          className={`${
+          className={clsx(
+            'relative inline-flex h-6 w-11 rounded-full transition-colors',
             enableNsfw ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-500'
-          } relative inline-flex h-6 w-11 rounded-full transition-colors`}
+          )}
           onClick={() => dispatch(toggleNsfw())}
         >
           <span
-            className={`${
+            className={clsx(
+              'mt-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
               enableNsfw ? 'translate-x-6' : 'translate-x-1'
-            } mt-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+            )}
           />
         </button>
       </div>
@@ -94,7 +99,7 @@ export default function Settings() {
       <div className="flex flex-col gap-4 border-t pt-4">
         <button
           aria-label="Save settings"
-          className="flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          className="flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
           onClick={() => {
             dispatch(toggleSettings())
           }}
@@ -104,7 +109,7 @@ export default function Settings() {
 
         <button
           aria-label="Reset all settings"
-          className="flex-1 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+          className="flex-1 rounded bg-red-400 px-4 py-2 text-white hover:bg-red-600"
           onClick={() => {
             if (confirm('Are you sure? This will clear all your settings!')) {
               dispatch(resetSettings())
@@ -112,17 +117,17 @@ export default function Settings() {
             }
           }}
         >
-          Reset
+          Reset all settings and clear history
         </button>
 
         <button
           aria-label="View About"
-          className="text-center text-white"
+          className="text-center font-bold underline"
           onClick={() => {
             dispatch(toggleAbout())
           }}
         >
-          About
+          About Reddit Viewer
         </button>
       </div>
     </div>
