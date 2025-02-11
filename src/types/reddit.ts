@@ -132,6 +132,7 @@ export interface RedditPost {
   over_18: boolean
   is_video: boolean
   index: number
+  selftext?: string
 
   // Media content.
   preview?: {
