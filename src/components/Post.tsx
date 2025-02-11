@@ -1,7 +1,10 @@
 import { memo, useCallback } from 'react'
 import { IconReddit } from '../icons/Reddit'
 import { IconUser } from '../icons/User'
-import { setCurrentSubreddit } from '../store/features/settingsSlice'
+import {
+  addRecentSubreddit,
+  setCurrentSubreddit
+} from '../store/features/settingsSlice'
 import { useAppDispatch } from '../store/hooks'
 import type { RedditChild } from '../types/reddit'
 import { formatTimeAgo } from '../utils/numbers'
@@ -52,6 +55,23 @@ export const Post = memo(function Post({
     [observerRef]
   )
 
+  /**
+   * Handle subreddit clicks.
+   */
+  const handleSubRedditClick = useCallback(() => {
+    // Send the user to this subreddit.
+    dispatch(setCurrentSubreddit(post.data.subreddit))
+
+    // Update history.
+    dispatch(
+      addRecentSubreddit({
+        display_name: post.data.subreddit,
+        over18: post.data.over_18,
+        subscribers: post.data.subreddit_subscribers
+      })
+    )
+  }, [dispatch, post.data])
+
   return (
     <article
       ref={setRef}
@@ -73,7 +93,7 @@ export const Post = memo(function Post({
           <button
             aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
             className="flex items-center gap-1 pb-2 text-xs font-semibold"
-            onClick={() => dispatch(setCurrentSubreddit(post.data.subreddit))}
+            onClick={handleSubRedditClick}
           >
             <IconReddit />
             {post.data.subreddit_name_prefixed}
