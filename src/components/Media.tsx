@@ -2,6 +2,7 @@ import { memo, useCallback, useMemo } from 'react'
 import { IconNoMedia } from '../icons/NoMedia'
 import type { RedditChild } from '../types/reddit'
 import { getCachedUrl, prefetchMedia } from '../utils/cache'
+import { sanitizeText } from '../utils/sanitizeText'
 import { HlsPlayer } from './HlsPlayer'
 import { ResponsiveImage } from './ResponsiveImage'
 
@@ -14,6 +15,8 @@ import { ResponsiveImage } from './ResponsiveImage'
  * 3. Reddit-hosted videos (HLS)
  * 4. Standard images
  * 5. Rich media embeds
+ * 6. Article links
+ * 7. Text posts
  *
  * Features:
  * - Automatic format detection
@@ -108,6 +111,48 @@ export const Media = memo(function MediaContent({
           )
         : null
     }
+
+    case 'link': {
+      // Handle article links with media preview
+      if (post.preview?.images[0]?.source.url) {
+        const thumbnail = post.preview.images[0].resolutions[0]?.url
+        if (thumbnail) prefetchMedia(thumbnail)
+        return (
+          <a
+            aria-label="View Article"
+            className="relative block h-full w-full"
+            href={post.url}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <ResponsiveImage
+              src={post.preview.images[0].source.url}
+              thumbnail={thumbnail}
+            />
+            <div className="absolute inset-0 z-50 flex items-center justify-center">
+              <div className="rounded bg-black/75 px-4 py-2 text-sm text-white">
+                View Article ↗
+              </div>
+            </div>
+          </a>
+        )
+      }
+      break
+    }
+  }
+
+  // Handle text posts
+  if (post.selftext) {
+    return (
+      <div className="absolute inset-0 flex">
+        <div className="z-50 max-w-[77%] overflow-y-auto py-8 pl-4 lg:w-full">
+          <div
+            className="line-clamp-24"
+            dangerouslySetInnerHTML={{ __html: sanitizeText(post.selftext) }}
+          />
+        </div>
+      </div>
+    )
   }
 
   // Fallback for unsupported content.
