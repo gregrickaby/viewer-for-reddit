@@ -76,11 +76,11 @@ export const Post = memo(function Post({
     <article
       ref={setRef}
       data-post-id={post.data.id}
-      className="relative flex h-[100dvh] w-full min-w-[400px] snap-start items-center justify-center"
+      className="relative flex h-[100dvh] w-full snap-start items-center justify-center"
     >
-      <div className="relative flex h-full min-w-[400px] items-center justify-center">
+      <div className="relative flex h-full items-center justify-center">
         {/* Media content */}
-        <div className="relative h-full w-full min-w-[400px]">
+        <div className="relative h-full w-full min-w-[400px] lg:min-w-[600px]">
           <Media post={post.data} />
         </div>
 

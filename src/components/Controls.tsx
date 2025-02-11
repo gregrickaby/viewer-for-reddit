@@ -117,9 +117,9 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
         </Tooltip>
 
         {/* Recent button. */}
-        <Tooltip label="Recent Searches">
+        <Tooltip label="Viewing History">
           <button
-            aria-label="view recent searches"
+            aria-label="viewing history"
             className={buttonStyles}
             onClick={() => dispatch(toggleRecent())}
           >
