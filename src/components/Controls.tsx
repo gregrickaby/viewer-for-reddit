@@ -16,7 +16,7 @@ import {
   toggleSettings
 } from '../store/features/settingsSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { redditApi } from '../store/services/redditApi'
+import { publicApi } from '../store/services/publicApi'
 import type { RedditPost } from '../types/reddit'
 import { formatNumber } from '../utils/numbers'
 import { Tooltip } from './Tooltip'
@@ -58,7 +58,7 @@ export function Controls({ post, isCurrent = false }: Readonly<ControlsProps>) {
     dispatch(setCurrentSubreddit('popular'))
     // Reset API state after a short delay.
     setTimeout(() => {
-      dispatch(redditApi.util.resetApiState())
+      dispatch(publicApi.util.resetApiState())
       // Hide loading state after another delay.
       setTimeout(() => {
         dispatch(toggleAppLoading())
