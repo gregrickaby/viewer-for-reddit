@@ -28,6 +28,9 @@ export const publicApi = createApi({
         params: { after, limit: 25, raw_json: 1 }
       }),
 
+      // Keep the data for 60 seconds.
+      keepUnusedDataFor: 60,
+
       // Filter out stickied posts.
       transformResponse: (response: RedditResponse) => ({
         ...response,
@@ -77,6 +80,9 @@ export const publicApi = createApi({
         url: '/subreddits/popular.json',
         params: { after, limit: 25, raw_json: 1 }
       }),
+
+      // Keep the data for 60 seconds.
+      keepUnusedDataFor: 60,
 
       // Sort subreddits by subscribers count.
       transformResponse: (response: RedditSearchResponse) => ({
