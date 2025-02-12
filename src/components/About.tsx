@@ -38,7 +38,7 @@ export default function About() {
         </a>
       </p>
 
-      <footer className="flex items-center justify-between border-t pt-4">
+      <footer className="flex flex-col items-center gap-4 border-t pt-4 lg:flex-row lg:justify-between">
         <p>
           Made with ❤️ by{' '}
           <a
