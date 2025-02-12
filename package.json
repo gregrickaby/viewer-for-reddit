@@ -54,7 +54,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^15.14.0",
+    "globals": "^15.15.0",
     "jsdom": "^26.0.0",
     "lefthook": "^1.10.10",
     "prettier": "^3.5.0",
@@ -66,5 +66,10 @@
     "vite": "^6.1.0",
     "vite-plugin-vercel": "^9.0.5",
     "vitest": "^3.0.5"
+  },
+  "overrides": {
+    "glob": "^11.0.1",
+    "path-to-regexp": "^8.2.0",
+    "undici": "^6.21.1"
   }
 }
