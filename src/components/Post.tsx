@@ -74,9 +74,9 @@ export const Post = memo(function Post({
 
   return (
     <article
-      ref={setRef}
-      data-post-id={post.data.id}
       className="relative flex h-[100dvh] w-full snap-start items-center justify-center"
+      data-post-id={post.data.id}
+      ref={setRef}
     >
       <div className="relative flex h-full items-center justify-center">
         {/* Media content */}
