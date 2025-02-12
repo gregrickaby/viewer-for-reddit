@@ -6,16 +6,23 @@ import sanitizeHtml from 'sanitize-html'
  * @param text - The text to sanitize.
  */
 export function sanitizeText(text: string): string {
-  // If there is no text, return an empty string.
-  if (!text) {
-    return ''
-  }
-
-  return sanitizeHtml(text, {
-    allowedTags: [], // No HTML tags allowed
-    allowedAttributes: {}, // No attributes allowed
-    parser: {
-      decodeEntities: true // Decode HTML entities
-    }
+  return sanitizeHtml(text || '', {
+    allowedTags: [
+      'b',
+      'i',
+      'strong',
+      'em',
+      'a',
+      'p',
+      'br',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'code',
+      'pre'
+    ],
+    allowedAttributes: { a: ['href', 'target'] },
+    parser: { decodeEntities: true }
   })
 }
