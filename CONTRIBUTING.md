@@ -74,21 +74,7 @@ Take note of the `client id` and `secret` values. You will need these in a momen
 cp .env.example .env.local
 ```
 
-3. Add your token to the `.env.local` file:
-
-```text
-# Your Reddit Client ID
-# Get one here: https://www.reddit.com/prefs/apps
-REDDIT_CLIENT_ID="YOUR-TOKEN-HERE"
-
-# Search Secret
-NEXT_PUBLIC_SEARCH_SECRET="ANY-RANDOM-STRING-HERE"
-
-# Used on production to verify the site with Google Webmaster Tools.
-NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION="YOUR-TOKEN-HERE"
-```
-
-> The `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is only needed on Production. You can leave it as-is for local development.
+3. Add your Reddit tokens to the `.env.local` file.
 
 ---
 

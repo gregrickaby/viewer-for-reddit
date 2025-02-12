@@ -1,7 +1,7 @@
 {
   "name": "Reddit Viewer",
   "short_name": "RV",
-  "description": "The ultimate Reddit app: dynamic, TikTok-style, fast & tracking-free!",
+  "description": "The ultimate Reddit viewing app",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone",

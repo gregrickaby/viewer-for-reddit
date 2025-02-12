@@ -1,6 +1,6 @@
 # Viewer for Reddit
 
-The ultimate Reddit app: dynamic, TikTok-style, fast & tracking-free!
+The ultimate Reddit viewing app
 
 [https://reddit-viewer.com/](https://reddit-viewer.com/)
 
