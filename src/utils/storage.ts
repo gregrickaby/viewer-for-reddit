@@ -27,6 +27,7 @@ export function getInitialSettings(): UserSettings {
     isMuted: true,
     recent: [],
     showAbout: false,
+    showFavorites: false,
     showRecent: false,
     showSearch: false,
     showSettings: false

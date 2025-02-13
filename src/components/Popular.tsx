@@ -98,7 +98,11 @@ export function PopularSubreddits() {
 
         return (
           <div key={subreddit.id} ref={isLastItem ? endOfListRef : undefined}>
-            <SubredditItem subreddit={subreddit} closeSearchOnSelect={true} />
+            <SubredditItem
+              closeOnSelect={true}
+              listType="popular"
+              subreddit={subreddit}
+            />
           </div>
         )
       })}

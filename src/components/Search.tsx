@@ -114,7 +114,11 @@ export function Search() {
               </div>
             ) : (
               results.map((subreddit) => (
-                <SubredditItem key={subreddit.id} subreddit={subreddit} />
+                <SubredditItem
+                  key={subreddit.id}
+                  listType="search"
+                  subreddit={subreddit}
+                />
               ))
             )}
           </>
