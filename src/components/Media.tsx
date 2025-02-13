@@ -130,7 +130,7 @@ export const Media = memo(function MediaContent({
               thumbnail={thumbnail}
             />
             <div className="absolute inset-0 z-50 flex items-center justify-center">
-              <div className="rounded bg-black/75 px-4 py-2 text-sm text-white">
+              <div className="rounded bg-black/75 px-4 py-2 text-sm">
                 View Article ↗
               </div>
             </div>
@@ -162,7 +162,7 @@ export const Media = memo(function MediaContent({
       <p className="w-72 text-lg">
         This post is text-only or has unsupported media.
         <div className="absolute inset-0 z-50 mt-44 flex items-center justify-center">
-          <div className="rounded bg-black/75 px-4 py-2 text-sm text-white">
+          <div className="rounded bg-black/75 px-4 py-2 text-sm">
             <a href={post.url} rel="noopener noreferrer" target="_blank">
               View on Reddit.com instead ↗
             </a>
