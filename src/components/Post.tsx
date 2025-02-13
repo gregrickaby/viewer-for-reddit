@@ -1,18 +1,22 @@
 import { memo, useCallback } from 'react'
 import { IconComments } from '../icons/Comments'
+import { IconHeart } from '../icons/Heart'
+import { IconHeartFilled } from '../icons/HeartFilled'
 import { IconReddit } from '../icons/Reddit'
 import { IconTime } from '../icons/Time'
 import { IconUp } from '../icons/Up'
 import { IconUser } from '../icons/User'
 import {
   addRecentSubreddit,
-  setCurrentSubreddit
+  setCurrentSubreddit,
+  toggleFavoriteSubreddit
 } from '../store/features/settingsSlice'
-import { useAppDispatch } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
 import type { RedditChild } from '../types/reddit'
 import { formatNumber, formatTimeAgo } from '../utils/numbers'
 import { sanitizeText } from '../utils/sanitizeText'
 import { Media } from './Media'
+import { Tooltip } from './Tooltip'
 
 interface PostProps {
   /** Reddit post data. */
@@ -47,6 +51,13 @@ export const Post = memo(function Post({
   // Get the dispatch function.
   const dispatch = useAppDispatch()
 
+  // Add selector to check if subreddit is in favorites
+  const isFavorite = useAppSelector((state) =>
+    state.settings.favorites.some(
+      (sub) => sub.display_name === post.data.subreddit
+    )
+  )
+
   // Set a ref for the current post.
   const setRef = useCallback(
     (node: Element | null) => {
@@ -72,6 +83,19 @@ export const Post = memo(function Post({
     )
   }, [dispatch, post.data])
 
+  /**
+   * Handle toggling favorites.
+   */
+  const handleFavoriteClick = useCallback(() => {
+    dispatch(
+      toggleFavoriteSubreddit({
+        display_name: post.data.subreddit,
+        over18: post.data.over_18,
+        subscribers: post.data.subreddit_subscribers
+      })
+    )
+  }, [dispatch, post.data])
+
   return (
     <article
       className="relative flex h-[100dvh] w-full snap-start items-center justify-center"
@@ -86,15 +110,34 @@ export const Post = memo(function Post({
 
         {/* Post Meta */}
         <div className="absolute right-0 bottom-0 z-20 flex min-h-48 w-full flex-col items-start justify-end gap-2 bg-gradient-to-t from-black/95 to-transparent p-6">
-          {/* Current Sub */}
-          <button
-            aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
-            className="flex items-center gap-1 pb-3 text-xs font-semibold"
-            onClick={handleSubRedditClick}
-          >
-            <IconReddit />
-            {post.data.subreddit_name_prefixed}
-          </button>
+          <div className="flex flex-row gap-4">
+            {/* Current Sub */}
+            <button
+              aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
+              className="flex items-center gap-1 pb-3 text-xs font-semibold"
+              onClick={handleSubRedditClick}
+            >
+              <IconReddit />
+              {post.data.subreddit_name_prefixed}
+            </button>
+
+            {/* Add to Favorite */}
+            <button
+              arial-label={`${isFavorite ? 'remove from' : 'add to'} favorites`}
+              className="flex items-center gap-1 pb-3 text-xs font-semibold"
+              onClick={handleFavoriteClick}
+            >
+              <Tooltip
+                label={`${isFavorite ? 'Remove from' : 'Add to'} Favorites`}
+              >
+                {isFavorite ? (
+                  <IconHeartFilled height={18} width={18} />
+                ) : (
+                  <IconHeart height={18} width={18} />
+                )}
+              </Tooltip>
+            </button>
+          </div>
 
           {/* Post Author */}
           <div className="flex items-center gap-1 text-xs">

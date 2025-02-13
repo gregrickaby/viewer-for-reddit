@@ -8,6 +8,7 @@ import { Search } from './components/Search'
 import { IconSpinner } from './icons/Spinner'
 import {
   toggleAbout,
+  toggleFavorites,
   toggleRecent,
   toggleSearch,
   toggleSettings
@@ -19,6 +20,7 @@ import type { RootState } from './store/store'
 const About = React.lazy(() => import('./components/About'))
 const Recent = React.lazy(() => import('./components/Recent'))
 const Settings = React.lazy(() => import('./components/Settings'))
+const Favorites = React.lazy(() => import('./components/Favorites'))
 
 /**
  * Main App Component
@@ -35,9 +37,8 @@ export default function App() {
   const dispatch = useAppDispatch()
 
   // Select modal visibility states from the Redux store.
-  const { showSettings, showSearch, showAbout, showRecent } = useAppSelector(
-    (state: RootState) => state.settings
-  )
+  const { showSettings, showSearch, showAbout, showRecent, showFavorites } =
+    useAppSelector((state: RootState) => state.settings)
 
   return (
     <>
@@ -50,19 +51,6 @@ export default function App() {
       </main>
 
       <Controls />
-
-      {/* Settings Modal. */}
-      <Modal
-        isOpen={showSettings}
-        onClose={function handleCloseSettings() {
-          dispatch(toggleSettings())
-        }}
-        title="Settings"
-      >
-        <Suspense fallback={<IconSpinner />}>
-          <Settings />
-        </Suspense>
-      </Modal>
 
       {/* Search Modal. */}
       <Modal
@@ -84,6 +72,30 @@ export default function App() {
         title="Viewing History"
       >
         <Recent />
+      </Modal>
+
+      {/* Favorites Modal. */}
+      <Modal
+        isOpen={showFavorites}
+        onClose={function handleCloseFavorites() {
+          dispatch(toggleFavorites())
+        }}
+        title="Favorites"
+      >
+        <Favorites />
+      </Modal>
+
+      {/* Settings Modal. */}
+      <Modal
+        isOpen={showSettings}
+        onClose={function handleCloseSettings() {
+          dispatch(toggleSettings())
+        }}
+        title="Settings"
+      >
+        <Suspense fallback={<IconSpinner />}>
+          <Settings />
+        </Suspense>
       </Modal>
 
       {/* About Modal. */}

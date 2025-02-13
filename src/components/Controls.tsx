@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { IconHeart } from '../icons/Heart'
 import { IconHistory } from '../icons/History'
 import { IconHome } from '../icons/Home'
 import { IconMute } from '../icons/Mute'
@@ -9,6 +10,7 @@ import { IconSpeaker } from '../icons/Speaker'
 import {
   setCurrentSubreddit,
   toggleAppLoading,
+  toggleFavorites,
   toggleMute,
   toggleRecent,
   toggleSearch,
@@ -90,6 +92,17 @@ export function Controls() {
             onClick={() => dispatch(toggleSearch())}
           >
             <IconSearch />
+          </button>
+        </Tooltip>
+
+        {/* Favorites button. */}
+        <Tooltip label="Favorite Subreddits">
+          <button
+            aria-label="favorite subreddits"
+            className={buttonStyles}
+            onClick={() => dispatch(toggleFavorites())}
+          >
+            <IconHeart height={34} width={34} />
           </button>
         </Tooltip>
 

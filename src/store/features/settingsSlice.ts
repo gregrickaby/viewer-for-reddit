@@ -45,7 +45,7 @@ export const settingsSlice = createSlice({
       saveSettings(state)
     },
 
-    // Add subreddit to recent history (max 10).
+    // Add subreddit to recent history.
     addRecentSubreddit: (state, action: PayloadAction<RedditSubreddit>) => {
       const exists = state.recent.findIndex(
         (sub) => sub.display_name === action.payload.display_name
@@ -54,13 +54,57 @@ export const settingsSlice = createSlice({
         state.recent.splice(exists, 1)
       }
       state.recent.unshift(action.payload)
-      state.recent = state.recent.slice(0, 10) // Keep only 10 recent.
+      state.recent = state.recent.slice(0, 15) // Keep only 15.
+      saveSettings(state)
+    },
+
+    clearSingleRecent: (state, action: PayloadAction<string>) => {
+      const exists = state.recent.findIndex(
+        (sub) => sub.display_name === action.payload
+      )
+      if (exists !== -1) {
+        state.recent.splice(exists, 1)
+      }
       saveSettings(state)
     },
 
     // Clear recent subreddits.
     clearRecent: (state) => {
       state.recent = []
+      saveSettings(state)
+    },
+
+    // Toggle subreddit in favorites.
+    toggleFavoriteSubreddit: (
+      state,
+      action: PayloadAction<RedditSubreddit>
+    ) => {
+      const existingIndex = state.favorites.findIndex(
+        (sub) => sub.display_name === action.payload.display_name
+      )
+      if (existingIndex !== -1) {
+        state.favorites.splice(existingIndex, 1)
+      } else {
+        state.favorites.unshift(action.payload)
+        state.favorites = state.favorites.slice(0, 15) // Keep only 15
+      }
+      saveSettings(state)
+    },
+
+    // Clear a single favorite subreddit.
+    clearSingleFavorite: (state, action: PayloadAction<string>) => {
+      const existingIndex = state.favorites.findIndex(
+        (sub) => sub.display_name === action.payload
+      )
+      if (existingIndex !== -1) {
+        state.favorites.splice(existingIndex, 1)
+      }
+      saveSettings(state)
+    },
+
+    // Clear favorite subreddits.
+    clearFavorites: (state) => {
+      state.favorites = []
       saveSettings(state)
     },
 
@@ -82,12 +126,23 @@ export const settingsSlice = createSlice({
       saveSettings(state)
     },
 
-    // Toggle recent subreddits modal.
+    // Toggle recent modal.
     toggleRecent: (state) => {
       state.showRecent = !state.showRecent
       state.showSettings = false
       state.showSearch = false
       state.showAbout = false
+      state.showFavorites = false
+      saveSettings(state)
+    },
+
+    // Toggle favorites modal.
+    toggleFavorites: (state) => {
+      state.showFavorites = !state.showFavorites
+      state.showSettings = false
+      state.showSearch = false
+      state.showAbout = false
+      state.showRecent = false
       saveSettings(state)
     },
 
@@ -105,6 +160,7 @@ export const settingsSlice = createSlice({
       state.showSettings = false
       state.showSearch = false
       state.showAbout = false
+      state.showFavorites = false
       saveSettings(state)
     },
 
@@ -113,6 +169,7 @@ export const settingsSlice = createSlice({
       state.showSearch = !state.showSearch
       state.showRecent = false
       state.showSettings = false
+      state.showFavorites = false
       saveSettings(state)
     },
 
@@ -121,6 +178,7 @@ export const settingsSlice = createSlice({
       state.showAbout = !state.showAbout
       state.showSettings = false
       state.showRecent = false
+      state.showSearch = false
       saveSettings(state)
     },
 
@@ -135,7 +193,10 @@ export const settingsSlice = createSlice({
 // Export actions.
 export const {
   addRecentSubreddit,
+  clearFavorites,
   clearRecent,
+  clearSingleFavorite,
+  clearSingleRecent,
   closeAllModals,
   resetSettings,
   setCurrentSubreddit,
@@ -143,6 +204,8 @@ export const {
   toggleAbout,
   toggleAppLoading,
   toggleDarkMode,
+  toggleFavoriteSubreddit,
+  toggleFavorites,
   toggleMute,
   toggleNsfw,
   toggleRecent,

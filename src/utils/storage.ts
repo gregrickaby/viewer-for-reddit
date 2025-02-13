@@ -22,9 +22,9 @@ export function getInitialSettings(): UserSettings {
     currentSubreddit: 'aww',
     darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
     enableNsfw: true,
+    favorites: [],
     isAppLoading: true,
     isMuted: true,
-    likedPosts: {},
     recent: [],
     showAbout: false,
     showRecent: false,
@@ -51,6 +51,7 @@ function filterModalKeys(
   delete copy.showRecent
   delete copy.showSearch
   delete copy.showSettings
+  delete copy.showFavorites
   return copy
 }
 
