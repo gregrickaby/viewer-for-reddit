@@ -25,7 +25,7 @@ export const publicApi = createApi({
     >({
       query: ({ subreddit, sort, after }) => ({
         url: `/r/${subreddit}/${sort}.json`,
-        params: { after, limit: 25, raw_json: 1 }
+        params: { after, limit: 2, raw_json: 1 }
       }),
 
       // Keep the data for 60 seconds.
