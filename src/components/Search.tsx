@@ -56,6 +56,11 @@ export function Search() {
 
       // Debounce the query.
       debouncedSetQuery(value)
+
+      // If the input is cleared, reset the debounced query.
+      if (value === '') {
+        setDebouncedQuery('')
+      }
     },
     [debouncedSetQuery]
   )
