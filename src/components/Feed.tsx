@@ -89,19 +89,11 @@ export function Feed() {
   if (!data?.data.children.length) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4 p-4 text-center">
-        <p className="max-w-60 text-xl">
-          Whoops! Please try again or reload the page to start fresh.
-        </p>
+        <p className="max-w-60 text-black dark:text-white">Whoops!</p>
         <div className="flex gap-4">
           <button
-            onClick={() => refetch()}
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:cursor-pointer hover:bg-blue-600"
-          >
-            Retry
-          </button>
-          <button
             onClick={() => window.location.reload()}
-            className="rounded bg-gray-500 px-4 py-2 text-white hover:cursor-pointer hover:bg-gray-600"
+            className="rounded bg-gray-500 px-4 py-2 hover:cursor-pointer hover:bg-gray-600"
           >
             Reload Page
           </button>
