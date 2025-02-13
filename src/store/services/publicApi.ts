@@ -8,7 +8,7 @@ import type { RedditResponse, RedditSearchResponse } from '../../types/reddit'
  */
 export const publicApi = createApi({
   reducerPath: 'publicApi',
-  tagTypes: ['Posts', 'Subreddits'],
+  tagTypes: ['SubredditPosts', 'PopularSubreddits'],
   baseQuery: fetchBaseQuery({ baseUrl: 'https://www.reddit.com' }),
   endpoints: (builder) => ({
     /**
@@ -63,7 +63,10 @@ export const publicApi = createApi({
         currentArg?.after !== previousArg?.after,
 
       // Provide tags for invalidating the cache.
-      providesTags: ['Posts']
+      providesTags: (_result, _error, { subreddit, sort }) => [
+        { type: 'SubredditPosts', id: `${subreddit}-${sort}` },
+        { type: 'SubredditPosts', id: 'LIST' }
+      ]
     }),
 
     /**
@@ -81,8 +84,8 @@ export const publicApi = createApi({
         params: { after, limit: 25, raw_json: 1 }
       }),
 
-      // Keep the data for 60 seconds.
-      keepUnusedDataFor: 60,
+      // Keep the data for 1 hour.
+      keepUnusedDataFor: 3600,
 
       // Sort subreddits by subscribers count.
       transformResponse: (response: RedditSearchResponse) => ({
@@ -116,11 +119,14 @@ export const publicApi = createApi({
         currentArg?.after !== previousArg?.after,
 
       // Provide tags for invalidating the cache.
-      providesTags: ['Subreddits']
+      providesTags: ['PopularSubreddits']
     })
   })
 })
 
-// Export hooks for usage in functional components.
-export const { useGetPopularSubredditsQuery, useGetSubredditPostsQuery } =
-  publicApi
+// Export the hooks and invalidation helpers
+export const {
+  useGetPopularSubredditsQuery,
+  useGetSubredditPostsQuery,
+  util: { invalidateTags }
+} = publicApi
