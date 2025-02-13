@@ -160,7 +160,14 @@ export const Media = memo(function MediaContent({
     <div className="absolute top-1/3 right-0 left-0 flex flex-col items-center gap-4 text-center text-zinc-400 dark:text-zinc-600">
       <IconNoMedia />
       <p className="w-72 text-lg">
-        This post is text-only or has unsupported media. Keep scrolling!
+        This post is text-only or has unsupported media.
+        <div className="absolute inset-0 z-50 mt-44 flex items-center justify-center">
+          <div className="rounded bg-black/75 px-4 py-2 text-sm text-white">
+            <a href={post.url} rel="noopener noreferrer" target="_blank">
+              View on Reddit.com instead ↗
+            </a>
+          </div>
+        </div>
       </p>
     </div>
   )
