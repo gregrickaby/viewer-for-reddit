@@ -47,20 +47,20 @@ export const settingsSlice = createSlice({
 
     // Add subreddit to recent history (max 10).
     addRecentSubreddit: (state, action: PayloadAction<RedditSubreddit>) => {
-      const exists = state.recentSubreddits.findIndex(
+      const exists = state.recent.findIndex(
         (sub) => sub.display_name === action.payload.display_name
       )
       if (exists !== -1) {
-        state.recentSubreddits.splice(exists, 1)
+        state.recent.splice(exists, 1)
       }
-      state.recentSubreddits.unshift(action.payload)
-      state.recentSubreddits = state.recentSubreddits.slice(0, 10) // Keep only 10 recent.
+      state.recent.unshift(action.payload)
+      state.recent = state.recent.slice(0, 10) // Keep only 10 recent.
       saveSettings(state)
     },
 
     // Clear recent subreddits.
-    clearRecentSubreddits: (state) => {
-      state.recentSubreddits = []
+    clearRecent: (state) => {
+      state.recent = []
       saveSettings(state)
     },
 
@@ -135,7 +135,7 @@ export const settingsSlice = createSlice({
 // Export actions.
 export const {
   addRecentSubreddit,
-  clearRecentSubreddits,
+  clearRecent,
   closeAllModals,
   resetSettings,
   setCurrentSubreddit,

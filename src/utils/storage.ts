@@ -25,7 +25,7 @@ export function getInitialSettings(): UserSettings {
     isAppLoading: true,
     isMuted: true,
     likedPosts: {},
-    recentSubreddits: [],
+    recent: [],
     showAbout: false,
     showRecent: false,
     showSearch: false,

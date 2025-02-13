@@ -12,7 +12,7 @@ export interface UserSettings {
   currentSort: SortingOption // Current post sorting method
   enableNsfw: boolean // NSFW content toggle
   likedPosts: Record<string, number> // Map of post IDs to timestamp of like
-  recentSubreddits: RedditSubreddit[] // Recently visited subreddits
+  recent: RedditSubreddit[] // Recently visited subreddits
   currentSubreddit: string | null // Currently selected subreddit
   isMuted: boolean // Mute audio in video posts
   showRecent: boolean // Show recent subreddits modal

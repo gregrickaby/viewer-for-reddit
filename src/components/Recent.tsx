@@ -1,5 +1,5 @@
 import {
-  clearRecentSubreddits,
+  clearRecent,
   toggleRecent,
   toggleSearch
 } from '../store/features/settingsSlice'
@@ -14,12 +14,10 @@ export default function Recent() {
   const dispatch = useAppDispatch()
 
   // Get the recent subreddits from the store.
-  const recentSubreddits = useAppSelector(
-    (state) => state.settings.recentSubreddits
-  )
+  const recent = useAppSelector((state) => state.settings.recent)
 
   // Display a message if there are no recent subreddits.
-  if (recentSubreddits.length === 0) {
+  if (recent.length === 0) {
     return (
       <div className="flex flex-col gap-4 p-4 text-center text-zinc-500">
         You don't have any viewing history yet.
@@ -38,7 +36,7 @@ export default function Recent() {
 
   return (
     <div className="flex flex-col gap-4">
-      {recentSubreddits.map((subreddit) => (
+      {recent.map((subreddit) => (
         <SubredditItem key={subreddit.display_name} subreddit={subreddit} />
       ))}
 
@@ -47,7 +45,7 @@ export default function Recent() {
         className="mt-8 flex-1 rounded bg-red-400 px-4 py-2 text-white hover:bg-red-600"
         onClick={() => {
           if (confirm('Are you sure? This will clear your viewing history!')) {
-            dispatch(clearRecentSubreddits())
+            dispatch(clearRecent())
             dispatch(toggleRecent())
           }
         }}
