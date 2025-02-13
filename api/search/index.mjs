@@ -9,9 +9,9 @@
  * @property {string} REDDIT_SEARCH_URL - Reddit search API endpoint
  */
 const CONFIG = {
-  TOKEN_BUFFER_TIME: 60000, // 1 minute in ms
-  REQUEST_LIMIT: 950,
-  USER_AGENT: 'web-app:viewer-for-reddit:v1.0.0 (by Greg Rickaby)',
+  TOKEN_BUFFER_TIME: 60000, // 1 minute in ms.
+  REQUEST_LIMIT: 999, // Reddit allows 1,000 requests per hour per token.
+  USER_AGENT: 'web-app:viewer-for-reddit:v6.0.0 (by Greg Rickaby)',
   REDDIT_TOKEN_URL: 'https://www.reddit.com/api/v1/access_token',
   REDDIT_SEARCH_URL: 'https://oauth.reddit.com/api/subreddit_autocomplete_v2'
 }
@@ -30,6 +30,7 @@ let tokenCache = {
 
 /**
  * Checks if the cached token is still valid.
+ *
  * A token is considered valid if:
  * 1. It exists
  * 2. It's not expired (with buffer time)
@@ -122,11 +123,13 @@ export default async function handler(req, res) {
 
     // Construct search parameters for Reddit API.
     const searchParams = new URLSearchParams({
-      query, // Search term
-      raw_json: '1', // Get raw JSON response
-      include_over_18: params.get('include_over_18') || 'false', // NSFW content flag
-      include_profiles: 'false', // Exclude user profiles
-      typeahead_active: 'true' // Enable autocomplete
+      query,
+      include_over_18: params.get('include_over_18') || 'false',
+      include_profiles: params.get('include_profiles') || 'false',
+      limit: params.get('limit') || '10',
+      raw_json: '1',
+      search_query_id: params.get('search_query_id') || 'DO_NOT_TRACK',
+      typeahead_active: params.get('typeahead_active') || 'true'
     })
 
     // Make authenticated request to Reddit's search API.

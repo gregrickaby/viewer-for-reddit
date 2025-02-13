@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { v4 as uuidv4 } from 'uuid'
 import type { RedditSearchResponse, RedditSubreddit } from '../../types/reddit'
 
 /**
@@ -34,8 +35,9 @@ export const privateApi = createApi({
           query: encodeURIComponent(query.trim()),
           include_over_18: enableNsfw,
           include_profiles: false,
-          typeahead_active: false,
-          search_query_id: 'DO_NOT_TRACK'
+          limit: 10,
+          search_query_id: uuidv4(),
+          typeahead_active: true
         }
       }),
 
