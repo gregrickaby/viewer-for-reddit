@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { IconSpinner } from '../icons/Spinner'
-import { useAppSelector } from '../store/hooks'
+import { toggleAppLoading } from '../store/features/settingsSlice'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { useGetSubredditPostsQuery } from '../store/services/publicApi'
 import { Post } from './Post'
 import { ReloadButton } from './ReloadButton'
@@ -10,6 +11,9 @@ import { ReloadButton } from './ReloadButton'
  * The Feed component fetches and displays posts from the selected subreddit.
  */
 export function Feed() {
+  // Get the Redux dispatch function.
+  const dispatch = useAppDispatch()
+
   // Get the current subreddit, sort, and app loading state from the Redux store.
   const { currentSubreddit, currentSort, isAppLoading } = useAppSelector(
     (state) => state.settings
@@ -33,6 +37,17 @@ export function Feed() {
     rootMargin: '100px',
     threshold: 0.5
   })
+
+  // When everything is finished, set appLoading to false.
+  useEffect(() => {
+    if (!isLoading) {
+      setTimeout(() => {
+        if (isAppLoading) {
+          dispatch(toggleAppLoading())
+        }
+      }, 1000)
+    }
+  }, [isLoading, isAppLoading, dispatch])
 
   /**
    * Append the next page of posts when the end of the list is reached.
