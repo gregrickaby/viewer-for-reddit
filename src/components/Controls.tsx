@@ -21,7 +21,7 @@ import { publicApi } from '../store/services/publicApi'
 import { Tooltip } from './Tooltip'
 
 /**
- * Controls Component.
+ * Controls component.
  */
 export function Controls() {
   // Get dispatch function.
