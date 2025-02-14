@@ -22,8 +22,6 @@ import { Tooltip } from './Tooltip'
 
 /**
  * Controls Component.
- *
- * @param {RedditPost} post - Reddit post data
  */
 export function Controls() {
   // Get dispatch function.
