@@ -9,7 +9,7 @@ export function ReloadButton({
   message = 'Whoops!'
 }: Readonly<ReloadButtonProps>) {
   return (
-    <>
+    <div className="flex h-screen w-screen flex-col items-center justify-center space-y-4 text-center">
       <p className="max-w-60 text-black dark:text-white">{message}</p>
       <div className="flex gap-4">
         <button
@@ -19,6 +19,6 @@ export function ReloadButton({
           Reload Page
         </button>
       </div>
-    </>
+    </div>
   )
 }
