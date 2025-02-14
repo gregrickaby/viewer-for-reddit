@@ -46,7 +46,7 @@ export default function Favorites() {
 
       <button
         aria-label="Clear all favorites"
-        className="mt-8 flex-1 rounded bg-red-400 px-4 py-2 text-white hover:bg-red-600"
+        className="mt-8 flex-1 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
         onClick={() => {
           if (confirm('Are you sure? This will clear all your favorites!')) {
             dispatch(clearFavorites())

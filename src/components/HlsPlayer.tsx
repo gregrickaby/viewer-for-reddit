@@ -157,7 +157,7 @@ export function HlsPlayer({
   return (
     <div className="group relative h-full w-full">
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-zinc-900">
+        <div className="absolute inset-0 flex items-center justify-center">
           <IconSpinner />
         </div>
       )}

@@ -60,8 +60,8 @@ export class ErrorBoundary extends Component<ErrorBoundryProps, ErrorState> {
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <div className="flex h-full w-full items-center justify-center bg-zinc-900">
-            <p className="text-zinc-400">Something went wrong</p>
+          <div className="flex h-full w-full items-center justify-center">
+            <p>Something went wrong</p>
           </div>
         )
       )
