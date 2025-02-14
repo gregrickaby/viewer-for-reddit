@@ -44,7 +44,7 @@ export function HlsPlayer({
   const hlsRef = useRef<Hls | null>(null)
   const hasInitialized = useRef(false)
   const isMuted = useAppSelector((state) => state.settings.isMuted)
-  const [isLandscape, setIsLandscape] = useState(false)
+  const [aspectRatio, setAspectRatio] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
   /**
@@ -124,13 +124,14 @@ export function HlsPlayer({
     }
   }, [src, fallbackUrl, autoPlay])
 
-  // Determine video orientation once metadata is loaded.
+  // Calculate and store aspect ratio on metadata load
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
     const handleLoadedMetadata = () => {
-      setIsLandscape(video.videoWidth > video.videoHeight)
+      const ratio = video.videoWidth / video.videoHeight
+      setAspectRatio(ratio)
     }
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
@@ -138,7 +139,7 @@ export function HlsPlayer({
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
   }, [])
 
-  // Update loading state when the video can play.
+  // Handle loading state
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -148,23 +149,43 @@ export function HlsPlayer({
     return () => video.removeEventListener('canplay', handleCanPlay)
   }, [])
 
-  // Memoize the video element's class name based on orientation.
-  const videoClassName = useMemo(
-    () => `h-full w-full ${isLandscape ? 'object-contain' : 'object-cover'}`,
-    [isLandscape]
-  )
+  // Calculate container classes based on aspect ratio
+  const containerClasses = useMemo(() => {
+    const base = 'relative h-full w-full flex items-center justify-center'
+
+    if (!aspectRatio) return base
+
+    // Extremely vertical videos (e.g., TikTok, Instagram Stories)
+    if (aspectRatio < 0.5) {
+      return `${base} max-w-[min(500px,100vw)]`
+    }
+
+    // Moderately vertical videos (e.g., 9:16, 3:4)
+    if (aspectRatio < 1) {
+      return `${base} max-w-[min(800px,100vw)]`
+    }
+
+    // Landscape videos
+    return `${base} max-w-[min(1200px,100vw)]`
+  }, [aspectRatio])
+
+  // Calculate video classes based on aspect ratio
+  const videoClasses = useMemo(() => {
+    const base = 'h-full w-full'
+    return `${base} object-contain` // Always use object-contain to maintain aspect ratio
+  }, [])
 
   return (
-    <div className="group relative h-full w-full">
+    <div className={containerClasses}>
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm">
           <IconSpinner />
         </div>
       )}
 
       <video
         autoPlay={autoPlay}
-        className={videoClassName}
+        className={videoClasses}
         controls={controls}
         data-hint={dataHint}
         id={id}
