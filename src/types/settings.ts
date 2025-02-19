@@ -13,12 +13,6 @@ export interface UserSettings {
   darkMode: boolean // Theme preference
   enableNsfw: boolean // NSFW content toggle
   favorites: RedditSubreddit[] // Favorite subreddits
-  isAppLoading: boolean // Loading state for the app
   isMuted: boolean // Mute audio in video posts
   recent: RedditSubreddit[] // Recently visited subreddits
-  showAbout: boolean // About modal visibility
-  showFavorites: boolean // Favorites modal visibility
-  showRecent: boolean // Show recent subreddits modal
-  showSearch: boolean // Search modal visibility
-  showSettings: boolean // Settings modal visibility
 }

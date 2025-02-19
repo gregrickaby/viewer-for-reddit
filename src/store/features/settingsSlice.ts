@@ -33,15 +33,21 @@ export const settingsSlice = createSlice({
       saveSettings(state)
     },
 
-    // Update sort method for posts.
-    setSortingOption: (state, action: PayloadAction<SortingOption>) => {
-      state.currentSort = action.payload
+    // Toggle global mute state.
+    toggleMute: (state) => {
+      state.isMuted = !state.isMuted
       saveSettings(state)
     },
 
     // Toggle NSFW content visibility.
     toggleNsfw: (state) => {
       state.enableNsfw = !state.enableNsfw
+      saveSettings(state)
+    },
+
+    // Update sort method for posts.
+    setSortingOption: (state, action: PayloadAction<SortingOption>) => {
+      state.currentSort = action.payload
       saveSettings(state)
     },
 
@@ -118,74 +124,6 @@ export const settingsSlice = createSlice({
     setCurrentSubreddit: (state, action: PayloadAction<string>) => {
       state.currentSubreddit = action.payload
       saveSettings(state)
-    },
-
-    // Toggle global mute state.
-    toggleMute: (state) => {
-      state.isMuted = !state.isMuted
-      saveSettings(state)
-    },
-
-    // Toggle recent modal.
-    toggleRecent: (state) => {
-      state.showRecent = !state.showRecent
-      state.showSettings = false
-      state.showSearch = false
-      state.showAbout = false
-      state.showFavorites = false
-      saveSettings(state)
-    },
-
-    // Toggle favorites modal.
-    toggleFavorites: (state) => {
-      state.showFavorites = !state.showFavorites
-      state.showSettings = false
-      state.showSearch = false
-      state.showAbout = false
-      state.showRecent = false
-      saveSettings(state)
-    },
-
-    // Toggle settings modal visibility.
-    toggleSettings: (state) => {
-      state.showSettings = !state.showSettings
-      state.showRecent = false
-      state.showSearch = false
-      saveSettings(state)
-    },
-
-    // Close all modals.
-    closeAllModals: (state) => {
-      state.showRecent = false
-      state.showSettings = false
-      state.showSearch = false
-      state.showAbout = false
-      state.showFavorites = false
-      saveSettings(state)
-    },
-
-    // Toggle search modal visibility.
-    toggleSearch: (state) => {
-      state.showSearch = !state.showSearch
-      state.showRecent = false
-      state.showSettings = false
-      state.showFavorites = false
-      saveSettings(state)
-    },
-
-    // Toggle about modal visibility.
-    toggleAbout: (state) => {
-      state.showAbout = !state.showAbout
-      state.showSettings = false
-      state.showRecent = false
-      state.showSearch = false
-      saveSettings(state)
-    },
-
-    // Toggle app loading state.
-    toggleAppLoading: (state) => {
-      state.isAppLoading = !state.isAppLoading
-      saveSettings(state)
     }
   }
 })
@@ -197,20 +135,13 @@ export const {
   clearRecent,
   clearSingleFavorite,
   clearSingleRecent,
-  closeAllModals,
   resetSettings,
   setCurrentSubreddit,
   setSortingOption,
-  toggleAbout,
-  toggleAppLoading,
   toggleDarkMode,
   toggleFavoriteSubreddit,
-  toggleFavorites,
   toggleMute,
-  toggleNsfw,
-  toggleRecent,
-  toggleSearch,
-  toggleSettings
+  toggleNsfw
 } = settingsSlice.actions
 
 // Export reducer.

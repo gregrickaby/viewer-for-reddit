@@ -12,7 +12,7 @@ import {
   toggleRecent,
   toggleSearch,
   toggleSettings
-} from './store/features/settingsSlice'
+} from './store/features/transientSlice'
 import { useAppDispatch, useAppSelector } from './store/hooks'
 import type { RootState } from './store/store'
 
@@ -38,7 +38,7 @@ export default function App() {
 
   // Select modal visibility states from the Redux store.
   const { showSettings, showSearch, showAbout, showRecent, showFavorites } =
-    useAppSelector((state: RootState) => state.settings)
+    useAppSelector((state: RootState) => state.transient)
 
   return (
     <>

@@ -1,8 +1,5 @@
-import {
-  clearRecent,
-  toggleRecent,
-  toggleSearch
-} from '../store/features/settingsSlice'
+import { clearRecent } from '../store/features/settingsSlice'
+import { toggleRecent, toggleSearch } from '../store/features/transientSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { SubredditItem } from './SubredditItem'
 

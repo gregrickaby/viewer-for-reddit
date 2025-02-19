@@ -1,11 +1,7 @@
-import {
-  clearFavorites,
-  toggleFavorites,
-  toggleSearch
-} from '../store/features/settingsSlice'
+import { clearFavorites } from '../store/features/settingsSlice'
+import { toggleFavorites, toggleSearch } from '../store/features/transientSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { SubredditItem } from './SubredditItem'
-
 /**
  * Favorites component.
  */

@@ -3,11 +3,10 @@ import { useMemo } from 'react'
 import {
   resetSettings,
   setSortingOption,
-  toggleAbout,
   toggleDarkMode,
-  toggleNsfw,
-  toggleSettings
+  toggleNsfw
 } from '../store/features/settingsSlice'
+import { toggleAbout, toggleSettings } from '../store/features/transientSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { RootState } from '../store/store'
 import type { SortingOption } from '../types/settings'

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { IconSpinner } from '../icons/Spinner'
-import { toggleAppLoading } from '../store/features/settingsSlice'
+import { toggleAppLoading } from '../store/features/transientSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { useGetSubredditPostsQuery } from '../store/services/publicApi'
 import { Post } from './Post'
@@ -14,10 +14,13 @@ export function Feed() {
   // Get the Redux dispatch function.
   const dispatch = useAppDispatch()
 
-  // Get the current subreddit, sort, and app loading state from the Redux store.
-  const { currentSubreddit, currentSort, isAppLoading } = useAppSelector(
+  // Get the current subreddit and sort from the Redux store.
+  const { currentSubreddit, currentSort } = useAppSelector(
     (state) => state.settings
   )
+
+  // Get the app loading state from the Redux store.
+  const { isAppLoading } = useAppSelector((state) => state.transient)
 
   // Pagination state.
   const [afterToken, setAfterToken] = useState<string | null>(null)

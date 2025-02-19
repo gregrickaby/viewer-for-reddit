@@ -9,13 +9,15 @@ import { IconSettings } from '../icons/Settings'
 import { IconSpeaker } from '../icons/Speaker'
 import {
   setCurrentSubreddit,
+  toggleMute
+} from '../store/features/settingsSlice'
+import {
   toggleAppLoading,
   toggleFavorites,
-  toggleMute,
   toggleRecent,
   toggleSearch,
   toggleSettings
-} from '../store/features/settingsSlice'
+} from '../store/features/transientSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { publicApi } from '../store/services/publicApi'
 import { Tooltip } from './Tooltip'

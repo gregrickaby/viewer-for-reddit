@@ -23,37 +23,9 @@ export function getInitialSettings(): UserSettings {
     darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
     enableNsfw: true,
     favorites: [],
-    isAppLoading: true,
     isMuted: true,
-    recent: [],
-    showAbout: false,
-    showFavorites: false,
-    showRecent: false,
-    showSearch: false,
-    showSettings: false
+    recent: []
   }
-}
-
-/**
- * Filters out modal state keys from the saved settings object.
- *
- * This function creates a shallow copy of the provided settings object and
- * deletes the keys that correspond to modal visibility. This ensures that transient
- * UI state for modals is not persisted between sessions.
- *
- * @param {Partial<UserSettings>} settings - The settings object to filter.
- * @returns {Partial<UserSettings>} A new settings object without the modal state keys.
- */
-function filterModalKeys(
-  settings: Partial<UserSettings>
-): Partial<UserSettings> {
-  const copy = { ...settings }
-  delete copy.showAbout
-  delete copy.showRecent
-  delete copy.showSearch
-  delete copy.showSettings
-  delete copy.showFavorites
-  return copy
 }
 
 /**
@@ -76,14 +48,10 @@ export function loadSettings(): UserSettings {
     }
 
     // Parse the saved JSON string.
-    const parsed = JSON.parse(saved) as Partial<UserSettings>
+    const settings = JSON.parse(saved) as Partial<UserSettings>
 
-    // Remove any persisted modal state values.
-    const filteredSettings = filterModalKeys(parsed)
-
-    // Merge default settings with the filtered saved settings.
-    // Saved settings will override the defaults, ensuring all keys exist.
-    return { ...getInitialSettings(), ...filteredSettings }
+    // Merge the saved settings with the defaults.
+    return { ...getInitialSettings(), ...settings }
   } catch (error) {
     console.error('Failed to load settings:', error)
     // In case of an error (e.g., corrupted JSON), return the defaults.

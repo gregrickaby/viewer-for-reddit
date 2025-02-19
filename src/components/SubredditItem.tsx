@@ -5,9 +5,9 @@ import {
   addRecentSubreddit,
   clearSingleFavorite,
   clearSingleRecent,
-  closeAllModals,
   setCurrentSubreddit
 } from '../store/features/settingsSlice'
+import { closeAllModals } from '../store/features/transientSlice'
 import { useAppDispatch } from '../store/hooks'
 import type { RedditSubreddit } from '../types/reddit'
 import { formatNumber } from '../utils/numbers'

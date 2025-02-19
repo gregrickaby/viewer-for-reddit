@@ -2,11 +2,17 @@ import type { Action, ThunkAction } from '@reduxjs/toolkit'
 import { combineSlices, configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import { settingsSlice } from './features/settingsSlice'
+import { transientSlice } from './features/transientSlice'
 import { privateApi } from './services/privateApi'
 import { publicApi } from './services/publicApi'
 
 // Combine all slices into a single reducer function.
-const rootReducer = combineSlices(settingsSlice, publicApi, privateApi)
+const rootReducer = combineSlices(
+  privateApi,
+  publicApi,
+  settingsSlice,
+  transientSlice
+)
 
 // Infer the `RootState` type from the root reducer.
 export type RootState = ReturnType<typeof rootReducer>
