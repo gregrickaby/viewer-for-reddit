@@ -55,6 +55,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-testing-library": "^7.1.1",
     "globals": "^16.0.0",
     "jsdom": "^26.0.0",
     "lefthook": "^1.10.10",
