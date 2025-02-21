@@ -22,9 +22,8 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/reddit.svg",
     "lint": "eslint .",
     "start": "vite preview --port 3000",
-    "test": "vitest",
-    "test:ci": "vitest run",
-    "test:ui": "vitest --ui"
+    "test": "vitest -ui",
+    "test:ci": "vitest run"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
@@ -40,7 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
-    "@tailwindcss/vite": "^4.0.7",
+    "@tailwindcss/vite": "^4.0.8",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
@@ -69,7 +68,7 @@
     "prettier": "^3.5.1",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "rimraf": "^6.0.1",
-    "tailwindcss": "^4.0.7",
+    "tailwindcss": "^4.0.8",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.1.1",
