@@ -62,12 +62,16 @@ function isTokenValid() {
  * @throws {Error} If token fetch fails
  */
 async function getRedditToken(clientId, clientSecret) {
+  // Encode the client ID and secret for the Authorization header.
+  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+
+  // Fetch new token from Reddit.
   const response = await fetch(CONFIG.REDDIT_TOKEN_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'User-Agent': CONFIG.USER_AGENT,
-      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`
+      Authorization: `Basic ${auth}`,
+      'User-Agent': CONFIG.USER_AGENT
     },
     body: new URLSearchParams({
       grant_type: 'client_credentials',
@@ -75,9 +79,20 @@ async function getRedditToken(clientId, clientSecret) {
     })
   })
 
-  const data = await response.json()
-  if (!data.access_token) throw new Error('Failed to get Reddit token')
+  // Handle token fetch errors.
+  if (!response.ok) {
+    throw new Error('Failed to get Reddit token')
+  }
 
+  // Parse token response.
+  const data = await response.json()
+
+  // Validate token response.
+  if (!data.access_token) {
+    throw new Error('Failed to get Reddit token')
+  }
+
+  // Return token data.
   return data
 }
 
@@ -155,8 +170,18 @@ export default async function handler(req, res) {
       throw new Error(`Reddit API error: ${searchResponse.status}`)
     }
 
-    // Return successful response.
+    // Parse the search response.
     const data = await searchResponse.json()
+
+    // Verify the response.
+    if (data.error) {
+      return res.status(500).json({
+        error: 'Reddit API Error',
+        message: data.error
+      })
+    }
+
+    // Return the search results.
     return res.status(200).json(data)
   } catch (error) {
     // Detailed error logging in development.
