@@ -15,6 +15,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -25,9 +31,8 @@
       "@testing-library/jest-dom",
       "@testing-library/react",
       "jest",
-      "node",
       "vitest/globals"
     ]
   },
-  "include": ["src", "api"]
+  "include": ["src", "api", "tests"]
 }
