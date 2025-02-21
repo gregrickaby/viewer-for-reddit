@@ -1,3 +1,9 @@
+import { Buffer } from 'buffer'
+import { console } from 'console'
+import fetch from 'node-fetch'
+import { URLSearchParams, URL } from 'url'
+import process from 'process'
+
 /**
  * Reddit API Configuration.
  *
@@ -8,6 +14,7 @@
  * @property {string} REDDIT_TOKEN_URL - Reddit OAuth token endpoint
  * @property {string} REDDIT_SEARCH_URL - Reddit search API endpoint
  */
+
 const CONFIG = {
   TOKEN_BUFFER_TIME: 60000, // 1 minute in ms.
   REQUEST_LIMIT: 999, // Reddit allows 1,000 requests per hour per token.
