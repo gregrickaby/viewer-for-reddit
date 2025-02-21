@@ -1,8 +1,4 @@
-import { Buffer } from 'buffer'
-import { console } from 'console'
-import fetch from 'node-fetch'
-import { URLSearchParams, URL } from 'url'
-import process from 'process'
+/* eslint-disable no-undef */
 
 /**
  * Reddit API Configuration.
