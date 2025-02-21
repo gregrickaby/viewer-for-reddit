@@ -20,7 +20,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "types": [
+      "@testing-library/jest-dom",
+      "@testing-library/react",
+      "jest",
+      "node",
+      "vitest/globals"
+    ]
   },
   "include": ["src", "api"]
 }
