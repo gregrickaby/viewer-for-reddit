@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-interface TransientState {
+export interface TransientState {
   showRecent: boolean
   showFavorites: boolean
   showSettings: boolean
