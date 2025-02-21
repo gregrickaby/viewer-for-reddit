@@ -1,8 +1,31 @@
+import '@testing-library/jest-dom/matchers'
 import '@testing-library/jest-dom/vitest'
-import { afterAll, afterEach, beforeAll, vi } from 'vitest'
-import { server } from './src/__tests__/utils/server'
+import { server } from './server'
 
-// Mock window.matchMedia.
+/**
+ * Before all tests, start the MSW server.
+ */
+beforeAll(() => {
+  server.listen()
+})
+
+/**
+ * After each test, reset the MSW server to its default handlers.
+ */
+afterEach(() => {
+  server.resetHandlers()
+})
+
+/**
+ * After all tests, stop the MSW server.
+ */
+afterAll(() => {
+  server.close()
+})
+
+/**
+ * Mock window.matchMedia.
+ */
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
@@ -17,14 +40,18 @@ Object.defineProperty(window, 'matchMedia', {
   }))
 })
 
-// Mock ResizeObserver.
+/**
+ * Mock ResizeObserver.
+ */
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn()
 }))
 
-// Mock IntersectionObserver.
+/**
+ * Mock IntersectionObserver.
+ */
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
@@ -33,12 +60,3 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   rootMargin: '',
   thresholds: []
 }))
-
-// Before All.
-beforeAll(() => server.listen())
-
-// After Each.
-afterEach(() => server.resetHandlers())
-
-// After All.
-afterAll(() => server.close())

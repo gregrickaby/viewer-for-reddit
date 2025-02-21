@@ -1,6 +1,8 @@
-import type { RootState } from '../../store/store'
+import type { RootState } from '@/src/store/store'
 
-// Base state that other states can extend from.
+/**
+ * Base state that other states can extend from.
+ */
 export const baseState: Partial<RootState> = {
   settings: {
     currentSort: 'hot',
@@ -21,7 +23,9 @@ export const baseState: Partial<RootState> = {
   }
 }
 
-// State for when the app has finished loading.
+/**
+ * State for when the app has finished loading.
+ */
 export const loadedState: Partial<RootState> = {
   ...baseState,
   transient: {
