@@ -22,7 +22,7 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/reddit.svg",
     "lint": "eslint .",
     "start": "vite preview --port 3000",
-    "test": "vitest -ui",
+    "test": "vitest --ui",
     "test:ci": "vitest run"
   },
   "dependencies": {
