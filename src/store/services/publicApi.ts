@@ -88,15 +88,18 @@ export const publicApi = createApi({
       keepUnusedDataFor: 3600,
 
       // Sort subreddits by subscribers count.
-      transformResponse: (response: RedditSearchResponse) => ({
-        ...response,
-        data: {
-          ...response.data,
-          children: response.data.children.sort(
-            (a, b) => b.data.subscribers - a.data.subscribers
-          )
+      transformResponse: (response: RedditSearchResponse) => {
+        const sortedChildren = [...response.data.children].sort(
+          (a, b) => b.data.subscribers - a.data.subscribers
+        )
+        return {
+          ...response,
+          data: {
+            ...response.data,
+            children: sortedChildren
+          }
         }
-      }),
+      },
 
       // Serialize the query args to use them as a cache key.
       serializeQueryArgs: ({ queryArgs }) => `popular-${queryArgs.after || ''}`,
