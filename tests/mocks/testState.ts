@@ -14,22 +14,6 @@ export const baseState: Partial<RootState> = {
     recent: []
   },
   transient: {
-    isAppLoading: true,
-    showRecent: false,
-    showFavorites: false,
-    showSettings: false,
-    showSearch: false,
-    showAbout: false
-  }
-}
-
-/**
- * State for when the app has finished loading.
- */
-export const loadedState: Partial<RootState> = {
-  ...baseState,
-  transient: {
-    isAppLoading: false,
     showRecent: false,
     showFavorites: false,
     showSettings: false,

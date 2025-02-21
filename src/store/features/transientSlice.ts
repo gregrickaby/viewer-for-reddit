@@ -6,7 +6,6 @@ export interface TransientState {
   showSettings: boolean
   showSearch: boolean
   showAbout: boolean
-  isAppLoading: boolean
 }
 
 // Initial state.
@@ -15,8 +14,7 @@ const initialState: TransientState = {
   showFavorites: false,
   showSettings: false,
   showSearch: false,
-  showAbout: false,
-  isAppLoading: true
+  showAbout: false
 }
 
 /**
@@ -67,11 +65,6 @@ export const transientSlice = createSlice({
       state.showSearch = false
     },
 
-    // Toggle app loading state.
-    toggleAppLoading: (state) => {
-      state.isAppLoading = !state.isAppLoading
-    },
-
     // Close all modals.
     closeAllModals: (state) => {
       state.showAbout = false
@@ -87,7 +80,6 @@ export const transientSlice = createSlice({
 export const {
   closeAllModals,
   toggleAbout,
-  toggleAppLoading,
   toggleFavorites,
   toggleRecent,
   toggleSearch,

@@ -1,5 +1,5 @@
 import App from '@/src/App'
-import { baseState, loadedState } from '@/tests/mocks/testState'
+import { baseState } from '@/tests/mocks/testState'
 import { renderWithProviders } from '@/tests/mocks/testUtils'
 import { screen, waitFor } from '@testing-library/react'
 
@@ -14,7 +14,7 @@ describe('App', () => {
   })
 
   it('displays content after loading', async () => {
-    renderWithProviders(<App />, { preloadedState: loadedState })
+    renderWithProviders(<App />, { preloadedState: baseState })
 
     await waitFor(() => {
       // Verify the loading state is not displayed.

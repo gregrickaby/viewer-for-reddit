@@ -12,14 +12,12 @@ import {
   toggleMute
 } from '../store/features/settingsSlice'
 import {
-  toggleAppLoading,
   toggleFavorites,
   toggleRecent,
   toggleSearch,
   toggleSettings
 } from '../store/features/transientSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { publicApi } from '../store/services/publicApi'
 import { Tooltip } from './Tooltip'
 
 /**
@@ -32,25 +30,10 @@ export function Controls() {
   // Get mute state.
   const mute = useAppSelector((state) => state.settings.isMuted)
 
-  /**
-   * Home button handler.
-   * Dispatches actions to toggle the loading state and set the current subreddit to popular.
-   * Uses delays to ensure smooth transitions.
-   */
+  // Handle subreddit change.
   const handleClick = useCallback(
     (sub: string) => {
-      // Show loading state immediately.
-      dispatch(toggleAppLoading())
-      // Switch to popular.
       dispatch(setCurrentSubreddit(sub))
-      // Reset API state after a short delay.
-      setTimeout(() => {
-        dispatch(publicApi.util.resetApiState())
-        // Hide loading state after another delay.
-        setTimeout(() => {
-          dispatch(toggleAppLoading())
-        }, 500)
-      }, 300)
     },
     [dispatch]
   )
