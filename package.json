@@ -1,9 +1,8 @@
 {
   "name": "@gregrickaby/viewer-for-reddit",
   "description": "The ultimate Reddit app",
-  "version": "7.0.0",
+  "version": "6.5.0",
   "private": true,
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
