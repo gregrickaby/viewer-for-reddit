@@ -1,9 +1,0 @@
-{
-  "redirects": [
-    {
-      "source": "/r/:path*",
-      "destination": "/",
-      "permanent": true
-    }
-  ]
-}

@@ -1,5 +1,5 @@
-import type { AppStore, RootState } from '@/src/store/store'
-import { makeStore } from '@/src/store/store'
+import type { AppStore, RootState } from '@/lib/store'
+import { makeStore } from '@/lib/store'
 import type { RenderOptions } from '@testing-library/react'
 import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
