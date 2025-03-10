@@ -1,7 +1,5 @@
 'use client'
 
-import { IconReddit } from '@/icons/Reddit'
-import { IconTrashCan } from '@/icons/TrashCan'
 import {
   addRecentSubreddit,
   clearSingleFavorite,
@@ -12,6 +10,7 @@ import { closeAllModals } from '@/lib/features/transientSlice'
 import { useAppDispatch } from '@/lib/hooks'
 import { formatNumber } from '@/lib/numbers'
 import type { RedditSubreddit } from '@/types/reddit'
+import { IconBrandReddit, IconTrash } from '@tabler/icons-react'
 import { useCallback } from 'react'
 
 /**
@@ -83,7 +82,7 @@ export function SubredditItem({
     <div className="flex w-full items-center gap-4">
       <button
         aria-label={`navigate to r/${subreddit.display_name}`}
-        className="flex w-full items-center rounded p-2 text-left hover:bg-zinc-100 dark:hover:bg-zinc-700"
+        className="flex w-full items-center rounded p-2 text-left hover:cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700"
         onClick={handleSelect}
       >
         {/* Display the subreddit icon or the default Reddit icon. */}
@@ -96,7 +95,7 @@ export function SubredditItem({
               loading="lazy"
             />
           ) : (
-            <IconReddit />
+            <IconBrandReddit />
           )}
         </div>
 
@@ -114,9 +113,9 @@ export function SubredditItem({
         <button
           aria-label={`Remove r/${subreddit.display_name} from ${listType}s`}
           onClick={handleRemove}
-          className=""
+          className="hover:cursor-pointer"
         >
-          <IconTrashCan height={18} width={18} />
+          <IconTrash size={18} />
         </button>
       )}
     </div>

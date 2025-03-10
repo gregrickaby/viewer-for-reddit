@@ -1,10 +1,6 @@
 'use client'
 
-import { Controls } from '@/components/Controls'
-import { ErrorFallback } from '@/components/ErrorFallback'
-import { Feed } from '@/components/Feed'
-import { Modal } from '@/components/Modal'
-import { Search } from '@/components/Search'
+import { Controls, ErrorFallback, Feed, Modal, Search } from '@/components'
 import { IconSpinner } from '@/icons/Spinner'
 import {
   toggleAbout,
@@ -26,16 +22,9 @@ const Settings = dynamic(() => import('@/components/Settings'))
 const Favorites = dynamic(() => import('@/components/Favorites'))
 
 /**
- * Main App Component
- *
- * This component sets up the primary layout of the application. It renders the main feed,
- * and it conditionally displays modals for settings, search, and about information.
- *
- * The Feed component is wrapped in an ErrorBoundary to catch and display errors using an ErrorFallback.
- * The Settings and About modals are lazy-loaded via dynamic and Suspense, so they are only loaded
- * when needed, which improves initial load performance.
+ * Home component.
  */
-export default function App() {
+export default function Home() {
   // Get the dispatch function.
   const dispatch = useAppDispatch()
 
@@ -45,9 +34,9 @@ export default function App() {
 
   return (
     <>
-      {/* Create the TikTok-style layout with snapping and smooth scrolling. */}
+      {/* Create the TikTok-style layout with snapping and smooth scrolling */}
       <main className="h-screen w-full snap-y snap-mandatory overflow-x-hidden overflow-y-scroll overscroll-contain scroll-smooth dark:bg-zinc-900">
-        {/* The ErrorBoundary catches errors in the Feed component and renders ErrorFallback if necessary. */}
+        {/* The ErrorBoundary catches errors in the Feed component and renders ErrorFallback if necessary */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <Feed />
         </ErrorBoundary>
@@ -55,7 +44,7 @@ export default function App() {
 
       <Controls />
 
-      {/* Search Modal. */}
+      {/* Search Modal */}
       <Modal
         isOpen={showSearch}
         onClose={function handleCloseSearch() {
@@ -66,7 +55,7 @@ export default function App() {
         <Search />
       </Modal>
 
-      {/* Recent Modal. */}
+      {/* Recent Modal */}
       <Modal
         isOpen={showRecent}
         onClose={function handleCloseRecent() {
@@ -77,7 +66,7 @@ export default function App() {
         <Recent />
       </Modal>
 
-      {/* Favorites Modal. */}
+      {/* Favorites Modal */}
       <Modal
         isOpen={showFavorites}
         onClose={function handleCloseFavorites() {
@@ -88,7 +77,7 @@ export default function App() {
         <Favorites />
       </Modal>
 
-      {/* Settings Modal. */}
+      {/* Settings Modal */}
       <Modal
         isOpen={showSettings}
         onClose={function handleCloseSettings() {
@@ -101,7 +90,7 @@ export default function App() {
         </Suspense>
       </Modal>
 
-      {/* About Modal. */}
+      {/* About Modal */}
       <Modal
         isOpen={showAbout}
         onClose={function handleCloseAbout() {

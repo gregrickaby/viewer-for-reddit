@@ -39,7 +39,7 @@ export default function Settings() {
           aria-label="Toggle NSFW content"
           aria-pressed={enableNsfw}
           className={clsx(
-            'relative inline-flex h-6 w-11 rounded-full transition-colors',
+            'relative inline-flex h-6 w-11 rounded-full transition-colors hover:cursor-pointer',
             enableNsfw ? 'bg-blue-600' : 'bg-zinc-200 dark:bg-zinc-500'
           )}
           onClick={() => dispatch(toggleNsfw())}
@@ -78,7 +78,7 @@ export default function Settings() {
       <div className="flex flex-col gap-4 border-t pt-4">
         <button
           aria-label="Save settings"
-          className="flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
+          className="flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:cursor-pointer hover:bg-blue-700"
           onClick={() => {
             dispatch(toggleSettings())
           }}
@@ -88,7 +88,7 @@ export default function Settings() {
 
         <button
           aria-label="Reset all settings"
-          className="flex-1 rounded bg-red-400 px-4 py-2 text-white hover:bg-red-600"
+          className="flex-1 rounded bg-red-400 px-4 py-2 text-white hover:cursor-pointer hover:bg-red-600"
           onClick={() => {
             if (confirm('Are you sure? This will clear all your settings!')) {
               dispatch(resetSettings())
@@ -101,7 +101,7 @@ export default function Settings() {
 
         <button
           aria-label="View About"
-          className="text-center font-bold underline"
+          className="text-center font-bold underline hover:cursor-pointer"
           onClick={() => {
             dispatch(toggleAbout())
           }}

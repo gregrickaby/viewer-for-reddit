@@ -1,5 +1,6 @@
-import { IconGithub } from '@/icons/Github'
+import { IconBrandGithub } from '@tabler/icons-react'
 import Image from 'next/image'
+import buyMeCoffee from '../public/buymeacoffee.png'
 
 /**
  * About component.
@@ -32,9 +33,9 @@ export default function About() {
           Buy me a coffee!
           <Image
             alt="buy me a coffe"
-            height="16"
-            src="/buymeacoffee.png"
-            width="16"
+            height={16}
+            src={buyMeCoffee}
+            width={16}
           />
         </a>
       </p>
@@ -60,7 +61,7 @@ export default function About() {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <IconGithub />
+            <IconBrandGithub />
             View the source code
           </a>
         </p>

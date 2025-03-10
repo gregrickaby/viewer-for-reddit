@@ -1,6 +1,6 @@
 'use client'
 
-import { IconClose } from '@/icons/Close'
+import { IconX } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -57,7 +57,7 @@ export function Modal({
             className="absolute top-6 right-6 hover:cursor-pointer"
             onClick={onClose}
           >
-            <IconClose />
+            <IconX />
           </button>
         </div>
 

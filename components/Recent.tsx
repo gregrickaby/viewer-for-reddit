@@ -22,7 +22,7 @@ export default function Recent() {
         You don&apos;t have any viewing history yet.
         <button
           aria-label="Search for subreddits"
-          className="mt-8 flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          className="mt-8 flex-1 rounded bg-blue-500 px-4 py-2 text-white hover:cursor-pointer hover:bg-blue-600"
           onClick={() => {
             dispatch(toggleSearch())
           }}
@@ -45,7 +45,7 @@ export default function Recent() {
 
       <button
         aria-label="Clear recent history"
-        className="mt-8 flex-1 rounded bg-red-400 px-4 py-2 text-white hover:bg-red-600"
+        className="mt-8 flex-1 rounded bg-red-400 px-4 py-2 text-white hover:cursor-pointer hover:bg-red-600"
         onClick={() => {
           if (confirm('Are you sure? This will clear your viewing history!')) {
             dispatch(clearRecent())

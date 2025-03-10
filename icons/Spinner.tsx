@@ -6,7 +6,7 @@ interface SpinnerProps {
 /**
  * The animated spinner icon.
  */
-export function IconSpinner({ height = 6, width = 6 }: SpinnerProps) {
+export function IconSpinner({ height = 6, width = 6 }: Readonly<SpinnerProps>) {
   return (
     <svg
       className={`h-${height} w-${width} animate-spin text-zinc-500`}

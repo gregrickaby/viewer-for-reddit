@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
+    "@tabler/icons-react": "^3.31.0",
     "debounce": "^2.2.0",
     "hls.js": "^1.5.20",
     "next": "^15.2.1",

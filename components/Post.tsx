@@ -1,12 +1,6 @@
 'use client'
 
-import { IconComments } from '@/icons/Comments'
-import { IconHeart } from '@/icons/Heart'
-import { IconHeartFilled } from '@/icons/HeartFilled'
-import { IconReddit } from '@/icons/Reddit'
-import { IconTime } from '@/icons/Time'
-import { IconUp } from '@/icons/Up'
-import { IconUser } from '@/icons/User'
+import { Media, Tooltip } from '@/components'
 import {
   addRecentSubreddit,
   setCurrentSubreddit,
@@ -16,9 +10,16 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { formatNumber, formatTimeAgo } from '@/lib/numbers'
 import { sanitizeText } from '@/lib/sanitize'
 import type { RedditChild } from '@/types/reddit'
+import {
+  IconArrowNarrowUp,
+  IconBrandReddit,
+  IconClockHour8,
+  IconHeart,
+  IconHeartFilled,
+  IconMessage,
+  IconUser
+} from '@tabler/icons-react'
 import { memo, useCallback } from 'react'
-import { Media } from './Media'
-import { Tooltip } from './Tooltip'
 
 interface PostProps {
   /** Reddit post data. */
@@ -116,26 +117,26 @@ export const Post = memo(function Post({
             {/* Current Sub */}
             <button
               aria-label={`load posts from ${post.data.subreddit_name_prefixed}`}
-              className="flex items-center gap-1 pb-3 text-xs font-semibold"
+              className="flex items-center gap-1 pb-3 text-xs font-semibold hover:cursor-pointer"
               onClick={handleSubRedditClick}
             >
-              <IconReddit />
+              <IconBrandReddit size={16} />
               {post.data.subreddit_name_prefixed}
             </button>
 
             {/* Add to Favorite */}
             <button
-              arial-label={`${isFavorite ? 'remove from' : 'add to'} favorites`}
-              className="flex items-center gap-1 pb-3 text-xs font-semibold"
+              aria-label={`${isFavorite ? 'remove from' : 'add to'} favorites`}
+              className="flex items-center gap-1 pb-3 text-xs font-semibold hover:cursor-pointer"
               onClick={handleFavoriteClick}
             >
               <Tooltip
                 label={`${isFavorite ? 'Remove from' : 'Add to'} Favorites`}
               >
                 {isFavorite ? (
-                  <IconHeartFilled height={18} width={18} />
+                  <IconHeartFilled size={16} />
                 ) : (
-                  <IconHeart height={18} width={18} />
+                  <IconHeart size={16} />
                 )}
               </Tooltip>
             </button>
@@ -150,22 +151,22 @@ export const Post = memo(function Post({
               rel="noopener noreferrer"
               target="_blank"
             >
-              <IconUser />
+              <IconUser size={16} />
               {sanitizeText(post.data.author)}
             </a>
             <span>&middot;</span>
             <time className="flex items-center gap-1">
-              <IconTime />
+              <IconClockHour8 size={16} />
               {formatTimeAgo(post.data.created_utc)}
             </time>
             <span>&middot;</span>
             <span className="flex items-center gap-1">
-              <IconComments />
+              <IconMessage size={16} />
               {formatNumber(post.data.num_comments)}
             </span>
             <span>&middot;</span>
             <span className="flex items-center gap-1">
-              <IconUp />
+              <IconArrowNarrowUp size={16} />
               {formatNumber(post.data.ups)}
             </span>
           </div>

@@ -1,13 +1,5 @@
 'use client'
 
-import { IconHeart } from '@/icons/Heart'
-import { IconHistory } from '@/icons/History'
-import { IconHome } from '@/icons/Home'
-import { IconMute } from '@/icons/Mute'
-import { IconPopular } from '@/icons/Popular'
-import { IconSearch } from '@/icons/Search'
-import { IconSettings } from '@/icons/Settings'
-import { IconSpeaker } from '@/icons/Speaker'
 import { setCurrentSubreddit, toggleMute } from '@/lib/features/settingsSlice'
 import {
   toggleFavorites,
@@ -16,6 +8,16 @@ import {
   toggleSettings
 } from '@/lib/features/transientSlice'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
+import {
+  IconFlame,
+  IconHeart,
+  IconHistory,
+  IconHome,
+  IconSearch,
+  IconSettings,
+  IconVolume,
+  IconVolumeOff
+} from '@tabler/icons-react'
 import { useCallback } from 'react'
 import { Tooltip } from './Tooltip'
 
@@ -39,7 +41,7 @@ export function Controls() {
 
   // Common button styles.
   const buttonStyles =
-    'rounded-xl bg-white/50 dark:bg-black/70 p-1.5 text-black dark:text-white hover:scale-110 hover:box-shadow-lg'
+    'rounded-xl bg-white/50 dark:bg-black/70 p-1.5 text-black dark:text-white hover:scale-110 hover:box-shadow-lg hover:cursor-pointer'
 
   return (
     <div className="fixed right-3 bottom-18 z-[100] transition-opacity duration-200 lg:right-10">
@@ -51,7 +53,7 @@ export function Controls() {
             className={buttonStyles}
             onClick={() => handleClick('all')}
           >
-            <IconHome />
+            <IconHome size={34} />
           </button>
         </Tooltip>
 
@@ -62,7 +64,7 @@ export function Controls() {
             className={buttonStyles}
             onClick={() => handleClick('popular')}
           >
-            <IconPopular />
+            <IconFlame size={34} />
           </button>
         </Tooltip>
 
@@ -73,7 +75,7 @@ export function Controls() {
             className={buttonStyles}
             onClick={() => dispatch(toggleSearch())}
           >
-            <IconSearch />
+            <IconSearch size={34} />
           </button>
         </Tooltip>
 
@@ -84,7 +86,7 @@ export function Controls() {
             className={buttonStyles}
             onClick={() => dispatch(toggleFavorites())}
           >
-            <IconHeart height={34} width={34} />
+            <IconHeart size={34} />
           </button>
         </Tooltip>
 
@@ -95,7 +97,7 @@ export function Controls() {
             className={buttonStyles}
             onClick={() => dispatch(toggleRecent())}
           >
-            <IconHistory />
+            <IconHistory size={34} />
           </button>
         </Tooltip>
 
@@ -106,7 +108,7 @@ export function Controls() {
             className={buttonStyles}
             onClick={() => dispatch(toggleSettings())}
           >
-            <IconSettings />
+            <IconSettings size={34} />
           </button>
         </Tooltip>
 
@@ -117,7 +119,7 @@ export function Controls() {
             className={buttonStyles}
             onClick={() => dispatch(toggleMute())}
           >
-            {mute ? <IconMute /> : <IconSpeaker />}
+            {mute ? <IconVolumeOff size={34} /> : <IconVolume size={34} />}
           </button>
         </Tooltip>
 
