@@ -20,7 +20,7 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "test": "vitest --watch",
-    "test:ci": "vitest --ci"
+    "test:ci": "vitest"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
