@@ -48,6 +48,7 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/sanitize-html": "^2.13.0",
+    "@vitejs/plugin-react-swc": "^3.8.0",
     "@vitest/coverage-v8": "^3.0.8",
     "clsx": "^2.1.1",
     "eslint": "^9.22.0",

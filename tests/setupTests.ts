@@ -1,12 +1,32 @@
+import { handlers } from '@/tests/utils/handlers'
 import '@testing-library/jest-dom/matchers'
 import '@testing-library/jest-dom/vitest'
-import { server } from './server'
+import { setupServer } from 'msw/node'
+
+// Export everything.
+export * from '@testing-library/react'
+export * from '@testing-library/user-event'
+
+// Export custom render function.
+export { customRender as render } from '@/tests/utils/customRender'
+
+/**
+ * Create a new MSW server with the defined handlers.
+ *
+ * @see https://mswjs.io/docs/getting-started/integrate/node
+ */
+export const server = setupServer(...handlers)
 
 /**
  * Before all tests, start the MSW server.
  */
 beforeAll(() => {
-  server.listen()
+  server.listen({
+    onUnhandledRequest: 'bypass'
+  })
+
+  // Suppress console errors produced by logError().
+  vi.spyOn(console, 'error').mockImplementation(() => {})
 })
 
 /**
