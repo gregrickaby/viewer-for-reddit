@@ -1,4 +1,4 @@
-import type { RootState } from '@/src/store/store'
+import type { RootState } from '@/lib/store'
 
 /**
  * Base state that other states can extend from.
@@ -7,7 +7,6 @@ export const baseState: Partial<RootState> = {
   settings: {
     currentSort: 'hot',
     currentSubreddit: 'aww',
-    darkMode: false,
     enableNsfw: false,
     favorites: [],
     isMuted: true,

@@ -1,4 +1,4 @@
-import { RedditResponse } from '@/src/types/reddit'
+import { RedditResponse } from '@/types/reddit'
 
 /**
  * Mock response from the Reddit API for a subreddit.
