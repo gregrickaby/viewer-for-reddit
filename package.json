@@ -73,6 +73,6 @@
     "typescript-eslint": "^8.25.0",
     "vite": "^6.2.0",
     "vite-plugin-vercel": "^9.0.5",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.8"
   }
 }
