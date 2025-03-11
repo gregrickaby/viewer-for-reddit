@@ -4,8 +4,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 /**
  * Private Reddit API service.
- *
- * This service now uses server actions directly instead of API routes.
  */
 export const privateApi = createApi({
   reducerPath: 'privateApi',
@@ -19,20 +17,22 @@ export const privateApi = createApi({
      *
      * @param query - The search query.
      * @param enableNsfw - Whether to include NSFW subreddits.
+     *
      * @returns The response object.
      */
     searchSubreddits: builder.query<
       RedditSubreddit[],
       { query: string; enableNsfw: boolean }
     >({
-      queryFn: async ({ query }) => {
+      queryFn: async ({ query, enableNsfw }) => {
         try {
-          // Use the fetchSearchResults server action directly
+          // Fetch search results.
           const response = await fetchSearchResults(
-            encodeURIComponent(query.trim())
+            encodeURIComponent(query.trim()),
+            { nsfw: enableNsfw, limit: 10 }
           )
 
-          // Transform response to match expected return format
+          // Transform response to match expected return format.
           const data = response.data.children
             .map((child) => child.data)
             .sort((a, b) => b.subscribers - a.subscribers)
@@ -55,7 +55,7 @@ export const privateApi = createApi({
       // Cache for 5 minutes.
       keepUnusedDataFor: 300,
 
-      // Create a unique cache key for each search
+      // Create a unique cache key for each search.
       serializeQueryArgs: ({ queryArgs }) =>
         `${queryArgs.query}-${queryArgs.enableNsfw}`,
 
