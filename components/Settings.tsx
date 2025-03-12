@@ -26,7 +26,7 @@ export default function Settings() {
 
   // Sort options.
   const sortOptions = useMemo<SortingOption[]>(
-    () => ['hot', 'new', 'top', 'latest'],
+    () => ['hot', 'top', 'new', 'controversial', 'rising'],
     []
   )
 

@@ -3,7 +3,7 @@ import type { RedditSubreddit } from './reddit'
 /**
  * Valid sorting options for Reddit posts.
  */
-export type SortingOption = 'hot' | 'new' | 'top' | 'latest'
+export type SortingOption = 'hot' | 'new' | 'top' | 'controversial' | 'rising'
 /**
  * User settings persisted in localStorage.
  */

@@ -2,8 +2,8 @@
 
 import { IconSpinner } from '@/icons/Spinner'
 import { useAppSelector } from '@/lib/hooks'
-import { useGetSubredditPostsQuery } from '@/lib/services/publicApi'
-import { useEffect, useState } from 'react'
+import { useGetSubredditPostsInfiniteQuery } from '@/lib/services/publicApi'
+import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { Post } from './Post'
 import { ReloadButton } from './ReloadButton'
@@ -17,37 +17,27 @@ export function Feed() {
     (state) => state.settings
   )
 
-  // Pagination state.
-  const [afterToken, setAfterToken] = useState<string | null>(null)
+  // Fetch subreddit data.
+  const { data, isLoading, error, isSuccess, fetchNextPage, hasNextPage } =
+    useGetSubredditPostsInfiniteQuery(
+      { subreddit: currentSubreddit ?? '', sort: currentSort },
+      { skip: !currentSubreddit }
+    )
 
-  // Query posts from the selected subreddit.
-  const { data, isLoading, error, isSuccess } = useGetSubredditPostsQuery(
-    {
-      subreddit: currentSubreddit ?? '',
-      sort: currentSort,
-      after: afterToken ?? ''
-    },
-    { skip: !currentSubreddit }
-  )
-
-  // Infinite scroll observer.
+  // Track when the end-of-list element comes into view.
   const { ref: endOfListRef, inView } = useInView({
     rootMargin: '100px',
     threshold: 0.5
   })
 
-  /**
-   * Append the next page of posts when the end of the list is reached.
-   */
+  // When the end of the list is in view and there's another page, fetch it.
   useEffect(() => {
-    if (inView && data?.data.after && afterToken !== data.data.after) {
-      setAfterToken(data.data.after)
+    if (inView && hasNextPage) {
+      fetchNextPage()
     }
-  }, [inView, data?.data?.after, afterToken])
+  }, [inView, hasNextPage, fetchNextPage])
 
-  {
-    /* If there is an error, show an error message with a retry button. */
-  }
+  // Error handling.
   if (error || (isSuccess && !data)) {
     console.error('Error in Feed. Failed to load posts:', error)
     return (
@@ -55,16 +45,12 @@ export function Feed() {
     )
   }
 
-  {
-    /* If there are no posts, show a message reload buttons. */
-  }
-  if (isSuccess && !data?.data?.children?.length) {
+  // If there are no posts, show a reload button.
+  if (isSuccess && data?.pages.every((page) => !page.data.children.length)) {
     return <ReloadButton />
   }
 
-  {
-    /* If the data is loading, show a loading spinner. */
-  }
+  // If the data is loading, show a loading spinner.
   if (isLoading) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2">
@@ -74,21 +60,24 @@ export function Feed() {
     )
   }
 
-  {
-    /* Render the posts */
-  }
   return (
     <>
-      {data?.data?.children?.map((post, index) => {
-        const isLastPost = index === data.data.children.length - 1
-        return (
-          <Post
-            key={post.data.id}
-            observerRef={isLastPost ? endOfListRef : undefined}
-            post={post}
-          />
-        )
-      })}
+      {data?.pages.map((page, pageIndex) =>
+        page.data.children.map((post, postIndex) => {
+          // Determine if this is the last post of the last page.
+          const isLastPage = pageIndex === data.pages.length - 1
+          const isLastPostInPage = postIndex === page.data.children.length - 1
+          const isLastPost = isLastPage && isLastPostInPage
+
+          return (
+            <Post
+              key={post.data.id}
+              observerRef={isLastPost ? endOfListRef : undefined}
+              post={post}
+            />
+          )
+        })
+      )}
     </>
   )
 }
