@@ -101,7 +101,7 @@ export function SubredditItem({
 
         {/* Display the subreddit name and subscriber count. */}
         <div className="flex flex-1 items-center">
-          <span>r/{subreddit.display_name}</span>
+          <span>{subreddit.display_name}</span>
           <span className="ml-2 flex-shrink-0 text-sm text-zinc-500">
             {formatNumber(subreddit.subscribers)}
           </span>
