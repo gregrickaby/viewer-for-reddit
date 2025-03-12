@@ -6,7 +6,7 @@ const config = {
   siteUrl: 'https://reddit-viewer.com/',
   siteAuthor: 'Greg Rickaby',
   authorUrl: 'https://gregrickaby.com',
-  userAgent: 'web-app:viewer-for-reddit:* (by Greg Rickaby)',
+  userAgent: 'web-app:viewer-for-reddit:v6.5.0 (by Greg Rickaby)',
   githubUrl: 'https://github.com/gregrickaby/viewer-for-reddit',
   redditApi: {
     limit: 50,

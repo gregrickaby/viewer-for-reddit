@@ -2,6 +2,7 @@
 
 import config from '@/lib/config'
 import { RedditOAuthResponse, RedditSearchResponse } from '@/types/reddit'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * Fetch a Reddit oAuth token.
@@ -65,7 +66,11 @@ export async function fetchToken(): Promise<RedditOAuthResponse> {
  * Fetch search results.
  */
 export async function fetchSearchResults(
-  query: string
+  query: string,
+  options: { nsfw?: boolean; limit?: number } = {
+    nsfw: true,
+    limit: 10
+  }
 ): Promise<RedditSearchResponse> {
   try {
     // Get the access token.
@@ -73,13 +78,10 @@ export async function fetchSearchResults(
 
     // Attempt to fetch subreddits.
     const response = await fetch(
-      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${query}&limit=10&include_over_18=true&include_profiles=false&typeahead_active=true&search_query_id=DO_NOT_TRACK`,
+      `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${query}&limit${options.limit}&include_over_18=${options.nsfw}&include_profiles=false&typeahead_active=true&search_query_id=${uuidv4()}`,
       {
         headers: {
           authorization: `Bearer ${access_token}`
-        },
-        next: {
-          revalidate: config.cacheTtl
         }
       }
     )
