@@ -58,7 +58,7 @@ export function PopularSubreddits() {
 
       {/* Display a loading spinner when data is being fetched. */}
       {isFetching && (
-        <div className="flex justify-center py-4">
+        <div className="flex justify-center py-4" data-testid="loading-spinner">
           <IconSpinner />
         </div>
       )}
