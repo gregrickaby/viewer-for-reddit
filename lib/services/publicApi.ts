@@ -1,4 +1,4 @@
-import type { RedditResponse, RedditSearchResponse } from '@/types/reddit'
+import type { PopularListing, RedditResponse } from '@/types/reddit'
 import type { SortingOption } from '@/types/settings'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
@@ -32,11 +32,7 @@ export const publicApi = createApi({
      *
      * @returns {RedditSearchResponse} The response containing a list of popular subreddits.
      */
-    getPopularSubreddits: builder.infiniteQuery<
-      RedditSearchResponse,
-      void,
-      string
-    >({
+    getPopularSubreddits: builder.infiniteQuery<PopularListing, void, string>({
       query: ({ pageParam }) => {
         // Create query params.
         const params = new URLSearchParams({
@@ -63,7 +59,7 @@ export const publicApi = createApi({
         getPreviousPageParam: () => null
       },
       // Sort subreddits by subscribers count.
-      transformResponse: (response: RedditSearchResponse) => {
+      transformResponse: (response: PopularListing) => {
         const sortedChildren = response.data?.children
           ? [...response.data.children].sort(
               (a, b) => b.data.subscribers - a.data.subscribers
