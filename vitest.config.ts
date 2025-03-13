@@ -1,14 +1,9 @@
 import react from '@vitejs/plugin-react-swc'
-import path from 'path'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './')
-    }
-  },
+  plugins: [tsconfigPaths(), react()],
   test: {
     coverage: {
       enabled: true,
@@ -26,7 +21,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     mockReset: true,
-    setupFiles: ['./tests/setupTests.ts'],
+    setupFiles: ['./__tests__/setupTests.ts'],
     exclude: [
       '**/node_modules/**',
       '**/*.stories.{ts,tsx}',
