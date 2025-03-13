@@ -1,4 +1,4 @@
-import { handlers } from '@/tests/utils/handlers'
+import { handlers } from '@/tests/mocks/handlers'
 import '@testing-library/jest-dom/matchers'
 import '@testing-library/jest-dom/vitest'
 import { setupServer } from 'msw/node'
@@ -8,7 +8,7 @@ export * from '@testing-library/react'
 export * from '@testing-library/user-event'
 
 // Export custom render function.
-export { customRender as render } from '@/tests/utils/customRender'
+export { customRender as render } from '@/tests/mocks/customRender'
 
 /**
  * Create a new MSW server with the defined handlers.
