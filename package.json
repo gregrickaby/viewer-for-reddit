@@ -23,6 +23,7 @@
     "test:ci": "vitest"
   },
   "dependencies": {
+    "@datadog/browser-rum": "^6.5.1",
     "@reduxjs/toolkit": "^2.6.1",
     "@tabler/icons-react": "^3.31.0",
     "debounce": "^2.2.0",

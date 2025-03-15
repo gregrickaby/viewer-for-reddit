@@ -1,3 +1,4 @@
+import { DatadogRum } from '@/components/DatadogRum'
 import { StoreProvider } from '@/components/StoreProvider'
 import config from '@/lib/config'
 import type { Metadata } from 'next'
@@ -50,10 +51,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Datadog Config.
+  const datadogConfig = {
+    applicationId: process.env.DD_APP_ID ?? '',
+    clientToken: process.env.DD_CLIENT_TOKEN ?? '',
+    env: process.env.DD_ENV ?? ''
+  }
+
+  // Is Datadog enabled?
+  const isDatadogEnabled = process.env.DD_ENABLED === 'true'
+
   return (
     <StoreProvider>
       <html lang="en">
-        <body>{children}</body>
+        <body>
+          {isDatadogEnabled && <DatadogRum config={datadogConfig} />}
+          {children}
+        </body>
       </html>
     </StoreProvider>
   )
