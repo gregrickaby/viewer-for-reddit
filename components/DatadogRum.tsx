@@ -27,7 +27,8 @@ export function DatadogRum({ config }: DatadogRumProps) {
       service: 'viewer-for-reddit',
       env: config.env,
       sessionSampleRate: 100,
-      sessionReplaySampleRate: 20
+      sessionReplaySampleRate: 20,
+      defaultPrivacyLevel: 'allow'
     })
 
     // Stop session replay recording on beforeunload.
