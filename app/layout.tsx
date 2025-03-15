@@ -55,7 +55,7 @@ export default function RootLayout({
   const datadogConfig = {
     applicationId: process.env.DD_APP_ID ?? '',
     clientToken: process.env.DD_CLIENT_TOKEN ?? '',
-    env: process.env.DD_ENV ?? ''
+    env: process.env.NODE_ENV ?? ''
   }
 
   // Is Datadog enabled?
