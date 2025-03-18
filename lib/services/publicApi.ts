@@ -107,7 +107,7 @@ export const publicApi = createApi({
 
         // Create query params.
         const params = new URLSearchParams({
-          limit: '2',
+          limit: '10',
           raw_json: '1'
         })
 
