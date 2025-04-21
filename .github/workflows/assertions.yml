@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@vmain
+        uses: actions/checkout@main
 
       - name: Setup Node
         uses: actions/setup-node@main
         with:
-          node-version: 'lts/*'
+          node-version: '22'
           cache: 'npm'
 
       - name: Copy .env
