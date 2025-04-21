@@ -200,7 +200,7 @@ export default function Search() {
       </div>
 
       {isDrawerOpen && results && (
-        <ul className="absolute left-0 top-16 z-50 m-0 w-full list-none rounded-b bg-zinc-200 p-0 dark:bg-zinc-700">
+        <ul className="absolute top-16 left-0 z-50 m-0 w-full list-none rounded-b bg-zinc-200 p-0 dark:bg-zinc-700">
           {results?.data?.children?.map(
             ({data}, index) =>
               data.display_name && (

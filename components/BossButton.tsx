@@ -38,7 +38,7 @@ export default function BossButton() {
   return (
     <button
       aria-label={buttonText}
-      className="boss-button fixed right-6 top-8 z-10 hidden md:block"
+      className="boss-button fixed top-8 right-6 z-10 hidden md:block"
       onClick={() => router.push(redirectUrl)}
       title={buttonText}
     >

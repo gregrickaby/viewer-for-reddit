@@ -48,7 +48,7 @@ export default function Posts(props: Readonly<RedditPostResponse>) {
 
               <div className="flex flex-col gap-1">
                 <a
-                  className="text-base font-bold leading-tight"
+                  className="text-base leading-tight font-bold"
                   href={`https://www.reddit.com${data.permalink}`}
                   rel="noopener noreferrer"
                   target="_blank"

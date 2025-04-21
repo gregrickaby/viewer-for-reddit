@@ -18,7 +18,7 @@ export default async function About({slug}: {slug: string}) {
           src={data?.icon_img !== '' ? data?.icon_img : '/icon.png'}
         />
         <div className="flex flex-col items-start gap-1">
-          <h2 className="m-0 p-0 capitalize leading-none">
+          <h2 className="m-0 p-0 leading-none capitalize">
             {sanitizeText(data?.title)}
           </h2>
           <div className="text-left leading-tight">

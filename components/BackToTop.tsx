@@ -37,7 +37,7 @@ export default function BackToTop() {
   return showButton ? (
     <button
       aria-label={buttonText}
-      className="button fixed bottom-8 right-6"
+      className="button fixed right-6 bottom-8"
       onClick={scrollToTop}
       title={buttonText}
     >

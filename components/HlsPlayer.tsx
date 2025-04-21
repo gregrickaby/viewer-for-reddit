@@ -34,12 +34,14 @@ export default function HlsPlayer(props: Readonly<HlsPlayerProps>) {
    * @param {IntersectionObserverEntry[]} entries - The entries provided by the observer.
    */
   const handleIntersection = useCallback(
-    debounce((entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries
-      if (entry.isIntersecting) {
-        setIsVisible(true) // Mark the video as visible when 50% or more is in the viewport.
-      }
-    }, 100), // 100ms debounce to avoid rapid re-triggering.
+    (entries: IntersectionObserverEntry[]) => {
+      debounce(() => {
+        const [entry] = entries
+        if (entry.isIntersecting) {
+          setIsVisible(true) // Mark the video as visible when 50% or more is in the viewport.
+        }
+      }, 100)() // 100ms debounce to avoid rapid re-triggering.
+    },
     []
   )
 

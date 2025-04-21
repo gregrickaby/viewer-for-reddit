@@ -1,12 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @layer base {
   body {
     @apply relative mx-auto space-y-12 p-8 antialiased;
     @apply prose prose-zinc lg:prose-xl;
-    @apply bg-white dark:prose-invert dark:bg-zinc-900;
+    @apply dark:prose-invert bg-white dark:bg-zinc-900;
   }
 
   input,
