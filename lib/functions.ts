@@ -93,12 +93,29 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
  *
  * @param text - The text to sanitize.
  */
+/**
+ * Sanitize text with sanitize-html and remove any HTML or encoded entities.
+ *
+ * @param text - The text to sanitize.
+ */
 export function sanitizeText(text: string): string {
-  return sanitizeHtml(text, {
-    allowedTags: [], // No HTML tags allowed
-    allowedAttributes: {}, // No attributes allowed
-    parser: {
-      decodeEntities: true // Decode HTML entities
-    }
+  return sanitizeHtml(text || '', {
+    allowedTags: [
+      'b',
+      'i',
+      'strong',
+      'em',
+      'a',
+      'p',
+      'br',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'code',
+      'pre'
+    ],
+    allowedAttributes: {a: ['href', 'target']},
+    parser: {decodeEntities: true}
   })
 }
