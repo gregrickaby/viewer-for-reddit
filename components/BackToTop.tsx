@@ -1,8 +1,8 @@
 'use client'
 
 import {debounce} from '@/lib/functions'
-import {IconArrowUp} from '@tabler/icons-react'
 import {useEffect, useMemo, useState} from 'react'
+import {FaArrowUp} from 'react-icons/fa'
 
 /**
  * The back to top component.
@@ -41,7 +41,7 @@ export default function BackToTop() {
       onClick={scrollToTop}
       title={buttonText}
     >
-      <IconArrowUp height="32" width="32" />
+      <FaArrowUp height="32" width="32" />
       <span className="sr-only">{buttonText}</span>
     </button>
   ) : null

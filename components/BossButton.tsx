@@ -1,6 +1,7 @@
 'use client'
 
-import {IconDoorExit} from '@tabler/icons-react'
+import {TbDoorExit} from 'react-icons/tb'
+
 import {useRouter} from 'next/navigation'
 import {useEffect, useMemo} from 'react'
 
@@ -42,7 +43,7 @@ export default function BossButton() {
       onClick={() => router.push(redirectUrl)}
       title={buttonText}
     >
-      <IconDoorExit aria-hidden="true" height="32" width="32" />
+      <TbDoorExit aria-hidden="true" height="32" width="32" />
       <span className="sr-only">{buttonText}</span>
     </button>
   )
