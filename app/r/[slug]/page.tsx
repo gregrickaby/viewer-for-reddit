@@ -4,7 +4,7 @@ import BossButton from '@/components/BossButton'
 import Posts from '@/components/Posts'
 import {fetchSubredditPosts} from '@/lib/actions'
 import config from '@/lib/config'
-import {PageProps} from '@/lib/types'
+import type {PageProps} from '@/lib/types'
 import type {Metadata} from 'next'
 import Link from 'next/link'
 

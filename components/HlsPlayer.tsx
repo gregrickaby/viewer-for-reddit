@@ -1,7 +1,7 @@
 'use client'
 
 import {debounce} from '@/lib/functions'
-import {HlsPlayerProps} from '@/lib/types'
+import type {HlsPlayerProps} from '@/lib/types'
 import Hls from 'hls.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 

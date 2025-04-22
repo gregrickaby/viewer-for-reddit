@@ -3,7 +3,7 @@
 import {fetchSearchResults} from '@/lib/actions'
 import config from '@/lib/config'
 import {debounce} from '@/lib/functions'
-import {RedditSearchResponse} from '@/lib/types'
+import type {RedditSearchResponse} from '@/lib/types'
 import Link from 'next/link'
 import {usePathname, useRouter} from 'next/navigation'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
