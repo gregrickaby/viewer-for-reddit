@@ -2,14 +2,9 @@
 
 import Media from '@/components/Media'
 import {formatNumber, getTimeAgo, sanitizeText} from '@/lib/functions'
-import {RedditPostResponse} from '@/lib/types'
-import {
-  IconArrowUp,
-  IconClock,
-  IconMessage,
-  IconUser
-} from '@tabler/icons-react'
+import type {RedditPostResponse} from '@/lib/types'
 import React, {useMemo} from 'react'
+import {FaArrowUp, FaClock, FaComment, FaUser} from 'react-icons/fa'
 import Masonry from 'react-masonry-css'
 
 /**
@@ -30,7 +25,7 @@ export default function Posts(props: Readonly<RedditPostResponse>) {
     <Masonry
       breakpointCols={breakpointCols}
       className="mb-12 flex gap-12"
-      columnClassName="flex flex-col gap-12 not-prose"
+      columnClassName="flex flex-col gap-12 "
     >
       {props?.data?.children.map(({data}, index) => (
         <React.Fragment key={data.id}>
@@ -40,7 +35,7 @@ export default function Posts(props: Readonly<RedditPostResponse>) {
           >
             <header className="flex gap-4 text-left">
               <div className="flex flex-col items-center gap-0">
-                <IconArrowUp height={18} width={18} />
+                <FaArrowUp height={18} width={18} />
                 <span className="text-base font-bold">
                   {formatNumber(data.score)}
                 </span>
@@ -62,7 +57,7 @@ export default function Posts(props: Readonly<RedditPostResponse>) {
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    <IconUser height={16} width={16} />
+                    <FaUser height={16} width={16} />
                     u/{sanitizeText(data.author)}
                   </a>
                   <a
@@ -71,17 +66,25 @@ export default function Posts(props: Readonly<RedditPostResponse>) {
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    <IconMessage height={16} width={16} />
+                    <FaComment height={16} width={16} />
                     {formatNumber(data.num_comments)}
                   </a>
                   <time className="flex items-center gap-1">
-                    <IconClock height={16} width={16} />
+                    <FaClock height={16} width={16} />
                     {getTimeAgo(data.created_utc)}
                   </time>
                 </div>
               </div>
             </header>
             <Media {...data} />
+            <a
+              className="button"
+              href={data.url}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              View on Reddit
+            </a>
           </article>
         </React.Fragment>
       ))}

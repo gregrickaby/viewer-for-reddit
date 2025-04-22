@@ -1,5 +1,5 @@
 import {getMediumImage} from '@/lib/functions'
-import {RedditPost} from '@/lib/types'
+import type {RedditPost} from '@/lib/types'
 import dynamic from 'next/dynamic'
 import {Suspense, useMemo} from 'react'
 
@@ -23,12 +23,12 @@ const hlsDefaults = {
 export default function Media(post: Readonly<RedditPost>) {
   // Set the medium image asset.
   const mediumImageAsset = useMemo(() => {
-    return getMediumImage(post.preview?.images[0]?.resolutions) || null
+    return getMediumImage(post.preview?.images[0]?.resolutions ?? []) || null
   }, [post.preview?.images])
 
   // Get the YouTube video ID.
   const youtubeVideoId = useMemo(() => {
-    return /embed\/([a-zA-Z0-9_-]+)/.exec(post.media?.oembed?.html)?.[1]
+    return /embed\/([a-zA-Z0-9_-]+)/.exec(post.media?.oembed?.html ?? '')?.[1]
   }, [post.media?.oembed])
 
   // Determine the media type and render the appropriate component.
@@ -78,7 +78,6 @@ export default function Media(post: Readonly<RedditPost>) {
         <HlsPlayer
           {...hlsDefaults}
           dataHint={post.post_hint}
-          fallbackUrl={videoPreview?.fallback_url}
           height={videoPreview?.height}
           id={post.id}
           poster={mediumImageAsset?.url}
@@ -90,14 +89,10 @@ export default function Media(post: Readonly<RedditPost>) {
 
     case 'link': {
       const isGifv = post.url?.includes('gifv')
-      const videoUrl = isGifv
-        ? post.url?.replace('.gifv', '.mp4')
-        : post.video_preview?.fallback_url
       return (
         <HlsPlayer
           {...hlsDefaults}
           dataHint={isGifv ? 'link:gifv' : 'link'}
-          fallbackUrl={videoUrl}
           height={post.video_preview?.height}
           id={post.id}
           poster={mediumImageAsset?.url}
@@ -107,8 +102,16 @@ export default function Media(post: Readonly<RedditPost>) {
       )
     }
 
-    // Nothing matched.
     default:
-      return <p>Unsupported or missing media content.</p>
+      return post.selftext ? (
+        <div
+          className="prose dark:prose-invert text-left"
+          dangerouslySetInnerHTML={{
+            __html: post.selftext_html ?? ''
+          }}
+        />
+      ) : (
+        <p className="text-sm text-zinc-500 italic">Unsupported media.</p>
+      )
   }
 }
