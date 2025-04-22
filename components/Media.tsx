@@ -59,7 +59,7 @@ export default function Media(post: Readonly<RedditPost>) {
     case 'rich:video': {
       // Get the Reddit-hosted video preview.
       const videoPreview =
-        post.preview?.reddit_video_preview || post.media?.reddit_video
+        post.preview?.reddit_video_preview ?? post.media?.reddit_video
 
       // Determine if the media is a YouTube video.
       const isYouTube = post.media?.oembed?.provider_name === 'YouTube'
@@ -79,6 +79,7 @@ export default function Media(post: Readonly<RedditPost>) {
           {...hlsDefaults}
           dataHint={post.post_hint}
           height={videoPreview?.height}
+          fallbackUrl={videoPreview?.fallback_url}
           id={post.id}
           poster={mediumImageAsset?.url}
           src={videoPreview?.hls_url}
@@ -89,11 +90,15 @@ export default function Media(post: Readonly<RedditPost>) {
 
     case 'link': {
       const isGifv = post.url?.includes('gifv')
+      const videoUrl = isGifv
+        ? post.url?.replace('.gifv', '.mp4')
+        : post.video_preview?.fallback_url
       return (
         <HlsPlayer
           {...hlsDefaults}
-          dataHint={isGifv ? 'link:gifv' : 'link'}
+          dataHint={videoUrl ? 'link:gifv' : 'link'}
           height={post.video_preview?.height}
+          fallbackUrl={videoUrl}
           id={post.id}
           poster={mediumImageAsset?.url}
           src={post.video_preview?.hls_url}
