@@ -9,8 +9,9 @@ import {
   mantineHtmlProps
 } from '@mantine/core'
 import '@mantine/core/styles.css'
+import {NavigationProgress} from '@mantine/nprogress'
+import '@mantine/nprogress/styles.css'
 import type {Metadata, Viewport} from 'next'
-import NextTopLoader from 'nextjs-toploader'
 
 /**
  * Generate metadata.
@@ -72,7 +73,7 @@ export default function RootLayout({
         </head>
         <body>
           <MantineProvider defaultColorScheme="auto">
-            <NextTopLoader />
+            <NavigationProgress />
             <Header />
             <Search />
             <main>{children}</main>

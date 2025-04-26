@@ -2,7 +2,7 @@
   "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
   "description": "Anonymously browse Reddit",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
@@ -21,16 +21,15 @@
     "lint": "eslint . --fix && next lint && tsc"
   },
   "dependencies": {
-    "@mantine/core": "^7.17.5",
-    "@mantine/hooks": "^7.17.5",
+    "@mantine/core": "next",
+    "@mantine/hooks": "next",
+    "@mantine/nprogress": "next",
     "@reduxjs/toolkit": "^2.7.0",
     "hls.js": "^1.6.2",
     "next": "^15.3.1",
-    "nextjs-toploader": "^3.8.16",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
-    "react-masonry-css": "^1.0.16",
     "react-redux": "^9.2.0",
     "sanitize-html": "^2.16.0",
     "uuid": "^11.1.0"
