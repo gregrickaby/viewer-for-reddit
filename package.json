@@ -29,7 +29,8 @@
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-masonry-css": "^1.0.16",
-    "sanitize-html": "^2.16.0"
+    "sanitize-html": "^2.16.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
