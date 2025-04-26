@@ -1,16 +1,17 @@
 import config from '@/lib/config'
 import Link from 'next/link'
+import classes from './Header.module.css'
 
 /**
  * The header component.
  */
 export default function Header() {
   return (
-    <header className="flex flex-col space-y-4 text-center">
+    <header className={classes.header}>
       <Link href="/" prefetch={false}>
-        <h1 className="m-0 p-0">{config.siteName}</h1>
+        <h1>{config.siteName}</h1>
       </Link>
-      <p className="m-0 p-0">{config.metaDescription}</p>
+      <p>{config.metaDescription}</p>
     </header>
   )
 }

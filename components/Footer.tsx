@@ -1,12 +1,13 @@
 import config from '@/lib/config'
 import {SiBuymeacoffee} from 'react-icons/si'
+import classes from './Footer.module.css'
 
 /**
  * The footer component.
  */
 export default function Footer() {
   return (
-    <footer className="text-center font-mono text-xs">
+    <footer className={classes.footer}>
       <p>
         Created and maintained by{' '}
         <a

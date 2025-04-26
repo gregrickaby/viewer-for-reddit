@@ -1,8 +1,14 @@
-import '@/app/globals.css'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Search from '@/components/Search'
+import {StoreProvider} from '@/components/StoreProvider'
 import config from '@/lib/config'
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps
+} from '@mantine/core'
+import '@mantine/core/styles.css'
 import type {Metadata, Viewport} from 'next'
 import NextTopLoader from 'nextjs-toploader'
 
@@ -59,14 +65,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <NextTopLoader />
-        <Header />
-        <Search />
-        <main>{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <StoreProvider>
+      <html lang="en" {...mantineHtmlProps}>
+        <head>
+          <ColorSchemeScript defaultColorScheme="auto" />
+        </head>
+        <body>
+          <MantineProvider defaultColorScheme="auto">
+            <NextTopLoader />
+            <Header />
+            <Search />
+            <main>{children}</main>
+            <Footer />
+          </MantineProvider>
+        </body>
+      </html>
+    </StoreProvider>
   )
 }
