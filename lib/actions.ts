@@ -10,6 +10,7 @@ import {
   RedditSearchResponse,
   RedditTokenResponse
 } from '@/lib/types'
+import {v4 as uuidv4} from 'uuid'
 
 function validateEnvVars() {
   const clientId = process.env.REDDIT_CLIENT_ID
@@ -25,32 +26,33 @@ function validateEnvVars() {
 export async function fetchToken(): Promise<RedditTokenResponse> {
   try {
     const {clientId, clientSecret} = validateEnvVars()
-    const url = new URL('https://www.reddit.com/api/v1/access_token')
-    url.search = new URLSearchParams({
+
+    const searchParams = new URLSearchParams({
       grant_type: 'client_credentials',
       scope: 'read',
       device_id: 'DO_NOT_TRACK_THIS_DEVICE'
-    }).toString()
-
-    const headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': config.userAgent,
-      Authorization:
-        'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64')
-    }
-
-    const response = await fetch(url.toString(), {
-      method: 'POST',
-      headers,
-      next: {
-        tags: ['token'],
-        revalidate: 86400
-      }
     })
 
-    if (!response.ok) throw new Error('Failed to fetch Reddit oAuth Token.')
+    const response = await fetch('https://www.reddit.com/api/v1/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization:
+          'Basic ' +
+          Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
+        'User-Agent': config.userAgent
+      },
+      body: searchParams.toString(),
+      next: {tags: ['token'], revalidate: config.cacheTtl}
+    })
+
+    if (!response.ok)
+      throw new Error(
+        `Failed to fetch Reddit oAuth Token: ${response.status} ${response.statusText}`
+      )
 
     const data: RedditTokenResponse = await response.json()
+
     if (!data.access_token)
       throw new Error(data.error ?? 'No access token in response')
 
@@ -70,19 +72,14 @@ export async function fetchPopularSubreddits(): Promise<RedditPopularResponse> {
     const url = new URL('https://oauth.reddit.com/subreddits/popular/.json')
     url.searchParams.set('limit', '11')
 
-    const headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': config.userAgent,
-      Authorization: `Bearer ${access_token}`
-    }
-
     const response = await fetch(url.toString(), {
       method: 'GET',
-      headers,
-      next: {
-        tags: ['popular'],
-        revalidate: config.cacheTtl
-      }
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': config.userAgent,
+        Authorization: `Bearer ${access_token}`
+      },
+      next: {tags: ['popular'], revalidate: config.cacheTtl}
     })
 
     if (!response.ok)
@@ -134,22 +131,17 @@ export async function fetchSearchResults(
       include_over_18: 'true',
       include_profiles: 'false',
       typeahead_active: 'true',
-      search_query_id: 'DO_NOT_TRACK'
+      search_query_id: uuidv4()
     }).toString()
-
-    const headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': config.userAgent,
-      Authorization: `Bearer ${access_token}`
-    }
 
     const response = await fetch(url.toString(), {
       method: 'GET',
-      headers,
-      next: {
-        tags: [`search-${query}`],
-        revalidate: 86400
-      }
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': config.userAgent,
+        Authorization: `Bearer ${access_token}`
+      },
+      next: {tags: [`search-${query}`], revalidate: config.cacheTtl}
     })
 
     if (!response.ok)
@@ -187,15 +179,13 @@ export async function fetchSubredditPosts(
       raw_json: '1'
     }).toString()
 
-    const headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': config.userAgent,
-      Authorization: `Bearer ${access_token}`
-    }
-
     const response = await fetch(url.toString(), {
       method: 'GET',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': config.userAgent,
+        Authorization: `Bearer ${access_token}`
+      },
       next: {
         tags: [`posts-${slug}-${sort}-${limit}-${after}`],
         revalidate: config.cacheTtl
@@ -245,19 +235,14 @@ export async function fetchSubredditAbout(
     slug = encodeURIComponent(slug.trim())
     const url = new URL(`https://oauth.reddit.com/r/${slug}/about/.json`)
 
-    const headers = {
-      'Content-Type': 'application/json',
-      'User-Agent': config.userAgent,
-      Authorization: `Bearer ${access_token}`
-    }
-
     const response = await fetch(url.toString(), {
       method: 'GET',
-      headers,
-      next: {
-        tags: [`about-${slug}`],
-        revalidate: 86400
-      }
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': config.userAgent,
+        Authorization: `Bearer ${access_token}`
+      },
+      next: {tags: [`about-${slug}`], revalidate: 86400}
     })
 
     if (!response.ok) throw new Error(`${response.statusText}: /r/${slug}`)
