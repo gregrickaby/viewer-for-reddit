@@ -1,6 +1,3 @@
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import Search from '@/components/Search'
 import {StoreProvider} from '@/components/StoreProvider'
 import config from '@/lib/config'
 import {
@@ -11,6 +8,7 @@ import {
 import '@mantine/core/styles.css'
 import {NavigationProgress} from '@mantine/nprogress'
 import '@mantine/nprogress/styles.css'
+import '@mantine/spotlight/styles.css'
 import type {Metadata, Viewport} from 'next'
 
 /**
@@ -58,7 +56,13 @@ export const viewport: Viewport = {
 }
 
 /**
- * The root layout.
+ * The server-rendered root layout component.
+ *
+ * This component sets up the global layout for the application.
+ * It includes the MantineProvider for theming and styles,
+ * and the StoreProvider for Redux state management.
+ *
+ * It also handles the initial color scheme, SEO metadata, and viewport settings.
  */
 export default function RootLayout({
   children
@@ -74,10 +78,7 @@ export default function RootLayout({
         <body>
           <MantineProvider defaultColorScheme="auto">
             <NavigationProgress />
-            <Header />
-            <Search />
-            <main>{children}</main>
-            <Footer />
+            {children}
           </MantineProvider>
         </body>
       </html>

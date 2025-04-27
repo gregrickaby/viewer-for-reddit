@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
-    "dev": "rimraf .next && next dev --turbopack",
+    "dev": "rimraf .next && next dev --turbo",
     "build": "next build",
     "start": "next start",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
@@ -24,6 +24,7 @@
     "@mantine/core": "next",
     "@mantine/hooks": "next",
     "@mantine/nprogress": "next",
+    "@mantine/spotlight": "next",
     "@reduxjs/toolkit": "^2.7.0",
     "hls.js": "^1.6.2",
     "next": "^15.3.1",

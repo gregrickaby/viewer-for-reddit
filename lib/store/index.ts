@@ -1,7 +1,7 @@
-import {settingsSlice} from '@/lib/features/settingsSlice'
-import {transientSlice} from '@/lib/features/transientSlice'
-import {privateApi} from '@/lib/services/privateApi'
-import {publicApi} from '@/lib/services/publicApi'
+import {settingsSlice} from '@/lib/store/features/settingsSlice'
+import {transientSlice} from '@/lib/store/features/transientSlice'
+import {privateApi} from '@/lib/store/services/privateApi'
+import {publicApi} from '@/lib/store/services/publicApi'
 import type {Action, ThunkAction} from '@reduxjs/toolkit'
 import {combineSlices, configureStore} from '@reduxjs/toolkit'
 import {setupListeners} from '@reduxjs/toolkit/query'
@@ -21,7 +21,7 @@ export type RootState = ReturnType<typeof rootReducer>
  * Create a new Redux store with the combined slices.
  *
  * The store setup is wrapped in `makeStore` to allow reuse when
- * setting uptests that need the same store config.
+ * setting up tests that need the same store config.
  *
  * @param preloadedState - The initial state to populate the store with.
  */

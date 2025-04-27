@@ -1,5 +1,4 @@
-import type {PopularListing, RedditResponse} from '@/types/reddit'
-import type {SortingOption} from '@/types/settings'
+import type {PopularListing, RedditResponse, SortingOption} from '@/lib/types'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 /**
@@ -62,7 +61,8 @@ export const publicApi = createApi({
       transformResponse: (response: PopularListing) => {
         const sortedChildren = response.data?.children
           ? [...response.data.children].sort(
-              (a, b) => b.data.subscribers - a.data.subscribers
+              (a, b) =>
+                b.data.subreddit_subscribers - a.data.subreddit_subscribers
             )
           : []
         return {

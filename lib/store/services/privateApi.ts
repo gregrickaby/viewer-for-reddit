@@ -1,5 +1,5 @@
 import {fetchSearchResults} from '@/lib/actions'
-import type {RedditSubreddit} from '@/types/reddit'
+import type {RedditSubreddit} from '@/lib/types'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 /**

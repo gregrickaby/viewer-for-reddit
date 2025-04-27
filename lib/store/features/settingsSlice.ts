@@ -3,9 +3,8 @@ import {
   getInitialSettings,
   loadSettings,
   saveSettings
-} from '@/lib/storage'
-import type {RedditSubreddit} from '@/types/reddit'
-import type {SortingOption, UserSettings} from '@/types/settings'
+} from '@/lib/functions/storage'
+import type {RedditSubreddit, SortingOption, UserSettings} from '@/lib/types'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 /**

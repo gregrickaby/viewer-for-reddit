@@ -1,4 +1,4 @@
-import type {UserSettings} from '@/types/settings'
+import type {UserSettings} from '@/lib/types'
 
 // Constant key used for localStorage to store settings.
 // Using a consistent key ensures that all parts of the app refer to the same settings.
