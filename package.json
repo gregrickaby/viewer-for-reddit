@@ -35,7 +35,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.25.1",
-    "@evilmartians/lefthook": "^1.11.11",
+    "@evilmartians/lefthook": "^1.11.12",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.2",
