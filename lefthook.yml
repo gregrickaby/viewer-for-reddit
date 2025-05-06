@@ -10,3 +10,9 @@ pre-commit:
     prettier:
       glob: '*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}'
       run: npx prettier {staged_files} --ignore-path .prettierignore --write
+
+pre-push:
+  parallel: true
+  commands:
+    test:
+      run: npx vitest run
