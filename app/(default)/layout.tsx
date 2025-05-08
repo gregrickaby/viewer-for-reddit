@@ -1,7 +1,7 @@
 'use client'
 
-import {Header} from '@/components/Header'
-import {Navigation} from '@/components/Navigation'
+import {Header} from '@/components/Header/Header'
+import {Navigation} from '@/components/Navigation/Navigation'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {AppShell} from '@mantine/core'
 import styles from './layout.module.css'

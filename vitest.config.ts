@@ -3,6 +3,7 @@ import path from 'path'
 import {defineConfig} from 'vitest/config'
 
 // https://vitejs.dev/config/
+// https://mantine.dev/guides/vitest/
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -13,11 +14,17 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: './test.setup.ts',
+    setupFiles: './vitest.setup.ts',
     coverage: {
       enabled: true,
       include: ['**/*.{ts,tsx}'],
-      exclude: ['**/*.test.{ts,tsx}', '**/__tests__/**'],
+      exclude: [
+        '**/*.spec.{ts,tsx}',
+        '**/*.test.{ts,tsx}',
+        '**/test-utils/**',
+        '*.config.ts',
+        '*.d.ts'
+      ],
       reporter: ['text', 'json', 'html']
     }
   }

@@ -6,8 +6,8 @@ import Image from 'next/image'
  */
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4">
-      <h1 className="mb-0">404 - Not Found</h1>
+    <div>
+      <h1>404 - Not Found</h1>
       <Image alt="Not Found" src={notFound} priority unoptimized />
       <p>The page you&apos;re looking for cannot be found.</p>
     </div>

@@ -2,8 +2,12 @@ import {settingsSlice} from '@/lib/store/features/settingsSlice'
 import {transientSlice} from '@/lib/store/features/transientSlice'
 import {privateApi} from '@/lib/store/services/privateApi'
 import {publicApi} from '@/lib/store/services/publicApi'
-import type {Action, ThunkAction} from '@reduxjs/toolkit'
-import {combineSlices, configureStore} from '@reduxjs/toolkit'
+import {
+  combineSlices,
+  configureStore,
+  type Action,
+  type ThunkAction
+} from '@reduxjs/toolkit'
 import {setupListeners} from '@reduxjs/toolkit/query'
 
 // Combine all slices into a single reducer function.

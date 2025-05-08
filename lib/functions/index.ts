@@ -43,9 +43,8 @@ export function getTimeAgo(timestampInSeconds: number): string {
     return `${Math.floor(elapsedSeconds / DAY)}d ago`
   } else if (elapsedSeconds < YEAR) {
     return `${Math.floor(elapsedSeconds / MONTH)}mo ago`
-  } else {
-    return `${Math.floor(elapsedSeconds / YEAR)}y ago`
   }
+  return `${Math.floor(elapsedSeconds / YEAR)}y ago`
 }
 
 /**

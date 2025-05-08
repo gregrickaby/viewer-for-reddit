@@ -1,5 +1,5 @@
-import {StoreProvider} from '@/components/StoreProvider'
 import config from '@/lib/config'
+import {StoreProvider} from '@/lib/store/StoreProvider'
 import {
   ColorSchemeScript,
   MantineProvider,

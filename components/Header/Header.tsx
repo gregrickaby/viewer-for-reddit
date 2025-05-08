@@ -1,12 +1,12 @@
 'use client'
 
+import icon from '@/app/icon.png'
 import config from '@/lib/config'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {ActionIcon, Burger, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
 import {FaSearch} from 'react-icons/fa'
-import icon from '../app/icon.png'
 
 /**
  * The header component.

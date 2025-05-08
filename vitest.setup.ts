@@ -1,6 +1,9 @@
+import {setupBrowserMocks} from '@/test-utils/mocks/browserMocks'
 import '@testing-library/jest-dom'
 import {afterAll, afterEach, beforeAll} from 'vitest'
-import {server} from './__tests__/msw/server'
+import {server} from './test-utils/msw/server'
+
+setupBrowserMocks()
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())

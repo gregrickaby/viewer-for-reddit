@@ -61,7 +61,9 @@ export const privateApi = createApi({
 
       // Merge function for updating existing cache.
       merge: (currentCache, newItems) => {
-        if (!currentCache) return newItems
+        if (!currentCache) {
+          return newItems
+        }
         return Array.from(new Set([...currentCache, ...newItems]))
       },
 
