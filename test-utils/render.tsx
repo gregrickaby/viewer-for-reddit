@@ -1,10 +1,7 @@
 import {makeStore, type AppStore, type RootState} from '@/lib/store'
 import {StoreProvider} from '@/lib/store/StoreProvider'
 import {MantineProvider} from '@mantine/core'
-import {
-  render as testingLibraryRender,
-  type RenderOptions
-} from '@testing-library/react'
+import {render as rtlRender, type RenderOptions} from '@testing-library/react'
 import type {PropsWithChildren, ReactElement} from 'react'
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
@@ -32,6 +29,6 @@ export function render(
 
   return {
     store,
-    ...testingLibraryRender(ui, {wrapper: Wrapper, ...renderOptions})
+    ...rtlRender(ui, {wrapper: Wrapper, ...renderOptions})
   }
 }
