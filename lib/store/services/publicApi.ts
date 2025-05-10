@@ -1,11 +1,13 @@
-import type {PopularListing, RedditResponse, SortingOption} from '@/lib/types'
+import type {
+  PopularListingResponse,
+  PopularSubredditChild,
+  RedditResponse,
+  SortingOption
+} from '@/lib/types'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 /**
- * Query argument for fetching subreddit posts.
- *
- * @property {string} subreddit - The subreddit name.
- * @property {'hot' | 'top' | 'new' | 'rising' | 'controversial'} sort - The sorting option.
+ * Query parameters for fetching subreddit posts.
  */
 interface GetSubredditPostsQueryArgs {
   subreddit: string
@@ -13,10 +15,17 @@ interface GetSubredditPostsQueryArgs {
 }
 
 /**
+ * Extracts subscriber count from a child for sorting.
+ */
+export function getSubscriberCount(child: PopularSubredditChild): number {
+  return child.data?.subscribers ?? 0
+}
+
+/**
  * Public Reddit API service.
  *
- * This service provides public access to Reddit API endpoints, including fetching
- * popular subreddits and posts from a specific subreddit with infinite pagination.
+ * Provides unauthenticated access to Reddit endpoints like popular subreddits
+ * and subreddit-specific post listings.
  */
 export const publicApi = createApi({
   reducerPath: 'publicApi',
@@ -24,115 +33,74 @@ export const publicApi = createApi({
   baseQuery: fetchBaseQuery({baseUrl: 'https://www.reddit.com'}),
   endpoints: (builder) => ({
     /**
-     * Fetch popular subreddits.
+     * Fetches popular subreddits.
      *
-     * This endpoint uses an infinite query to support pagination.
-     * It fetches popular subreddits with optional page tokens.
-     *
-     * @returns {RedditSearchResponse} The response containing a list of popular subreddits.
+     * @param limit - Number of subreddits to retrieve.
+     * @returns Sorted list of popular subreddits.
      */
-    getPopularSubreddits: builder.infiniteQuery<PopularListing, void, string>({
-      query: ({pageParam}) => {
-        // Create query params.
-        const params = new URLSearchParams({
-          limit: '25',
-          raw_json: '1'
-        })
-
-        // Append the page token if provided.
-        if (pageParam) {
-          params.append('after', pageParam)
-        }
-
-        // Return the URL with query params.
-        return `/subreddits/popular.json?${params.toString()}`
+    getPopularSubreddits: builder.query<
+      PopularListingResponse,
+      {limit?: number}
+    >({
+      query: ({limit = 25}) => {
+        return `/subreddits/popular.json?${limit}`
       },
-      infiniteQueryOptions: {
-        // The initial page param is an empty string.
-        initialPageParam: '',
-        // Limit the number of cached pages.
-        maxPages: 10,
-        // Extract the next page token from the last page's response.
-        getNextPageParam: (lastPage) => lastPage.data?.after ?? null,
-        // Not implementing previous page logic.
-        getPreviousPageParam: () => null
-      },
-      // Sort subreddits by subscribers count.
-      transformResponse: (response: PopularListing) => {
-        const sortedChildren = response.data?.children
-          ? [...response.data.children].sort(
-              (a, b) =>
-                b.data.subreddit_subscribers - a.data.subreddit_subscribers
-            )
-          : []
+      transformResponse: (response: PopularListingResponse) => {
+        // Sort the subreddits by subscriber count in descending order.
+        const sorted = [...(response.data?.children ?? [])].sort(
+          (a, b) => getSubscriberCount(b) - getSubscriberCount(a)
+        )
+
         return {
           ...response,
           data: {
             ...response.data,
-            children: sortedChildren
+            children: sorted
           }
         }
-      }
+      },
+      providesTags: ['PopularSubreddits']
     }),
 
     /**
-     * Fetch posts from a specific subreddit with pagination.
+     * Gets posts from a specific subreddit.
      *
-     * This endpoint fetches posts from a subreddit using the selected sort option.
-     * It also filters out stickied posts from the response.
-     *
-     * @param {GetSubredditPostsQueryArgs} queryArg - An object containing the subreddit and sort.
-     * @param {string | undefined} pageParam - The page token (Reddit "after" token).
-     * @returns {RedditResponse} The response containing subreddit posts.
+     * @param queryArg - The subreddit and sorting option.
+     * @param pageParam - The pagination token for the next page of results.
+     * @returns An infinite list of posts from the subreddit.
      */
     getSubredditPosts: builder.infiniteQuery<
-      RedditResponse, // Response type
-      GetSubredditPostsQueryArgs, // Query argument type (subreddit and sort)
-      string | undefined // Page parameter (Reddit "after" token)
+      RedditResponse,
+      GetSubredditPostsQueryArgs,
+      string | undefined
     >({
       infiniteQueryOptions: {
-        // For the initial request, no page token is required.
         initialPageParam: undefined,
-        // Limit the number of cached pages (adjustable as needed).
-        maxPages: 10,
-        // Extract the next page token from the response.
         getNextPageParam: (lastPage) => lastPage.data.after ?? undefined,
-        // No previous page handling.
-        getPreviousPageParam: () => undefined
+        getPreviousPageParam: () => undefined,
+        maxPages: 10
       },
-      // Build the request URL using URLSearchParams.
       query({queryArg, pageParam}) {
-        // Extract the subreddit and sort from the query argument.
         const {subreddit, sort} = queryArg
-
-        // Create query params.
-        const params = new URLSearchParams({
-          limit: '10',
-          raw_json: '1'
-        })
-
-        // Append the page token if provided.
-        if (pageParam) {
-          params.append('after', pageParam)
-        }
-
-        // Return the URL with query params.
-        return `/r/${subreddit}/${sort}.json?${params.toString()}`
+        return `/r/${subreddit}/${sort}.json?limit=25&after=${pageParam}`
       },
-      // Transform the response to filter out stickied posts.
-      transformResponse: (response: RedditResponse) => ({
-        ...response,
-        data: {
-          ...response.data,
-          children: response.data.children.filter(({data}) => !data.stickied)
+      transformResponse: (response: RedditResponse) => {
+        // Filter out stickied posts from the response.
+        const filteredChildren = response.data.children.filter(
+          ({data}) => !data.stickied
+        )
+
+        return {
+          ...response,
+          data: {
+            ...response.data,
+            children: filteredChildren
+          }
         }
-      })
+      }
     })
   })
 })
 
-// Export the auto-generated hooks for the endpoints.
-export const {
-  useGetPopularSubredditsInfiniteQuery,
-  useGetSubredditPostsInfiniteQuery
-} = publicApi
+export const {useGetPopularSubredditsQuery, useGetSubredditPostsInfiniteQuery} =
+  publicApi
