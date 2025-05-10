@@ -1,0 +1,43 @@
+'use client'
+
+import {toggleFavoriteSubreddit} from '@/lib/store/features/settingsSlice'
+import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
+import {useLazyGetSubredditAboutQuery} from '@/lib/store/services/publicApi'
+import {logError} from '@/lib/utils/logError'
+import {notifications} from '@mantine/notifications'
+import {useState} from 'react'
+
+export function useToggleFavorite(subreddit: string) {
+  const dispatch = useAppDispatch()
+  const favorites = useAppSelector((state) => state.settings.favorites)
+  const [trigger] = useLazyGetSubredditAboutQuery()
+  const [loading, setLoading] = useState(false)
+  const isFavorite = favorites.some((sub) => sub.display_name === subreddit)
+
+  const toggle = async () => {
+    if (loading) return
+    setLoading(true)
+
+    try {
+      const data = await trigger(subreddit).unwrap()
+      dispatch(toggleFavoriteSubreddit(data))
+      notifications.show({
+        title: isFavorite ? 'Removed from favorites' : 'Added to favorites',
+        message: `r/${subreddit} was ${isFavorite ? 'removed from' : 'added to'} your favorites.`,
+        color: isFavorite ? 'gray' : 'green',
+        autoClose: 2000
+      })
+    } catch (error) {
+      logError(error)
+      notifications.show({
+        title: 'Error',
+        message: `Failed to update favorite for r/${subreddit}`,
+        color: 'red'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {isFavorite, loading, toggle}
+}
