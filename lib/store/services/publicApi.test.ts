@@ -1,9 +1,24 @@
 import {
   useGetPopularSubredditsQuery,
+  useGetSubredditAboutQuery,
   useGetSubredditPostsInfiniteQuery
 } from '@/lib/store/services/publicApi'
 import {renderHook, server, waitFor} from '@/test-utils'
 import {http, HttpResponse} from 'msw'
+
+describe('publicApi - getSubredditAbout', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('should fetch subreddit about data', async () => {
+    const {result} = renderHook(() => useGetSubredditAboutQuery('awww'))
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data).toBeDefined()
+    expect(result.current.data?.display_name).toBe('Awww')
+  })
+})
 
 describe('publicApi - getPopularSubreddits', () => {
   beforeEach(() => {

@@ -2,6 +2,7 @@ import type {
   PopularListingResponse,
   PopularSubredditChild,
   RedditResponse,
+  RedditSubreddit,
   SortingOption
 } from '@/lib/types'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
@@ -32,6 +33,13 @@ export const publicApi = createApi({
   tagTypes: ['SubredditPosts', 'PopularSubreddits'],
   baseQuery: fetchBaseQuery({baseUrl: 'https://www.reddit.com'}),
   endpoints: (builder) => ({
+    /**
+     * Fetches subreddit information.
+     */
+    getSubredditAbout: builder.query<RedditSubreddit, string>({
+      query: (subreddit) => `/r/${subreddit}/about.json`,
+      transformResponse: (response: {data: RedditSubreddit}) => response.data
+    }),
     /**
      * Fetches popular subreddits.
      *
@@ -102,5 +110,9 @@ export const publicApi = createApi({
   })
 })
 
-export const {useGetPopularSubredditsQuery, useGetSubredditPostsInfiniteQuery} =
-  publicApi
+export const {
+  useGetSubredditAboutQuery,
+  useGetPopularSubredditsQuery,
+  useGetSubredditPostsInfiniteQuery,
+  useLazyGetSubredditAboutQuery
+} = publicApi

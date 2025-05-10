@@ -1,4 +1,5 @@
 import {http, HttpResponse} from 'msw'
+import {aboutMock} from '../mocks/about'
 import {popularMock} from '../mocks/popular'
 import {searchMock} from '../mocks/search'
 import {subredditMock} from '../mocks/subreddit'
@@ -8,6 +9,11 @@ export const handlers = [
   // Token endpoint
   http.post('https://www.reddit.com/api/v1/access_token', async () => {
     return HttpResponse.json(tokenMock)
+  }),
+
+  // About subreddit
+  http.get('https://reddit.com/r/:slug/about.json', () => {
+    return HttpResponse.json(aboutMock)
   }),
 
   // Popular subreddits
