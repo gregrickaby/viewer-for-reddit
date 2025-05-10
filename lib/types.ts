@@ -362,7 +362,7 @@ export interface RedditPost {
   author_flair_richtext: LinkFlairRichText
   author_flair_type: 'text' | 'richtext'
   author_patreon_flair?: boolean
-  user_flair_background_color: string | null
+  user_flair_background_color?: string | null
 
   distinguished: 'moderator' | 'admin' | 'special' | string | null
 
@@ -720,5 +720,5 @@ export interface SearchResult {
 }
 
 export interface CommentContributionSettings {
-  allowed_media_types?: null
+  allowed_media_types?: string[] | null
 }
