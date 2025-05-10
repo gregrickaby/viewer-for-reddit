@@ -1,4 +1,12 @@
 /**
+ * Next.js dynamic route parameters.
+ */
+export type Params = Promise<{slug: string}>
+export type SearchParams = Promise<{
+  [key: string]: string | string[] | undefined
+}>
+
+/**
  * Valid sorting options for Reddit posts.
  */
 export type SortingOption = 'hot' | 'new' | 'top' | 'controversial' | 'rising'
