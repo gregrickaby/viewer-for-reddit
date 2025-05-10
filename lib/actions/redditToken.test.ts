@@ -19,8 +19,6 @@ vi.mock('@/lib/utils/logError', () => ({
 describe('fetchToken', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    vi.stubEnv('REDDIT_CLIENT_ID', 'mock_client_id')
-    vi.stubEnv('REDDIT_CLIENT_SECRET', 'mock_client_secret')
     resetTokenState()
   })
 
@@ -50,12 +48,12 @@ describe('fetchToken', () => {
         message: 'Missing Reddit ENV variables'
       })
     )
+
+    vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
+    vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
   })
 
   it('throws an error when the token request fails', async () => {
-    vi.stubEnv('REDDIT_CLIENT_ID', 'invalid_client_id')
-    vi.stubEnv('REDDIT_CLIENT_SECRET', 'invalid_client_secret')
-
     server.use(
       http.post('https://www.reddit.com/api/v1/access_token', async () => {
         return HttpResponse.json(
@@ -104,8 +102,6 @@ describe('getRedditToken', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     resetTokenState()
-    vi.stubEnv('REDDIT_CLIENT_ID', 'mock_client_id')
-    vi.stubEnv('REDDIT_CLIENT_SECRET', 'mock_client_secret')
   })
 
   it('fetches and caches a new token when no token exists', async () => {
@@ -122,7 +118,7 @@ describe('getRedditToken', () => {
   })
 
   it('fetches new token if request limit is exceeded', async () => {
-    setTokenState(tokenMock, 951) // exceeds MAX_REQUESTS
+    setTokenState(tokenMock, 951)
     const token = await getRedditToken()
     expect(token).toStrictEqual(tokenMock)
     expect(getRequestCount()).toBe(0)
@@ -144,7 +140,6 @@ describe('getRedditToken', () => {
   })
 
   it('logs and returns null if token response is missing access_token', async () => {
-    // Simulate Reddit responding with malformed token
     server.use(
       http.post('https://www.reddit.com/api/v1/access_token', () =>
         HttpResponse.json({
