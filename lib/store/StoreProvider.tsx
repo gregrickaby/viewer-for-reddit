@@ -1,20 +1,25 @@
 'use client'
 
-import {AppStore, makeStore} from '@/lib/store'
+import {AppStore, makeStore, type RootState} from '@/lib/store'
 import {setupListeners} from '@reduxjs/toolkit/query'
 import {useEffect, useMemo, type ReactNode} from 'react'
 import {Provider} from 'react-redux'
 
 export interface StoreProviderProps {
   children: ReactNode
+  preloadedState?: Partial<RootState>
   store?: AppStore
 }
 
 export function StoreProvider({
   children,
-  store: externalStore
+  store: externalStore,
+  preloadedState
 }: Readonly<StoreProviderProps>) {
-  const store = useMemo(() => externalStore ?? makeStore(), [externalStore])
+  const store = useMemo(
+    () => externalStore ?? makeStore(preloadedState),
+    [externalStore, preloadedState]
+  )
 
   useEffect(() => {
     const unsubscribe = setupListeners(store.dispatch)
