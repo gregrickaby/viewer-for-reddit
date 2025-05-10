@@ -4,6 +4,7 @@ import {useSearchSubredditsQuery} from '@/lib/store/services/privateApi'
 import {Autocomplete} from '@mantine/core'
 import {useDebouncedValue} from '@mantine/hooks'
 import {useState} from 'react'
+import classes from './Search.module.css'
 
 export function Search() {
   const [query, setQuery] = useState('')
@@ -18,11 +19,16 @@ export function Search() {
 
   return (
     <Autocomplete
+      aria-label="search subreddits"
+      classNames={{
+        wrapper: classes.wrapper
+      }}
+      clearable
       data={autoCompleteData}
-      label="Search subreddits"
       onChange={setQuery}
       placeholder="Search subreddits"
       value={query}
+      width="100%"
     />
   )
 }
