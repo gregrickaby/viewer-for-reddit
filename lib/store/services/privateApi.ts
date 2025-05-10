@@ -1,15 +1,25 @@
-import {fetchSearchResults} from '@/lib/actions'
-import type {RedditSubreddit} from '@/lib/types'
+'use client'
+
+import {getRedditToken} from '@/lib/actions/redditToken'
+import type {SearchResponse, SearchResult} from '@/lib/types'
+import {extractChildren} from '@/lib/utils/extractChildren'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 /**
- * Private Reddit API service.
+ * The following queries need to be authenticated with a Reddit token.
  */
 export const privateApi = createApi({
   reducerPath: 'privateApi',
   tagTypes: ['Search'],
   baseQuery: fetchBaseQuery({
-    baseUrl: '/'
+    baseUrl: '/',
+    prepareHeaders: async (headers) => {
+      const token = await getRedditToken()
+      if (token?.access_token) {
+        headers.set('Authorization', `Bearer ${token.access_token}`)
+      }
+      return headers
+    }
   }),
   endpoints: (builder) => ({
     /**
@@ -18,71 +28,19 @@ export const privateApi = createApi({
      * @param query - The search query.
      * @param enableNsfw - Whether to include NSFW subreddits.
      *
-     * @returns The response object.
+     * @returns A list of SearchResults.
      */
     searchSubreddits: builder.query<
-      RedditSubreddit[],
+      SearchResult[],
       {query: string; enableNsfw: boolean}
     >({
-      queryFn: async ({query, enableNsfw}) => {
-        try {
-          // Fetch search results.
-          const response = await fetchSearchResults(
-            encodeURIComponent(query.trim()),
-            {nsfw: enableNsfw, limit: 10}
-          )
-
-          // Transform response to match expected return format.
-          const data = response.data.children
-            .map((child) => child.data)
-            .sort((a, b) => b.subscribers - a.subscribers)
-
-          return {data}
-        } catch (error) {
-          return {
-            error: {
-              status: 'CUSTOM_ERROR',
-              data:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to fetch search results',
-              error: 'An error occurred while fetching search results'
-            }
-          }
-        }
-      },
-
-      // Cache for 5 minutes.
-      keepUnusedDataFor: 300,
-
-      // Create a unique cache key for each search.
-      serializeQueryArgs: ({queryArgs}) =>
-        `${queryArgs.query}-${queryArgs.enableNsfw}`,
-
-      // Merge function for updating existing cache.
-      merge: (currentCache, newItems) => {
-        if (!currentCache) {
-          return newItems
-        }
-        return Array.from(new Set([...currentCache, ...newItems]))
-      },
-
-      // Only refetch if the query or NSFW setting changes.
-      forceRefetch: ({currentArg, previousArg}) =>
-        currentArg?.query !== previousArg?.query ||
-        currentArg?.enableNsfw !== previousArg?.enableNsfw,
-
-      // Add tags for cache invalidation.
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({id}) => ({type: 'Search' as const, id})),
-              {type: 'Search', id: 'LIST'}
-            ]
-          : [{type: 'Search', id: 'LIST'}]
+      query: ({query, enableNsfw}) =>
+        `https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=${query}&limit=10&include_over_18=${enableNsfw}&include_profiles=false&typeahead_active=true&search_query_id=${crypto.randomUUID()}`,
+      transformResponse: (response: SearchResponse) =>
+        extractChildren<SearchResult>(response),
+      providesTags: ['Search']
     })
   })
 })
 
-// Export hooks for usage in functional components.
 export const {useSearchSubredditsQuery} = privateApi
