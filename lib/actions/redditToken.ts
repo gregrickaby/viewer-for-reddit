@@ -1,14 +1,14 @@
 'use server'
 
 import config from '@/lib/config'
-import {logError} from '@/lib/functions'
+import {OAuthResponse} from '@/lib/types'
+import {logError} from '@/lib/utils/logError'
 import {
   getCachedToken,
   incrementRequestCount,
   setTokenState,
   shouldFetchNewToken
-} from '@/lib/functions/token'
-import {OAuthResponse} from '@/lib/types'
+} from '@/lib/utils/token'
 
 /**
  * Fetches a new application-only Reddit OAuth token.

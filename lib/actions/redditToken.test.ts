@@ -1,7 +1,7 @@
+import {logError} from '@/lib/utils/logError'
 import {tokenMock} from '@/test-utils/mocks/token'
 import {server} from '@/test-utils/msw/server'
 import {http, HttpResponse} from 'msw'
-import {logError} from '../functions'
 import {fetchToken, getRedditToken} from './redditToken'
 
 import {
@@ -10,9 +10,9 @@ import {
   resetTokenState,
   setTokenState,
   shouldFetchNewToken
-} from '@/lib/functions/token'
+} from '@/lib/utils/token'
 
-vi.mock('@/lib/functions', () => ({
+vi.mock('@/lib/utils/logError', () => ({
   logError: vi.fn()
 }))
 

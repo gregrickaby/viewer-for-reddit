@@ -1,10 +1,10 @@
+import type {RedditSubreddit, SortingOption, UserSettings} from '@/lib/types'
 import {
   clearSettings,
   getInitialSettings,
   loadSettings,
   saveSettings
-} from '@/lib/functions/storage'
-import type {RedditSubreddit, SortingOption, UserSettings} from '@/lib/types'
+} from '@/lib/utils/storage'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 /**
