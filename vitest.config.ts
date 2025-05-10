@@ -23,7 +23,7 @@ export default defineConfig({
         '**/*.test.{ts,tsx}',
         '**/test-utils/**',
         '*.config.ts',
-        '**/index.ts',
+        '**/types.ts',
         '*.d.ts'
       ],
       reporter: ['text', 'json', 'html']
