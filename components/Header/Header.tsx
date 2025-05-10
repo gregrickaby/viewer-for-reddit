@@ -1,19 +1,15 @@
 'use client'
 
 import icon from '@/app/icon.png'
+import {Search} from '@/components/Search/Search'
 import config from '@/lib/config'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
-import {ActionIcon, Burger, Title, VisuallyHidden} from '@mantine/core'
+import {Burger, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
-import {FaSearch} from 'react-icons/fa'
 
-/**
- * The header component.
- */
 export function Header() {
-  const {showNavbar, toggleNavbarHandler, toggleSearchHandler} =
-    useHeaderState()
+  const {showNavbar, toggleNavbarHandler} = useHeaderState()
 
   return (
     <>
@@ -30,14 +26,7 @@ export function Header() {
         <Title visibleFrom="sm">{config.siteName}</Title>
         <VisuallyHidden>{config.metaDescription}</VisuallyHidden>
       </div>
-      <ActionIcon
-        hiddenFrom="sm"
-        variant="transparent"
-        aria-label="Search"
-        onClick={toggleSearchHandler}
-      >
-        <FaSearch size="32" />
-      </ActionIcon>
+      <Search />
     </>
   )
 }
