@@ -1,4 +1,4 @@
-import {Results} from '@/components/Results/Results'
+import {Posts} from '@/components/Posts/Posts'
 import config from '@/lib/config'
 import type {Params, SearchParams, SortingOption} from '@/lib/types'
 
@@ -26,5 +26,5 @@ export default async function Page(props: {
   const searchParams = await props.searchParams
   const sort = searchParams.sort as SortingOption
 
-  return <Results subreddit={slug} sort={sort} />
+  return <Posts subreddit={slug} sort={sort} />
 }
