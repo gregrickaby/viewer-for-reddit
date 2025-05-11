@@ -22,10 +22,9 @@ export function useToggleFavorite(subreddit: string) {
       const data = await trigger(subreddit).unwrap()
       dispatch(toggleFavoriteSubreddit(data))
       notifications.show({
-        title: isFavorite ? 'Removed from favorites' : 'Added to favorites',
-        message: `r/${subreddit} was ${isFavorite ? 'removed from' : 'added to'} your favorites.`,
-        color: isFavorite ? 'gray' : 'green',
-        autoClose: 2000
+        title: isFavorite ? 'Deleted' : 'Added',
+        message: `r/${subreddit} was ${isFavorite ? 'deleted from' : 'added to'} your favorites.`,
+        color: isFavorite ? 'blue' : 'green'
       })
     } catch (error) {
       logError(error)
