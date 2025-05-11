@@ -4,7 +4,7 @@ import {ActionIcon, Group, Tooltip} from '@mantine/core'
 import {FaGithub} from 'react-icons/fa'
 import {SiBuymeacoffee} from 'react-icons/si'
 
-export function Icons() {
+export function HeaderIcons() {
   return (
     <Group gap="xs">
       <Settings />

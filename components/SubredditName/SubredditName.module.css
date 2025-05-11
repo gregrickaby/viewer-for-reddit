@@ -1,5 +1,6 @@
-.navLink {
+.name {
   align-items: center;
+  color: var(--mantine-primary-color-0);
   display: flex;
   gap: var(--mantine-spacing-xs);
 }

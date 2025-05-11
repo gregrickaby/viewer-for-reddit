@@ -1,35 +1,37 @@
 import {useAppSelector} from '@/lib/store/hooks'
 import {useSearchSubredditsQuery} from '@/lib/store/services/privateApi'
 import {useGetPopularSubredditsQuery} from '@/lib/store/services/publicApi'
+import type {SubredditItem} from '@/lib/types'
+import {fromSearch} from '@/lib/utils/subredditMapper'
 import {useDebouncedValue} from '@mantine/hooks'
 import {useMemo, useState} from 'react'
 
-export function useSubredditSearch() {
+export function useSubredditSearch(): {
+  query: string
+  setQuery: (value: string) => void
+  autoCompleteData: SubredditItem[]
+} {
   const [query, setQuery] = useState('')
   const [debounced] = useDebouncedValue(query.trim(), 200)
   const nsfw = useAppSelector((state) => state.settings.enableNsfw)
 
   const {data: searchResults = []} = useSearchSubredditsQuery(
     {query: debounced, enableNsfw: nsfw},
-    {skip: !debounced}
+    {skip: debounced.length === 0}
   )
 
-  const {data: popularResponse} = useGetPopularSubredditsQuery(
+  const {data: popularSubreddits = []} = useGetPopularSubredditsQuery(
     {limit: 25},
-    {skip: !!debounced}
+    {skip: debounced.length > 0}
   )
 
-  const autoCompleteData = useMemo(() => {
-    if (debounced) {
-      return searchResults.map((s) => s.display_name_prefixed ?? '')
+  const autoCompleteData = useMemo<SubredditItem[]>(() => {
+    if (debounced.length > 0) {
+      return searchResults.map(fromSearch)
     }
 
-    return (
-      popularResponse?.data?.children.map(
-        (child) => child.data.display_name_prefixed ?? ''
-      ) ?? []
-    )
-  }, [debounced, searchResults, popularResponse])
+    return popularSubreddits
+  }, [debounced, searchResults, popularSubreddits])
 
   return {
     query,

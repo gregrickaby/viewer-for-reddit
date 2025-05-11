@@ -1,6 +1,6 @@
-import type {PopularListingResponse} from '@/lib/types'
+import {PopularResponse} from '@/lib/types/popular'
 
-export const popularMock: PopularListingResponse = {
+export const popularMock: PopularResponse = {
   kind: 'Listing',
   data: {
     after: 't5_2qh1i',
@@ -30,7 +30,7 @@ export const popularMock: PopularListingResponse = {
           display_name_prefixed: 'r/Home',
           accounts_active: null,
           public_traffic: false,
-          subscribers: 311094,
+          subscribers: 311441,
           user_flair_richtext: [],
           videostream_links_count: 0,
           name: 't5_2qs0k',
@@ -143,7 +143,7 @@ export const popularMock: PopularListingResponse = {
           display_name_prefixed: 'r/AskReddit',
           accounts_active: null,
           public_traffic: false,
-          subscribers: 55114713,
+          subscribers: 55174938,
           user_flair_richtext: [],
           name: 't5_2qh1i',
           quarantine: false,

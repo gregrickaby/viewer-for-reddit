@@ -1,12 +1,12 @@
-import {OAuthResponse} from '@/lib/types'
+import type {TokenResponse} from '@/lib/types/token'
 
-let cachedToken: OAuthResponse | null = null
+let cachedToken: TokenResponse | null = null
 let requestCount = 0
 
 const MAX_REQUESTS = 950
 
 export function shouldFetchNewToken(
-  token: OAuthResponse | null = cachedToken,
+  token: TokenResponse | null = cachedToken,
   count: number = requestCount
 ): boolean {
   return !token || count >= MAX_REQUESTS
@@ -16,7 +16,7 @@ export function getRequestCount(): number {
   return requestCount
 }
 
-export function getCachedToken(): OAuthResponse | null {
+export function getCachedToken(): TokenResponse | null {
   return cachedToken
 }
 
@@ -26,7 +26,7 @@ export function resetTokenState(): void {
 }
 
 export function setTokenState(
-  token: OAuthResponse | null,
+  token: TokenResponse | null,
   count: number = 0
 ): void {
   cachedToken = token

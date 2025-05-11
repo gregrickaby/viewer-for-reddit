@@ -1,9 +1,9 @@
-import {ImageAsset} from '@/lib/types'
+import {Source} from '@/lib/types/posts'
 
 /**
  * Helper function to get the medium sized image.
  */
-export function getMediumImage(images: ImageAsset[]): ImageAsset | null {
+export function getMediumImage(images: Source[]): Source | null {
   // If there are no images, return null.
   if (!Array.isArray(images) || images.length === 0) {
     return null

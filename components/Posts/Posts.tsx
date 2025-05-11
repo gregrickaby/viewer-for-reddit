@@ -11,12 +11,6 @@ interface PostsProps {
   sort?: SortingOption
 }
 
-/**
- * Displays an infinite list of posts from a subreddit.
- *
- * @param subreddit - The subreddit to fetch posts from.
- * @param sort - The sorting method for posts (default: 'hot').
- */
 export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
   useTrackRecentSubreddit(subreddit)
 
@@ -40,14 +34,18 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
         {`r/${subreddit}`}
         <Favorite subreddit={subreddit} />
       </h1>
+
       <div>
-        {data?.pages.flatMap((page) =>
-          page.data.children.map((post) => (
-            <div key={post.data.id}>
-              <h2>{post.data.title}</h2>
-              <p>{post.data.subreddit_name_prefixed}</p>
-            </div>
-          ))
+        {data?.pages.flatMap(
+          (page) =>
+            page?.data?.children?.map((post) =>
+              post?.data ? (
+                <div key={post.data.id}>
+                  <h2>{post.data.title}</h2>
+                  <p>{post.data.subreddit_name_prefixed}</p>
+                </div>
+              ) : null
+            ) ?? []
         )}
 
         {hasNextPage && (

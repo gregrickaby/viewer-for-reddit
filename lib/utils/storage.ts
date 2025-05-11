@@ -25,7 +25,7 @@ const isBrowser = typeof window !== 'undefined'
 export function getInitialSettings(): UserSettings {
   return {
     currentSort: 'hot',
-    currentSubreddit: 'aww',
+    currentSubreddit: '',
     enableNsfw: true,
     favorites: [],
     isMuted: true,

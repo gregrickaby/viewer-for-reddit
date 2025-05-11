@@ -1,4 +1,4 @@
-import type {SearchResponse} from '@/lib/types'
+import type {SearchResponse} from '@/lib/types/search'
 
 export const searchMock: SearchResponse = {
   kind: 'Listing',

@@ -1,4 +1,6 @@
-export const aboutMock = {
+import {AboutResponse} from '@/lib/types/about'
+
+export const aboutMock: AboutResponse = {
   kind: 't5',
   data: {
     user_flair_background_color: null,

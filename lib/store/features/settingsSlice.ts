@@ -1,4 +1,4 @@
-import type {RedditSubreddit, SortingOption, UserSettings} from '@/lib/types'
+import type {SortingOption, SubredditItem, UserSettings} from '@/lib/types'
 import {
   clearSettings,
   getInitialSettings,
@@ -40,7 +40,7 @@ export const settingsSlice = createSlice({
     },
 
     // Add subreddit to recent history.
-    addRecentSubreddit: (state, action: PayloadAction<RedditSubreddit>) => {
+    addRecentSubreddit: (state, action: PayloadAction<SubredditItem>) => {
       const exists = state.recent.findIndex(
         (sub) => sub.display_name === action.payload.display_name
       )
@@ -69,10 +69,7 @@ export const settingsSlice = createSlice({
     },
 
     // Toggle subreddit in favorites.
-    toggleFavoriteSubreddit: (
-      state,
-      action: PayloadAction<RedditSubreddit>
-    ) => {
+    toggleFavoriteSubreddit: (state, action: PayloadAction<SubredditItem>) => {
       const existingIndex = state.favorites.findIndex(
         (sub) => sub.display_name === action.payload.display_name
       )

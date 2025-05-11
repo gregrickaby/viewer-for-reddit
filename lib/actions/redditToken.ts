@@ -1,7 +1,7 @@
 'use server'
 
 import config from '@/lib/config'
-import {OAuthResponse} from '@/lib/types'
+import {TokenResponse} from '@/lib/types/token'
 import {logError} from '@/lib/utils/logError'
 import {
   getCachedToken,
@@ -16,12 +16,12 @@ import {
  * Used to authenticate read-only requests to Reddit. Token expires in 24 hours,
  * but we proactively rotate based on request count to avoid hitting the limit.
  *
- * @returns {Promise<OAuthResponse>} The OAuth token response.
+ * @returns {Promise<TokenResponse>} The OAuth token response.
  * @throws {Error} If the token request fails or if the response is invalid.
  *
  * @see https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
  */
-export async function fetchToken(): Promise<OAuthResponse | null> {
+export async function fetchToken(): Promise<TokenResponse | null> {
   try {
     const clientId = process.env.REDDIT_CLIENT_ID
     const clientSecret = process.env.REDDIT_CLIENT_SECRET
@@ -51,7 +51,7 @@ export async function fetchToken(): Promise<OAuthResponse | null> {
       )
     }
 
-    const data = (await response.json()) as OAuthResponse
+    const data = (await response.json()) as TokenResponse
 
     if (!data.access_token || !data.expires_in) {
       throw new Error(data.error ?? 'Invalid token response')
@@ -72,7 +72,7 @@ export async function fetchToken(): Promise<OAuthResponse | null> {
  *
  * @returns A valid Reddit OAuth token, or null if unable to obtain one.
  */
-export async function getRedditToken(): Promise<OAuthResponse | null> {
+export async function getRedditToken(): Promise<TokenResponse | null> {
   if (!shouldFetchNewToken()) {
     incrementRequestCount()
     return getCachedToken()

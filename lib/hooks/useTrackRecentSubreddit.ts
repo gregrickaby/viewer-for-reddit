@@ -11,14 +11,15 @@ export function useTrackRecentSubreddit(subreddit: string) {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (!subreddit) return
+    if (!subreddit.trim()) return
 
     dispatch(
       addRecentSubreddit({
         display_name: subreddit,
         icon_img: '',
         subscribers: 0,
-        over18: false
+        over18: false,
+        value: subreddit
       })
     )
 

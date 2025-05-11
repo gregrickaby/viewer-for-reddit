@@ -1,7 +1,7 @@
 'use client'
 
 import icon from '@/app/icon.png'
-import {Icons} from '@/components/Header/Icons'
+import {HeaderIcons} from '@/components/Header/HeaderIcons'
 import {Search} from '@/components/Search/Search'
 import config from '@/lib/config'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
@@ -30,7 +30,7 @@ export function Header() {
       </div>
       <div className={classes.headerRight}>
         <Search />
-        <Icons />
+        <HeaderIcons />
       </div>
     </div>
   )
