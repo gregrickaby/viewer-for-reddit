@@ -11,16 +11,24 @@ interface FavoriteProps {
 export function Favorite({subreddit}: Readonly<FavoriteProps>) {
   const {isFavorite, loading, toggle} = useToggleFavorite(subreddit)
 
+  if (subreddit === 'all' || subreddit === 'popular') return null
+
+  const label = isFavorite ? 'Remove from favorites' : 'Add to favorites'
+  const icon = isFavorite ? <FaHeart /> : <FaRegHeart />
+  const color = isFavorite ? 'red' : 'gray'
+
   return (
     <ActionIcon
-      aria-label="Toggle favorite"
+      aria-label={label}
+      color={color}
       disabled={loading}
       loading={loading}
       onClick={toggle}
-      title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       size="lg"
+      title={label}
+      variant="subtle"
     >
-      {isFavorite ? <FaHeart /> : <FaRegHeart />}
+      {icon}
     </ActionIcon>
   )
 }
