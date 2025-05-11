@@ -2,6 +2,7 @@
 
 import icon from '@/app/icon.png'
 import {Search} from '@/components/Search/Search'
+import {Settings} from '@/components/Settings/Settings'
 import config from '@/lib/config'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {Burger, Title, VisuallyHidden} from '@mantine/core'
@@ -27,6 +28,7 @@ export function Header() {
         <VisuallyHidden>{config.metaDescription}</VisuallyHidden>
       </div>
       <Search />
+      <Settings />
     </>
   )
 }
