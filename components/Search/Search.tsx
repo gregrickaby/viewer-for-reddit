@@ -11,11 +11,14 @@ export function Search() {
   return (
     <Autocomplete
       aria-label="Search subreddits"
-      classNames={{wrapper: classes.wrapper}}
+      autoCapitalize="off"
+      autoCorrect="off"
+      classNames={{root: classes.root}}
       clearable
       data={autoCompleteData}
       onChange={setQuery}
       placeholder="Search subreddits"
+      spellCheck="false"
       value={query}
       renderOption={({option}) => (
         <Link href={`/r/${option.value.replace(/^r\//, '')}`}>

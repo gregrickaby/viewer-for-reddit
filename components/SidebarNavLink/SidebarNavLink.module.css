@@ -1,5 +1,5 @@
 .navLink {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--mantine-spacing-xs);
 }

@@ -3,14 +3,11 @@
   display: flex;
   gap: var(--mantine-spacing-md);
   justify-content: space-between;
-
-  div {
-    display: flex;
-    align-items: center;
-  }
 }
 
-.branding {
+.headerLeft {
+  align-items: center;
+  display: flex;
   gap: var(--mantine-spacing-md);
 
   a {
@@ -24,10 +21,14 @@
   }
 }
 
-.headerActions {
+.headerRight {
+  display: flex;
+  align-items: center;
+  justify-content: end;
   gap: var(--mantine-spacing-md);
-}
+  width: 70%;
 
-.icons {
-  gap: var(--mantine-spacing-xs);
+  .icons {
+    gap: var(--mantine-spacing-xs);
+  }
 }

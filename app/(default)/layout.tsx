@@ -5,6 +5,7 @@ import {Header} from '@/components/Header/Header'
 import {Sidebar} from '@/components/Sidebar/Sidebar'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {AppShell} from '@mantine/core'
+import {useViewportSize} from '@mantine/hooks'
 
 /**
  * The client-side layout component with the AppShell.
@@ -16,10 +17,12 @@ export default function Layout({
 }>) {
   const {showNavbar: isNavbarCollapsed} = useHeaderState()
 
+  const isMobile = useViewportSize().width < 480
+
   return (
     <AppShell
       header={{height: 68}}
-      footer={{height: 54}}
+      footer={{collapsed: isMobile, height: 54}}
       navbar={{
         breakpoint: 'sm',
         collapsed: {mobile: !isNavbarCollapsed, desktop: !isNavbarCollapsed},

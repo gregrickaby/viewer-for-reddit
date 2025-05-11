@@ -1,5 +1,11 @@
-.wrapper {
-  @media screen and (min-width: 690px) {
-    width: 400px;
+.root {
+  width: 100%;
+
+  @media screen and (min-width: 767px) {
+    width: 70%;
+  }
+
+  @media screen and (min-width: 1280px) {
+    width: 40%;
   }
 }
