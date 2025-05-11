@@ -1,10 +1,10 @@
 'use client'
 
+import {Footer} from '@/components/Footer/Footer'
 import {Header} from '@/components/Header/Header'
-import {Navigation} from '@/components/Navigation/Navigation'
+import {Sidebar} from '@/components/Sidebar/Sidebar'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {AppShell} from '@mantine/core'
-import styles from './layout.module.css'
 
 /**
  * The client-side layout component with the AppShell.
@@ -19,6 +19,7 @@ export default function Layout({
   return (
     <AppShell
       header={{height: 68}}
+      footer={{height: 54}}
       navbar={{
         breakpoint: 'sm',
         collapsed: {mobile: !isNavbarCollapsed, desktop: !isNavbarCollapsed},
@@ -26,15 +27,19 @@ export default function Layout({
       }}
       padding="md"
     >
-      <AppShell.Header p="md" className={styles.header}>
+      <AppShell.Header p="md">
         <Header />
       </AppShell.Header>
 
       <AppShell.Navbar p="md">
-        <Navigation />
+        <Sidebar />
       </AppShell.Navbar>
 
       <AppShell.Main>{children}</AppShell.Main>
+
+      <AppShell.Footer p="md">
+        <Footer />
+      </AppShell.Footer>
     </AppShell>
   )
 }

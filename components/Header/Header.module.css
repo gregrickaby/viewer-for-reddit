@@ -1,0 +1,33 @@
+.header {
+  align-items: center;
+  display: flex;
+  gap: var(--mantine-spacing-md);
+  justify-content: space-between;
+
+  div {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.branding {
+  gap: var(--mantine-spacing-md);
+
+  a {
+    display: inline-flex;
+  }
+
+  h1 {
+    font-size: var(--mantine-font-size-lg);
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.headerActions {
+  gap: var(--mantine-spacing-md);
+}
+
+.icons {
+  gap: var(--mantine-spacing-xs);
+}

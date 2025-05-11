@@ -8,13 +8,15 @@ import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {Burger, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
+import classes from './Header.module.css'
+import {Icons} from './Icons'
 
 export function Header() {
   const {showNavbar, toggleNavbarHandler} = useHeaderState()
 
   return (
-    <>
-      <div>
+    <div className={classes.header}>
+      <div className={classes.branding}>
         <Burger
           aria-label="Toggle navigation menu"
           onClick={toggleNavbarHandler}
@@ -22,13 +24,18 @@ export function Header() {
           size="md"
         />
         <Link href="/">
-          <Image alt="Logo" height={32} src={icon} width={32} />
+          <Image alt="Logo" height={32} src={icon} width={32} priority />
         </Link>
-        <Title visibleFrom="sm">{config.siteName}</Title>
+        <Title visibleFrom="md">{config.siteName}</Title>
         <VisuallyHidden>{config.metaDescription}</VisuallyHidden>
       </div>
-      <Search />
-      <Settings />
-    </>
+      <div className={classes.headerActions}>
+        <Search />
+        <div className={classes.icons}>
+          <Settings />
+          <Icons />
+        </div>
+      </div>
+    </div>
   )
 }

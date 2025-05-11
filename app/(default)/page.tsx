@@ -1,23 +1,25 @@
-/**
- * The home page route.
- *
- * @see https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#pages
- */
+import {Container} from '@mantine/core'
+
 export default async function Home() {
   return (
-    <section>
+    <Container size="sm">
       <h2>About</h2>
       <p>
-        The Viewer for Reddit app is the best way to browse media on Reddit
-        anonymously.
+        <strong>Viewer for Reddit</strong> has been a fast, private way to
+        browse media on Reddit since 2020.
       </p>
       <p>
-        With a focus on privacy, there&apos;s no tracking or logging of your
-        activity—aside from the minimal server logs (maintained for operational
-        integrity). Enjoy a clean, fast, and untracked browsing experience. To
-        get started, try searching for a subreddit or click one of the popular
-        subreddits above.
+        There's no tracking, no ads, and no personalized feeds or algorithms —
+        just a clean, fast browsing experience.
       </p>
-    </section>
+      <p>
+        As the app turns 5 years old, I'm excited to introduce new features: you
+        can now save your favorite subreddits and view your recent activity.
+        Just open the sidebar to access them anytime.
+      </p>
+      <p>
+        <strong>To get started, try searching for a subreddit above.</strong>
+      </p>
+    </Container>
   )
 }
