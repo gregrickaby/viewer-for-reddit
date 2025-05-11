@@ -28,9 +28,16 @@ export function Settings() {
   return (
     <Menu shadow="md" width={220} position="bottom-end" withArrow>
       <Menu.Target>
-        <ActionIcon size="lg" aria-label="Settings">
-          <FaCog />
-        </ActionIcon>
+        <Tooltip label="View settings" position="bottom" withArrow>
+          <ActionIcon
+            aria-label="Settings"
+            color="gray"
+            size="lg"
+            variant="light"
+          >
+            <FaCog size={18} />
+          </ActionIcon>
+        </Tooltip>
       </Menu.Target>
 
       <Menu.Dropdown>
