@@ -1,5 +1,6 @@
 'use client'
 
+import {useAppSelector} from '@/lib/store/hooks'
 import {useSearchSubredditsQuery} from '@/lib/store/services/privateApi'
 import {useGetPopularSubredditsQuery} from '@/lib/store/services/publicApi'
 import {Autocomplete} from '@mantine/core'
@@ -11,9 +12,10 @@ import classes from './Search.module.css'
 export function Search() {
   const [query, setQuery] = useState('')
   const [debounced] = useDebouncedValue(query.trim(), 200)
+  const nsfw = useAppSelector((state) => state.settings.enableNsfw)
 
   const {data: searchResults = []} = useSearchSubredditsQuery(
-    {query: debounced, enableNsfw: false},
+    {query: debounced, enableNsfw: nsfw},
     {skip: !debounced}
   )
 
