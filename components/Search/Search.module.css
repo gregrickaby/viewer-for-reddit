@@ -1,7 +1,5 @@
 .wrapper {
-  width: 250px;
-
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 690px) {
     width: 400px;
   }
 }
