@@ -1,10 +1,11 @@
 'use client'
 
 import {Favorite} from '@/components/Favorite/Favorite'
+import {PostCard} from '@/components/PostCard/PostCard'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/useTrackRecentSubreddit'
 import type {SortingOption} from '@/lib/types'
-import {Button, Loader} from '@mantine/core'
+import {Button, Group, Loader, SimpleGrid, Stack, Title} from '@mantine/core'
 
 interface PostsProps {
   subreddit: string
@@ -25,39 +26,56 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     ref
   } = useInfinitePosts(subreddit, sort)
 
-  if (isLoading) return <Loader />
-  if (isError) return <p>Error: {(error as Error).message}</p>
+  if (isLoading) {
+    return (
+      <Group justify="center" mt="lg">
+        <Loader />
+      </Group>
+    )
+  }
+
+  if (isError) {
+    return (
+      <Stack align="center" mt="lg">
+        <Title order={4} c="red">
+          Error: {(error as Error).message}
+        </Title>
+      </Stack>
+    )
+  }
 
   return (
-    <>
-      <h1>
-        {`r/${subreddit}`}
+    <Stack gap="md">
+      <Group justify="space-between">
+        <Title order={2}>{`r/${subreddit}`}</Title>
         <Favorite subreddit={subreddit} />
-      </h1>
+      </Group>
 
-      <div>
-        {data?.pages.flatMap(
-          (page) =>
-            page?.data?.children?.map((post) =>
-              post?.data ? (
-                <div key={post.data.id}>
-                  <h2>{post.data.title}</h2>
-                  <p>{post.data.subreddit_name_prefixed}</p>
-                </div>
-              ) : null
-            ) ?? []
+      <SimpleGrid
+        cols={{base: 1, sm: 2, lg: 3}}
+        spacing={{base: 10, sm: 'xl'}}
+        verticalSpacing={{base: 'md', sm: 'xl'}}
+      >
+        {data?.pages.flatMap((page) =>
+          (page?.data?.children ?? []).map((post) =>
+            post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
+          )
         )}
+      </SimpleGrid>
 
-        {hasNextPage && (
-          <div ref={ref}>
-            {isFetchingNextPage ? (
+      {hasNextPage && (
+        <div ref={ref} style={{minHeight: 60}}>
+          {isFetchingNextPage ? (
+            <Group justify="center">
               <Loader />
-            ) : (
-              <Button onClick={() => fetchNextPage()}>Load More</Button>
-            )}
-          </div>
-        )}
-      </div>
-    </>
+            </Group>
+          ) : (
+            <Button fullWidth onClick={() => fetchNextPage()}>
+              Load More
+            </Button>
+          )}
+        </div>
+      )}
+    </Stack>
   )
 }
