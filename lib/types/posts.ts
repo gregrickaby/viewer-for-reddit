@@ -128,6 +128,7 @@ export interface PostChildData {
   is_video?: boolean
   post_hint?: string
   preview?: Preview
+  video_preview?: RedditVideoPreview
 }
 
 export interface CrosspostParentList {
@@ -241,6 +242,7 @@ export interface Gildings {}
 
 export interface Media {
   type?: string
+  reddit_video?: RedditVideoPreview & {is_gif: boolean}
   oembed?: Oembed
 }
 

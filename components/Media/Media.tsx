@@ -1,15 +1,20 @@
-import {getMediumImage} from '@/lib/functions'
-import type {RedditPost} from '@/lib/types'
+'use client'
+
+import type {PostChildData} from '@/lib/types/posts'
+import {getMediumImage} from '@/lib/utils/getMediumImage'
 import dynamic from 'next/dynamic'
 import {Suspense, useMemo} from 'react'
+import styles from './Media.module.css'
 
 // Dynamic imports.
-const HlsPlayer = dynamic(() => import('@/components/HlsPlayer'))
-const YouTubePlayer = dynamic(() => import('@/components/YouTubePlayer'))
+const HlsPlayer = dynamic(() => import('@/components/HlsPlayer/HlsPlayer'))
+const YouTubePlayer = dynamic(
+  () => import('@/components/YouTubePlayer/YouTubePlayer')
+)
 
 // Set HLS player defaults.
 const hlsDefaults = {
-  autoPlay: false,
+  autoPlay: true,
   controls: true,
   loop: true,
   muted: true,
@@ -17,13 +22,18 @@ const hlsDefaults = {
   preload: 'none'
 }
 
+// Helper to detect vertical video.
+function getIsVertical(width?: number, height?: number): boolean {
+  return !!(width && height && height > width)
+}
+
 /**
  * The media component.
  */
-export default function Media(post: Readonly<RedditPost>) {
+export function Media(post: Readonly<PostChildData>) {
   // Set the medium image asset.
   const mediumImageAsset = useMemo(() => {
-    return getMediumImage(post.preview?.images[0]?.resolutions ?? []) || null
+    return getMediumImage(post.preview?.images?.[0]?.resolutions ?? []) || null
   }, [post.preview?.images])
 
   // Get the YouTube video ID.
@@ -42,7 +52,7 @@ export default function Media(post: Readonly<RedditPost>) {
           target="_blank"
         >
           <img
-            alt={post.title || 'reddit image'}
+            alt={post.title ?? 'reddit image'}
             data-hint="image"
             decoding="async"
             id={post.id}
@@ -57,14 +67,11 @@ export default function Media(post: Readonly<RedditPost>) {
 
     case 'hosted:video':
     case 'rich:video': {
-      // Get the Reddit-hosted video preview.
       const videoPreview =
         post.preview?.reddit_video_preview ?? post.media?.reddit_video
 
-      // Determine if the media is a YouTube video.
       const isYouTube = post.media?.oembed?.provider_name === 'YouTube'
 
-      // Render a YouTube video.
       if (isYouTube && youtubeVideoId) {
         return (
           <Suspense fallback={<div>Loading YouTube...</div>}>
@@ -73,18 +80,26 @@ export default function Media(post: Readonly<RedditPost>) {
         )
       }
 
-      // Render a reddit-hosted video.
+      const isVertical = getIsVertical(
+        videoPreview?.width,
+        videoPreview?.height
+      )
+
       return (
-        <HlsPlayer
-          {...hlsDefaults}
-          dataHint={post.post_hint}
-          height={videoPreview?.height}
-          fallbackUrl={videoPreview?.fallback_url}
-          id={post.id}
-          poster={mediumImageAsset?.url}
-          src={videoPreview?.hls_url}
-          width={videoPreview?.width}
-        />
+        <div
+          className={`${styles.wrapper} ${isVertical ? styles.vertical : styles.horizontal}`}
+        >
+          <HlsPlayer
+            {...hlsDefaults}
+            dataHint={post.post_hint}
+            height={videoPreview?.height}
+            fallbackUrl={videoPreview?.fallback_url}
+            id={post.id}
+            poster={mediumImageAsset?.url}
+            src={videoPreview?.hls_url}
+            width={videoPreview?.width}
+          />
+        </div>
       )
     }
 
@@ -93,17 +108,27 @@ export default function Media(post: Readonly<RedditPost>) {
       const videoUrl = isGifv
         ? post.url?.replace('.gifv', '.mp4')
         : post.video_preview?.fallback_url
+
+      const isVertical = getIsVertical(
+        post.video_preview?.width,
+        post.video_preview?.height
+      )
+
       return (
-        <HlsPlayer
-          {...hlsDefaults}
-          dataHint={videoUrl ? 'link:gifv' : 'link'}
-          height={post.video_preview?.height}
-          fallbackUrl={videoUrl}
-          id={post.id}
-          poster={mediumImageAsset?.url}
-          src={post.video_preview?.hls_url}
-          width={post.video_preview?.width}
-        />
+        <div
+          className={`${styles.wrapper} ${isVertical ? styles.vertical : styles.horizontal}`}
+        >
+          <HlsPlayer
+            {...hlsDefaults}
+            dataHint={videoUrl ? 'link:gifv' : 'link'}
+            height={post.video_preview?.height}
+            fallbackUrl={videoUrl}
+            id={post.id}
+            poster={mediumImageAsset?.url}
+            src={post.video_preview?.hls_url}
+            width={post.video_preview?.width}
+          />
+        </div>
       )
     }
 

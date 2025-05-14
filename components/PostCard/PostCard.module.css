@@ -1,0 +1,8 @@
+.postCard {
+  margin: 0 auto;
+  width: 320px;
+
+  @media screen and (min-width: 767px) {
+    width: 700px;
+  }
+}

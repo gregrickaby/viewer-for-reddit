@@ -1,4 +1,6 @@
-import {debounce} from '@/lib/functions' // Import your reusable debounce function
+'use client'
+
+import {debounce} from '@/lib/utils/debounce'
 import {useEffect, useMemo, useRef, useState} from 'react'
 
 /**
@@ -50,15 +52,7 @@ export default function YouTubePlayer({videoId}: Readonly<{videoId: string}>) {
   }, [])
 
   return (
-    <div
-      ref={videoRef}
-      style={{
-        position: 'relative',
-        paddingBottom: '56.25%',
-        height: 0,
-        overflow: 'hidden'
-      }}
-    >
+    <>
       {isVisible ? (
         <iframe
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -78,6 +72,6 @@ export default function YouTubePlayer({videoId}: Readonly<{videoId: string}>) {
           style={{width: '100%', height: 'auto', cursor: 'pointer'}}
         />
       )}
-    </div>
+    </>
   )
 }

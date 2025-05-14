@@ -37,3 +37,13 @@ export interface UserSettings {
   isMuted: boolean // Mute audio in video posts
   recent: SubredditItem[] // Recently visited subreddits
 }
+
+/**
+ * HLS player component props.
+ */
+export interface HlsPlayerProps
+  extends Omit<React.VideoHTMLAttributes<HTMLVideoElement>, 'data-hint'> {
+  dataHint?: string
+  src?: string
+  fallbackUrl?: string
+}

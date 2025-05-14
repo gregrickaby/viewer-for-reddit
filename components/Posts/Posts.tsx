@@ -5,7 +5,7 @@ import {PostCard} from '@/components/PostCard/PostCard'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/useTrackRecentSubreddit'
 import type {SortingOption} from '@/lib/types'
-import {Button, Group, Loader, SimpleGrid, Stack, Title} from '@mantine/core'
+import {Button, Group, Loader, Stack, Title} from '@mantine/core'
 
 interface PostsProps {
   subreddit: string
@@ -51,17 +51,11 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
         <Favorite subreddit={subreddit} />
       </Group>
 
-      <SimpleGrid
-        cols={{base: 1, sm: 2, lg: 3}}
-        spacing={{base: 10, sm: 'xl'}}
-        verticalSpacing={{base: 'md', sm: 'xl'}}
-      >
-        {data?.pages.flatMap((page) =>
-          (page?.data?.children ?? []).map((post) =>
-            post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
-          )
-        )}
-      </SimpleGrid>
+      {data?.pages.flatMap((page) =>
+        (page?.data?.children ?? []).map((post) =>
+          post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
+        )
+      )}
 
       {hasNextPage && (
         <div ref={ref} style={{minHeight: 60}}>

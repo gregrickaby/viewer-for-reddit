@@ -1,10 +1,9 @@
-'use client'
-
+import {Media} from '@/components/Media/Media'
 import type {PostChildData} from '@/lib/types/posts'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {Card, Group, Text, Title} from '@mantine/core'
-import Image from 'next/image'
 import Link from 'next/link'
+import classes from './PostCard.module.css'
 
 interface PostCardProps {
   post: PostChildData
@@ -15,17 +14,16 @@ export function PostCard({post}: Readonly<PostCardProps>) {
   const image = getMediumImage(preview ?? [])
 
   return (
-    <Card withBorder shadow="sm" padding="md" radius="md">
+    <Card
+      className={classes.postCard}
+      padding="md"
+      radius="md"
+      shadow="sm"
+      withBorder
+    >
       {image?.url && (
         <Card.Section>
-          <Image
-            alt={post.title ?? 'Image'}
-            src={image.url.replace(/&amp;/g, '&')}
-            width={image.width ?? 400}
-            height={image.height ?? 200}
-            style={{objectFit: 'cover'}}
-            unoptimized
-          />
+          <Media {...post} />
         </Card.Section>
       )}
 
