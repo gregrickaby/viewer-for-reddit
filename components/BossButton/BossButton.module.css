@@ -1,0 +1,7 @@
+.bossButton {
+  height: 48px;
+  position: fixed;
+  right: var(--mantine-spacing-lg);
+  top: 96px;
+  z-index: 999999;
+}

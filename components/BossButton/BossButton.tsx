@@ -1,23 +1,18 @@
 'use client'
 
-import {TbDoorExit} from 'react-icons/tb'
-
+import {Button, Tooltip, VisuallyHidden} from '@mantine/core'
+import {useWindowScroll} from '@mantine/hooks'
 import {useRouter} from 'next/navigation'
-import {useEffect, useMemo} from 'react'
+import {useEffect} from 'react'
+import {MdExitToApp} from 'react-icons/md'
+import classes from './BossButton.module.css'
 
-/**
- * The boss button component.
- */
 export default function BossButton() {
   const router = useRouter()
-
-  // Redirect URL and button text
-  const redirectUrl = useMemo(() => 'https://duckduckgo.com/', [])
-  const buttonText = useMemo(
-    () =>
-      'The boss button. Click or press Escape to quickly navigate to DuckDuckGo.',
-    []
-  )
+  const [scroll] = useWindowScroll()
+  const redirectUrl = 'https://duckduckgo.com/'
+  const buttonText =
+    'The boss button. Click or press Escape to instantly navigate to DuckDuckGo.'
 
   /**
    * Effect for handling keyboard event.
@@ -36,15 +31,22 @@ export default function BossButton() {
     return () => window.removeEventListener('keydown', keydownHandler)
   }, [router, redirectUrl])
 
+  if (scroll.y <= 200) {
+    return null
+  }
+
   return (
-    <button
-      aria-label={buttonText}
-      className="boss-button fixed top-8 right-6 z-10 hidden md:block"
-      onClick={() => router.push(redirectUrl)}
-      title={buttonText}
-    >
-      <TbDoorExit aria-hidden="true" height="32" width="32" />
-      <span className="sr-only">{buttonText}</span>
-    </button>
+    <Tooltip label={buttonText} position="left" withArrow>
+      <Button
+        aria-label={buttonText}
+        className={classes.bossButton}
+        color="gray"
+        component="a"
+        href={redirectUrl}
+      >
+        <MdExitToApp aria-hidden="true" size={24} />
+        <VisuallyHidden>{buttonText}</VisuallyHidden>
+      </Button>
+    </Tooltip>
   )
 }

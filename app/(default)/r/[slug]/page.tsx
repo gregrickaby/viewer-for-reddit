@@ -1,3 +1,5 @@
+import BackToTop from '@/components/BackToTop/BackToTop'
+import BossButton from '@/components/BossButton/BossButton'
 import {Posts} from '@/components/Posts/Posts'
 import config from '@/lib/config'
 import type {Params, SearchParams, SortingOption} from '@/lib/types'
@@ -26,5 +28,11 @@ export default async function Page(props: {
   const searchParams = await props.searchParams
   const sort = searchParams.sort as SortingOption
 
-  return <Posts subreddit={slug} sort={sort} />
+  return (
+    <>
+      <Posts subreddit={slug} sort={sort} />
+      <BossButton />
+      <BackToTop />
+    </>
+  )
 }

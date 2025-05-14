@@ -1,0 +1,7 @@
+.backToTop {
+  bottom: var(--mantine-spacing-lg);
+  height: 48px;
+  position: fixed;
+  right: var(--mantine-spacing-lg);
+  z-index: 999999;
+}

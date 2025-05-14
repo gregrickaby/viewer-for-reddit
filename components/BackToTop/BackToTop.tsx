@@ -1,48 +1,28 @@
 'use client'
 
-import {debounce} from '@/lib/functions'
-import {useEffect, useMemo, useState} from 'react'
-import {FaArrowUp} from 'react-icons/fa'
+import {Button, VisuallyHidden} from '@mantine/core'
+import {useWindowScroll} from '@mantine/hooks'
+import {FaChevronUp} from 'react-icons/fa'
+import classes from './BackToTop.module.css'
 
-/**
- * The back to top component.
- */
 export default function BackToTop() {
-  const [showButton, setShowButton] = useState(false)
-  const buttonText = useMemo(() => 'Go back to the top of the page', [])
+  const [scroll, scrollTo] = useWindowScroll()
+  const buttonText = 'Go back to the top of the page'
 
-  /**
-   * Effect for showing the back to top button.
-   */
-  useEffect(() => {
-    // Scroll event handler.
-    const scrollHandler = debounce(() => {
-      setShowButton(window.scrollY > 200)
-    }, 200)
-
-    // Add event listener.
-    window.addEventListener('scroll', scrollHandler)
-
-    // Cleanup event listener.
-    return () => window.removeEventListener('scroll', scrollHandler)
-  }, [])
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    })
+  if (scroll.y <= 200) {
+    return null
   }
 
-  return showButton ? (
-    <button
+  return (
+    <Button
       aria-label={buttonText}
-      className="button fixed right-6 bottom-8"
-      onClick={scrollToTop}
+      className={classes.backToTop}
+      color="gray"
+      onClick={() => scrollTo({y: 0})}
       title={buttonText}
     >
-      <FaArrowUp height="32" width="32" />
-      <span className="sr-only">{buttonText}</span>
-    </button>
-  ) : null
+      <FaChevronUp aria-hidden="true" size={16} />
+      <VisuallyHidden>{buttonText}</VisuallyHidden>
+    </Button>
+  )
 }
