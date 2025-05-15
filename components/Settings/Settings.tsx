@@ -4,6 +4,7 @@ import {
   clearFavorites,
   clearRecent,
   resetSettings,
+  toggleMute,
   toggleNsfw
 } from '@/lib/store/features/settingsSlice'
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
@@ -24,6 +25,7 @@ export function Settings() {
   const {colorScheme, setColorScheme} = useMantineColorScheme()
   const isDark = colorScheme === 'dark'
   const nsfw = useAppSelector((state) => state.settings.enableNsfw)
+  const isMuted = useAppSelector((state) => state.settings.isMuted)
 
   return (
     <Menu shadow="md" width={220} position="bottom-end" withArrow>
@@ -58,6 +60,14 @@ export function Settings() {
             onChange={(e) =>
               setColorScheme(e.currentTarget.checked ? 'dark' : 'light')
             }
+          />
+        </Menu.Item>
+
+        <Menu.Item closeMenuOnClick={false}>
+          <Switch
+            label="Mute"
+            checked={isMuted}
+            onChange={() => dispatch(toggleMute())}
           />
         </Menu.Item>
 

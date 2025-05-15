@@ -1,5 +1,6 @@
 'use client'
 
+import {useAppSelector} from '@/lib/store/hooks'
 import type {PostChildData} from '@/lib/types/posts'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import dynamic from 'next/dynamic'
@@ -40,6 +41,8 @@ export function Media(post: Readonly<PostChildData>) {
   const youtubeVideoId = useMemo(() => {
     return /embed\/([a-zA-Z0-9_-]+)/.exec(post.media?.oembed?.html ?? '')?.[1]
   }, [post.media?.oembed])
+
+  const isMuted = useAppSelector((state) => state.settings.isMuted)
 
   // Determine the media type and render the appropriate component.
   switch (post.post_hint) {
@@ -97,6 +100,7 @@ export function Media(post: Readonly<PostChildData>) {
             id={post.id}
             poster={mediumImageAsset?.url}
             src={videoPreview?.hls_url}
+            muted={isMuted}
             width={videoPreview?.width}
           />
         </div>
@@ -125,6 +129,7 @@ export function Media(post: Readonly<PostChildData>) {
             fallbackUrl={videoUrl}
             id={post.id}
             poster={mediumImageAsset?.url}
+            muted={isMuted}
             src={post.video_preview?.hls_url}
             width={post.video_preview?.width}
           />
