@@ -1,0 +1,14 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.vertical {
+  aspect-ratio: 9 / 16;
+}
+
+.horizontal {
+  aspect-ratio: 16 / 9;
+}

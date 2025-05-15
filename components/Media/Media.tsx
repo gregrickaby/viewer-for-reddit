@@ -1,6 +1,8 @@
 'use client'
 
 import {HlsPlayer} from '@/components/HlsPlayer/HlsPlayer'
+import {MediaContainer} from '@/components/MediaContainer/MediaContainer'
+import {ResponsiveImage} from '@/components/ResponsiveImage/ResponsiveImage'
 import {YouTubePlayer} from '@/components/YouTubePlayer/YouTubePlayer'
 import {useMediaAssets} from '@/lib/hooks/useMediaAssets'
 import {useMediaType} from '@/lib/hooks/useMediaType'
@@ -8,7 +10,6 @@ import {useAppSelector} from '@/lib/store/hooks'
 import type {PostChildData} from '@/lib/types/posts'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
 import {Suspense} from 'react'
-import {MediaWrapper} from './MediaWrapper'
 
 const hlsDefaults = {
   autoPlay: true,
@@ -34,24 +35,15 @@ export function Media(post: Readonly<PostChildData>) {
   }
 
   if (isImage) {
+    const isVertical = getIsVertical(
+      post.preview?.images[0]?.source?.width,
+      post.preview?.images[0]?.source?.height
+    )
+
     return (
-      <a
-        aria-label="view full image"
-        href={post.url}
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <img
-          alt={post.title ?? 'reddit image'}
-          data-hint="image"
-          decoding="async"
-          id={post.id}
-          height={mediumImage?.height}
-          loading="lazy"
-          src={mediumImage?.url}
-          width={mediumImage?.width}
-        />
-      </a>
+      <MediaContainer isVertical={isVertical}>
+        <ResponsiveImage alt={post.title} src={post.url} />
+      </MediaContainer>
     )
   }
 
@@ -60,7 +52,7 @@ export function Media(post: Readonly<PostChildData>) {
     const isVertical = getIsVertical(video?.width, video?.height)
 
     return (
-      <MediaWrapper isVertical={isVertical}>
+      <MediaContainer isVertical={isVertical}>
         <HlsPlayer
           {...hlsDefaults}
           dataHint={post.post_hint}
@@ -72,7 +64,7 @@ export function Media(post: Readonly<PostChildData>) {
           muted={isMuted}
           width={video?.width}
         />
-      </MediaWrapper>
+      </MediaContainer>
     )
   }
 
@@ -83,7 +75,7 @@ export function Media(post: Readonly<PostChildData>) {
     )
 
     return (
-      <MediaWrapper isVertical={isVertical}>
+      <MediaContainer isVertical={isVertical}>
         <HlsPlayer
           {...hlsDefaults}
           dataHint={fallbackUrl ? 'link:gifv' : 'link'}
@@ -95,11 +87,11 @@ export function Media(post: Readonly<PostChildData>) {
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
         />
-      </MediaWrapper>
+      </MediaContainer>
     )
   }
 
-  console.warn('Unhandled post type:', post)
+  console.warn('Unhandled post type:', post.post_hint)
 
   return post.selftext ? (
     <div
