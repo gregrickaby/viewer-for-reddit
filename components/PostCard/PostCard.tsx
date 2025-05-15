@@ -21,16 +21,8 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       shadow="sm"
       withBorder
     >
-      {image?.url && (
-        <Card.Section>
-          <Media {...post} />
-        </Card.Section>
-      )}
-
       <Link href={`https://reddit.com${post.permalink}`} target="_blank">
-        <Title order={4} mt="sm">
-          {post.title}
-        </Title>
+        <Title order={4}>{post.title}</Title>
       </Link>
 
       <Group justify="space-between" mt="xs">
@@ -39,6 +31,12 @@ export function PostCard({post}: Readonly<PostCardProps>) {
         </Text>
         <Text size="sm">{post.ups?.toLocaleString()} upvotes</Text>
       </Group>
+
+      {image?.url && (
+        <Card.Section>
+          <Media {...post} />
+        </Card.Section>
+      )}
     </Card>
   )
 }

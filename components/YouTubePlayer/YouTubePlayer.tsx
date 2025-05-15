@@ -1,77 +1,63 @@
 'use client'
 
-import {debounce} from '@/lib/utils/debounce'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useYouTubeVideo} from '@/lib/hooks/useYouTubeVideo'
+import {Button} from '@mantine/core'
+import {useMemo} from 'react'
 
-/**
- * YouTubePlayer component for lazy loading YouTube videos.
- *
- * @param {string} videoId - The YouTube video ID to display.
- */
-export default function YouTubePlayer({videoId}: Readonly<{videoId: string}>) {
-  const [isVisible, setIsVisible] = useState(false)
-  const videoRef = useRef<HTMLDivElement>(null)
+interface YouTubePlayerProps {
+  videoId: string
+}
 
-  // Function to get the YouTube thumbnail image URL.
+export function YouTubePlayer({videoId}: Readonly<YouTubePlayerProps>) {
+  const {ref, isVisible, setIsVisible} = useYouTubeVideo()
+
   const thumbnailUrl = useMemo(
     () => `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
     [videoId]
   )
 
-  /**
-   * Effect to observe when the video enters the viewport.
-   *
-   * Loads the YouTube iframe once 25% of the video is visible.
-   * Debounced using the reusable debounce function to avoid excessive observer callbacks.
-   */
-  useEffect(() => {
-    // Debounced function to handle the intersection observer.
-    const handleIntersection = debounce(
-      (entries: IntersectionObserverEntry[]) => {
-        const [entry] = entries
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      100
+  if (isVisible) {
+    return (
+      <iframe
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        height="100%"
+        loading="lazy"
+        src={`https://www.youtube.com/embed/${videoId}`}
+        style={{position: 'absolute', top: 0, left: 0}}
+        title="YouTube video player"
+        width="100%"
+      />
     )
-
-    const observer = new IntersectionObserver(handleIntersection, {
-      threshold: 0.25
-    })
-
-    const currentVideoRef = videoRef.current
-    if (currentVideoRef) {
-      observer.observe(currentVideoRef)
-    }
-
-    // Cleanup the observer on unmount.
-    if (currentVideoRef) {
-      observer.disconnect()
-    }
-  }, [])
+  }
 
   return (
-    <>
-      {isVisible ? (
-        <iframe
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          height="100%"
-          loading="lazy"
-          src={`https://www.youtube.com/embed/${videoId}`}
-          style={{position: 'absolute', top: 0, left: 0}}
-          title="YouTube video player"
-          width="100%"
-        />
-      ) : (
-        <img
-          alt="YouTube video thumbnail"
-          onClick={() => setIsVisible(true)}
-          src={thumbnailUrl}
-          style={{width: '100%', height: 'auto', cursor: 'pointer'}}
-        />
-      )}
-    </>
+    <Button
+      ref={ref}
+      type="button"
+      aria-label="Play YouTube video"
+      onClick={() => setIsVisible(true)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          setIsVisible(true)
+        }
+      }}
+      style={{
+        width: '100%',
+        height: 'auto',
+        padding: 0,
+        border: 'none',
+        background: 'none',
+        cursor: 'pointer',
+        position: 'relative',
+        display: 'block'
+      }}
+    >
+      <img
+        alt="YouTube video thumbnail"
+        src={thumbnailUrl}
+        style={{width: '100%', height: 'auto', display: 'block'}}
+      />
+    </Button>
   )
 }
