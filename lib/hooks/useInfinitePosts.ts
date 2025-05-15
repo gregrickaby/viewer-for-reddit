@@ -1,22 +1,36 @@
 'use client'
 
-import {useGetSubredditPostsInfiniteQuery} from '@/lib/store/services/publicApi'
+import {useGetSubredditPostsInfiniteQuery} from '@/lib/store/services/redditApi'
 import type {SortingOption} from '@/lib/types'
+import {useIntersection} from '@mantine/hooks'
 import {useEffect} from 'react'
-import {useInView} from 'react-intersection-observer'
 
-export function useInfinitePosts(
-  subreddit: string,
-  sort: SortingOption = 'hot'
-) {
+interface InfiniteQueryProps {
+  subreddit: string
+  sort?: SortingOption
+}
+
+export function useInfinitePosts({
+  subreddit,
+  sort = 'hot'
+}: Readonly<InfiniteQueryProps>) {
   const query = useGetSubredditPostsInfiniteQuery({subreddit, sort})
-  const {ref, inView} = useInView({threshold: 1})
+  const {ref, entry} = useIntersection({
+    threshold: 1
+  })
 
   useEffect(() => {
-    if (inView && query.hasNextPage && !query.isFetchingNextPage) {
+    if (
+      entry?.isIntersecting &&
+      query.hasNextPage &&
+      !query.isFetchingNextPage
+    ) {
       query.fetchNextPage()
     }
-  }, [inView, query.hasNextPage, query.isFetchingNextPage, query.fetchNextPage])
+  }, [entry, query.hasNextPage, query.isFetchingNextPage, query.fetchNextPage])
 
-  return {...query, ref}
+  return {
+    ...query,
+    ref
+  }
 }

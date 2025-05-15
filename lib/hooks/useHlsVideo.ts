@@ -1,4 +1,5 @@
 import {useAppSelector} from '@/lib/store/hooks'
+import {useIntersection} from '@mantine/hooks'
 import type Hls from 'hls.js'
 import {useEffect, useRef, useState} from 'react'
 
@@ -25,16 +26,27 @@ export function useHlsVideo({
   const isMuted = useAppSelector((state) => state.settings.isMuted)
   const [isLoading, setIsLoading] = useState(true)
 
+  const {ref: intersectionRef, entry} = useIntersection({threshold: 0.25})
+
+  // Combine refs: Mantine's intersection ref + local video ref
+  useEffect(() => {
+    if (intersectionRef && videoRef.current) {
+      intersectionRef(videoRef.current)
+    }
+  }, [intersectionRef])
+
+  // Intersection handler
   useEffect(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video || !entry) return
 
-    const observerCallback = async ([entry]: IntersectionObserverEntry[]) => {
-      if (entry.isIntersecting) {
-        if (!hasInitialized.current) {
-          if (src) {
-            try {
-              const Hls = await loadHlsModule()
+    const isVisible = entry.isIntersecting
+
+    if (isVisible) {
+      if (!hasInitialized.current) {
+        if (src) {
+          loadHlsModule()
+            .then((Hls) => {
               if (Hls.isSupported()) {
                 hlsRef.current = new Hls({maxBufferSize: 30 * 1000 * 1000})
                 hlsRef.current.loadSource(src)
@@ -44,47 +56,32 @@ export function useHlsVideo({
               } else if (fallbackUrl) {
                 video.src = fallbackUrl
               }
-            } catch (err) {
+            })
+            .catch((err) => {
               console.warn('Failed to load HLS.js:', err)
               if (fallbackUrl) video.src = fallbackUrl
-            }
-          } else if (fallbackUrl) {
-            video.src = fallbackUrl
-          }
-
-          hasInitialized.current = true
+            })
+        } else if (fallbackUrl) {
+          video.src = fallbackUrl
         }
 
-        if (autoPlay && isMuted && video.paused) {
-          video.play().catch((err) => {
-            console.warn('Auto-play failed:', err)
-          })
-        }
-      } else {
-        video.pause()
-        if (hlsRef.current) {
-          hlsRef.current.destroy()
-          hlsRef.current = null
-        }
-        hasInitialized.current = false
+        hasInitialized.current = true
       }
-    }
 
-    const observer = new IntersectionObserver(observerCallback, {
-      threshold: 0.25
-    })
-    observer.observe(video)
-
-    return () => {
-      observer.disconnect()
-      if (hlsRef.current) {
-        hlsRef.current.destroy()
-        hlsRef.current = null
+      if (autoPlay && isMuted && video.paused) {
+        video.play().catch((err) => {
+          console.warn('Auto-play failed:', err)
+        })
       }
+    } else {
+      video.pause()
+      hlsRef.current?.destroy()
+      hlsRef.current = null
       hasInitialized.current = false
     }
-  }, [src, fallbackUrl, autoPlay, isMuted])
+  }, [entry, src, fallbackUrl, autoPlay, isMuted])
 
+  // Track canplay for loading state
   useEffect(() => {
     const video = videoRef.current
     if (!video) return

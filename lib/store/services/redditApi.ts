@@ -1,13 +1,12 @@
+import {getRedditToken} from '@/lib/actions/redditToken'
 import type {SortingOption, SubredditItem} from '@/lib/types'
 import type {AboutResponseData} from '@/lib/types/about'
 import type {PopularResponse} from '@/lib/types/popular'
 import type {PostResponse} from '@/lib/types/posts'
+import type {SearchChildData, SearchResponse} from '@/lib/types/search'
 import {extractChildren} from '@/lib/utils/extractChildren'
 import {fromAbout, fromPopular} from '@/lib/utils/subredditMapper'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
-
-// Constants
-const REDDIT_BASE_URL = 'https://www.reddit.com'
 
 /**
  * Query parameters for fetching subreddit posts.
@@ -18,16 +17,43 @@ interface GetSubredditPostsQueryArgs {
 }
 
 /**
- * Public Reddit API service.
+ * Reddit API service.
  *
- * Provides unauthenticated access to Reddit endpoints like popular subreddits
- * and subreddit-specific post listings.
+ * Provides authenticated access to Reddit endpoints.
  */
-export const publicApi = createApi({
-  reducerPath: 'publicApi',
-  tagTypes: ['SubredditPosts', 'PopularSubreddits'],
-  baseQuery: fetchBaseQuery({baseUrl: REDDIT_BASE_URL}),
+export const redditApi = createApi({
+  reducerPath: 'redditApi',
+  tagTypes: ['SubredditPosts', 'PopularSubreddits', 'Search'],
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://oauth.reddit.com',
+    prepareHeaders: async (headers) => {
+      const token = await getRedditToken()
+      if (token?.access_token) {
+        headers.set('Authorization', `Bearer ${token.access_token}`)
+      }
+      return headers
+    }
+  }),
   endpoints: (builder) => ({
+    /**
+     * Search subreddits.
+     *
+     * @param query - The search query.
+     * @param enableNsfw - Whether to include NSFW subreddits.
+     *
+     * @returns A list of SearchResults.
+     */
+    searchSubreddits: builder.query<
+      SearchChildData[],
+      {query: string; enableNsfw: boolean}
+    >({
+      query: ({query, enableNsfw}) =>
+        `/api/subreddit_autocomplete_v2?query=${query}&limit=10&include_over_18=${enableNsfw}&include_profiles=false&typeahead_active=true`,
+      transformResponse: (response: SearchResponse) =>
+        extractChildren<SearchChildData>(response),
+      providesTags: (_result, _err, {query}) => [{type: 'Search', id: query}]
+    }),
+
     /**
      * Fetches subreddit information.
      *
@@ -67,7 +93,7 @@ export const publicApi = createApi({
     /**
      * Fetches paginated posts from a specific subreddit.
      *
-     * @param queryArg - Subreddit name and sorting option.
+     * @param args - Subreddit name and sorting option.
      * @param pageParam - Cursor for the next page.
      * @returns A filtered list of posts without stickied items.
      */
@@ -82,9 +108,8 @@ export const publicApi = createApi({
         getPreviousPageParam: () => undefined,
         maxPages: 10
       },
-      query({queryArg, pageParam}) {
-        const {subreddit, sort} = queryArg
-        return `/r/${subreddit}/${sort}.json?limit=25&after=${pageParam}`
+      query({queryArg: {subreddit, sort}, pageParam}) {
+        return `/r/${subreddit}/${sort}.json?limit=25&after=${pageParam ?? ''}`
       },
       transformResponse: (response: PostResponse): PostResponse => ({
         ...response,
@@ -103,8 +128,9 @@ export const publicApi = createApi({
 })
 
 export const {
+  useSearchSubredditsQuery,
   useGetSubredditAboutQuery,
   useGetPopularSubredditsQuery,
   useGetSubredditPostsInfiniteQuery,
   useLazyGetSubredditAboutQuery
-} = publicApi
+} = redditApi

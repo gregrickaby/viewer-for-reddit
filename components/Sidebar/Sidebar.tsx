@@ -3,7 +3,7 @@
 import {SidebarSection} from '@/components/Sidebar/SidebarSection'
 import {useRemoveItemFromHistory} from '@/lib/hooks/useRemoveItemFromHistory'
 import {useAppSelector} from '@/lib/store/hooks'
-import {useGetPopularSubredditsQuery} from '@/lib/store/services/publicApi'
+import {useGetPopularSubredditsQuery} from '@/lib/store/services/redditApi'
 import {NavLink, ScrollArea, Stack} from '@mantine/core'
 import {useMounted} from '@mantine/hooks'
 import Link from 'next/link'
@@ -38,6 +38,12 @@ export function Sidebar() {
           label="Recent"
           onDelete={(sub) => remove(sub.display_name)}
           subreddits={recent}
+        />
+
+        <NavLink
+          label="About Viewer for Reddit"
+          component={Link}
+          href="/about"
         />
       </Stack>
     </ScrollArea>

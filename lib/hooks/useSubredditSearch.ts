@@ -1,6 +1,8 @@
 import {useAppSelector} from '@/lib/store/hooks'
-import {useSearchSubredditsQuery} from '@/lib/store/services/privateApi'
-import {useGetPopularSubredditsQuery} from '@/lib/store/services/publicApi'
+import {
+  useGetPopularSubredditsQuery,
+  useSearchSubredditsQuery
+} from '@/lib/store/services/redditApi'
 import type {SubredditItem} from '@/lib/types'
 import {fromSearch} from '@/lib/utils/subredditMapper'
 import {useDebouncedValue} from '@mantine/hooks'

@@ -2,7 +2,7 @@ import {
   useGetPopularSubredditsQuery,
   useGetSubredditAboutQuery,
   useGetSubredditPostsInfiniteQuery
-} from '@/lib/store/services/publicApi'
+} from '@/lib/store/services/redditApi'
 import {renderHook, server, waitFor} from '@/test-utils'
 import {http, HttpResponse} from 'msw'
 
