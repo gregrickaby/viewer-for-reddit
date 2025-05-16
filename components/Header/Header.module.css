@@ -1,0 +1,35 @@
+.header {
+  align-items: center;
+  display: flex;
+  gap: var(--mantine-spacing-md);
+  justify-content: space-between;
+}
+
+.headerLeft {
+  align-items: center;
+  display: flex;
+  gap: var(--mantine-spacing-md);
+
+  a {
+    color: var(--mantine-text-color);
+    text-decoration: none;
+  }
+
+  h1 {
+    font-size: var(--mantine-font-size-lg);
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: var(--mantine-spacing-md);
+  width: 70%;
+
+  .icons {
+    gap: var(--mantine-spacing-xs);
+  }
+}

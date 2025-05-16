@@ -1,10 +1,14 @@
-import '@/app/globals.css'
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import Search from '@/components/Search'
 import config from '@/lib/config'
+import {StoreProvider} from '@/lib/store/StoreProvider'
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps
+} from '@mantine/core'
+import '@mantine/core/styles.css'
+import {Notifications} from '@mantine/notifications'
+import '@mantine/notifications/styles.css'
 import type {Metadata, Viewport} from 'next'
-import NextTopLoader from 'nextjs-toploader'
 
 /**
  * Generate metadata.
@@ -51,7 +55,13 @@ export const viewport: Viewport = {
 }
 
 /**
- * The root layout.
+ * The server-rendered root layout component.
+ *
+ * This component sets up the global layout for the application.
+ * It includes the MantineProvider for theming and styles,
+ * and the StoreProvider for Redux state management.
+ *
+ * It also handles the initial color scheme, SEO metadata, and viewport settings.
  */
 export default function RootLayout({
   children
@@ -59,14 +69,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <NextTopLoader />
-        <Header />
-        <Search />
-        <main>{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <StoreProvider>
+      <html lang="en" {...mantineHtmlProps}>
+        <head>
+          <ColorSchemeScript defaultColorScheme="auto" />
+        </head>
+        <body>
+          <MantineProvider defaultColorScheme="auto">
+            {children}
+            <Notifications />
+          </MantineProvider>
+        </body>
+      </html>
+    </StoreProvider>
   )
 }

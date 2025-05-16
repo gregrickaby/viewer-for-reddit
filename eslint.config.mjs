@@ -1,44 +1,62 @@
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import js from '@eslint/js'
-import {FlatCompat} from '@eslint/eslintrc'
+import eslint from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import mantine from 'eslint-config-mantine'
+import testingLibrary from 'eslint-plugin-testing-library'
+import jestDom from 'eslint-plugin-jest-dom'
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all
-})
+export default tseslint.config(
+  // Base JS rules
+  // https://eslint.org/docs/latest/rules/
+  eslint.configs.recommended,
 
-const config = [
+  // TypeScript rules
+  // https://typescript-eslint.io/rules/
+  ...tseslint.configs.recommended,
+
+  // Mantine config
+  // https://mantine.dev/eslint-config-mantine/
+  ...mantine,
+
+  // Prettier rules
+  // https://github.com/prettier/eslint-config-prettier
+  eslintConfigPrettier,
+
+  // Project rules
+  {
+    rules: {
+      'no-console': ['error', {allow: ['warn', 'error', 'info']}]
+    }
+  },
+
+  // Testing-specific rules
+  // https://github.com/testing-library/eslint-plugin-testing-library
+  {
+    files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+    plugins: {
+      'testing-library': testingLibrary,
+      'jest-dom': jestDom
+    },
+    rules: {
+      ...testingLibrary.configs['flat/react'].rules,
+      ...jestDom.configs['flat/recommended'].rules
+    }
+  },
+
+  // Ignore patterns
   {
     ignores: [
-      '.*.js',
-      '**/*.min.js',
-      '**/.*cache/',
+      '**/node_modules/',
       '**/.next/',
       '**/.vercel/',
-      '**/out/',
       '**/dist/',
       '**/build/',
       '**/coverage/',
-      '**/node_modules/',
-      '**/public/'
+      '**/out/',
+      '**/public/',
+      '**/*.min.js',
+      '**/*.js',
+      '**/.*cache/'
     ]
-  },
-  ...compat.extends('next/core-web-vitals', 'prettier'),
-  {
-    rules: {
-      '@next/next/no-img-element': 'off',
-      'no-console': [
-        'error',
-        {
-          allow: ['warn', 'error', 'info']
-        }
-      ]
-    }
   }
-]
-
-export default config
+)

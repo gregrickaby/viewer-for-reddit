@@ -1,0 +1,19 @@
+.container {
+  padding: var(--mantine-spacing-md);
+  max-height: 580px;
+  width: 100%;
+
+  img,
+  video {
+    max-height: 550px;
+    width: 100%;
+  }
+}
+
+.vertical {
+  aspect-ratio: 9 / 16;
+}
+
+.horizontal {
+  aspect-ratio: 16 / 9;
+}

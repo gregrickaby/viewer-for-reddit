@@ -2,9 +2,9 @@
 
 🙈 Anonymously browse Reddit [https://reddit-viewer.com/](https://reddit-viewer.com/)
 
-With a focus on privacy, there's no tracking or logging of your
-activity—aside from the minimal server logs (maintained for operational
-integrity). Enjoy a clean, fast, and untracked browsing experience.
+Viewer for Reddit has been a fast, private way to browse media on Reddit since 2020.
+
+There's no tracking, no ads, and no personalized feeds or algorithms — just a clean, fast browsing experience.
 
 ---
 

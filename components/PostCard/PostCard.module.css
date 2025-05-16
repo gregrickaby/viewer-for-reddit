@@ -1,0 +1,14 @@
+.postCard {
+  height: auto;
+  margin: 0 auto;
+  width: 100%;
+
+  a {
+    text-decoration: none;
+    color: var(--mantine-color-text);
+  }
+}
+
+.meta {
+  gap: 4px;
+}

@@ -1,0 +1,15 @@
+.root {
+  width: 100%;
+
+  @media screen and (min-width: 767px) {
+    width: 70%;
+  }
+
+  @media screen and (min-width: 1280px) {
+    width: 40%;
+  }
+}
+
+.dropdown {
+  min-width: 300px;
+}
