@@ -2,7 +2,6 @@
 
 import {useYouTubeVideo} from '@/lib/hooks/useYouTubeVideo'
 import {Button} from '@mantine/core'
-import {useMemo} from 'react'
 
 interface YouTubePlayerProps {
   videoId: string
@@ -10,11 +9,7 @@ interface YouTubePlayerProps {
 
 export function YouTubePlayer({videoId}: Readonly<YouTubePlayerProps>) {
   const {ref, isVisible, setIsVisible} = useYouTubeVideo()
-
-  const thumbnailUrl = useMemo(
-    () => `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-    [videoId]
-  )
+  const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
 
   if (isVisible) {
     return (
@@ -24,7 +19,6 @@ export function YouTubePlayer({videoId}: Readonly<YouTubePlayerProps>) {
         height="100%"
         loading="lazy"
         src={`https://www.youtube.com/embed/${videoId}`}
-        style={{position: 'absolute', top: 0, left: 0}}
         title="YouTube video player"
         width="100%"
       />

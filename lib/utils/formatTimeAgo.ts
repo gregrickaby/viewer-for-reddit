@@ -1,7 +1,7 @@
 /**
  * Helper function to get the time in "___ ago" format.
  */
-export function getTimeAgo(timestampInSeconds: number): string {
+export function formatTimeAgo(timestampInSeconds: number): string {
   // Constants for time conversions.
   const SECOND = 1
   const MINUTE = 60 * SECOND

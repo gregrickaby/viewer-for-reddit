@@ -6,4 +6,13 @@
   @media screen and (min-width: 767px) {
     width: 700px;
   }
+
+  a {
+    text-decoration: none;
+    color: var(--mantine-color-text);
+  }
+}
+
+.meta {
+  gap: 4px;
 }

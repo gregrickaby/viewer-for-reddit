@@ -29,7 +29,9 @@ export function Media(post: Readonly<PostChildData>) {
   if (isYouTube && youtubeVideoId) {
     return (
       <Suspense fallback={<div>Loading YouTube...</div>}>
-        <YouTubePlayer videoId={youtubeVideoId} />
+        <MediaContainer isVertical={false}>
+          <YouTubePlayer videoId={youtubeVideoId} />
+        </MediaContainer>
       </Suspense>
     )
   }

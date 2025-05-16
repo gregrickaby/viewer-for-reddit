@@ -39,7 +39,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.26.0",
-    "@evilmartians/lefthook": "^1.11.12",
+    "@evilmartians/lefthook": "^1.11.13",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

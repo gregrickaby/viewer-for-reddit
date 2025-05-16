@@ -1,8 +1,13 @@
 .container {
-  position: relative;
+  padding: var(--mantine-spacing-md);
+  max-height: 580px;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+
+  img,
+  video {
+    max-height: 550px;
+    width: 100%;
+  }
 }
 
 .vertical {
