@@ -1,7 +1,7 @@
 'use client'
 
 import {useToggleFavorite} from '@/lib/hooks/useToggleFavorite'
-import {ActionIcon} from '@mantine/core'
+import {ActionIcon, Tooltip} from '@mantine/core'
 import {FaHeart, FaRegHeart} from 'react-icons/fa'
 
 interface FavoriteProps {
@@ -18,17 +18,19 @@ export function Favorite({subreddit}: Readonly<FavoriteProps>) {
   const color = isFavorite ? 'red' : 'gray'
 
   return (
-    <ActionIcon
-      aria-label={label}
-      color={color}
-      disabled={loading}
-      loading={loading}
-      onClick={toggle}
-      size="lg"
-      title={label}
-      variant="subtle"
-    >
-      {icon}
-    </ActionIcon>
+    <Tooltip label="Add to favorites" position="right" withArrow>
+      <ActionIcon
+        aria-label={label}
+        color={color}
+        disabled={loading}
+        loading={loading}
+        onClick={toggle}
+        size="lg"
+        title={label}
+        variant="subtle"
+      >
+        {icon}
+      </ActionIcon>
+    </Tooltip>
   )
 }

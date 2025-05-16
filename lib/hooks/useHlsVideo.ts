@@ -67,12 +67,6 @@ export function useHlsVideo({
 
         hasInitialized.current = true
       }
-
-      if (autoPlay && isMuted && video.paused) {
-        video.play().catch((err) => {
-          console.warn('Auto-play failed:', err)
-        })
-      }
     } else {
       video.pause()
       hlsRef.current?.destroy()

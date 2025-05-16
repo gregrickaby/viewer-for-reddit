@@ -64,7 +64,7 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
   }
 
   return (
-    <Stack gap="md">
+    <Stack>
       <Group justify="space-between">
         <Title order={2}>{`r/${subreddit}`}</Title>
         <Favorite subreddit={subreddit} />

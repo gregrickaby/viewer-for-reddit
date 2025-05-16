@@ -25,7 +25,7 @@ export default function Layout({
       navbar={{
         breakpoint: 'sm',
         collapsed: {mobile: !isNavbarCollapsed, desktop: !isNavbarCollapsed},
-        width: 300
+        width: 320
       }}
       padding="md"
     >

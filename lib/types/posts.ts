@@ -230,7 +230,7 @@ export interface CrosspostParentList {
   author_flair_text_color?: null
   permalink?: string
   stickied?: boolean
-  url?: string
+  url: string
   subreddit_subscribers?: number
   created_utc?: number
   num_crossposts?: number
@@ -268,16 +268,16 @@ export interface MediaEmbed {
 }
 
 export interface Preview {
-  images?: Image[]
+  images: Image[]
   reddit_video_preview?: RedditVideoPreview
   enabled?: boolean
 }
 
 export interface Image {
-  source?: Source
-  resolutions?: Source[]
-  variants?: Variants
-  id?: string
+  source: Source
+  resolutions: Source[]
+  variants: Variants
+  id: string
 }
 
 export interface Source {

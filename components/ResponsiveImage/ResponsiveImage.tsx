@@ -5,7 +5,7 @@ import {useCallback, useRef, useState} from 'react'
 
 interface ResponsiveImageProps {
   alt?: string
-  src: string
+  src: string | null | undefined
 }
 
 export function ResponsiveImage({
@@ -29,7 +29,7 @@ export function ResponsiveImage({
   return (
     <a
       aria-label="view full image"
-      href={src}
+      href={src ?? ''}
       rel="noopener noreferrer"
       target="_blank"
     >
@@ -40,7 +40,7 @@ export function ResponsiveImage({
         loading="lazy"
         onLoad={handleLoad}
         ref={imgRef}
-        src={getCachedUrl(src)}
+        src={getCachedUrl(src ?? '')}
       />
     </a>
   )

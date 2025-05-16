@@ -11,7 +11,8 @@
   gap: var(--mantine-spacing-md);
 
   a {
-    display: inline-flex;
+    color: var(--mantine-text-color);
+    text-decoration: none;
   }
 
   h1 {

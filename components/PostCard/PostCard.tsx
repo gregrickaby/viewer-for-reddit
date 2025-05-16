@@ -41,7 +41,7 @@ export function PostCard({post}: Readonly<PostCardProps>) {
         </Card.Section>
       )}
 
-      <Group>
+      <Group mt="xs">
         <Group className={classes.meta}>
           <BiUpvote size={16} />
           <Text size="sm" c="dimmed">

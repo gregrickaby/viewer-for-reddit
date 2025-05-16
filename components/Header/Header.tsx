@@ -5,7 +5,7 @@ import {HeaderIcons} from '@/components/Header/HeaderIcons'
 import {Search} from '@/components/Search/Search'
 import config from '@/lib/config'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
-import {Burger, Title, VisuallyHidden} from '@mantine/core'
+import {Burger, Group, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
 import classes from './Header.module.css'
@@ -22,10 +22,12 @@ export function Header() {
           opened={showNavbar}
           size="md"
         />
-        <Link href="/">
-          <Image alt="Logo" height={32} src={icon} width={32} priority />
+        <Link href="/" onClick={showNavbar ? toggleNavbarHandler : undefined}>
+          <Group>
+            <Image alt="Logo" height={32} src={icon} width={32} priority />
+            <Title visibleFrom="md">{config.siteName}</Title>
+          </Group>
         </Link>
-        <Title visibleFrom="md">{config.siteName}</Title>
         <VisuallyHidden>{config.metaDescription}</VisuallyHidden>
       </div>
       <div className={classes.headerRight}>

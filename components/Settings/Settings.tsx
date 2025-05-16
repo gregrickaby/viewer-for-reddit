@@ -28,7 +28,7 @@ export function Settings() {
   const isMuted = useAppSelector((state) => state.settings.isMuted)
 
   return (
-    <Menu shadow="md" width={220} position="bottom-end" withArrow>
+    <Menu shadow="md" width={220} position="bottom-end" withArrow zIndex={999}>
       <Menu.Target>
         <Tooltip label="View settings" position="bottom" withArrow>
           <ActionIcon
