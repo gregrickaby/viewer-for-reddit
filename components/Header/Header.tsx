@@ -20,11 +20,11 @@ export function Header() {
           aria-label="Toggle navigation menu"
           onClick={toggleNavbarHandler}
           opened={showNavbar}
-          size="md"
+          size="lg"
         />
         <Link href="/" onClick={showNavbar ? toggleNavbarHandler : undefined}>
           <Group>
-            <Image alt="Logo" height={32} src={icon} width={32} priority />
+            <Image alt="Logo" height={38} src={icon} width={38} priority />
             <Title visibleFrom="md">{config.siteName}</Title>
           </Group>
         </Link>

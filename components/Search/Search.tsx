@@ -29,6 +29,7 @@ export function Search() {
       data={autoCompleteData.map(({value}) => ({value}))}
       placeholder="Search subreddits"
       spellCheck="false"
+      size="lg"
       renderOption={({option}) => {
         const item = itemMap.get(option.value)
         if (!item) return null

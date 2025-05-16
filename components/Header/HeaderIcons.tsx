@@ -15,7 +15,7 @@ export function HeaderIcons() {
           component="a"
           href={config.githubUrl}
           rel="noopener noreferrer"
-          size="lg"
+          size="xl"
           target="_blank"
           variant="light"
           visibleFrom="sm"
@@ -30,7 +30,7 @@ export function HeaderIcons() {
           component="a"
           href="https://buymeacoffee.com/gregrickaby"
           rel="noopener noreferrer"
-          size="lg"
+          size="xl"
           target="_blank"
           variant="light"
           visibleFrom="sm"
