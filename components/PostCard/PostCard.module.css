@@ -3,11 +3,6 @@
   margin: 0 auto;
   width: 100%;
 
-  @media screen and (min-width: 767px) {
-    width: 700px;
-    max-width: 700px;
-  }
-
   a {
     text-decoration: none;
     color: var(--mantine-color-text);

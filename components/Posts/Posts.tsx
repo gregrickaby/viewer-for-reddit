@@ -11,10 +11,12 @@ import {
   Container,
   Group,
   Loader,
+  SegmentedControl,
   Stack,
   Title
 } from '@mantine/core'
 import Link from 'next/link'
+import {useState} from 'react'
 import {MdError} from 'react-icons/md'
 
 interface PostsProps {
@@ -22,21 +24,9 @@ interface PostsProps {
   sort?: SortingOption
 }
 
-/**
- * `Posts` Component
- *
- * Displays a list of posts from a specified subreddit, optionally sorted by a given method.
- *
- * @param {string} subreddit - The subreddit to fetch posts from (e.g., "gifs", "pics").
- * @param {SortingOption} [sort='hot'] - Optional sort method ("hot", "new", "top", etc.).
- *
- * @example
- * ```tsx
- * <Posts subreddit="funny" sort="top" />
- * ```
- */
 export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
   useTrackRecentSubreddit(subreddit)
+  const [selectedSort, setSelectedSort] = useState<SortingOption>(sort)
 
   const {
     data,
@@ -47,7 +37,7 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     hasNextPage,
     fetchNextPage,
     ref
-  } = useInfinitePosts({subreddit, sort})
+  } = useInfinitePosts({subreddit, sort: selectedSort})
 
   if (isLoading) {
     return (
@@ -76,7 +66,18 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
       <Stack>
         <Group justify="space-between">
           <Title order={2}>{`r/${subreddit}`}</Title>
-          <Favorite subreddit={subreddit} />
+          <Group>
+            <Favorite subreddit={subreddit} />
+            <SegmentedControl
+              value={selectedSort}
+              onChange={(value) => setSelectedSort(value as SortingOption)}
+              data={[
+                {label: 'Hot', value: 'hot'},
+                {label: 'New', value: 'new'},
+                {label: 'Top', value: 'top'}
+              ]}
+            />
+          </Group>
         </Group>
 
         {data?.pages.flatMap((page) =>
