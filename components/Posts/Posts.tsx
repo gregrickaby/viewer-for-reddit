@@ -5,7 +5,15 @@ import {PostCard} from '@/components/PostCard/PostCard'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/useTrackRecentSubreddit'
 import type {SortingOption} from '@/lib/types'
-import {Button, Code, Group, Loader, Stack, Title} from '@mantine/core'
+import {
+  Button,
+  Code,
+  Container,
+  Group,
+  Loader,
+  Stack,
+  Title
+} from '@mantine/core'
 import Link from 'next/link'
 import {MdError} from 'react-icons/md'
 
@@ -64,31 +72,33 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
   }
 
   return (
-    <Stack>
-      <Group justify="space-between">
-        <Title order={2}>{`r/${subreddit}`}</Title>
-        <Favorite subreddit={subreddit} />
-      </Group>
+    <Container maw={700}>
+      <Stack>
+        <Group justify="space-between">
+          <Title order={2}>{`r/${subreddit}`}</Title>
+          <Favorite subreddit={subreddit} />
+        </Group>
 
-      {data?.pages.flatMap((page) =>
-        (page?.data?.children ?? []).map((post) =>
-          post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
-        )
-      )}
+        {data?.pages.flatMap((page) =>
+          (page?.data?.children ?? []).map((post) =>
+            post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
+          )
+        )}
 
-      {hasNextPage && (
-        <div ref={ref} style={{minHeight: 60}}>
-          {isFetchingNextPage ? (
-            <Group justify="center">
-              <Loader />
-            </Group>
-          ) : (
-            <Button fullWidth onClick={() => fetchNextPage()}>
-              Load More
-            </Button>
-          )}
-        </div>
-      )}
-    </Stack>
+        {hasNextPage && (
+          <div ref={ref} style={{minHeight: 60}}>
+            {isFetchingNextPage ? (
+              <Group justify="center">
+                <Loader />
+              </Group>
+            ) : (
+              <Button fullWidth onClick={() => fetchNextPage()}>
+                Load More
+              </Button>
+            )}
+          </div>
+        )}
+      </Stack>
+    </Container>
   )
 }
