@@ -18,7 +18,7 @@ export function Favorite({subreddit}: Readonly<FavoriteProps>) {
   const color = isFavorite ? 'red' : 'gray'
 
   return (
-    <Tooltip label="Add to favorites" position="right" withArrow>
+    <Tooltip label={label} position="right" withArrow>
       <ActionIcon
         aria-label={label}
         color={color}
