@@ -22,7 +22,7 @@ export function Search() {
       aria-label="Search subreddits"
       autoCapitalize="off"
       autoCorrect="off"
-      classNames={{root: classes.root}}
+      classNames={{root: classes.root, dropdown: classes.dropdown}}
       clearable
       value={query}
       onChange={setQuery}
