@@ -47,7 +47,7 @@ export function Settings() {
 
         <Menu.Item closeMenuOnClick={false}>
           <Switch
-            label="Enable NSFW"
+            label="Allow NSFW"
             checked={nsfw}
             onChange={() => dispatch(toggleNsfw())}
           />
@@ -124,7 +124,7 @@ export function Settings() {
             }}
           >
             <FaTrashAlt style={{marginRight: '8px'}} />
-            Reset All
+            Reset All Data
           </Menu.Item>
         </Tooltip>
       </Menu.Dropdown>

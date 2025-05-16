@@ -52,7 +52,8 @@ export function PostCard({post}: Readonly<PostCardProps>) {
         <Group className={classes.meta}>
           <FaRegComment size={16} />
           <Text size="sm" c="dimmed">
-            {post.num_comments} comments
+            <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
+            comments
           </Text>
         </Group>
       </Group>

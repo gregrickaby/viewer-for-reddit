@@ -30,13 +30,15 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
 
   const {
     data,
-    isLoading,
-    isError,
     error,
-    isFetchingNextPage,
-    hasNextPage,
     fetchNextPage,
-    ref
+    hasNextPage,
+    isError,
+    isFetchingNextPage,
+    isLoading,
+    noVisiblePosts,
+    ref,
+    wasFiltered
   } = useInfinitePosts({subreddit, sort: selectedSort})
 
   if (isLoading) {
@@ -61,32 +63,45 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     )
   }
 
+  let content = null
+  if (noVisiblePosts) {
+    content = (
+      <Title order={4} ta="center" mt="lg" c="red">
+        {wasFiltered
+          ? 'You need to enable the "Allow NSFW" setting to see posts'
+          : 'No posts found! Try a different subreddit'}
+      </Title>
+    )
+  } else {
+    content = data?.pages.flatMap((page) =>
+      (page?.data?.children ?? []).map((post) =>
+        post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
+      )
+    )
+  }
+
   return (
     <Container maw={700}>
       <Stack>
-        <Group justify="space-between">
-          <Title order={2}>{`r/${subreddit}`}</Title>
-          <Group>
+        <Group justify="space-between" gap="xs">
+          <Group gap="xs">
+            <Title order={2}>{`r/${subreddit}`}</Title>
             <Favorite subreddit={subreddit} />
-            <SegmentedControl
-              value={selectedSort}
-              onChange={(value) => setSelectedSort(value as SortingOption)}
-              data={[
-                {label: 'Hot', value: 'hot'},
-                {label: 'New', value: 'new'},
-                {label: 'Top', value: 'top'}
-              ]}
-            />
           </Group>
+          <SegmentedControl
+            value={selectedSort}
+            onChange={(value) => setSelectedSort(value as SortingOption)}
+            data={[
+              {label: 'Hot', value: 'hot'},
+              {label: 'New', value: 'new'},
+              {label: 'Top', value: 'top'}
+            ]}
+          />
         </Group>
 
-        {data?.pages.flatMap((page) =>
-          (page?.data?.children ?? []).map((post) =>
-            post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
-          )
-        )}
+        {content}
 
-        {hasNextPage && (
+        {hasNextPage && !wasFiltered && (
           <div ref={ref} style={{minHeight: 60}}>
             {isFetchingNextPage ? (
               <Group justify="center">
