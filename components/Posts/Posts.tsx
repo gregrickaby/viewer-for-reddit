@@ -85,7 +85,7 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
       <Stack>
         <Group justify="space-between" gap="xs">
           <Group gap="xs">
-            <Title order={2}>{`r/${subreddit}`}</Title>
+            <Title order={1}>Posts from {`r/${subreddit}`}</Title>
             <Favorite subreddit={subreddit} />
           </Group>
           <SegmentedControl
