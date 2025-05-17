@@ -19,6 +19,7 @@ export function PostCard({post}: Readonly<PostCardProps>) {
 
   return (
     <Card
+      component="article"
       className={classes.postCard}
       padding="md"
       radius="md"
