@@ -23,7 +23,7 @@ export function useSubredditSearch(): {
   )
 
   const {data: popularSubreddits = []} = useGetPopularSubredditsQuery(
-    {limit: 25},
+    {limit: 10},
     {skip: debounced.length > 0}
   )
 
