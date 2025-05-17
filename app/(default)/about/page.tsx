@@ -7,7 +7,24 @@ import {SiBuymeacoffee} from 'react-icons/si'
  */
 export async function generateMetadata() {
   return {
-    title: `About - ${config.siteName}`
+    title: `About - ${config.siteName}`,
+    description: `${config.siteName} has been a fast, private way to browse Reddit media since 2020. No ads. No tracking.`,
+    alternates: {
+      canonical: `${config.siteUrl}/about`
+    },
+    openGraph: {
+      title: `About - ${config.siteName}`,
+      description: `Learn more about the motivation and creator behind ${config.siteName}, a privacy-first Reddit viewer.`,
+      url: `${config.siteUrl}/about`,
+      images: [
+        {
+          url: `${config.siteUrl}social-share.webp`,
+          width: 1200,
+          height: 630,
+          alt: config.siteName
+        }
+      ]
+    }
   }
 }
 
