@@ -42,7 +42,9 @@ export async function fetchToken(): Promise<TokenResponse | null> {
       body: new URLSearchParams({
         grant_type: 'client_credentials',
         device_id: 'DO_NOT_TRACK_THIS_DEVICE'
-      })
+      }),
+      cache: 'force-cache',
+      next: {revalidate: 1800}
     })
 
     if (!response.ok) {

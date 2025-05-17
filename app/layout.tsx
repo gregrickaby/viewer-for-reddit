@@ -1,3 +1,5 @@
+'use cache'
+
 import config from '@/lib/config'
 import {StoreProvider} from '@/lib/store/StoreProvider'
 import {
@@ -63,7 +65,7 @@ export const viewport: Viewport = {
  *
  * It also handles the initial color scheme, SEO metadata, and viewport settings.
  */
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode

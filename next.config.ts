@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
     ]
   },
   experimental: {
+    useCache: true,
     optimizePackageImports: [
       '@mantine/core',
       '@mantine/hooks',
