@@ -32,7 +32,9 @@ export function PostCard({post}: Readonly<PostCardProps>) {
           <time>{post.created_utc ? formatTimeAgo(post.created_utc) : ''}</time>
         </Text>
         <Link href={postLink} target="_blank">
-          <Title order={3}>{post.title}</Title>
+          <Title order={1} size="lg">
+            {post.title}
+          </Title>
         </Link>
       </Stack>
 
