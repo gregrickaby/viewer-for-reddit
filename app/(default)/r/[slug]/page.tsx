@@ -15,12 +15,12 @@ export async function generateMetadata(props: {params: Params}) {
     title: `/r/${slug} - ${config.siteName}`,
     description: `Browse posts in /r/${slug} anonymously with Viewer for Reddit.`,
     alternates: {
-      canonical: `${config.siteUrl}/r/${slug}`
+      canonical: `${config.siteUrl}r/${slug}`
     },
     openGraph: {
       title: `/r/${slug} - ${config.siteName}`,
       description: `Posts in /r/${slug}, updated in real time.`,
-      url: `${config.siteUrl}/r/${slug}`,
+      url: `${config.siteUrl}r/${slug}`,
       images: [
         {
           url: `${config.siteUrl}social-share.webp`,

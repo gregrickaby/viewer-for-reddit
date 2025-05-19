@@ -10,12 +10,12 @@ export async function generateMetadata() {
     title: `About - ${config.siteName}`,
     description: `${config.siteName} has been a fast, private way to browse Reddit media since 2020. No ads. No tracking.`,
     alternates: {
-      canonical: `${config.siteUrl}/about`
+      canonical: `${config.siteUrl}about`
     },
     openGraph: {
       title: `About - ${config.siteName}`,
       description: `Learn more about the motivation and creator behind ${config.siteName}, a privacy-first Reddit viewer.`,
-      url: `${config.siteUrl}/about`,
+      url: `${config.siteUrl}about`,
       images: [
         {
           url: `${config.siteUrl}social-share.webp`,
