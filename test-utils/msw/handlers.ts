@@ -12,12 +12,12 @@ export const handlers = [
   }),
 
   // About subreddit
-  http.get('https://reddit.com/r/:slug/about.json', () => {
+  http.get('https://oauth.reddit.com/r/:slug/about.json', () => {
     return HttpResponse.json(aboutMock)
   }),
 
   // Popular subreddits
-  http.get('https://www.reddit.com/subreddits/popular/.json', () => {
+  http.get('https://oauth.reddit.com/subreddits/popular.json', () => {
     return HttpResponse.json(popularMock)
   }),
 
@@ -27,7 +27,7 @@ export const handlers = [
   }),
 
   // Subreddit posts
-  http.get('https://oauth.reddit.com/r/:slug/:sort/.json', () => {
+  http.get('https://oauth.reddit.com/r/:slug/:sort.json', () => {
     return HttpResponse.json(subredditMock)
   })
 ]

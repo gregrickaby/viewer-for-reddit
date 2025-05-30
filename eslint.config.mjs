@@ -6,6 +6,23 @@ import jestDom from 'eslint-plugin-jest-dom'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 
 export default tseslint.config(
+  // Ignore patterns
+  {
+    ignores: [
+      '**/node_modules/',
+      '**/.next/',
+      '**/.vercel/',
+      '**/dist/',
+      '**/build/',
+      '**/coverage/',
+      '**/out/',
+      '**/public/',
+      '**/*.min.js',
+      '**/*.js',
+      '**/.*cache/'
+    ]
+  },
+
   // Base JS rules
   // https://eslint.org/docs/latest/rules/
   eslint.configs.recommended,
@@ -17,10 +34,6 @@ export default tseslint.config(
   // Mantine config
   // https://mantine.dev/eslint-config-mantine/
   ...mantine,
-
-  // Prettier rules
-  // https://github.com/prettier/eslint-config-prettier
-  eslintConfigPrettier,
 
   // Project rules
   {
@@ -43,20 +56,7 @@ export default tseslint.config(
     }
   },
 
-  // Ignore patterns
-  {
-    ignores: [
-      '**/node_modules/',
-      '**/.next/',
-      '**/.vercel/',
-      '**/dist/',
-      '**/build/',
-      '**/coverage/',
-      '**/out/',
-      '**/public/',
-      '**/*.min.js',
-      '**/*.js',
-      '**/.*cache/'
-    ]
-  }
+  // Prettier rules
+  // https://github.com/prettier/eslint-config-prettier
+  eslintConfigPrettier
 )

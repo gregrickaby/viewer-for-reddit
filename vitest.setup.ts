@@ -14,7 +14,9 @@ setupBrowserMocks()
 // Global setup for Vitest test environment
 beforeAll(() => {
   // Start the MSW server to intercept network requests
-  server.listen()
+  server.listen({onUnhandledRequest: 'warn'})
+
+  // Warn if any tests are not using the mocked API
 
   // Stub required environment variables for Reddit token fetching
   vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
