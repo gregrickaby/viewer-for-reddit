@@ -9,7 +9,7 @@ export const tokenMock: TokenResponse = {
 
 export const emptyTokenMock: TokenResponse = {
   access_token: '',
-  error: expect.any(String),
+  error: '',
   expires_in: 0,
   scope: '',
   token_type: ''
