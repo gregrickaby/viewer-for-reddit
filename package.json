@@ -27,7 +27,7 @@
     "@mantine/hooks": "^8.0.2",
     "@mantine/notifications": "^8.0.2",
     "@reduxjs/toolkit": "^2.8.2",
-    "hls.js": "^1.6.4",
+    "hls.js": "^1.6.5",
     "next": "^15.4.0-canary.61",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -69,6 +69,6 @@
     "rimraf": "^6.0.1",
     "sharp": "^0.34.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.0"
+    "typescript-eslint": "^8.33.1"
   }
 }
