@@ -28,7 +28,7 @@
     "@mantine/notifications": "^8.1.1",
     "@reduxjs/toolkit": "^2.8.2",
     "hls.js": "^1.6.5",
-    "next": "^15.4.0-canary.61",
+    "next": "^15.4.0-canary.93",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
