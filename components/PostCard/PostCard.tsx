@@ -3,7 +3,6 @@ import type {PostChildData} from '@/lib/types/posts'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {Card, Group, NumberFormatter, Stack, Text, Title} from '@mantine/core'
-import Link from 'next/link'
 import {BiUpvote} from 'react-icons/bi'
 import {FaRegComment} from 'react-icons/fa'
 import classes from './PostCard.module.css'
@@ -27,15 +26,24 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       withBorder
     >
       <Stack justify="space-between" gap="xs">
-        <Text size="sm" c="dimmed">
-          {post.subreddit_name_prefixed} &middot;{' '}
-          <time>{post.created_utc ? formatTimeAgo(post.created_utc) : ''}</time>
-        </Text>
-        <Link href={postLink} target="_blank">
+        <a href={`/${post.subreddit_name_prefixed}`}>
+          <Text size="sm" c="dimmed">
+            {post.subreddit_name_prefixed} &middot;{' '}
+            <time>
+              {post.created_utc ? formatTimeAgo(post.created_utc) : ''}
+            </time>
+          </Text>
+        </a>
+        <a
+          className={classes.titleLink}
+          href={postLink}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           <Title order={1} size="lg">
             {post.title}
           </Title>
-        </Link>
+        </a>
       </Stack>
 
       {image?.url && (
@@ -47,17 +55,21 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       <Group mt="xs">
         <Group className={classes.meta}>
           <BiUpvote size={16} />
-          <Text size="sm" c="dimmed">
-            <NumberFormatter value={post.ups} thousandSeparator />
-          </Text>
+          <a href={postLink} rel="noopener noreferrer" target="_blank">
+            <Text size="sm" c="dimmed">
+              <NumberFormatter value={post.ups} thousandSeparator />
+            </Text>
+          </a>
         </Group>
 
         <Group className={classes.meta}>
           <FaRegComment size={16} />
-          <Text size="sm" c="dimmed">
-            <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
-            comments
-          </Text>
+          <a href={postLink} rel="noopener noreferrer" target="_blank">
+            <Text size="sm" c="dimmed">
+              <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
+              comments
+            </Text>
+          </a>
         </Group>
       </Group>
     </Card>

@@ -9,6 +9,12 @@
   }
 }
 
+.titleLink {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .meta {
   gap: 4px;
 }
