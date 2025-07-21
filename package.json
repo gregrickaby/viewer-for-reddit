@@ -54,7 +54,7 @@
     "@vitest/ui": "^3.2.4",
     "eslint": "^9.31.0",
     "eslint-config-mantine": "^4.0.3",
-    "eslint-config-next": "^15.3.5",
+    "eslint-config-next": "^15.4.2",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
