@@ -34,6 +34,7 @@
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "sanitize-html": "^2.17.0",
+    "sharp": "^0.34.3",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
@@ -67,7 +68,6 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "sharp": "^0.34.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
   }
