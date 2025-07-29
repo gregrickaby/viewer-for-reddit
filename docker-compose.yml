@@ -1,48 +1,28 @@
 services:
-  traefik:
-    image: traefik:v3.4
-    container_name: traefik
-    command:
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.websecure.address=:443'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--certificatesresolvers.le.acme.httpchallenge=true'
-      - '--certificatesresolvers.le.acme.httpchallenge.entrypoint=web'
-      - '--certificatesresolvers.le.acme.email=greg@gregrickaby.com'
-      - '--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json'
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./letsencrypt:/letsencrypt
-    networks:
-      - web
-    restart: unless-stopped
-
-  viewer-for-reddit:
-    container_name: viewer
+  app:
+    container_name: 'viewer-for-reddit'
     build:
       context: .
       dockerfile: Dockerfile
     expose:
       - '3000'
-    networks:
-      - web
-    restart: unless-stopped
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
+    networks:
+      - 'traefik'
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.viewer.rule=Host(`reddit-viewer.com`)'
-      - 'traefik.http.routers.viewer.entrypoints=websecure'
-      - 'traefik.http.routers.viewer.tls=true'
-      - 'traefik.http.routers.viewer.tls.certresolver=le'
-      - 'traefik.http.services.viewer.loadbalancer.server.port=3000'
+      'traefik.enable': 'true'
+      'traefik.http.routers.site.rule': 'Host(`reddit-viewer.com`) || Host(`www.reddit-viewer.com`)'
+      'traefik.http.routers.site.entrypoints': 'websecure'
+      'traefik.http.routers.site.tls.certresolver': 'le'
+      'traefik.http.services.site.loadbalancer.server.port': '3000'
+      'traefik.http.routers.site.middlewares': 'hstsx,redirect-www'
+      'traefik.http.middlewares.redirect-www.redirectregex.regex': "^https://www\\.(.+)"
+      'traefik.http.middlewares.redirect-www.redirectregex.replacement': 'https://$${1}'
+      'traefik.http.middlewares.redirect-www.redirectregex.permanent': 'true'
 
 networks:
-  web:
-    driver: bridge
+  traefik:
+    external: true
