@@ -14,11 +14,11 @@ services:
       - 'traefik'
     labels:
       'traefik.enable': 'true'
-      'traefik.http.routers.site.rule': 'Host(`reddit-viewer.com`) || Host(`www.reddit-viewer.com`)'
-      'traefik.http.routers.site.entrypoints': 'websecure'
-      'traefik.http.routers.site.tls.certresolver': 'le'
-      'traefik.http.services.site.loadbalancer.server.port': '3000'
-      'traefik.http.routers.site.middlewares': 'hstsx,redirect-www'
+      'traefik.http.routers.reddit-viewer.rule': 'Host(`reddit-viewer.com`) || Host(`www.reddit-viewer.com`)'
+      'traefik.http.routers.reddit-viewer.entrypoints': 'websecure'
+      'traefik.http.routers.reddit-viewer.tls.certresolver': 'le'
+      'traefik.http.routers.reddit-viewer.middlewares': 'hstsx,redirect-www'
+      'traefik.http.services.reddit-viewer.loadbalancer.server.port': '3000'
       'traefik.http.middlewares.redirect-www.redirectregex.regex': "^https://www\\.(.+)"
       'traefik.http.middlewares.redirect-www.redirectregex.replacement': 'https://$${1}'
       'traefik.http.middlewares.redirect-www.redirectregex.permanent': 'true'
