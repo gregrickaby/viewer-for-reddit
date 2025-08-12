@@ -35,6 +35,18 @@ export default tseslint.config(
   // https://mantine.dev/eslint-config-mantine/
   ...mantine,
 
+  // Language options
+  // https://eslint.org/docs/latest/use/configure/migration-guide#configuring-language-options
+  [
+    {
+      languageOptions: {
+        parserOptions: {
+          tsconfigRootDir: './'
+        }
+      }
+    }
+  ],
+
   // Project rules
   {
     rules: {
