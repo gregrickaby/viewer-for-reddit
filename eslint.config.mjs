@@ -41,7 +41,7 @@ export default tseslint.config(
     {
       languageOptions: {
         parserOptions: {
-          tsconfigRootDir: './'
+          tsconfigRootDir: new URL('.', import.meta.url).pathname
         }
       }
     }
