@@ -9,7 +9,7 @@ interface CacheEntry {
 /**
  * Simple cache for media URLs with expiration and size limits.
  */
-class MediaCache {
+export class MediaCache {
   private readonly cache: Map<string, CacheEntry>
   private readonly maxSize: number
   private readonly maxAge: number // milliseconds

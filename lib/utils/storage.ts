@@ -8,7 +8,9 @@ const STORAGE_KEY = 'redditViewer'
  * Check if the code is running in a browser environment
  * This prevents errors during server-side rendering
  */
-const isBrowser = typeof window !== 'undefined'
+function isBrowser() {
+  return typeof window !== 'undefined'
+}
 
 /**
  * Retrieves the initial default settings for a new user.
@@ -45,7 +47,7 @@ export function getInitialSettings(): UserSettings {
 export function loadSettings(): UserSettings {
   try {
     // Check if running in a browser environment
-    if (!isBrowser) {
+    if (!isBrowser()) {
       return getInitialSettings()
     }
 
@@ -82,7 +84,7 @@ export function loadSettings(): UserSettings {
 export function saveSettings(settings: UserSettings): void {
   try {
     // Only attempt to save if in browser environment
-    if (isBrowser) {
+    if (isBrowser()) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
     }
   } catch (error) {
@@ -98,7 +100,7 @@ export function saveSettings(settings: UserSettings): void {
 export function clearSettings(): void {
   try {
     // Only attempt to clear if in browser environment
-    if (isBrowser) {
+    if (isBrowser()) {
       localStorage.removeItem(STORAGE_KEY)
     }
   } catch (error) {

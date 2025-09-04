@@ -32,6 +32,11 @@ export async function fetchToken(): Promise<TokenResponse | null> {
 
     const encodedCredentials = btoa(`${clientId}:${clientSecret}`)
 
+    const params = new URLSearchParams({
+      grant_type: 'client_credentials',
+      device_id: 'DO_NOT_TRACK_THIS_DEVICE'
+    })
+
     const response = await fetch('https://www.reddit.com/api/v1/access_token', {
       method: 'POST',
       headers: {
@@ -39,10 +44,7 @@ export async function fetchToken(): Promise<TokenResponse | null> {
         'User-Agent': config.userAgent,
         Authorization: `Basic ${encodedCredentials}`
       },
-      body: new URLSearchParams({
-        grant_type: 'client_credentials',
-        device_id: 'DO_NOT_TRACK_THIS_DEVICE'
-      }),
+      body: params.toString(),
       cache: 'force-cache',
       next: {revalidate: 1800}
     })
