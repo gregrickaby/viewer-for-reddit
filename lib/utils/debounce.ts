@@ -10,10 +10,10 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
 ) {
   let timer: ReturnType<typeof setTimeout>
 
-  return function (...args: Parameters<T>): void {
+  return function (this: any, ...args: Parameters<T>): void {
     clearTimeout(timer)
     timer = setTimeout(() => {
-      func(...args)
+      func.apply(this, args)
     }, delay)
   }
 }
