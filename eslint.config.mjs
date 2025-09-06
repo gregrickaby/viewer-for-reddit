@@ -50,7 +50,8 @@ export default tseslint.config(
   // Project rules
   {
     rules: {
-      'no-console': ['error', {allow: ['warn', 'error', 'info']}]
+      'no-console': ['error', {allow: ['warn', 'error', 'info']}],
+      '@typescript-eslint/triple-slash-reference': 'off'
     }
   },
 
