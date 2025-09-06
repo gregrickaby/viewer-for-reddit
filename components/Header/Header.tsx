@@ -7,7 +7,7 @@ import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {Burger, Group, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
-import AppIcon from '../app/icon.png'
+import AppIcon from '../../app/icon.png'
 import classes from './Header.module.css'
 
 export function Header() {

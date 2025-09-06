@@ -4,7 +4,7 @@ import {Favorite} from '@/components/Favorite/Favorite'
 import {ActionIcon, Group, Tooltip} from '@mantine/core'
 import Image from 'next/image'
 import {FaTrashAlt} from 'react-icons/fa'
-import AppIcon from '../app/icon.png'
+import AppIcon from '../../app/icon.png'
 import classes from './SubredditName.module.css'
 
 export interface SubredditNameProps {
