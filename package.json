@@ -13,6 +13,7 @@
     "url": "https://github.com/gregrickaby/viewer-for-reddit/issues"
   },
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
+  "packageManager": "npm@11.6.0",
   "scripts": {
     "build": "next build",
     "coverage": "vitest run --coverage",
