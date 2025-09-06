@@ -1,5 +1,5 @@
-import notFound from '@/public/not-found.webp'
 import Image from 'next/image'
+import notFound from '../public/not-found.webp'
 
 /**
  * The 404 component.
