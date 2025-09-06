@@ -46,7 +46,7 @@ npx create-next-app --example https://github.com/gregrickaby/viewer-for-reddit v
 2. Work locally adhering to coding standards
 3. Run `npm run lint`
 4. Make sure the app builds locally with `npm run build && npm run start`
-5. Push your code to Github and open your PR (note: Your PR will be deployed to Vercel for QA after approval)
+5. Push your code to GitHub and open your PR (note: Your PR will be deployed to Vercel for QA after approval)
 6. Fill out the PR template and request a peer review
 7. After peer review, the PR will be merged back into `main`
 8. Repeat ♻️
