@@ -7,7 +7,7 @@ import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {Burger, Group, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
-import icon from '../app/icon.png'
+import AppIcon from '../app/icon.png'
 import classes from './Header.module.css'
 
 export function Header() {
@@ -24,7 +24,7 @@ export function Header() {
         />
         <Link href="/" onClick={showNavbar ? toggleNavbarHandler : undefined}>
           <Group>
-            <Image alt="Logo" height={38} src={icon} width={38} priority />
+            <Image alt="Logo" height={38} src={AppIcon} width={38} priority />
             <Title visibleFrom="md">{config.siteName}</Title>
           </Group>
         </Link>

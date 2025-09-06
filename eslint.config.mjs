@@ -4,8 +4,9 @@ import mantine from 'eslint-config-mantine'
 import testingLibrary from 'eslint-plugin-testing-library'
 import jestDom from 'eslint-plugin-jest-dom'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import {defineConfig} from 'eslint/config'
 
-export default tseslint.config(
+export default defineConfig(
   // Ignore patterns
   {
     ignores: [
