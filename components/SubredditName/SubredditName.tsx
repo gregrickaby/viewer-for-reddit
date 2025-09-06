@@ -4,7 +4,7 @@ import {Favorite} from '@/components/Favorite/Favorite'
 import {ActionIcon, Group, Tooltip} from '@mantine/core'
 import Image from 'next/image'
 import {FaTrashAlt} from 'react-icons/fa'
-import appIcon from '../app/icon.png'
+import AppIcon from '../app/icon.png'
 import classes from './SubredditName.module.css'
 
 export interface SubredditNameProps {
@@ -28,7 +28,7 @@ export function SubredditName({
           className={classes.icon}
           height={24}
           width={24}
-          src={icon || appIcon}
+          src={icon || AppIcon}
           unoptimized
         />
         <span title={`r/${name}`}>{`r/${name}`}</span>
