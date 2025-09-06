@@ -27,7 +27,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Install Dependencies
-        run: npm ci --ignore-scripts
+        run: npm i
 
       - name: Lint
         run: npm run lint
