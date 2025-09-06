@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import NotFoundAnimation from '../public/not-found.webp'
+import NotFoundAnimation from '../../public/not-found.webp'
 
 /**
  * The 404 component.
