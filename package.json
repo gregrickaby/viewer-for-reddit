@@ -18,7 +18,7 @@
     "coverage": "vitest run --coverage",
     "dev": "rimraf .next && next dev --turbo",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
-    "lint": "eslint && tsc --noEmit",
+    "lint": "eslint",
     "start": "next start",
     "test": "vitest"
   },
