@@ -1,4 +1,4 @@
-import type {DeepPartial} from '@/global'
+import type {DeepPartial} from '@/lib/types/global'
 import type {PostResponse} from '@/lib/types/posts'
 
 export const subredditMock: DeepPartial<PostResponse> = {
