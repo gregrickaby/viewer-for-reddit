@@ -1,4 +1,5 @@
 import {renderHook} from '@/test-utils/renderHook'
+import {act} from '@testing-library/react'
 import {useHeaderState} from './useHeaderState'
 
 describe('useHeaderState', () => {
@@ -13,8 +14,10 @@ describe('useHeaderState', () => {
     expect(result.current.showNavbar).toBe(true)
     expect(result.current.showSearch).toBe(false)
     // Toggle both
-    result.current.toggleNavbarHandler()
-    result.current.toggleSearchHandler()
+    act(() => {
+      result.current.toggleNavbarHandler()
+      result.current.toggleSearchHandler()
+    })
     const state = store.getState().transient
     expect(state.toggleNavbar).toBe(false)
     expect(state.toggleSearch).toBe(true)
@@ -28,7 +31,9 @@ describe('useHeaderState', () => {
       }
     }
     const {result, store} = renderHook(() => useHeaderState(), {preloadedState})
-    result.current.toggleNavbarHandler()
+    act(() => {
+      result.current.toggleNavbarHandler()
+    })
     expect(store.getState().transient.toggleNavbar).toBe(true)
   })
 
@@ -40,7 +45,9 @@ describe('useHeaderState', () => {
       }
     }
     const {result, store} = renderHook(() => useHeaderState(), {preloadedState})
-    result.current.toggleSearchHandler()
+    act(() => {
+      result.current.toggleSearchHandler()
+    })
     expect(store.getState().transient.toggleSearch).toBe(true)
   })
 })
