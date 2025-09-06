@@ -1,6 +1,5 @@
 'use client'
 
-import icon from '@/app/icon.png'
 import {HeaderIcons} from '@/components/Header/HeaderIcons'
 import {Search} from '@/components/Search/Search'
 import config from '@/lib/config'
@@ -8,6 +7,7 @@ import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {Burger, Group, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
+import icon from '../app/icon.png'
 import classes from './Header.module.css'
 
 export function Header() {
