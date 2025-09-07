@@ -32,11 +32,15 @@ vi.mock('@/components/ResponsiveImage/ResponsiveImage', () => ({
 }))
 
 vi.mock('@/components/HlsPlayer/HlsPlayer', () => ({
-  HlsPlayer: (props: any) => <div data-testid="hls-player" {...props} />
+  HlsPlayer: ({dataHint, fallbackUrl, ...props}: any) => (
+    <div data-testid="hls-player" data-hint={dataHint} {...props} />
+  )
 }))
 
 vi.mock('@/components/YouTubePlayer/YouTubePlayer', () => ({
-  YouTubePlayer: (props: any) => <div data-testid="youtube-player" {...props} />
+  YouTubePlayer: ({videoId, ...props}: any) => (
+    <div data-testid="youtube-player" {...props} />
+  )
 }))
 
 vi.mock('@/components/MediaContainer/MediaContainer', () => ({
@@ -160,7 +164,7 @@ describe('Media', () => {
     }
     render(<Media {...post} />)
     expect(screen.getByTestId('hls-player')).toHaveAttribute(
-      'dataHint',
+      'data-hint',
       'link:gifv'
     )
   })
@@ -185,7 +189,10 @@ describe('Media', () => {
       video_preview: {width: 1, height: 1, hls_url: 'h'}
     }
     render(<Media {...post} />)
-    expect(screen.getByTestId('hls-player')).toHaveAttribute('dataHint', 'link')
+    expect(screen.getByTestId('hls-player')).toHaveAttribute(
+      'data-hint',
+      'link'
+    )
   })
 
   it('renders selftext when provided', () => {

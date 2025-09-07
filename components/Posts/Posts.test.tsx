@@ -26,7 +26,7 @@ vi.mock('@mantine/core', async (importOriginal) => {
   return {
     ...actual,
     Loader: () => <div data-testid="loader" />,
-    Button: ({children, ...props}: any) => (
+    Button: ({children, fullWidth, ...props}: any) => (
       <button type="button" {...props}>
         {children}
       </button>
