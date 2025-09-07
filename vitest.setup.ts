@@ -1,8 +1,26 @@
 import {setupBrowserMocks} from '@/test-utils/mocks/browserMocks'
 import {server} from '@/test-utils/msw/server'
 import '@testing-library/jest-dom'
+import React, {type ImgHTMLAttributes} from 'react'
+import type {StaticImageData} from 'next/image'
 import {URLSearchParams as NodeURLSearchParams} from 'url'
-import {afterAll, afterEach, beforeAll} from 'vitest'
+import {afterAll, afterEach, beforeAll, vi} from 'vitest'
+
+interface MockNextImageProps
+  extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
+  src: string | StaticImageData
+  alt: string
+  priority?: boolean
+  unoptimized?: boolean
+}
+
+vi.mock('next/image', () => ({
+  __esModule: true,
+  default: ({src, alt, priority, unoptimized, ...rest}: MockNextImageProps) => {
+    const imgSrc = typeof src === 'string' ? src : src.src
+    return React.createElement('img', {...rest, src: imgSrc, alt})
+  }
+}))
 
 // Polyfill: Vitest does not provide URLSearchParams in Node by default
 // https://github.com/vitest-dev/vitest/issues/7906

@@ -2,11 +2,6 @@ import {SubredditName} from '@/components/SubredditName/SubredditName'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
 
-vi.mock('next/image', () => ({
-  // eslint-disable-next-line jsx-a11y/alt-text
-  default: (props: any) => <img {...props} />
-}))
-
 vi.mock('@/components/Favorite/Favorite', () => ({
   Favorite: () => <div data-testid="favorite" />
 }))
