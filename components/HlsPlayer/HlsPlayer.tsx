@@ -32,6 +32,7 @@ export function HlsPlayer({
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video
+        data-testid="video"
         autoPlay={autoPlay}
         controls={controls}
         data-hint={dataHint}

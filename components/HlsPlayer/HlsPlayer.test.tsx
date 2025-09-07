@@ -1,5 +1,5 @@
 import {HlsPlayer} from '@/components/HlsPlayer/HlsPlayer'
-import {render} from '@/test-utils'
+import {render, screen} from '@/test-utils'
 
 const videoRef = {current: null}
 vi.mock('@/lib/hooks/useHlsVideo', () => ({
@@ -18,9 +18,6 @@ describe('HlsPlayer', () => {
       />
     )
 
-    expect(
-      // eslint-disable-next-line testing-library/no-node-access
-      document.querySelector('video')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('video')).toBeInTheDocument()
   })
 })
