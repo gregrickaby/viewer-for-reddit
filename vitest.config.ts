@@ -22,6 +22,7 @@ export default defineConfig({
         '**/*.spec.{ts,tsx}',
         '**/*.test.{ts,tsx}',
         '**/test-utils/**',
+        '**/app/**/*.{ts,tsx}',
         '**/types/**',
         '*.config.ts',
         '*.d.ts'
