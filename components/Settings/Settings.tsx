@@ -47,6 +47,7 @@ export function Settings() {
 
         <Menu.Item closeMenuOnClick={false}>
           <Switch
+            aria-label="Allow NSFW"
             label="Allow NSFW"
             checked={nsfw}
             onChange={() => dispatch(toggleNsfw())}
@@ -55,6 +56,7 @@ export function Settings() {
 
         <Menu.Item closeMenuOnClick={false}>
           <Switch
+            aria-label="Dark Mode"
             label="Dark Mode"
             checked={isDark}
             onChange={(e) =>
@@ -65,6 +67,7 @@ export function Settings() {
 
         <Menu.Item closeMenuOnClick={false}>
           <Switch
+            aria-label="Mute"
             label="Mute"
             checked={isMuted}
             onChange={() => dispatch(toggleMute())}
