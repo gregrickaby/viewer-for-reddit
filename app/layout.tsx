@@ -5,12 +5,15 @@ import {StoreProvider} from '@/lib/store/StoreProvider'
 import {
   ColorSchemeScript,
   MantineProvider,
-  mantineHtmlProps
+  createTheme,
+  mantineHtmlProps,
+  type MantineColorsTuple
 } from '@mantine/core'
 import '@mantine/core/styles.css'
 import {Notifications} from '@mantine/notifications'
 import '@mantine/notifications/styles.css'
 import type {Metadata, Viewport} from 'next'
+import {Reddit_Sans} from 'next/font/google'
 
 /**
  * Generate metadata.
@@ -57,13 +60,53 @@ export const viewport: Viewport = {
 }
 
 /**
+ * Load fonts.
+ *
+ * @see https://nextjs.org/docs/app/building-your-application/optimizing/fonts
+ * @see https://redditbrand.lingoapp.com/s/Typography-d03Ney?v=40
+ */
+const redditSans = Reddit_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap'
+})
+
+/**
+ * Set the color scheme based on Reddit's branding.
+ *
+ * @see https://mantine.dev/theming/colors/#primarycolor
+ * @see https://redditbrand.lingoapp.com/s/Color-R7y72J?v=40
+ */
+const redditColorScheme: MantineColorsTuple = [
+  '#ffeee4',
+  '#ffdbcd',
+  '#ffb69b',
+  '#ff8e64',
+  '#fe6d37',
+  '#fe5719',
+  '#ff4500',
+  '#e43c00',
+  '#cb3400',
+  '#b22900'
+]
+
+/**
+ * Create Mantine theme.
+ *
+ * @see https://mantine.dev/theming/theme-object/
+ */
+const theme = createTheme({
+  colors: {redditColorScheme},
+  fontFamily: redditSans.style.fontFamily,
+  primaryColor: 'redditColorScheme'
+})
+
+/**
  * The server-rendered root layout component.
  *
- * This component sets up the global layout for the application.
- * It includes the MantineProvider for theming and styles,
- * and the StoreProvider for Redux state management.
+ * This component wraps all pages and components in the application.
  *
- * It also handles the initial color scheme, SEO metadata, and viewport settings.
+ * @see https://nextjs.org/docs/app/getting-started/layouts-and-pages#root-layout
  */
 export default async function RootLayout({
   children
@@ -72,12 +115,13 @@ export default async function RootLayout({
 }>) {
   return (
     <StoreProvider>
-      <html lang="en" {...mantineHtmlProps}>
+      <html lang="en" {...mantineHtmlProps} className={redditSans.className}>
         <head>
+          {/* Prevent flash / hydration mismatch */}
           <ColorSchemeScript defaultColorScheme="auto" />
         </head>
         <body>
-          <MantineProvider defaultColorScheme="auto">
+          <MantineProvider theme={theme} defaultColorScheme="auto">
             {children}
             <Notifications />
           </MantineProvider>
