@@ -37,7 +37,7 @@ export function HlsPlayer({
           setIsMediaChromeLoaded(true)
         } catch (error) {
           console.warn('Failed to load media-chrome:', error)
-          setIsMediaChromeLoaded(true)
+          setIsMediaChromeLoaded(false)
         }
       }
     }
@@ -58,7 +58,7 @@ export function HlsPlayer({
         'media-controller',
         {
           'data-testid': 'media-controller',
-          hotkeys: hotkeys ? '' : undefined,
+          hotkeys: hotkeys || undefined,
           'gestures-disabled': gesturesDisabled || undefined,
           'default-stream-type': defaultStreamType,
           breakpoints
