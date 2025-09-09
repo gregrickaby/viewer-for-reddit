@@ -7,7 +7,7 @@ import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {Burger, Group, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
-import AppIcon from '../../app/icon.png'
+import Snoo from '../../app/icon.png'
 import classes from './Header.module.css'
 
 export function Header() {
@@ -20,11 +20,10 @@ export function Header() {
           aria-label="Toggle navigation menu"
           onClick={toggleNavbarHandler}
           opened={showNavbar}
-          size="lg"
         />
         <Link href="/" onClick={showNavbar ? toggleNavbarHandler : undefined}>
           <Group>
-            <Image alt="Logo" height={38} src={AppIcon} width={38} priority />
+            <Image alt="Logo" height={38} src={Snoo} width={38} priority />
             <Title visibleFrom="md">{config.siteName}</Title>
           </Group>
         </Link>
