@@ -46,4 +46,8 @@ export interface HlsPlayerProps
   dataHint?: string
   src?: string
   fallbackUrl?: string
+  hotkeys?: boolean
+  gesturesDisabled?: boolean
+  defaultStreamType?: 'on-demand' | 'live' | 'unknown'
+  breakpoints?: string
 }
