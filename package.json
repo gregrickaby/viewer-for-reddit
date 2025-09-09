@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@mantine/core": "^8.3.0",
-    "@mantine/hooks": "^8.2.8",
-    "@mantine/notifications": "^8.2.8",
+    "@mantine/hooks": "^8.3.0",
+    "@mantine/notifications": "^8.3.0",
     "@reduxjs/toolkit": "^2.9.0",
     "hls.js": "^1.6.11",
     "next": "^15.5.2",
