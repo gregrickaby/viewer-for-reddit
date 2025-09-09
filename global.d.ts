@@ -1,4 +1,13 @@
 import type {StaticImageData} from 'next/image'
+import type * as React from 'react'
+
+declare global {
+  interface Window {
+    scrollTo: (x: number, y: number) => void
+    ResizeObserver: typeof ResizeObserver
+    IntersectionObserver: typeof IntersectionObserver
+  }
+}
 
 declare module '*.png' {
   const src: StaticImageData
@@ -36,22 +45,12 @@ declare module '*.ico' {
 }
 
 declare module '*.svg' {
-  import * as React from 'react'
-
   export const ReactComponent: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & {title?: string}
   >
 
   const src: string
   export default src
-}
-
-declare global {
-  interface Window {
-    scrollTo: (x: number, y: number) => void
-    ResizeObserver: typeof ResizeObserver
-    IntersectionObserver: typeof IntersectionObserver
-  }
 }
 
 declare module '*.module.css' {
