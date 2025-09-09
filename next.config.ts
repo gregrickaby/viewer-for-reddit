@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     ]
   },
   experimental: {
+    globalNotFound: true,
     useCache: true,
     optimizePackageImports: [
       '@mantine/core',
