@@ -34,6 +34,7 @@ export function Settings() {
           <ActionIcon
             aria-label="Settings"
             color="gray"
+            data-testid="settings-button"
             size="xl"
             variant="light"
           >
@@ -47,16 +48,20 @@ export function Settings() {
 
         <Menu.Item closeMenuOnClick={false}>
           <Switch
-            label="Allow NSFW"
+            aria-label="Toggle NSFW"
             checked={nsfw}
+            data-testid="nsfw-switch"
+            label="Allow NSFW"
             onChange={() => dispatch(toggleNsfw())}
           />
         </Menu.Item>
 
         <Menu.Item closeMenuOnClick={false}>
           <Switch
-            label="Dark Mode"
+            aria-label="Toggle Dark Mode"
             checked={isDark}
+            data-testid="dark-mode-switch"
+            label="Dark Mode"
             onChange={(e) =>
               setColorScheme(e.currentTarget.checked ? 'dark' : 'light')
             }
@@ -65,8 +70,10 @@ export function Settings() {
 
         <Menu.Item closeMenuOnClick={false}>
           <Switch
-            label="Mute"
+            aria-label="Toggle Mute"
             checked={isMuted}
+            data-testid="mute-switch"
+            label="Mute"
             onChange={() => dispatch(toggleMute())}
           />
         </Menu.Item>
@@ -75,6 +82,7 @@ export function Settings() {
         <Menu.Label>Viewing History and Favorites</Menu.Label>
 
         <Menu.Item
+          data-testid="clear-recent-button"
           onClick={() => {
             dispatch(clearRecent())
             showNotification({
@@ -89,6 +97,7 @@ export function Settings() {
         </Menu.Item>
 
         <Menu.Item
+          data-testid="clear-favorites-button"
           onClick={() => {
             dispatch(clearFavorites())
             showNotification({
@@ -113,6 +122,7 @@ export function Settings() {
         >
           <Menu.Item
             color="red"
+            data-testid="reset-all-button"
             onClick={() => {
               dispatch(resetSettings())
               showNotification({

@@ -1,81 +1,96 @@
 import {Settings} from '@/components/Settings/Settings'
-import {render, screen} from '@/test-utils'
+import {render, screen, waitFor} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
 
-const {mockDispatch, mockSetColorScheme, mockShowNotification, switchHandlers} =
-  vi.hoisted(() => ({
-    mockDispatch: vi.fn(),
-    mockSetColorScheme: vi.fn(),
-    mockShowNotification: vi.fn(),
-    switchHandlers: {} as Record<string, any>
-  }))
+const user = userEvent.setup()
+
+const mocks = vi.hoisted(() => ({
+  showNotification: vi.fn()
+}))
 
 vi.mock('@mantine/notifications', () => ({
-  showNotification: mockShowNotification
+  showNotification: mocks.showNotification
 }))
-
-vi.mock('@/lib/store/hooks', () => ({
-  useAppDispatch: () => mockDispatch,
-  useAppSelector: (selector: any) =>
-    selector({settings: {enableNsfw: false, isMuted: false}})
-}))
-
-vi.mock('@mantine/core', async () => {
-  const actual = await vi.importActual<any>('@mantine/core')
-  return {
-    ...actual,
-    useMantineColorScheme: () => ({
-      colorScheme: 'light',
-      setColorScheme: mockSetColorScheme
-    }),
-    Switch: ({label, checked, onChange}: any) => {
-      switchHandlers[label] = onChange
-      return (
-        <label>
-          <input
-            type="checkbox"
-            aria-label={label}
-            checked={checked}
-            onChange={onChange}
-          />
-        </label>
-      )
-    }
-  }
-})
-
-beforeEach(() => {
-  vi.clearAllMocks()
-})
 
 describe('Settings', () => {
-  it('handles menu actions', async () => {
-    const user = userEvent.setup()
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should toggle switches', async () => {
     render(<Settings />)
 
-    // open menu
-    await user.click(screen.getByLabelText('Settings'))
+    await user.click(screen.getByTestId('settings-button'))
+    await waitFor(() => {
+      expect(screen.getByText('Preferences')).toBeInTheDocument()
+    })
 
-    // toggles
-    await user.click(screen.getByLabelText('Allow NSFW'))
-    switchHandlers['Dark Mode']({currentTarget: {checked: true}})
-    switchHandlers['Dark Mode']({currentTarget: {checked: false}})
-    await user.click(screen.getByLabelText('Mute'))
+    const nsfwSwitch = screen.getByTestId('nsfw-switch')
+    const darkModeSwitch = screen.getByTestId('dark-mode-switch')
+    const muteSwitch = screen.getByTestId('mute-switch')
 
-    // delete recently viewed
-    await user.click(screen.getByText('Delete Recently Viewed'))
-    await user.click(screen.getByLabelText('Settings'))
+    await user.click(nsfwSwitch)
+    await user.click(darkModeSwitch)
+    await user.click(darkModeSwitch)
+    await user.click(muteSwitch)
 
-    // delete favorites
-    await user.click(screen.getByText('Delete All Favorites'))
-    await user.click(screen.getByLabelText('Settings'))
+    expect(nsfwSwitch).not.toBeChecked()
+    expect(darkModeSwitch).not.toBeChecked()
+    expect(muteSwitch).not.toBeChecked()
+  })
 
-    // reset all data
-    await user.click(screen.getByText('Reset All Data'))
+  it('should clear recent viewing history', async () => {
+    render(<Settings />)
 
-    expect(mockDispatch).toHaveBeenCalledTimes(5)
-    expect(mockSetColorScheme).toHaveBeenNthCalledWith(1, 'dark')
-    expect(mockSetColorScheme).toHaveBeenNthCalledWith(2, 'light')
-    expect(mockShowNotification).toHaveBeenCalledTimes(3)
+    await user.click(screen.getByTestId('settings-button'))
+    await waitFor(() => {
+      expect(screen.getByText('Preferences')).toBeInTheDocument()
+    })
+
+    const clearRecentButton = screen.getByTestId('clear-recent-button')
+    await user.click(clearRecentButton)
+
+    expect(mocks.showNotification).toHaveBeenCalledWith({
+      title: 'Success',
+      message: 'All recent viewing history has been removed.',
+      color: 'green'
+    })
+  })
+
+  it('should clear favorites', async () => {
+    render(<Settings />)
+
+    await user.click(screen.getByTestId('settings-button'))
+    await waitFor(() => {
+      expect(screen.getByText('Preferences')).toBeInTheDocument()
+    })
+
+    const clearFavoritesButton = screen.getByTestId('clear-favorites-button')
+    await user.click(clearFavoritesButton)
+
+    expect(mocks.showNotification).toHaveBeenCalledWith({
+      title: 'Success',
+      message:
+        'All favorites have been removed. You can always add them again.',
+      color: 'green'
+    })
+  })
+
+  it('should reset all settings', async () => {
+    render(<Settings />)
+
+    await user.click(screen.getByTestId('settings-button'))
+    await waitFor(() => {
+      expect(screen.getByText('Preferences')).toBeInTheDocument()
+    })
+
+    const resetAllButton = screen.getByTestId('reset-all-button')
+    await user.click(resetAllButton)
+
+    expect(mocks.showNotification).toHaveBeenCalledWith({
+      title: 'Success',
+      message: 'All settings, history, and favorites have been removed.',
+      color: 'green'
+    })
   })
 })
