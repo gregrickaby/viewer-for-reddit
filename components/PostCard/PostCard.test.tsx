@@ -14,7 +14,7 @@ vi.mock('@/lib/utils/getMediumImage', () => ({
 }))
 
 describe('PostCard', () => {
-  it('renders post information', () => {
+  it('should render post information', () => {
     const post: any = {
       id: '1',
       subreddit_name_prefixed: 'r/test',
@@ -25,9 +25,35 @@ describe('PostCard', () => {
       ups: 10,
       num_comments: 2
     }
+
     render(<PostCard post={post} />)
+
     expect(screen.getByRole('heading', {name: 'Test post'})).toBeInTheDocument()
     expect(screen.getByText(/r\/test/)).toBeInTheDocument()
-    expect(screen.getByText('just now')).toBeInTheDocument()
+
+    const time = screen.getByText('just now')
+    expect(time).toBeInTheDocument()
+    expect(time).toHaveAttribute(
+      'dateTime',
+      new Date(post.created_utc * 1000).toISOString()
+    )
+  })
+
+  it('should render empty time when created_utc is missing', () => {
+    const post: any = {
+      id: '1',
+      subreddit_name_prefixed: 'r/test',
+      permalink: '/r/test/1',
+      title: 'Test post',
+      preview: {images: [{resolutions: []}]},
+      ups: 10,
+      num_comments: 2
+    }
+
+    render(<PostCard post={post} />)
+
+    const time = screen.getByText((_, element) => element.tagName === 'TIME')
+    expect(time).toBeInTheDocument()
+    expect(time).toHaveAttribute('dateTime', '')
   })
 })

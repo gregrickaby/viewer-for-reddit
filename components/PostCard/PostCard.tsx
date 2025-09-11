@@ -15,6 +15,9 @@ export function PostCard({post}: Readonly<PostCardProps>) {
   const preview = post.preview?.images?.[0]?.resolutions
   const image = getMediumImage(preview ?? [])
   const postLink = `https://reddit.com${post.permalink}`
+  const created = post.created_utc
+    ? new Date(post.created_utc * 1000).toISOString()
+    : ''
 
   return (
     <Card
@@ -29,7 +32,7 @@ export function PostCard({post}: Readonly<PostCardProps>) {
         <a href={`/${post.subreddit_name_prefixed}`}>
           <Text size="sm" c="dimmed">
             {post.subreddit_name_prefixed} &middot;{' '}
-            <time>
+            <time dateTime={created}>
               {post.created_utc ? formatTimeAgo(post.created_utc) : ''}
             </time>
           </Text>
