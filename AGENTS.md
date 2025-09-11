@@ -30,7 +30,7 @@ Deliver
    - Use beforeEach/afterEach for setup/teardown.
    - Use describe blocks to group related tests.
 
-Example test file structure:
+Example component test file structure:
 
 ```typescript
 import BackToTop from '@/components/BackToTop/BackToTop'
@@ -68,6 +68,132 @@ describe('BackToTop', () => {
     })
     await userEvent.click(button)
     expect(scrollToMock).toHaveBeenCalledWith({y: 0})
+  })
+})
+```
+
+Example backend test file structure:
+
+```typescript
+import {logError} from '@/lib/utils/logError'
+import {tokenMock} from '@/test-utils/mocks/token'
+import {server} from '@/test-utils/msw/server'
+import {http, HttpResponse} from 'msw'
+import {fetchToken, getRedditToken} from './redditToken'
+import {
+  getCachedToken,
+  getRequestCount,
+  resetTokenState,
+  setTokenState,
+  shouldFetchNewToken
+} from '@/lib/utils/token'
+
+vi.mock('@/lib/utils/logError', () => ({
+  logError: vi.fn()
+}))
+
+describe('fetchToken', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+    resetTokenState()
+  })
+
+  it('returns a valid token on success', async () => {
+    const token = await fetchToken()
+
+    expect(token).toStrictEqual(tokenMock)
+  })
+
+  it('throws an error when ENV vars are missing', async () => {
+    vi.unstubAllEnvs()
+
+    const token = await fetchToken()
+
+    expect(token).toBeNull()
+    expect(logError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Missing Reddit ENV variables'
+      })
+    )
+
+    vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
+    vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
+  })
+
+  it('throws an error when the token request fails', async () => {
+    server.use(
+      http.post('https://www.reddit.com/api/v1/access_token', async () => {
+        return HttpResponse.json(
+          {
+            message: 'Unauthorized'
+          },
+          {status: 401}
+        )
+      })
+    )
+
+    const token = await fetchToken()
+
+    expect(token).toBeNull()
+    expect(logError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Failed to fetch Reddit OAuth token: Unauthorized'
+      })
+    )
+  })
+
+  it('throws an error when the token response is invalid', async () => {
+    server.use(
+      http.post('https://www.reddit.com/api/v1/access_token', async () => {
+        return HttpResponse.json({
+          access_token: '',
+          expires_in: 0,
+          scope: '',
+          token_type: ''
+        })
+      })
+    )
+
+    const token = await fetchToken()
+
+    expect(token).toBeNull()
+    expect(logError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Invalid token response'
+      })
+    )
+  })
+})
+
+describe('getRedditToken', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+    resetTokenState()
+  })
+
+  it('fetches and caches a new token when no token exists', async () => {
+    const token = await getRedditToken()
+    expect(token).toStrictEqual(tokenMock)
+    expect(getRequestCount()).toBe(0)
+  })
+
+  it('logs and returns null if token response is missing access_token', async () => {
+    server.use(
+      http.post('https://www.reddit.com/api/v1/access_token', () =>
+        HttpResponse.json({
+          access_token: '',
+          token_type: 'bearer',
+          expires_in: 86400,
+          scope: '*',
+          error: 'invalid_token'
+        })
+      )
+    )
+
+    const result = await getRedditToken()
+
+    expect(result).toBeNull()
+    expect(logError).toHaveBeenCalledWith('Failed to fetch Reddit OAuth token')
   })
 })
 ```
