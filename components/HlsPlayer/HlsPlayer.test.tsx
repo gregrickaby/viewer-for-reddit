@@ -6,6 +6,8 @@ vi.mock('@/lib/hooks/useHlsVideo', () => ({
   useHlsVideo: () => ({videoRef, isLoading: false, isMuted: false})
 }))
 
+vi.mock('media-chrome', () => ({}))
+
 describe('HlsPlayer', () => {
   it('renders video element initially', () => {
     render(
@@ -23,9 +25,6 @@ describe('HlsPlayer', () => {
   })
 
   it('shows media-chrome controls after loading', async () => {
-    // Mock successful media-chrome import
-    vi.doMock('media-chrome', () => ({}))
-
     render(
       <HlsPlayer
         src="video.m3u8"
@@ -36,11 +35,10 @@ describe('HlsPlayer', () => {
       />
     )
 
-    // Wait for media-chrome to load
     await waitFor(() => {
-      expect(screen.getByTestId('media-controller')).toBeInTheDocument()
+      expect(screen.getByTestId('media-control-bar')).toBeInTheDocument()
     })
 
-    expect(screen.getByTestId('video')).toBeInTheDocument()
+    expect(screen.getByTestId('video')).not.toHaveAttribute('controls')
   })
 })
