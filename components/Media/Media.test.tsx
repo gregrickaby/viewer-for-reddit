@@ -1,4 +1,5 @@
 import {Media} from '@/components/Media/Media'
+import {logError} from '@/lib/utils/logError'
 import {render, screen} from '@/test-utils'
 
 const {mockUseMediaType, mockUseMediaAssets, mockUseAppSelector} = vi.hoisted(
@@ -23,6 +24,10 @@ vi.mock('@/lib/store/hooks', () => ({
 
 vi.mock('@/lib/utils/getIsVertical', () => ({
   getIsVertical: () => false
+}))
+
+vi.mock('@/lib/utils/logError', () => ({
+  logError: vi.fn()
 }))
 
 vi.mock('@/components/ResponsiveImage/ResponsiveImage', () => ({
@@ -203,7 +208,6 @@ describe('Media', () => {
       isYouTube: false,
       youtubeVideoId: null
     })
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const post: any = {
       selftext: 'hello',
       selftext_html: '<p>hello</p>',
@@ -211,7 +215,7 @@ describe('Media', () => {
     }
     render(<Media {...post} />)
     expect(screen.getByText('hello')).toBeInTheDocument()
-    expect(warn).toHaveBeenCalled()
+    expect(logError).toHaveBeenCalledWith('Unhandled post type: self')
   })
 
   it('handles missing selftext_html', () => {
@@ -222,10 +226,9 @@ describe('Media', () => {
       isYouTube: false,
       youtubeVideoId: null
     })
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const post: any = {selftext: 'hello', post_hint: 'self'}
     render(<Media {...post} />)
-    expect(warn).toHaveBeenCalled()
+    expect(logError).toHaveBeenCalledWith('Unhandled post type: self')
   })
 
   it('renders unsupported message when no selftext', () => {
@@ -236,10 +239,9 @@ describe('Media', () => {
       isYouTube: true,
       youtubeVideoId: null
     })
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const post: any = {selftext: '', post_hint: 'other'}
     render(<Media {...post} />)
     expect(screen.getByText('Unsupported media.')).toBeInTheDocument()
-    expect(warn).toHaveBeenCalled()
+    expect(logError).toHaveBeenCalledWith('Unhandled post type: other')
   })
 })

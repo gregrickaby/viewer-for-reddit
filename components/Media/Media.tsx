@@ -9,6 +9,7 @@ import {useMediaType} from '@/lib/hooks/useMediaType'
 import {useAppSelector} from '@/lib/store/hooks'
 import type {PostChildData} from '@/lib/types/posts'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
+import {logError} from '@/lib/utils/logError'
 import {Suspense} from 'react'
 
 const hlsDefaults = {
@@ -93,7 +94,7 @@ export function Media(post: Readonly<PostChildData>) {
     )
   }
 
-  console.warn('Unhandled post type:', post.post_hint)
+  logError(`Unhandled post type: ${post.post_hint}`)
 
   return post.selftext ? (
     <div
