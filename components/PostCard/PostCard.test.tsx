@@ -27,8 +27,9 @@ describe('PostCard', () => {
     }
 
     render(<PostCard post={post} />)
-
-    expect(screen.getByRole('heading', {name: 'Test post'})).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {level: 2, name: 'Test post'})
+    ).toBeInTheDocument()
     expect(screen.getByText(/r\/test/)).toBeInTheDocument()
 
     const time = screen.getByText('just now')

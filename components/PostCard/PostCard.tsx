@@ -43,7 +43,7 @@ export function PostCard({post}: Readonly<PostCardProps>) {
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Title order={1} size="lg">
+          <Title order={2} size="lg">
             {post.title}
           </Title>
         </a>
