@@ -26,7 +26,9 @@ describe('PostCard', () => {
       num_comments: 2
     }
     render(<PostCard post={post} />)
-    expect(screen.getByRole('heading', {name: 'Test post'})).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {level: 2, name: 'Test post'})
+    ).toBeInTheDocument()
     expect(screen.getByText(/r\/test/)).toBeInTheDocument()
     expect(screen.getByText('just now')).toBeInTheDocument()
   })
