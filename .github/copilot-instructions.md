@@ -5,9 +5,12 @@
 This is a **Next.js 15 + React 19** Reddit viewer app using the **App Router** with:
 
 - **Mantine v8** for UI components and hooks
-- **Redux Toolkit Query** for Reddit API state management
+- **Redux Toolkit Query (RTK)** for Reddit API state management and data fetching
+- **TypeScript** with strict settings
+- **Next.js Server Actions** for server-side logic (Reddit OAuth token management)
+- **Reddit REST-API v2** for fetching posts, comments, subreddits
 - **Reddit OAuth 2.0** application-only authentication (read-only)
-- **Tailwind CSS + CSS Modules** for styling
+- **CSS Modules** for styling
 - **Vitest + React Testing Library + MSW v2** for testing
 
 Key data flow: Reddit API ← RTK Query ← Components ← Redux Store (settings/UI state)
@@ -32,7 +35,7 @@ Key data flow: Reddit API ← RTK Query ← Components ← Redux Store (settings
 
 - **Named exports only** - no default exports for components
 - **Function components** with explicit Props interfaces
-- **CSS Modules** with Tailwind utilities (`Component.module.css`)
+- **CSS Modules** (`Component.module.css`)
 - **One component per file** - split large components into separate files
 - **Hooks for logic** - components should be presentational
 
@@ -58,6 +61,7 @@ export function Component({src, alt = ''}: Readonly<ComponentProps>) {
 - Name tests: `it('should behavior when condition')`
 - Use `userEvent.setup()` per test to avoid shared state
 - Target **100% coverage** of control flow, not edge cases
+- Never mock Redux, always use preloaded state in tests
 
 ## Redux/API Architecture
 
@@ -86,7 +90,7 @@ export function Component({src, alt = ''}: Readonly<ComponentProps>) {
 
 - `ResponsiveImage` with lazy loading and viewport detection
 - `YouTubePlayer` with intersection observer for performance
-- `HlsPlayer` for video streaming
+- `HlsPlayer` for video streaming skinned with Media Chrome
 - All media cached via `lib/utils/mediaCache.ts`
 
 ## Environment Variables
