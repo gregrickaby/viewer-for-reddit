@@ -1,6 +1,7 @@
 'use client'
 
 import {useLazyGetPostCommentsQuery} from '@/lib/store/services/redditApi'
+import type {CommentData} from '@/lib/types/comments'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {decodeAndSanitizeHtml, sanitizeText} from '@/lib/utils/sanitizeText'
 import {
@@ -43,7 +44,7 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
   if (comments?.length) {
     return (
       <section className={classes.comments}>
-        {comments.map((c: any) => (
+        {comments.map((c: CommentData) => (
           <Card
             key={c.id}
             component="article"
@@ -64,7 +65,7 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
               </Anchor>
               &middot;
               <Text c="dimmed" size="sm">
-                {formatTimeAgo(c.created_utc)}
+                {formatTimeAgo(c.created_utc ?? 0)}
               </Text>
             </Group>
 

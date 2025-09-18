@@ -4,6 +4,8 @@ export interface CommentData {
   body?: string
   body_html?: string | null
   created_utc?: number
+  ups?: number
+  permalink?: string
 }
 
 export interface CommentChild {

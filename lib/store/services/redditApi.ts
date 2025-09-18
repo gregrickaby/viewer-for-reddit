@@ -14,6 +14,12 @@ import {fromAbout, fromPopular} from '@/lib/utils/subredditMapper'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 /**
+ * Constants for Reddit's deleted/removed content markers.
+ */
+const DELETED_CONTENT_MARKER = '[deleted]'
+const REMOVED_CONTENT_MARKER = '[removed]'
+
+/**
  * Query parameters for fetching subreddit posts.
  */
 export interface SubredditPostsArgs {
@@ -139,29 +145,47 @@ export const redditApi = createApi({
      * @returns An array of CommentData objects, filtered to exclude AutoModerator comments.
      */
     getPostComments: builder.query<CommentData[], string>({
+      // Build the API endpoint URL by appending .json to the permalink with a limit of 25 comments
       query: (permalink) => `${permalink}.json?limit=25`,
       transformResponse: (
         response: [unknown, CommentsListing] | CommentsListing
       ) => {
+        // Reddit API returns either a single CommentsListing or an array where:
+        // - First element [0] is the post data (which we don't need here)
+        // - Second element [1] is the comments listing
         const listing: CommentsListing | undefined = Array.isArray(response)
-          ? response[1]
-          : response
+          ? response[1] // Extract comments from array response
+          : response // Use response directly if it's already a CommentsListing
+
+        // Extract the children array from the listing data, defaulting to empty array if undefined
         const children: CommentChild[] = listing?.data?.children ?? []
-        return children
-          .map((c) => c.data)
-          .filter((data): data is CommentData => Boolean(data))
-          .filter((comment) => comment.author !== 'AutoModerator')
-          .filter((comment) => {
-            // Filter out deleted/removed comments and comments without content
-            return (
-              comment.author &&
-              comment.author !== '[deleted]' &&
-              comment.author !== '[removed]' &&
-              (comment.body || comment.body_html) &&
-              comment.body !== '[deleted]' &&
-              comment.body !== '[removed]'
-            )
-          })
+
+        return (
+          children
+            // Extract the actual comment data from each child wrapper object
+            .map((c) => c.data)
+
+            // Type guard: Filter out any null/undefined comment data objects
+            .filter((data): data is CommentData => Boolean(data))
+
+            // Remove AutoModerator comments as they're typically not useful for users
+            .filter((comment) => comment.author !== 'AutoModerator')
+
+            // Filter out deleted, removed, or empty comments
+            .filter((comment) => {
+              return (
+                // Ensure the comment has an author and it's not deleted/removed
+                comment.author &&
+                comment.author !== DELETED_CONTENT_MARKER &&
+                comment.author !== REMOVED_CONTENT_MARKER &&
+                // Ensure the comment has content (either plain text body OR HTML body)
+                (comment.body || comment.body_html) &&
+                // Ensure the comment content itself isn't marked as deleted/removed
+                comment.body !== DELETED_CONTENT_MARKER &&
+                comment.body !== REMOVED_CONTENT_MARKER
+              )
+            })
+        )
       }
     })
   })
