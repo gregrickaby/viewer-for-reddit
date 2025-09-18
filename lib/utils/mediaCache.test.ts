@@ -45,7 +45,6 @@ describe('MediaCache', () => {
     link?.dispatchEvent(new Event('load'))
     await p
     expect(cache.has(url)).toBe(true)
-    link?.remove()
   })
 
   it('prefetch with invalid url warns and does not throw', async () => {
@@ -90,6 +89,15 @@ describe('MediaCache', () => {
     expect(link).toBeTruthy()
     link?.dispatchEvent(new Event('load'))
     await p
-    link?.remove()
+  })
+
+  it('clear empties the cache', () => {
+    const cache = new MediaCache()
+    const url = 'https://clear.test/img.png'
+    cache.add(url)
+    expect(cache.size).toBeGreaterThan(0)
+    cache.clear()
+    expect(cache.size).toBe(0)
+    expect(cache.has(url)).toBe(false)
   })
 })

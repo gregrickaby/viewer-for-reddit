@@ -86,31 +86,48 @@ export class MediaCache {
     url: string,
     type: 'image' | 'video' = 'image'
   ): Promise<void> {
+    let link: HTMLLinkElement | null = null
+    let loaded = false
+
     try {
       if (this.has(url)) return
 
       new URL(url) // validate
 
-      const link = document.createElement('link')
+      link = document.createElement('link')
       link.rel = 'preload'
       link.as = type
       link.href = url
       document.head.appendChild(link)
 
       await Promise.race([
-        new Promise((resolve) => {
-          link.onload = resolve
-          link.onerror = resolve
+        new Promise<void>((resolve) => {
+          link!.onload = () => {
+            loaded = true
+            resolve()
+          }
+          link!.onerror = () => resolve()
         }),
-        new Promise((resolve) => setTimeout(resolve, 5000))
+        new Promise<void>((resolve) => setTimeout(resolve, 5000))
       ])
 
-      this.add(url)
+      if (loaded) {
+        this.add(url)
+      }
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
         console.warn(`[MediaCache] Prefetch failed (${type}):`, url, error)
       }
+    } finally {
+      link?.parentNode?.removeChild(link)
     }
+  }
+
+  /**
+   * Clear the cache entirely.
+   */
+  clear(): void {
+    this.cache.clear()
   }
 
   /**
