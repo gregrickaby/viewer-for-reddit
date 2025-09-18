@@ -18,6 +18,7 @@ import {
 import Link from 'next/link'
 import {useState} from 'react'
 import {MdError} from 'react-icons/md'
+import styles from './Posts.module.css'
 
 interface PostsProps {
   subreddit: string
@@ -84,8 +85,10 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     <Container maw={700}>
       <Stack>
         <Group justify="space-between" gap="xs">
-          <Group gap="xs">
-            <Title order={1}>Posts from {`r/${subreddit}`}</Title>
+          <Group gap="xs" className={styles.header}>
+            <Title order={1} size="h2">
+              Posts from {`r/${subreddit}`}
+            </Title>
             <Favorite subreddit={subreddit} />
           </Group>
           <SegmentedControl
