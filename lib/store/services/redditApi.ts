@@ -1,8 +1,13 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
 import type {SortingOption, SubredditItem} from '@/lib/types'
 import type {AboutResponseData} from '@/lib/types/about'
+import type {
+  CommentChild,
+  CommentData,
+  CommentsListing
+} from '@/lib/types/comments'
 import type {PopularResponse} from '@/lib/types/popular'
-import type {PostResponse} from '@/lib/types/posts'
+import type {PostChild, PostResponse} from '@/lib/types/posts'
 import type {SearchChildData, SearchResponse} from '@/lib/types/search'
 import {extractChildren} from '@/lib/utils/extractChildren'
 import {fromAbout, fromPopular} from '@/lib/utils/subredditMapper'
@@ -11,7 +16,7 @@ import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 /**
  * Query parameters for fetching subreddit posts.
  */
-interface GetSubredditPostsQueryArgs {
+export interface SubredditPostsArgs {
   subreddit: string
   sort: SortingOption
 }
@@ -99,7 +104,7 @@ export const redditApi = createApi({
      */
     getSubredditPosts: builder.infiniteQuery<
       PostResponse,
-      GetSubredditPostsQueryArgs,
+      SubredditPostsArgs,
       string | undefined
     >({
       infiniteQueryOptions: {
@@ -116,13 +121,48 @@ export const redditApi = createApi({
         data: {
           ...response.data,
           children: (response.data?.children ?? []).filter(
-            (child) => child?.data && !child.data.stickied
+            (child: PostChild) => child?.data && !child.data.stickied
           )
         }
       }),
       providesTags: (_result, _err, {subreddit}) => [
         {type: 'SubredditPosts', id: subreddit}
       ]
+    }),
+
+    /**
+     * Fetches comments for a post.
+     *
+     * Notes: Filter out AutoModerator comments.
+     *
+     * @param permalink - The Reddit post permalink.
+     * @returns An array of CommentData objects, filtered to exclude AutoModerator comments.
+     */
+    getPostComments: builder.query<CommentData[], string>({
+      query: (permalink) => `${permalink}.json?limit=25`,
+      transformResponse: (
+        response: [unknown, CommentsListing] | CommentsListing
+      ) => {
+        const listing: CommentsListing | undefined = Array.isArray(response)
+          ? response[1]
+          : response
+        const children: CommentChild[] = listing?.data?.children ?? []
+        return children
+          .map((c) => c.data)
+          .filter((data): data is CommentData => Boolean(data))
+          .filter((comment) => comment.author !== 'AutoModerator')
+          .filter((comment) => {
+            // Filter out deleted/removed comments and comments without content
+            return (
+              comment.author &&
+              comment.author !== '[deleted]' &&
+              comment.author !== '[removed]' &&
+              (comment.body || comment.body_html) &&
+              comment.body !== '[deleted]' &&
+              comment.body !== '[removed]'
+            )
+          })
+      }
     })
   })
 })
@@ -132,5 +172,6 @@ export const {
   useGetSubredditAboutQuery,
   useGetPopularSubredditsQuery,
   useGetSubredditPostsInfiniteQuery,
+  useLazyGetPostCommentsQuery,
   useLazyGetSubredditAboutQuery
 } = redditApi

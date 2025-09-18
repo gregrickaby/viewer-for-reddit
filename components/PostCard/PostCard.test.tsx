@@ -53,7 +53,7 @@ describe('PostCard', () => {
 
     render(<PostCard post={post} />)
 
-    const time = screen.getByText((_, element) => element.tagName === 'TIME')
+    const time = screen.getByText((_, element) => element?.tagName === 'TIME')
     expect(time).toBeInTheDocument()
     expect(time).toHaveAttribute('dateTime', '')
   })

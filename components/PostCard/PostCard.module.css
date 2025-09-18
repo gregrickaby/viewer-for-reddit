@@ -18,3 +18,8 @@
 .meta {
   gap: 4px;
 }
+
+.commentsToggle {
+  padding: 4px 8px;
+  border-radius: var(--mantine-radius-sm);
+}

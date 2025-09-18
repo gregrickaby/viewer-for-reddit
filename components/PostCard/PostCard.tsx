@@ -1,10 +1,23 @@
+import {Comments} from '@/components/Comments/Comments'
 import {Media} from '@/components/Media/Media'
 import type {PostChildData} from '@/lib/types/posts'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
-import {Card, Group, NumberFormatter, Stack, Text, Title} from '@mantine/core'
+import {
+  ActionIcon,
+  Card,
+  Collapse,
+  Group,
+  NumberFormatter,
+  Stack,
+  Text,
+  Title
+} from '@mantine/core'
+import dayjs from 'dayjs'
+import {useState} from 'react'
 import {BiUpvote} from 'react-icons/bi'
 import {FaRegComment} from 'react-icons/fa'
+import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
 import classes from './PostCard.module.css'
 
 interface PostCardProps {
@@ -16,8 +29,11 @@ export function PostCard({post}: Readonly<PostCardProps>) {
   const image = getMediumImage(preview ?? [])
   const postLink = `https://reddit.com${post.permalink}`
   const created = post.created_utc
-    ? new Date(post.created_utc * 1000).toISOString()
+    ? dayjs.unix(post.created_utc).toISOString()
     : ''
+
+  const postPermalink = post.permalink ?? post.id ?? ''
+  const [commentsOpen, setCommentsOpen] = useState(false)
 
   return (
     <Card
@@ -65,16 +81,29 @@ export function PostCard({post}: Readonly<PostCardProps>) {
           </a>
         </Group>
 
-        <Group className={classes.meta}>
+        <Group
+          className={`${classes.meta} ${classes.commentsToggle}`}
+          style={{cursor: 'pointer'}}
+          onClick={() => setCommentsOpen(!commentsOpen)}
+        >
           <FaRegComment size={16} />
-          <a href={postLink} rel="noopener noreferrer" target="_blank">
-            <Text size="sm" c="dimmed">
-              <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
-              comments
-            </Text>
-          </a>
+          <Text size="sm" c="dimmed">
+            <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
+            comments
+          </Text>
+          <ActionIcon variant="subtle" size="sm">
+            {commentsOpen ? <IoChevronUp /> : <IoChevronDown />}
+          </ActionIcon>
         </Group>
       </Group>
+
+      <Collapse in={commentsOpen}>
+        <Comments
+          permalink={postPermalink}
+          postLink={postLink}
+          open={commentsOpen}
+        />
+      </Collapse>
     </Card>
   )
 }
