@@ -7,7 +7,7 @@ import type {
   CommentsListing
 } from '@/lib/types/comments'
 import type {PopularResponse} from '@/lib/types/popular'
-import type {PostChild, PostResponse} from '@/lib/types/posts'
+import type {PostResponse} from '@/lib/types/posts'
 import type {SearchChildData, SearchResponse} from '@/lib/types/search'
 import {extractChildren} from '@/lib/utils/extractChildren'
 import {fromAbout, fromPopular} from '@/lib/utils/subredditMapper'
@@ -127,7 +127,7 @@ export const redditApi = createApi({
         data: {
           ...response.data,
           children: (response.data?.children ?? []).filter(
-            (child: PostChild) => child?.data && !child.data.stickied
+            (child) => child?.data && !child.data.stickied
           )
         }
       }),
