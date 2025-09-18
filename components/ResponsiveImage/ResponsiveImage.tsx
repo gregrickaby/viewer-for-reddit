@@ -1,6 +1,7 @@
 'use client'
 
 import {getCachedUrl} from '@/lib/utils/mediaCache'
+import {Anchor} from '@mantine/core'
 import {useInViewport} from '@mantine/hooks'
 import {useCallback, useRef, useState} from 'react'
 
@@ -18,6 +19,7 @@ interface ResponsiveImageProps {
  * - Caches image URLs for performance (getCachedUrl)
  * - Opens full image in a new tab with accessible link
  * - Handles missing/invalid src gracefully
+ * - Decodes HTML entities in URLs to fix double-encoding issues
  *
  * @param src - The image URL (string, may be null/undefined)
  * @param alt - The alt text for accessibility (optional)
@@ -33,6 +35,9 @@ export function ResponsiveImage({
     'cover'
   )
 
+  // Decode HTML entities in the URL to fix double-encoding issues from Reddit API.
+  const decodedSrc = src ? src.replace(/&amp;/g, '&') : src
+
   const handleLoad = useCallback(() => {
     const img = imgRef.current
     if (!img) return
@@ -43,9 +48,9 @@ export function ResponsiveImage({
   }, [])
 
   return (
-    <a
+    <Anchor
       aria-label="view full image"
-      href={src ?? ''}
+      href={decodedSrc ?? ''}
       ref={ref}
       rel="noopener noreferrer"
       target="_blank"
@@ -57,8 +62,8 @@ export function ResponsiveImage({
         loading={inViewport ? 'eager' : 'lazy'}
         onLoad={handleLoad}
         ref={imgRef}
-        src={getCachedUrl(src ?? '')}
+        src={getCachedUrl(decodedSrc ?? '')}
       />
-    </a>
+    </Anchor>
   )
 }
