@@ -7,6 +7,22 @@ interface YouTubePlayerProps {
   videoId: string
 }
 
+/**
+ * YouTubePlayer component for lazy-loading and displaying YouTube videos in posts.
+ *
+ * Features:
+ * - Uses intersection observer (useInViewport) to only load iframe when in viewport
+ * - Shows a clickable thumbnail button until video is in view, then loads iframe
+ * - Fully accessible with alt text, aria-label, and keyboard navigation
+ * - Uses privacy-enhanced youtube-nocookie.com embed
+ *
+ * @param videoId - The YouTube video ID to embed
+ * @returns JSX.Element for a lazy-loaded YouTube video player
+ *
+ * @remarks
+ * - Used by Media for all YouTube post types
+ * - Optimizes performance by deferring iframe load until needed
+ */
 export function YouTubePlayer({videoId}: Readonly<YouTubePlayerProps>) {
   const {ref, inViewport} = useInViewport()
   const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`

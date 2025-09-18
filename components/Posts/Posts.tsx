@@ -5,6 +5,7 @@ import {PostCard} from '@/components/PostCard/PostCard'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/useTrackRecentSubreddit'
 import type {SortingOption} from '@/lib/types'
+import type {PostChild} from '@/lib/types/posts'
 import {
   Button,
   Code,
@@ -25,6 +26,20 @@ interface PostsProps {
   sort?: SortingOption
 }
 
+/**
+ * Posts component for rendering a paginated, sortable list of Reddit posts for a subreddit.
+ *
+ * Features:
+ * - Fetches posts using useInfinitePosts (RTK Query + infinite scroll)
+ * - Supports sorting (Hot, New, Top) via SegmentedControl
+ * - Handles loading, error, and empty states with clear UI feedback
+ * - Integrates with Favorite, PostCard, and infinite scroll for seamless UX
+ * - Tracks recent subreddits for user convenience
+ *
+ * @param subreddit - The subreddit name to fetch posts from
+ * @param sort - The initial sorting option (default: 'hot')
+ * @returns JSX.Element for a full subreddit post feed with controls
+ */
 export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
   useTrackRecentSubreddit(subreddit)
   const [selectedSort, setSelectedSort] = useState<SortingOption>(sort)
@@ -75,7 +90,7 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     )
   } else {
     content = data?.pages.flatMap((page) =>
-      (page?.data?.children ?? []).map((post) =>
+      (page?.data?.children ?? []).map((post: PostChild) =>
         post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
       )
     )

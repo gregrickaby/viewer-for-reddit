@@ -1,6 +1,7 @@
 'use client'
 
 import {getCachedUrl} from '@/lib/utils/mediaCache'
+import {Anchor} from '@mantine/core'
 import {useInViewport} from '@mantine/hooks'
 import {useCallback, useRef, useState} from 'react'
 
@@ -9,6 +10,21 @@ interface ResponsiveImageProps {
   src: string | null | undefined
 }
 
+/**
+ * ResponsiveImage component for lazy-loading and optimizing Reddit post images.
+ *
+ * Features:
+ * - Uses intersection observer (useInViewport) for lazy/eager loading
+ * - Dynamically sets object-fit (cover/contain) based on image aspect ratio
+ * - Caches image URLs for performance (getCachedUrl)
+ * - Opens full image in a new tab with accessible link
+ * - Handles missing/invalid src gracefully
+ * - Decodes HTML entities in URLs to fix double-encoding issues
+ *
+ * @param src - The image URL (string, may be null/undefined)
+ * @param alt - The alt text for accessibility (optional)
+ * @returns JSX.Element for a responsive, performant image link
+ */
 export function ResponsiveImage({
   alt = '',
   src
@@ -18,6 +34,9 @@ export function ResponsiveImage({
   const [responsiveClass, setResponsiveClass] = useState<'contain' | 'cover'>(
     'cover'
   )
+
+  // Decode HTML entities in the URL to fix double-encoding issues from Reddit API.
+  const decodedSrc = src ? src.replace(/&amp;/g, '&') : src
 
   const handleLoad = useCallback(() => {
     const img = imgRef.current
@@ -29,9 +48,9 @@ export function ResponsiveImage({
   }, [])
 
   return (
-    <a
+    <Anchor
       aria-label="view full image"
-      href={src ?? ''}
+      href={decodedSrc ?? ''}
       ref={ref}
       rel="noopener noreferrer"
       target="_blank"
@@ -43,8 +62,8 @@ export function ResponsiveImage({
         loading={inViewport ? 'eager' : 'lazy'}
         onLoad={handleLoad}
         ref={imgRef}
-        src={getCachedUrl(src ?? '')}
+        src={getCachedUrl(decodedSrc ?? '')}
       />
-    </a>
+    </Anchor>
   )
 }

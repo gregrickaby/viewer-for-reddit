@@ -12,6 +12,15 @@
 
 .vertical {
   aspect-ratio: 9 / 16;
+
+  img,
+  video {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+  }
 }
 
 .horizontal {

@@ -1,29 +1,20 @@
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+// Extend dayjs with relativeTime plugin
+dayjs.extend(relativeTime)
+
 /**
  * Helper function to get the time in "___ ago" format.
+ * Uses Day.js for consistent cross-environment date handling.
+ *
+ * @param timestampInSeconds - Unix timestamp in seconds
+ * @returns Formatted relative time string (e.g., "2h ago", "just now")
  */
 export function formatTimeAgo(timestampInSeconds: number): string {
-  // Constants for time conversions.
-  const SECOND = 1
-  const MINUTE = 60 * SECOND
-  const HOUR = 60 * MINUTE
-  const DAY = 24 * HOUR
-  const MONTH = 30 * DAY
-  const YEAR = 12 * MONTH
+  // Convert seconds to milliseconds and create dayjs object
+  const timestamp = dayjs.unix(timestampInSeconds)
 
-  // Calculate elapsed time.
-  const elapsedSeconds = Math.floor(Date.now() / 1000 - timestampInSeconds)
-
-  // Return the appropriate string.
-  if (elapsedSeconds < MINUTE) {
-    return 'just now'
-  } else if (elapsedSeconds < HOUR) {
-    return `${Math.floor(elapsedSeconds / MINUTE)}m ago`
-  } else if (elapsedSeconds < DAY) {
-    return `${Math.floor(elapsedSeconds / HOUR)}h ago`
-  } else if (elapsedSeconds < MONTH) {
-    return `${Math.floor(elapsedSeconds / DAY)}d ago`
-  } else if (elapsedSeconds < YEAR) {
-    return `${Math.floor(elapsedSeconds / MONTH)}mo ago`
-  }
-  return `${Math.floor(elapsedSeconds / YEAR)}y ago`
+  // Use dayjs relative time formatting
+  return timestamp.fromNow()
 }

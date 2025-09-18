@@ -10,7 +10,10 @@ import {useAppSelector} from '@/lib/store/hooks'
 import type {PostChildData} from '@/lib/types/posts'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
 import {logError} from '@/lib/utils/logError'
+import {decodeHtmlEntities} from '@/lib/utils/sanitizeText'
+import {Anchor} from '@mantine/core'
 import {Suspense} from 'react'
+import classes from './Media.module.css'
 
 const hlsDefaults = {
   autoPlay: true,
@@ -21,9 +24,30 @@ const hlsDefaults = {
   preload: 'none'
 }
 
+/**
+ * Media component for rendering all supported Reddit post media types.
+ *
+ * Handles images, YouTube, Reddit-hosted video, HLS/gifv links, and fallback selftext.
+ * Uses Mantine, custom containers, and lazy loading for optimal performance.
+ *
+ * - Images: Renders with ResponsiveImage and MediaContainer, detects vertical/horizontal.
+ * - YouTube: Renders with YouTubePlayer inside Suspense for lazy loading.
+ * - Reddit Video: Renders with HlsPlayer, supports mute, poster, and fallback.
+ * - Link (gifv/HLS): Renders with HlsPlayer, uses fallbackUrl if present.
+ * - Fallback: Renders sanitized selftext HTML or unsupported message.
+ *
+ * @param post - The Reddit post data (PostChildData)
+ * @returns JSX.Element for the appropriate media type
+ */
 export function Media(post: Readonly<PostChildData>) {
-  const {isImage, isLink, isRedditVideo, isYouTube, youtubeVideoId} =
-    useMediaType(post)
+  const {
+    isImage,
+    isLink,
+    isRedditVideo,
+    isYouTube,
+    isLinkWithVideo,
+    youtubeVideoId
+  } = useMediaType(post)
   const {mediumImage, fallbackUrl} = useMediaAssets(post)
   const isMuted = useAppSelector((state) => state.settings.isMuted)
 
@@ -71,7 +95,7 @@ export function Media(post: Readonly<PostChildData>) {
     )
   }
 
-  if (isLink) {
+  if (isLinkWithVideo) {
     const isVertical = getIsVertical(
       post.video_preview?.width,
       post.video_preview?.height
@@ -90,6 +114,34 @@ export function Media(post: Readonly<PostChildData>) {
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
         />
+      </MediaContainer>
+    )
+  }
+
+  if (isLink) {
+    const isVertical = getIsVertical(
+      post.preview?.images[0]?.source?.width,
+      post.preview?.images[0]?.source?.height
+    )
+
+    const decodedSrc = mediumImage?.url || post.thumbnail
+    const imageSrc = decodedSrc ? decodeHtmlEntities(decodedSrc) : decodedSrc
+
+    return (
+      <MediaContainer isVertical={isVertical}>
+        <Anchor
+          href={post.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={classes.linkContainer}
+        >
+          <img
+            alt={post.title}
+            src={imageSrc ?? ''}
+            className={classes.linkImage}
+            data-testid="responsive-image"
+          />
+        </Anchor>
       </MediaContainer>
     )
   }
