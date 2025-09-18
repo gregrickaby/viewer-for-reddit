@@ -5,6 +5,7 @@ import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {
   ActionIcon,
+  Anchor,
   Card,
   Collapse,
   Group,
@@ -15,8 +16,8 @@ import {
 } from '@mantine/core'
 import dayjs from 'dayjs'
 import {useState} from 'react'
-import {BiUpvote} from 'react-icons/bi'
-import {FaRegComment} from 'react-icons/fa'
+import {BiSolidUpvote} from 'react-icons/bi'
+import {FaComment} from 'react-icons/fa'
 import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
 import classes from './PostCard.module.css'
 
@@ -24,6 +25,19 @@ interface PostCardProps {
   post: PostChildData
 }
 
+/**
+ * PostCard component for rendering a single Reddit post with all metadata and media.
+ *
+ * Features:
+ * - Displays subreddit, title, upvotes, comment count, and post age
+ * - Renders media (image, video, YouTube, etc.) using the Media component
+ * - Shows a comments toggle with animated collapse for in-place comment viewing
+ * - Uses Mantine UI for layout, icons, and accessibility
+ * - All links are accessible and open in new tabs where appropriate
+ *
+ * @param post - The Reddit post data (PostChildData)
+ * @returns JSX.Element for a styled, interactive Reddit post card
+ */
 export function PostCard({post}: Readonly<PostCardProps>) {
   const preview = post.preview?.images?.[0]?.resolutions
   const image = getMediumImage(preview ?? [])
@@ -45,14 +59,14 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       withBorder
     >
       <Stack justify="space-between" gap="xs">
-        <a href={`/${post.subreddit_name_prefixed}`}>
+        <Anchor href={`/${post.subreddit_name_prefixed}`}>
           <Text size="sm" c="dimmed">
             {post.subreddit_name_prefixed} &middot;{' '}
             <time dateTime={created}>
               {post.created_utc ? formatTimeAgo(post.created_utc) : ''}
             </time>
           </Text>
-        </a>
+        </Anchor>
         <a
           className={classes.titleLink}
           href={postLink}
@@ -73,25 +87,25 @@ export function PostCard({post}: Readonly<PostCardProps>) {
 
       <Group mt="xs">
         <Group className={classes.meta}>
-          <BiUpvote size={16} />
-          <a href={postLink} rel="noopener noreferrer" target="_blank">
+          <BiSolidUpvote size={16} color="red" />
+          <Anchor href={postLink} rel="noopener noreferrer" target="_blank">
             <Text size="sm" c="dimmed">
               <NumberFormatter value={post.ups} thousandSeparator />
             </Text>
-          </a>
+          </Anchor>
         </Group>
 
         <Group
           className={`${classes.meta} ${classes.commentsToggle}`}
-          style={{cursor: 'pointer'}}
           onClick={() => setCommentsOpen(!commentsOpen)}
+          style={{cursor: 'pointer'}}
         >
-          <FaRegComment size={16} />
+          <FaComment size={16} color="red" />
           <Text size="sm" c="dimmed">
             <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
             comments
           </Text>
-          <ActionIcon variant="subtle" size="sm">
+          <ActionIcon size="sm" title="View comments" variant="subtle">
             {commentsOpen ? <IoChevronUp /> : <IoChevronDown />}
           </ActionIcon>
         </Group>
