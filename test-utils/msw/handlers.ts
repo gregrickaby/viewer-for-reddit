@@ -252,6 +252,6 @@ export const handlers = [
     if (url.pathname.endsWith('.json')) {
       return HttpResponse.json([{}, commentsListing])
     }
-    return HttpResponse.json([{}, commentsListing])
+    return new HttpResponse(null, { status: 404, statusText: 'Not Found' })
   })
 ]
