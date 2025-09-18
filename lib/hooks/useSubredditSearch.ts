@@ -1,4 +1,10 @@
-import {useAppSelector} from '@/lib/store/hooks'
+'use client'
+
+import {
+  selectSearchQuery,
+  setSearchQuery
+} from '@/lib/store/features/transientSlice'
+import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 import {
   useGetPopularSubredditsQuery,
   useSearchSubredditsQuery
@@ -6,14 +12,15 @@ import {
 import type {SubredditItem} from '@/lib/types'
 import {fromSearch} from '@/lib/utils/subredditMapper'
 import {useDebouncedValue} from '@mantine/hooks'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 
 export function useSubredditSearch(): {
   query: string
   setQuery: (value: string) => void
   autoCompleteData: SubredditItem[]
 } {
-  const [query, setQuery] = useState('')
+  const dispatch = useAppDispatch()
+  const query = useAppSelector(selectSearchQuery)
   const [debounced] = useDebouncedValue(query.trim(), 200)
   const nsfw = useAppSelector((state) => state.settings.enableNsfw)
 
@@ -37,7 +44,7 @@ export function useSubredditSearch(): {
 
   return {
     query,
-    setQuery,
+    setQuery: (value: string) => dispatch(setSearchQuery(value)),
     autoCompleteData
   }
 }
