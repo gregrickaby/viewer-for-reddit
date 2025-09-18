@@ -3,8 +3,17 @@
 import {useLazyGetPostCommentsQuery} from '@/lib/store/services/redditApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {decodeAndSanitizeHtml, sanitizeText} from '@/lib/utils/sanitizeText'
-import {Anchor, Text} from '@mantine/core'
+import {
+  Anchor,
+  Card,
+  Center,
+  Group,
+  Loader,
+  NumberFormatter,
+  Text
+} from '@mantine/core'
 import {useEffect} from 'react'
+import {BiSolidUpvote} from 'react-icons/bi'
 import classes from './Comments.module.css'
 
 interface CommentsProps {
@@ -25,9 +34,9 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
 
   if (isLoading) {
     return (
-      <Text size="sm" c="dimmed">
-        Loading comments...
-      </Text>
+      <Center>
+        <Loader />
+      </Center>
     )
   }
 
@@ -35,12 +44,30 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
     return (
       <section className={classes.comments}>
         {comments.map((c: any) => (
-          <article key={c.id} className={classes.comment}>
-            <Text size="sm" c="dimmed">
-              <strong>{c.author}</strong>
-              {' • '}
-              posted {formatTimeAgo(c.created_utc)}
-            </Text>
+          <Card
+            key={c.id}
+            component="article"
+            padding="md"
+            radius="md"
+            shadow="none"
+            withBorder
+          >
+            <Group gap="xs">
+              <Anchor
+                href={`https://reddit.com/user/${c.author}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <Text c="dimmed" size="sm">
+                  {c.author}
+                </Text>
+              </Anchor>
+              &middot;
+              <Text c="dimmed" size="sm">
+                {formatTimeAgo(c.created_utc)}
+              </Text>
+            </Group>
+
             {c.body_html ? (
               <div
                 className={classes.commentBody}
@@ -51,11 +78,29 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
             ) : (
               <Text size="sm">{sanitizeText(c.body ?? '')}</Text>
             )}
-          </article>
+
+            <Group gap="md">
+              <Group className={classes.meta}>
+                <BiSolidUpvote size={16} color="red" />
+                <Text size="sm" c="dimmed">
+                  <NumberFormatter value={c.ups} thousandSeparator />
+                </Text>
+              </Group>
+              <Anchor
+                href={`https://reddit.com${c.permalink}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <Text size="sm" c="dimmed">
+                  View on Reddit
+                </Text>
+              </Anchor>
+            </Group>
+          </Card>
         ))}
 
         <Anchor
-          className={classes.link}
+          className={classes.readMoreLink}
           href={postLink}
           rel="noopener noreferrer"
           target="_blank"
