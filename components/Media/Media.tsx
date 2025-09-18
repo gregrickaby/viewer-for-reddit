@@ -10,7 +10,9 @@ import {useAppSelector} from '@/lib/store/hooks'
 import type {PostChildData} from '@/lib/types/posts'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
 import {logError} from '@/lib/utils/logError'
+import {Anchor} from '@mantine/core'
 import {Suspense} from 'react'
+import classes from './Media.module.css'
 
 const hlsDefaults = {
   autoPlay: true,
@@ -37,8 +39,14 @@ const hlsDefaults = {
  * @returns JSX.Element for the appropriate media type
  */
 export function Media(post: Readonly<PostChildData>) {
-  const {isImage, isLink, isRedditVideo, isYouTube, youtubeVideoId} =
-    useMediaType(post)
+  const {
+    isImage,
+    isLink,
+    isRedditVideo,
+    isYouTube,
+    isLinkWithVideo,
+    youtubeVideoId
+  } = useMediaType(post)
   const {mediumImage, fallbackUrl} = useMediaAssets(post)
   const isMuted = useAppSelector((state) => state.settings.isMuted)
 
@@ -86,7 +94,7 @@ export function Media(post: Readonly<PostChildData>) {
     )
   }
 
-  if (isLink) {
+  if (isLink && isLinkWithVideo) {
     const isVertical = getIsVertical(
       post.video_preview?.width,
       post.video_preview?.height
@@ -105,6 +113,34 @@ export function Media(post: Readonly<PostChildData>) {
           src={post.video_preview?.hls_url}
           width={post.video_preview?.width}
         />
+      </MediaContainer>
+    )
+  }
+
+  if (isLink) {
+    const isVertical = getIsVertical(
+      post.preview?.images[0]?.source?.width,
+      post.preview?.images[0]?.source?.height
+    )
+
+    const decodedSrc = mediumImage?.url || post.thumbnail
+    const imageSrc = decodedSrc ? decodedSrc.replace(/&amp;/g, '&') : decodedSrc
+
+    return (
+      <MediaContainer isVertical={isVertical}>
+        <Anchor
+          href={post.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={classes.linkContainer}
+        >
+          <img
+            alt={post.title}
+            src={imageSrc ?? ''}
+            className={classes.linkImage}
+            data-testid="responsive-image"
+          />
+        </Anchor>
       </MediaContainer>
     )
   }

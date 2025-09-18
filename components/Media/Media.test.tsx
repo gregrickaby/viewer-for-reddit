@@ -54,21 +54,36 @@ vi.mock('@/components/MediaContainer/MediaContainer', () => ({
   )
 }))
 
-beforeEach(() => {
-  vi.clearAllMocks()
-  mockUseAppSelector.mockReturnValue(true)
-  mockUseMediaAssets.mockReturnValue({mediumImage: null, fallbackUrl: null})
+const createMediaTypeMock = (
+  overrides: Partial<
+    ReturnType<typeof import('@/lib/hooks/useMediaType').useMediaType>
+  > = {}
+) => ({
+  isImage: false,
+  isLink: false,
+  isRedditVideo: false,
+  isYouTube: false,
+  isLinkWithVideo: false,
+  isGifv: false,
+  isVideoFile: false,
+  youtubeVideoId: null,
+  ...overrides
 })
 
 describe('Media', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseAppSelector.mockReturnValue(true)
+    mockUseMediaAssets.mockReturnValue({mediumImage: null, fallbackUrl: null})
+  })
+
   it('renders YouTube when post is YouTube', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: false,
-      isRedditVideo: false,
-      isYouTube: true,
-      youtubeVideoId: 'abc'
-    })
+    mockUseMediaType.mockReturnValue(
+      createMediaTypeMock({
+        isYouTube: true,
+        youtubeVideoId: 'abc'
+      })
+    )
 
     const post: any = {id: '1'}
     render(<Media {...post} />)
@@ -76,13 +91,11 @@ describe('Media', () => {
   })
 
   it('renders image when post is an image', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: true,
-      isLink: false,
-      isRedditVideo: false,
-      isYouTube: false,
-      youtubeVideoId: null
-    })
+    mockUseMediaType.mockReturnValue(
+      createMediaTypeMock({
+        isImage: true
+      })
+    )
 
     const post: any = {
       title: 'test',
@@ -94,13 +107,11 @@ describe('Media', () => {
   })
 
   it('renders reddit video when post is reddit video', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: false,
-      isRedditVideo: true,
-      isYouTube: false,
-      youtubeVideoId: null
-    })
+    mockUseMediaType.mockReturnValue(
+      createMediaTypeMock({
+        isRedditVideo: true
+      })
+    )
 
     const post: any = {
       id: '1',
@@ -124,13 +135,11 @@ describe('Media', () => {
   })
 
   it('uses media reddit video when preview missing', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: false,
-      isRedditVideo: true,
-      isYouTube: false,
-      youtubeVideoId: null
-    })
+    mockUseMediaType.mockReturnValue(
+      createMediaTypeMock({
+        isRedditVideo: true
+      })
+    )
 
     const post: any = {
       id: '1',
@@ -149,13 +158,12 @@ describe('Media', () => {
   })
 
   it('renders link gifv when fallbackUrl present', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: true,
-      isRedditVideo: false,
-      isYouTube: false,
-      youtubeVideoId: null
-    })
+    mockUseMediaType.mockReturnValue(
+      createMediaTypeMock({
+        isLink: true,
+        isLinkWithVideo: true
+      })
+    )
     mockUseMediaAssets.mockReturnValue({
       mediumImage: {url: 'm'},
       fallbackUrl: 'gifv.mp4'
@@ -174,40 +182,8 @@ describe('Media', () => {
     )
   })
 
-  it('renders link when no fallbackUrl', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: true,
-      isRedditVideo: false,
-      isYouTube: false,
-      youtubeVideoId: null
-    })
-    mockUseMediaAssets.mockReturnValue({
-      mediumImage: {url: 'm'},
-      fallbackUrl: null
-    })
-
-    const post: any = {
-      id: '1',
-      post_hint: 'link',
-      title: 'test',
-      video_preview: {width: 1, height: 1, hls_url: 'h'}
-    }
-    render(<Media {...post} />)
-    expect(screen.getByTestId('hls-player')).toHaveAttribute(
-      'data-hint',
-      'link'
-    )
-  })
-
   it('renders selftext when provided', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: false,
-      isRedditVideo: false,
-      isYouTube: false,
-      youtubeVideoId: null
-    })
+    mockUseMediaType.mockReturnValue(createMediaTypeMock())
     const post: any = {
       selftext: 'hello',
       selftext_html: '<p>hello</p>',
@@ -219,26 +195,18 @@ describe('Media', () => {
   })
 
   it('handles missing selftext_html', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: false,
-      isRedditVideo: false,
-      isYouTube: false,
-      youtubeVideoId: null
-    })
+    mockUseMediaType.mockReturnValue(createMediaTypeMock())
     const post: any = {selftext: 'hello', post_hint: 'self'}
     render(<Media {...post} />)
     expect(logError).toHaveBeenCalledWith('Unhandled post type: self')
   })
 
   it('renders unsupported message when no selftext', () => {
-    mockUseMediaType.mockReturnValue({
-      isImage: false,
-      isLink: false,
-      isRedditVideo: false,
-      isYouTube: true,
-      youtubeVideoId: null
-    })
+    mockUseMediaType.mockReturnValue(
+      createMediaTypeMock({
+        isYouTube: true
+      })
+    )
     const post: any = {selftext: '', post_hint: 'other'}
     render(<Media {...post} />)
     expect(screen.getByText('Unsupported media.')).toBeInTheDocument()
