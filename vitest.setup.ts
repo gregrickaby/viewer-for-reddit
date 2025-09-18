@@ -1,8 +1,9 @@
+import {installDomShims, removeDomShims} from '@/test-utils/domShims'
 import {setupBrowserMocks} from '@/test-utils/mocks/browserMocks'
 import {server} from '@/test-utils/msw/server'
 import '@testing-library/jest-dom'
-import React, {type ImgHTMLAttributes} from 'react'
 import type {StaticImageData} from 'next/image'
+import React, {type ImgHTMLAttributes} from 'react'
 import {URLSearchParams as NodeURLSearchParams} from 'url'
 import {afterAll, afterEach, beforeAll, vi} from 'vitest'
 
@@ -34,7 +35,8 @@ beforeAll(() => {
   // Start the MSW server to intercept network requests
   server.listen({onUnhandledRequest: 'warn'})
 
-  // Warn if any tests are not using the mocked API
+  // Install test DOM shims
+  installDomShims()
 
   // Stub required environment variables for Reddit token fetching
   vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
@@ -49,6 +51,9 @@ afterEach(() => {
 afterAll(() => {
   // Cleanly shut down MSW after all tests finish
   server.close()
+
+  // Remove any test DOM shims
+  removeDomShims()
 
   // Restore original environment variables
   vi.unstubAllEnvs()

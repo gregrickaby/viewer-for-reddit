@@ -1,3 +1,5 @@
+'use client'
+
 import type {PostChildData} from '@/lib/types/posts'
 import {useMemo} from 'react'
 

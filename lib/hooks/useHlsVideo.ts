@@ -1,3 +1,5 @@
+'use client'
+
 import {useAppSelector} from '@/lib/store/hooks'
 import {useIntersection} from '@mantine/hooks'
 import type Hls from 'hls.js'

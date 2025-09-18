@@ -20,11 +20,9 @@ describe('useTrackRecentSubreddit', () => {
         recent: []
       }
     }
-
     const {store} = renderHook(() => useTrackRecentSubreddit(''), {
       preloadedState: preloaded as any
     })
-
     const state = store.getState()
     expect(state.settings.recent.length).toBe(0)
     expect(state.settings.currentSubreddit).toBe('')

@@ -1,13 +1,16 @@
 import transientReducer, {
   selectNavbar,
   selectSearch,
+  selectSearchQuery,
+  setSearchQuery,
   toggleNavbar,
   toggleSearch
 } from './transientSlice'
 
 const baseState = {
   toggleNavbar: false,
-  toggleSearch: false
+  toggleSearch: false,
+  searchQuery: ''
 }
 
 describe('transientSlice', () => {
@@ -41,5 +44,18 @@ describe('transientSlice', () => {
   it('selectSearch selector returns toggleSearch', () => {
     const root = {transient: {...baseState, toggleSearch: true}}
     expect(selectSearch(root as any)).toBe(true)
+  })
+
+  it('setSearchQuery sets the search query', () => {
+    let state = {...baseState, searchQuery: ''}
+    state = transientReducer(state, setSearchQuery('reactjs'))
+    expect(state.searchQuery).toBe('reactjs')
+    state = transientReducer(state, setSearchQuery(''))
+    expect(state.searchQuery).toBe('')
+  })
+
+  it('selectSearchQuery selector returns searchQuery', () => {
+    const root = {transient: {...baseState, searchQuery: 'foo'}}
+    expect(selectSearchQuery(root as any)).toBe('foo')
   })
 })
