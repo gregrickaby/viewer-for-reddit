@@ -1,0 +1,7 @@
+/* Styles for HlsPlayer web component host */
+.controller {
+  /* Ensure the media-controller host fills its container */
+  width: 100%;
+  height: 100%;
+  display: block; /* ensure the custom element behaves like a block-level element */
+}

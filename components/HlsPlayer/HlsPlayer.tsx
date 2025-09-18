@@ -4,6 +4,7 @@ import {useHlsVideo} from '@/lib/hooks/useHlsVideo'
 import type {HlsPlayerProps} from '@/lib/types'
 import {Center, Loader} from '@mantine/core'
 import React, {useEffect, useState} from 'react'
+import classes from './HlsPlayer.module.css'
 
 /**
  * HlsPlayer component for rendering Reddit and external HLS/gifv video with custom controls.
@@ -74,7 +75,7 @@ export function HlsPlayer({
       {React.createElement(
         'media-controller',
         {
-          style: {width: '100%', height: '100%'},
+          className: classes.controller,
           'data-testid': 'media-controller',
           hotkeys: hotkeys || undefined,
           'gestures-disabled': gesturesDisabled || undefined,

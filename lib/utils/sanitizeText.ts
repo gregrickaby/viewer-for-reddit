@@ -73,15 +73,6 @@ export function sanitizeText(text: string): string {
 
 /**
  * Decodes HTML entities manually for cross-environment compatibility.
- *
- * @param str - String containing HTML entities to decode
- * @returns String with entities decoded to their character equivalents
- *
- * @example
- * ```ts
- * const decoded = decodeHtmlEntities('&lt;p&gt;Hello&lt;/p&gt;')
- * // Returns: '<p>Hello</p>'
- * ```
  */
 function decodeHtmlEntities(str: string): string {
   return str.replace(/&[#\w]+;/g, (entity) => HTML_ENTITY_MAP[entity] || entity)
