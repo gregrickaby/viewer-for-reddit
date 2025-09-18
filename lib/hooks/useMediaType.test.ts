@@ -9,6 +9,9 @@ describe('useMediaType', () => {
     expect(result.current.isLink).toBe(false)
     expect(result.current.isRedditVideo).toBe(false)
     expect(result.current.isYouTube).toBe(false)
+    expect(result.current.isLinkWithVideo).toBe(false)
+    expect(result.current.isGifv).toBe(false)
+    expect(result.current.isVideoFile).toBe(false)
     expect(result.current.youtubeVideoId).toBe(null)
   })
 
@@ -19,7 +22,59 @@ describe('useMediaType', () => {
     expect(result.current.isLink).toBe(true)
     expect(result.current.isRedditVideo).toBe(false)
     expect(result.current.isYouTube).toBe(false)
+    expect(result.current.isLinkWithVideo).toBe(false)
+    expect(result.current.isGifv).toBe(false)
+    expect(result.current.isVideoFile).toBe(false)
     expect(result.current.youtubeVideoId).toBe(null)
+  })
+
+  it('detects link with video preview', () => {
+    const post = {
+      post_hint: 'link',
+      video_preview: {
+        hls_url: 'https://example.com/video.m3u8'
+      }
+    } as any
+    const {result} = renderHook(() => useMediaType(post))
+    expect(result.current.isLink).toBe(true)
+    expect(result.current.isLinkWithVideo).toBe(true)
+    expect(result.current.isGifv).toBe(false)
+    expect(result.current.isVideoFile).toBe(false)
+  })
+
+  it('detects gifv from URL', () => {
+    const post = {
+      post_hint: 'link',
+      url: 'https://i.imgur.com/example.gifv'
+    } as any
+    const {result} = renderHook(() => useMediaType(post))
+    expect(result.current.isLink).toBe(true)
+    expect(result.current.isLinkWithVideo).toBe(true)
+    expect(result.current.isGifv).toBe(true)
+    expect(result.current.isVideoFile).toBe(false)
+  })
+
+  it('detects gifv from domain', () => {
+    const post = {
+      post_hint: 'link',
+      domain: 'i.imgur.com',
+      url: 'https://i.imgur.com/example'
+    } as any
+    const {result} = renderHook(() => useMediaType(post))
+    expect(result.current.isLink).toBe(true)
+    expect(result.current.isGifv).toBe(true)
+  })
+
+  it('detects video file from URL', () => {
+    const post = {
+      post_hint: 'link',
+      url: 'https://example.com/video.mp4'
+    } as any
+    const {result} = renderHook(() => useMediaType(post))
+    expect(result.current.isLink).toBe(true)
+    expect(result.current.isLinkWithVideo).toBe(true)
+    expect(result.current.isVideoFile).toBe(true)
+    expect(result.current.isGifv).toBe(false)
   })
 
   it('detects reddit hosted:video', () => {
