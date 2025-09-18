@@ -44,15 +44,17 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
   if (comments?.length) {
     return (
       <section className={classes.comments}>
-        {comments.map((c: CommentData, index) => (
-          <Card
-            key={c.id || c.permalink || index}
-            component="article"
-            padding="md"
-            radius="md"
-            shadow="none"
-            withBorder
-          >
+        {comments
+          .filter((c: CommentData) => c.id || c.permalink)
+          .map((c: CommentData) => (
+            <Card
+              key={c.id || c.permalink}
+              component="article"
+              padding="md"
+              radius="md"
+              shadow="none"
+              withBorder
+            >
             <Group gap="xs">
               <Anchor
                 href={`https://reddit.com/user/${c.author}`}
