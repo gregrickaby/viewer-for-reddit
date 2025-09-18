@@ -2,7 +2,7 @@
 
 import {useHlsVideo} from '@/lib/hooks/useHlsVideo'
 import type {HlsPlayerProps} from '@/lib/types'
-import {Center, Loader} from '@mantine/core'
+import {Loader} from '@mantine/core'
 import React, {useEffect, useState} from 'react'
 import classes from './HlsPlayer.module.css'
 
@@ -64,13 +64,7 @@ export function HlsPlayer({
   }, [])
 
   return (
-    <>
-      {isLoading && (
-        <Center>
-          <Loader color="gray" />
-        </Center>
-      )}
-
+    <div className={classes.container}>
       {/* Always render media-controller, but show fallback controls if Media Chrome failed */}
       {React.createElement(
         'media-controller',
@@ -121,6 +115,13 @@ export function HlsPlayer({
             )
         )
       )}
-    </>
+
+      {/* Loading spinner overlay */}
+      {isLoading && (
+        <div className={classes.loadingOverlay}>
+          <Loader color="gray" />
+        </div>
+      )}
+    </div>
   )
 }

@@ -1,7 +1,24 @@
-/* Styles for HlsPlayer web component host */
 .controller {
-  /* Ensure the media-controller host fills its container */
-  width: 100%;
+  display: block;
   height: 100%;
-  display: block; /* ensure the custom element behaves like a block-level element */
+  width: 100%;
+}
+
+.container {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.loadingOverlay {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
 }
