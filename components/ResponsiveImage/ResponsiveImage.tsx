@@ -9,6 +9,20 @@ interface ResponsiveImageProps {
   src: string | null | undefined
 }
 
+/**
+ * ResponsiveImage component for lazy-loading and optimizing Reddit post images.
+ *
+ * Features:
+ * - Uses intersection observer (useInViewport) for lazy/eager loading
+ * - Dynamically sets object-fit (cover/contain) based on image aspect ratio
+ * - Caches image URLs for performance (getCachedUrl)
+ * - Opens full image in a new tab with accessible link
+ * - Handles missing/invalid src gracefully
+ *
+ * @param src - The image URL (string, may be null/undefined)
+ * @param alt - The alt text for accessibility (optional)
+ * @returns JSX.Element for a responsive, performant image link
+ */
 export function ResponsiveImage({
   alt = '',
   src

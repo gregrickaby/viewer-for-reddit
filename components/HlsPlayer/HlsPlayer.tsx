@@ -5,6 +5,23 @@ import type {HlsPlayerProps} from '@/lib/types'
 import {Center, Loader} from '@mantine/core'
 import React, {useEffect, useState} from 'react'
 
+/**
+ * HlsPlayer component for rendering Reddit and external HLS/gifv video with custom controls.
+ *
+ * Integrates with Media Chrome web components for a modern, accessible video UI.
+ * Handles lazy loading of Media Chrome, fallback to native controls, and Redux mute state.
+ *
+ * Features:
+ * - Loads Media Chrome controls dynamically (SSR-safe)
+ * - Fallbacks to native controls if Media Chrome fails
+ * - Supports autoplay, loop, poster, preload, and mute
+ * - Uses custom hook useHlsVideo for HLS.js and fallback logic
+ * - Shows Mantine Loader while video is loading
+ * - Fully accessible and keyboard-friendly
+ *
+ * @param props - HlsPlayerProps (see @/lib/types)
+ * @returns JSX.Element for a video player with custom or native controls
+ */
 export function HlsPlayer({
   src,
   fallbackUrl,
@@ -57,6 +74,7 @@ export function HlsPlayer({
       {React.createElement(
         'media-controller',
         {
+          style: {width: '100%', height: '100%'},
           'data-testid': 'media-controller',
           hotkeys: hotkeys || undefined,
           'gestures-disabled': gesturesDisabled || undefined,

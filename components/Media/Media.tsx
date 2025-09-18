@@ -21,6 +21,21 @@ const hlsDefaults = {
   preload: 'none'
 }
 
+/**
+ * Media component for rendering all supported Reddit post media types.
+ *
+ * Handles images, YouTube, Reddit-hosted video, HLS/gifv links, and fallback selftext.
+ * Uses Mantine, custom containers, and lazy loading for optimal performance.
+ *
+ * - Images: Renders with ResponsiveImage and MediaContainer, detects vertical/horizontal.
+ * - YouTube: Renders with YouTubePlayer inside Suspense for lazy loading.
+ * - Reddit Video: Renders with HlsPlayer, supports mute, poster, and fallback.
+ * - Link (gifv/HLS): Renders with HlsPlayer, uses fallbackUrl if present.
+ * - Fallback: Renders sanitized selftext HTML or unsupported message.
+ *
+ * @param post - The Reddit post data (PostChildData)
+ * @returns JSX.Element for the appropriate media type
+ */
 export function Media(post: Readonly<PostChildData>) {
   const {isImage, isLink, isRedditVideo, isYouTube, youtubeVideoId} =
     useMediaType(post)
