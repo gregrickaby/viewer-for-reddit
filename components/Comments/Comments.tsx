@@ -3,7 +3,7 @@
 import {useLazyGetPostCommentsQuery} from '@/lib/store/services/redditApi'
 import type {CommentData} from '@/lib/types/comments'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
-import {decodeAndSanitizeHtml, sanitizeText} from '@/lib/utils/sanitizeText'
+import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
 import {
   Anchor,
   Card,
@@ -69,16 +69,12 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
               </Text>
             </Group>
 
-            {c.body_html ? (
-              <div
-                className={classes.commentBody}
-                dangerouslySetInnerHTML={{
-                  __html: decodeAndSanitizeHtml(c.body_html)
-                }}
-              />
-            ) : (
-              <Text size="sm">{sanitizeText(c.body ?? '')}</Text>
-            )}
+            <div
+              className={classes.commentBody}
+              dangerouslySetInnerHTML={{
+                __html: decodeAndSanitizeHtml(c.body_html ?? c.body ?? '')
+              }}
+            />
 
             <Group gap="md">
               <Group className={classes.meta}>

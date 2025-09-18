@@ -164,7 +164,7 @@ export const redditApi = createApi({
       // Build the API endpoint URL by appending .json to the permalink with a limit of comments
       query: (permalink) => {
         const params = new URLSearchParams({limit: String(COMMENTS_LIMIT)})
-        return `${permalink}.json?${params.toString()}`
+        return `${encodeURIComponent(permalink)}.json?${params.toString()}`
       },
       transformResponse: (
         response: [unknown, CommentsListing] | CommentsListing
