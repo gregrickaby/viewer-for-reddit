@@ -95,7 +95,7 @@ export function Media(post: Readonly<PostChildData>) {
     )
   }
 
-  if (isLink && isLinkWithVideo) {
+  if (isLinkWithVideo) {
     const isVertical = getIsVertical(
       post.video_preview?.width,
       post.video_preview?.height
