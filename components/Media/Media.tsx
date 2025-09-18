@@ -10,6 +10,7 @@ import {useAppSelector} from '@/lib/store/hooks'
 import type {PostChildData} from '@/lib/types/posts'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
 import {logError} from '@/lib/utils/logError'
+import {decodeHtmlEntities} from '@/lib/utils/sanitizeText'
 import {Anchor} from '@mantine/core'
 import {Suspense} from 'react'
 import classes from './Media.module.css'
@@ -124,7 +125,7 @@ export function Media(post: Readonly<PostChildData>) {
     )
 
     const decodedSrc = mediumImage?.url || post.thumbnail
-    const imageSrc = decodedSrc ? decodedSrc.replace(/&amp;/g, '&') : decodedSrc
+    const imageSrc = decodedSrc ? decodeHtmlEntities(decodedSrc) : decodedSrc
 
     return (
       <MediaContainer isVertical={isVertical}>

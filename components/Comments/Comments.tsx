@@ -44,9 +44,9 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
   if (comments?.length) {
     return (
       <section className={classes.comments}>
-        {comments.map((c: CommentData) => (
+        {comments.map((c: CommentData, index) => (
           <Card
-            key={c.id}
+            key={c.id || c.permalink || index}
             component="article"
             padding="md"
             radius="md"

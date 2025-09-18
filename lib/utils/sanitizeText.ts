@@ -73,8 +73,11 @@ export function sanitizeText(text: string): string {
 
 /**
  * Decodes HTML entities manually for cross-environment compatibility.
+ *
+ * @param str - String containing HTML entities to decode
+ * @returns String with HTML entities decoded
  */
-function decodeHtmlEntities(str: string): string {
+export function decodeHtmlEntities(str: string): string {
   return str.replace(/&[#\w]+;/g, (entity) => HTML_ENTITY_MAP[entity] || entity)
 }
 
