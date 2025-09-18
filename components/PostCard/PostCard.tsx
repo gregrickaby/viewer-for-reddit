@@ -4,8 +4,8 @@ import type {PostChildData} from '@/lib/types/posts'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {
-  ActionIcon,
   Anchor,
+  Button,
   Card,
   Collapse,
   Group,
@@ -95,20 +95,22 @@ export function PostCard({post}: Readonly<PostCardProps>) {
           </Anchor>
         </Group>
 
-        <Group
+        <Button
+          variant="subtle"
           className={`${classes.meta} ${classes.commentsToggle}`}
           onClick={() => setCommentsOpen(!commentsOpen)}
-          style={{cursor: 'pointer'}}
+          aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
+          aria-expanded={commentsOpen}
         >
-          <FaComment size={16} color="red" />
-          <Text size="sm" c="dimmed">
-            <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
-            comments
-          </Text>
-          <ActionIcon size="sm" title="View comments" variant="subtle">
+          <Group gap="xs">
+            <FaComment size={16} color="red" />
+            <Text size="sm" c="dimmed">
+              <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
+              comments
+            </Text>
             {commentsOpen ? <IoChevronUp /> : <IoChevronDown />}
-          </ActionIcon>
-        </Group>
+          </Group>
+        </Button>
       </Group>
 
       <Collapse in={commentsOpen}>
