@@ -6,6 +6,10 @@ describe('useSubredditSearch', () => {
     const {result} = renderHook(() => useSubredditSearch())
     expect(result.current.query).toBe('')
     expect(Array.isArray(result.current.autoCompleteData)).toBe(true)
+    expect(typeof result.current.groupedData).toBe('object')
+    expect(Array.isArray(result.current.groupedData.communities)).toBe(true)
+    expect(Array.isArray(result.current.groupedData.nsfw)).toBe(true)
+    expect(Array.isArray(result.current.groupedData.searchHistory)).toBe(true)
   })
 
   it('setQuery updates the Redux state', () => {
@@ -28,6 +32,7 @@ describe('useSubredditSearch', () => {
     })
     expect(result.current.query).toBe('reactjs')
     expect(Array.isArray(result.current.autoCompleteData)).toBe(true)
+    expect(typeof result.current.groupedData).toBe('object')
   })
 
   it('returns popular subreddits when query is empty', () => {
@@ -42,5 +47,6 @@ describe('useSubredditSearch', () => {
     })
     expect(result.current.query).toBe('')
     expect(Array.isArray(result.current.autoCompleteData)).toBe(true)
+    expect(typeof result.current.groupedData).toBe('object')
   })
 })

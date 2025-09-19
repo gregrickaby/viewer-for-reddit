@@ -2,8 +2,10 @@ import type {SortingOption, SubredditItem, UserSettings} from '@/lib/types'
 import * as storage from '@/lib/utils/storage'
 import settingsReducer, {
   addRecentSubreddit,
+  addToSearchHistory,
   clearFavorites,
   clearRecent,
+  clearSearchHistory,
   clearSingleFavorite,
   clearSingleRecent,
   resetSettings,
@@ -20,7 +22,8 @@ const baseState: UserSettings = {
   enableNsfw: true,
   favorites: [],
   isMuted: true,
-  recent: []
+  recent: [],
+  searchHistory: []
 }
 
 const subreddit: SubredditItem = {
@@ -153,6 +156,20 @@ describe('settingsSlice', () => {
   it('setCurrentSubreddit sets currentSubreddit', () => {
     const next = settingsReducer(baseState, setCurrentSubreddit('r/test'))
     expect(next.currentSubreddit).toBe('r/test')
+    expect(saveSpy).toHaveBeenCalled()
+  })
+
+  it('addToSearchHistory adds to search history', () => {
+    let state = {...baseState, searchHistory: []}
+    state = settingsReducer(state, addToSearchHistory(subreddit))
+    expect(state.searchHistory[0]).toEqual(subreddit)
+    expect(saveSpy).toHaveBeenCalled()
+  })
+
+  it('clearSearchHistory empties search history', () => {
+    let state = {...baseState, searchHistory: [subreddit]}
+    state = settingsReducer(state, clearSearchHistory())
+    expect(state.searchHistory).toEqual([])
     expect(saveSpy).toHaveBeenCalled()
   })
 })

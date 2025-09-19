@@ -36,6 +36,7 @@ export interface UserSettings {
   favorites: SubredditItem[] // Favorite subreddits
   isMuted: boolean // Mute audio in video posts
   recent: SubredditItem[] // Recently visited subreddits
+  searchHistory: SubredditItem[] // Recent search history (max 10)
 }
 
 /**

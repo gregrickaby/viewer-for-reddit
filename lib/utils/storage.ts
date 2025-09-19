@@ -31,7 +31,8 @@ export function getInitialSettings(): UserSettings {
     enableNsfw: true,
     favorites: [],
     isMuted: true,
-    recent: []
+    recent: [],
+    searchHistory: []
   }
 }
 

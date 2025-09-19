@@ -1,4 +1,5 @@
 import type {SortingOption, SubredditItem, UserSettings} from '@/lib/types'
+import {addToSearchHistory as addToSearchHistoryUtil} from '@/lib/utils/searchHistory'
 import {
   clearSettings,
   getInitialSettings,
@@ -109,6 +110,18 @@ export const settingsSlice = createSlice({
     setCurrentSubreddit: (state, action: PayloadAction<string>) => {
       state.currentSubreddit = action.payload
       saveSettings(state)
+    },
+
+    // Add subreddit to search history.
+    addToSearchHistory: (state, action: PayloadAction<SubredditItem>) => {
+      state.searchHistory = addToSearchHistoryUtil(state.searchHistory, action.payload)
+      saveSettings(state)
+    },
+
+    // Clear search history.
+    clearSearchHistory: (state) => {
+      state.searchHistory = []
+      saveSettings(state)
     }
   }
 })
@@ -116,8 +129,10 @@ export const settingsSlice = createSlice({
 // Export actions.
 export const {
   addRecentSubreddit,
+  addToSearchHistory,
   clearFavorites,
   clearRecent,
+  clearSearchHistory,
   clearSingleFavorite,
   clearSingleRecent,
   resetSettings,
