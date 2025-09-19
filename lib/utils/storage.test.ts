@@ -17,7 +17,8 @@ describe('storage utilities', () => {
       enableNsfw: true,
       favorites: [],
       isMuted: true,
-      recent: []
+      recent: [],
+      searchHistory: []
     })
   })
 

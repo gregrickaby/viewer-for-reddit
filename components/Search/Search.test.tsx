@@ -1,6 +1,5 @@
 import {Search} from '@/components/Search/Search'
-import {render, screen, user, waitFor, within} from '@/test-utils'
-import {vi} from 'vitest'
+import {render, screen, user, waitFor} from '@/test-utils'
 
 describe('Search', () => {
   it('renders search input', () => {
@@ -10,100 +9,106 @@ describe('Search', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows popular subreddits by default (empty input)', async () => {
+  it('shows grouped results when typing', async () => {
     render(<Search />)
+    const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+    await user.type(input, 'aww')
+    
+    await waitFor(() => {
+      expect(screen.getByText('Communities')).toBeInTheDocument()
+    })
+  })
+
+  it('shows Search History section when query is empty and history exists', async () => {
+    const mockHistory = [
+      {
+        display_name: 'aww',
+        icon_img: '',
+        over18: false,
+        public_description: '',
+        subscribers: 100,
+        value: 'r/aww'
+      }
+    ]
+    
+    render(<Search />, {
+      preloadedState: {
+        settings: {
+          searchHistory: mockHistory,
+          currentSort: 'hot',
+          currentSubreddit: '',
+          enableNsfw: true,
+          favorites: [],
+          isMuted: true,
+          recent: []
+        }
+      }
+    })
+    
     const input = screen.getByRole('textbox', {name: /Search subreddits/i})
     await user.click(input)
+    
     await waitFor(() => {
-      expect(screen.getByText(/r\/Home/i)).toBeInTheDocument()
+      expect(screen.getByText('Search History')).toBeInTheDocument()
     })
-    expect(screen.getAllByText(/^r\//i).length).toBeGreaterThan(0)
   })
 
-  it('shows autocomplete results when typing', async () => {
+  it('shows clear button when input has value', async () => {
     render(<Search />)
     const input = screen.getByRole('textbox', {name: /Search subreddits/i})
-    await user.type(input, 'aww')
-    await waitFor(() => {
-      expect(screen.getAllByText('r/aww')[0]).toBeInTheDocument()
-    })
+    await user.type(input, 'test')
+    
+    expect(screen.getByLabelText('Clear search')).toBeInTheDocument()
   })
 
-  it('renders subreddit link and favorite icon in option', async () => {
+  it('clears input when clear button is clicked', async () => {
     render(<Search />)
     const input = screen.getByRole('textbox', {name: /Search subreddits/i})
-    await user.type(input, 'aww')
-    await waitFor(() => {
-      expect(screen.getAllByText('r/aww')[0]).toBeInTheDocument()
-    })
-    const nameNode = screen.getAllByText('r/aww')[0]
-    const link = nameNode.closest('a')
-    expect(link).toBeTruthy()
-    expect(link?.getAttribute('href')?.endsWith('/r/aww')).toBe(true)
-    expect(
-      within(link as HTMLElement).getByRole('button', {
-        name: /add to favorites|remove from favorites/i,
-        hidden: true
-      })
-    ).toBeInTheDocument()
+    await user.type(input, 'test')
+    
+    const clearButton = screen.getByLabelText('Clear search')
+    await user.click(clearButton)
+    
+    expect(input).toHaveValue('')
   })
 
-  it('clears input and shows popular subreddits again', async () => {
-    render(<Search />)
-    const input = screen.getByRole('textbox', {name: /Search subreddits/i})
-    await user.type(input, 'aww')
-    await waitFor(() => {
-      expect(screen.getAllByText('r/aww')[0]).toBeInTheDocument()
-    })
-    await user.clear(input)
-    await waitFor(() => {
-      expect(screen.getByText('r/Home')).toBeInTheDocument()
-    })
-  })
-
-  it('shows empty state when no results', async () => {
+  it('shows empty state when no results found', async () => {
     render(<Search />)
     const input = screen.getByRole('textbox', {name: /Search subreddits/i})
     await user.type(input, 'notarealsubreddit')
+    
     await waitFor(() => {
-      expect(screen.queryAllByRole('option').length).toBe(0)
+      expect(screen.getByText('No results found')).toBeInTheDocument()
     })
   })
 
-  it('supports keyboard navigation and selection', async () => {
+  it('opens dropdown on focus', async () => {
     render(<Search />)
     const input = screen.getByRole('textbox', {name: /Search subreddits/i})
-    await user.type(input, 'aww')
+    await user.click(input)
+    
+    // The dropdown should open and show Communities section
     await waitFor(() => {
-      expect(screen.getAllByText('r/aww')[0]).toBeInTheDocument()
+      expect(screen.getByText('Communities')).toBeInTheDocument()
     })
-    await user.keyboard('{ArrowDown}')
-    await user.keyboard('{Enter}')
-    expect(input).toHaveValue('r/aww')
   })
 
-  it('calls toggleNavbarHandler if showNavbar is true when clicking option', async () => {
-    vi.resetModules()
-    const toggleMock = vi.fn()
-    vi.doMock('@/lib/hooks/useHeaderState', () => ({
-      useHeaderState: () => ({
-        showNavbar: true,
-        toggleNavbarHandler: toggleMock
-      })
-    }))
-    const {Search: SearchWithNavbar} = await import(
-      '@/components/Search/Search'
-    )
-    render(<SearchWithNavbar />)
+  it('closes dropdown when clicking outside', async () => {
+    render(<Search />)
     const input = screen.getByRole('textbox', {name: /Search subreddits/i})
-    await user.type(input, 'aww')
+    await user.click(input)
+    
+    // Wait for dropdown to open
     await waitFor(() => {
-      expect(screen.getAllByText('r/aww')[0]).toBeInTheDocument()
+      expect(screen.getByText('Communities')).toBeInTheDocument()
     })
-    const nameNode = screen.getAllByText('r/aww')[0]
-    const link = nameNode.closest('a')
-    expect(link).toBeTruthy()
-    await user.click(link as Element)
-    expect(toggleMock).toHaveBeenCalled()
+    
+    // Click outside (on document body)
+    await user.click(document.body)
+    
+    // Dropdown should close
+    await waitFor(() => {
+      expect(screen.queryByText('Communities')).not.toBeInTheDocument()
+    })
   })
 })
