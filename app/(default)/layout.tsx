@@ -15,12 +15,11 @@ export default function Layout({
   children: React.ReactNode
 }>) {
   const {showNavbar: isNavbarCollapsed} = useHeaderState()
-
   const isMobile = useViewportSize().width < 480
 
   return (
     <AppShell
-      header={{height: 84}}
+      header={{height: 84, collapsed: false}}
       footer={{collapsed: isMobile, height: 54}}
       navbar={{
         breakpoint: 'sm',
