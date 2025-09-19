@@ -103,8 +103,6 @@ export function HlsPlayer({
             'data-hint': dataHint,
             id,
             loop,
-            // For boolean attributes in React.createElement, pass true/false directly
-            // This ensures both the property and attribute are properly set
             muted: isMuted,
             playsInline,
             poster,

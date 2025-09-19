@@ -4,7 +4,6 @@
  */
 import {HlsPlayer} from '@/components/HlsPlayer/HlsPlayer'
 import {render, screen, waitFor} from '@/test-utils'
-import {userEvent} from '@testing-library/user-event'
 
 // Mock Media Chrome to test mute synchronization
 vi.mock('media-chrome', () => ({}))
@@ -45,9 +44,6 @@ describe('HlsPlayer - Mute Integration', () => {
     await waitFor(() => {
       expect(screen.getByTestId('media-control-bar')).toBeInTheDocument()
     })
-
-    // Media chrome should reflect the muted state
-    // This test will help us verify if the mute button is properly synced
   })
 
   it('should handle volume slider interaction on mobile', async () => {
@@ -76,10 +72,7 @@ describe('HlsPlayer - Mute Integration', () => {
     // On mobile (375px), volume range should be hidden via CSS
     const mediaController = screen.getByTestId('media-controller')
     expect(mediaController).toBeInTheDocument()
-    
-    // CSS media queries will handle the responsive behavior
-    // The controller class will be transformed by CSS modules but still applied
-    expect(mediaController.className).toContain('controller')
+    expect(mediaController.className).toMatch(/controller/)
   })
 
   it('should respond to device volume changes', async () => {
@@ -112,8 +105,5 @@ describe('HlsPlayer - Mute Integration', () => {
 
     // Verify the volume property was updated
     expect(video.volume).toBe(0.5)
-    
-    // Media Chrome should automatically sync with video element volume changes
-    // This is handled by Media Chrome's internal event listeners
   })
 })
