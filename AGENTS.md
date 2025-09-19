@@ -11,6 +11,7 @@
 
 ### Instructions
 
+- Use Mantine v8 components and hooks as per documentation: <https://mantine.dev/llms.txt>
 - Aim for 100% line/branch/function coverage of actual control flow (no speculative edge cases).
 - Write small, non-overlapping tests.
 - Use MSW 2.0 format for all network I/O; don't mock fetch/axios/circuit breakers unless the hook requires it.
