@@ -1,28 +1,26 @@
 .container {
-  padding: var(--mantine-spacing-md);
-  max-height: 580px;
+  padding: var(--mantine-spacing-md) var(--mantine-spacing-sm) 0
+    var(--mantine-spacing-sm);
+  max-height: 570px;
   width: 100%;
 
   img,
   video {
+    border-radius: var(--mantine-spacing-xs);
     max-height: 550px;
     width: 100%;
   }
 }
 
 .vertical {
-  aspect-ratio: 9 / 16;
-
   img,
   video {
-    width: auto;
-    height: 100%;
-    max-width: 100%;
-    margin: 0 auto;
+    border-radius: var(--mantine-spacing-xs);
     display: block;
+    min-height: 550px;
+    height: 100%;
+    margin: 0 auto;
+    max-width: 100%;
+    width: auto;
   }
-}
-
-.horizontal {
-  aspect-ratio: 16 / 9;
 }

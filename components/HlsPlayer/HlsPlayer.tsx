@@ -64,7 +64,7 @@ export function HlsPlayer({
   }, [])
 
   return (
-    <div className={classes.container}>
+    <>
       {/* Always render media-controller, but show fallback controls if Media Chrome failed */}
       {React.createElement(
         'media-controller',
@@ -80,6 +80,7 @@ export function HlsPlayer({
           React.Fragment,
           null,
           React.createElement('video', {
+            className: classes.video,
             slot: 'media',
             'data-testid': 'video',
             autoPlay,
@@ -122,6 +123,6 @@ export function HlsPlayer({
           <Loader color="gray" />
         </div>
       )}
-    </div>
+    </>
   )
 }

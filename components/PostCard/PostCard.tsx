@@ -45,7 +45,6 @@ export function PostCard({post}: Readonly<PostCardProps>) {
   const created = post.created_utc
     ? dayjs.unix(post.created_utc).toISOString()
     : ''
-
   const postPermalink = post.permalink ?? post.id ?? ''
   const [commentsOpen, setCommentsOpen] = useState(false)
 
@@ -67,16 +66,11 @@ export function PostCard({post}: Readonly<PostCardProps>) {
             </time>
           </Text>
         </Anchor>
-        <a
-          className={classes.titleLink}
-          href={postLink}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
+        <Anchor href={postLink} rel="noopener noreferrer" target="_blank">
           <Title order={2} size="lg">
             {post.title}
           </Title>
-        </a>
+        </Anchor>
       </Stack>
 
       {image?.url && (
@@ -96,11 +90,11 @@ export function PostCard({post}: Readonly<PostCardProps>) {
         </Group>
 
         <Button
-          variant="subtle"
+          aria-expanded={commentsOpen}
+          aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
           className={`${classes.meta} ${classes.commentsToggle}`}
           onClick={() => setCommentsOpen(!commentsOpen)}
-          aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
-          aria-expanded={commentsOpen}
+          variant="subtle"
         >
           <Group gap="xs">
             <FaComment size={16} color="red" />
@@ -115,9 +109,9 @@ export function PostCard({post}: Readonly<PostCardProps>) {
 
       <Collapse in={commentsOpen}>
         <Comments
+          open={commentsOpen}
           permalink={postPermalink}
           postLink={postLink}
-          open={commentsOpen}
         />
       </Collapse>
     </Card>

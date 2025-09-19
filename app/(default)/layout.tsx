@@ -37,7 +37,9 @@ export default function Layout({
         <Sidebar />
       </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main pl="0" pr="0">
+        {children}
+      </AppShell.Main>
     </AppShell>
   )
 }
