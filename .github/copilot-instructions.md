@@ -1,5 +1,90 @@
 # Copilot Instructions for Viewer for Reddit
 
+**ALWAYS follow these instructions first and fallback to additional search and context gathering ONLY if the information in these instructions is incomplete or found to be in error.**
+
+## Working Effectively
+
+**CRITICAL: NEVER CANCEL any build or test commands. Set explicit timeouts and wait for completion.**
+
+### Bootstrap and Development Setup
+1. **Environment Requirements**: Use Node v22 and npm v11 (see `.nvmrc`)
+2. **Install dependencies**: 
+   ```bash
+   npm install
+   ```
+   - Takes ~31 seconds. Set timeout to 60+ seconds.
+3. **Setup environment**:
+   ```bash
+   cp .env.example .env
+   ```
+   - For Reddit API functionality, configure `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` from https://www.reddit.com/prefs/apps
+
+### Development Workflow
+- **Start development server**:
+  ```bash
+  npm run dev
+  ```
+  - Uses Turbo mode, clears `.next/` cache
+  - Ready in ~1 second at http://localhost:3000
+  - NEVER CANCEL: Let server start completely
+
+- **Alternative Vercel development** (for Edge Functions/Middleware testing):
+  ```bash
+  npm install -g vercel
+  vercel env pull  # Only if you have Vercel access
+  vercel dev
+  ```
+
+### Testing and Quality Assurance
+- **Run tests**:
+  ```bash
+  npm test        # Watch mode
+  npm run coverage # Coverage report
+  ```
+  - Takes ~38 seconds for full test suite. NEVER CANCEL - set timeout to 60+ seconds.
+  - Achieves 100% coverage across all control flow
+  - Uses MSW v2 for API mocking
+
+- **Run linting**:
+  ```bash
+  npm run lint
+  ```
+  - Takes ~3 seconds. Includes ESLint + Prettier
+  - ALWAYS run before committing changes
+
+- **Format code**:
+  ```bash
+  npm run format
+  ```
+  - Formats all JS/TS/CSS/MD files with Prettier
+
+### Build Process
+- **Production build**:
+  ```bash
+  npm run build
+  ```
+  - **KNOWN LIMITATION**: Build fails in restricted network environments due to Google Fonts (fonts.googleapis.com) access requirement
+  - **WORKAROUND**: Build works in environments with internet access
+  - **VALIDATION**: Application runs correctly in development mode without build
+
+## Validation Scenarios
+
+**ALWAYS perform these validation steps after making changes:**
+
+1. **Development server validation**:
+   - Run `npm run dev`
+   - Navigate to http://localhost:3000
+   - Verify application loads with header, search box, and Reddit logo
+   - Search functionality should show "Unable to load posts from Reddit" if API credentials not configured (this is expected behavior)
+
+2. **Test validation**:
+   - Run `npm test` and ensure 100% coverage maintained
+   - All tests must pass - no exceptions
+
+3. **Lint validation**:
+   - Run `npm run lint` - must complete with no errors
+   - CI will fail if linting errors exist
+
 ## Architecture Overview
 
 This is a **Next.js 15 + React 19** Reddit viewer app using the **App Router** with:
@@ -25,13 +110,7 @@ Key data flow: Reddit API ← RTK Query ← Components ← Redux Store (settings
 - `lib/utils/` - Pure utility functions
 - `test-utils/` - Custom render functions with Redux/MSW setup
 
-## Critical Workflows
-
-**Development**: `npm run dev` (uses Turbo mode, clears .next)
-**Testing**: `npm test` (Vitest watch mode), `npm run coverage` (with HTML reports)
-**Dependencies**: Use `ncu -u && npm i` to update packages
-
-## Component Conventions (from AGENTS.md)
+## Component Conventions
 
 - **Named exports only** - no default exports for components
 - **Function components** with explicit Props interfaces
@@ -107,3 +186,16 @@ Required for Reddit API:
 - Reddit API requires User-Agent header (set in config)
 - CSS Modules classes imported as `classes.className`
 - Test files must use MSW for network calls, not fetch mocks
+- Build requires internet access for Google Fonts - use development mode in restricted environments
+
+## Command Timing Reference
+
+**Measured timings with appropriate timeout recommendations:**
+
+- `npm install`: ~31 seconds → timeout: 60+ seconds
+- `npm run lint`: ~3 seconds → timeout: 30+ seconds  
+- `npm test`: ~38 seconds → timeout: 60+ seconds
+- `npm run dev`: ~1 second startup → timeout: 30+ seconds
+- `npm run build`: Fails in restricted networks → use development mode instead
+
+**NEVER CANCEL these commands - always wait for completion with adequate timeouts.**
