@@ -63,6 +63,21 @@ export function HlsPlayer({
     loadMediaChrome()
   }, [])
 
+  // Ensure video element muted attribute is synchronized with Redux state
+  // This is critical for Media Chrome to properly initialize its mute button state
+  useEffect(() => {
+    const video = videoRef.current
+    if (video) {
+      video.muted = isMuted
+      // Explicitly set/remove the HTML attribute for Media Chrome compatibility
+      if (isMuted) {
+        video.setAttribute('muted', '')
+      } else {
+        video.removeAttribute('muted')
+      }
+    }
+  }, [isMuted])
+
   return (
     <>
       {/* Always render media-controller, but show fallback controls if Media Chrome failed */}
@@ -88,6 +103,8 @@ export function HlsPlayer({
             'data-hint': dataHint,
             id,
             loop,
+            // For boolean attributes in React.createElement, pass true/false directly
+            // This ensures both the property and attribute are properly set
             muted: isMuted,
             playsInline,
             poster,
