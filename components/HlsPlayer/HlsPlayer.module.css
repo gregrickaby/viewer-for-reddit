@@ -4,6 +4,28 @@
   width: 100%;
 }
 
+/* Mobile-first responsive volume controls */
+.controller media-volume-range {
+  /* On mobile: minimize volume slider width to prioritize scrubber */
+  --media-volume-range-track-width: 40px;
+  flex-shrink: 2;
+}
+
+/* On larger screens, allow normal volume slider */
+@media (min-width: 768px) {
+  .controller media-volume-range {
+    --media-volume-range-track-width: 80px;
+    flex-shrink: 1;
+  }
+}
+
+/* Very small screens: hide volume slider completely, keep only mute button */
+@media (max-width: 480px) {
+  .controller media-volume-range {
+    display: none;
+  }
+}
+
 .loadingOverlay {
   align-items: center;
   bottom: 0;
