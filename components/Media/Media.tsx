@@ -11,9 +11,7 @@ import type {PostChildData} from '@/lib/types/posts'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
 import {logError} from '@/lib/utils/logError'
 import {decodeHtmlEntities} from '@/lib/utils/sanitizeText'
-import {Anchor} from '@mantine/core'
 import {Suspense} from 'react'
-import classes from './Media.module.css'
 
 const hlsDefaults = {
   autoPlay: true,
@@ -129,19 +127,7 @@ export function Media(post: Readonly<PostChildData>) {
 
     return (
       <MediaContainer isVertical={isVertical}>
-        <Anchor
-          href={post.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={classes.linkContainer}
-        >
-          <img
-            alt={post.title}
-            src={imageSrc ?? ''}
-            className={classes.linkImage}
-            data-testid="responsive-image"
-          />
-        </Anchor>
+        <ResponsiveImage alt={post.title} src={imageSrc} />
       </MediaContainer>
     )
   }
