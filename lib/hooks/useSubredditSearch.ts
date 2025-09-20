@@ -158,15 +158,19 @@ export function useSubredditSearch(): {
    * This improves UX by preventing background scroll behind the overlay
    */
   useEffect(() => {
-    if (isMobile && mobileState === 'open') {
-      // Store original overflow and prevent scrolling
-      const originalOverflow = document.body.style.overflow
-      document.body.style.overflow = 'hidden'
+    if (isMobile) {
+      if (mobileState === 'open') {
+        // Store original overflow and prevent scrolling
+        const originalOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
 
-      return () => {
-        // Restore original overflow when drawer closes
-        document.body.style.overflow = originalOverflow
+        return () => {
+          // Restore original overflow when drawer closes
+          document.body.style.overflow = originalOverflow
+        }
       }
+      // Ensure body scrolling is restored when not open
+      document.body.style.overflow = ''
     }
   }, [isMobile, mobileState])
 
@@ -308,6 +312,8 @@ export function useSubredditSearch(): {
         if (isMobile && isDropdownOpen) {
           clearPendingTimeout()
           dispatch(setMobileSearchState('closed'))
+          // HOTFIX: Immediately restore body scrolling when closing drawer
+          document.body.style.overflow = ''
         }
 
         // 4. Close navbar if open (mobile UX)
