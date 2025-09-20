@@ -229,7 +229,7 @@ export function Search() {
                 />
               </div>
             </>
-          )}{' '}
+          )}
           <div className={isMobile ? styles.mobileSearchResults : undefined}>
             <Combobox.Options>
               {(() => {
