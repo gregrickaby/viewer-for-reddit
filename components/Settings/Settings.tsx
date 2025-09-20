@@ -134,7 +134,7 @@ export function Settings() {
         <Menu.Label>Danger Zone</Menu.Label>
 
         <Tooltip
-          label="This will Clear all settings, recent viewing history, and favorites. This action cannot be undone!"
+          label="This will clear all settings, recent viewing history, search history, and favorites. This action cannot be undone!"
           position="bottom"
         >
           <Menu.Item
@@ -145,7 +145,7 @@ export function Settings() {
               showNotification({
                 title: 'Success',
                 message:
-                  'All settings, history, and favorites have been removed.',
+                  'All settings, viewing & search history, and favorites have been removed.',
                 color: 'green'
               })
             }}
