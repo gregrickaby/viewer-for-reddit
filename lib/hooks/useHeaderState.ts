@@ -1,20 +1,30 @@
 'use client'
 
 import {
+  selectMobileSearchState,
   selectNavbar,
-  selectSearch,
-  toggleNavbar,
-  toggleSearch
+  setMobileSearchState,
+  toggleNavbar
 } from '@/lib/store/features/transientSlice'
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 
 export function useHeaderState() {
   const dispatch = useAppDispatch()
   const showNavbar = useAppSelector(selectNavbar)
-  const showSearch = useAppSelector(selectSearch)
+  const mobileSearchState = useAppSelector(selectMobileSearchState)
+
+  // Derive boolean state for backwards compatibility
+  const showSearch =
+    mobileSearchState === 'open' || mobileSearchState === 'opening'
 
   const toggleNavbarHandler = () => dispatch(toggleNavbar())
-  const toggleSearchHandler = () => dispatch(toggleSearch())
+  const toggleSearchHandler = () => {
+    if (showSearch) {
+      dispatch(setMobileSearchState('closed'))
+    } else {
+      dispatch(setMobileSearchState('open'))
+    }
+  }
 
   return {showNavbar, toggleNavbarHandler, showSearch, toggleSearchHandler}
 }

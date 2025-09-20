@@ -1,173 +1,258 @@
 'use client'
 
 import {SubredditName} from '@/components/SubredditName/SubredditName'
-import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {useSubredditSearch} from '@/lib/hooks/useSubredditSearch'
-import {addToSearchHistory} from '@/lib/store/features/settingsSlice'
-import {useAppDispatch} from '@/lib/store/hooks'
 import type {SubredditItem} from '@/lib/types'
 import {
-  Divider,
+  ActionIcon,
+  Combobox,
   Group,
-  Paper,
-  Stack,
+  InputBase,
+  Loader,
   Text,
-  TextInput
+  useCombobox
 } from '@mantine/core'
-import {useClickOutside} from '@mantine/hooks'
 import Link from 'next/link'
-import {useCallback, useState} from 'react'
-import classes from './Search.module.css'
+import {FaSearch} from 'react-icons/fa'
+import {IoMdArrowBack, IoMdClose} from 'react-icons/io'
+import styles from './Search.module.css'
 
+/**
+ * Search Component
+ *
+ * Presentational search input and dropdown for subreddit discovery in Viewer for Reddit.
+ *
+ * Features:
+ * - Mantine v8 Combobox with grouped options (Communities, NSFW, Search History)
+ * - Business logic handled by useSubredditSearch hook for clean separation of concerns
+ * - Keyboard and mouse navigation with full accessibility support
+ * - Clear/remove actions for search history management
+ * - Subreddit icons, names, NSFW badges, and removal controls
+ * - Empty state and error handling for robust UX
+ * - Responsive mobile/desktop behavior with proper animations
+ */
 export function Search() {
-  const {query, setQuery, groupedData} = useSubredditSearch()
-  const {showNavbar, toggleNavbarHandler} = useHeaderState()
-  const dispatch = useAppDispatch()
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const clickOutsideRef = useClickOutside(() => setDropdownOpen(false))
+  const {
+    query,
+    setQuery,
+    filteredGroups,
+    totalOptions,
+    handleOptionSelect,
+    handleRemoveFromHistory,
+    isLoading,
+    hasError,
+    hasNoResults,
+    isMobile,
+    handleMobileClose,
+    handleMobileSearchClick,
+    mobileInputRef,
+    isClosing
+  } = useSubredditSearch()
 
-  const handleOptionClick = useCallback(
-    (item: SubredditItem) => {
-      // Add to search history
-      dispatch(addToSearchHistory(item))
-      
-      // Update query
-      setQuery(item.value)
-      setDropdownOpen(false)
-      
-      // Handle navbar if needed
-      if (showNavbar) {
-        toggleNavbarHandler()
-      }
-    },
-    [dispatch, setQuery, showNavbar, toggleNavbarHandler]
-  )
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption()
+  })
 
-  const handleOptionKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>, item: SubredditItem) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        handleOptionClick(item)
-      }
-    },
-    [handleOptionClick]
-  )
-
-  const renderSection = (title: string, items: SubredditItem[], showNsfwLabel = false) => {
-    if (items.length === 0) return null
-
-    return (
-      <>
-        <Text size="sm" fw={500} c="dimmed" px="md" py="xs">
-          {title}
-        </Text>
-        {items.map((item) => (
-          <div
-            key={item.value}
-            role="button"
-            tabIndex={0}
-            style={{
-              padding: '8px 16px',
-              cursor: 'pointer',
-              borderRadius: '4px',
-              margin: '0 8px'
-            }}
-            onClick={() => handleOptionClick(item)}
-            onKeyDown={(e) => handleOptionKeyDown(e, item)}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-            }}
-          >
-            <Group wrap="nowrap" justify="space-between">
-              <Link href={`/${item.value}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <SubredditName
-                  icon={item.icon_img}
-                  name={item.display_name}
-                  enableFavorite
-                />
-              </Link>
-              {showNsfwLabel && item.over18 && (
-                <Text size="xs" c="red" fw={500}>
-                  NSFW
-                </Text>
-              )}
-            </Group>
-          </div>
-        ))}
-        <Divider my="xs" />
-      </>
-    )
+  /**
+   * Calculate dropdown className based on mobile state and animations
+   * Provides smooth transitions for mobile drawer behavior
+   */
+  const getDropdownClassName = () => {
+    if (isMobile) {
+      return isClosing
+        ? `${styles.dropdownMobile} ${styles.dropdownMobileClosing}`
+        : styles.dropdownMobile
+    }
+    return styles.dropdownDesktop
   }
 
-  const hasAnyResults = 
-    groupedData.communities.length > 0 ||
-    groupedData.nsfw.length > 0 ||
-    groupedData.searchHistory.length > 0
+  const groups = filteredGroups.map((group) => {
+    const options = group.options.map((item: SubredditItem) => (
+      <Combobox.Option value={item.value} key={item.value}>
+        <Group wrap="nowrap" justify="space-between">
+          <Link
+            href={`/${item.value}`}
+            style={{textDecoration: 'none', color: 'inherit', flex: 1}}
+          >
+            <SubredditName
+              enableFavorite
+              icon={item.icon_img}
+              name={item.display_name}
+            />
+          </Link>
+          <Group wrap="nowrap" gap="xs">
+            {group.label === 'NSFW' && item.over18 && (
+              <Text size="xs" c="red" fw={500} className={styles.nsfwText}>
+                NSFW
+              </Text>
+            )}
+            {group.label === 'Search History' && (
+              <ActionIcon
+                aria-label={`Remove ${item.display_name} from search history`}
+                color="gray"
+                size="sm"
+                variant="subtle"
+                onClick={(event) =>
+                  handleRemoveFromHistory(event, item.display_name)
+                }
+              >
+                <IoMdClose size={14} />
+              </ActionIcon>
+            )}
+          </Group>
+        </Group>
+      </Combobox.Option>
+    ))
+
+    return (
+      <Combobox.Group label={group.label} key={group.label}>
+        {options}
+      </Combobox.Group>
+    )
+  })
 
   return (
-    <div ref={clickOutsideRef} style={{ position: 'relative' }}>
-      <TextInput
-        className={classes.root}
-        placeholder="Search subreddits"
-        size="lg"
-        value={query}
-        onChange={(event) => {
-          setQuery(event.currentTarget.value)
-          setDropdownOpen(true)
-        }}
-        onFocus={() => setDropdownOpen(true)}
-        autoCapitalize="off"
-        autoCorrect="off"
-        spellCheck={false}
-        aria-label="Search subreddits"
-        rightSection={query ? (
-          <button
-            type="button"
-            onClick={() => setQuery('')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px'
-            }}
-            aria-label="Clear search"
-          >
-            ×
-          </button>
-        ) : null}
-      />
+    <div className={styles.search}>
+      <Combobox
+        onOptionSubmit={handleOptionSelect}
+        store={combobox}
+        withinPortal
+      >
+        {isMobile ? (
+          // Mobile: Search icon trigger with proper alignment
+          <Combobox.Target>
+            <div className={styles.mobileSearchTrigger}>
+              <ActionIcon
+                aria-label={
+                  combobox.dropdownOpened ? 'Close search' : 'Open search'
+                }
+                color="gray"
+                size="lg"
+                variant="subtle"
+                onClick={() => handleMobileSearchClick(combobox)}
+              >
+                <FaSearch size={18} />
+              </ActionIcon>
+            </div>
+          </Combobox.Target>
+        ) : (
+          // Tablet/Desktop: Search input in header
+          <Combobox.Target>
+            <InputBase
+              aria-label="Search subreddits"
+              autoCapitalize="off"
+              autoCorrect="off"
+              classNames={{input: styles.searchInput}}
+              placeholder="Search subreddits"
+              size="md"
+              spellCheck={false}
+              value={query}
+              onChange={(event) => {
+                combobox.openDropdown()
+                combobox.updateSelectedOptionIndex()
+                setQuery(event.currentTarget.value)
+              }}
+              onClick={() => combobox.openDropdown()}
+              onFocus={() => combobox.openDropdown()}
+              onBlur={() => combobox.closeDropdown()}
+              rightSectionPointerEvents="auto"
+              rightSection={
+                query ? (
+                  <ActionIcon
+                    aria-label="Clear search"
+                    color="gray"
+                    onClick={() => setQuery('')}
+                    size="sm"
+                    variant="subtle"
+                  >
+                    <IoMdClose size={16} />
+                  </ActionIcon>
+                ) : (
+                  <ActionIcon
+                    aria-label="Search"
+                    color="gray"
+                    size="sm"
+                    variant="subtle"
+                  >
+                    <FaSearch size={14} />
+                  </ActionIcon>
+                )
+              }
+            />
+          </Combobox.Target>
+        )}
 
-      {dropdownOpen && (
-        <Paper
-          shadow="md"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            zIndex: 1000,
-            marginTop: '4px',
-            maxHeight: '400px',
-            overflowY: 'auto'
-          }}
-          className={classes.dropdown}
-        >
-          {!hasAnyResults ? (
-            <Text p="md" c="dimmed">
-              No results found
-            </Text>
-          ) : (
-            <Stack gap={0}>
-              {renderSection('Communities', groupedData.communities)}
-              {renderSection('NSFW', groupedData.nsfw, true)}
-              {renderSection('Search History', groupedData.searchHistory)}
-            </Stack>
-          )}
-        </Paper>
-      )}
+        {/* Mobile and Desktop dropdowns */}
+        <Combobox.Dropdown className={getDropdownClassName()}>
+          {isMobile && (
+            <>
+              {/* Mobile: Header with back arrow and search input */}
+              <div className={styles.mobileHeader}>
+                <ActionIcon
+                  aria-label="Back"
+                  color="gray"
+                  size="md"
+                  variant="subtle"
+                  onClick={() => {
+                    combobox.closeDropdown()
+                    handleMobileClose()
+                  }}
+                >
+                  <IoMdArrowBack size={20} />
+                </ActionIcon>
+                <InputBase
+                  ref={mobileInputRef}
+                  aria-label="Search subreddits"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  placeholder="Search Reddit"
+                  size="md"
+                  spellCheck={false}
+                  value={query}
+                  onChange={(event) => {
+                    setQuery(event.currentTarget.value)
+                  }}
+                  className={styles.mobileSearchInput}
+                  classNames={{
+                    input: styles.mobileSearchInputBase
+                  }}
+                />
+              </div>
+            </>
+          )}{' '}
+          <div className={isMobile ? styles.mobileSearchResults : undefined}>
+            <Combobox.Options>
+              {(() => {
+                if (isLoading) {
+                  return (
+                    <div className={styles.loadingContainer}>
+                      <Loader size="sm" />
+                    </div>
+                  )
+                }
+
+                if (hasError) {
+                  return (
+                    <Combobox.Empty>
+                      Unable to load search results. Please try again.
+                    </Combobox.Empty>
+                  )
+                }
+
+                if (totalOptions > 0) {
+                  return groups
+                }
+
+                if (hasNoResults) {
+                  return <Combobox.Empty>No results found</Combobox.Empty>
+                }
+
+                return null
+              })()}
+            </Combobox.Options>
+          </div>
+        </Combobox.Dropdown>
+      </Combobox>
     </div>
   )
 }

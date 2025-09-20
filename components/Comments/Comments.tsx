@@ -55,48 +55,48 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
               shadow="none"
               withBorder
             >
-            <Group gap="xs">
-              <Anchor
-                href={`https://reddit.com/user/${c.author}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
+              <Group gap="xs">
+                <Anchor
+                  href={`https://reddit.com/user/${c.author}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <Text c="dimmed" size="sm">
+                    {c.author}
+                  </Text>
+                </Anchor>
+                &middot;
                 <Text c="dimmed" size="sm">
-                  {c.author}
-                </Text>
-              </Anchor>
-              &middot;
-              <Text c="dimmed" size="sm">
-                {formatTimeAgo(c.created_utc ?? 0)}
-              </Text>
-            </Group>
-
-            <div
-              className={classes.commentBody}
-              dangerouslySetInnerHTML={{
-                __html: decodeAndSanitizeHtml(c.body_html ?? c.body ?? '')
-              }}
-            />
-
-            <Group gap="md">
-              <Group className={classes.meta}>
-                <BiSolidUpvote size={16} color="red" />
-                <Text size="sm" c="dimmed">
-                  <NumberFormatter value={c.ups} thousandSeparator />
+                  {formatTimeAgo(c.created_utc ?? 0)}
                 </Text>
               </Group>
-              <Anchor
-                href={`https://reddit.com${c.permalink}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <Text size="sm" c="dimmed">
-                  View on Reddit
-                </Text>
-              </Anchor>
-            </Group>
-          </Card>
-        ))}
+
+              <div
+                className={classes.commentBody}
+                dangerouslySetInnerHTML={{
+                  __html: decodeAndSanitizeHtml(c.body_html ?? c.body ?? '')
+                }}
+              />
+
+              <Group gap="md">
+                <Group className={classes.meta}>
+                  <BiSolidUpvote size={16} color="red" />
+                  <Text size="sm" c="dimmed">
+                    <NumberFormatter value={c.ups} thousandSeparator />
+                  </Text>
+                </Group>
+                <Anchor
+                  href={`https://reddit.com${c.permalink}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <Text size="sm" c="dimmed">
+                    View on Reddit
+                  </Text>
+                </Anchor>
+              </Group>
+            </Card>
+          ))}
 
         <Anchor
           className={classes.readMoreLink}

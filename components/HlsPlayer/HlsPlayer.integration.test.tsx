@@ -34,7 +34,7 @@ describe('HlsPlayer - Mute Integration', () => {
     )
 
     const video = screen.getByTestId('video') as HTMLVideoElement
-    
+
     // Both the property and attribute should be set for proper browser compatibility
     expect(video.muted).toBe(true)
     // HTML attribute should also be present for accessibility and Media Chrome compatibility
@@ -87,12 +87,12 @@ describe('HlsPlayer - Mute Integration', () => {
     )
 
     const video = screen.getByTestId('video') as HTMLVideoElement
-    
+
     // Wait for media chrome to load
     await waitFor(() => {
       expect(screen.getByTestId('media-control-bar')).toBeInTheDocument()
     })
-    
+
     // Simulate device volume change
     Object.defineProperty(video, 'volume', {
       writable: true,

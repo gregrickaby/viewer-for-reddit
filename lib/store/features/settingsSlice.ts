@@ -114,7 +114,21 @@ export const settingsSlice = createSlice({
 
     // Add subreddit to search history.
     addToSearchHistory: (state, action: PayloadAction<SubredditItem>) => {
-      state.searchHistory = addToSearchHistoryUtil(state.searchHistory, action.payload)
+      state.searchHistory = addToSearchHistoryUtil(
+        state.searchHistory,
+        action.payload
+      )
+      saveSettings(state)
+    },
+
+    // Clear a single search history item.
+    clearSingleSearchHistory: (state, action: PayloadAction<string>) => {
+      const existingIndex = state.searchHistory.findIndex(
+        (sub) => sub.display_name === action.payload
+      )
+      if (existingIndex !== -1) {
+        state.searchHistory.splice(existingIndex, 1)
+      }
       saveSettings(state)
     },
 
@@ -135,6 +149,7 @@ export const {
   clearSearchHistory,
   clearSingleFavorite,
   clearSingleRecent,
+  clearSingleSearchHistory,
   resetSettings,
   setCurrentSubreddit,
   setSortingOption,

@@ -8,6 +8,7 @@ import settingsReducer, {
   clearSearchHistory,
   clearSingleFavorite,
   clearSingleRecent,
+  clearSingleSearchHistory,
   resetSettings,
   setCurrentSubreddit,
   setSortingOption,
@@ -160,16 +161,31 @@ describe('settingsSlice', () => {
   })
 
   it('addToSearchHistory adds to search history', () => {
-    let state = {...baseState, searchHistory: []}
-    state = settingsReducer(state, addToSearchHistory(subreddit))
-    expect(state.searchHistory[0]).toEqual(subreddit)
+    const state = {...baseState, searchHistory: []}
+    const next = settingsReducer(state, addToSearchHistory(subreddit))
+    expect(next.searchHistory[0]).toEqual(subreddit)
     expect(saveSpy).toHaveBeenCalled()
   })
 
   it('clearSearchHistory empties search history', () => {
-    let state = {...baseState, searchHistory: [subreddit]}
-    state = settingsReducer(state, clearSearchHistory())
-    expect(state.searchHistory).toEqual([])
+    const state = {...baseState, searchHistory: [subreddit]}
+    const next = settingsReducer(state, clearSearchHistory())
+    expect(next.searchHistory).toEqual([])
+    expect(saveSpy).toHaveBeenCalled()
+  })
+
+  it('clearSingleSearchHistory removes specific item from search history', () => {
+    const subreddit2: SubredditItem = {
+      display_name: 'test2',
+      icon_img: '',
+      over18: false,
+      public_description: '',
+      subscribers: 1,
+      value: 'test2'
+    }
+    const state = {...baseState, searchHistory: [subreddit, subreddit2]}
+    const next = settingsReducer(state, clearSingleSearchHistory('test'))
+    expect(next.searchHistory).toEqual([subreddit2])
     expect(saveSpy).toHaveBeenCalled()
   })
 })

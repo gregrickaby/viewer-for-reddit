@@ -58,9 +58,13 @@ describe('searchHistory utils', () => {
         display_name: `sub${i}`,
         value: `r/sub${i}`
       }))
-      const newSubreddit = {...mockSubreddit1, display_name: 'new', value: 'r/new'}
+      const newSubreddit = {
+        ...mockSubreddit1,
+        display_name: 'new',
+        value: 'r/new'
+      }
       const result = addToSearchHistory(history, newSubreddit)
-      
+
       expect(result).toHaveLength(10)
       expect(result[0]).toEqual(newSubreddit)
       expect(result).not.toContain(history[9]) // Last item should be removed

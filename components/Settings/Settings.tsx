@@ -3,6 +3,7 @@
 import {
   clearFavorites,
   clearRecent,
+  clearSearchHistory,
   resetSettings,
   toggleMute,
   toggleNsfw
@@ -18,6 +19,7 @@ import {
 import {showNotification} from '@mantine/notifications'
 import {FaCog, FaTrashAlt} from 'react-icons/fa'
 import {GoBookmarkSlashFill} from 'react-icons/go'
+import {MdSearchOff} from 'react-icons/md'
 import {TbArticleOff} from 'react-icons/tb'
 
 export function Settings() {
@@ -79,7 +81,22 @@ export function Settings() {
         </Menu.Item>
 
         <Menu.Divider />
-        <Menu.Label>Viewing History and Favorites</Menu.Label>
+        <Menu.Label>History and Favorites</Menu.Label>
+
+        <Menu.Item
+          data-testid="clear-search-history-button"
+          onClick={() => {
+            dispatch(clearSearchHistory())
+            showNotification({
+              title: 'Success',
+              message: 'Search history has been removed.',
+              color: 'green'
+            })
+          }}
+        >
+          <MdSearchOff style={{marginRight: '8px'}} />
+          Clear Search History
+        </Menu.Item>
 
         <Menu.Item
           data-testid="clear-recent-button"
@@ -93,7 +110,7 @@ export function Settings() {
           }}
         >
           <TbArticleOff style={{marginRight: '8px'}} />
-          Delete Recently Viewed
+          Clear Recently Viewed
         </Menu.Item>
 
         <Menu.Item
@@ -109,7 +126,7 @@ export function Settings() {
           }}
         >
           <GoBookmarkSlashFill style={{marginRight: '8px'}} />
-          Delete All Favorites
+          Clear All Favorites
         </Menu.Item>
 
         <Menu.Divider />
@@ -117,7 +134,7 @@ export function Settings() {
         <Menu.Label>Danger Zone</Menu.Label>
 
         <Tooltip
-          label="This will delete all settings, recent viewing history, and favorites. This action cannot be undone!"
+          label="This will Clear all settings, recent viewing history, and favorites. This action cannot be undone!"
           position="bottom"
         >
           <Menu.Item

@@ -19,7 +19,7 @@ export function addToSearchHistory(
 ): SubredditItem[] {
   // Remove any existing instance of this subreddit
   const filtered = history.filter((item) => item.value !== subreddit.value)
-  
+
   // Add to the beginning and limit to MAX_SEARCH_HISTORY
   return [subreddit, ...filtered].slice(0, MAX_SEARCH_HISTORY)
 }
