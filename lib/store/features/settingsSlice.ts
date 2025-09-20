@@ -124,7 +124,7 @@ export const settingsSlice = createSlice({
     // Clear a single search history item.
     clearSingleSearchHistory: (state, action: PayloadAction<string>) => {
       const existingIndex = state.searchHistory.findIndex(
-        (sub) => sub.display_name === action.payload
+        (sub) => sub.value === action.payload
       )
       if (existingIndex !== -1) {
         state.searchHistory.splice(existingIndex, 1)
