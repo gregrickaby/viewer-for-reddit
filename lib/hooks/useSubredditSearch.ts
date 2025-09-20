@@ -100,8 +100,9 @@ export function useSubredditSearch(): {
   const dispatch = useAppDispatch()
   const router = useRouter()
   const query = useAppSelector(selectSearchQuery)
+  const trimmedQuery = useMemo(() => query.trim(), [query])
   const [debounced] = useDebouncedValue(
-    query.trim(),
+    trimmedQuery,
     SEARCH_CONFIG.DEBOUNCE_DELAY
   )
   const nsfw = useAppSelector((state) => state.settings.enableNsfw)
