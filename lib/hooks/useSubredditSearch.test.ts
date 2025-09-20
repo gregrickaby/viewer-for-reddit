@@ -1,7 +1,18 @@
 import {act, renderHook} from '@/test-utils'
 import {useSubredditSearch} from './useSubredditSearch'
 
+const mockPush = vi.hoisted(() => vi.fn())
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush
+  })
+}))
+
 describe('useSubredditSearch', () => {
+  beforeEach(() => {
+    mockPush.mockClear()
+  })
+
   it('returns initial state from Redux', () => {
     const {result} = renderHook(() => useSubredditSearch())
     expect(result.current.query).toBe('')
@@ -38,7 +49,7 @@ describe('useSubredditSearch', () => {
       preloadedState: {
         transient: {
           toggleNavbar: false,
-          toggleSearch: false,
+          mobileSearchState: 'closed' as const,
           searchQuery: 'reactjs'
         }
       }
@@ -53,7 +64,7 @@ describe('useSubredditSearch', () => {
       preloadedState: {
         transient: {
           toggleNavbar: false,
-          toggleSearch: false,
+          mobileSearchState: 'closed' as const,
           searchQuery: ''
         }
       }
@@ -92,7 +103,8 @@ describe('useSubredditSearch', () => {
       result.current.handleOptionSelect('r/reactjs')
     })
 
-    expect(result.current.query).toBe('r/reactjs')
+    expect(result.current.query).toBe('')
+    expect(mockPush).toHaveBeenCalledWith('/r/reactjs')
   })
 
   it('handles removing item from search history', () => {
@@ -157,7 +169,7 @@ describe('useSubredditSearch', () => {
         },
         transient: {
           toggleNavbar: false,
-          toggleSearch: false,
+          mobileSearchState: 'closed' as const,
           searchQuery: ''
         }
       }

@@ -12,7 +12,7 @@ import {
   Text,
   useCombobox
 } from '@mantine/core'
-import Link from 'next/link'
+import {useCallback} from 'react'
 import {FaSearch} from 'react-icons/fa'
 import {IoMdArrowBack, IoMdClose} from 'react-icons/io'
 import styles from './Search.module.css'
@@ -54,6 +54,19 @@ export function Search() {
   })
 
   /**
+   * Enhanced option select handler that also closes the combobox
+   */
+  const handleOptionSelectWithClose = useCallback(
+    (value: string) => {
+      // Close the combobox dropdown first
+      combobox.closeDropdown()
+      // Then handle the selection
+      handleOptionSelect(value)
+    },
+    [handleOptionSelect, combobox]
+  )
+
+  /**
    * Calculate dropdown className based on mobile state and animations
    * Provides smooth transitions for mobile drawer behavior
    */
@@ -70,16 +83,13 @@ export function Search() {
     const options = group.options.map((item: SubredditItem) => (
       <Combobox.Option value={item.value} key={item.value}>
         <Group wrap="nowrap" justify="space-between">
-          <Link
-            href={`/${item.value}`}
-            style={{textDecoration: 'none', color: 'inherit', flex: 1}}
-          >
+          <div style={{flex: 1}}>
             <SubredditName
               enableFavorite
               icon={item.icon_img}
               name={item.display_name}
             />
-          </Link>
+          </div>
           <Group wrap="nowrap" gap="xs">
             {group.label === 'NSFW' && item.over18 && (
               <Text size="xs" c="red" fw={500} className={styles.nsfwText}>
@@ -114,7 +124,7 @@ export function Search() {
   return (
     <div className={styles.search}>
       <Combobox
-        onOptionSubmit={handleOptionSelect}
+        onOptionSubmit={handleOptionSelectWithClose}
         store={combobox}
         withinPortal
       >

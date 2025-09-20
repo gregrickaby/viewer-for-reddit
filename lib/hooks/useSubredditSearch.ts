@@ -19,6 +19,7 @@ import {
 import type {SubredditItem} from '@/lib/types'
 import {fromSearch} from '@/lib/utils/subredditMapper'
 import {useDebouncedValue, useMediaQuery} from '@mantine/hooks'
+import {useRouter} from 'next/navigation'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 /**
@@ -97,6 +98,7 @@ export function useSubredditSearch(): {
   isClosing: boolean
 } {
   const dispatch = useAppDispatch()
+  const router = useRouter()
   const query = useAppSelector(selectSearchQuery)
   const [debounced] = useDebouncedValue(
     query.trim(),
@@ -265,7 +267,7 @@ export function useSubredditSearch(): {
 
   /**
    * Handle subreddit selection from dropdown
-   * Updates search history, query state, and handles navbar toggle
+   * Updates search history, clears search state, closes drawer, and navigates to subreddit
    */
   const handleOptionSelect = useCallback(
     (value: string) => {
@@ -278,31 +280,36 @@ export function useSubredditSearch(): {
       const item = allItems.find((item) => item.value === value)
 
       if (item) {
-        // Add to search history for future quick access
+        // 1. Add to search history for future quick access
         dispatch(addToSearchHistory(item))
 
-        // Update the current search query
-        dispatch(setSearchQuery(item.value))
+        // 2. Clear the search query immediately
+        dispatch(setSearchQuery(''))
 
-        // Close mobile search drawer if open
+        // 3. Close mobile search drawer immediately (no animation)
         if (isMobile && isDropdownOpen) {
-          handleMobileClose()
+          clearPendingTimeout()
+          dispatch(setMobileSearchState('closed'))
         }
 
-        // Close navbar if open (mobile UX)
+        // 4. Close navbar if open (mobile UX)
         if (showNavbar) {
           toggleNavbarHandler()
         }
+
+        // 5. Navigate to the selected subreddit
+        router.push(`/${item.value}`)
       }
     },
     [
       dispatch,
+      router,
       showNavbar,
       toggleNavbarHandler,
       groupedData,
       isMobile,
       isDropdownOpen,
-      handleMobileClose
+      clearPendingTimeout
     ]
   )
 

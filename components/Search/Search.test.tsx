@@ -10,9 +10,17 @@ vi.mock('@mantine/hooks', async () => {
   }
 })
 
+const mockPush = vi.hoisted(() => vi.fn())
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush
+  })
+}))
+
 describe('Search', () => {
   beforeEach(() => {
     mockUseMediaQuery.mockReturnValue(true)
+    mockPush.mockClear()
   })
 
   describe('Desktop/Tablet behavior', () => {
@@ -56,6 +64,22 @@ describe('Search', () => {
       await user.click(clearButton)
 
       expect(input).toHaveValue('')
+    })
+
+    it('should navigate when option is selected on desktop', async () => {
+      render(<Search />)
+      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      await user.type(input, 'aww')
+
+      await waitFor(() => {
+        expect(screen.getByText('Communities')).toBeInTheDocument()
+      })
+
+      const option = screen.getByText('r/aww')
+      await user.click(option)
+
+      // Verify navigation is triggered
+      expect(mockPush).toHaveBeenCalledWith('/r/aww')
     })
   })
 
@@ -231,6 +255,9 @@ describe('Search', () => {
 
       const option = screen.getByText('r/aww')
       await user.click(option)
+
+      // Verify navigation is triggered
+      expect(mockPush).toHaveBeenCalledWith('/r/aww')
 
       // Verify the mobile drawer is closed by checking if the dropdown is hidden
       await waitFor(
