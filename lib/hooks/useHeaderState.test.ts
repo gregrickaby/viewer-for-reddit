@@ -6,7 +6,7 @@ describe('useHeaderState', () => {
     const preloadedState = {
       transient: {
         toggleNavbar: true,
-        toggleSearch: false,
+        mobileSearchState: 'closed' as const,
         searchQuery: ''
       }
     }
@@ -19,14 +19,14 @@ describe('useHeaderState', () => {
     })
     const state = store.getState().transient
     expect(state.toggleNavbar).toBe(false)
-    expect(state.toggleSearch).toBe(true)
+    expect(state.mobileSearchState).toBe('open')
   })
 
   it('toggleNavbarHandler toggles state', () => {
     const preloadedState = {
       transient: {
         toggleNavbar: false,
-        toggleSearch: false,
+        mobileSearchState: 'closed' as const,
         searchQuery: ''
       }
     }
@@ -37,11 +37,11 @@ describe('useHeaderState', () => {
     expect(store.getState().transient.toggleNavbar).toBe(true)
   })
 
-  it('toggleSearchHandler toggles state', () => {
+  it('toggleSearchHandler sets mobileSearchState', () => {
     const preloadedState = {
       transient: {
         toggleNavbar: false,
-        toggleSearch: false,
+        mobileSearchState: 'closed' as const,
         searchQuery: ''
       }
     }
@@ -49,6 +49,6 @@ describe('useHeaderState', () => {
     act(() => {
       result.current.toggleSearchHandler()
     })
-    expect(store.getState().transient.toggleSearch).toBe(true)
+    expect(store.getState().transient.mobileSearchState).toBe('open')
   })
 })

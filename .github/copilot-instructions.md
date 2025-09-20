@@ -118,7 +118,7 @@ Key data flow: Reddit API ← RTK Query ← Components ← Redux Store (settings
 - `app/(default)/` - App Router pages with grouped layout
 - `components/` - One component per folder with Component.tsx, Component.module.css, Component.test.tsx
 - `lib/actions/` - Server actions (Reddit OAuth token management)
-- `lib/hooks/` - Custom React hooks (intersection observers, infinite scroll)
+- `lib/hooks/` - Custom React hooks (business logic, intersection observers, infinite scroll)
 - `lib/store/` - Redux store with RTK Query services and slices
 - `lib/utils/` - Pure utility functions
 - `test-utils/` - Custom render functions with Redux/MSW setup
@@ -126,10 +126,10 @@ Key data flow: Reddit API ← RTK Query ← Components ← Redux Store (settings
 ## Component Conventions
 
 - **Named exports only** - no default exports for components
-- **Function components** with explicit Props interfaces
+- **Function components** with explicit Props interfaces. Components should be presentational and business logic should be in hooks.
 - **CSS Modules** (`Component.module.css`)
 - **One component per file** - split large components into separate files
-- **Hooks for logic** - components should be presentational
+- **Hooks for logic** - Businesss logic, data fetching, and state management should be in custom hooks
 
 Example component structure:
 
@@ -160,14 +160,16 @@ export function Component({src, alt = ''}: Readonly<ComponentProps>) {
 **Store setup**:
 
 - `redditApi` service handles all Reddit endpoints with OAuth
-- `settingsSlice` for user preferences (NSFW, layout)
+- `settingsSlice` for user preferences (NSFW, search history, favorites, mute audio)
 - `transientSlice` for ephemeral UI state
 
 **Key endpoints**:
 
-- `getSubredditPostsInfinite` - paginated posts with NSFW filtering
 - `searchSubreddits` - autocomplete search
+- `getSubredditPosts` - subreddit posts
+- `getSubredditAbout` - subreddit details
 - `getPopularSubreddits` - trending subreddits
+- `getPostComments` - fetch comments for a post
 
 **Authentication**: Server-side token caching in `lib/actions/redditToken.ts` with automatic rotation
 

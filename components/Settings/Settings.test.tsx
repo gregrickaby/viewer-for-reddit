@@ -57,6 +57,26 @@ describe('Settings', () => {
     })
   })
 
+  it('should clear search history', async () => {
+    render(<Settings />)
+
+    await user.click(screen.getByTestId('settings-button'))
+    await waitFor(() => {
+      expect(screen.getByText('Preferences')).toBeInTheDocument()
+    })
+
+    const clearSearchHistoryButton = screen.getByTestId(
+      'clear-search-history-button'
+    )
+    await user.click(clearSearchHistoryButton)
+
+    expect(mocks.showNotification).toHaveBeenCalledWith({
+      title: 'Success',
+      message: 'Search history has been removed.',
+      color: 'green'
+    })
+  })
+
   it('should clear favorites', async () => {
     render(<Settings />)
 
@@ -89,7 +109,8 @@ describe('Settings', () => {
 
     expect(mocks.showNotification).toHaveBeenCalledWith({
       title: 'Success',
-      message: 'All settings, history, and favorites have been removed.',
+      message:
+        'All settings, viewing & search history, and favorites have been removed.',
       color: 'green'
     })
   })

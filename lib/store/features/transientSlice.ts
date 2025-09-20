@@ -1,15 +1,21 @@
 import type {RootState} from '@/lib/store'
 import {createSlice} from '@reduxjs/toolkit'
 
+/**
+ * Mobile search state machine states
+ * Provides clear state transitions and prevents invalid states
+ */
+export type MobileSearchState = 'closed' | 'opening' | 'open' | 'closing'
+
 export interface TransientState {
   toggleNavbar: boolean
-  toggleSearch: boolean
+  mobileSearchState: MobileSearchState
   searchQuery: string
 }
 
 const initialState: TransientState = {
   toggleNavbar: false,
-  toggleSearch: false,
+  mobileSearchState: 'closed',
   searchQuery: ''
 }
 
@@ -27,10 +33,10 @@ export const transientSlice = createSlice({
       state.toggleNavbar = !state.toggleNavbar
     },
     /**
-     * Toggle the search.
+     * Set the mobile search state.
      */
-    toggleSearch: (state) => {
-      state.toggleSearch = !state.toggleSearch
+    setMobileSearchState: (state, action: {payload: MobileSearchState}) => {
+      state.mobileSearchState = action.payload
     },
     /**
      * Set the global search query.
@@ -42,12 +48,13 @@ export const transientSlice = createSlice({
 })
 
 // Export actions.
-export const {toggleNavbar, toggleSearch, setSearchQuery} =
+export const {toggleNavbar, setMobileSearchState, setSearchQuery} =
   transientSlice.actions
 
 // Export selectors.
 export const selectNavbar = (state: RootState) => state.transient.toggleNavbar
-export const selectSearch = (state: RootState) => state.transient.toggleSearch
+export const selectMobileSearchState = (state: RootState) =>
+  state.transient.mobileSearchState
 export const selectSearchQuery = (state: RootState) =>
   state.transient.searchQuery
 

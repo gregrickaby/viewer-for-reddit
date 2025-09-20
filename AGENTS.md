@@ -33,7 +33,7 @@
 
 1. **Create component folder** in `components/ComponentName/`
 2. **Create three files**: `ComponentName.tsx`, `ComponentName.module.css`, `ComponentName.test.tsx`
-3. **Extract logic to hooks** - keep components presentational
+3. **Place business logic in custom hooks** - keep components presentational
 4. **Write tests first** - follow testing patterns below
 5. **Run tests**: `npm test` to validate implementation
 
