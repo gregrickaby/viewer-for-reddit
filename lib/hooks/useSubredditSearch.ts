@@ -154,6 +154,23 @@ export function useSubredditSearch(): {
   }, [isMobile, mobileState])
 
   /**
+   * Prevent body scrolling when mobile search drawer is open
+   * This improves UX by preventing background scroll behind the overlay
+   */
+  useEffect(() => {
+    if (isMobile && mobileState === 'open') {
+      // Store original overflow and prevent scrolling
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+
+      return () => {
+        // Restore original overflow when drawer closes
+        document.body.style.overflow = originalOverflow
+      }
+    }
+  }, [isMobile, mobileState])
+
+  /**
    * Shared animation close handler with proper cleanup
    * Manages state transitions and prevents memory leaks
    */

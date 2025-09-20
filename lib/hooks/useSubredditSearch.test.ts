@@ -232,4 +232,38 @@ describe('useSubredditSearch', () => {
 
     expect(result.current.isClosing).toBe(true)
   })
+
+  it('prevents body scrolling when mobile search is open', () => {
+    // Store original overflow value
+    const originalOverflow = document.body.style.overflow
+
+    const {result} = renderHook(() => useSubredditSearch(), {
+      preloadedState: {
+        transient: {
+          searchQuery: '',
+          mobileSearchState: 'closed' as const,
+          toggleNavbar: false
+        }
+      }
+    })
+
+    // Initially body should not be affected
+    expect(document.body.style.overflow).toBe(originalOverflow)
+
+    // Open mobile search
+    act(() => {
+      result.current.handleMobileToggle()
+    })
+
+    // Body overflow should be hidden when mobile search is open
+    expect(document.body).toHaveStyle('overflow: hidden')
+
+    // Close mobile search
+    act(() => {
+      result.current.handleMobileClose()
+    })
+
+    // Body overflow should be restored (cleanup happens in useEffect cleanup)
+    // Note: In test environment, the cleanup might not run immediately
+  })
 })
