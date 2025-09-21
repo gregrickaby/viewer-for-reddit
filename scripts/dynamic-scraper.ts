@@ -21,7 +21,7 @@ class DynamicRedditScraper extends OpenAPIGenerator {
       tags: ['comments'],
       generator: async (baseUrl) => {
         // Fetch recent posts to get real post IDs
-        const subreddits = ['typescript', 'nextjs', 'webdev']
+        const subreddits = ['askReddit', 'damnthatsinteresting', 'news', 'pics']
         const urls: string[] = []
 
         for (const sub of subreddits) {
@@ -67,7 +67,7 @@ class DynamicRedditScraper extends OpenAPIGenerator {
       generator: async (baseUrl) => {
         // Get some usernames from recent posts
         const response = await fetch(
-          `${baseUrl}/r/typescript/hot.json?limit=5`,
+          `${baseUrl}/r/askReddit/hot.json?limit=5`,
           {
             headers: {'User-Agent': 'OpenAPI-Generator/1.0.0'}
           }

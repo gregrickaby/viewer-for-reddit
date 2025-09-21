@@ -28,6 +28,7 @@ Welcome! 👋 This guide will help you contribute to Viewer for Reddit, whether 
     - [Server-Side Token Management](#server-side-token-management)
   - [Type Generation System](#type-generation-system)
     - [Quick Usage](#quick-usage)
+    - [Configuration Improvements](#configuration-improvements)
     - [What It Does](#what-it-does)
     - [Generated Files](#generated-files)
     - [Endpoints Covered](#endpoints-covered)
@@ -254,6 +255,19 @@ npm run codegen:fetch     # Fetch samples from Reddit
 npm run codegen:types     # Generate TypeScript types
 npm run codegen:validate  # Validate OpenAPI spec
 ```
+
+#### Configuration Improvements
+
+The `openapi-typescript` generator uses optimized flags for cleaner, more practical types:
+
+- `--export-type`: Uses `type` declarations instead of `interface` for better composition
+- `--enum`: Creates proper TypeScript enums instead of union types
+- `--alphabetize`: Organizes properties alphabetically for better readability
+- `--exclude-deprecated`: Removes deprecated Reddit API fields
+- `--default-non-nullable`: Makes types more strict by defaulting to non-nullable
+- `--empty-objects-unknown`: Uses `unknown` instead of complex empty object types
+
+**Result**: Much simpler, more maintainable generated types compared to default settings.
 
 #### What It Does
 

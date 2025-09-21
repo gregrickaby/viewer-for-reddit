@@ -43,9 +43,10 @@ const redditEndpoints: EndpointConfig[] = [
       }
     ],
     sampleUrls: [
-      'https://www.reddit.com/r/typescript/hot.json?limit=5',
-      'https://www.reddit.com/r/nextjs/new.json?limit=5',
-      'https://www.reddit.com/r/webdev/top.json?limit=5&t=week'
+      'https://www.reddit.com/r/askReddit/hot.json?limit=5',
+      'https://www.reddit.com/r/damnthatsinteresting/new.json?limit=5',
+      'https://www.reddit.com/r/news/top.json?limit=5&t=week',
+      'https://www.reddit.com/r/pics/hot.json?limit=5'
     ]
   },
   {
@@ -58,8 +59,10 @@ const redditEndpoints: EndpointConfig[] = [
       {name: 'subreddit', in: 'path', required: true, schema: {type: 'string'}}
     ],
     sampleUrls: [
-      'https://www.reddit.com/r/typescript/about.json',
-      'https://www.reddit.com/r/nextjs/about.json'
+      'https://www.reddit.com/r/askReddit/about.json',
+      'https://www.reddit.com/r/damnthatsinteresting/about.json',
+      'https://www.reddit.com/r/news/about.json',
+      'https://www.reddit.com/r/pics/about.json'
     ]
   },
   {
@@ -78,8 +81,8 @@ const redditEndpoints: EndpointConfig[] = [
       }
     ],
     sampleUrls: [
-      'https://www.reddit.com/subreddits/search.json?q=typescript&limit=10',
-      'https://www.reddit.com/subreddits/search.json?q=javascript&limit=5'
+      'https://www.reddit.com/subreddits/search.json?q=interesting&limit=10',
+      'https://www.reddit.com/subreddits/search.json?q=science&limit=5'
     ]
   },
   {
