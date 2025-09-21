@@ -1,0 +1,23 @@
+extends:
+  - recommended
+
+rules:
+  # Reddit API is public and doesn't require authentication for the endpoints we're using
+  security-defined: off
+
+  # We can enable this but make it a warning instead of error
+  info-license: warn
+
+  # Useful rules to keep enabled
+  operation-operationId: error
+  operation-summary: error
+  operation-tag-defined: error
+  no-unresolved-refs: error
+
+  # Path-related rules
+  path-parameters-defined: error
+  paths-kebab-case: warn
+
+  # Schema rules
+  no-enum-type-mismatch: error
+  no-example-value-and-externalValue: error

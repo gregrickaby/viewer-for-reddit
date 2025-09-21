@@ -15,6 +15,10 @@
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
     "build": "next build",
+    "codegen": "npm run codegen:fetch && npm run codegen:types && npm run codegen:validate",
+    "codegen:fetch": "tsx scripts/dynamic-scraper.ts",
+    "codegen:types": "openapi-typescript scripts/reddit-openapi-complete.json --output lib/types/reddit-api.ts",
+    "codegen:validate": "redocly lint scripts/reddit-openapi-complete.json",
     "coverage": "vitest run --coverage",
     "dev": "rimraf .next && next dev --turbo",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
@@ -46,6 +50,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.36.0",
     "@evilmartians/lefthook": "^1.13.1",
+    "@redocly/cli": "^2.1.5",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
@@ -68,6 +73,7 @@
     "eslint-plugin-testing-library": "^7.8.0",
     "jsdom": "^27.0.0",
     "msw": "^2.11.3",
+    "openapi-typescript": "^7.9.1",
     "postcss": "^8.5.6",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
@@ -75,7 +81,10 @@
     "rimraf": "^6.0.1",
     "rollup": "^4.52.0",
     "sharp": "^0.34.4",
+    "swagger-codegen-cli": "^2.2.3",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.0"
+    "typescript-eslint": "^8.44.0",
+    "yaml": "^2.8.1"
   }
 }
