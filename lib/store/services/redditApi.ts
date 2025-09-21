@@ -1,6 +1,5 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
 import type {SortingOption, SubredditItem} from '@/lib/types'
-import type {CommentData} from '@/lib/types/comments'
 import type {components} from '@/lib/types/reddit-api'
 import {fromAbout, fromPopular, fromSearch} from '@/lib/utils/subredditMapper'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
@@ -35,6 +34,12 @@ export type AutoPostChild = NonNullable<
   >['children']
 >[number]
 export type AutoPostChildData = NonNullable<AutoPostChild['data']>
+
+// Auto-generated comment types
+export type AutoCommentChild = NonNullable<
+  NonNullable<NonNullable<AutoPostCommentsResponse>[1]['data']>['children']
+>[number]
+export type AutoCommentData = NonNullable<AutoCommentChild['data']>
 
 /**
  * Constants.
@@ -199,9 +204,9 @@ export const redditApi = createApi({
      * Notes: Filter out AutoModerator comments.
      *
      * @param permalink - The Reddit post permalink.
-     * @returns An array of CommentData objects, filtered to exclude AutoModerator comments.
+     * @returns An array of AutoCommentData objects, filtered to exclude AutoModerator comments.
      */
-    getPostComments: builder.query<CommentData[], string>({
+    getPostComments: builder.query<AutoCommentData[], string>({
       // Build the API endpoint URL by appending .json to the permalink with a limit of comments
       query: (permalink) => {
         const params = new URLSearchParams({limit: String(COMMENTS_LIMIT)})
@@ -224,23 +229,24 @@ export const redditApi = createApi({
             .map((c) => c.data)
 
             // Type guard: Filter out any null/undefined comment data objects
-            .filter((data): data is CommentData => Boolean(data))
+            .filter((data): data is AutoCommentData => Boolean(data))
 
             // Remove AutoModerator comments as they're typically not useful for users
-            .filter((comment) => comment.author !== 'AutoModerator')
+            .filter((comment) => (comment as any).author !== 'AutoModerator')
 
             // Filter out deleted, removed, or empty comments
             .filter((comment) => {
+              const c = comment as any
               return (
                 // Ensure the comment has an author and it's not deleted/removed
-                comment.author &&
-                comment.author !== DELETED_CONTENT_MARKER &&
-                comment.author !== REMOVED_CONTENT_MARKER &&
+                c.author &&
+                c.author !== DELETED_CONTENT_MARKER &&
+                c.author !== REMOVED_CONTENT_MARKER &&
                 // Ensure the comment has content (either plain text body OR HTML body)
-                (comment.body || comment.body_html) &&
+                (c.body || c.body_html) &&
                 // Ensure the comment content itself isn't marked as deleted/removed
-                comment.body !== DELETED_CONTENT_MARKER &&
-                comment.body !== REMOVED_CONTENT_MARKER
+                c.body !== DELETED_CONTENT_MARKER &&
+                c.body !== REMOVED_CONTENT_MARKER
               )
             })
         )
