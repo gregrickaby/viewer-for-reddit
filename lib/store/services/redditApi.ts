@@ -1,17 +1,34 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
 import type {SortingOption, SubredditItem} from '@/lib/types'
-import type {AboutResponseData} from '@/lib/types/about'
-import type {
-  CommentChild,
-  CommentData,
-  CommentsListing
-} from '@/lib/types/comments'
-import type {PopularResponse} from '@/lib/types/popular'
-import type {PostResponse} from '@/lib/types/posts'
-import type {SearchChildData, SearchResponse} from '@/lib/types/search'
-import {extractChildren} from '@/lib/utils/extractChildren'
-import {fromAbout, fromPopular} from '@/lib/utils/subredditMapper'
+import type {CommentData} from '@/lib/types/comments'
+import type {components} from '@/lib/types/reddit-api'
+import {fromAbout, fromPopular, fromSearch} from '@/lib/utils/subredditMapper'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
+
+// Auto-generated type aliases for gradual migration from hand-written types.
+type AutoPostCommentsResponse = components['schemas']['GetPostCommentsResponse']
+type AutoSubredditAboutResponse =
+  components['schemas']['GetSubredditAboutResponse']
+type AutoPopularSubredditsResponse =
+  components['schemas']['GetPopularSubredditsResponse']
+type AutoPopularChildData = NonNullable<
+  NonNullable<
+    NonNullable<
+      components['schemas']['GetPopularSubredditsResponse']['data']
+    >['children']
+  >[number]['data']
+>
+type AutoSearchSubredditsResponse =
+  components['schemas']['SearchSubredditsResponse']
+type AutoSearchChildData = NonNullable<
+  NonNullable<
+    NonNullable<
+      components['schemas']['SearchSubredditsResponse']['data']
+    >['children']
+  >[number]['data']
+>
+type AutoSubredditPostsResponse =
+  components['schemas']['GetSubredditPostsResponse']
 
 /**
  * Constants.
@@ -58,7 +75,7 @@ export const redditApi = createApi({
      * @returns A list of SearchResults.
      */
     searchSubreddits: builder.query<
-      SearchChildData[],
+      SubredditItem[],
       {query: string; enableNsfw: boolean}
     >({
       query: ({query, enableNsfw}) => {
@@ -71,8 +88,15 @@ export const redditApi = createApi({
         })
         return `/api/subreddit_autocomplete_v2?${params.toString()}`
       },
-      transformResponse: (response: SearchResponse) =>
-        extractChildren<SearchChildData>(response),
+      transformResponse: (response: AutoSearchSubredditsResponse) => {
+        // Extract children manually since auto-generated types don't match extractChildren generic
+        const children = response.data?.children ?? []
+        const childrenData = children
+          .map((child) => child.data)
+          .filter((data): data is AutoSearchChildData => data !== undefined)
+
+        return childrenData.map(fromSearch)
+      },
       providesTags: (_result, _err, {query}) => [{type: 'Search', id: query}]
     }),
 
@@ -84,8 +108,8 @@ export const redditApi = createApi({
      */
     getSubredditAbout: builder.query<SubredditItem, string>({
       query: (subreddit) => `/r/${encodeURIComponent(subreddit)}/about.json`,
-      transformResponse: (response: {data: AboutResponseData}) =>
-        fromAbout(response.data),
+      transformResponse: (response: AutoSubredditAboutResponse) =>
+        fromAbout(response.data!),
       providesTags: (_result, _err, subreddit) => [
         {type: 'SubredditPosts', id: subreddit}
       ]
@@ -102,10 +126,19 @@ export const redditApi = createApi({
         const params = new URLSearchParams({limit: String(limit)})
         return `/subreddits/popular.json?${params.toString()}`
       },
-      transformResponse: (response: PopularResponse) =>
-        extractChildren(response)
-          .sort((a, b) => (b.subscribers ?? 0) - (a.subscribers ?? 0))
-          .map(fromPopular),
+      transformResponse: (response: AutoPopularSubredditsResponse) => {
+        // Extract children using type assertion since the structures are compatible at runtime
+        const children = response.data?.children ?? []
+        const childrenData = children
+          .map((child) => child.data)
+          .filter((data): data is AutoPopularChildData => data !== undefined)
+
+        const sortedChildren = childrenData.toSorted(
+          (a, b) => (b.subscribers ?? 0) - (a.subscribers ?? 0)
+        )
+
+        return sortedChildren.map(fromPopular)
+      },
       providesTags: (result) =>
         result?.length
           ? result.map((sub) => ({
@@ -123,7 +156,7 @@ export const redditApi = createApi({
      * @returns A filtered list of posts without stickied items.
      */
     getSubredditPosts: builder.infiniteQuery<
-      PostResponse,
+      AutoSubredditPostsResponse,
       SubredditPostsArgs,
       string | undefined
     >({
@@ -138,7 +171,9 @@ export const redditApi = createApi({
         if (pageParam) params.set('after', pageParam)
         return `/r/${encodeURIComponent(subreddit)}/${sort}.json?${params.toString()}`
       },
-      transformResponse: (response: PostResponse): PostResponse => ({
+      transformResponse: (
+        response: AutoSubredditPostsResponse
+      ): AutoSubredditPostsResponse => ({
         ...response,
         data: {
           ...response.data,
@@ -166,18 +201,16 @@ export const redditApi = createApi({
         const params = new URLSearchParams({limit: String(COMMENTS_LIMIT)})
         return `${permalink}.json?${params.toString()}`
       },
-      transformResponse: (
-        response: [unknown, CommentsListing] | CommentsListing
-      ) => {
+      transformResponse: (response: AutoPostCommentsResponse) => {
         // Reddit API returns either a single CommentsListing or an array where:
         // - First element [0] is the post data (which we don't need here)
         // - Second element [1] is the comments listing
-        const listing: CommentsListing | undefined = Array.isArray(response)
+        const listing = Array.isArray(response)
           ? response[1] // Extract comments from array response
           : response // Use response directly if it's already a CommentsListing
 
         // Extract the children array from the listing data, defaulting to empty array if undefined
-        const children: CommentChild[] = listing?.data?.children ?? []
+        const children = listing?.data?.children ?? []
 
         return (
           children

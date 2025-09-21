@@ -21,8 +21,9 @@ export default defineConfig({
       exclude: [
         '**/*.spec.{ts,tsx}',
         '**/*.test.{ts,tsx}',
-        '**/test-utils/**',
         '**/app/**/*.{ts,tsx}',
+        '**/scripts/**',
+        '**/test-utils/**',
         '**/types/**',
         '*.config.ts',
         '*.d.ts'

@@ -1,7 +1,28 @@
 import type {SubredditItem} from '@/lib/types'
-import type {AboutResponseData} from '@/lib/types/about'
-import type {PopularChildData} from '@/lib/types/popular'
-import type {SearchChildData} from '@/lib/types/search'
+import type {components} from '@/lib/types/reddit-api'
+
+// Auto-generated type for subreddit about data
+type AutoAboutData = NonNullable<
+  components['schemas']['GetSubredditAboutResponse']['data']
+>
+
+// Auto-generated type for popular subreddit child data
+type AutoPopularChildData = NonNullable<
+  NonNullable<
+    NonNullable<
+      components['schemas']['GetPopularSubredditsResponse']['data']
+    >['children']
+  >[number]['data']
+>
+
+// Auto-generated type for search subreddit child data
+type AutoSearchChildData = NonNullable<
+  NonNullable<
+    NonNullable<
+      components['schemas']['SearchSubredditsResponse']['data']
+    >['children']
+  >[number]['data']
+>
 
 function baseSubredditItem(input: {
   display_name?: string
@@ -21,11 +42,11 @@ function baseSubredditItem(input: {
   }
 }
 
-export const fromSearch = (sub: SearchChildData): SubredditItem =>
+export const fromSearch = (sub: AutoSearchChildData): SubredditItem =>
   baseSubredditItem(sub)
 
-export const fromPopular = (sub: PopularChildData): SubredditItem =>
+export const fromPopular = (sub: AutoPopularChildData): SubredditItem =>
   baseSubredditItem(sub)
 
-export const fromAbout = (sub: AboutResponseData): SubredditItem =>
+export const fromAbout = (sub: AutoAboutData): SubredditItem =>
   baseSubredditItem(sub)
