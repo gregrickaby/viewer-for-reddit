@@ -161,7 +161,7 @@ class OpenAPIGenerator {
           const data = await response.json()
 
           // Store response for schema generation
-          const key = `${endpoint.operationId}_${Math.random().toString(36).substr(2, 9)}`
+          const key = `${endpoint.operationId}_${Math.random().toString(36).slice(2, 11)}`
           this.responses[key] = data
 
           console.log(`✅ Fetched sample from ${url}`)
