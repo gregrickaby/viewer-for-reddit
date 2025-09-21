@@ -1,13 +1,10 @@
-import {act, renderHook} from '@/test-utils'
+import {act, mockPreloadedState, renderHook} from '@/test-utils'
 import {useRemoveItemFromHistory} from './useRemoveItemFromHistory'
 
 const preloadedState = {
+  ...mockPreloadedState,
   settings: {
-    favorites: [],
-    currentSort: 'hot' as const,
-    currentSubreddit: null,
-    enableNsfw: false,
-    isMuted: false,
+    ...mockPreloadedState.settings,
     recent: [
       {
         display_name: 'reactjs',
@@ -26,8 +23,7 @@ const preloadedState = {
         value: 'r/aww'
       }
     ]
-  },
-  transient: {toggleNavbar: false, toggleSearch: false, searchQuery: ''}
+  }
 }
 
 describe('useRemoveItemFromHistory', () => {
