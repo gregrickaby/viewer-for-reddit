@@ -94,11 +94,9 @@ describe('useMediaType', () => {
   it('detects YouTube video and extracts videoId', () => {
     const post = {
       post_hint: 'rich:video',
-      media: {
-        oembed: {
-          provider_name: 'YouTube',
-          html: '<iframe src="https://www.youtube.com/embed/abc123xyz"></iframe>'
-        }
+      media_embed: {
+        provider_name: 'YouTube',
+        html: '<iframe src="https://www.youtube.com/embed/abc123xyz"></iframe>'
       }
     } as any
     const {result} = renderHook(() => useMediaType(post))
@@ -124,11 +122,9 @@ describe('useMediaType', () => {
   it('returns null youtubeVideoId if YouTube but no match', () => {
     const post = {
       post_hint: 'rich:video',
-      media: {
-        oembed: {
-          provider_name: 'YouTube',
-          html: '<iframe src="https://www.youtube.com/embed/"></iframe>'
-        }
+      media_embed: {
+        provider_name: 'YouTube',
+        html: '<iframe src="https://www.youtube.com/embed/"></iframe>'
       }
     } as any
     const {result} = renderHook(() => useMediaType(post))
