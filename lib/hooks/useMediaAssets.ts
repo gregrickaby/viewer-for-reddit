@@ -12,7 +12,7 @@ export function useMediaAssets(post: Readonly<AutoPostChildData>) {
   const fallbackUrl = useMemo(() => {
     if (post.url?.includes('gifv')) return post.url.replace('.gifv', '.mp4')
     return (post as any).video_preview?.fallback_url
-  }, [post.url])
+  }, [post.url, (post as any).video_preview])
 
   return {
     mediumImage,
