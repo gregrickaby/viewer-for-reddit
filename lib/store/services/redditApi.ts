@@ -37,7 +37,10 @@ export type AutoPostChildData = NonNullable<AutoPostChild['data']>
 
 // Auto-generated comment types
 // Helper type to extract the comments listing from the response array
-type CommentsListing = Extract<AutoPostCommentsResponse[number], { data?: { children?: any } }>
+type CommentsListing = Extract<
+  AutoPostCommentsResponse[number],
+  {data?: {children?: any}}
+>
 export type AutoCommentChild = NonNullable<
   NonNullable<NonNullable<CommentsListing['data']>['children']>[number]
 >
