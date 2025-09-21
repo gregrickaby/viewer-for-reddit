@@ -178,7 +178,7 @@ class OpenAPIGenerator {
   private inferSchemaFromValue(value: any, depth = 0): JSONSchema {
     if (depth > 10) return {type: 'object'} // Prevent infinite recursion
 
-    if (value === null) return {type: ['string', 'null']}
+    if (value === null) return {type: 'null'}
 
     if (Array.isArray(value)) {
       if (value.length === 0) return {type: 'array', items: {type: 'object'}}
