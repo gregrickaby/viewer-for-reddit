@@ -1,4 +1,4 @@
-import type {TokenResponse} from '@/lib/types/token'
+import type {TokenResponse} from '@/lib/types'
 
 export const tokenMock: TokenResponse = {
   access_token: 'test_access_token',

@@ -1,4 +1,17 @@
 /**
+ * Utility types for the application.
+ */
+export type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends (...args: unknown[]) => unknown
+    ? T[K]
+    : T[K] extends Array<infer U>
+      ? Array<DeepPartial<U>>
+      : T[K] extends object
+        ? DeepPartial<T[K]>
+        : T[K]
+}
+
+/**
  * Next.js dynamic route parameters.
  */
 export type Params = Promise<{slug: string}>
@@ -51,4 +64,18 @@ export interface HlsPlayerProps
   gesturesDisabled?: boolean
   defaultStreamType?: 'on-demand' | 'live' | 'unknown'
   breakpoints?: string
+}
+
+/**
+ * Reddit OAuth 2.0 token response.
+ * Follows RFC 6749 standard for OAuth 2.0 access token responses.
+ *
+ * @see https://github.com/reddit-archive/reddit/wiki/OAuth2#application-only-oauth
+ */
+export interface TokenResponse {
+  access_token: string
+  token_type: string
+  expires_in: number
+  scope: string
+  error?: string
 }

@@ -1,6 +1,9 @@
-import type {DeepPartial} from '@/lib/types/global'
+import type {DeepPartial} from '@/lib/types'
 
-// For now, use a broader type to avoid null/undefined compatibility issues in test mock
+/**
+ * Mock subreddit data for testing.
+ * For now, use a broader type to avoid null/undefined compatibility issues in test mock.
+ */
 export const subredditMock: DeepPartial<Record<string, any>> = {
   kind: 'Listing',
   data: {
