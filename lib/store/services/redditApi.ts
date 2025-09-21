@@ -144,7 +144,7 @@ export const redditApi = createApi({
           .map((child) => child.data)
           .filter((data): data is AutoPopularChildData => data !== undefined)
 
-        const sortedChildren = childrenData.toSorted(
+        const sortedChildren = [...childrenData].sort(
           (a, b) => (b.subscribers ?? 0) - (a.subscribers ?? 0)
         )
 
