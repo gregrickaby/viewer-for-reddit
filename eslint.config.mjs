@@ -20,7 +20,8 @@ export default defineConfig(
       '**/public/',
       '**/*.min.js',
       '**/*.js',
-      '**/.*cache/'
+      '**/.*cache/',
+      'scripts/**'
     ]
   },
 

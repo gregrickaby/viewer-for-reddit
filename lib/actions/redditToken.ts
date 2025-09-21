@@ -1,7 +1,7 @@
 'use server'
 
 import config from '@/lib/config'
-import {TokenResponse} from '@/lib/types/token'
+import {TokenResponse} from '@/lib/types'
 import {logError} from '@/lib/utils/logError'
 import {
   getCachedToken,

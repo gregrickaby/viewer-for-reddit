@@ -4,8 +4,8 @@ import {Favorite} from '@/components/Favorite/Favorite'
 import {PostCard} from '@/components/PostCard/PostCard'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/useTrackRecentSubreddit'
+import type {AutoPostChild} from '@/lib/store/services/redditApi'
 import type {SortingOption} from '@/lib/types'
-import type {PostChild} from '@/lib/types/posts'
 import {
   Button,
   Code,
@@ -90,7 +90,7 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     )
   } else {
     content = data?.pages.flatMap((page) =>
-      (page?.data?.children ?? []).map((post: PostChild) =>
+      (page?.data?.children ?? []).map((post: AutoPostChild) =>
         post?.data ? <PostCard key={post.data.id} post={post.data} /> : null
       )
     )

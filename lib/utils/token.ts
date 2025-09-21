@@ -1,4 +1,4 @@
-import type {TokenResponse} from '@/lib/types/token'
+import type {TokenResponse} from '@/lib/types'
 
 let cachedToken: TokenResponse | null = null
 let requestCount = 0

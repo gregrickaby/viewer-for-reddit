@@ -1,9 +1,11 @@
 'use client'
 
 import {useAppSelector} from '@/lib/store/hooks'
-import {useGetSubredditPostsInfiniteQuery} from '@/lib/store/services/redditApi'
+import {
+  useGetSubredditPostsInfiniteQuery,
+  type AutoPostChild
+} from '@/lib/store/services/redditApi'
 import type {SortingOption} from '@/lib/types'
-import type {PostChild} from '@/lib/types/posts'
 import {useIntersection} from '@mantine/hooks'
 import {useEffect, useMemo} from 'react'
 
@@ -30,7 +32,7 @@ export function useInfinitePosts({
 
     const filteredPages = query.data.pages.map((page) => {
       const filteredChildren = (page.data?.children ?? []).filter(
-        (child: PostChild) => {
+        (child: AutoPostChild) => {
           const post = child?.data
           return post && (enableNsfw || !post.over_18)
         }
@@ -68,7 +70,7 @@ export function useInfinitePosts({
   useEffect(() => {
     const lastPage = query.data?.pages.at(-1)
     const visiblePosts = lastPage?.data?.children?.some(
-      (child: PostChild) => enableNsfw || !child?.data?.over_18
+      (child: AutoPostChild) => enableNsfw || !child?.data?.over_18
     )
 
     if (

@@ -1,4 +1,4 @@
-import {act, renderHook} from '@/test-utils'
+import {act, mockPreloadedState, renderHook} from '@/test-utils'
 import {useSidebarSection} from './useSidebarSection'
 
 const subreddit: any = {
@@ -20,15 +20,12 @@ const subreddit2: any = {
 }
 
 const preloadedState = {
+  ...mockPreloadedState,
   settings: {
+    ...mockPreloadedState.settings,
     favorites: [subreddit],
-    currentSort: 'hot' as const,
-    currentSubreddit: null,
-    enableNsfw: false,
-    isMuted: false,
     recent: []
-  },
-  transient: {toggleNavbar: false, toggleSearch: false, searchQuery: ''}
+  }
 }
 
 describe('useSidebarSection', () => {

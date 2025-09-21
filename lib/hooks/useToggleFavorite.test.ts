@@ -1,9 +1,11 @@
-import {act, renderHook, server} from '@/test-utils'
+import {act, mockPreloadedState, renderHook, server} from '@/test-utils'
 import {http, HttpResponse} from 'msw'
 import {useToggleFavorite} from './useToggleFavorite'
 
 const preloadedState = {
+  ...mockPreloadedState,
   settings: {
+    ...mockPreloadedState.settings,
     favorites: [
       {
         display_name: 'reactjs',
@@ -13,14 +15,8 @@ const preloadedState = {
         subscribers: 100000,
         value: 'r/reactjs'
       }
-    ],
-    currentSort: 'hot' as const,
-    currentSubreddit: null,
-    enableNsfw: false,
-    isMuted: false,
-    recent: []
-  },
-  transient: {toggleNavbar: false, toggleSearch: false, searchQuery: ''}
+    ]
+  }
 }
 
 describe('useToggleFavorite', () => {

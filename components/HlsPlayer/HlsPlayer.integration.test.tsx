@@ -3,7 +3,7 @@
  * and media chrome synchronization issues.
  */
 import {HlsPlayer} from '@/components/HlsPlayer/HlsPlayer'
-import {render, screen, waitFor} from '@/test-utils'
+import {mockPreloadedState, render, screen, waitFor} from '@/test-utils'
 
 // Mock Media Chrome to test mute synchronization
 vi.mock('media-chrome', () => ({}))
@@ -11,15 +11,11 @@ vi.mock('media-chrome', () => ({}))
 describe('HlsPlayer - Mute Integration', () => {
   it('should sync initial muted state from Redux to media chrome', async () => {
     const preloadedState = {
+      ...mockPreloadedState,
       settings: {
-        favorites: [],
-        currentSort: 'hot' as const,
-        currentSubreddit: null,
-        enableNsfw: false,
-        isMuted: true, // Should be muted initially
-        recent: []
-      },
-      transient: {toggleNavbar: false, toggleSearch: false, searchQuery: ''}
+        ...mockPreloadedState.settings,
+        isMuted: true // Should be muted initially
+      }
     }
 
     render(

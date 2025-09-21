@@ -1,20 +1,10 @@
-import {renderHook, waitFor} from '@/test-utils'
+import {mockPreloadedState, renderHook, waitFor} from '@/test-utils'
 import {server} from '@/test-utils/msw/server'
 import {http, HttpResponse} from 'msw'
 import {useInfinitePosts} from './useInfinitePosts'
 
 const subreddit = 'reactjs'
-const preloadedState = {
-  settings: {
-    favorites: [],
-    currentSort: 'hot' as const,
-    currentSubreddit: null,
-    enableNsfw: false,
-    isMuted: false,
-    recent: []
-  },
-  transient: {toggleNavbar: false, toggleSearch: false, searchQuery: ''}
-}
+const preloadedState = mockPreloadedState
 
 describe('useInfinitePosts', () => {
   beforeAll(() => {

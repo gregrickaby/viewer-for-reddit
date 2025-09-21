@@ -1,17 +1,7 @@
-import {act, renderHook} from '@/test-utils'
+import {act, mockPreloadedState, renderHook} from '@/test-utils'
 import {useHlsVideo} from './useHlsVideo'
 
-const preloadedState = {
-  settings: {
-    favorites: [],
-    currentSort: 'hot' as const,
-    currentSubreddit: null,
-    enableNsfw: false,
-    isMuted: false,
-    recent: []
-  },
-  transient: {toggleNavbar: false, toggleSearch: false, searchQuery: ''}
-}
+const preloadedState = mockPreloadedState
 
 describe('useHlsVideo', () => {
   it('returns refs and state', () => {
