@@ -1,7 +1,7 @@
 import type {DeepPartial} from '@/lib/types/global'
-import type {PostResponse} from '@/lib/types/posts'
 
-export const subredditMock: DeepPartial<PostResponse> = {
+// For now, use a broader type to avoid null/undefined compatibility issues in test mock
+export const subredditMock: DeepPartial<Record<string, any>> = {
   kind: 'Listing',
   data: {
     after: 't3_1kjyhw7',

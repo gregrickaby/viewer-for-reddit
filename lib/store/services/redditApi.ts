@@ -29,6 +29,12 @@ type AutoSearchChildData = NonNullable<
 >
 type AutoSubredditPostsResponse =
   components['schemas']['GetSubredditPostsResponse']
+export type AutoPostChild = NonNullable<
+  NonNullable<
+    components['schemas']['GetSubredditPostsResponse']['data']
+  >['children']
+>[number]
+export type AutoPostChildData = NonNullable<AutoPostChild['data']>
 
 /**
  * Constants.

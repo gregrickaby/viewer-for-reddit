@@ -1,6 +1,6 @@
 'use client'
 
-import type {PostChildData} from '@/lib/types/posts'
+import type {AutoPostChildData} from '@/lib/store/services/redditApi'
 import {useMemo} from 'react'
 
 /**
@@ -11,7 +11,7 @@ import {useMemo} from 'react'
  * intentionally keeps its API simple so components can make clear rendering
  * decisions (image vs reddit-hosted video vs youtube vs link-with-video, etc.).
  *
- * @param post - The Reddit post object (PostChildData)
+ * @param post - The Reddit post object (AutoPostChildData)
  * @returns An object with boolean flags for media types and extracted YouTube ID
  *
  * Example usage
@@ -19,25 +19,25 @@ import {useMemo} from 'react'
  * const {isImage, isRedditVideo, isLinkWithVideo, youtubeVideoId} = useMediaType(post)
  * ```
  */
-export function useMediaType(post: Readonly<PostChildData>) {
+export function useMediaType(post: Readonly<AutoPostChildData>) {
   const isImage = post.post_hint === 'image'
   const isLink = post.post_hint === 'link'
   const isRedditVideo =
     post.post_hint === 'hosted:video' || post.post_hint === 'rich:video'
 
-  const isYouTube = post.media?.oembed?.provider_name === 'YouTube'
+  const isYouTube = (post.media_embed as any)?.provider_name === 'YouTube'
 
   const isLinkWithVideo = useMemo(() => {
     if (!isLink) return false
 
     return Boolean(
-      post.video_preview?.hls_url ||
-        post.video_preview?.fallback_url ||
+      (post as any).video_preview?.hls_url ||
+        (post as any).video_preview?.fallback_url ||
         post.url?.endsWith('.gifv') ||
         post.url?.endsWith('.mp4') ||
         post.url?.endsWith('.webm')
     )
-  }, [isLink, post.video_preview, post.url])
+  }, [isLink, post.url])
 
   const isGifv = useMemo(() => {
     return Boolean(post.url?.endsWith('.gifv') || post.domain === 'i.imgur.com')
@@ -55,10 +55,11 @@ export function useMediaType(post: Readonly<PostChildData>) {
   const youtubeVideoId = useMemo(() => {
     if (!isYouTube) return null
     return (
-      /embed\/([a-zA-Z0-9_-]+)/.exec(post.media?.oembed?.html ?? '')?.[1] ??
-      null
+      /embed\/([a-zA-Z0-9_-]+)/.exec(
+        (post.media_embed as any)?.html ?? ''
+      )?.[1] ?? null
     )
-  }, [isYouTube, post.media?.oembed])
+  }, [isYouTube, post.media_embed])
 
   return {
     isImage,

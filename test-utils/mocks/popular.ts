@@ -1,6 +1,5 @@
-import {PopularResponse} from '@/lib/types/popular'
-
-export const popularMock: PopularResponse = {
+// Generic mock for popular response, no longer tied to hand-written types
+export const popularMock: Record<string, any> = {
   kind: 'Listing',
   data: {
     after: 't5_2qh1i',

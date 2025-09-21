@@ -1,6 +1,6 @@
 import {Comments} from '@/components/Comments/Comments'
 import {Media} from '@/components/Media/Media'
-import type {PostChildData} from '@/lib/types/posts'
+import type {AutoPostChildData} from '@/lib/store/services/redditApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {
@@ -22,7 +22,7 @@ import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
 import classes from './PostCard.module.css'
 
 interface PostCardProps {
-  post: PostChildData
+  post: AutoPostChildData
 }
 
 /**
@@ -35,7 +35,7 @@ interface PostCardProps {
  * - Uses Mantine UI for layout, icons, and accessibility
  * - All links are accessible and open in new tabs where appropriate
  *
- * @param post - The Reddit post data (PostChildData)
+ * @param post - The Reddit post data (AutoPostChildData)
  * @returns JSX.Element for a styled, interactive Reddit post card
  */
 export function PostCard({post}: Readonly<PostCardProps>) {

@@ -1,6 +1,5 @@
-import type {SearchResponse} from '@/lib/types/search'
-
-export const searchMock: SearchResponse = {
+// Generic mock for search response, no longer tied to hand-written types
+export const searchMock: Record<string, any> = {
   kind: 'Listing',
   data: {
     after: null,

@@ -1,6 +1,5 @@
-import {AboutResponse} from '@/lib/types/about'
-
-export const aboutMock: AboutResponse = {
+// Generic mock for about response, no longer tied to hand-written types
+export const aboutMock: Record<string, any> = {
   kind: 't5',
   data: {
     user_flair_background_color: null,

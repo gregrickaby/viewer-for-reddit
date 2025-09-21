@@ -7,7 +7,7 @@ import {YouTubePlayer} from '@/components/YouTubePlayer/YouTubePlayer'
 import {useMediaAssets} from '@/lib/hooks/useMediaAssets'
 import {useMediaType} from '@/lib/hooks/useMediaType'
 import {useAppSelector} from '@/lib/store/hooks'
-import type {PostChildData} from '@/lib/types/posts'
+import type {AutoPostChildData} from '@/lib/store/services/redditApi'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
 import {logError} from '@/lib/utils/logError'
 import {decodeHtmlEntities} from '@/lib/utils/sanitizeText'
@@ -34,10 +34,10 @@ const hlsDefaults = {
  * - Link (gifv/HLS): Renders with HlsPlayer, uses fallbackUrl if present.
  * - Fallback: Renders sanitized selftext HTML or unsupported message.
  *
- * @param post - The Reddit post data (PostChildData)
+ * @param post - The Reddit post data (AutoPostChildData)
  * @returns JSX.Element for the appropriate media type
  */
-export function Media(post: Readonly<PostChildData>) {
+export function Media(post: Readonly<AutoPostChildData>) {
   const {
     isImage,
     isLink,
@@ -61,8 +61,8 @@ export function Media(post: Readonly<PostChildData>) {
 
   if (isImage) {
     const isVertical = getIsVertical(
-      post.preview?.images[0]?.source?.width,
-      post.preview?.images[0]?.source?.height
+      post.preview?.images?.[0]?.source?.width,
+      post.preview?.images?.[0]?.source?.height
     )
 
     return (
@@ -73,7 +73,9 @@ export function Media(post: Readonly<PostChildData>) {
   }
 
   if (isRedditVideo) {
-    const video = post.preview?.reddit_video_preview ?? post.media?.reddit_video
+    const video =
+      (post.preview as any)?.reddit_video_preview ??
+      (post.media as any)?.reddit_video
     const isVertical = getIsVertical(video?.width, video?.height)
 
     return (
@@ -95,8 +97,8 @@ export function Media(post: Readonly<PostChildData>) {
 
   if (isLinkWithVideo) {
     const isVertical = getIsVertical(
-      post.video_preview?.width,
-      post.video_preview?.height
+      (post as any).video_preview?.width,
+      (post as any).video_preview?.height
     )
 
     return (
@@ -104,13 +106,13 @@ export function Media(post: Readonly<PostChildData>) {
         <HlsPlayer
           {...hlsDefaults}
           dataHint={fallbackUrl ? 'link:gifv' : 'link'}
-          height={post.video_preview?.height}
+          height={(post as any).video_preview?.height}
           fallbackUrl={fallbackUrl}
           id={post.id}
           poster={mediumImage?.url}
           muted={isMuted}
-          src={post.video_preview?.hls_url}
-          width={post.video_preview?.width}
+          src={(post as any).video_preview?.hls_url}
+          width={(post as any).video_preview?.width}
         />
       </MediaContainer>
     )
@@ -118,8 +120,8 @@ export function Media(post: Readonly<PostChildData>) {
 
   if (isLink) {
     const isVertical = getIsVertical(
-      post.preview?.images[0]?.source?.width,
-      post.preview?.images[0]?.source?.height
+      post.preview?.images?.[0]?.source?.width,
+      post.preview?.images?.[0]?.source?.height
     )
 
     const decodedSrc = mediumImage?.url || post.thumbnail
