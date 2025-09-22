@@ -1,19 +1,34 @@
-### Related Issue
+# Pull Request
 
-Fixes #
+## Related Issue
 
-### Description
+Closes # (issue number)
 
-What does your feature do? Give some context.
+## Description
 
-### Screenshot
+- What does this PR do? Provide context and background for reviewers.
+- Why is this change needed?
 
-If possible, add some screenshots of your feature.
+## Screenshots (if applicable)
 
-### Verification
+- Add screenshots or GIFs to help reviewers understand the change.
 
-How will a stakeholder test this PR?
+## Verification Steps
+
+- How can a reviewer or stakeholder test this PR?
+- List clear, step-by-step instructions:
 
 1.
-1.
-1.
+2.
+3.
+
+---
+
+## Checklist
+
+- [ ] PR title is clear and descriptive
+- [ ] Related issue is linked above
+- [ ] Tests added or updated (if needed)
+- [ ] Linting and formatting pass (`npm run lint`)
+- [ ] All tests pass (`npm test`)
+- [ ] Documentation updated (if needed)
