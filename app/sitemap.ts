@@ -54,7 +54,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1
     },
     {
-      url: `${base}/about`,
+      url: `${base}about`,
       lastModified,
       changeFrequency: 'monthly',
       priority: 0.5
@@ -63,7 +63,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const subredditPages: MetadataRoute.Sitemap = popularSubreddits.map(
     (slug) => ({
-      url: `${base}/r/${slug}`,
+      url: `${base}r/${slug}`,
       lastModified,
       changeFrequency: 'hourly',
       priority: 0.8
