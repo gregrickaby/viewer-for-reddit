@@ -53,7 +53,7 @@ Welcome! 👋 This guide will help you contribute to Viewer for Reddit, whether 
 
 1. **Fork and clone** the repository
 2. **Install dependencies**: `npm install`
-3. **Set up environment**: `cp .env.example .env`
+3. **Set up environment**: `cp .env.example .env` and then add your Reddit API credentials [see below](#authentication-setup)
 4. **Start development**: `npm run dev`
 5. **Open**: <http://localhost:3000>
 
@@ -68,7 +68,7 @@ That's it! You're ready to start contributing. 🎉
 - **Node.js v22** (see `.nvmrc`)
 - **npm v11+**
 - **Git**
-- **Reddit API credentials** (optional, for full functionality)
+- **Reddit API credentials**
 
 ### Setup
 
@@ -76,11 +76,11 @@ That's it! You're ready to start contributing. 🎉
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR-USERNAME/viewer-for-reddit.git
+git clone https://github.com/gregrickaby/viewer-for-reddit.git
 cd viewer-for-reddit
 
-# Install dependencies (~31 seconds)
-npm install
+# Install dependencies
+nvm use && npm i
 ```
 
 #### 2. Environment Configuration
@@ -90,10 +90,10 @@ npm install
 cp .env.example .env
 ```
 
-**Optional Reddit API Setup** (for full functionality):
+**Reddit API Setup**:
 
 - Visit <https://www.reddit.com/prefs/apps>
-- Create a new app (type: `script`)
+- Create a new app (type: `personal use script`)
 - Add your credentials to `.env`:
 
 ```bash
@@ -101,7 +101,7 @@ REDDIT_CLIENT_ID="your_client_id_here"
 REDDIT_CLIENT_SECRET="your_client_secret_here"
 ```
 
-> **Note**: The app works without Reddit credentials, but will show "Unable to load posts" messages.
+> **Note**: The app will not without Reddit credentials!.
 
 ### Development
 
@@ -177,7 +177,7 @@ npm run coverage
 - **Framework**: Next.js (App Router)
 - **UI**: React and Mantine
 - **Styling**: CSS Modules
-- **State**: Redux Toolkit Query (RTK)
+- **State**: Redux Toolkit w/ RTK Query
 - **Types**: TypeScript (strict)
 - **Testing**: Vitest + RTL + MSW
 - **API**: Reddit REST API + OAuth 2.0
@@ -226,7 +226,7 @@ The app uses **Reddit OAuth 2.0** for API access:
 
 1. **Visit**: <https://www.reddit.com/prefs/apps>
 2. **Create new app**:
-   - **Name**: `Viewer for Reddit Local Dev`
+   - **Name**: `Local Dev`
    - **Type**: `script`
    - **Description**: `Local development app`
    - **About URL**: `http://localhost:3000`
@@ -379,4 +379,4 @@ redocly lint scripts/reddit-openapi-complete.json
 
 This repository is maintained by [Greg Rickaby](https://gregrickaby.com/). By contributing code, you agree to license your contributions under the [MIT License](https://github.com/gregrickaby/viewer-for-reddit/blob/main/LICENSE).
 
-**Disclaimer**: This project is not affiliated with, endorsed by, or sponsored by Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc.
+_Viewer for Reddit is an independent side project and is not affiliated with, endorsed by, or sponsored by Reddit, Inc. “Reddit” and the Snoo logo are trademarks of Reddit, Inc., used in accordance with their [brand guidelines](https://redditinc.com/brand). The app developer and contributors endeavor to comply with Reddit’s [API terms](https://redditinc.com/policies/data-api-terms) and [Developer Platform](https://support.reddithelp.com/hc/en-us/articles/14945211791892-Developer-Platform-Accessing-Reddit-Data) policies._
