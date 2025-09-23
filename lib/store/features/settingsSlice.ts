@@ -6,7 +6,7 @@ import {
   loadSettings,
   saveSettings
 } from '@/lib/utils/storage'
-import {createSelector, createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 /**
  * Maximum number of items to keep in favorites and recent lists
@@ -172,29 +172,3 @@ export const {
 
 // Export Reducer.
 export default settingsSlice.reducer
-
-// Export Selectors.
-export const selectFavoriteSubreddits = createSelector(
-  [(state: any) => state.settings.favorites],
-  (favorites: SubredditItem[]) => favorites.map((sub) => sub.display_name)
-)
-
-export const selectHasFavorites = createSelector(
-  [selectFavoriteSubreddits],
-  (favoriteNames) => favoriteNames.length > 0
-)
-
-export const selectRecentSubreddits = createSelector(
-  [(state: any) => state.settings.recent],
-  (recent: SubredditItem[]) => recent.map((sub) => sub.display_name)
-)
-
-export const selectHasRecent = createSelector(
-  [selectRecentSubreddits],
-  (recentNames) => recentNames.length > 0
-)
-
-export const selectSearchHistory = createSelector(
-  [(state: any) => state.settings.searchHistory],
-  (searchHistory: SubredditItem[]) => searchHistory
-)

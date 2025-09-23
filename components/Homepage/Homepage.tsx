@@ -2,11 +2,11 @@
 
 import {FavoritePosts} from '@/components/FavoritePosts/FavoritePosts'
 import {Posts} from '@/components/Posts/Posts'
+import {useAppSelector} from '@/lib/store/hooks'
 import {
   selectFavoriteSubreddits,
   selectHasFavorites
-} from '@/lib/store/features/settingsSlice'
-import {useAppSelector} from '@/lib/store/hooks'
+} from '@/lib/store/selectors/settingsSelectors'
 
 /**
  * Homepage component

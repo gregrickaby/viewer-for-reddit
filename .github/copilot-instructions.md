@@ -84,19 +84,16 @@
 
 **ALWAYS perform these validation steps after making changes:**
 
-1. **Development server validation**:
-   - Run `npm run dev`
-   - Navigate to http://localhost:3000
-   - Verify application loads with header, search box, and Reddit logo
-   - Search functionality should show "Unable to load posts from Reddit" if API credentials not configured (this is expected behavior)
-
-2. **Test validation**:
-   - Run `npm test` and ensure 100% coverage maintained
-   - All tests must pass - no exceptions
-
-3. **Lint validation**:
+1. **Lint validation**:
    - Run `npm run lint` - must complete with no errors
    - CI will fail if linting errors exist
+
+2. **TypeScript validation**:
+   - Run `npx tsc --noEmit` - must complete with no errors
+
+3. **Test validation**:
+   - Run `npm test` and ensure 100% coverage maintained
+   - All tests must pass - no exceptions
 
 ## Architecture Overview
 

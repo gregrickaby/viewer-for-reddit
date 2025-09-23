@@ -198,6 +198,60 @@ export const handlers = [
       })
     }
 
+    if (slug === 'gaming+technology+programming') {
+      // Test multi-subreddit request with + separators preserved
+      return HttpResponse.json({
+        kind: 'Listing',
+        data: {
+          after: null,
+          dist: 2,
+          modhash: '',
+          geo_filter: '',
+          children: [
+            {
+              kind: 't3',
+              data: {
+                title: 'Gaming post from multi-subreddit',
+                id: 'multi1',
+                stickied: false
+              }
+            },
+            {
+              kind: 't3',
+              data: {
+                title: 'Technology post from multi-subreddit',
+                id: 'multi2',
+                stickied: false
+              }
+            }
+          ]
+        }
+      })
+    }
+
+    if (slug === 'test%20space+normal') {
+      // Test that individual subreddit names with spaces are encoded properly
+      return HttpResponse.json({
+        kind: 'Listing',
+        data: {
+          after: null,
+          dist: 1,
+          modhash: '',
+          geo_filter: '',
+          children: [
+            {
+              kind: 't3',
+              data: {
+                title: 'Post from encoded subreddit',
+                id: 'encoded1',
+                stickied: false
+              }
+            }
+          ]
+        }
+      })
+    }
+
     return HttpResponse.json(subredditMock)
   }),
 

@@ -1,4 +1,7 @@
-import type {AutoCommentData} from '@/lib/store/services/redditApi'
+import type {
+  AutoCommentData,
+  AutoCommentWithText
+} from '@/lib/store/services/redditApi'
 
 /**
  * Content filtering constants for Reddit comments
@@ -16,7 +19,16 @@ export const COMMENT_CONTENT_MARKERS = {
  * @returns True if the comment is from AutoModerator
  */
 export function isAutoModeratorComment(comment: AutoCommentData): boolean {
-  return (comment as any).author === COMMENT_CONTENT_MARKERS.AUTO_MODERATOR
+  return comment.author === COMMENT_CONTENT_MARKERS.AUTO_MODERATOR
+}
+
+/**
+ * Type guard to check if a comment has text content
+ */
+function hasCommentText(
+  comment: AutoCommentData
+): comment is AutoCommentWithText {
+  return 'body' in comment && 'body_html' in comment
 }
 
 /**
@@ -31,18 +43,28 @@ export function isAutoModeratorComment(comment: AutoCommentData): boolean {
  * @returns True if the comment is valid for display
  */
 export function isValidComment(comment: AutoCommentData): boolean {
-  const c = comment as any // Reddit API types are complex, using any for practical access
-  return (
-    // Ensure the comment has an author and it's not deleted/removed
-    c.author &&
-    c.author !== COMMENT_CONTENT_MARKERS.DELETED &&
-    c.author !== COMMENT_CONTENT_MARKERS.REMOVED &&
-    // Ensure the comment has content (either plain text body OR HTML body with actual content)
-    Boolean(c.body?.trim() || c.body_html?.trim()) &&
-    // Ensure the comment content itself isn't marked as deleted/removed
-    c.body !== COMMENT_CONTENT_MARKERS.DELETED &&
-    c.body !== COMMENT_CONTENT_MARKERS.REMOVED
+  // Check if author exists and is valid
+  const hasValidAuthor = Boolean(
+    comment.author &&
+      comment.author !== COMMENT_CONTENT_MARKERS.DELETED &&
+      comment.author !== COMMENT_CONTENT_MARKERS.REMOVED
   )
+
+  // Check if comment has text properties
+  if (!hasCommentText(comment)) {
+    return false
+  }
+
+  // Check if comment has valid content
+  const hasContent = Boolean(comment.body?.trim() || comment.body_html?.trim())
+
+  // Check if content is not marked as deleted/removed
+  const isNotDeleted = Boolean(
+    comment.body !== COMMENT_CONTENT_MARKERS.DELETED &&
+      comment.body !== COMMENT_CONTENT_MARKERS.REMOVED
+  )
+
+  return hasValidAuthor && hasContent && isNotDeleted
 }
 
 /**

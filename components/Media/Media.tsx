@@ -45,24 +45,25 @@ export function Media(post: Readonly<AutoPostChildData>) {
 
   const imageVerticalData = useMemo(() => {
     if (!isImage && !isLink) return null
+    const preview = (post as any).preview
     return {
       isVertical: getIsVertical(
-        post.preview?.images?.[0]?.source?.width,
-        post.preview?.images?.[0]?.source?.height
+        preview?.images?.[0]?.source?.width,
+        preview?.images?.[0]?.source?.height
       )
     }
-  }, [isImage, isLink, post.preview?.images])
+  }, [isImage, isLink, (post as any).preview?.images])
 
   const redditVideoData = useMemo(() => {
     if (!isRedditVideo) return null
+    const preview = (post as any).preview
     const video =
-      (post.preview as any)?.reddit_video_preview ??
-      (post.media as any)?.reddit_video
+      preview?.reddit_video_preview ?? (post.media as any)?.reddit_video
     return {
       video,
       isVertical: getIsVertical(video?.width, video?.height)
     }
-  }, [isRedditVideo, post.preview, post.media])
+  }, [isRedditVideo, (post as any).preview, post.media])
 
   const linkVideoData = useMemo(() => {
     if (!isLinkWithVideo) return null
@@ -98,7 +99,7 @@ export function Media(post: Readonly<AutoPostChildData>) {
       <MediaContainer isVertical={isVertical}>
         <HlsPlayer
           {...HLS_DEFAULTS}
-          dataHint={post.post_hint}
+          dataHint={(post as any).post_hint}
           height={video?.height}
           fallbackUrl={video?.fallback_url}
           id={post.id}
@@ -150,8 +151,6 @@ export function Media(post: Readonly<AutoPostChildData>) {
     )
   }
 
-  logError(
-    `Unsupported media type: post_hint="${post.post_hint}", url="${post.url}"`
-  )
+  logError(`Unsupported media type: "${post.url}"`)
   return <p>Unsupported post type</p>
 }

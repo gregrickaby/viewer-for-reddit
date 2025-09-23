@@ -35,6 +35,11 @@ export type AutoPostChild = NonNullable<
   >['children']
 >[number]
 export type AutoPostChildData = NonNullable<AutoPostChild['data']>
+// More specific type for components that need preview and post_hint
+export type AutoPostWithMedia = Extract<
+  AutoPostChildData,
+  {preview?: any; post_hint?: string}
+>
 type CommentsListing = Extract<
   AutoPostCommentsResponse[number],
   {data?: {children?: any}}
@@ -43,6 +48,11 @@ export type AutoCommentChild = NonNullable<
   NonNullable<NonNullable<CommentsListing['data']>['children']>[number]
 >
 export type AutoCommentData = NonNullable<AutoCommentChild['data']>
+// More specific type for components that need body and body_html
+export type AutoCommentWithText = Extract<
+  AutoCommentData,
+  {body?: string; body_html?: string}
+>
 
 /**
  * Constants.
@@ -181,7 +191,12 @@ export const redditApi = createApi({
       query({queryArg: {subreddit, sort}, pageParam}) {
         const params = new URLSearchParams({limit: String(MAX_LIMIT)})
         if (pageParam) params.set('after', pageParam)
-        return `/r/${encodeURIComponent(subreddit)}/${sort}.json?${params.toString()}`
+        // Handle multi-subreddit syntax: encode individual subreddit names but preserve + separators
+        const encodedSubreddit = subreddit
+          .split('+')
+          .map((sub) => encodeURIComponent(sub))
+          .join('+')
+        return `/r/${encodedSubreddit}/${sort}.json?${params.toString()}`
       },
       transformResponse: (
         response: AutoSubredditPostsResponse

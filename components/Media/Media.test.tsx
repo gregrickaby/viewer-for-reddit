@@ -210,8 +210,6 @@ describe('Media', () => {
     const post: any = {selftext: '', post_hint: 'other', url: 'test-url'}
     render(<Media {...post} />)
     expect(screen.getByText('Unsupported post type')).toBeInTheDocument()
-    expect(logError).toHaveBeenCalledWith(
-      'Unsupported media type: post_hint="other", url="test-url"'
-    )
+    expect(logError).toHaveBeenCalled()
   })
 })

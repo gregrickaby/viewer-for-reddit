@@ -39,7 +39,7 @@ interface PostCardProps {
  * @returns JSX.Element for a styled, interactive Reddit post card
  */
 export function PostCard({post}: Readonly<PostCardProps>) {
-  const preview = post.preview?.images?.[0]?.resolutions
+  const preview = (post as any).preview?.images?.[0]?.resolutions
   const image = getMediumImage(preview ?? [])
   const postLink = `https://reddit.com${post.permalink}`
   const created = post.created_utc
