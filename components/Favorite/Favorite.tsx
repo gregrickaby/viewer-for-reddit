@@ -1,6 +1,6 @@
 'use client'
 
-import {useToggleFavorite} from '@/lib/hooks/useToggleFavorite'
+import {useAddFavorite} from '@/lib/hooks/useAddFavorite'
 import {ActionIcon, Tooltip} from '@mantine/core'
 import {FaHeart, FaRegHeart} from 'react-icons/fa'
 
@@ -9,7 +9,7 @@ interface FavoriteProps {
 }
 
 export function Favorite({subreddit}: Readonly<FavoriteProps>) {
-  const {isFavorite, loading, toggle} = useToggleFavorite(subreddit)
+  const {isFavorite, loading, toggle} = useAddFavorite(subreddit)
 
   if (subreddit === 'all' || subreddit === 'popular') return null
 

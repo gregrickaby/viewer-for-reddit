@@ -7,7 +7,7 @@ import {logError} from '@/lib/utils/logError'
 import {notifications} from '@mantine/notifications'
 import {useState} from 'react'
 
-export function useToggleFavorite(subreddit: string) {
+export function useAddFavorite(subreddit: string) {
   const dispatch = useAppDispatch()
   const favorites = useAppSelector((state) => state.settings.favorites)
   const [trigger] = useLazyGetSubredditAboutQuery()

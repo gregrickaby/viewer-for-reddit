@@ -3,8 +3,8 @@ import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
 
 const toggleMock = vi.fn()
-vi.mock('@/lib/hooks/useToggleFavorite', () => ({
-  useToggleFavorite: () => ({
+vi.mock('@/lib/hooks/useAddFavorite', () => ({
+  useAddFavorite: () => ({
     isFavorite: false,
     loading: false,
     toggle: toggleMock
