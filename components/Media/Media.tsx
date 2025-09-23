@@ -11,28 +11,22 @@ import type {AutoPostChildData} from '@/lib/store/services/redditApi'
 import {getIsVertical} from '@/lib/utils/getIsVertical'
 import {logError} from '@/lib/utils/logError'
 import {decodeHtmlEntities} from '@/lib/utils/sanitizeText'
-import {Suspense} from 'react'
+import {Suspense, useMemo} from 'react'
 
-const hlsDefaults = {
+const HLS_DEFAULTS = {
   autoPlay: true,
   controls: true,
   loop: true,
   muted: true,
   playsInline: true,
   preload: 'none'
-}
+} as const
 
 /**
  * Media component for rendering all supported Reddit post media types.
  *
  * Handles images, YouTube, Reddit-hosted video, HLS/gifv links, and fallback selftext.
  * Uses Mantine, custom containers, and lazy loading for optimal performance.
- *
- * - Images: Renders with ResponsiveImage and MediaContainer, detects vertical/horizontal.
- * - YouTube: Renders with YouTubePlayer inside Suspense for lazy loading.
- * - Reddit Video: Renders with HlsPlayer, supports mute, poster, and fallback.
- * - Link (gifv/HLS): Renders with HlsPlayer, uses fallbackUrl if present.
- * - Fallback: Renders sanitized selftext HTML or unsupported message.
  *
  * @param post - The Reddit post data (AutoPostChildData)
  * @returns JSX.Element for the appropriate media type
@@ -49,6 +43,37 @@ export function Media(post: Readonly<AutoPostChildData>) {
   const {mediumImage, fallbackUrl} = useMediaAssets(post)
   const isMuted = useAppSelector((state) => state.settings.isMuted)
 
+  const imageVerticalData = useMemo(() => {
+    if (!isImage && !isLink) return null
+    return {
+      isVertical: getIsVertical(
+        post.preview?.images?.[0]?.source?.width,
+        post.preview?.images?.[0]?.source?.height
+      )
+    }
+  }, [isImage, isLink, post.preview?.images])
+
+  const redditVideoData = useMemo(() => {
+    if (!isRedditVideo) return null
+    const video =
+      (post.preview as any)?.reddit_video_preview ??
+      (post.media as any)?.reddit_video
+    return {
+      video,
+      isVertical: getIsVertical(video?.width, video?.height)
+    }
+  }, [isRedditVideo, post.preview, post.media])
+
+  const linkVideoData = useMemo(() => {
+    if (!isLinkWithVideo) return null
+    return {
+      isVertical: getIsVertical(
+        (post as any).video_preview?.width,
+        (post as any).video_preview?.height
+      )
+    }
+  }, [isLinkWithVideo, post])
+
   if (isYouTube && youtubeVideoId) {
     return (
       <Suspense fallback={<div>Loading YouTube...</div>}>
@@ -59,29 +84,20 @@ export function Media(post: Readonly<AutoPostChildData>) {
     )
   }
 
-  if (isImage) {
-    const isVertical = getIsVertical(
-      post.preview?.images?.[0]?.source?.width,
-      post.preview?.images?.[0]?.source?.height
-    )
-
+  if (isImage && imageVerticalData) {
     return (
-      <MediaContainer isVertical={isVertical}>
+      <MediaContainer isVertical={imageVerticalData.isVertical}>
         <ResponsiveImage alt={post.title} src={post.url} />
       </MediaContainer>
     )
   }
 
-  if (isRedditVideo) {
-    const video =
-      (post.preview as any)?.reddit_video_preview ??
-      (post.media as any)?.reddit_video
-    const isVertical = getIsVertical(video?.width, video?.height)
-
+  if (isRedditVideo && redditVideoData) {
+    const {video, isVertical} = redditVideoData
     return (
       <MediaContainer isVertical={isVertical}>
         <HlsPlayer
-          {...hlsDefaults}
+          {...HLS_DEFAULTS}
           dataHint={post.post_hint}
           height={video?.height}
           fallbackUrl={video?.fallback_url}
@@ -95,16 +111,11 @@ export function Media(post: Readonly<AutoPostChildData>) {
     )
   }
 
-  if (isLinkWithVideo) {
-    const isVertical = getIsVertical(
-      (post as any).video_preview?.width,
-      (post as any).video_preview?.height
-    )
-
+  if (isLinkWithVideo && linkVideoData) {
     return (
-      <MediaContainer isVertical={isVertical}>
+      <MediaContainer isVertical={linkVideoData.isVertical}>
         <HlsPlayer
-          {...hlsDefaults}
+          {...HLS_DEFAULTS}
           dataHint={fallbackUrl ? 'link:gifv' : 'link'}
           height={(post as any).video_preview?.height}
           fallbackUrl={fallbackUrl}
@@ -118,31 +129,29 @@ export function Media(post: Readonly<AutoPostChildData>) {
     )
   }
 
-  if (isLink) {
-    const isVertical = getIsVertical(
-      post.preview?.images?.[0]?.source?.width,
-      post.preview?.images?.[0]?.source?.height
-    )
-
+  if (isLink && imageVerticalData) {
     const decodedSrc = mediumImage?.url || post.thumbnail
     const imageSrc = decodedSrc ? decodeHtmlEntities(decodedSrc) : decodedSrc
 
     return (
-      <MediaContainer isVertical={isVertical}>
+      <MediaContainer isVertical={imageVerticalData.isVertical}>
         <ResponsiveImage alt={post.title} src={imageSrc} />
       </MediaContainer>
     )
   }
 
-  logError(`Unhandled post type: ${post.post_hint}`)
+  if (post.selftext) {
+    return (
+      <div
+        dangerouslySetInnerHTML={{
+          __html: post.selftext_html ?? ''
+        }}
+      />
+    )
+  }
 
-  return post.selftext ? (
-    <div
-      dangerouslySetInnerHTML={{
-        __html: post.selftext_html ?? ''
-      }}
-    />
-  ) : (
-    <p>Unsupported media.</p>
+  logError(
+    `Unsupported media type: post_hint="${post.post_hint}", url="${post.url}"`
   )
+  return <p>Unsupported post type</p>
 }
