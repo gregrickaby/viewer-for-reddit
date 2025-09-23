@@ -170,5 +170,5 @@ export const {
   toggleNsfw
 } = settingsSlice.actions
 
-// Export Reducer.
+// Export reducer.
 export default settingsSlice.reducer
