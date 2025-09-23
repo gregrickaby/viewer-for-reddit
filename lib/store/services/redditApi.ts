@@ -1,4 +1,3 @@
-import {getRedditToken} from '@/lib/actions/redditToken'
 import type {SortingOption, SubredditItem} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
 import {extractAndFilterComments} from '@/lib/utils/commentFilters'
@@ -88,78 +87,35 @@ const MAX_LIMIT = 25
 const COMMENTS_LIMIT = 25
 
 /**
- * Detects if the current environment is iOS Safari which has CORS restrictions.
+ * Base query function for Reddit API requests.
  *
- * iOS Safari blocks direct cross-origin requests to oauth.reddit.com, requiring
- * us to route through our proxy API handler for these specific browsers.
- *
- * @returns {boolean} true if running on iOS Safari, false otherwise
- */
-function isIOSSafari(): boolean {
-  // Return false in server-side rendering context
-  if (typeof window === 'undefined') return false
-
-  const userAgent = window.navigator.userAgent
-  // Check for iOS devices (iPad, iPhone, iPod)
-  const isIOS = /iPad|iPhone|iPod/.test(userAgent)
-  // Check for Safari browser while excluding Chrome-based browsers on iOS
-  const isSafari =
-    /Safari/.test(userAgent) && !/Chrome|CriOS|EdgiOS|FxiOS/.test(userAgent)
-
-  return isIOS && isSafari
-}
-
-/**
- * Smart base query that uses proxy for iOS Safari, direct API for other browsers.
- *
- * This approach optimizes for your traffic profile:
- * - 63% iOS Safari users → automatically routed through CORS proxy
- * - 37% other browsers → direct API calls for better performance
- *
- * The proxy route (/api/reddit) handles authentication server-side and adds
- * proper CORS headers, while direct calls use client-side token management.
+ * Routes all Reddit API requests through our proxy endpoint which handles:
+ * - OAuth authentication with server-side token management
+ * - CORS headers for cross-origin requests
+ * - Security validations and rate limiting
+ * - Centralized error handling and logging
  *
  * @param args - RTK Query arguments (URL string or request config object)
  * @param api - RTK Query API object with dispatch and state access
  * @param extraOptions - Additional options passed to the base query
  * @returns Promise resolving to the API response data or error
  */
-const smartBaseQuery: BaseQueryFn = async (args, api, extraOptions) => {
-  if (isIOSSafari()) {
-    // Use proxy for iOS Safari to bypass CORS restrictions
-    const proxyQuery = fetchBaseQuery({
-      baseUrl: '/api/reddit',
-      prepareHeaders: (headers) => {
-        headers.set('Content-Type', 'application/json')
-        return headers
-      }
-    })
-
-    // Convert the original Reddit API URL to proxy format
-    // Example: "/r/programming/hot.json" → "?path=%2Fr%2Fprogramming%2Fhot.json"
-    const originalUrl = typeof args === 'string' ? args : args.url
-    const proxyArgs =
-      typeof args === 'string'
-        ? `?path=${encodeURIComponent(originalUrl)}`
-        : {...args, url: `?path=${encodeURIComponent(originalUrl)}`}
-
-    return await proxyQuery(proxyArgs, api, extraOptions)
-  }
-
-  // Use direct Reddit API for other browsers (better performance)
-  const directQuery = fetchBaseQuery({
-    baseUrl: 'https://oauth.reddit.com',
-    prepareHeaders: async (headers) => {
-      // Fetch OAuth token and add Authorization header
-      const token = await getRedditToken()
-      if (token?.access_token) {
-        headers.set('Authorization', `Bearer ${token.access_token}`)
-      }
+const baseQuery: BaseQueryFn = async (args, api, extraOptions) => {
+  const proxyQuery = fetchBaseQuery({
+    baseUrl: '/api/reddit',
+    prepareHeaders: (headers) => {
+      headers.set('Content-Type', 'application/json')
       return headers
     }
   })
 
-  return await directQuery(args, api, extraOptions)
+  const originalUrl = typeof args === 'string' ? args : args.url
+  const proxyArgs =
+    typeof args === 'string'
+      ? `?path=${encodeURIComponent(originalUrl)}`
+      : {...args, url: `?path=${encodeURIComponent(originalUrl)}`}
+
+  return await proxyQuery(proxyArgs, api, extraOptions)
 }
 
 /**
@@ -177,24 +133,13 @@ export interface SubredditPostsArgs {
 /**
  * Reddit API service using RTK Query.
  *
- * Provides authenticated access to Reddit endpoints with smart routing:
- * - iOS Safari: Routes through /api/reddit proxy to bypass CORS restrictions
- * - Other browsers: Direct API calls to oauth.reddit.com for optimal performance
- *
- * Features:
- * - Automatic authentication token management
- * - Response transformation and normalization
- * - Infinite scrolling support for posts
- * - Comprehensive error handling
- * - Cache invalidation and tagging
- *
  * @see {@link https://redux-toolkit.js.org/rtk-query/overview} RTK Query Documentation
  * @see {@link https://www.reddit.com/dev/api/} Reddit API Documentation
  */
 export const redditApi = createApi({
   reducerPath: 'redditApi',
   tagTypes: ['SubredditPosts', 'PopularSubreddits', 'Search'],
-  baseQuery: smartBaseQuery,
+  baseQuery,
   endpoints: (builder) => ({
     /**
      * Search subreddits using Reddit's autocomplete API.
@@ -356,8 +301,7 @@ export const redditApi = createApi({
         const params = new URLSearchParams({limit: String(MAX_LIMIT)})
         if (pageParam) params.set('after', pageParam) // Add pagination cursor
 
-        // Handle multi-subreddit syntax: encode individual subreddit names but preserve + separators
-        // This fixes the P1 issue where "Fauxmoi+SipsTea+GreenBayPackers" was being over-encoded
+        // Handle multi-subreddit syntax: encode individual subreddit names but preserve + separators.
         const encodedSubreddit = subreddit
           .split('+')
           .map((sub) => encodeURIComponent(sub))
@@ -370,13 +314,12 @@ export const redditApi = createApi({
         ...response,
         data: {
           ...response.data,
-          // Filter out stickied posts (pinned posts) for cleaner feed experience
+          // Filter out stickied posts (pinned posts) for cleaner feed experience.
           children: (response.data?.children ?? []).filter(
             (child) => child?.data && !child.data.stickied
           )
         }
       }),
-      // Cache posts per subreddit for performance
       providesTags: (_result, _err, {subreddit}) => [
         {type: 'SubredditPosts', id: subreddit}
       ]
@@ -430,19 +373,6 @@ export const redditApi = createApi({
 
 /**
  * Exported RTK Query hooks for Reddit API endpoints.
- *
- * These hooks provide type-safe access to Reddit data with automatic caching,
- * loading states, error handling, and background refetching. They integrate
- * seamlessly with React components and provide excellent developer experience.
- *
- * Available hooks:
- * - useSearchSubredditsQuery: Real-time subreddit search with typeahead
- * - useGetSubredditAboutQuery: Subreddit metadata and information
- * - useGetPopularSubredditsQuery: Trending subreddits sorted by popularity
- * - useGetSubredditPostsInfiniteQuery: Paginated posts with infinite scroll
- * - useLazyGetPostCommentsQuery: On-demand comment loading for posts
- * - useLazyGetSubredditAboutQuery: On-demand subreddit information loading
- *
  * @see {@link https://redux-toolkit.js.org/rtk-query/usage/queries} RTK Query Usage Guide
  */
 export const {
