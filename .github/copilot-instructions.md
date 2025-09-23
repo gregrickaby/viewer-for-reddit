@@ -104,7 +104,7 @@ This is a **Next.js 15 + React 19** Reddit viewer app using the **App Router** w
 
 - **Mantine v8** for UI components and hooks (see documentation url https://mantine.dev/llms.txt)
 - **Redux Toolkit Query (RTK)** for Reddit API state management and data fetching
-- **TypeScript** with strict settings
+- **TypeScript** with strict settings. Avoid `any` and non-null assertions
 - **Next.js Server Actions** for server-side logic (Reddit OAuth token management)
 - **Reddit REST-API v2** for fetching posts, comments, subreddits (see documentation url https://www.reddit.com/dev/api/)
 - **Reddit OAuth 2.0** application-only authentication (read-only)
