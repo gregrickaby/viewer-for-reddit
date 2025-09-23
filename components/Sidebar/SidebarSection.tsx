@@ -6,15 +6,17 @@ import type {SubredditItem} from '@/lib/types'
 import {NavLink} from '@mantine/core'
 
 interface SidebarSectionProps {
-  label: string
-  subreddits: SubredditItem[]
   enableDelete?: boolean
   enableFavorite?: boolean
+  label: string
+  leftSection?: React.ReactNode
   onDelete?: (sub: SubredditItem) => void
+  subreddits: SubredditItem[]
 }
 
 export function SidebarSection({
   label,
+  leftSection,
   subreddits,
   enableDelete = false,
   enableFavorite = false,
@@ -25,7 +27,7 @@ export function SidebarSection({
   if (!subreddits.length) return null
 
   return (
-    <NavLink label={label} childrenOffset={8}>
+    <NavLink label={label} childrenOffset={8} leftSection={leftSection}>
       {subreddits.map((sub) => (
         <SidebarNavLink
           key={sub.display_name}

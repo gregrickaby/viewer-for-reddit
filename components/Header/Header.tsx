@@ -15,10 +15,11 @@ export function Header() {
   const {showNavbar, toggleNavbarHandler} = useHeaderState()
   const {setQuery} = useSubredditSearch()
 
+  /**
+   * When clicking the logo, clear the search query and close the navbar.
+   */
   const onClickHandler = () => {
-    // Always reset search query when clicking home
     setQuery('')
-    // Close navbar if it's open
     if (showNavbar) {
       toggleNavbarHandler()
     }
