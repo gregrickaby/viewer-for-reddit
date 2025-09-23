@@ -13,7 +13,7 @@ export function logError(error: unknown): void {
       console.error(`Error: ${error.status} - ${JSON.stringify(error.data)}`)
     } else if ('message' in error) {
       // Object with message property
-      console.error(`Error: ${String((error as any).message)}`)
+      console.error(`Error: ${String((error as { message: unknown }).message)}`)
     } else {
       // Generic object
       console.error(`Error: ${JSON.stringify(error)}`)
