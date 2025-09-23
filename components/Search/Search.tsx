@@ -137,11 +137,15 @@ export function Search() {
                   combobox.dropdownOpened ? 'Close search' : 'Open search'
                 }
                 color="gray"
-                size="lg"
+                size="xl"
                 variant="subtle"
                 onClick={() => handleMobileSearchClick(combobox)}
               >
-                <FaSearch size={18} />
+                {combobox.dropdownOpened ? (
+                  <IoMdClose size={22} />
+                ) : (
+                  <FaSearch size={18} />
+                )}
               </ActionIcon>
             </div>
           </Combobox.Target>
