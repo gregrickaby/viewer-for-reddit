@@ -43,7 +43,7 @@ function createMockRedditResponse(
 describe('/api/reddit route security validations', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     // Mock successful token response by default
     mockGetRedditToken.mockResolvedValue({
       access_token: 'mock_token',
@@ -143,7 +143,9 @@ describe('/api/reddit route security validations', () => {
         const response = await GET(request)
         expect(response.status).toBe(400)
         const responseData = await response.json()
-        expect(responseData.error).toMatch(/Invalid (path format|Reddit API path)/)
+        expect(responseData.error).toMatch(
+          /Invalid (path format|Reddit API path)/
+        )
       }
     })
   })
@@ -253,11 +255,9 @@ describe('/api/reddit route security validations', () => {
   describe('Reddit API Error Handling', () => {
     it('should handle Reddit API 429 rate limit errors', async () => {
       mockFetch.mockImplementation(() =>
-        createMockRedditResponse(
-          {error: 'Too Many Requests'},
-          429,
-          {'retry-after': '120'}
-        )
+        createMockRedditResponse({error: 'Too Many Requests'}, 429, {
+          'retry-after': '120'
+        })
       )
 
       const request = createMockRequest(
