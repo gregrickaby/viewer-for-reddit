@@ -102,7 +102,7 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
         <Group justify="space-between" gap="xs">
           <Group gap="xs" className={styles.header}>
             <Title order={1} size="h2">
-              Posts from {`r/${subreddit}`}
+              {subreddit === 'all' ? 'Home' : `Posts from r/${subreddit}`}
             </Title>
             <Favorite subreddit={subreddit} />
           </Group>
