@@ -32,7 +32,7 @@ export default function Layout({
         <Header />
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">
+      <AppShell.Navbar p="md" h="100%">
         <Sidebar />
       </AppShell.Navbar>
 
