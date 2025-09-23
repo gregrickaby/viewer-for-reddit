@@ -6,7 +6,12 @@ import {
   loadSettings,
   saveSettings
 } from '@/lib/utils/storage'
-import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {createSelector, createSlice, PayloadAction} from '@reduxjs/toolkit'
+
+/**
+ * Maximum number of items to keep in favorites and recent lists
+ */
+const MAX_LIST_ITEMS = 15
 
 /**
  * Load initial settings from localStorage.
@@ -22,19 +27,26 @@ export const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    // Toggle global mute state.
+    /**
+     * Toggle global audio mute state for video/audio content.
+     */
     toggleMute: (state) => {
       state.isMuted = !state.isMuted
       saveSettings(state)
     },
 
-    // Toggle NSFW content visibility.
+    /**
+     * Toggle NSFW (Not Safe For Work) content visibility.
+     */
     toggleNsfw: (state) => {
       state.enableNsfw = !state.enableNsfw
       saveSettings(state)
     },
 
-    // Update sort method for posts.
+    /**
+     * Update the current sorting method for Reddit posts.
+     * @param action.payload - The new sorting option (hot, new, top, controversial, rising)
+     */
     setSortingOption: (state, action: PayloadAction<SortingOption>) => {
       state.currentSort = action.payload
       saveSettings(state)
@@ -49,7 +61,7 @@ export const settingsSlice = createSlice({
         state.recent.splice(exists, 1)
       }
       state.recent.unshift(action.payload)
-      state.recent = state.recent.slice(0, 15) // Keep only 15.
+      state.recent = state.recent.slice(0, MAX_LIST_ITEMS) // Keep only 15.
       saveSettings(state)
     },
 
@@ -78,7 +90,7 @@ export const settingsSlice = createSlice({
         state.favorites.splice(existingIndex, 1)
       } else {
         state.favorites.unshift(action.payload)
-        state.favorites = state.favorites.slice(0, 15) // Keep only 15
+        state.favorites = state.favorites.slice(0, MAX_LIST_ITEMS) // Keep only 15
       }
       saveSettings(state)
     },
@@ -158,5 +170,31 @@ export const {
   toggleNsfw
 } = settingsSlice.actions
 
-// Export reducer.
+// Export Reducer.
 export default settingsSlice.reducer
+
+// Export Selectors.
+export const selectFavoriteSubreddits = createSelector(
+  [(state: any) => state.settings.favorites],
+  (favorites: SubredditItem[]) => favorites.map((sub) => sub.display_name)
+)
+
+export const selectHasFavorites = createSelector(
+  [selectFavoriteSubreddits],
+  (favoriteNames) => favoriteNames.length > 0
+)
+
+export const selectRecentSubreddits = createSelector(
+  [(state: any) => state.settings.recent],
+  (recent: SubredditItem[]) => recent.map((sub) => sub.display_name)
+)
+
+export const selectHasRecent = createSelector(
+  [selectRecentSubreddits],
+  (recentNames) => recentNames.length > 0
+)
+
+export const selectSearchHistory = createSelector(
+  [(state: any) => state.settings.searchHistory],
+  (searchHistory: SubredditItem[]) => searchHistory
+)

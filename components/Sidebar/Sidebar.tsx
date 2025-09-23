@@ -16,7 +16,11 @@ import {
   FaRegArrowAltCircleUp
 } from 'react-icons/fa'
 import {FaArrowTrendUp} from 'react-icons/fa6'
+import {MdDynamicFeed} from 'react-icons/md'
 
+/**
+ * Sidebar component
+ */
 export function Sidebar() {
   const mounted = useMounted()
   const recent = useAppSelector((state) => state.settings.recent)
@@ -33,9 +37,17 @@ export function Sidebar() {
         <NavLink
           label="Home"
           component={Link}
-          href="/r/all"
+          href="/"
           onClick={showNavbar ? toggleNavbarHandler : undefined}
           leftSection={<FaHome />}
+        />
+
+        <NavLink
+          label="All"
+          component={Link}
+          href="/r/all"
+          onClick={showNavbar ? toggleNavbarHandler : undefined}
+          leftSection={<MdDynamicFeed />}
         />
 
         <NavLink

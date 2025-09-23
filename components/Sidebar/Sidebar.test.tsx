@@ -26,9 +26,9 @@ vi.mock('@/lib/hooks/useHeaderState', () => ({
 }))
 
 describe('Sidebar', () => {
-  it('renders basic links', () => {
+  it('should render links', () => {
     render(<Sidebar />)
-    expect(screen.getByRole('link', {name: 'All'})).toBeInTheDocument()
+    expect(screen.getByRole('link', {name: 'Home'})).toBeInTheDocument()
     expect(screen.getByRole('link', {name: 'Popular'})).toBeInTheDocument()
   })
 })

@@ -88,7 +88,7 @@ describe('useToggleFavorite', () => {
   it('should handle API error gracefully', async () => {
     server.use(
       http.get('https://oauth.reddit.com/r/aww/about.json', () =>
-        HttpResponse.text('fail', {status: 500})
+        HttpResponse.json({error: 'Internal Server Error'}, {status: 500})
       )
     )
     const {result} = renderHook(() => useToggleFavorite('aww'), {

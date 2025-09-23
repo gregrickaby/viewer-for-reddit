@@ -41,6 +41,11 @@ beforeAll(() => {
   // Stub required environment variables for Reddit token fetching
   vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
   vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
+
+  // Spy on console methods to suppress logs during tests
+  vi.spyOn(console, 'error').mockImplementation(() => {})
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
+  vi.spyOn(console, 'info').mockImplementation(() => {})
 })
 
 afterEach(() => {
