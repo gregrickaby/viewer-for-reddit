@@ -35,7 +35,7 @@
     "chroma-js": "^3.1.2",
     "dayjs": "^1.11.18",
     "gray-matter": "^4.0.3",
-    "hls.js": "^1.6.12",
+    "hls.js": "^1.6.13",
     "media-chrome": "^4.13.1",
     "next": "^15.5.3",
     "react": "^19.1.1",
@@ -83,7 +83,7 @@
     "sharp": "^0.34.4",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.0",
+    "typescript-eslint": "^8.44.1",
     "yaml": "^2.8.1"
   }
 }
