@@ -17,6 +17,12 @@ export function Favorite({subreddit}: Readonly<FavoriteProps>) {
   const icon = isFavorite ? <FaHeart /> : <FaRegHeart />
   const color = isFavorite ? 'red' : 'gray'
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    toggle()
+  }
+
   return (
     <Tooltip label={label} position="right" withArrow>
       <ActionIcon
@@ -24,7 +30,7 @@ export function Favorite({subreddit}: Readonly<FavoriteProps>) {
         color={color}
         disabled={loading}
         loading={loading}
-        onClick={toggle}
+        onClick={handleClick}
         size="lg"
         title={label}
         variant="subtle"

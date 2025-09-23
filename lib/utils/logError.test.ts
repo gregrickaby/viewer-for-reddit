@@ -1,6 +1,10 @@
 import {logError} from './logError'
 
 describe('logError', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
   })

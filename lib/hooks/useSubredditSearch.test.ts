@@ -139,7 +139,7 @@ describe('useSubredditSearch', () => {
     } as unknown as React.MouseEvent
 
     act(() => {
-      result.current.handleRemoveFromHistory(mockEvent, 'aww')
+      result.current.handleRemoveFromHistory(mockEvent, 'r/aww')
     })
 
     expect(mockEvent.preventDefault).toHaveBeenCalled()

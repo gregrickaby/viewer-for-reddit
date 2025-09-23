@@ -2,6 +2,7 @@
 
 import {SidebarSection} from '@/components/Sidebar/SidebarSection'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
+import {useRemoveFromFavorites} from '@/lib/hooks/useRemoveFromFavorites'
 import {useRemoveItemFromHistory} from '@/lib/hooks/useRemoveItemFromHistory'
 import {useAppSelector} from '@/lib/store/hooks'
 import {useGetPopularSubredditsQuery} from '@/lib/store/services/redditApi'
@@ -25,7 +26,8 @@ export function Sidebar() {
   const mounted = useMounted()
   const recent = useAppSelector((state) => state.settings.recent)
   const favorites = useAppSelector((state) => state.settings.favorites)
-  const {remove} = useRemoveItemFromHistory()
+  const {remove: removeFromHistory} = useRemoveItemFromHistory()
+  const {remove: removeFromFavorites} = useRemoveFromFavorites()
   const {data: trending = []} = useGetPopularSubredditsQuery({limit: 10})
   const {showNavbar, toggleNavbarHandler} = useHeaderState()
 
@@ -61,7 +63,7 @@ export function Sidebar() {
         <SidebarSection
           enableDelete
           label="Favorites"
-          onDelete={(sub) => remove(sub.display_name)}
+          onDelete={(sub) => removeFromFavorites(sub.display_name)}
           subreddits={favorites}
           leftSection={<FaHeart />}
         />
@@ -77,7 +79,7 @@ export function Sidebar() {
           enableDelete
           enableFavorite
           label="History"
-          onDelete={(sub) => remove(sub.display_name)}
+          onDelete={(sub) => removeFromHistory(sub.display_name)}
           subreddits={recent}
           leftSection={<FaHistory />}
         />

@@ -27,4 +27,19 @@ describe('Favorite', () => {
     await userEvent.click(btn)
     expect(toggleMock).toHaveBeenCalled()
   })
+
+  it('prevents event propagation when clicked', async () => {
+    const parentClickHandler = vi.fn()
+    render(
+      <button type="button" onClick={parentClickHandler}>
+        <Favorite subreddit="nextjs" />
+      </button>
+    )
+
+    const btn = screen.getByRole('button', {name: 'Add to favorites'})
+    await userEvent.click(btn)
+
+    expect(toggleMock).toHaveBeenCalled()
+    expect(parentClickHandler).not.toHaveBeenCalled()
+  })
 })
