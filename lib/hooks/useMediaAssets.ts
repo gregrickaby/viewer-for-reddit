@@ -6,8 +6,9 @@ import {useMemo} from 'react'
 
 export function useMediaAssets(post: Readonly<AutoPostChildData>) {
   const mediumImage = useMemo(() => {
-    return getMediumImage(post.preview?.images?.[0]?.resolutions ?? []) || null
-  }, [post.preview?.images])
+    const preview = (post as any).preview
+    return getMediumImage(preview?.images?.[0]?.resolutions ?? []) || null
+  }, [(post as any).preview?.images])
 
   const fallbackUrl = useMemo(() => {
     if (post.url?.includes('gifv')) return post.url.replace('.gifv', '.mp4')

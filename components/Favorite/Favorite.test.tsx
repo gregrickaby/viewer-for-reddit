@@ -3,8 +3,8 @@ import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
 
 const toggleMock = vi.fn()
-vi.mock('@/lib/hooks/useToggleFavorite', () => ({
-  useToggleFavorite: () => ({
+vi.mock('@/lib/hooks/useAddFavorite', () => ({
+  useAddFavorite: () => ({
     isFavorite: false,
     loading: false,
     toggle: toggleMock
@@ -26,5 +26,20 @@ describe('Favorite', () => {
     const btn = screen.getByRole('button', {name: 'Add to favorites'})
     await userEvent.click(btn)
     expect(toggleMock).toHaveBeenCalled()
+  })
+
+  it('prevents event propagation when clicked', async () => {
+    const parentClickHandler = vi.fn()
+    render(
+      <button type="button" onClick={parentClickHandler}>
+        <Favorite subreddit="nextjs" />
+      </button>
+    )
+
+    const btn = screen.getByRole('button', {name: 'Add to favorites'})
+    await userEvent.click(btn)
+
+    expect(toggleMock).toHaveBeenCalled()
+    expect(parentClickHandler).not.toHaveBeenCalled()
   })
 })

@@ -10,6 +10,7 @@ import {
   InputBase,
   Loader,
   Text,
+  Tooltip,
   useCombobox
 } from '@mantine/core'
 import {useCallback} from 'react'
@@ -97,17 +98,23 @@ export function Search() {
               </Text>
             )}
             {group.label === 'Search History' && (
-              <ActionIcon
-                aria-label={`Remove ${item.display_name} from search history`}
-                color="gray"
-                size="sm"
-                variant="subtle"
-                onClick={(event) =>
-                  handleRemoveFromHistory(event, item.display_name)
-                }
+              <Tooltip
+                label="Remove from search history"
+                position="bottom"
+                withArrow
               >
-                <IoMdClose size={14} />
-              </ActionIcon>
+                <ActionIcon
+                  aria-label={`Remove ${item.display_name} from search history`}
+                  color="gray"
+                  size="sm"
+                  variant="subtle"
+                  onClick={(event) =>
+                    handleRemoveFromHistory(event, item.value)
+                  }
+                >
+                  <IoMdClose size={14} />
+                </ActionIcon>
+              </Tooltip>
             )}
           </Group>
         </Group>

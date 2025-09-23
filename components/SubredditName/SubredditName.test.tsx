@@ -12,7 +12,7 @@ describe('SubredditName', () => {
     render(<SubredditName name="test" onDelete={onDelete} enableFavorite />)
     expect(screen.getByText('r/test')).toBeInTheDocument()
     expect(screen.getByTestId('favorite')).toBeInTheDocument()
-    const btn = screen.getByRole('button', {name: 'Clear subreddit'})
+    const btn = screen.getByRole('button', {name: 'Remove'})
     await userEvent.click(btn)
     expect(onDelete).toHaveBeenCalled()
   })

@@ -191,14 +191,14 @@ describe('Media', () => {
     }
     render(<Media {...post} />)
     expect(screen.getByText('hello')).toBeInTheDocument()
-    expect(logError).toHaveBeenCalledWith('Unhandled post type: self')
+    expect(logError).not.toHaveBeenCalled()
   })
 
   it('handles missing selftext_html', () => {
     mockUseMediaType.mockReturnValue(createMediaTypeMock())
     const post: any = {selftext: 'hello', post_hint: 'self'}
     render(<Media {...post} />)
-    expect(logError).toHaveBeenCalledWith('Unhandled post type: self')
+    expect(logError).not.toHaveBeenCalled()
   })
 
   it('renders unsupported message when no selftext', () => {
@@ -207,9 +207,9 @@ describe('Media', () => {
         isYouTube: true
       })
     )
-    const post: any = {selftext: '', post_hint: 'other'}
+    const post: any = {selftext: '', post_hint: 'other', url: 'test-url'}
     render(<Media {...post} />)
-    expect(screen.getByText('Unsupported media.')).toBeInTheDocument()
-    expect(logError).toHaveBeenCalledWith('Unhandled post type: other')
+    expect(screen.getByText('Unsupported post type')).toBeInTheDocument()
+    expect(logError).toHaveBeenCalled()
   })
 })

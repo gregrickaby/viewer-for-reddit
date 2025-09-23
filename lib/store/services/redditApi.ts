@@ -1,6 +1,7 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
 import type {SortingOption, SubredditItem} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
+import {extractAndFilterComments} from '@/lib/utils/commentFilters'
 import {fromAbout, fromPopular, fromSearch} from '@/lib/utils/subredditMapper'
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
@@ -34,9 +35,11 @@ export type AutoPostChild = NonNullable<
   >['children']
 >[number]
 export type AutoPostChildData = NonNullable<AutoPostChild['data']>
-
-// Auto-generated comment types
-// Helper type to extract the comments listing from the response array
+// More specific type for components that need preview and post_hint
+export type AutoPostWithMedia = Extract<
+  AutoPostChildData,
+  {preview?: any; post_hint?: string}
+>
 type CommentsListing = Extract<
   AutoPostCommentsResponse[number],
   {data?: {children?: any}}
@@ -45,6 +48,11 @@ export type AutoCommentChild = NonNullable<
   NonNullable<NonNullable<CommentsListing['data']>['children']>[number]
 >
 export type AutoCommentData = NonNullable<AutoCommentChild['data']>
+// More specific type for components that need body and body_html
+export type AutoCommentWithText = Extract<
+  AutoCommentData,
+  {body?: string; body_html?: string}
+>
 
 /**
  * Constants.
@@ -52,8 +60,6 @@ export type AutoCommentData = NonNullable<AutoCommentChild['data']>
 const MIN_LIMIT = 10
 const MAX_LIMIT = 25
 const COMMENTS_LIMIT = 25
-const DELETED_CONTENT_MARKER = '[deleted]'
-const REMOVED_CONTENT_MARKER = '[removed]'
 
 /**
  * Query parameters for fetching subreddit posts.
@@ -185,7 +191,12 @@ export const redditApi = createApi({
       query({queryArg: {subreddit, sort}, pageParam}) {
         const params = new URLSearchParams({limit: String(MAX_LIMIT)})
         if (pageParam) params.set('after', pageParam)
-        return `/r/${encodeURIComponent(subreddit)}/${sort}.json?${params.toString()}`
+        // Handle multi-subreddit syntax: encode individual subreddit names but preserve + separators
+        const encodedSubreddit = subreddit
+          .split('+')
+          .map((sub) => encodeURIComponent(sub))
+          .join('+')
+        return `/r/${encodedSubreddit}/${sort}.json?${params.toString()}`
       },
       transformResponse: (
         response: AutoSubredditPostsResponse
@@ -225,36 +236,10 @@ export const redditApi = createApi({
           ? response[1] // Extract comments from array response
           : response // Use response directly if it's already a CommentsListing
 
-        // Extract the children array from the listing data, defaulting to empty array if undefined
+        // Extract the children array from the listing data and apply filtering
         const children = listing?.data?.children ?? []
 
-        return (
-          children
-            // Extract the actual comment data from each child wrapper object
-            .map((c) => c.data)
-
-            // Type guard: Filter out any null/undefined comment data objects
-            .filter((data): data is AutoCommentData => Boolean(data))
-
-            // Remove AutoModerator comments as they're typically not useful for users
-            .filter((comment) => (comment as any).author !== 'AutoModerator')
-
-            // Filter out deleted, removed, or empty comments
-            .filter((comment) => {
-              const c = comment as any
-              return (
-                // Ensure the comment has an author and it's not deleted/removed
-                c.author &&
-                c.author !== DELETED_CONTENT_MARKER &&
-                c.author !== REMOVED_CONTENT_MARKER &&
-                // Ensure the comment has content (either plain text body OR HTML body)
-                (c.body || c.body_html) &&
-                // Ensure the comment content itself isn't marked as deleted/removed
-                c.body !== DELETED_CONTENT_MARKER &&
-                c.body !== REMOVED_CONTENT_MARKER
-              )
-            })
-        )
+        return extractAndFilterComments(children)
       }
     })
   })

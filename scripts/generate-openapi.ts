@@ -122,7 +122,7 @@ const redditEndpoints: EndpointConfig[] = [
       {name: 'limit', in: 'query', schema: {type: 'integer'}}
     ],
     sampleUrls: [
-      // We'll need to fetch actual post IDs dynamically
+      // Will be populated dynamically by fetching real post IDs
     ]
   }
 ]
@@ -145,7 +145,17 @@ class OpenAPIGenerator {
     for (const endpoint of redditEndpoints) {
       console.log(`Fetching samples for ${endpoint.operationId}...`)
 
-      for (const url of endpoint.sampleUrls) {
+      let sampleUrls = endpoint.sampleUrls
+
+      // For getPostComments, dynamically fetch real post URLs
+      if (
+        endpoint.operationId === 'getPostComments' &&
+        sampleUrls.length === 0
+      ) {
+        sampleUrls = await this.fetchPostUrls()
+      }
+
+      for (const url of sampleUrls) {
         try {
           const response = await fetch(url, {
             headers: {
@@ -173,6 +183,46 @@ class OpenAPIGenerator {
         }
       }
     }
+  }
+
+  private async fetchPostUrls(): Promise<string[]> {
+    const urls: string[] = []
+    const subreddits = ['AskReddit', 'programming', 'technology']
+
+    for (const subreddit of subreddits) {
+      try {
+        const response = await fetch(
+          `https://www.reddit.com/r/${subreddit}/hot.json?limit=2`,
+          {
+            headers: {
+              'User-Agent': 'OpenAPI-Generator/1.0.0'
+            }
+          }
+        )
+
+        if (response.ok) {
+          const data = await response.json()
+          const posts = data?.data?.children || []
+
+          for (const post of posts.slice(0, 1)) {
+            // Take first post only
+            const postId = post?.data?.id
+            if (postId) {
+              urls.push(
+                `https://www.reddit.com/r/${subreddit}/comments/${postId}.json?limit=10`
+              )
+            }
+          }
+        }
+
+        // Rate limit
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      } catch (error) {
+        console.warn(`Failed to fetch posts from r/${subreddit}:`, error)
+      }
+    }
+
+    return urls
   }
 
   private inferSchemaFromValue(value: any, depth = 0): JSONSchema {
@@ -239,13 +289,8 @@ class OpenAPIGenerator {
 
       const schema = this.inferSchemaFromValue(response)
 
-      // Merge with existing schema if it exists (to handle multiple samples)
-      if (this.schemas[schemaName]) {
-        // Simple merge strategy - could be more sophisticated
-        this.schemas[schemaName] = schema
-      } else {
-        this.schemas[schemaName] = schema
-      }
+      // Store schema (could enhance this to merge multiple samples in the future)
+      this.schemas[schemaName] = schema
 
       console.log(`✅ Generated schema: ${schemaName}`)
     }

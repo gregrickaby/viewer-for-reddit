@@ -1,6 +1,6 @@
 import {act, mockPreloadedState, renderHook, server} from '@/test-utils'
 import {http, HttpResponse} from 'msw'
-import {useToggleFavorite} from './useToggleFavorite'
+import {useAddFavorite} from './useAddFavorite'
 
 const preloadedState = {
   ...mockPreloadedState,
@@ -19,9 +19,9 @@ const preloadedState = {
   }
 }
 
-describe('useToggleFavorite', () => {
+describe('useAddFavorite', () => {
   it('should indicate favorite status from Redux', () => {
-    const {result} = renderHook(() => useToggleFavorite('reactjs'), {
+    const {result} = renderHook(() => useAddFavorite('reactjs'), {
       preloadedState
     })
     expect(result.current.isFavorite).toBe(true)
@@ -29,7 +29,7 @@ describe('useToggleFavorite', () => {
   })
 
   it('should indicate not favorite if not in favorites', () => {
-    const {result} = renderHook(() => useToggleFavorite('aww'), {
+    const {result} = renderHook(() => useAddFavorite('aww'), {
       preloadedState
     })
     expect(result.current.isFavorite).toBe(false)
@@ -50,7 +50,7 @@ describe('useToggleFavorite', () => {
         })
       )
     )
-    const {result} = renderHook(() => useToggleFavorite('aww'), {
+    const {result} = renderHook(() => useAddFavorite('aww'), {
       preloadedState
     })
     await act(async () => {
@@ -75,7 +75,7 @@ describe('useToggleFavorite', () => {
         })
       )
     )
-    const {result} = renderHook(() => useToggleFavorite('reactjs'), {
+    const {result} = renderHook(() => useAddFavorite('reactjs'), {
       preloadedState
     })
     await act(async () => {
@@ -88,10 +88,10 @@ describe('useToggleFavorite', () => {
   it('should handle API error gracefully', async () => {
     server.use(
       http.get('https://oauth.reddit.com/r/aww/about.json', () =>
-        HttpResponse.text('fail', {status: 500})
+        HttpResponse.json({error: 'Internal Server Error'}, {status: 500})
       )
     )
-    const {result} = renderHook(() => useToggleFavorite('aww'), {
+    const {result} = renderHook(() => useAddFavorite('aww'), {
       preloadedState
     })
     await act(async () => {
@@ -102,7 +102,7 @@ describe('useToggleFavorite', () => {
   })
 
   it('should not trigger toggle if already loading', async () => {
-    const {result} = renderHook(() => useToggleFavorite('aww'), {
+    const {result} = renderHook(() => useAddFavorite('aww'), {
       preloadedState
     })
     await act(async () => {

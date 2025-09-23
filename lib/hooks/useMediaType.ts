@@ -20,10 +20,10 @@ import {useMemo} from 'react'
  * ```
  */
 export function useMediaType(post: Readonly<AutoPostChildData>) {
-  const isImage = post.post_hint === 'image'
-  const isLink = post.post_hint === 'link'
-  const isRedditVideo =
-    post.post_hint === 'hosted:video' || post.post_hint === 'rich:video'
+  const postHint = (post as any).post_hint
+  const isImage = postHint === 'image'
+  const isLink = postHint === 'link'
+  const isRedditVideo = postHint === 'hosted:video' || postHint === 'rich:video'
 
   const isYouTube = (post.media_embed as any)?.provider_name === 'YouTube'
 

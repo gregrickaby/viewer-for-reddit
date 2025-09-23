@@ -84,19 +84,16 @@
 
 **ALWAYS perform these validation steps after making changes:**
 
-1. **Development server validation**:
-   - Run `npm run dev`
-   - Navigate to http://localhost:3000
-   - Verify application loads with header, search box, and Reddit logo
-   - Search functionality should show "Unable to load posts from Reddit" if API credentials not configured (this is expected behavior)
-
-2. **Test validation**:
-   - Run `npm test` and ensure 100% coverage maintained
-   - All tests must pass - no exceptions
-
-3. **Lint validation**:
+1. **Lint validation**:
    - Run `npm run lint` - must complete with no errors
    - CI will fail if linting errors exist
+
+2. **TypeScript validation**:
+   - Run `npx tsc --noEmit` - must complete with no errors
+
+3. **Test validation**:
+   - Run `npm test` and ensure 100% coverage maintained
+   - All tests must pass - no exceptions
 
 ## Architecture Overview
 
@@ -104,7 +101,7 @@ This is a **Next.js 15 + React 19** Reddit viewer app using the **App Router** w
 
 - **Mantine v8** for UI components and hooks (see documentation url https://mantine.dev/llms.txt)
 - **Redux Toolkit Query (RTK)** for Reddit API state management and data fetching
-- **TypeScript** with strict settings
+- **TypeScript** with strict settings. Avoid `any` and non-null assertions
 - **Next.js Server Actions** for server-side logic (Reddit OAuth token management)
 - **Reddit REST-API v2** for fetching posts, comments, subreddits (see documentation url https://www.reddit.com/dev/api/)
 - **Reddit OAuth 2.0** application-only authentication (read-only)

@@ -38,8 +38,9 @@ export function SubredditName({
         {enableFavorite && <Favorite subreddit={name} />}
 
         {onDelete && (
-          <Tooltip label="Clear subreddit" position="bottom" withArrow>
+          <Tooltip label="Remove" position="bottom" withArrow>
             <ActionIcon
+              aria-label="Remove"
               size="xs"
               color="red"
               variant="subtle"
@@ -48,7 +49,6 @@ export function SubredditName({
                 e.stopPropagation()
                 onDelete()
               }}
-              aria-label="Clear subreddit"
             >
               <FaTrashAlt />
             </ActionIcon>

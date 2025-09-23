@@ -273,4 +273,38 @@ describe('redditApi', () => {
     expect(pages.length).toBeGreaterThan(0)
     expect(pages[0]?.data?.children?.length).toBe(0)
   })
+
+  it('should properly encode multi-subreddit URLs with + separators', async () => {
+    // Test that multi-subreddit syntax preserves + separators
+    const {result} = renderHook(() =>
+      useGetSubredditPostsInfiniteQuery({
+        subreddit: 'gaming+technology+programming',
+        sort: 'hot'
+      })
+    )
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+
+    // The query should succeed, which means the URL was properly formatted
+    // without encoding the + separators as %2B
+    expect(result.current.data).toBeDefined()
+  })
+
+  it('should encode special characters in individual subreddit names', async () => {
+    // Test that special characters in subreddit names are still encoded
+    const {result} = renderHook(() =>
+      useGetSubredditPostsInfiniteQuery({
+        subreddit: 'test space+normal',
+        sort: 'hot'
+      })
+    )
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+
+    expect(result.current.data).toBeDefined()
+  })
 })

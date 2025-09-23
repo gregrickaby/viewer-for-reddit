@@ -1,15 +1,7 @@
-import type {components} from '@/lib/types/reddit-api'
+import type {AutoPostWithMedia} from '@/lib/store/services/redditApi'
 
 // Extract the resolution type from auto-generated schema
-type ImageResolution = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<
-        components['schemas']['GetSubredditPostsResponse']['data']
-      >['children']
-    >[number]['data']
-  >['preview']
->['images']
+type ImageResolution = NonNullable<AutoPostWithMedia['preview']>['images']
 
 type Resolution = NonNullable<
   NonNullable<ImageResolution>[number]['resolutions']
