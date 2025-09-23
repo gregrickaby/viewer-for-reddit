@@ -1,4 +1,10 @@
 .tabs {
   margin: 0 auto;
-  width: 68%;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .tabs {
+    width: 40%;
+  }
 }

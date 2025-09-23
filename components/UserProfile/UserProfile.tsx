@@ -13,8 +13,11 @@ interface UserProfileProps {
 }
 
 /**
- * UserProfile component displays either posts or comments for a Reddit user
- * with tab-based navigation between the two views.
+ * UserProfile component.
+ *
+ * @param username - The Reddit username to display profile for
+ * @param sort - The initial sorting option for posts and comments (default: 'new')
+ * @returns JSX.Element for user profile with tab navigation between posts and comments
  */
 export function UserProfile({
   username,
@@ -23,7 +26,7 @@ export function UserProfile({
   const [activeTab, setActiveTab] = useState<string | null>('posts')
 
   return (
-    <Container>
+    <Container size="xl" fluid>
       <Tabs value={activeTab} onChange={setActiveTab} className={classes.tabs}>
         <Tabs.List>
           <Tabs.Tab value="posts">Posts</Tabs.Tab>
