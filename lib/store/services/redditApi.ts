@@ -175,6 +175,30 @@ export interface SubredditPostsArgs {
 }
 
 /**
+ * Query parameters for fetching user posts.
+ *
+ * @interface UserPostsArgs
+ * @property {string} username - Reddit username to fetch posts from
+ * @property {SortingOption} sort - How to sort posts (hot, new, top, etc.)
+ */
+export interface UserPostsArgs {
+  username: string
+  sort: SortingOption
+}
+
+/**
+ * Query parameters for fetching user comments.
+ *
+ * @interface UserCommentsArgs
+ * @property {string} username - Reddit username to fetch comments from
+ * @property {SortingOption} sort - How to sort comments (hot, new, top, etc.)
+ */
+export interface UserCommentsArgs {
+  username: string
+  sort: SortingOption
+}
+
+/**
  * Reddit API service using RTK Query.
  *
  * Provides authenticated access to Reddit endpoints with smart routing:
@@ -193,7 +217,7 @@ export interface SubredditPostsArgs {
  */
 export const redditApi = createApi({
   reducerPath: 'redditApi',
-  tagTypes: ['SubredditPosts', 'PopularSubreddits', 'Search'],
+  tagTypes: ['SubredditPosts', 'PopularSubreddits', 'Search', 'UserComments'],
   baseQuery: smartBaseQuery,
   endpoints: (builder) => ({
     /**
@@ -424,6 +448,125 @@ export const redditApi = createApi({
         // Apply comment filtering (removes AutoModerator, processes nested threads)
         return extractAndFilterComments(children)
       }
+    }),
+
+    /**
+     * Fetches posts submitted by a specific Reddit user with infinite pagination support.
+     *
+     * Similar to getSubredditPosts but fetches from a user's submitted posts endpoint.
+     * Supports pagination using Reddit's "after" parameter for infinite scroll functionality.
+     *
+     * Features:
+     * - Infinite pagination with "after" cursors
+     * - Automatic sticky post filtering
+     * - Configurable sorting options
+     *
+     * @param {UserPostsArgs} args - Query arguments
+     * @param {string} args.username - Reddit username to fetch posts from
+     * @param {SortingOption} args.sort - Sort method (hot, new, top, etc.)
+     * @param {string} [pageParam] - Pagination cursor for next page (Reddit's "after" parameter)
+     *
+     * @returns {AutoSubredditPostsResponse} Posts response with filtered stickied posts
+     *
+     * @example
+     * // Fetch new posts from a specific user
+     * const {data, fetchNextPage} = useGetUserPostsInfiniteQuery({
+     *   username: 'spez',
+     *   sort: 'new'
+     * })
+     */
+    getUserPosts: builder.infiniteQuery<
+      AutoSubredditPostsResponse,
+      UserPostsArgs,
+      string | undefined
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: undefined,
+        // Extract "after" cursor for next page pagination
+        getNextPageParam: (lastPage) => lastPage?.data?.after ?? undefined,
+        getPreviousPageParam: () => undefined, // Reddit doesn't support backward pagination
+        maxPages: 10 // Limit memory usage for infinite scroll
+      },
+      query({queryArg: {username, sort}, pageParam}) {
+        const params = new URLSearchParams({
+          limit: String(MAX_LIMIT),
+          sort // Add sort as a parameter, not in the path
+        })
+        if (pageParam) params.set('after', pageParam) // Add pagination cursor
+
+        const encodedUsername = encodeURIComponent(username)
+        return `/user/${encodedUsername}/submitted/.json?${params.toString()}`
+      },
+      transformResponse: (
+        response: AutoSubredditPostsResponse
+      ): AutoSubredditPostsResponse => ({
+        ...response,
+        data: {
+          ...response.data,
+          // Filter out stickied posts (pinned posts) for cleaner feed experience.
+          children: (response.data?.children ?? []).filter(
+            (child) => child?.data && !child.data.stickied
+          )
+        }
+      }),
+      providesTags: (_result, _err, {username}) => [
+        {type: 'SubredditPosts', id: `user:${username}`}
+      ]
+    }),
+
+    /**
+     * Fetches comments submitted by a specific Reddit user with infinite pagination support.
+     *
+     * Similar to getUserPosts but fetches from a user's comments endpoint.
+     * Supports pagination using Reddit's "after" parameter for infinite scroll functionality.
+     *
+     * Features:
+     * - Infinite pagination with "after" cursors
+     * - Configurable sorting options
+     * - Returns raw comment data with parent context
+     *
+     * @param {UserCommentsArgs} args - Query arguments
+     * @param {string} args.username - Reddit username to fetch comments from
+     * @param {SortingOption} args.sort - Sort method (hot, new, top, etc.)
+     * @param {string} [pageParam] - Pagination cursor for next page (Reddit's "after" parameter)
+     *
+     * @returns {AutoSubredditPostsResponse} Comments response with pagination (uses same structure as posts)
+     *
+     * @example
+     * // Fetch new comments from a specific user
+     * const {data, fetchNextPage} = useGetUserCommentsInfiniteQuery({
+     *   username: 'spez',
+     *   sort: 'new'
+     * })
+     */
+    getUserComments: builder.infiniteQuery<
+      AutoSubredditPostsResponse,
+      UserCommentsArgs,
+      string | undefined
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: undefined,
+        // Extract "after" cursor for next page pagination
+        getNextPageParam: (lastPage) => lastPage?.data?.after ?? undefined,
+        getPreviousPageParam: () => undefined, // Reddit doesn't support backward pagination
+        maxPages: 10 // Limit memory usage for infinite scroll
+      },
+      query({queryArg: {username, sort}, pageParam}) {
+        const params = new URLSearchParams({
+          limit: String(MAX_LIMIT),
+          sort // Add sort as a parameter, not in the path
+        })
+        if (pageParam) params.set('after', pageParam) // Add pagination cursor
+
+        const encodedUsername = encodeURIComponent(username)
+        return `/user/${encodedUsername}/comments/.json?${params.toString()}`
+      },
+      transformResponse: (
+        response: AutoSubredditPostsResponse
+      ): AutoSubredditPostsResponse => response, // No filtering needed for comments
+      providesTags: (_result, _err, {username}) => [
+        {type: 'UserComments', id: `user:${username}`}
+      ]
     })
   })
 })
@@ -440,6 +583,8 @@ export const redditApi = createApi({
  * - useGetSubredditAboutQuery: Subreddit metadata and information
  * - useGetPopularSubredditsQuery: Trending subreddits sorted by popularity
  * - useGetSubredditPostsInfiniteQuery: Paginated posts with infinite scroll
+ * - useGetUserPostsInfiniteQuery: Paginated user posts with infinite scroll
+ * - useGetUserCommentsInfiniteQuery: Paginated user comments with infinite scroll
  * - useLazyGetPostCommentsQuery: On-demand comment loading for posts
  * - useLazyGetSubredditAboutQuery: On-demand subreddit information loading
  *
@@ -450,6 +595,8 @@ export const {
   useGetSubredditAboutQuery,
   useGetPopularSubredditsQuery,
   useGetSubredditPostsInfiniteQuery,
+  useGetUserPostsInfiniteQuery,
+  useGetUserCommentsInfiniteQuery,
   useLazyGetPostCommentsQuery,
   useLazyGetSubredditAboutQuery
 } = redditApi

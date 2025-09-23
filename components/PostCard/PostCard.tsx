@@ -1,5 +1,5 @@
-import {Comments} from '@/components/Comments/Comments'
 import {Media} from '@/components/Media/Media'
+import {PostComments} from '@/components/PostComments/PostComments'
 import type {AutoPostChildData} from '@/lib/store/services/redditApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
@@ -15,6 +15,7 @@ import {
   Title
 } from '@mantine/core'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import {useState} from 'react'
 import {BiSolidUpvote} from 'react-icons/bi'
 import {FaComment} from 'react-icons/fa'
@@ -26,14 +27,7 @@ interface PostCardProps {
 }
 
 /**
- * PostCard component for rendering a single Reddit post with all metadata and media.
- *
- * Features:
- * - Displays subreddit, title, upvotes, comment count, and post age
- * - Renders media (image, video, YouTube, etc.) using the Media component
- * - Shows a comments toggle with animated collapse for in-place comment viewing
- * - Uses Mantine UI for layout, icons, and accessibility
- * - All links are accessible and open in new tabs where appropriate
+ * PostCard component.
  *
  * @param post - The Reddit post data (AutoPostChildData)
  * @returns JSX.Element for a styled, interactive Reddit post card
@@ -58,14 +52,21 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       withBorder
     >
       <Stack justify="space-between" gap="xs">
-        <Anchor href={`/${post.subreddit_name_prefixed}`}>
-          <Text size="sm" c="dimmed">
-            {post.subreddit_name_prefixed} &middot;{' '}
+        <Group gap="xs">
+          <Anchor href={`/${post.subreddit_name_prefixed}`}>
+            <Text size="sm">{post.subreddit_name_prefixed}</Text>
+          </Anchor>
+          <Text size="xs" c="dimmed">
             <time dateTime={created}>
               {post.created_utc ? formatTimeAgo(post.created_utc) : ''}
             </time>
           </Text>
-        </Anchor>
+          <Link href={`/u/${post.author}`}>
+            <Text size="xs" c="dimmed">
+              {post.author}
+            </Text>
+          </Link>
+        </Group>
         <Anchor href={postLink} rel="noopener noreferrer" target="_blank">
           <Title order={2} size="lg">
             {post.title}
@@ -108,7 +109,7 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       </Group>
 
       <Collapse in={commentsOpen}>
-        <Comments
+        <PostComments
           open={commentsOpen}
           permalink={postPermalink}
           postLink={postLink}

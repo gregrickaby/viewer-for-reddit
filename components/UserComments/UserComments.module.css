@@ -1,0 +1,74 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-md);
+}
+
+.comment {
+  background: var(--mantine-color-white);
+  border-radius: var(--mantine-radius-md);
+  border: 1px solid var(--mantine-color-gray-3);
+  padding: var(--mantine-spacing-md);
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--mantine-spacing-xs);
+}
+
+.linkTitle {
+  color: var(--mantine-color-blue-6);
+  margin-bottom: var(--mantine-spacing-xs);
+}
+
+.body {
+  line-height: 1.5;
+  margin-bottom: var(--mantine-spacing-xs);
+}
+
+.body :global(p) {
+  margin: 0 0 var(--mantine-spacing-xs);
+}
+
+.body :global(p:last-child) {
+  margin-bottom: 0;
+}
+
+.body :global(a) {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+}
+
+.body :global(a:hover) {
+  text-decoration: underline;
+}
+
+.body :global(blockquote) {
+  border-left: 3px solid var(--mantine-color-gray-4);
+  color: var(--mantine-color-dimmed);
+  margin: var(--mantine-spacing-xs) 0;
+  padding-left: var(--mantine-spacing-sm);
+}
+
+.body :global(code) {
+  background: var(--mantine-color-gray-1);
+  border-radius: var(--mantine-radius-xs);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 0.9em;
+  padding: 2px 4px;
+}
+
+.body :global(pre) {
+  background: var(--mantine-color-gray-1);
+  border-radius: var(--mantine-radius-sm);
+  margin: var(--mantine-spacing-xs) 0;
+  overflow-x: auto;
+  padding: var(--mantine-spacing-sm);
+}
+
+.body :global(pre code) {
+  background: none;
+  padding: 0;
+}

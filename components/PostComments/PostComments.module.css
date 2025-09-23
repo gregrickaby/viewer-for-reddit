@@ -1,0 +1,30 @@
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-md);
+  margin-bottom: var(--mantine-spacing-sm);
+  margin-top: var(--mantine-spacing-sm);
+}
+
+.commentBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-xs);
+
+  & a {
+    text-decoration: underline !important;
+  }
+}
+
+.meta {
+  gap: 2px;
+}
+
+.readMoreLink {
+  text-align: center;
+  text-decoration: underline !important;
+
+  &:hover {
+    text-decoration: none !important;
+  }
+}

@@ -273,7 +273,10 @@ export const handlers = [
               author: 'testuser',
               body: 'First comment',
               body_html:
-                '&lt;div class="md"&gt;&lt;p&gt;First comment&lt;/p&gt;&lt;/div&gt;'
+                '&lt;div class="md"&gt;&lt;p&gt;First comment&lt;/p&gt;&lt;/div&gt;',
+              permalink: '/r/test/comments/1/test_post/c1/',
+              created_utc: 1672531200,
+              ups: 5
             }
           },
           {
@@ -283,7 +286,10 @@ export const handlers = [
               author: 'anotheruser',
               body: 'Second comment with a link',
               body_html:
-                '&lt;div class="md"&gt;&lt;p&gt;Second comment with a &lt;a href="https://example.com"&gt;link&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;'
+                '&lt;div class="md"&gt;&lt;p&gt;Second comment with a &lt;a href="https://example.com"&gt;link&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;',
+              permalink: '/r/test/comments/1/test_post/c2/',
+              created_utc: 1672534800,
+              ups: 3
             }
           },
           {
@@ -293,7 +299,10 @@ export const handlers = [
               author: 'AutoModerator',
               body: 'This is an AutoModerator comment',
               body_html:
-                '&lt;div class="md"&gt;&lt;p&gt;This is an AutoModerator comment&lt;/p&gt;&lt;/div&gt;'
+                '&lt;div class="md"&gt;&lt;p&gt;This is an AutoModerator comment&lt;/p&gt;&lt;/div&gt;',
+              permalink: '/r/test/comments/1/test_post/c3/',
+              created_utc: 1672531800,
+              ups: 1
             }
           }
         ]
@@ -422,5 +431,73 @@ export const handlers = [
     }
 
     return new HttpResponse(null, {status: 404})
-  })
+  }),
+
+  // User posts
+  http.get(
+    'https://oauth.reddit.com/user/:username/submitted/.json',
+    ({params, request}) => {
+      const {username} = params
+      const url = new URL(request.url)
+      const sort = url.searchParams.get('sort') || 'new'
+
+      if (username === 'nonexistentuser') {
+        return new HttpResponse(null, {status: 404})
+      }
+
+      if (username === 'testuser' || username === 'spez') {
+        return HttpResponse.json({
+          kind: 'Listing',
+          data: {
+            after: 'test_after_token',
+            dist: 2,
+            modhash: '',
+            geo_filter: '',
+            children: [
+              {
+                kind: 't3',
+                data: {
+                  id: 'user_post_1',
+                  title: `Test post from ${username} (sorted by ${sort})`,
+                  author: username,
+                  subreddit: 'test',
+                  subreddit_name_prefixed: 'r/test',
+                  created_utc: Date.now() / 1000,
+                  score: 100,
+                  num_comments: 10,
+                  url: 'https://example.com',
+                  permalink: `/r/test/comments/user_post_1/test_post_from_${username}/`,
+                  over_18: false,
+                  is_video: false,
+                  stickied: false,
+                  post_hint: 'link'
+                }
+              },
+              {
+                kind: 't3',
+                data: {
+                  id: 'user_post_2',
+                  title: `Another post from ${username} (sorted by ${sort})`,
+                  author: username,
+                  subreddit: 'programming',
+                  subreddit_name_prefixed: 'r/programming',
+                  created_utc: Date.now() / 1000 - 3600,
+                  score: 50,
+                  num_comments: 5,
+                  url: 'https://github.com',
+                  permalink: `/r/programming/comments/user_post_2/another_post_from_${username}/`,
+                  over_18: false,
+                  is_video: false,
+                  stickied: false,
+                  post_hint: 'link'
+                }
+              }
+            ]
+          }
+        })
+      }
+
+      return new HttpResponse(null, {status: 404})
+    }
+  )
 ]
