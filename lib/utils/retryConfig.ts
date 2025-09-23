@@ -1,18 +1,8 @@
 /**
- * Retry Configuration for Reddit API
+ * Retry configuration constants and utility functions for Reddit API.
  *
- * This file contains configuration for implementing retry logic
- * for transient network failures in Reddit API calls.
- *
- * @future-improvement
- * Implementation of retry logic with RTK Query's retry utility
- * would provide better resilience for network failures.
- *
- * Example implementation would include:
- * - Exponential backoff (1s, 2s, 4s delays)
- * - Retry on FETCH_ERROR, TIMEOUT_ERROR, and 5xx status codes
- * - Maximum of 3 retries for critical endpoints
- * - Lighter retry (1 retry) for search/autocomplete endpoints
+ * This file exports configuration values for retry logic, and utility functions
+ * to determine if an error is retryable and to calculate exponential backoff delays.
  *
  * @see https://redux-toolkit.js.org/rtk-query/api/retry
  */
