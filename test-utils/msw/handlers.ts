@@ -307,5 +307,120 @@ export const handlers = [
       return HttpResponse.json([{}, commentsListing])
     }
     return new HttpResponse(null, {status: 404, statusText: 'Not Found'})
+  }),
+
+  // Proxy API endpoints - mirror the direct Reddit API responses
+  http.get('/api/reddit', ({request}) => {
+    const url = new URL(request.url)
+    const path = url.searchParams.get('path')
+
+    if (!path) {
+      return new HttpResponse(null, {status: 400})
+    }
+
+    // Route proxy requests to appropriate responses based on path
+    if (path.includes('/about.json')) {
+      const subreddit = path.split('/')[2] // Extract subreddit from /r/subreddit/about.json
+      if (subreddit === 'notarealsubreddit') {
+        return new HttpResponse(null, {status: 404})
+      }
+      return HttpResponse.json(aboutMock)
+    }
+
+    if (path.includes('/subreddits/popular.json')) {
+      const pathUrl = new URL(`https://oauth.reddit.com${path}`)
+      const limit = pathUrl.searchParams.get('limit')
+
+      if (limit === '0') {
+        return HttpResponse.json({
+          kind: 'Listing',
+          data: {
+            after: null,
+            dist: 0,
+            modhash: '',
+            geo_filter: '',
+            children: []
+          }
+        })
+      }
+      return HttpResponse.json(popularMock)
+    }
+
+    if (path.includes('/api/subreddit_autocomplete_v2')) {
+      const pathUrl = new URL(`https://oauth.reddit.com${path}`)
+      const query = pathUrl.searchParams.get('query')
+
+      if (query === 'empty') {
+        return HttpResponse.json({
+          kind: 'Listing',
+          data: {
+            after: null,
+            dist: 0,
+            modhash: '',
+            geo_filter: '',
+            children: []
+          }
+        })
+      }
+      return HttpResponse.json(searchMock)
+    }
+
+    const subredditPostsRegex = /\/r\/[^/]+\/(hot|new|top)\.json/
+    if (subredditPostsRegex.exec(path)) {
+      const pathUrl = new URL(`https://oauth.reddit.com${path}`)
+      const after = pathUrl.searchParams.get('after')
+
+      if (after === 'no-posts') {
+        return HttpResponse.json({
+          kind: 'Listing',
+          data: {
+            after: null,
+            dist: 0,
+            modhash: '',
+            geo_filter: '',
+            children: []
+          }
+        })
+      }
+      return HttpResponse.json(subredditMock)
+    }
+
+    if (path.endsWith('.json')) {
+      // Comments endpoint
+      const commentsListing = {
+        kind: 'Listing',
+        data: {
+          after: null,
+          dist: 2,
+          modhash: '',
+          geo_filter: '',
+          children: [
+            {
+              kind: 't1',
+              data: {
+                id: 'c1',
+                author: 'testuser',
+                body: 'First comment',
+                body_html:
+                  '&lt;div class="md"&gt;&lt;p&gt;First comment&lt;/p&gt;&lt;/div&gt;'
+              }
+            },
+            {
+              kind: 't1',
+              data: {
+                id: 'c2',
+                author: 'anotheruser',
+                body: 'Second comment with a link',
+                body_html:
+                  '&lt;div class="md"&gt;&lt;p&gt;Second comment with a &lt;a href="https://example.com"&gt;link&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;'
+              }
+            }
+          ]
+        }
+      }
+      return HttpResponse.json([{}, commentsListing])
+    }
+
+    return new HttpResponse(null, {status: 404})
   })
 ]
