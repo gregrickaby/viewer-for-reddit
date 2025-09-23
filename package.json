@@ -2,7 +2,7 @@
   "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
   "description": "Anonymously browse Reddit",
-  "version": "8.0.1",
+  "version": "8.0.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
@@ -49,8 +49,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.36.0",
-    "@evilmartians/lefthook": "^1.13.2",
-    "@redocly/cli": "^2.1.5",
+    "@evilmartians/lefthook": "^1.13.4",
+    "@redocly/cli": "^2.2.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
@@ -70,7 +70,7 @@
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-testing-library": "^7.8.1",
+    "eslint-plugin-testing-library": "^7.9.1",
     "jsdom": "^27.0.0",
     "msw": "^2.11.3",
     "openapi-typescript": "^7.9.1",
@@ -79,7 +79,7 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "rollup": "^4.52.0",
+    "rollup": "^4.52.2",
     "sharp": "^0.34.4",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
