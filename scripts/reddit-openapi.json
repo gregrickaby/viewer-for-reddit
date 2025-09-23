@@ -38,9 +38,7 @@
       "get": {
         "operationId": "getSubredditPosts",
         "summary": "Get posts from a subreddit",
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "parameters": [
           {
             "name": "subreddit",
@@ -56,12 +54,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "hot",
-                "new",
-                "top",
-                "rising"
-              ]
+              "enum": ["hot", "new", "top", "rising"]
             }
           },
           {
@@ -83,14 +76,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "hour",
-                "day",
-                "week",
-                "month",
-                "year",
-                "all"
-              ]
+              "enum": ["hour", "day", "week", "month", "year", "all"]
             }
           }
         ],
@@ -118,9 +104,7 @@
       "get": {
         "operationId": "getSubredditAbout",
         "summary": "Get subreddit information",
-        "tags": [
-          "subreddits"
-        ],
+        "tags": ["subreddits"],
         "parameters": [
           {
             "name": "subreddit",
@@ -155,9 +139,7 @@
       "get": {
         "operationId": "searchSubreddits",
         "summary": "Search for subreddits",
-        "tags": [
-          "subreddits"
-        ],
+        "tags": ["subreddits"],
         "parameters": [
           {
             "name": "q",
@@ -179,10 +161,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "relevance",
-                "activity"
-              ]
+              "enum": ["relevance", "activity"]
             }
           }
         ],
@@ -210,9 +189,7 @@
       "get": {
         "operationId": "getPopularSubreddits",
         "summary": "Get popular subreddits",
-        "tags": [
-          "subreddits"
-        ],
+        "tags": ["subreddits"],
         "parameters": [
           {
             "name": "limit",
@@ -246,9 +223,7 @@
       "get": {
         "operationId": "getPostComments",
         "summary": "Get comments for a post",
-        "tags": [
-          "comments"
-        ],
+        "tags": ["comments"],
         "parameters": [
           {
             "name": "subreddit",
