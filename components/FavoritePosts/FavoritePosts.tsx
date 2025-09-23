@@ -25,10 +25,6 @@ interface FavoritePostsProps {
 /**
  * FavoritePosts component
  *
- * Uses Reddit's multi-subreddit syntax (r/pics+gaming+funny) to fetch
- * posts from all favorite subreddits in a single request, then displays
- * them with a unified feed with special "My Feed" header and heart icon.
- *
  * @param favorites - Array of favorite subreddit names
  * @param sort - The initial sorting option (default: 'hot')
  */
@@ -57,7 +53,7 @@ export function FavoritePosts({
   if (isLoading) {
     return (
       <Group justify="center" mt="lg">
-        <Loader />
+        <Loader data-testid="loader" />
       </Group>
     )
   }

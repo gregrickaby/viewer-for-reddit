@@ -29,7 +29,7 @@ describe('UserComments', () => {
 
     render(<UserComments username="testuser" sort="new" />)
 
-    expect(screen.getByText('Loading comments...')).toBeInTheDocument()
+    expect(screen.getByTestId('loader')).toBeInTheDocument()
   })
 
   it('should show error state when there is an error', () => {

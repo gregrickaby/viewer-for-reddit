@@ -1,7 +1,7 @@
 import {Comments} from '@/components/Comments/Comments'
 import {useInfiniteUserComments} from '@/lib/hooks/useInfiniteUserComments'
 import type {SortingOption} from '@/lib/types'
-import {Button, Center, Group, LoadingOverlay, Text, Title} from '@mantine/core'
+import {Button, Center, Group, Loader, Text, Title} from '@mantine/core'
 import classes from './UserComments.module.css'
 
 interface UserCommentsProps {
@@ -24,9 +24,9 @@ export function UserComments({username, sort}: Readonly<UserCommentsProps>) {
 
   if (isLoading) {
     return (
-      <Center p="xl">
-        <LoadingOverlay />
-      </Center>
+      <Group justify="center" mt="lg">
+        <Loader data-testid="loader" />
+      </Group>
     )
   }
 
