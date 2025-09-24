@@ -49,7 +49,7 @@
 
   - Takes ~38 seconds for full test suite. NEVER CANCEL - set timeout to 60+ seconds.
   - Achieves 100% coverage across all control flow
-  - Uses MSW v2 for API mocking
+  - Uses MSW v2 for API mocking in handlers.ts. Never mock fetch or RTK queries directly.
 
 - **Run linting**:
 
@@ -101,7 +101,8 @@ This is a **Next.js 15 + React 19** Reddit viewer app using the **App Router** w
 
 - **Mantine v8** for UI components and hooks (see documentation url https://mantine.dev/llms.txt)
 - **Redux Toolkit Query (RTK)** for Reddit API state management and data fetching
-- **TypeScript** with strict settings. Avoid `any` and non-null assertions
+- **TypeScript** with strict settings. Never use `any` and non-null assertions
+- **Auto-generated types** from Reddit API using OpenAPI schema and `openapi-typescript`. To generate, run `npm run codegen:types`. Never write types manually for API data.
 - **Next.js Server Actions** for server-side logic (Reddit OAuth token management)
 - **Reddit REST-API v2** for fetching posts, comments, subreddits (see documentation url https://www.reddit.com/dev/api/)
 - **Reddit OAuth 2.0** application-only authentication (read-only)
@@ -113,12 +114,15 @@ Key data flow: Reddit API ← RTK Query ← Components ← Redux Store (settings
 ## Project Structure Patterns
 
 - `app/(default)/` - App Router pages with grouped layout
+- `app/api/reddit` - Route handler for Reddit OAuth to avoid CORS issues
 - `components/` - One component per folder with Component.tsx, Component.module.css, Component.test.tsx
 - `lib/actions/` - Server actions (Reddit OAuth token management)
 - `lib/hooks/` - Custom React hooks (business logic, intersection observers, infinite scroll)
 - `lib/store/` - Redux store with RTK Query services and slices
+- `lib/types/index.ts` - Global types
+- `lib/types/reddit-api.ts` - Auto-generated Reddit API types (do not edit manually. Run `npm run codegen:types`)
 - `lib/utils/` - Pure utility functions
-- `test-utils/` - Custom render functions with Redux/MSW setup
+- `test-utils/` - Custom render functions with custom renderers and MSW handlers and mocks
 
 ## Component Conventions
 

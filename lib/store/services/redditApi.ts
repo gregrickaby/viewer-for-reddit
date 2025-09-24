@@ -42,6 +42,30 @@ type AutoSearchChildData = NonNullable<
   >[number]['data']
 >
 
+// User-related auto-generated types
+type AutoUserPostsResponse = components['schemas']['GetUserPostsResponse']
+type AutoUserCommentsResponse = components['schemas']['GetUserCommentsResponse']
+type AutoUserProfileResponse = components['schemas']['GetUserProfileResponse']
+
+/** Extracted data type for user posts responses */
+export type AutoUserPostChild = NonNullable<
+  NonNullable<AutoUserPostsResponse['data']>['children']
+>[number]
+
+/** User post child data type containing post metadata */
+export type AutoUserPostData = NonNullable<AutoUserPostChild['data']>
+
+/** Extracted data type for user comments responses */
+export type AutoUserCommentChild = NonNullable<
+  NonNullable<AutoUserCommentsResponse['data']>['children']
+>[number]
+
+/** User comment child data type */
+export type AutoUserCommentData = NonNullable<AutoUserCommentChild['data']>
+
+/** User profile data type */
+export type AutoUserProfileData = NonNullable<AutoUserProfileResponse['data']>
+
 type AutoSubredditPostsResponse =
   components['schemas']['GetSubredditPostsResponse']
 
@@ -87,22 +111,23 @@ const MAX_LIMIT = 25
 const COMMENTS_LIMIT = 25
 
 /**
- * Base query function for Reddit API requests.
+ * Custom base query that proxies requests through the local API route.
+ * This is needed to avoid CORS issues when making requests to Reddit's API.
  *
- * Routes all Reddit API requests through our proxy endpoint which handles:
- * - OAuth authentication with server-side token management
- * - CORS headers for cross-origin requests
- * - Security validations and rate limiting
- * - Centralized error handling and logging
- *
- * @param args - RTK Query arguments (URL string or request config object)
- * @param api - RTK Query API object with dispatch and state access
- * @param extraOptions - Additional options passed to the base query
+ * @param args - The request arguments (URL and options)
+ * @param api - The RTK Query API object
+ * @param extraOptions - Additional options
  * @returns Promise resolving to the API response data or error
  */
 const baseQuery: BaseQueryFn = async (args, api, extraOptions) => {
+  // Use absolute URL for tests to avoid URL parsing issues
+  const baseUrl =
+    typeof window === 'undefined' || process.env.NODE_ENV === 'test'
+      ? 'http://localhost:3000/api/reddit'
+      : '/api/reddit'
+
   const proxyQuery = fetchBaseQuery({
-    baseUrl: '/api/reddit',
+    baseUrl,
     prepareHeaders: (headers) => {
       headers.set('Content-Type', 'application/json')
       return headers
@@ -367,6 +392,107 @@ export const redditApi = createApi({
         // Apply comment filtering (removes AutoModerator, processes nested threads)
         return extractAndFilterComments(children)
       }
+    }),
+
+    /**
+     * Fetches user profile information.
+     *
+     * Retrieves detailed information about a Reddit user including karma,
+     * account age, profile description, and other public profile data.
+     *
+     * @param {string} username - The Reddit username (without the u/ prefix)
+     *
+     * @returns {AutoUserProfileData} User profile information
+     *
+     * @example
+     * // Fetch profile for a specific user
+     * const {data: profile} = useGetUserProfileQuery('spez')
+     */
+    getUserProfile: builder.query<AutoUserProfileData, string>({
+      query: (username) => `/user/${username}/about.json`,
+      transformResponse: (
+        response: AutoUserProfileResponse
+      ): AutoUserProfileData => {
+        return response.data!
+      }
+    }),
+
+    /**
+     * Fetches posts submitted by a specific user with infinite scrolling support.
+     *
+     * Retrieves paginated list of posts that a user has submitted across all subreddits.
+     * Supports infinite pagination for smooth scrolling experience.
+     *
+     * @param {string} username - The Reddit username (without the u/ prefix)
+     * @param {string} [pageParam] - Pagination cursor for next page
+     *
+     * @returns {AutoUserPostsResponse} User's submitted posts with pagination info
+     *
+     * @example
+     * // Fetch posts from a user with infinite scroll
+     * const {data, fetchNextPage} = useGetUserPostsInfiniteQuery('spez')
+     */
+    getUserPosts: builder.infiniteQuery<
+      AutoUserPostsResponse,
+      string,
+      string | undefined
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: undefined,
+        getNextPageParam: (lastPage) => lastPage?.data?.after ?? undefined,
+        getPreviousPageParam: () => undefined,
+        maxPages: 10 // Limit memory usage
+      },
+      query({queryArg: username, pageParam}) {
+        const params = new URLSearchParams({limit: String(MAX_LIMIT)})
+        if (pageParam) params.set('after', pageParam)
+        return `/user/${username}/submitted.json?${params.toString()}`
+      },
+      transformResponse: (
+        response: AutoUserPostsResponse
+      ): AutoUserPostsResponse => {
+        // Return posts as-is, filtering can be done at component level if needed
+        return response
+      }
+    }),
+
+    /**
+     * Fetches comments submitted by a specific user with infinite scrolling support.
+     *
+     * Retrieves paginated list of comments that a user has made across all subreddits.
+     * Supports infinite pagination for smooth scrolling experience.
+     *
+     * @param {string} username - The Reddit username (without the u/ prefix)
+     * @param {string} [pageParam] - Pagination cursor for next page
+     *
+     * @returns {AutoUserCommentsResponse} User's submitted comments with pagination info
+     *
+     * @example
+     * // Fetch comments from a user with infinite scroll
+     * const {data, fetchNextPage} = useGetUserCommentsInfiniteQuery('spez')
+     */
+    getUserComments: builder.infiniteQuery<
+      AutoUserCommentsResponse,
+      string,
+      string | undefined
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: undefined,
+        getNextPageParam: (lastPage) => lastPage?.data?.after ?? undefined,
+        getPreviousPageParam: () => undefined,
+        maxPages: 10 // Limit memory usage
+      },
+      query({queryArg: username, pageParam}) {
+        const params = new URLSearchParams({limit: String(MAX_LIMIT)})
+        if (pageParam) params.set('after', pageParam)
+        return `/user/${username}/comments.json?${params.toString()}`
+      },
+      transformResponse: (
+        response: AutoUserCommentsResponse
+      ): AutoUserCommentsResponse => {
+        // Return comments as-is, filtering can be done at component level if needed
+        return response
+      }
     })
   })
 })
@@ -381,5 +507,8 @@ export const {
   useGetPopularSubredditsQuery,
   useGetSubredditPostsInfiniteQuery,
   useLazyGetPostCommentsQuery,
-  useLazyGetSubredditAboutQuery
+  useLazyGetSubredditAboutQuery,
+  useGetUserProfileQuery,
+  useGetUserPostsInfiniteQuery,
+  useGetUserCommentsInfiniteQuery
 } = redditApi

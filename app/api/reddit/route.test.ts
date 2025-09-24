@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 import {NextRequest} from 'next/server'
-import {vi, describe, it, expect, beforeEach, afterEach} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock the Reddit token action before importing the route
 const mockGetRedditToken = vi.fn()
@@ -184,6 +184,23 @@ describe('/api/reddit route security validations', () => {
       }
     })
 
+    it('should accept valid user paths', async () => {
+      const validPaths = [
+        '/user/testuser/submitted.json',
+        '/user/profile/comments.json',
+        '/user/someone123/about.json'
+      ]
+
+      for (const validPath of validPaths) {
+        const request = createMockRequest(
+          `http://localhost:3000/api/reddit?path=${validPath}`
+        )
+
+        const response = await GET(request)
+        expect(response.status).toBe(200)
+      }
+    })
+
     it('should accept valid popular subreddits path', async () => {
       const request = createMockRequest(
         'http://localhost:3000/api/reddit?path=/subreddits/popular.json'
@@ -193,10 +210,18 @@ describe('/api/reddit route security validations', () => {
       expect(response.status).toBe(200)
     })
 
+    it('should accept popular subreddits path with query parameters', async () => {
+      const request = createMockRequest(
+        'http://localhost:3000/api/reddit?path=/subreddits/popular.json?limit=10'
+      )
+
+      const response = await GET(request)
+      expect(response.status).toBe(200)
+    })
+
     it('should reject invalid Reddit API paths', async () => {
       const invalidPaths = [
         '/admin/secret',
-        '/user/profile',
         '/api/private',
         '/oauth/token',
         '/dashboard',

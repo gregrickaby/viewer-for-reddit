@@ -19,7 +19,10 @@ export const COMMENT_CONTENT_MARKERS = {
  * @returns True if the comment is from AutoModerator
  */
 export function isAutoModeratorComment(comment: AutoCommentData): boolean {
-  return comment.author === COMMENT_CONTENT_MARKERS.AUTO_MODERATOR
+  return (
+    'author' in comment &&
+    comment.author === COMMENT_CONTENT_MARKERS.AUTO_MODERATOR
+  )
 }
 
 /**
@@ -45,13 +48,14 @@ function hasCommentText(
 export function isValidComment(comment: AutoCommentData): boolean {
   // Check if author exists and is valid
   const hasValidAuthor = Boolean(
-    comment.author &&
+    'author' in comment &&
+      comment.author &&
       comment.author !== COMMENT_CONTENT_MARKERS.DELETED &&
       comment.author !== COMMENT_CONTENT_MARKERS.REMOVED
   )
 
-  // Check if comment has text properties
-  if (!hasCommentText(comment)) {
+  // Check if comment has text properties - must have author AND content properties
+  if (!hasValidAuthor || !hasCommentText(comment)) {
     return false
   }
 
@@ -64,7 +68,7 @@ export function isValidComment(comment: AutoCommentData): boolean {
       comment.body !== COMMENT_CONTENT_MARKERS.REMOVED
   )
 
-  return hasValidAuthor && hasContent && isNotDeleted
+  return hasContent && isNotDeleted
 }
 
 /**

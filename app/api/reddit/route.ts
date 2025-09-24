@@ -77,9 +77,11 @@ export async function GET(request: NextRequest) {
   // Ensure path matches Reddit API patterns
   const isValidRedditPath =
     (path.startsWith('/r/') && path.length > 3) || // Must have subreddit name after /r/
+    (path.startsWith('/user/') && path.length > 6) || // Must have username after /user/
     path === '/api/subreddit_autocomplete_v2' ||
     path.startsWith('/api/subreddit_autocomplete_v2?') ||
-    path === '/subreddits/popular.json'
+    path === '/subreddits/popular.json' ||
+    path.startsWith('/subreddits/popular.json?')
 
   if (!isValidRedditPath) {
     return NextResponse.json({error: 'Invalid Reddit API path'}, {status: 400})

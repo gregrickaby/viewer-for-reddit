@@ -27,6 +27,20 @@ vi.mock('next/image', () => ({
 // https://github.com/vitest-dev/vitest/issues/7906
 global.URLSearchParams = NodeURLSearchParams as any
 
+// Set up base URL for test environment to resolve relative URLs
+Object.defineProperty(window, 'location', {
+  value: {
+    ...window.location,
+    origin: 'http://localhost:3000',
+    host: 'localhost:3000',
+    hostname: 'localhost',
+    port: '3000',
+    protocol: 'http:',
+    href: 'http://localhost:3000'
+  },
+  writable: true
+})
+
 // Set up DOM-related browser APIs (e.g., matchMedia, ResizeObserver)
 setupBrowserMocks()
 
@@ -51,6 +65,9 @@ beforeAll(() => {
 afterEach(() => {
   // Reset any runtime request handlers between tests
   server.resetHandlers()
+
+  // Restore original environment variables
+  vi.unstubAllEnvs()
 })
 
 afterAll(() => {
