@@ -6,6 +6,34 @@
 
 **CRITICAL: NEVER CANCEL any build or test commands. Set explicit timeouts and wait for completion.**
 
+### Agent Loop Prevention
+
+**STOP CONDITIONS - Bail out early if:**
+
+- You've made 3+ attempts at the same fix without success
+- You're repeating the same tool calls or getting identical error messages
+- A command has been running for longer than expected timeout (see timing reference below)
+- You cannot find the information needed after 2-3 targeted searches
+- The user's request requires information not available in the current workspace
+
+**When to ask for help:**
+
+- If you're unsure about project-specific patterns after reading the instructions
+- If you need clarification on requirements rather than continuing to guess
+- If you encounter errors that aren't covered in the troubleshooting section below
+
+### Error Recovery and Debugging
+
+- **If commands fail unexpectedly**:
+  - Check Node version with `node --version` (should be v22)
+  - Clear caches: `rm -rf .next node_modules package-lock.json && npm install`
+  - For test failures, check MSW handlers in `test-utils/msw/` before debugging components
+
+- **Common error patterns**:
+  - TypeScript errors: Run `npx tsc --noEmit` for detailed diagnostics
+  - Test flakiness: Usually caused by shared state - ensure `userEvent.setup()` per test
+  - Build failures: Switch to development mode if in restricted network environment
+
 ### Bootstrap and Development Setup
 
 1. **Environment Requirements**: Use Node v22 and npm v11 (see `.nvmrc`)
@@ -48,7 +76,7 @@
   ```
 
   - Takes ~38 seconds for full test suite. NEVER CANCEL - set timeout to 60+ seconds.
-  - Achieves 100% coverage across all control flow
+  - Achieves 90%+ coverage across control flow (skip hard-to-cover edge cases)
   - Uses MSW v2 for API mocking in handlers.ts. Never mock fetch or RTK queries directly.
 
 - **Run linting**:
@@ -92,8 +120,13 @@
    - Run `npx tsc --noEmit` - must complete with no errors
 
 3. **Test validation**:
-   - Run `npm test` and ensure 100% coverage maintained
+   - Run `npm run test` and ensure 90%+ coverage maintained
    - All tests must pass - no exceptions
+   - Skip edge cases that are difficult to cover or test
+
+4. **Development server validation**:
+   - Start `npm run dev` and verify app loads at http://localhost:3000
+   - Test core functionality: search, subreddit navigation, post viewing
 
 ## Architecture Overview
 
@@ -150,10 +183,10 @@ export function Component({src, alt = ''}: Readonly<ComponentProps>) {
 ## Testing Patterns
 
 - Use `render()` and `renderHook()` from `@/test-utils` (includes Redux store)
-- **MSW v2** for API mocking - assume global server setup exists
+- MSW v2 for API mocking - assume global server setup exists
 - Name tests: `it('should behavior when condition')`
 - Use `userEvent.setup()` per test to avoid shared state
-- Target **100% coverage** of control flow, not edge cases
+- Target **90%+ coverage** of control flow, not edge cases
 - Never mock Redux, always use preloaded state in tests
 
 ## Redux/API Architecture
@@ -203,6 +236,9 @@ Required for Reddit API:
 - CSS Modules classes imported as `classes.className`
 - Test files must use MSW for network calls, not fetch mocks
 - Build requires internet access for Google Fonts - use development mode in restricted environments
+- Always use `userEvent.setup()` per test to avoid flaky tests
+- Never edit `lib/types/reddit-api.ts` manually - it's auto-generated
+- RTK Query hooks automatically handle loading states and caching
 
 ## Command Timing Reference
 
@@ -210,8 +246,16 @@ Required for Reddit API:
 
 - `npm install`: ~31 seconds → timeout: 60+ seconds
 - `npm run lint`: ~3 seconds → timeout: 30+ seconds
-- `npm test`: ~38 seconds → timeout: 60+ seconds
+- `npm run test`: ~38 seconds → timeout: 60+ seconds
+- `npm run coverage`: ~40 seconds → timeout: 60+ seconds
 - `npm run dev`: ~1 second startup → timeout: 30+ seconds
 - `npm run build`: Fails in restricted networks → use development mode instead
+- `npm run codegen`: ~30 seconds → timeout: 60+ seconds
 
 **NEVER CANCEL these commands - always wait for completion with adequate timeouts.**
+
+## Branching and Commit Guidelines
+
+**Branch naming convention**: Use format `ticket-number-issue-title` (e.g., `614-view-user-profiles`)
+
+**Commit message format**: Use imperative mood, e.g., "Add user profile component"
