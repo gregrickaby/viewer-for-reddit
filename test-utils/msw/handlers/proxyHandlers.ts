@@ -12,7 +12,6 @@ export const proxyHandlers = [
   http.get('*/api/reddit', async ({request}) => {
     const url = new URL(request.url)
     const path = url.searchParams.get('path')
-    console.error('DEBUG: Proxy handler called with path:', path)
 
     if (!path) {
       return new HttpResponse(null, {status: 400})
@@ -72,14 +71,9 @@ export const proxyHandlers = [
 
     // Post comments
     const postCommentsRegex = /^\/r\/.+\/comments\/[^/]+(?:\/[^/]*)?\.json$/
-    console.error(
-      'DEBUG: Checking path for post comments:',
-      path,
-      'matches:',
-      postCommentsRegex.test(path)
-    )
-    if (postCommentsRegex.test(path)) {
-      console.error('DEBUG: Returning post comments mock')
+    // Strip query parameters for path matching
+    const pathWithoutQuery = path.split('?')[0]
+    if (postCommentsRegex.test(pathWithoutQuery)) {
       const {postCommentsMock} = await import('../../mocks/postComments')
       return HttpResponse.json(postCommentsMock)
     }

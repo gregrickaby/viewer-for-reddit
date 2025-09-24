@@ -24,12 +24,17 @@ describe('Comments', () => {
 
   it('should should show no comments when none returned', async () => {
     server.use(
-      http.get('https://oauth.reddit.com/r/test/comments/none.json', () =>
-        HttpResponse.json([
-          {},
-          {kind: 'Listing', data: {after: null, dist: 0, children: []}}
-        ])
-      )
+      http.get('http://localhost:3000/api/reddit', ({request}) => {
+        const url = new URL(request.url)
+        const path = url.searchParams.get('path')
+        if (path?.startsWith('/r/test/comments/none')) {
+          return HttpResponse.json([
+            {},
+            {kind: 'Listing', data: {after: null, dist: 0, children: []}}
+          ])
+        }
+        return new HttpResponse(null, {status: 404})
+      })
     )
 
     render(

@@ -27,56 +27,54 @@ vi.mock('next/image', () => ({
 // https://github.com/vitest-dev/vitest/issues/7906
 global.URLSearchParams = NodeURLSearchParams as any
 
-// Set up base URL for test environment to resolve relative URLs
-Object.defineProperty(window, 'location', {
-  value: {
-    ...window.location,
-    origin: 'http://localhost:3000',
-    host: 'localhost:3000',
-    hostname: 'localhost',
-    port: '3000',
-    protocol: 'http:',
-    href: 'http://localhost:3000'
-  },
-  writable: true
-})
+// Set up base URL for test environment
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'location', {
+    value: {
+      ...window.location,
+      origin: 'http://localhost:3000',
+      host: 'localhost:3000',
+      hostname: 'localhost',
+      port: '3000',
+      protocol: 'http:',
+      href: 'http://localhost:3000'
+    },
+    writable: true
+  })
+}
 
-// Set up DOM-related browser APIs (e.g., matchMedia, ResizeObserver)
-setupBrowserMocks()
+// Set up DOM-related browser APIs
+if (typeof window !== 'undefined') {
+  setupBrowserMocks()
+}
 
 // Global setup for Vitest test environment
 beforeAll(() => {
-  // Start the MSW server to intercept network requests
   server.listen({onUnhandledRequest: 'warn'})
 
-  // Install test DOM shims
-  installDomShims()
+  if (typeof window !== 'undefined') {
+    installDomShims()
+  }
 
-  // Stub required environment variables for Reddit token fetching
   vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
   vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
-  // Spy on console methods to suppress logs during tests
   vi.spyOn(console, 'error').mockImplementation(() => {})
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   vi.spyOn(console, 'info').mockImplementation(() => {})
 })
 
 afterEach(() => {
-  // Reset any runtime request handlers between tests
   server.resetHandlers()
-
-  // Restore original environment variables
   vi.unstubAllEnvs()
 })
 
 afterAll(() => {
-  // Cleanly shut down MSW after all tests finish
   server.close()
 
-  // Remove any test DOM shims
-  removeDomShims()
+  if (typeof window !== 'undefined') {
+    removeDomShims()
+  }
 
-  // Restore original environment variables
   vi.unstubAllEnvs()
 })

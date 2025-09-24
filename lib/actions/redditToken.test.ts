@@ -20,6 +20,8 @@ describe('fetchToken', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     resetTokenState()
+    vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
+    vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
   })
 
   it('returns a valid token on success', async () => {
@@ -102,6 +104,8 @@ describe('getRedditToken', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     resetTokenState()
+    vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
+    vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
   })
 
   it('fetches and caches a new token when no token exists', async () => {

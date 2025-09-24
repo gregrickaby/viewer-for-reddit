@@ -37,18 +37,22 @@ describe('useAddFavorite', () => {
 
   it('should add subreddit to favorites on toggle (success path)', async () => {
     server.use(
-      http.get('https://oauth.reddit.com/r/aww/about.json', () =>
-        HttpResponse.json({
-          data: {
-            display_name: 'aww',
-            icon_img: '',
-            over18: false,
-            public_description: 'Cute stuff',
-            subscribers: 123,
-            value: 'r/aww'
-          }
-        })
-      )
+      http.get('http://localhost:3000/api/reddit', ({request}) => {
+        const url = new URL(request.url)
+        const path = url.searchParams.get('path')
+        if (path === '/r/aww/about.json') {
+          return HttpResponse.json({
+            data: {
+              display_name: 'aww',
+              icon_img: '',
+              over18: false,
+              public_description: 'Cute stuff',
+              subscribers: 123
+            }
+          })
+        }
+        return new HttpResponse(null, {status: 404})
+      })
     )
     const {result} = renderHook(() => useAddFavorite('aww'), {
       preloadedState
@@ -62,18 +66,22 @@ describe('useAddFavorite', () => {
 
   it('should remove subreddit from favorites on toggle (success path)', async () => {
     server.use(
-      http.get('https://oauth.reddit.com/r/reactjs/about.json', () =>
-        HttpResponse.json({
-          data: {
-            display_name: 'reactjs',
-            icon_img: '',
-            over18: false,
-            public_description: 'React community',
-            subscribers: 100000,
-            value: 'r/reactjs'
-          }
-        })
-      )
+      http.get('http://localhost:3000/api/reddit', ({request}) => {
+        const url = new URL(request.url)
+        const path = url.searchParams.get('path')
+        if (path === '/r/reactjs/about.json') {
+          return HttpResponse.json({
+            data: {
+              display_name: 'reactjs',
+              icon_img: '',
+              over18: false,
+              public_description: 'React community',
+              subscribers: 100000
+            }
+          })
+        }
+        return new HttpResponse(null, {status: 404})
+      })
     )
     const {result} = renderHook(() => useAddFavorite('reactjs'), {
       preloadedState
@@ -87,9 +95,14 @@ describe('useAddFavorite', () => {
 
   it('should handle API error gracefully', async () => {
     server.use(
-      http.get('https://oauth.reddit.com/r/aww/about.json', () =>
-        HttpResponse.json({error: 'Internal Server Error'}, {status: 500})
-      )
+      http.get('http://localhost:3000/api/reddit', ({request}) => {
+        const url = new URL(request.url)
+        const path = url.searchParams.get('path')
+        if (path === '/r/aww/about.json') {
+          return new HttpResponse(null, {status: 500})
+        }
+        return new HttpResponse(null, {status: 404})
+      })
     )
     const {result} = renderHook(() => useAddFavorite('aww'), {
       preloadedState

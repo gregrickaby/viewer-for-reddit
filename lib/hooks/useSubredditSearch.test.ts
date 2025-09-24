@@ -262,8 +262,5 @@ describe('useSubredditSearch', () => {
     act(() => {
       result.current.handleMobileClose()
     })
-
-    // Body overflow should be restored (cleanup happens in useEffect cleanup)
-    // Note: In test environment, the cleanup might not run immediately
   })
 })
