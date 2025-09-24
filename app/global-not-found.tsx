@@ -1,12 +1,24 @@
+import {logError} from '@/lib/utils/logError'
+import type {Metadata} from 'next'
+import {headers} from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 import NotFoundAnimation from '../public/not-found.webp'
 import Snoo from './icon.png'
 
+export const metadata: Metadata = {
+  title: '404 - Page Not Found',
+  description: 'The page you are looking for does not exist.'
+}
+
 /**
  * The Global 404 component.
  */
-export default function GlobalNotFound() {
+export default async function GlobalNotFound() {
+  const headersList = await headers()
+  const referer = headersList.get('referer') ?? 'unknown'
+  logError(`404 Not Found: ${referer}`)
+
   return (
     <html lang="en">
       <body
