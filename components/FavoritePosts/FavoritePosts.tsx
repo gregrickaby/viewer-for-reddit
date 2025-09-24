@@ -53,7 +53,7 @@ export function FavoritePosts({
   if (isLoading) {
     return (
       <Group justify="center" mt="lg">
-        <Loader data-testid="loader" />
+        <Loader />
       </Group>
     )
   }

@@ -1,5 +1,4 @@
-import {getRedditToken} from '@/lib/actions/redditToken'
-import type {SortingOption, SubredditItem} from '@/lib/types'
+import type {SortingOption, SubredditItem, UserItem} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
 import {extractAndFilterComments} from '@/lib/utils/commentFilters'
 import {fromAbout, fromPopular, fromSearch} from '@/lib/utils/subredditMapper'
@@ -74,7 +73,21 @@ export type AutoCommentChild = NonNullable<
 >
 
 /** Comment data type containing comment text and metadata */
-export type AutoCommentData = NonNullable<AutoCommentChild['data']>
+export interface AutoCommentData {
+  author?: string
+  subreddit?: string
+  created_utc?: number
+  ups?: number
+  permalink?: string
+  body?: string
+  body_html?: string
+  id?: string
+  name?: string
+  parent_id?: string
+  children?: string[]
+  count?: number
+  depth?: number
+}
 
 /** Comment type that includes body text content */
 export type AutoCommentWithText = Extract<
@@ -88,78 +101,37 @@ const MAX_LIMIT = 25
 const COMMENTS_LIMIT = 25
 
 /**
- * Detects if the current environment is iOS Safari which has CORS restrictions.
+ * Base query that routes all browser requests through the Next.js API proxy.
  *
- * iOS Safari blocks direct cross-origin requests to oauth.reddit.com, requiring
- * us to route through our proxy API handler for these specific browsers.
- *
- * @returns {boolean} true if running on iOS Safari, false otherwise
- */
-function isIOSSafari(): boolean {
-  // Return false in server-side rendering context
-  if (typeof window === 'undefined') return false
-
-  const userAgent = window.navigator.userAgent
-  // Check for iOS devices (iPad, iPhone, iPod)
-  const isIOS = /iPad|iPhone|iPod/.test(userAgent)
-  // Check for Safari browser while excluding Chrome-based browsers on iOS
-  const isSafari =
-    /Safari/.test(userAgent) && !/Chrome|CriOS|EdgiOS|FxiOS/.test(userAgent)
-
-  return isIOS && isSafari
-}
-
-/**
- * Smart base query that uses proxy for iOS Safari, direct API for other browsers.
- *
- * This approach optimizes for your traffic profile:
- * - 63% iOS Safari users → automatically routed through CORS proxy
- * - 37% other browsers → direct API calls for better performance
- *
- * The proxy route (/api/reddit) handles authentication server-side and adds
- * proper CORS headers, while direct calls use client-side token management.
+ * This approach ensures CORS compliance for all browsers:
+ * - All client-side requests → routed through /api/reddit/ proxy
+ * - Server-side authentication and token management
+ * - Eliminates CORS errors for cross-origin requests
  *
  * @param args - RTK Query arguments (URL string or request config object)
  * @param api - RTK Query API object with dispatch and state access
  * @param extraOptions - Additional options passed to the base query
  * @returns Promise resolving to the API response data or error
  */
-const smartBaseQuery: BaseQueryFn = async (args, api, extraOptions) => {
-  if (isIOSSafari()) {
-    // Use proxy for iOS Safari to bypass CORS restrictions
-    const proxyQuery = fetchBaseQuery({
-      baseUrl: '/api/reddit',
-      prepareHeaders: (headers) => {
-        headers.set('Content-Type', 'application/json')
-        return headers
-      }
-    })
-
-    // Convert the original Reddit API URL to proxy format
-    // Example: "/r/programming/hot.json" → "?path=%2Fr%2Fprogramming%2Fhot.json"
-    const originalUrl = typeof args === 'string' ? args : args.url
-    const proxyArgs =
-      typeof args === 'string'
-        ? `?path=${encodeURIComponent(originalUrl)}`
-        : {...args, url: `?path=${encodeURIComponent(originalUrl)}`}
-
-    return await proxyQuery(proxyArgs, api, extraOptions)
-  }
-
-  // Use direct Reddit API for other browsers (better performance)
-  const directQuery = fetchBaseQuery({
-    baseUrl: 'https://oauth.reddit.com',
-    prepareHeaders: async (headers) => {
-      // Fetch OAuth token and add Authorization header
-      const token = await getRedditToken()
-      if (token?.access_token) {
-        headers.set('Authorization', `Bearer ${token.access_token}`)
-      }
+const proxyBaseQuery: BaseQueryFn = async (args, api, extraOptions) => {
+  // Always use proxy for browser requests to avoid CORS issues
+  const proxyQuery = fetchBaseQuery({
+    baseUrl: '/api/reddit',
+    prepareHeaders: (headers) => {
+      headers.set('Content-Type', 'application/json')
       return headers
     }
   })
 
-  return await directQuery(args, api, extraOptions)
+  // Convert the original Reddit API URL to proxy format
+  // Example: "/r/programming/hot.json" → "?path=%2Fr%2Fprogramming%2Fhot.json"
+  const originalUrl = typeof args === 'string' ? args : args.url
+  const proxyArgs =
+    typeof args === 'string'
+      ? `?path=${encodeURIComponent(originalUrl)}`
+      : {...args, url: `?path=${encodeURIComponent(originalUrl)}`}
+
+  return await proxyQuery(proxyArgs, api, extraOptions)
 }
 
 /**
@@ -218,7 +190,7 @@ export interface UserCommentsArgs {
 export const redditApi = createApi({
   reducerPath: 'redditApi',
   tagTypes: ['SubredditPosts', 'PopularSubreddits', 'Search', 'UserComments'],
-  baseQuery: smartBaseQuery,
+  baseQuery: proxyBaseQuery,
   endpoints: (builder) => ({
     /**
      * Search subreddits using Reddit's autocomplete API.
@@ -288,6 +260,42 @@ export const redditApi = createApi({
       // Cache per subreddit and invalidate when posts are updated
       providesTags: (_result, _err, subreddit) => [
         {type: 'SubredditPosts', id: subreddit}
+      ]
+    }),
+
+    /**
+     * Fetches information about a specific Reddit user.
+     *
+     * Retrieves user profile data including avatar, karma, account creation date,
+     * and other public profile information from Reddit's /user/{username}/about.json endpoint.
+     *
+     * @param {string} username - The Reddit username (without u/ prefix)
+     *
+     * @returns {UserItem} User profile information
+     *
+     * @example
+     * // Get user profile information
+     * const {data} = useGetUserAboutQuery('spez')
+     */
+    getUserAbout: builder.query<UserItem, string>({
+      query: (username) => `/user/${encodeURIComponent(username)}/about.json`,
+      transformResponse: (
+        response: {data: any},
+        _meta,
+        username: string
+      ): UserItem => {
+        const userData = response.data
+        // Return the userData as-is since it matches the auto-generated type
+        // Only add fallback for icon if needed
+        return {
+          ...userData,
+          name: userData.name || username,
+          icon_img: userData.icon_img || userData.subreddit?.icon_img
+        }
+      },
+      // Cache user data with appropriate tags
+      providesTags: (_result, _err, username) => [
+        {type: 'UserComments' as const, id: username}
       ]
     }),
 
@@ -581,6 +589,7 @@ export const redditApi = createApi({
  * Available hooks:
  * - useSearchSubredditsQuery: Real-time subreddit search with typeahead
  * - useGetSubredditAboutQuery: Subreddit metadata and information
+ * - useGetUserAboutQuery: User profile metadata and information
  * - useGetPopularSubredditsQuery: Trending subreddits sorted by popularity
  * - useGetSubredditPostsInfiniteQuery: Paginated posts with infinite scroll
  * - useGetUserPostsInfiniteQuery: Paginated user posts with infinite scroll
@@ -593,6 +602,7 @@ export const redditApi = createApi({
 export const {
   useSearchSubredditsQuery,
   useGetSubredditAboutQuery,
+  useGetUserAboutQuery,
   useGetPopularSubredditsQuery,
   useGetSubredditPostsInfiniteQuery,
   useGetUserPostsInfiniteQuery,

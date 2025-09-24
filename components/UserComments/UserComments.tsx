@@ -25,7 +25,7 @@ export function UserComments({username, sort}: Readonly<UserCommentsProps>) {
   if (isLoading) {
     return (
       <Group justify="center" mt="lg">
-        <Loader data-testid="loader" />
+        <Loader />
       </Group>
     )
   }

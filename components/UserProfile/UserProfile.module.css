@@ -1,3 +1,12 @@
+.userHeader {
+  border-radius: 12px;
+}
+
+.avatar {
+  border: 2px solid var(--mantine-color-gray-3);
+  border-radius: 50%;
+}
+
 .tabs {
   margin: 0 auto;
   width: 100%;

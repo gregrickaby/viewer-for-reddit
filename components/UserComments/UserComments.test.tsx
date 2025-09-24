@@ -9,6 +9,14 @@ vi.mock('@/lib/hooks/useInfiniteUserComments', () => ({
   useInfiniteUserComments: mockUseInfiniteUserComments
 }))
 
+vi.mock('@mantine/core', async (importOriginal) => {
+  const actual = await importOriginal<any>()
+  return {
+    ...actual,
+    Loader: () => <div data-testid="loader" />
+  }
+})
+
 describe('UserComments', () => {
   beforeEach(() => {
     mockUseInfiniteUserComments.mockReset()

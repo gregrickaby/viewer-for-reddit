@@ -40,6 +40,17 @@ export interface SubredditItem {
 }
 
 /**
+ * User profile shape used for displaying user information.
+ * Auto-generated from Reddit's OpenAPI specification.
+ *
+ * @note This type is derived from the auto-generated OpenAPI types in reddit-api.ts.
+ * To update this type, run: npm run codegen:types
+ */
+export type UserItem = NonNullable<
+  import('./reddit-api').components['schemas']['GetUserProfileResponse']['data']
+>
+
+/**
  * User settings persisted in localStorage.
  */
 export interface UserSettings {

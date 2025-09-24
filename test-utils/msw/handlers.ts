@@ -329,6 +329,58 @@ export const handlers = [
 
     // Route proxy requests to appropriate responses based on path
     if (path.includes('/about.json')) {
+      if (path.includes('/user/')) {
+        // User about endpoint: /user/{username}/about.json
+        const username = path.split('/')[2] // Extract username from /user/username/about.json
+        if (username === 'nonexistentuser') {
+          return new HttpResponse(null, {status: 404})
+        }
+        if (username === 'minimaluser') {
+          return HttpResponse.json({
+            data: {
+              name: 'minimaluser'
+            }
+          })
+        }
+        if (username === 'testmod') {
+          return HttpResponse.json({
+            data: {
+              name: 'testmod',
+              link_karma: 5000,
+              comment_karma: 2500,
+              created_utc: 1546300800,
+              subreddit: {
+                display_name: 'u_testmod',
+                public_description: 'Test mod user'
+              },
+              verified: false,
+              is_gold: false,
+              is_mod: true,
+              icon_img:
+                'https://www.redditstatic.com/avatars/avatar_default_02_FF8717.png'
+            }
+          })
+        }
+        // Default user data for other usernames (like 'testuser')
+        return HttpResponse.json({
+          data: {
+            name: username,
+            link_karma: 1000,
+            comment_karma: 500,
+            created_utc: 1546300800,
+            subreddit: {
+              display_name: `u_${username}`,
+              public_description: 'Test user'
+            },
+            verified: true,
+            is_gold: true,
+            is_mod: false,
+            icon_img:
+              'https://www.redditstatic.com/avatars/avatar_default_02_FF8717.png'
+          }
+        })
+      }
+      // Subreddit about endpoint
       const subreddit = path.split('/')[2] // Extract subreddit from /r/subreddit/about.json
       if (subreddit === 'notarealsubreddit') {
         return new HttpResponse(null, {status: 404})
@@ -395,12 +447,12 @@ export const handlers = [
     }
 
     if (path.endsWith('.json')) {
-      // Comments endpoint
+      // Comments endpoint - return the same complete mock data as direct API
       const commentsListing = {
         kind: 'Listing',
         data: {
           after: null,
-          dist: 2,
+          dist: 3,
           modhash: '',
           geo_filter: '',
           children: [
@@ -411,7 +463,10 @@ export const handlers = [
                 author: 'testuser',
                 body: 'First comment',
                 body_html:
-                  '&lt;div class="md"&gt;&lt;p&gt;First comment&lt;/p&gt;&lt;/div&gt;'
+                  '&lt;div class="md"&gt;&lt;p&gt;First comment&lt;/p&gt;&lt;/div&gt;',
+                permalink: '/r/test/comments/1/test_post/c1/',
+                created_utc: 1672531200,
+                ups: 5
               }
             },
             {
@@ -421,7 +476,23 @@ export const handlers = [
                 author: 'anotheruser',
                 body: 'Second comment with a link',
                 body_html:
-                  '&lt;div class="md"&gt;&lt;p&gt;Second comment with a &lt;a href="https://example.com"&gt;link&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;'
+                  '&lt;div class="md"&gt;&lt;p&gt;Second comment with a &lt;a href="https://example.com"&gt;link&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;',
+                permalink: '/r/test/comments/1/test_post/c2/',
+                created_utc: 1672534800,
+                ups: 3
+              }
+            },
+            {
+              kind: 't1',
+              data: {
+                id: 'c3',
+                author: 'AutoModerator',
+                body: 'This is an AutoModerator comment',
+                body_html:
+                  '&lt;div class="md"&gt;&lt;p&gt;This is an AutoModerator comment&lt;/p&gt;&lt;/div&gt;',
+                permalink: '/r/test/comments/1/test_post/c3/',
+                created_utc: 1672531800,
+                ups: 1
               }
             }
           ]
