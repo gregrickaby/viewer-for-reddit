@@ -240,9 +240,9 @@ Required for Reddit API:
 - Never edit `lib/types/reddit-api.ts` manually - it's auto-generated
 - RTK Query hooks automatically handle loading states and caching
 
-## Command Timing Reference
+## NPM Commands and Timing Reference
 
-**Measured timings with appropriate timeout recommendations:**
+**List of available NPM commands and measured timings with appropriate timeout recommendations:**
 
 - `npm install`: ~31 seconds → timeout: 60+ seconds
 - `npm run lint`: ~3 seconds → timeout: 30+ seconds
