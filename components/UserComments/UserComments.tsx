@@ -1,3 +1,5 @@
+'use client'
+
 import {Comments} from '@/components/Comments/Comments'
 import {useInfiniteUserComments} from '@/lib/hooks/useInfiniteUserComments'
 import type {SortingOption} from '@/lib/types'
