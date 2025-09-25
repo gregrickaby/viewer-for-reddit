@@ -1,18 +1,38 @@
-.postCard {
-  height: auto;
-  margin: 0 auto;
-  width: 100%;
+.subredditLink {
+  text-decoration: none;
 
-  a {
-    color: var(--mantine-color-text);
-
-    &:hover {
-      text-decoration: none;
-    }
+  &:hover {
+    text-decoration: none;
   }
 }
 
-.meta {
+.subreddit {
+  color: var(--mantine-color-text);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.metaLink {
+  color: var(--mantine-color-dimmed);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.title {
+  color: var(--mantine-color-text);
+
+  &:hover {
+    color: var(--mantine-color-red);
+    text-decoration: none;
+  }
+}
+
+.bottomMeta {
   gap: 4px;
 }
 

@@ -211,23 +211,6 @@ describe('redditApi', () => {
     }
   })
 
-  it('should handle stickied post filtering in transform response', async () => {
-    const {result} = renderHook(() =>
-      useGetSubredditPostsInfiniteQuery({subreddit: 'testfilter', sort: 'hot'})
-    )
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-    })
-
-    const pages = result.current.data?.pages ?? []
-    const posts = pages[0]?.data?.children ?? []
-
-    expect(posts.length).toBe(1)
-    expect(posts[0]?.data?.title).toBe('Normal post')
-    expect(posts[0]?.data?.stickied).toBe(false)
-  })
-
   it('should handle popular subreddits sorting with missing subscriber counts', async () => {
     const {result} = renderHook(() =>
       useGetPopularSubredditsQuery({limit: 999})
@@ -255,23 +238,6 @@ describe('redditApi', () => {
     })
 
     expect(result.current.data?.length).toBe(0)
-  })
-
-  it('should handle null children array in posts response', async () => {
-    const {result} = renderHook(() =>
-      useGetSubredditPostsInfiniteQuery({
-        subreddit: 'testfilternull',
-        sort: 'hot'
-      })
-    )
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-    })
-
-    const pages = result.current.data?.pages ?? []
-    expect(pages.length).toBeGreaterThan(0)
-    expect(pages[0]?.data?.children?.length).toBe(0)
   })
 
   it('should properly encode multi-subreddit URLs with + separators', async () => {

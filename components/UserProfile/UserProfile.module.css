@@ -1,0 +1,25 @@
+/* User profile component styles */
+.container {
+  padding: 1rem;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.data {
+  background-color: var(--mantine-color-gray-0);
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  overflow-x: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .data {
+    background-color: var(--mantine-color-dark-8);
+    border-color: var(--mantine-color-dark-4);
+  }
+}

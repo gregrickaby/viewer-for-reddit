@@ -326,6 +326,132 @@
           }
         }
       }
+    },
+    "/user/{username}/submitted.json": {
+      "get": {
+        "operationId": "getUserPosts",
+        "summary": "Get posts submitted by a user",
+        "tags": ["users"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The username parameter"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "description": "Maximum number of posts to return"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Fullname of a thing for pagination"
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Fullname of a thing for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserPostsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/user/{username}/comments.json": {
+      "get": {
+        "operationId": "getUserComments",
+        "summary": "Get comments submitted by a user",
+        "tags": ["users"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The username parameter"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "description": "Maximum number of comments to return"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Fullname of a thing for pagination"
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Fullname of a thing for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserCommentsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -6008,6 +6134,90 @@
               },
               "has_subscribed": {
                 "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "GetUserPostsResponse": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "after": {
+                "type": ["string", "null"]
+              },
+              "dist": {
+                "type": ["integer", "null"]
+              },
+              "modhash": {
+                "type": ["string", "null"]
+              },
+              "geo_filter": {
+                "type": ["string", "null"]
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "before": {
+                "type": ["string", "null"]
+              }
+            }
+          }
+        }
+      },
+      "GetUserCommentsResponse": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "after": {
+                "type": ["string", "null"]
+              },
+              "dist": {
+                "type": ["integer", "null"]
+              },
+              "modhash": {
+                "type": ["string", "null"]
+              },
+              "geo_filter": {
+                "type": ["string", "null"]
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "before": {
+                "type": ["string", "null"]
               }
             }
           }

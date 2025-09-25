@@ -70,7 +70,7 @@
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-testing-library": "^7.9.2",
+    "eslint-plugin-testing-library": "^7.10.0",
     "jsdom": "^27.0.0",
     "msw": "^2.11.3",
     "openapi-typescript": "^7.9.1",
