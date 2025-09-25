@@ -32,7 +32,7 @@ export function ResponsiveImage({
   const {ref, inViewport} = useInViewport()
   const imgRef = useRef<HTMLImageElement | null>(null)
   const [responsiveClass, setResponsiveClass] = useState<'contain' | 'cover'>(
-    'cover'
+    'contain'
   )
 
   // Decode HTML entities in the URL to fix double-encoding issues from Reddit API.
@@ -43,7 +43,8 @@ export function ResponsiveImage({
     if (!img) return
 
     const ratio = img.naturalWidth / img.naturalHeight
-    const fit = ratio > 1.2 || ratio < 0.8 ? 'contain' : 'cover'
+    // Use contain by default to show full image, only use cover for square-ish images
+    const fit = ratio >= 0.9 && ratio <= 1.1 ? 'cover' : 'contain'
     setResponsiveClass(fit)
   }, [])
 
