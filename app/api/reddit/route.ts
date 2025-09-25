@@ -42,7 +42,7 @@ function validateOrigin(request: NextRequest): boolean {
 
 /**
  * Validates that the provided path is a safe and legal Reddit API path.
- * @param {string} path 
+ * @param path The path to validate.
  * @returns {boolean}
  */
 function isSafeRedditPath(path: string): boolean {
