@@ -3,7 +3,7 @@
 import {Header} from '@/components/Header/Header'
 import {Sidebar} from '@/components/Sidebar/Sidebar'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
-import {AppShell} from '@mantine/core'
+import {AppShell, Container} from '@mantine/core'
 import {useViewportSize} from '@mantine/hooks'
 
 /**
@@ -37,7 +37,7 @@ export default function Layout({
       </AppShell.Navbar>
 
       <AppShell.Main pl="0" pr="0">
-        {children}
+        <Container maw={700}>{children}</Container>
       </AppShell.Main>
     </AppShell>
   )

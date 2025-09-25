@@ -3,7 +3,6 @@ import BossButton from '@/components/BossButton/BossButton'
 import {UserProfile} from '@/components/UserProfile/UserProfile'
 import config from '@/lib/config'
 import type {UserParams} from '@/lib/types'
-import {Container} from '@mantine/core'
 
 /**
  * Generate metadata.
@@ -42,10 +41,10 @@ export default async function UserProfilePage(props: {params: UserParams}) {
   const {username} = params
 
   return (
-    <Container>
+    <>
       <UserProfile username={username} />
       <BossButton />
       <BackToTop />
-    </Container>
+    </>
   )
 }

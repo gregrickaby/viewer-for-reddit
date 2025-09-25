@@ -1,5 +1,5 @@
 import config from '@/lib/config'
-import {Container, Typography} from '@mantine/core'
+import {Typography} from '@mantine/core'
 import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
@@ -40,10 +40,8 @@ export default async function About() {
   const {content} = matter(fileContent)
 
   return (
-    <Container size="sm">
-      <Typography>
-        <ReactMarkdown>{content}</ReactMarkdown>
-      </Typography>
-    </Container>
+    <Typography>
+      <ReactMarkdown>{content}</ReactMarkdown>
+    </Typography>
   )
 }

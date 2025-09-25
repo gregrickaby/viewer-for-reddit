@@ -3,7 +3,6 @@ import BossButton from '@/components/BossButton/BossButton'
 import {Posts} from '@/components/Posts/Posts'
 import config from '@/lib/config'
 import type {Params, SearchParams, SortingOption} from '@/lib/types'
-import {Container} from '@mantine/core'
 
 /**
  * Generate metadata.
@@ -47,10 +46,10 @@ export default async function Page(props: {
   const sort = searchParams.sort as SortingOption
 
   return (
-    <Container>
+    <>
       <Posts subreddit={slug} sort={sort} />
       <BossButton />
       <BackToTop />
-    </Container>
+    </>
   )
 }

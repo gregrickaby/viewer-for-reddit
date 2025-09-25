@@ -9,7 +9,6 @@ import type {SortingOption} from '@/lib/types'
 import {
   Button,
   Code,
-  Container,
   Group,
   Loader,
   SegmentedControl,
@@ -97,42 +96,40 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
   }
 
   return (
-    <Container maw={700}>
-      <Stack>
-        <Group justify="space-between" gap="xs">
-          <Group gap="xs" className={styles.header}>
-            <Title order={1} size="h2">
-              {subreddit === 'all' ? 'Home' : `Posts from r/${subreddit}`}
-            </Title>
-            <Favorite subreddit={subreddit} />
-          </Group>
-          <SegmentedControl
-            value={selectedSort}
-            onChange={(value) => setSelectedSort(value as SortingOption)}
-            data={[
-              {label: 'Hot', value: 'hot'},
-              {label: 'New', value: 'new'},
-              {label: 'Top', value: 'top'}
-            ]}
-          />
+    <Stack>
+      <Group justify="space-between" gap="xs">
+        <Group gap="xs" className={styles.header}>
+          <Title order={1} size="h2">
+            {subreddit === 'all' ? 'Home' : `Posts from r/${subreddit}`}
+          </Title>
+          <Favorite subreddit={subreddit} />
         </Group>
+        <SegmentedControl
+          value={selectedSort}
+          onChange={(value) => setSelectedSort(value as SortingOption)}
+          data={[
+            {label: 'Hot', value: 'hot'},
+            {label: 'New', value: 'new'},
+            {label: 'Top', value: 'top'}
+          ]}
+        />
+      </Group>
 
-        {content}
+      {content}
 
-        {hasNextPage && !wasFiltered && (
-          <div ref={ref} style={{minHeight: 60}}>
-            {isFetchingNextPage ? (
-              <Group justify="center">
-                <Loader />
-              </Group>
-            ) : (
-              <Button fullWidth onClick={() => fetchNextPage()}>
-                Load More
-              </Button>
-            )}
-          </div>
-        )}
-      </Stack>
-    </Container>
+      {hasNextPage && !wasFiltered && (
+        <div ref={ref} style={{minHeight: 60}}>
+          {isFetchingNextPage ? (
+            <Group justify="center">
+              <Loader />
+            </Group>
+          ) : (
+            <Button fullWidth onClick={() => fetchNextPage()}>
+              Load More
+            </Button>
+          )}
+        </div>
+      )}
+    </Stack>
   )
 }
