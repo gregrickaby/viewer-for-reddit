@@ -27,7 +27,12 @@ export function useAddFavorite(subreddit: string) {
         color: isFavorite ? 'blue' : 'green'
       })
     } catch (error) {
-      logError(error)
+      logError(error, {
+        component: 'useAddFavorite',
+        action: 'addFavorite',
+        subreddit,
+        context: 'Failed to update favorite subreddit'
+      })
       notifications.show({
         title: 'Error',
         message: `Failed to update favorite for r/${subreddit}`,

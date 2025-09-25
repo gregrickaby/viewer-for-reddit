@@ -169,7 +169,9 @@ describe('Reddit API Route', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
-        statusText: 'Not Found'
+        statusText: 'Not Found',
+        headers: new Headers(),
+        json: () => Promise.resolve({error: 'Not found'})
       })
 
       const request = new NextRequest(

@@ -1,10 +1,6 @@
-import {logError} from '@/lib/utils/logError'
+import {NotFoundClient} from '@/components/NotFoundClient/NotFoundClient'
 import type {Metadata} from 'next'
 import {headers} from 'next/headers'
-import Image from 'next/image'
-import Link from 'next/link'
-import NotFoundAnimation from '../public/not-found.webp'
-import Snoo from './icon.png'
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found',
@@ -16,22 +12,30 @@ export const metadata: Metadata = {
  */
 export default async function GlobalNotFound() {
   const headersList = await headers()
-  const referer = headersList.get('referer') ?? 'unknown'
-  logError(`404 Not Found: ${referer}`)
 
-  return (
-    <html lang="en">
-      <body
-        style={{fontFamily: 'sans-serif', textAlign: 'center', padding: '2rem'}}
-      >
-        <Link href="/">
-          <Image alt="" src={Snoo} height={64} width={64} />
-        </Link>
-        <h1>404 - Not Found</h1>
-        <Image alt="Not Found" src={NotFoundAnimation} priority unoptimized />
-        <p>The page you&apos;re looking for cannot be found.</p>
-        <Link href="/">Go back home</Link>
-      </body>
-    </html>
-  )
+  // Capture server-side headers to pass to client component
+  const serverHeaders: Record<string, string | null> = {
+    referer: headersList.get('referer'),
+    userAgent: headersList.get('user-agent'),
+    host: headersList.get('host'),
+    xForwardedFor: headersList.get('x-forwarded-for'),
+    xRealIp: headersList.get('x-real-ip'),
+    acceptLanguage: headersList.get('accept-language'),
+    accept: headersList.get('accept'),
+    connection: headersList.get('connection'),
+    upgradeInsecureRequests: headersList.get('upgrade-insecure-requests'),
+    secFetchSite: headersList.get('sec-fetch-site'),
+    secFetchMode: headersList.get('sec-fetch-mode'),
+    secFetchDest: headersList.get('sec-fetch-dest'),
+    purpose: headersList.get('purpose'),
+    nextUrl: headersList.get('next-url'),
+    xMiddlewareNext: headersList.get('x-middleware-next'),
+    xInvokePath: headersList.get('x-invoke-path'),
+    xInvokeRoute: headersList.get('x-invoke-route'),
+    xMatchedPath: headersList.get('x-matched-path'),
+    xRoutePath: headersList.get('x-route-path'),
+    pathname: headersList.get('x-pathname') || headersList.get('pathname')
+  }
+
+  return <NotFoundClient serverHeaders={serverHeaders} />
 }

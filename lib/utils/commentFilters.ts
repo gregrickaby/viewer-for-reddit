@@ -68,7 +68,7 @@ export function isValidComment(comment: AutoCommentData): boolean {
       comment.body !== COMMENT_CONTENT_MARKERS.REMOVED
   )
 
-  return hasValidAuthor && hasContent && isNotDeleted
+  return hasContent && isNotDeleted
 }
 
 /**
