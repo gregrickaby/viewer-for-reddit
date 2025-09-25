@@ -121,7 +121,7 @@ export default async function RootLayout({
           <ColorSchemeScript defaultColorScheme="auto" />
           <Script
             data-website-id="61885b11-f90e-4e2f-a955-213ff27c44cb"
-            src="https://umami.reddit-viewer.com/script.js"
+            src="https://umami.wiregrasswebsites.com/script.js"
             strategy="afterInteractive"
           />
         </head>
