@@ -47,17 +47,17 @@ function validateOrigin(request: NextRequest): boolean {
  */
 function isSafeRedditPath(path: string): boolean {
   // Must start with exactly one /
-  if (!path || !path.startsWith('/') || path.startsWith('//')) return false;
+  if (!path || !path.startsWith('/') || path.startsWith('//')) return false
   // Disallow path traversal
-  if (path.includes('..')) return false;
+  if (path.includes('..')) return false
   // Disallow protocol-relative, or absolute URLs
-  if (path.startsWith('http:') || path.startsWith('https:')) return false;
+  if (path.startsWith('http:') || path.startsWith('https:')) return false
   // Disallow fragments or dangerous characters
-  if (path.includes('#')) return false;
+  if (path.includes('#')) return false
   // Optionally allow-list known prefixes (e.g. /r/, /user/, /api/, /subreddits/, etc.)
   // Example:
   //    if (!/^\/(r|user|subreddits|api|comments|by_id|message|live|prefs|search|mod)/.test(path)) return false;
-  return true;
+  return true
 }
 
 /**
@@ -101,10 +101,7 @@ export async function GET(request: NextRequest) {
       url: request.url,
       searchParams: Object.fromEntries(searchParams.entries())
     })
-    return NextResponse.json(
-      {error: 'Invalid path parameter'},
-      {status: 400}
-    )
+    return NextResponse.json({error: 'Invalid path parameter'}, {status: 400})
   }
 
   try {
