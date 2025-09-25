@@ -28,6 +28,15 @@ function validateOrigin(request: NextRequest): boolean {
     }
   }
 
+  // Log blocked request with structured context
+  logError('Request blocked due to invalid origin', {
+    component: 'redditApiRoute',
+    action: 'validateOrigin',
+    origin: origin || 'none',
+    referer: referer || 'none',
+    nodeEnv: process.env.NODE_ENV,
+    productionUrl: productionUrl || 'not-set'
+  })
   return false
 }
 
@@ -51,6 +60,12 @@ export async function GET(request: NextRequest) {
   const path = searchParams.get('path')
 
   if (!path) {
+    logError('Missing required path parameter', {
+      component: 'redditApiRoute',
+      action: 'validatePath',
+      url: request.url,
+      searchParams: Object.fromEntries(searchParams.entries())
+    })
     return NextResponse.json(
       {error: 'Path parameter is required'},
       {status: 400}
@@ -61,6 +76,14 @@ export async function GET(request: NextRequest) {
     const token = await getRedditToken()
 
     if (!token?.access_token) {
+      logError('Reddit token unavailable for API request', {
+        component: 'redditApiRoute',
+        action: 'validateToken',
+        path,
+        tokenExists: !!token,
+        hasAccessToken: !!token?.access_token,
+        tokenType: token?.token_type
+      })
       return NextResponse.json(
         {error: 'No Reddit token available'},
         {status: 401}
@@ -75,7 +98,21 @@ export async function GET(request: NextRequest) {
     })
 
     if (!response.ok) {
-      logError(`Reddit API error: ${response.status} for path: ${path}`)
+      logError('Reddit API request failed', {
+        component: 'redditApiRoute',
+        action: 'fetchRedditApi',
+        path,
+        status: response.status,
+        statusText: response.statusText,
+        redditUrl: `https://oauth.reddit.com${path}`,
+        headers: {
+          'content-type': response.headers.get('content-type'),
+          'x-ratelimit-remaining': response.headers.get(
+            'x-ratelimit-remaining'
+          ),
+          'x-ratelimit-reset': response.headers.get('x-ratelimit-reset')
+        }
+      })
       return NextResponse.json(
         {error: 'Reddit API error'},
         {status: response.status}
@@ -89,7 +126,10 @@ export async function GET(request: NextRequest) {
       component: 'redditApiRoute',
       action: 'proxyRequest',
       path,
-      context: 'Unexpected error in Reddit API proxy'
+      url: request.url,
+      method: request.method,
+      origin: request.headers.get('origin'),
+      userAgent: request.headers.get('user-agent')
     })
     return NextResponse.json({error: 'Internal server error'}, {status: 500})
   }
