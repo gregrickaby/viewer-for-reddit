@@ -112,7 +112,15 @@ export async function GET(request: NextRequest) {
     // Handle Reddit API errors by forwarding the status and message
     if (!response.ok) {
       logError(
-        `Reddit API error: ${response.status} ${response.statusText} for path: ${path}`
+        `Reddit API error: ${response.status} ${response.statusText} for path: ${path}`,
+        {
+          component: 'redditApiRoute',
+          action: 'proxyRequest',
+          path,
+          status: response.status,
+          statusText: response.statusText,
+          context: 'Reddit API returned error response'
+        }
       )
 
       // Return specific error messages for common issues
@@ -159,7 +167,13 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (error) {
-    logError(error)
+    logError(error, {
+      component: 'redditApiRoute',
+      action: 'proxyRequest',
+      path,
+      clientId,
+      context: 'Unexpected error in Reddit API proxy'
+    })
     return NextResponse.json({error: 'Internal server error'}, {status: 500})
   }
 }

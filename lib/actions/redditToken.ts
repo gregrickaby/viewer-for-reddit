@@ -63,7 +63,11 @@ export async function fetchToken(): Promise<TokenResponse | null> {
 
     return data
   } catch (error) {
-    logError(error)
+    logError(error, {
+      component: 'redditToken',
+      action: 'fetchToken',
+      context: 'OAuth token request failed'
+    })
     return null
   }
 }
@@ -85,7 +89,11 @@ export async function getRedditToken(): Promise<TokenResponse | null> {
   const token = await fetchToken()
 
   if (!token?.access_token) {
-    logError('Failed to fetch Reddit OAuth token')
+    logError('Failed to fetch Reddit OAuth token', {
+      component: 'redditToken',
+      action: 'getRedditToken',
+      context: 'Token validation failed after fetch'
+    })
     return null
   }
 

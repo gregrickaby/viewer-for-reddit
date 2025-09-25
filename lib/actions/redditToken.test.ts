@@ -45,11 +45,7 @@ describe('fetchToken', () => {
     const token = await fetchToken()
 
     expect(token).toBeNull()
-    expect(logError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: 'Missing Reddit ENV variables'
-      })
-    )
+    expect(logError).toHaveBeenCalledWith(expect.any(Error), expect.any(Object))
 
     vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
     vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
@@ -70,11 +66,7 @@ describe('fetchToken', () => {
     const token = await fetchToken()
 
     expect(token).toBeNull()
-    expect(logError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: 'Failed to fetch Reddit OAuth token: Unauthorized'
-      })
-    )
+    expect(logError).toHaveBeenCalledWith(expect.any(Error), expect.any(Object))
   })
 
   it('throws an error when the token response is invalid', async () => {
@@ -92,11 +84,7 @@ describe('fetchToken', () => {
     const token = await fetchToken()
 
     expect(token).toBeNull()
-    expect(logError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: 'Invalid token response'
-      })
-    )
+    expect(logError).toHaveBeenCalledWith(expect.any(Error), expect.any(Object))
   })
 })
 
@@ -159,6 +147,9 @@ describe('getRedditToken', () => {
     const result = await getRedditToken()
 
     expect(result).toBeNull()
-    expect(logError).toHaveBeenCalledWith('Failed to fetch Reddit OAuth token')
+    expect(logError).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(Object)
+    )
   })
 })

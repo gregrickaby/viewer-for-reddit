@@ -151,6 +151,12 @@ export function Media(post: Readonly<AutoPostChildData>) {
     )
   }
 
-  logError(`Unsupported media type: "${post.url}"`)
+  logError(`Unsupported media type: "${post.url}"`, {
+    component: 'Media',
+    action: 'renderMedia',
+    postUrl: post.url,
+    postId: post.id,
+    context: 'Unsupported media type encountered'
+  })
   return <p>Unsupported post type</p>
 }
