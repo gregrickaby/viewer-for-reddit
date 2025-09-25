@@ -14,6 +14,7 @@ import {Notifications} from '@mantine/notifications'
 import '@mantine/notifications/styles.css'
 import type {Metadata, Viewport} from 'next'
 import {Reddit_Sans} from 'next/font/google'
+import Script from 'next/script'
 
 /**
  * Generate metadata.
@@ -117,8 +118,12 @@ export default async function RootLayout({
     <StoreProvider>
       <html lang="en" {...mantineHtmlProps} className={redditSans.className}>
         <head>
-          {/* Prevent flash / hydration mismatch */}
           <ColorSchemeScript defaultColorScheme="auto" />
+          <Script
+            data-website-id="61885b11-f90e-4e2f-a955-213ff27c44cb"
+            src="https://umami.reddit-viewer.com/script.js"
+            strategy="afterInteractive"
+          />
         </head>
         <body>
           <MantineProvider theme={theme} defaultColorScheme="auto">

@@ -4,7 +4,11 @@ import {headers} from 'next/headers'
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found',
-  description: 'The page you are looking for does not exist.'
+  description: 'The page you are looking for does not exist.',
+  robots: {
+    index: false,
+    follow: false
+  }
 }
 
 /**
@@ -12,8 +16,6 @@ export const metadata: Metadata = {
  */
 export default async function GlobalNotFound() {
   const headersList = await headers()
-
-  // Capture server-side headers to pass to client component
   const serverHeaders: Record<string, string | null> = {
     referer: headersList.get('referer'),
     userAgent: headersList.get('user-agent'),
