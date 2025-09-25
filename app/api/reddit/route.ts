@@ -56,7 +56,7 @@ function isSafeRedditPath(path: string): boolean {
   if (path.includes('#')) return false;
   // Optionally allow-list known prefixes (e.g. /r/, /user/, /api/, /subreddits/, etc.)
   // Example:
-  //    if (!/^\/(r|user|subreddits|api|comments|by_id|message|live|prefs|api|search|mod)/.test(path)) return false;
+  //    if (!/^\/(r|user|subreddits|api|comments|by_id|message|live|prefs|search|mod)/.test(path)) return false;
   return true;
 }
 
