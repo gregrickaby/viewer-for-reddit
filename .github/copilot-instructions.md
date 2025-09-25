@@ -184,12 +184,13 @@ export function Component({src, alt = ''}: Readonly<ComponentProps>) {
 
 - Never mock Redux, always use preloaded state in tests
 - Use `render()` and `renderHook()` from `@/test-utils` (includes Redux store)
-- Use MSW v2 for API mocking - verify the global server setup exists, if not, add it. Use local handlers for specific test cases.
+- Use MSW v2 for API mocking - verify the global server setup exists, if not, add it. Use local handlers for specific test cases
 - Name tests: `it('should behavior when condition')`
 - Use `userEvent.setup()` per test to avoid shared state
-- Target **90%+ coverage** of control flow, not edge cases. Skip hard-to-cover edge cases.
+- Target **90%+ coverage** of control flow, not edge cases. Skip hard-to-cover edge cases
 - Never assert the `logError()` structured data, only verify it was called like `expect(logError).toHaveBeenCalled()`
 - Never assert toast notification content. Instead, just verify that a toast was shown like `expect(showNotification).toHaveBeenCalled()`
+- Never add inline comments to tests
 
 ### Example Test
 
