@@ -41,6 +41,26 @@ function validateOrigin(request: NextRequest): boolean {
 }
 
 /**
+ * Validates that the provided path is a safe and legal Reddit API path.
+ * @param path The path to validate.
+ * @returns {boolean}
+ */
+function isSafeRedditPath(path: string): boolean {
+  // Must start with exactly one /
+  if (!path || !path.startsWith('/') || path.startsWith('//')) return false;
+  // Disallow path traversal
+  if (path.includes('..')) return false;
+  // Disallow protocol-relative, or absolute URLs
+  if (path.startsWith('http:') || path.startsWith('https:')) return false;
+  // Disallow fragments or dangerous characters
+  if (path.includes('#')) return false;
+  // Optionally allow-list known prefixes (e.g. /r/, /user/, /api/, /subreddits/, etc.)
+  // Example:
+  //    if (!/^\/(r|user|subreddits|api|comments|by_id|message|live|prefs|search|mod)/.test(path)) return false;
+  return true;
+}
+
+/**
  * Reddit API Proxy Route Handler.
  *
  * @example
@@ -68,6 +88,21 @@ export async function GET(request: NextRequest) {
     })
     return NextResponse.json(
       {error: 'Path parameter is required'},
+      {status: 400}
+    )
+  }
+
+  // Validate path to prevent SSRF and abuse
+  if (!isSafeRedditPath(path)) {
+    logError('Invalid or dangerous Reddit API path', {
+      component: 'redditApiRoute',
+      action: 'validatePath',
+      path,
+      url: request.url,
+      searchParams: Object.fromEntries(searchParams.entries())
+    })
+    return NextResponse.json(
+      {error: 'Invalid path parameter'},
       {status: 400}
     )
   }
