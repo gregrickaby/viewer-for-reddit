@@ -141,6 +141,7 @@ This is a **Next.js 15 + React 19** Reddit viewer app using the **App Router** w
 - **Reddit OAuth 2.0** application-only authentication (read-only)
 - **CSS Modules** for styling
 - **Vitest v3 + React Testing Library + MSW v2** for testing
+- **This app is self-hosted** Using Coolify via a custom Github app.
 
 Key data flow: Reddit API ← RTK Query ← Components ← Redux Store (settings/UI state)
 
