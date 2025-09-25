@@ -15,6 +15,7 @@ import {
   Title
 } from '@mantine/core'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import {useState} from 'react'
 import {BiSolidUpvote} from 'react-icons/bi'
 import {FaComment} from 'react-icons/fa'
@@ -57,17 +58,36 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       shadow="sm"
       withBorder
     >
-      <Stack justify="space-between" gap="xs">
-        <Anchor href={`/${post.subreddit_name_prefixed}`}>
-          <Text size="sm" c="dimmed">
-            {post.subreddit_name_prefixed} &middot;{' '}
+      <Stack gap={0}>
+        <Link
+          className={classes.subredditLink}
+          href={`/${post.subreddit_name_prefixed}`}
+        >
+          <Text className={classes.subreddit} size="sm" fw={700}>
+            {post.subreddit_name_prefixed}
+          </Text>
+        </Link>
+
+        <Group gap={4} c="dimmed">
+          <Link className={classes.metaLink} href={`/u/${post.author}`}>
+            <Text size="xs">u/{post.author}</Text>
+          </Link>
+          &middot;
+          <Text size="xs">
             <time dateTime={created}>
               {post.created_utc ? formatTimeAgo(post.created_utc) : ''}
             </time>
           </Text>
-        </Anchor>
-        <Anchor href={postLink} rel="noopener noreferrer" target="_blank">
-          <Title order={2} size="lg">
+        </Group>
+
+        <Anchor
+          className={classes.link}
+          href={postLink}
+          rel="noopener noreferrer"
+          target="_blank"
+          underline="never"
+        >
+          <Title className={classes.title} order={2} size="xl" mt="xs">
             {post.title}
           </Title>
         </Anchor>
@@ -79,10 +99,15 @@ export function PostCard({post}: Readonly<PostCardProps>) {
         </Card.Section>
       )}
 
-      <Group mt="xs">
-        <Group className={classes.meta}>
+      <Group gap="xs" mt="xs">
+        <Group gap={2}>
           <BiSolidUpvote size={16} color="red" />
-          <Anchor href={postLink} rel="noopener noreferrer" target="_blank">
+          <Anchor
+            href={postLink}
+            rel="noopener noreferrer"
+            target="_blank"
+            underline="never"
+          >
             <Text size="sm" c="dimmed">
               <NumberFormatter value={post.ups} thousandSeparator />
             </Text>
@@ -92,11 +117,11 @@ export function PostCard({post}: Readonly<PostCardProps>) {
         <Button
           aria-expanded={commentsOpen}
           aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
-          className={`${classes.meta} ${classes.commentsToggle}`}
+          className={`${classes.bottomMeta} ${classes.commentsToggle}`}
           onClick={() => setCommentsOpen(!commentsOpen)}
           variant="subtle"
         >
-          <Group gap="xs">
+          <Group gap={4}>
             <FaComment size={16} color="red" />
             <Text size="sm" c="dimmed">
               <NumberFormatter value={post.num_comments} thousandSeparator />{' '}

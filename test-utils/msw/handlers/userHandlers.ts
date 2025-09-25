@@ -1,7 +1,15 @@
 import {http, HttpResponse} from 'msw'
 import {userCommentsEmptyMock, userCommentsMock} from '../../mocks/userComments'
 import {userPostsEmptyMock, userPostsMock} from '../../mocks/userPosts'
-import {userNotFoundMock, userProfileMock} from '../../mocks/userProfile'
+import {
+  adminUserMock,
+  emailVerifiedUserMock,
+  emptyUserMock,
+  goldUserMock,
+  limitedUserMock,
+  userNotFoundMock,
+  userProfileMock
+} from '../../mocks/userProfile'
 
 export const userHandlers = [
   // User profile
@@ -10,6 +18,26 @@ export const userHandlers = [
 
     if (username === 'nonexistentuser') {
       return HttpResponse.json(userNotFoundMock, {status: 404})
+    }
+
+    if (username === 'emailverified') {
+      return HttpResponse.json(emailVerifiedUserMock)
+    }
+
+    if (username === 'adminuser') {
+      return HttpResponse.json(adminUserMock)
+    }
+
+    if (username === 'golduser') {
+      return HttpResponse.json(goldUserMock)
+    }
+
+    if (username === 'limiteduser') {
+      return HttpResponse.json(limitedUserMock)
+    }
+
+    if (username === 'emptyuser') {
+      return HttpResponse.json(emptyUserMock)
     }
 
     return HttpResponse.json(userProfileMock)
@@ -31,6 +59,17 @@ export const userHandlers = [
         return HttpResponse.json(userPostsEmptyMock)
       }
 
+      if (username === 'limiteduser') {
+        // Return posts without 'after' to indicate no more pages
+        return HttpResponse.json({
+          ...userPostsMock,
+          data: {
+            ...userPostsMock.data,
+            after: null // No more pages available
+          }
+        })
+      }
+
       return HttpResponse.json(userPostsMock)
     }
   ),
@@ -49,6 +88,17 @@ export const userHandlers = [
 
       if (username === 'emptyuser' || after === 'no-more-comments') {
         return HttpResponse.json(userCommentsEmptyMock)
+      }
+
+      if (username === 'limiteduser') {
+        // Return comments without 'after' to indicate no more pages
+        return HttpResponse.json({
+          ...userCommentsMock,
+          data: {
+            ...userCommentsMock.data,
+            after: null // No more pages available
+          }
+        })
       }
 
       return HttpResponse.json(userCommentsMock)

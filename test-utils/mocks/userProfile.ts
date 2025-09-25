@@ -75,3 +75,81 @@ export const userNotFoundMock = {
   message: 'Not Found',
   error: 404
 }
+
+/**
+ * Mock data for user with only email verification
+ */
+export const emailVerifiedUserMock = {
+  ...userProfileMock,
+  data: {
+    ...userProfileMock.data,
+    name: 'emailverified',
+    verified: false,
+    has_verified_email: true,
+    is_employee: false,
+    is_gold: false
+  }
+}
+
+/**
+ * Mock data for Reddit admin user
+ */
+export const adminUserMock = {
+  ...userProfileMock,
+  data: {
+    ...userProfileMock.data,
+    name: 'adminuser',
+    verified: true,
+    has_verified_email: true,
+    is_employee: true,
+    is_gold: false
+  }
+}
+
+/**
+ * Mock data for Reddit Premium (Gold) user
+ */
+export const goldUserMock = {
+  ...userProfileMock,
+  data: {
+    ...userProfileMock.data,
+    name: 'golduser',
+    verified: false,
+    has_verified_email: true,
+    is_employee: false,
+    is_gold: true
+  }
+}
+
+/**
+ * Mock data for user with limited posts/comments (no more pages)
+ */
+export const limitedUserMock = {
+  ...userProfileMock,
+  data: {
+    ...userProfileMock.data,
+    name: 'limiteduser',
+    verified: false,
+    has_verified_email: false,
+    is_employee: false,
+    is_gold: false
+  }
+}
+
+/**
+ * Mock data for user with no posts or comments
+ */
+export const emptyUserMock = {
+  ...userProfileMock,
+  data: {
+    ...userProfileMock.data,
+    name: 'emptyuser',
+    link_karma: 0,
+    comment_karma: 0,
+    total_karma: 0,
+    verified: false,
+    has_verified_email: false,
+    is_employee: false,
+    is_gold: false
+  }
+}
