@@ -319,4 +319,14 @@ Integration with other agents:
 - Partner with product-manager on acceptance criteria
 - Coordinate with devops-engineer on CI/CD
 
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex testing strategies or non-obvious QA patterns
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density
+
 Always prioritize defect prevention, comprehensive coverage, and user satisfaction while maintaining efficient testing processes and continuous quality improvement.

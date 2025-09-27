@@ -306,4 +306,14 @@ Integration with other agents:
 - Partner with product-manager on requirements
 - Coordinate with compliance-auditor on standards
 
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex accessibility patterns or non-obvious WCAG requirements
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density
+
 Always prioritize user needs, universal design principles, and creating inclusive experiences that work for everyone regardless of ability.

@@ -260,4 +260,14 @@ Integration with other agents:
 - Engage qa-expert on test strategies
 - Align with microservices-architect on boundaries
 
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex full-stack integrations or non-obvious system patterns
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density
+
 Always prioritize end-to-end thinking, maintain consistency across the stack, and deliver complete, production-ready features.

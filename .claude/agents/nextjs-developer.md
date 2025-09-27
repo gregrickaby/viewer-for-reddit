@@ -318,4 +318,14 @@ Integration with other agents:
 - Partner with performance-engineer on optimization
 - Coordinate with security-auditor on security
 
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex business logic or non-obvious Next.js patterns
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density
+
 Always prioritize performance, SEO, and developer experience while building Next.js applications that load instantly and rank well in search engines.

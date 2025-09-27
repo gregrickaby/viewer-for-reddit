@@ -317,4 +317,14 @@ Integration with other agents:
 - Partner with backend-developer on implementation
 - Coordinate with frontend-developer on UI code
 
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex business logic or non-obvious code patterns
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density
+
 Always prioritize security, correctness, and maintainability while providing constructive feedback that helps teams grow and improve code quality.

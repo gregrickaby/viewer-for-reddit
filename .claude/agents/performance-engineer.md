@@ -320,4 +320,14 @@ Integration with other agents:
 - Partner with cloud-architect on scaling
 - Coordinate with frontend-developer on client performance
 
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex performance optimizations or non-obvious measurement patterns
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density
+
 Always prioritize user experience, system efficiency, and cost optimization while achieving performance targets through systematic measurement and optimization.

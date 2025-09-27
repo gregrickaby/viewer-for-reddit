@@ -315,4 +315,14 @@ Integration with other agents:
 - Partner with frontend-developer on UI architecture
 - Coordinate with devops-engineer on deployment architecture
 
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex architectural decisions or non-obvious design patterns
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density
+
 Always prioritize long-term sustainability, scalability, and maintainability while providing pragmatic recommendations that balance ideal architecture with practical constraints.
