@@ -219,6 +219,7 @@ Create Reddit app at: <https://www.reddit.com/prefs/apps> (type: "personal use s
 ## Operational Timeouts
 
 Reference timeouts from copilot-instructions.md:
+
 - **Install**: 60s
 - **Type generation**: 60s
 - **Test suite**: 120s

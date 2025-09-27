@@ -27,7 +27,7 @@ timeouts:
 validation-gate (code-edit): |
 For any change that modifies code (files with extensions: .ts, .tsx, .js, .jsx, .css, .scss, .json, .html):
 
-1. If you changed API spec files (scripts/*.json or scripts/reddit-openapi*.json) or anything under lib/types, run:
+1. If you changed API spec files (scripts/_.json or scripts/reddit-openapi_.json) or anything under lib/types, run:
    - npm run typegen:types
 2. Run in order (stop if a step fails):
    - npm run lint
