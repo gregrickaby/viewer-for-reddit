@@ -106,40 +106,6 @@ export type paths = {
     patch?: never
     trace?: never
   }
-  '/user/{username}/comments.json': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Get comments submitted by a user */
-    get: operations['getUserComments']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/user/{username}/submitted.json': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Get posts submitted by a user */
-    get: operations['getUserPosts']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
 }
 export type webhooks = Record<string, never>
 export type components = {
@@ -147,7 +113,7 @@ export type components = {
     GetPopularSubredditsResponse: {
       data?: {
         after?: string
-        before?: string | null
+        before?: null
         children?: (
           | {
               data?: {
@@ -168,12 +134,12 @@ export type components = {
                 banner_background_color?: string
                 banner_background_image?: string
                 banner_img?: string
-                banner_size?: string | null
+                banner_size?: null
                 can_assign_link_flair?: boolean
                 can_assign_user_flair?: boolean
                 collapse_deleted_comments?: boolean
                 comment_contribution_settings?: {
-                  allowed_media_types?: string | null
+                  allowed_media_types?: null
                 }
                 comment_score_hide_mins?: number
                 community_icon?: string
@@ -185,32 +151,32 @@ export type components = {
                 disable_contributor_requests?: boolean
                 display_name?: string
                 display_name_prefixed?: string
-                emojis_custom_size?: string | null
+                emojis_custom_size?: null
                 emojis_enabled?: boolean
                 free_form_reports?: boolean
                 has_menu_widget?: boolean
-                header_img?: string | null
-                header_size?: string | null
+                header_img?: null
+                header_size?: null
                 header_title?: string
                 hide_ads?: boolean
                 icon_img?: string
-                icon_size?: string | null
+                icon_size?: null
                 id?: string
                 is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: string | null
+                is_enrolled_in_new_modmail?: null
                 key_color?: string
                 lang?: string
                 link_flair_enabled?: boolean
                 link_flair_position?: string
                 mobile_banner_image?: string
                 name?: string
-                notification_level?: string | null
+                notification_level?: null
                 original_content_tag_enabled?: boolean
                 over18?: boolean
                 prediction_leaderboard_entry_type?: number
                 primary_color?: string
                 public_description?: string
-                public_description_html?: string | null
+                public_description_html?: null
                 public_traffic?: boolean
                 quarantine?: boolean
                 restrict_commenting?: boolean
@@ -223,30 +189,30 @@ export type components = {
                 submission_type?: string
                 submit_link_label?: string
                 submit_text?: string
-                submit_text_html?: string | null
+                submit_text_html?: null
                 submit_text_label?: string
                 subreddit_type?: string
                 subscribers?: number
-                suggested_comment_sort?: string | null
+                suggested_comment_sort?: null
                 title?: string
                 url?: string
-                user_can_flair_in_sr?: string | null
-                user_flair_background_color?: string | null
-                user_flair_css_class?: string | null
+                user_can_flair_in_sr?: null
+                user_flair_background_color?: null
+                user_flair_css_class?: null
                 user_flair_enabled_in_sr?: boolean
                 user_flair_position?: string
                 user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: string | null
-                user_flair_text?: string | null
-                user_flair_text_color?: string | null
+                user_flair_template_id?: null
+                user_flair_text?: null
+                user_flair_text_color?: null
                 user_flair_type?: string
-                user_has_favorited?: string | null
-                user_is_banned?: string | null
-                user_is_contributor?: string | null
-                user_is_moderator?: string | null
-                user_is_muted?: string | null
-                user_is_subscriber?: string | null
-                user_sr_flair_enabled?: string | null
+                user_has_favorited?: null
+                user_is_banned?: null
+                user_is_contributor?: null
+                user_is_moderator?: null
+                user_is_muted?: null
+                user_is_subscriber?: null
+                user_sr_flair_enabled?: null
                 user_sr_theme_enabled?: boolean
                 videostream_links_count?: number
                 wiki_enabled?: boolean
@@ -278,7 +244,7 @@ export type components = {
                 can_assign_user_flair?: boolean
                 collapse_deleted_comments?: boolean
                 comment_contribution_settings?: {
-                  allowed_media_types?: string | null
+                  allowed_media_types?: null
                 }
                 comment_score_hide_mins?: number
                 community_icon?: string
@@ -290,7 +256,7 @@ export type components = {
                 disable_contributor_requests?: boolean
                 display_name?: string
                 display_name_prefixed?: string
-                emojis_custom_size?: string | null
+                emojis_custom_size?: null
                 emojis_enabled?: boolean
                 free_form_reports?: boolean
                 has_menu_widget?: boolean
@@ -302,14 +268,14 @@ export type components = {
                 icon_size?: number[]
                 id?: string
                 is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: string | null
+                is_enrolled_in_new_modmail?: null
                 key_color?: string
                 lang?: string
                 link_flair_enabled?: boolean
                 link_flair_position?: string
                 mobile_banner_image?: string
                 name?: string
-                notification_level?: string | null
+                notification_level?: null
                 original_content_tag_enabled?: boolean
                 over18?: boolean
                 prediction_leaderboard_entry_type?: number
@@ -332,26 +298,26 @@ export type components = {
                 submit_text_label?: string
                 subreddit_type?: string
                 subscribers?: number
-                suggested_comment_sort?: string | null
+                suggested_comment_sort?: null
                 title?: string
                 url?: string
-                user_can_flair_in_sr?: string | null
-                user_flair_background_color?: string | null
-                user_flair_css_class?: string | null
+                user_can_flair_in_sr?: null
+                user_flair_background_color?: null
+                user_flair_css_class?: null
                 user_flair_enabled_in_sr?: boolean
                 user_flair_position?: string
                 user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: string | null
-                user_flair_text?: string | null
-                user_flair_text_color?: string | null
+                user_flair_template_id?: null
+                user_flair_text?: null
+                user_flair_text_color?: null
                 user_flair_type?: string
-                user_has_favorited?: string | null
-                user_is_banned?: string | null
-                user_is_contributor?: string | null
-                user_is_moderator?: string | null
-                user_is_muted?: string | null
-                user_is_subscriber?: string | null
-                user_sr_flair_enabled?: string | null
+                user_has_favorited?: null
+                user_is_banned?: null
+                user_is_contributor?: null
+                user_is_moderator?: null
+                user_is_muted?: null
+                user_is_subscriber?: null
+                user_sr_flair_enabled?: null
                 user_sr_theme_enabled?: boolean
                 wiki_enabled?: boolean
                 wls?: number
@@ -382,7 +348,7 @@ export type components = {
                 can_assign_user_flair?: boolean
                 collapse_deleted_comments?: boolean
                 comment_contribution_settings?: {
-                  allowed_media_types?: string | null
+                  allowed_media_types?: null
                 }
                 comment_score_hide_mins?: number
                 community_icon?: string
@@ -394,7 +360,7 @@ export type components = {
                 disable_contributor_requests?: boolean
                 display_name?: string
                 display_name_prefixed?: string
-                emojis_custom_size?: string | null
+                emojis_custom_size?: null
                 emojis_enabled?: boolean
                 free_form_reports?: boolean
                 has_menu_widget?: boolean
@@ -406,14 +372,14 @@ export type components = {
                 icon_size?: number[]
                 id?: string
                 is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: string | null
+                is_enrolled_in_new_modmail?: null
                 key_color?: string
                 lang?: string
                 link_flair_enabled?: boolean
                 link_flair_position?: string
                 mobile_banner_image?: string
                 name?: string
-                notification_level?: string | null
+                notification_level?: null
                 original_content_tag_enabled?: boolean
                 over18?: boolean
                 prediction_leaderboard_entry_type?: number
@@ -436,26 +402,26 @@ export type components = {
                 submit_text_label?: string
                 subreddit_type?: string
                 subscribers?: number
-                suggested_comment_sort?: string | null
+                suggested_comment_sort?: null
                 title?: string
                 url?: string
-                user_can_flair_in_sr?: string | null
-                user_flair_background_color?: string | null
-                user_flair_css_class?: string | null
+                user_can_flair_in_sr?: null
+                user_flair_background_color?: null
+                user_flair_css_class?: null
                 user_flair_enabled_in_sr?: boolean
                 user_flair_position?: string
                 user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: string | null
-                user_flair_text?: string | null
-                user_flair_text_color?: string | null
+                user_flair_template_id?: null
+                user_flair_text?: null
+                user_flair_text_color?: null
                 user_flair_type?: string
-                user_has_favorited?: string | null
-                user_is_banned?: string | null
-                user_is_contributor?: string | null
-                user_is_moderator?: string | null
-                user_is_muted?: string | null
-                user_is_subscriber?: string | null
-                user_sr_flair_enabled?: string | null
+                user_has_favorited?: null
+                user_is_banned?: null
+                user_is_contributor?: null
+                user_is_moderator?: null
+                user_is_muted?: null
+                user_is_subscriber?: null
+                user_sr_flair_enabled?: null
                 user_sr_theme_enabled?: boolean
                 wiki_enabled?: boolean
                 wls?: number
@@ -472,40 +438,40 @@ export type components = {
     GetPostCommentsResponse: (
       | {
           data?: {
-            after?: string | null
-            before?: string | null
+            after?: null
+            before?: null
             children?: {
               data?: {
                 all_awardings?: Record<string, unknown>[]
                 allow_live_comments?: boolean
-                approved_at_utc?: string | null
-                approved_by?: string | null
+                approved_at_utc?: null
+                approved_by?: null
                 archived?: boolean
                 author?: string
-                author_flair_background_color?: string | null
-                author_flair_css_class?: string | null
+                author_flair_background_color?: null
+                author_flair_css_class?: null
                 author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: string | null
-                author_flair_text?: string | null
-                author_flair_text_color?: string | null
+                author_flair_template_id?: null
+                author_flair_text?: null
+                author_flair_text_color?: null
                 author_flair_type?: string
                 author_fullname?: string
                 author_is_blocked?: boolean
                 author_patreon_flair?: boolean
                 author_premium?: boolean
                 awarders?: Record<string, unknown>[]
-                banned_at_utc?: string | null
-                banned_by?: string | null
+                banned_at_utc?: null
+                banned_by?: null
                 can_gild?: boolean
                 can_mod_post?: boolean
-                category?: string | null
+                category?: null
                 clicked?: boolean
                 content_categories?: string[]
                 contest_mode?: boolean
                 created?: number
                 created_utc?: number
-                discussion_type?: string | null
-                distinguished?: string | null
+                discussion_type?: null
+                distinguished?: null
                 domain?: string
                 downs?: number
                 edited?: boolean
@@ -522,27 +488,27 @@ export type components = {
                 is_robot_indexable?: boolean
                 is_self?: boolean
                 is_video?: boolean
-                likes?: string | null
+                likes?: null
                 link_flair_background_color?: string
-                link_flair_css_class?: string | null
+                link_flair_css_class?: null
                 link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: string | null
+                link_flair_text?: null
                 link_flair_text_color?: string
                 link_flair_type?: string
                 locked?: boolean
-                media?: string | null
+                media?: null
                 media_embed?: Record<string, unknown>
                 media_only?: boolean
-                mod_note?: string | null
-                mod_reason_by?: string | null
-                mod_reason_title?: string | null
+                mod_note?: null
+                mod_reason_by?: null
+                mod_reason_title?: null
                 mod_reports?: Record<string, unknown>[]
                 name?: string
                 no_follow?: boolean
                 num_comments?: number
                 num_crossposts?: number
                 num_duplicates?: number
-                num_reports?: string | null
+                num_reports?: null
                 over_18?: boolean
                 permalink?: string
                 pinned?: boolean
@@ -578,16 +544,16 @@ export type components = {
                 }
                 pwls?: number
                 quarantine?: boolean
-                removal_reason?: string | null
-                removed_by?: string | null
-                removed_by_category?: string | null
-                report_reasons?: string | null
+                removal_reason?: null
+                removed_by?: null
+                removed_by_category?: null
+                report_reasons?: null
                 saved?: boolean
                 score?: number
-                secure_media?: string | null
+                secure_media?: null
                 secure_media_embed?: Record<string, unknown>
                 selftext?: string
-                selftext_html?: string | null
+                selftext_html?: null
                 send_replies?: boolean
                 spoiler?: boolean
                 stickied?: boolean
@@ -596,12 +562,12 @@ export type components = {
                 subreddit_name_prefixed?: string
                 subreddit_subscribers?: number
                 subreddit_type?: string
-                suggested_sort?: string | null
+                suggested_sort?: null
                 thumbnail?: string
                 thumbnail_height?: number
                 thumbnail_width?: number
                 title?: string
-                top_awarded_type?: string | null
+                top_awarded_type?: null
                 total_awards_received?: number
                 treatment_tags?: Record<string, unknown>[]
                 ups?: number
@@ -609,7 +575,7 @@ export type components = {
                 url?: string
                 url_overridden_by_dest?: string
                 user_reports?: Record<string, unknown>[]
-                view_count?: string | null
+                view_count?: null
                 visited?: boolean
                 wls?: number
               }
@@ -623,254 +589,69 @@ export type components = {
         }
       | {
           data?: {
-            after?: string | null
-            before?: string | null
+            after?: null
+            before?: null
             children?: (
               | {
                   data?: {
                     all_awardings?: Record<string, unknown>[]
-                    approved_at_utc?: string | null
-                    approved_by?: string | null
+                    approved_at_utc?: null
+                    approved_by?: null
                     archived?: boolean
-                    associated_award?: string | null
+                    associated_award?: null
                     author?: string
-                    author_flair_background_color?: string | null
-                    author_flair_css_class?: string | null
+                    author_flair_background_color?: null
+                    author_flair_css_class?: null
                     author_flair_richtext?: Record<string, unknown>[]
-                    author_flair_template_id?: string | null
-                    author_flair_text?: string | null
-                    author_flair_text_color?: string | null
+                    author_flair_template_id?: null
+                    author_flair_text?: null
+                    author_flair_text_color?: null
                     author_flair_type?: string
                     author_fullname?: string
                     author_is_blocked?: boolean
                     author_patreon_flair?: boolean
                     author_premium?: boolean
                     awarders?: Record<string, unknown>[]
-                    banned_at_utc?: string | null
-                    banned_by?: string | null
+                    banned_at_utc?: null
+                    banned_by?: null
                     body?: string
                     body_html?: string
                     can_gild?: boolean
                     can_mod_post?: boolean
                     collapsed?: boolean
-                    collapsed_because_crowd_control?: string | null
-                    collapsed_reason?: string | null
-                    collapsed_reason_code?: string | null
-                    comment_type?: string | null
+                    collapsed_because_crowd_control?: null
+                    collapsed_reason?: null
+                    collapsed_reason_code?: null
+                    comment_type?: null
                     controversiality?: number
                     created?: number
                     created_utc?: number
                     depth?: number
-                    distinguished?: string | null
-                    downs?: number
-                    edited?: number
-                    gilded?: number
-                    gildings?: Record<string, unknown>
-                    id?: string
-                    is_submitter?: boolean
-                    likes?: string | null
-                    link_id?: string
-                    locked?: boolean
-                    mod_note?: string | null
-                    mod_reason_by?: string | null
-                    mod_reason_title?: string | null
-                    mod_reports?: Record<string, unknown>[]
-                    name?: string
-                    no_follow?: boolean
-                    num_reports?: string | null
-                    parent_id?: string
-                    permalink?: string
-                    removal_reason?: string | null
-                    replies?: {
-                      data?: {
-                        after?: string | null
-                        before?: string | null
-                        children?: {
-                          data?: {
-                            children?: Record<string, unknown>
-                            count?: Record<string, unknown>
-                            depth?: Record<string, unknown>
-                            id?: Record<string, unknown>
-                            name?: Record<string, unknown>
-                            parent_id?: Record<string, unknown>
-                          }
-                          kind?: string
-                        }[]
-                        dist?: string | null
-                        geo_filter?: string
-                        modhash?: string
-                      }
-                      kind?: string
-                    }
-                    report_reasons?: string | null
-                    saved?: boolean
-                    score?: number
-                    score_hidden?: boolean
-                    send_replies?: boolean
-                    stickied?: boolean
-                    subreddit?: string
-                    subreddit_id?: string
-                    subreddit_name_prefixed?: string
-                    subreddit_type?: string
-                    top_awarded_type?: string | null
-                    total_awards_received?: number
-                    treatment_tags?: Record<string, unknown>[]
-                    unrepliable_reason?: string | null
-                    ups?: number
-                    user_reports?: Record<string, unknown>[]
-                  }
-                  kind?: string
-                }
-              | {
-                  data?: {
-                    all_awardings?: Record<string, unknown>[]
-                    approved_at_utc?: string | null
-                    approved_by?: string | null
-                    archived?: boolean
-                    associated_award?: string | null
-                    author?: string
-                    author_flair_background_color?: string | null
-                    author_flair_css_class?: string | null
-                    author_flair_richtext?: Record<string, unknown>[]
-                    author_flair_template_id?: string | null
-                    author_flair_text?: string | null
-                    author_flair_text_color?: string | null
-                    author_flair_type?: string
-                    author_fullname?: string
-                    author_is_blocked?: boolean
-                    author_patreon_flair?: boolean
-                    author_premium?: boolean
-                    awarders?: Record<string, unknown>[]
-                    banned_at_utc?: string | null
-                    banned_by?: string | null
-                    body?: string
-                    body_html?: string
-                    can_gild?: boolean
-                    can_mod_post?: boolean
-                    collapsed?: boolean
-                    collapsed_because_crowd_control?: string | null
-                    collapsed_reason?: string | null
-                    collapsed_reason_code?: string | null
-                    comment_type?: string | null
-                    controversiality?: number
-                    created?: number
-                    created_utc?: number
-                    depth?: number
-                    distinguished?: string | null
+                    distinguished?: null
                     downs?: number
                     edited?: boolean
                     gilded?: number
                     gildings?: Record<string, unknown>
                     id?: string
                     is_submitter?: boolean
-                    likes?: string | null
+                    likes?: null
                     link_id?: string
                     locked?: boolean
-                    mod_note?: string | null
-                    mod_reason_by?: string | null
-                    mod_reason_title?: string | null
+                    mod_note?: null
+                    mod_reason_by?: null
+                    mod_reason_title?: null
                     mod_reports?: Record<string, unknown>[]
                     name?: string
                     no_follow?: boolean
-                    num_reports?: string | null
+                    num_reports?: null
                     parent_id?: string
                     permalink?: string
-                    removal_reason?: string | null
+                    removal_reason?: null
                     replies?: {
                       data?: {
-                        after?: string | null
-                        before?: string | null
+                        after?: null
+                        before?: null
                         children?: (
-                          | {
-                              data?: {
-                                all_awardings?: Record<string, unknown>
-                                approved_at_utc?: Record<string, unknown>
-                                approved_by?: Record<string, unknown>
-                                archived?: Record<string, unknown>
-                                associated_award?: Record<string, unknown>
-                                author?: Record<string, unknown>
-                                author_flair_background_color?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_css_class?: Record<string, unknown>
-                                author_flair_richtext?: Record<string, unknown>
-                                author_flair_template_id?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_text?: Record<string, unknown>
-                                author_flair_text_color?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_type?: Record<string, unknown>
-                                author_fullname?: Record<string, unknown>
-                                author_is_blocked?: Record<string, unknown>
-                                author_patreon_flair?: Record<string, unknown>
-                                author_premium?: Record<string, unknown>
-                                awarders?: Record<string, unknown>
-                                banned_at_utc?: Record<string, unknown>
-                                banned_by?: Record<string, unknown>
-                                body?: Record<string, unknown>
-                                body_html?: Record<string, unknown>
-                                can_gild?: Record<string, unknown>
-                                can_mod_post?: Record<string, unknown>
-                                collapsed?: Record<string, unknown>
-                                collapsed_because_crowd_control?: Record<
-                                  string,
-                                  unknown
-                                >
-                                collapsed_reason?: Record<string, unknown>
-                                collapsed_reason_code?: Record<string, unknown>
-                                comment_type?: Record<string, unknown>
-                                controversiality?: Record<string, unknown>
-                                created?: Record<string, unknown>
-                                created_utc?: Record<string, unknown>
-                                depth?: Record<string, unknown>
-                                distinguished?: Record<string, unknown>
-                                downs?: Record<string, unknown>
-                                edited?: Record<string, unknown>
-                                gilded?: Record<string, unknown>
-                                gildings?: Record<string, unknown>
-                                id?: Record<string, unknown>
-                                is_submitter?: Record<string, unknown>
-                                likes?: Record<string, unknown>
-                                link_id?: Record<string, unknown>
-                                locked?: Record<string, unknown>
-                                mod_note?: Record<string, unknown>
-                                mod_reason_by?: Record<string, unknown>
-                                mod_reason_title?: Record<string, unknown>
-                                mod_reports?: Record<string, unknown>
-                                name?: Record<string, unknown>
-                                no_follow?: Record<string, unknown>
-                                num_reports?: Record<string, unknown>
-                                parent_id?: Record<string, unknown>
-                                permalink?: Record<string, unknown>
-                                removal_reason?: Record<string, unknown>
-                                replies?: Record<string, unknown>
-                                report_reasons?: Record<string, unknown>
-                                saved?: Record<string, unknown>
-                                score?: Record<string, unknown>
-                                score_hidden?: Record<string, unknown>
-                                send_replies?: Record<string, unknown>
-                                stickied?: Record<string, unknown>
-                                subreddit?: Record<string, unknown>
-                                subreddit_id?: Record<string, unknown>
-                                subreddit_name_prefixed?: Record<
-                                  string,
-                                  unknown
-                                >
-                                subreddit_type?: Record<string, unknown>
-                                top_awarded_type?: Record<string, unknown>
-                                total_awards_received?: Record<string, unknown>
-                                treatment_tags?: Record<string, unknown>
-                                unrepliable_reason?: Record<string, unknown>
-                                ups?: Record<string, unknown>
-                                user_reports?: Record<string, unknown>
-                              }
-                              kind?: string
-                            }
                           | {
                               data?: {
                                 all_awardings?: Record<string, unknown>
@@ -973,13 +754,13 @@ export type components = {
                               kind?: string
                             }
                         )[]
-                        dist?: string | null
+                        dist?: null
                         geo_filter?: string
                         modhash?: string
                       }
                       kind?: string
                     }
-                    report_reasons?: string | null
+                    report_reasons?: null
                     saved?: boolean
                     score?: number
                     score_hidden?: boolean
@@ -989,10 +770,10 @@ export type components = {
                     subreddit_id?: string
                     subreddit_name_prefixed?: string
                     subreddit_type?: string
-                    top_awarded_type?: string | null
+                    top_awarded_type?: null
                     total_awards_received?: number
                     treatment_tags?: Record<string, unknown>[]
-                    unrepliable_reason?: string | null
+                    unrepliable_reason?: null
                     ups?: number
                     user_reports?: Record<string, unknown>[]
                   }
@@ -1000,17 +781,288 @@ export type components = {
                 }
               | {
                   data?: {
-                    children?: string[]
-                    count?: number
+                    all_awardings?: Record<string, unknown>[]
+                    approved_at_utc?: null
+                    approved_by?: null
+                    archived?: boolean
+                    associated_award?: null
+                    author?: string
+                    author_flair_background_color?: null
+                    author_flair_css_class?: null
+                    author_flair_richtext?: Record<string, unknown>[]
+                    author_flair_template_id?: null
+                    author_flair_text?: null
+                    author_flair_text_color?: null
+                    author_flair_type?: string
+                    author_fullname?: string
+                    author_is_blocked?: boolean
+                    author_patreon_flair?: boolean
+                    author_premium?: boolean
+                    awarders?: Record<string, unknown>[]
+                    banned_at_utc?: null
+                    banned_by?: null
+                    body?: string
+                    body_html?: string
+                    can_gild?: boolean
+                    can_mod_post?: boolean
+                    collapsed?: boolean
+                    collapsed_because_crowd_control?: null
+                    collapsed_reason?: null
+                    collapsed_reason_code?: null
+                    comment_type?: null
+                    controversiality?: number
+                    created?: number
+                    created_utc?: number
                     depth?: number
+                    distinguished?: null
+                    downs?: number
+                    edited?: boolean
+                    gilded?: number
+                    gildings?: Record<string, unknown>
                     id?: string
+                    is_submitter?: boolean
+                    likes?: null
+                    link_id?: string
+                    locked?: boolean
+                    mod_note?: null
+                    mod_reason_by?: null
+                    mod_reason_title?: null
+                    mod_reports?: Record<string, unknown>[]
                     name?: string
+                    no_follow?: boolean
+                    num_reports?: null
                     parent_id?: string
+                    permalink?: string
+                    removal_reason?: null
+                    replies?: {
+                      data?: {
+                        after?: null
+                        before?: null
+                        children?: {
+                          data?: {
+                            children?: Record<string, unknown>
+                            count?: Record<string, unknown>
+                            depth?: Record<string, unknown>
+                            id?: Record<string, unknown>
+                            name?: Record<string, unknown>
+                            parent_id?: Record<string, unknown>
+                          }
+                          kind?: string
+                        }[]
+                        dist?: null
+                        geo_filter?: string
+                        modhash?: string
+                      }
+                      kind?: string
+                    }
+                    report_reasons?: null
+                    saved?: boolean
+                    score?: number
+                    score_hidden?: boolean
+                    send_replies?: boolean
+                    stickied?: boolean
+                    subreddit?: string
+                    subreddit_id?: string
+                    subreddit_name_prefixed?: string
+                    subreddit_type?: string
+                    top_awarded_type?: null
+                    total_awards_received?: number
+                    treatment_tags?: Record<string, unknown>[]
+                    unrepliable_reason?: null
+                    ups?: number
+                    user_reports?: Record<string, unknown>[]
+                  }
+                  kind?: string
+                }
+              | {
+                  data?: {
+                    all_awardings?: Record<string, unknown>[]
+                    approved_at_utc?: null
+                    approved_by?: null
+                    archived?: boolean
+                    associated_award?: null
+                    author?: string
+                    author_flair_background_color?: null
+                    author_flair_css_class?: null
+                    author_flair_richtext?: Record<string, unknown>[]
+                    author_flair_template_id?: null
+                    author_flair_text?: null
+                    author_flair_text_color?: null
+                    author_flair_type?: string
+                    author_fullname?: string
+                    author_is_blocked?: boolean
+                    author_patreon_flair?: boolean
+                    author_premium?: boolean
+                    awarders?: Record<string, unknown>[]
+                    banned_at_utc?: null
+                    banned_by?: null
+                    body?: string
+                    body_html?: string
+                    can_gild?: boolean
+                    can_mod_post?: boolean
+                    collapsed?: boolean
+                    collapsed_because_crowd_control?: null
+                    collapsed_reason?: null
+                    collapsed_reason_code?: null
+                    comment_type?: null
+                    controversiality?: number
+                    created?: number
+                    created_utc?: number
+                    depth?: number
+                    distinguished?: null
+                    downs?: number
+                    edited?: boolean
+                    gilded?: number
+                    gildings?: Record<string, unknown>
+                    id?: string
+                    is_submitter?: boolean
+                    likes?: null
+                    link_id?: string
+                    locked?: boolean
+                    mod_note?: null
+                    mod_reason_by?: null
+                    mod_reason_title?: null
+                    mod_reports?: Record<string, unknown>[]
+                    name?: string
+                    no_follow?: boolean
+                    num_reports?: null
+                    parent_id?: string
+                    permalink?: string
+                    removal_reason?: null
+                    replies?: {
+                      data?: {
+                        after?: null
+                        before?: null
+                        children?: (
+                          | {
+                              data?: {
+                                all_awardings?: Record<string, unknown>
+                                approved_at_utc?: Record<string, unknown>
+                                approved_by?: Record<string, unknown>
+                                archived?: Record<string, unknown>
+                                associated_award?: Record<string, unknown>
+                                author?: Record<string, unknown>
+                                author_flair_background_color?: Record<
+                                  string,
+                                  unknown
+                                >
+                                author_flair_css_class?: Record<string, unknown>
+                                author_flair_richtext?: Record<string, unknown>
+                                author_flair_template_id?: Record<
+                                  string,
+                                  unknown
+                                >
+                                author_flair_text?: Record<string, unknown>
+                                author_flair_text_color?: Record<
+                                  string,
+                                  unknown
+                                >
+                                author_flair_type?: Record<string, unknown>
+                                author_fullname?: Record<string, unknown>
+                                author_is_blocked?: Record<string, unknown>
+                                author_patreon_flair?: Record<string, unknown>
+                                author_premium?: Record<string, unknown>
+                                awarders?: Record<string, unknown>
+                                banned_at_utc?: Record<string, unknown>
+                                banned_by?: Record<string, unknown>
+                                body?: Record<string, unknown>
+                                body_html?: Record<string, unknown>
+                                can_gild?: Record<string, unknown>
+                                can_mod_post?: Record<string, unknown>
+                                collapsed?: Record<string, unknown>
+                                collapsed_because_crowd_control?: Record<
+                                  string,
+                                  unknown
+                                >
+                                collapsed_reason?: Record<string, unknown>
+                                collapsed_reason_code?: Record<string, unknown>
+                                comment_type?: Record<string, unknown>
+                                controversiality?: Record<string, unknown>
+                                created?: Record<string, unknown>
+                                created_utc?: Record<string, unknown>
+                                depth?: Record<string, unknown>
+                                distinguished?: Record<string, unknown>
+                                downs?: Record<string, unknown>
+                                edited?: Record<string, unknown>
+                                gilded?: Record<string, unknown>
+                                gildings?: Record<string, unknown>
+                                id?: Record<string, unknown>
+                                is_submitter?: Record<string, unknown>
+                                likes?: Record<string, unknown>
+                                link_id?: Record<string, unknown>
+                                locked?: Record<string, unknown>
+                                mod_note?: Record<string, unknown>
+                                mod_reason_by?: Record<string, unknown>
+                                mod_reason_title?: Record<string, unknown>
+                                mod_reports?: Record<string, unknown>
+                                name?: Record<string, unknown>
+                                no_follow?: Record<string, unknown>
+                                num_reports?: Record<string, unknown>
+                                parent_id?: Record<string, unknown>
+                                permalink?: Record<string, unknown>
+                                removal_reason?: Record<string, unknown>
+                                replies?: Record<string, unknown>
+                                report_reasons?: Record<string, unknown>
+                                saved?: Record<string, unknown>
+                                score?: Record<string, unknown>
+                                score_hidden?: Record<string, unknown>
+                                send_replies?: Record<string, unknown>
+                                stickied?: Record<string, unknown>
+                                subreddit?: Record<string, unknown>
+                                subreddit_id?: Record<string, unknown>
+                                subreddit_name_prefixed?: Record<
+                                  string,
+                                  unknown
+                                >
+                                subreddit_type?: Record<string, unknown>
+                                top_awarded_type?: Record<string, unknown>
+                                total_awards_received?: Record<string, unknown>
+                                treatment_tags?: Record<string, unknown>
+                                unrepliable_reason?: Record<string, unknown>
+                                ups?: Record<string, unknown>
+                                user_reports?: Record<string, unknown>
+                              }
+                              kind?: string
+                            }
+                          | {
+                              data?: {
+                                children?: Record<string, unknown>
+                                count?: Record<string, unknown>
+                                depth?: Record<string, unknown>
+                                id?: Record<string, unknown>
+                                name?: Record<string, unknown>
+                                parent_id?: Record<string, unknown>
+                              }
+                              kind?: string
+                            }
+                        )[]
+                        dist?: null
+                        geo_filter?: string
+                        modhash?: string
+                      }
+                      kind?: string
+                    }
+                    report_reasons?: null
+                    saved?: boolean
+                    score?: number
+                    score_hidden?: boolean
+                    send_replies?: boolean
+                    stickied?: boolean
+                    subreddit?: string
+                    subreddit_id?: string
+                    subreddit_name_prefixed?: string
+                    subreddit_type?: string
+                    top_awarded_type?: null
+                    total_awards_received?: number
+                    treatment_tags?: Record<string, unknown>[]
+                    unrepliable_reason?: null
+                    ups?: number
+                    user_reports?: Record<string, unknown>[]
                   }
                   kind?: string
                 }
             )[]
-            dist?: string | null
+            dist?: null
             geo_filter?: string
             modhash?: string
           }
@@ -1036,7 +1088,7 @@ export type components = {
         banner_background_color?: string
         banner_background_image?: string
         banner_img?: string
-        banner_size?: string | null
+        banner_size?: null
         can_assign_link_flair?: boolean
         can_assign_user_flair?: boolean
         collapse_deleted_comments?: boolean
@@ -1054,7 +1106,7 @@ export type components = {
         disable_contributor_requests?: boolean
         display_name?: string
         display_name_prefixed?: string
-        emojis_custom_size?: string | null
+        emojis_custom_size?: null
         emojis_enabled?: boolean
         free_form_reports?: boolean
         has_menu_widget?: boolean
@@ -1066,14 +1118,14 @@ export type components = {
         icon_size?: number[]
         id?: string
         is_crosspostable_subreddit?: boolean
-        is_enrolled_in_new_modmail?: string | null
+        is_enrolled_in_new_modmail?: null
         key_color?: string
         lang?: string
         link_flair_enabled?: boolean
         link_flair_position?: string
         mobile_banner_image?: string
         name?: string
-        notification_level?: string | null
+        notification_level?: null
         original_content_tag_enabled?: boolean
         over18?: boolean
         prediction_leaderboard_entry_type?: number
@@ -1096,26 +1148,26 @@ export type components = {
         submit_text_label?: string
         subreddit_type?: string
         subscribers?: number
-        suggested_comment_sort?: string | null
+        suggested_comment_sort?: null
         title?: string
         url?: string
-        user_can_flair_in_sr?: string | null
-        user_flair_background_color?: string | null
-        user_flair_css_class?: string | null
+        user_can_flair_in_sr?: null
+        user_flair_background_color?: null
+        user_flair_css_class?: null
         user_flair_enabled_in_sr?: boolean
         user_flair_position?: string
         user_flair_richtext?: Record<string, unknown>[]
-        user_flair_template_id?: string | null
-        user_flair_text?: string | null
-        user_flair_text_color?: string | null
+        user_flair_template_id?: null
+        user_flair_text?: null
+        user_flair_text_color?: null
         user_flair_type?: string
-        user_has_favorited?: string | null
-        user_is_banned?: string | null
-        user_is_contributor?: string | null
-        user_is_moderator?: string | null
-        user_is_muted?: string | null
-        user_is_subscriber?: string | null
-        user_sr_flair_enabled?: string | null
+        user_has_favorited?: null
+        user_is_banned?: null
+        user_is_contributor?: null
+        user_is_moderator?: null
+        user_is_muted?: null
+        user_is_subscriber?: null
+        user_sr_flair_enabled?: null
         user_sr_theme_enabled?: boolean
         wiki_enabled?: boolean
         wls?: number
@@ -1125,40 +1177,40 @@ export type components = {
     GetSubredditPostsResponse: {
       data?: {
         after?: string
-        before?: string | null
+        before?: null
         children?: (
           | {
               data?: {
                 all_awardings?: Record<string, unknown>[]
                 allow_live_comments?: boolean
-                approved_at_utc?: string | null
-                approved_by?: string | null
+                approved_at_utc?: null
+                approved_by?: null
                 archived?: boolean
                 author?: string
-                author_flair_background_color?: string | null
-                author_flair_css_class?: string | null
+                author_flair_background_color?: null
+                author_flair_css_class?: null
                 author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: string | null
-                author_flair_text?: string | null
-                author_flair_text_color?: string | null
+                author_flair_template_id?: null
+                author_flair_text?: null
+                author_flair_text_color?: null
                 author_flair_type?: string
                 author_fullname?: string
                 author_is_blocked?: boolean
                 author_patreon_flair?: boolean
                 author_premium?: boolean
                 awarders?: Record<string, unknown>[]
-                banned_at_utc?: string | null
-                banned_by?: string | null
+                banned_at_utc?: null
+                banned_by?: null
                 can_gild?: boolean
                 can_mod_post?: boolean
-                category?: string | null
+                category?: null
                 clicked?: boolean
                 content_categories?: string[]
                 contest_mode?: boolean
                 created?: number
                 created_utc?: number
-                discussion_type?: string | null
-                distinguished?: string | null
+                discussion_type?: null
+                distinguished?: null
                 domain?: string
                 downs?: number
                 edited?: boolean
@@ -1175,26 +1227,26 @@ export type components = {
                 is_robot_indexable?: boolean
                 is_self?: boolean
                 is_video?: boolean
-                likes?: string | null
-                link_flair_background_color?: string
-                link_flair_css_class?: string | null
+                likes?: null
+                link_flair_background_color?: null
+                link_flair_css_class?: string
                 link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: string | null
-                link_flair_text_color?: string
+                link_flair_text?: string
+                link_flair_text_color?: null
                 link_flair_type?: string
                 locked?: boolean
-                media?: string | null
+                media?: null
                 media_embed?: Record<string, unknown>
                 media_only?: boolean
-                mod_note?: string | null
-                mod_reason_by?: string | null
-                mod_reason_title?: string | null
+                mod_note?: null
+                mod_reason_by?: null
+                mod_reason_title?: null
                 mod_reports?: Record<string, unknown>[]
                 name?: string
                 no_follow?: boolean
                 num_comments?: number
                 num_crossposts?: number
-                num_reports?: string | null
+                num_reports?: null
                 over_18?: boolean
                 permalink?: string
                 pinned?: boolean
@@ -1230,16 +1282,16 @@ export type components = {
                 }
                 pwls?: number
                 quarantine?: boolean
-                removal_reason?: string | null
-                removed_by?: string | null
-                removed_by_category?: string | null
-                report_reasons?: string | null
+                removal_reason?: null
+                removed_by?: null
+                removed_by_category?: null
+                report_reasons?: null
                 saved?: boolean
                 score?: number
-                secure_media?: string | null
+                secure_media?: null
                 secure_media_embed?: Record<string, unknown>
                 selftext?: string
-                selftext_html?: string | null
+                selftext_html?: null
                 send_replies?: boolean
                 spoiler?: boolean
                 stickied?: boolean
@@ -1248,12 +1300,12 @@ export type components = {
                 subreddit_name_prefixed?: string
                 subreddit_subscribers?: number
                 subreddit_type?: string
-                suggested_sort?: string | null
+                suggested_sort?: null
                 thumbnail?: string
                 thumbnail_height?: number
                 thumbnail_width?: number
                 title?: string
-                top_awarded_type?: string | null
+                top_awarded_type?: null
                 total_awards_received?: number
                 treatment_tags?: Record<string, unknown>[]
                 ups?: number
@@ -1261,7 +1313,7 @@ export type components = {
                 url?: string
                 url_overridden_by_dest?: string
                 user_reports?: Record<string, unknown>[]
-                view_count?: string | null
+                view_count?: null
                 visited?: boolean
                 wls?: number
               }
@@ -1271,34 +1323,34 @@ export type components = {
               data?: {
                 all_awardings?: Record<string, unknown>[]
                 allow_live_comments?: boolean
-                approved_at_utc?: string | null
-                approved_by?: string | null
+                approved_at_utc?: null
+                approved_by?: null
                 archived?: boolean
                 author?: string
-                author_flair_background_color?: string | null
-                author_flair_css_class?: string | null
+                author_flair_background_color?: null
+                author_flair_css_class?: null
                 author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: string | null
-                author_flair_text?: string | null
-                author_flair_text_color?: string | null
+                author_flair_template_id?: null
+                author_flair_text?: null
+                author_flair_text_color?: null
                 author_flair_type?: string
                 author_fullname?: string
                 author_is_blocked?: boolean
                 author_patreon_flair?: boolean
                 author_premium?: boolean
                 awarders?: Record<string, unknown>[]
-                banned_at_utc?: string | null
-                banned_by?: string | null
+                banned_at_utc?: null
+                banned_by?: null
                 can_gild?: boolean
                 can_mod_post?: boolean
-                category?: string | null
+                category?: null
                 clicked?: boolean
                 content_categories?: string[]
                 contest_mode?: boolean
                 created?: number
                 created_utc?: number
-                discussion_type?: string | null
-                distinguished?: string | null
+                discussion_type?: null
+                distinguished?: null
                 domain?: string
                 downs?: number
                 edited?: boolean
@@ -1315,26 +1367,26 @@ export type components = {
                 is_robot_indexable?: boolean
                 is_self?: boolean
                 is_video?: boolean
-                likes?: string | null
+                likes?: null
                 link_flair_background_color?: string
-                link_flair_css_class?: string | null
+                link_flair_css_class?: null
                 link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: string | null
+                link_flair_text?: null
                 link_flair_text_color?: string
                 link_flair_type?: string
                 locked?: boolean
-                media?: string | null
+                media?: null
                 media_embed?: Record<string, unknown>
                 media_only?: boolean
-                mod_note?: string | null
-                mod_reason_by?: string | null
-                mod_reason_title?: string | null
+                mod_note?: null
+                mod_reason_by?: null
+                mod_reason_title?: null
                 mod_reports?: Record<string, unknown>[]
                 name?: string
                 no_follow?: boolean
                 num_comments?: number
                 num_crossposts?: number
-                num_reports?: string | null
+                num_reports?: null
                 over_18?: boolean
                 permalink?: string
                 pinned?: boolean
@@ -1370,16 +1422,16 @@ export type components = {
                 }
                 pwls?: number
                 quarantine?: boolean
-                removal_reason?: string | null
-                removed_by?: string | null
-                removed_by_category?: string | null
-                report_reasons?: string | null
+                removal_reason?: null
+                removed_by?: null
+                removed_by_category?: null
+                report_reasons?: null
                 saved?: boolean
                 score?: number
-                secure_media?: string | null
+                secure_media?: null
                 secure_media_embed?: Record<string, unknown>
                 selftext?: string
-                selftext_html?: string | null
+                selftext_html?: null
                 send_replies?: boolean
                 spoiler?: boolean
                 stickied?: boolean
@@ -1388,12 +1440,12 @@ export type components = {
                 subreddit_name_prefixed?: string
                 subreddit_subscribers?: number
                 subreddit_type?: string
-                suggested_sort?: string | null
+                suggested_sort?: null
                 thumbnail?: string
                 thumbnail_height?: number
                 thumbnail_width?: number
                 title?: string
-                top_awarded_type?: string | null
+                top_awarded_type?: null
                 total_awards_received?: number
                 treatment_tags?: Record<string, unknown>[]
                 ups?: number
@@ -1401,7 +1453,7 @@ export type components = {
                 url?: string
                 url_overridden_by_dest?: string
                 user_reports?: Record<string, unknown>[]
-                view_count?: string | null
+                view_count?: null
                 visited?: boolean
                 wls?: number
               }
@@ -1411,34 +1463,34 @@ export type components = {
               data?: {
                 all_awardings?: Record<string, unknown>[]
                 allow_live_comments?: boolean
-                approved_at_utc?: string | null
-                approved_by?: string | null
+                approved_at_utc?: null
+                approved_by?: null
                 archived?: boolean
                 author?: string
-                author_flair_background_color?: string | null
-                author_flair_css_class?: string | null
+                author_flair_background_color?: null
+                author_flair_css_class?: null
                 author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: string | null
-                author_flair_text?: string | null
-                author_flair_text_color?: string | null
+                author_flair_template_id?: null
+                author_flair_text?: null
+                author_flair_text_color?: null
                 author_flair_type?: string
                 author_fullname?: string
                 author_is_blocked?: boolean
                 author_patreon_flair?: boolean
                 author_premium?: boolean
                 awarders?: Record<string, unknown>[]
-                banned_at_utc?: string | null
-                banned_by?: string | null
+                banned_at_utc?: null
+                banned_by?: null
                 can_gild?: boolean
                 can_mod_post?: boolean
-                category?: string | null
+                category?: null
                 clicked?: boolean
                 content_categories?: string[]
                 contest_mode?: boolean
                 created?: number
                 created_utc?: number
-                discussion_type?: string | null
-                distinguished?: string | null
+                discussion_type?: null
+                distinguished?: null
                 domain?: string
                 downs?: number
                 edited?: boolean
@@ -1455,26 +1507,26 @@ export type components = {
                 is_robot_indexable?: boolean
                 is_self?: boolean
                 is_video?: boolean
-                likes?: string | null
-                link_flair_background_color?: string
-                link_flair_css_class?: string | null
+                likes?: null
+                link_flair_background_color?: null
+                link_flair_css_class?: string
                 link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: string | null
-                link_flair_text_color?: string
+                link_flair_text?: string
+                link_flair_text_color?: null
                 link_flair_type?: string
                 locked?: boolean
-                media?: string | null
+                media?: null
                 media_embed?: Record<string, unknown>
                 media_only?: boolean
-                mod_note?: string | null
-                mod_reason_by?: string | null
-                mod_reason_title?: string | null
+                mod_note?: null
+                mod_reason_by?: null
+                mod_reason_title?: null
                 mod_reports?: Record<string, unknown>[]
                 name?: string
                 no_follow?: boolean
                 num_comments?: number
                 num_crossposts?: number
-                num_reports?: string | null
+                num_reports?: null
                 over_18?: boolean
                 permalink?: string
                 pinned?: boolean
@@ -1510,16 +1562,16 @@ export type components = {
                 }
                 pwls?: number
                 quarantine?: boolean
-                removal_reason?: string | null
-                removed_by?: string | null
-                removed_by_category?: string | null
-                report_reasons?: string | null
+                removal_reason?: null
+                removed_by?: null
+                removed_by_category?: null
+                report_reasons?: null
                 saved?: boolean
                 score?: number
-                secure_media?: string | null
+                secure_media?: null
                 secure_media_embed?: Record<string, unknown>
                 selftext?: string
-                selftext_html?: string | null
+                selftext_html?: null
                 send_replies?: boolean
                 spoiler?: boolean
                 stickied?: boolean
@@ -1528,12 +1580,12 @@ export type components = {
                 subreddit_name_prefixed?: string
                 subreddit_subscribers?: number
                 subreddit_type?: string
-                suggested_sort?: string | null
+                suggested_sort?: null
                 thumbnail?: string
                 thumbnail_height?: number
                 thumbnail_width?: number
                 title?: string
-                top_awarded_type?: string | null
+                top_awarded_type?: null
                 total_awards_received?: number
                 treatment_tags?: Record<string, unknown>[]
                 ups?: number
@@ -1541,7 +1593,7 @@ export type components = {
                 url?: string
                 url_overridden_by_dest?: string
                 user_reports?: Record<string, unknown>[]
-                view_count?: string | null
+                view_count?: null
                 visited?: boolean
                 wls?: number
               }
@@ -1549,36 +1601,8 @@ export type components = {
             }
         )[]
         dist?: number
-        geo_filter?: string | null
+        geo_filter?: null
         modhash?: string
-      }
-      kind?: string
-    }
-    GetUserCommentsResponse: {
-      data?: {
-        after?: string | null
-        before?: string | null
-        children?: {
-          data?: Record<string, unknown>
-          kind?: string
-        }[]
-        dist?: number | null
-        geo_filter?: string | null
-        modhash?: string | null
-      }
-      kind?: string
-    }
-    GetUserPostsResponse: {
-      data?: {
-        after?: string | null
-        before?: string | null
-        children?: {
-          data?: Record<string, unknown>
-          kind?: string
-        }[]
-        dist?: number | null
-        geo_filter?: string | null
-        modhash?: string | null
       }
       kind?: string
     }
@@ -1609,16 +1633,16 @@ export type components = {
           accept_followers?: boolean
           allowed_media_in_comments?: Record<string, unknown>[]
           banner_img?: string
-          banner_size?: string | null
-          community_icon?: string | null
+          banner_size?: null
+          community_icon?: null
           default_set?: boolean
           description?: string
           disable_contributor_requests?: boolean
           display_name?: string
           display_name_prefixed?: string
           free_form_reports?: boolean
-          header_img?: string | null
-          header_size?: string | null
+          header_img?: null
+          header_size?: null
           icon_color?: string
           icon_img?: string
           icon_size?: number[]
@@ -1642,11 +1666,11 @@ export type components = {
           subscribers?: number
           title?: string
           url?: string
-          user_is_banned?: string | null
-          user_is_contributor?: string | null
-          user_is_moderator?: string | null
-          user_is_muted?: string | null
-          user_is_subscriber?: string | null
+          user_is_banned?: null
+          user_is_contributor?: null
+          user_is_moderator?: null
+          user_is_muted?: null
+          user_is_subscriber?: null
         }
         total_karma?: number
         verified?: boolean
@@ -1656,7 +1680,7 @@ export type components = {
     SearchSubredditsResponse: {
       data?: {
         after?: string
-        before?: string | null
+        before?: null
         children?: (
           | {
               data?: {
@@ -1682,7 +1706,7 @@ export type components = {
                 can_assign_user_flair?: boolean
                 collapse_deleted_comments?: boolean
                 comment_contribution_settings?: {
-                  allowed_media_types?: string | null
+                  allowed_media_types?: null
                 }
                 comment_score_hide_mins?: number
                 community_icon?: string
@@ -1694,7 +1718,7 @@ export type components = {
                 disable_contributor_requests?: boolean
                 display_name?: string
                 display_name_prefixed?: string
-                emojis_custom_size?: string | null
+                emojis_custom_size?: null
                 emojis_enabled?: boolean
                 free_form_reports?: boolean
                 has_menu_widget?: boolean
@@ -1706,14 +1730,14 @@ export type components = {
                 icon_size?: number[]
                 id?: string
                 is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: string | null
+                is_enrolled_in_new_modmail?: null
                 key_color?: string
                 lang?: string
                 link_flair_enabled?: boolean
                 link_flair_position?: string
                 mobile_banner_image?: string
                 name?: string
-                notification_level?: string | null
+                notification_level?: null
                 original_content_tag_enabled?: boolean
                 over18?: boolean
                 prediction_leaderboard_entry_type?: number
@@ -1732,30 +1756,30 @@ export type components = {
                 submission_type?: string
                 submit_link_label?: string
                 submit_text?: string
-                submit_text_html?: string | null
+                submit_text_html?: null
                 submit_text_label?: string
                 subreddit_type?: string
                 subscribers?: number
                 suggested_comment_sort?: string
                 title?: string
                 url?: string
-                user_can_flair_in_sr?: string | null
-                user_flair_background_color?: string | null
-                user_flair_css_class?: string | null
+                user_can_flair_in_sr?: null
+                user_flair_background_color?: null
+                user_flair_css_class?: null
                 user_flair_enabled_in_sr?: boolean
                 user_flair_position?: string
                 user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: string | null
-                user_flair_text?: string | null
-                user_flair_text_color?: string | null
+                user_flair_template_id?: null
+                user_flair_text?: null
+                user_flair_text_color?: null
                 user_flair_type?: string
-                user_has_favorited?: string | null
-                user_is_banned?: string | null
-                user_is_contributor?: string | null
-                user_is_moderator?: string | null
-                user_is_muted?: string | null
-                user_is_subscriber?: string | null
-                user_sr_flair_enabled?: string | null
+                user_has_favorited?: null
+                user_is_banned?: null
+                user_is_contributor?: null
+                user_is_moderator?: null
+                user_is_muted?: null
+                user_is_subscriber?: null
+                user_sr_flair_enabled?: null
                 user_sr_theme_enabled?: boolean
                 wiki_enabled?: boolean
                 wls?: number
@@ -1786,7 +1810,7 @@ export type components = {
                 can_assign_user_flair?: boolean
                 collapse_deleted_comments?: boolean
                 comment_contribution_settings?: {
-                  allowed_media_types?: string | null
+                  allowed_media_types?: null
                 }
                 comment_score_hide_mins?: number
                 community_icon?: string
@@ -1798,7 +1822,7 @@ export type components = {
                 disable_contributor_requests?: boolean
                 display_name?: string
                 display_name_prefixed?: string
-                emojis_custom_size?: string | null
+                emojis_custom_size?: null
                 emojis_enabled?: boolean
                 free_form_reports?: boolean
                 has_menu_widget?: boolean
@@ -1810,14 +1834,14 @@ export type components = {
                 icon_size?: number[]
                 id?: string
                 is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: string | null
+                is_enrolled_in_new_modmail?: null
                 key_color?: string
                 lang?: string
                 link_flair_enabled?: boolean
                 link_flair_position?: string
                 mobile_banner_image?: string
                 name?: string
-                notification_level?: string | null
+                notification_level?: null
                 original_content_tag_enabled?: boolean
                 over18?: boolean
                 prediction_leaderboard_entry_type?: number
@@ -1836,30 +1860,30 @@ export type components = {
                 submission_type?: string
                 submit_link_label?: string
                 submit_text?: string
-                submit_text_html?: string | null
+                submit_text_html?: null
                 submit_text_label?: string
                 subreddit_type?: string
                 subscribers?: number
-                suggested_comment_sort?: string | null
+                suggested_comment_sort?: null
                 title?: string
                 url?: string
-                user_can_flair_in_sr?: string | null
-                user_flair_background_color?: string | null
-                user_flair_css_class?: string | null
+                user_can_flair_in_sr?: null
+                user_flair_background_color?: null
+                user_flair_css_class?: null
                 user_flair_enabled_in_sr?: boolean
                 user_flair_position?: string
                 user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: string | null
-                user_flair_text?: string | null
-                user_flair_text_color?: string | null
+                user_flair_template_id?: null
+                user_flair_text?: null
+                user_flair_text_color?: null
                 user_flair_type?: string
-                user_has_favorited?: string | null
-                user_is_banned?: string | null
-                user_is_contributor?: string | null
-                user_is_moderator?: string | null
-                user_is_muted?: string | null
-                user_is_subscriber?: string | null
-                user_sr_flair_enabled?: string | null
+                user_has_favorited?: null
+                user_is_banned?: null
+                user_is_contributor?: null
+                user_is_moderator?: null
+                user_is_muted?: null
+                user_is_subscriber?: null
+                user_sr_flair_enabled?: null
                 user_sr_theme_enabled?: boolean
                 videostream_links_count?: number
                 wiki_enabled?: boolean
@@ -1886,12 +1910,12 @@ export type components = {
                 banner_background_color?: string
                 banner_background_image?: string
                 banner_img?: string
-                banner_size?: string | null
+                banner_size?: null
                 can_assign_link_flair?: boolean
                 can_assign_user_flair?: boolean
                 collapse_deleted_comments?: boolean
                 comment_contribution_settings?: {
-                  allowed_media_types?: string | null
+                  allowed_media_types?: null
                 }
                 comment_score_hide_mins?: number
                 community_icon?: string
@@ -1903,7 +1927,7 @@ export type components = {
                 disable_contributor_requests?: boolean
                 display_name?: string
                 display_name_prefixed?: string
-                emojis_custom_size?: string | null
+                emojis_custom_size?: null
                 emojis_enabled?: boolean
                 free_form_reports?: boolean
                 has_menu_widget?: boolean
@@ -1915,14 +1939,14 @@ export type components = {
                 icon_size?: number[]
                 id?: string
                 is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: string | null
+                is_enrolled_in_new_modmail?: null
                 key_color?: string
                 lang?: string
                 link_flair_enabled?: boolean
                 link_flair_position?: string
                 mobile_banner_image?: string
                 name?: string
-                notification_level?: string | null
+                notification_level?: null
                 original_content_tag_enabled?: boolean
                 over18?: boolean
                 prediction_leaderboard_entry_type?: number
@@ -1941,30 +1965,30 @@ export type components = {
                 submission_type?: string
                 submit_link_label?: string
                 submit_text?: string
-                submit_text_html?: string | null
+                submit_text_html?: null
                 submit_text_label?: string
                 subreddit_type?: string
                 subscribers?: number
                 suggested_comment_sort?: string
                 title?: string
                 url?: string
-                user_can_flair_in_sr?: string | null
-                user_flair_background_color?: string | null
-                user_flair_css_class?: string | null
+                user_can_flair_in_sr?: null
+                user_flair_background_color?: null
+                user_flair_css_class?: null
                 user_flair_enabled_in_sr?: boolean
                 user_flair_position?: string
                 user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: string | null
-                user_flair_text?: string | null
-                user_flair_text_color?: string | null
+                user_flair_template_id?: null
+                user_flair_text?: null
+                user_flair_text_color?: null
                 user_flair_type?: string
-                user_has_favorited?: string | null
-                user_is_banned?: string | null
-                user_is_contributor?: string | null
-                user_is_moderator?: string | null
-                user_is_muted?: string | null
-                user_is_subscriber?: string | null
-                user_sr_flair_enabled?: string | null
+                user_has_favorited?: null
+                user_is_banned?: null
+                user_is_contributor?: null
+                user_is_moderator?: null
+                user_is_muted?: null
+                user_is_subscriber?: null
+                user_sr_flair_enabled?: null
                 user_sr_theme_enabled?: boolean
                 videostream_links_count?: number
                 wiki_enabled?: boolean
@@ -2205,94 +2229,6 @@ export interface operations {
         }
       }
       /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      /** @description Server error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  getUserComments: {
-    parameters: {
-      query?: {
-        /** @description Fullname of a thing for pagination */
-        after?: string
-        /** @description Fullname of a thing for pagination */
-        before?: string
-        /** @description Maximum number of comments to return */
-        limit?: number
-      }
-      header?: never
-      path: {
-        /** @description The username parameter */
-        username: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Successful response */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['GetUserCommentsResponse']
-        }
-      }
-      /** @description User not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-      /** @description Server error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  getUserPosts: {
-    parameters: {
-      query?: {
-        /** @description Fullname of a thing for pagination */
-        after?: string
-        /** @description Fullname of a thing for pagination */
-        before?: string
-        /** @description Maximum number of posts to return */
-        limit?: number
-      }
-      header?: never
-      path: {
-        /** @description The username parameter */
-        username: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Successful response */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['GetUserPostsResponse']
-        }
-      }
-      /** @description User not found */
       404: {
         headers: {
           [name: string]: unknown

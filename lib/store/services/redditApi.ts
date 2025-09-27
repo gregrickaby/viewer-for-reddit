@@ -43,8 +43,15 @@ type AutoSearchChildData = NonNullable<
 >
 
 // User-related auto-generated types
-type AutoUserPostsResponse = components['schemas']['GetUserPostsResponse']
-type AutoUserCommentsResponse = components['schemas']['GetUserCommentsResponse']
+// The OpenAPI schema in this repo does not include dedicated user posts/comments
+// response shapes named `GetUserPostsResponse` or `GetUserCommentsResponse`.
+// Reuse compatible generated types to keep typings accurate and avoid hard
+// failures when the OpenAPI spec is narrower than runtime responses.
+type AutoUserPostsResponse = components['schemas']['GetSubredditPostsResponse']
+// The generated GetPostCommentsResponse is an array (post listing + comments
+// listing). For user comments we want a single listing element that contains
+// a `.data` property. Use the element type of the post comments response.
+type AutoUserCommentsResponse = AutoPostCommentsResponse[number]
 type AutoUserProfileResponse = components['schemas']['GetUserProfileResponse']
 
 /** Extracted data type for user posts responses */
