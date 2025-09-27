@@ -13,11 +13,11 @@ function validateOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
   const referer = request.headers.get('referer')
 
-  // In development, allow localhost.
-  if (process.env.NODE_ENV === 'development') {
-    if (origin?.includes('localhost') || referer?.includes('localhost')) {
-      return true
-    }
+  // Allow localhost for development and local testing (both dev and production builds)
+  const isLocalhost =
+    origin?.includes('localhost') || referer?.includes('localhost')
+  if (isLocalhost) {
+    return true
   }
 
   // In production, check against your domain.
