@@ -1,5 +1,4 @@
-# Refer for explanation to following link:
-# https://github.com/evilmartians/lefthook/blob/master/docs/usage.md
+# Refer for explanation to following link: https://lefthook.dev/
 
 pre-commit:
   parallel: true
