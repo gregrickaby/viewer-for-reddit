@@ -39,3 +39,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 letsencrypt
+
+# Claude Code local settings
+.claude/settings.local.json
+.claude/cache/
+.claude/logs/
+
+# Keep agents
+!.claude/agents/
