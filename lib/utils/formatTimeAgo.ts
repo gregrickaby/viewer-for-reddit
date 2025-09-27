@@ -12,9 +12,6 @@ dayjs.extend(relativeTime)
  * @returns Formatted relative time string (e.g., "2h ago", "just now")
  */
 export function formatTimeAgo(timestampInSeconds: number): string {
-  // Convert seconds to milliseconds and create dayjs object
   const timestamp = dayjs.unix(timestampInSeconds)
-
-  // Use dayjs relative time formatting
   return timestamp.fromNow()
 }

@@ -1,7 +1,5 @@
 import type {UserSettings} from '@/lib/types'
 
-// Constant key used for localStorage to store settings.
-// Using a consistent key ensures that all parts of the app refer to the same settings.
 const STORAGE_KEY = 'redditViewer'
 
 /**
@@ -14,13 +12,6 @@ function isBrowser() {
 
 /**
  * Retrieves the initial default settings for a new user.
- *
- * These settings include default preferences such as:
- * - The initial subreddit ('aww') and sort order ('hot').
- * - Whether dark mode is enabled (based on the user's system preference).
- * - Various UI state toggles (like showing settings, search, and about panels).
- *
- * Modal states (showAbout, showRecent, showSearch, showSettings) are always set to false.
  *
  * @returns {UserSettings} The default settings object.
  */
@@ -39,11 +30,10 @@ export function getInitialSettings(): UserSettings {
 /**
  * Loads user settings from localStorage.
  *
- * If no settings are found, the function returns the default settings.
- * If settings are found, they are merged with the default settings to ensure all keys are present.
- * The modal state keys are explicitly removed so that transient UI state is not persisted between sessions.
+ * If no settings are found, returns default settings.
+ * If settings are found, they are merged with defaults to ensure all keys are present.
  *
- * @returns {UserSettings} The merged user settings object with modal keys reset.
+ * @returns {UserSettings} The merged user settings object.
  */
 export function loadSettings(): UserSettings {
   try {
