@@ -7,7 +7,7 @@
       "Bash(npm run test:e2e:*)",
       "Bash(node:*)",
       "Bash(curl:*)",
-      "Read(//Users/gregoryrickaby/Downloads/**)"
+      "Read(~/Downloads/**)"
     ],
     "deny": [],
     "ask": []
