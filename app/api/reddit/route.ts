@@ -20,10 +20,18 @@ function validateOrigin(request: NextRequest): boolean {
     return true
   }
 
-  // In production, check against your domain.
-  const productionUrl = process.env.PRODUCTION_URL
-  if (productionUrl) {
-    if (origin === productionUrl || referer?.startsWith(productionUrl)) {
+  // Check against allowed domain and preview deployments.
+  const allowedHost = process.env.ALLOWED_HOST
+  if (allowedHost) {
+    // Extract hostname from origin and referer URLs
+    const originHost = origin ? new URL(origin).hostname : null
+    const refererHost = referer ? new URL(referer).hostname : null
+
+    // Allow exact domain match or any subdomain
+    const isAllowedDomain = (host: string | null) =>
+      host === allowedHost || host?.endsWith(`.${allowedHost}`)
+
+    if (isAllowedDomain(originHost) || isAllowedDomain(refererHost)) {
       return true
     }
   }
@@ -35,7 +43,7 @@ function validateOrigin(request: NextRequest): boolean {
     origin: origin || 'none',
     referer: referer || 'none',
     nodeEnv: process.env.NODE_ENV,
-    productionUrl: productionUrl || 'not-set'
+    allowedHost: allowedHost || 'not-set'
   })
   return false
 }

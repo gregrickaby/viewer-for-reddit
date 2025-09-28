@@ -58,7 +58,7 @@ beforeAll(() => {
 
   vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
   vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
-  vi.stubEnv('PRODUCTION_URL', 'https://example.com')
+  vi.stubEnv('ALLOWED_HOST', 'example.com')
 
   vi.spyOn(console, 'error').mockImplementation(() => {})
   vi.spyOn(console, 'warn').mockImplementation(() => {})
