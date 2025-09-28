@@ -7,17 +7,80 @@ vi.mock('@/lib/utils/logError', () => ({
   logError: vi.fn()
 }))
 
+// Mock the validateOrigin utility
+vi.mock('@/lib/utils/validateOrigin', () => ({
+  validateOrigin: vi.fn()
+}))
+
 const mockLogError = vi.mocked((await import('@/lib/utils/logError')).logError)
+const mockValidateOrigin = vi.mocked(
+  (await import('@/lib/utils/validateOrigin')).validateOrigin
+)
 
 describe('Log API Route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2023-01-01T12:00:00.000Z'))
+    // Default to allowing requests (individual tests can override)
+    mockValidateOrigin.mockReturnValue(true)
   })
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  describe('Origin Validation', () => {
+    it('should block requests with invalid origins', async () => {
+      mockValidateOrigin.mockReturnValue(false)
+
+      const requestBody = {
+        level: 'error',
+        message: 'Test error message',
+        context: {component: 'TestComponent'}
+      }
+
+      const request = new NextRequest('http://localhost:3000/api/log', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          origin: 'https://malicious.com'
+        },
+        body: JSON.stringify(requestBody)
+      })
+
+      const response = await POST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(403)
+      expect(data).toEqual({error: 'Forbidden'})
+      expect(mockValidateOrigin).toHaveBeenCalledWith(request)
+      expect(mockLogError).not.toHaveBeenCalled()
+    })
+
+    it('should allow requests with valid origins', async () => {
+      mockValidateOrigin.mockReturnValue(true)
+
+      const requestBody = {
+        level: 'error',
+        message: 'Test error message',
+        context: {component: 'TestComponent'}
+      }
+
+      const request = new NextRequest('http://localhost:3000/api/log', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          origin: 'http://localhost:3000'
+        },
+        body: JSON.stringify(requestBody)
+      })
+
+      const response = await POST(request)
+
+      expect(response.status).toBe(200)
+      expect(mockValidateOrigin).toHaveBeenCalledWith(request)
+    })
   })
 
   describe('POST /api/log', () => {

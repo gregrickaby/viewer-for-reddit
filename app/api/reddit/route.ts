@@ -1,57 +1,13 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
+import {validateOrigin} from '@/lib/utils/validateOrigin'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
- * Validates that the request comes from an allowed origin.
- *
- * @param {NextRequest} request - The incoming request object.
- * @returns {boolean} True if the origin is allowed, false otherwise.
- */
-function validateOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get('origin')
-  const referer = request.headers.get('referer')
-
-  // Allow localhost for development and local testing (both dev and production builds)
-  const isLocalhost =
-    origin?.includes('localhost') || referer?.includes('localhost')
-  if (isLocalhost) {
-    return true
-  }
-
-  // Check against allowed domain and preview deployments.
-  const allowedHost = process.env.ALLOWED_HOST
-  if (allowedHost) {
-    // Extract hostname from origin and referer URLs
-    const originHost = origin ? new URL(origin).hostname : null
-    const refererHost = referer ? new URL(referer).hostname : null
-
-    // Allow exact domain match or any subdomain
-    const isAllowedDomain = (host: string | null) =>
-      host === allowedHost || host?.endsWith(`.${allowedHost}`)
-
-    if (isAllowedDomain(originHost) || isAllowedDomain(refererHost)) {
-      return true
-    }
-  }
-
-  // Log blocked request with structured context
-  logError('Request blocked due to invalid origin', {
-    component: 'redditApiRoute',
-    action: 'validateOrigin',
-    origin: origin || 'none',
-    referer: referer || 'none',
-    nodeEnv: process.env.NODE_ENV,
-    allowedHost: allowedHost || 'not-set'
-  })
-  return false
-}
-
-/**
  * Validates that the provided path is a safe and legal Reddit API path.
+ *
  * @param path The path to validate.
- * @returns {boolean}
  */
 function isSafeRedditPath(path: string): boolean {
   // Must start with exactly one /
@@ -62,9 +18,6 @@ function isSafeRedditPath(path: string): boolean {
   if (path.startsWith('http:') || path.startsWith('https:')) return false
   // Disallow fragments or dangerous characters
   if (path.includes('#')) return false
-  // Optionally allow-list known prefixes (e.g. /r/, /user/, /api/, /subreddits/, etc.)
-  // Example:
-  //    if (!/^\/(r|user|subreddits|api|comments|by_id|message|live|prefs|search|mod)/.test(path)) return false;
   return true
 }
 
@@ -75,7 +28,6 @@ function isSafeRedditPath(path: string): boolean {
  * fetch('/api/reddit?path=/r/programming/hot.json?limit=25')
  *
  * @param {NextRequest} request - The incoming request object.
- * @returns {Promise<NextResponse>} The response from the Reddit API or an error.
  */
 export async function GET(request: NextRequest) {
   // Validate request origin to prevent external abuse
