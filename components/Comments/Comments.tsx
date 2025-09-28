@@ -23,17 +23,32 @@ interface CommentsProps {
   permalink: string
   postLink: string
   open: boolean
+  comments?: AutoCommentData[]
 }
 
-export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
-  const [fetchComments, {data: comments, isLoading}] =
+export function Comments({
+  permalink,
+  postLink,
+  open,
+  comments: providedComments
+}: Readonly<CommentsProps>) {
+  const [fetchComments, {data: fetchedComments, isLoading}] =
     useLazyGetPostCommentsQuery()
 
+  const comments = providedComments || fetchedComments
+
   useEffect(() => {
-    if (open && !comments && !isLoading) {
+    if (open && !providedComments && !fetchedComments && !isLoading) {
       void fetchComments(permalink)
     }
-  }, [open, comments, isLoading, fetchComments, permalink])
+  }, [
+    open,
+    providedComments,
+    fetchedComments,
+    isLoading,
+    fetchComments,
+    permalink
+  ])
 
   if (isLoading) {
     return (

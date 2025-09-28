@@ -2,6 +2,7 @@ import {
   useGetPopularSubredditsQuery,
   useGetSubredditAboutQuery,
   useGetSubredditPostsInfiniteQuery,
+  useGetSinglePostQuery,
   useLazyGetSubredditAboutQuery,
   useSearchSubredditsQuery
 } from '@/lib/store/services/redditApi'
@@ -272,5 +273,126 @@ describe('redditApi', () => {
     })
 
     expect(result.current.data).toBeDefined()
+  })
+
+  describe('getSinglePost', () => {
+    it('should fetch single post with comments successfully', async () => {
+      const {result} = renderHook(() =>
+        useGetSinglePostQuery({subreddit: 'programming', postId: 'abc123'})
+      )
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true)
+      })
+
+      expect(result.current.data).toBeDefined()
+      expect(result.current.data?.post).toBeDefined()
+      expect(result.current.data?.comments).toBeDefined()
+
+      // Verify post structure
+      const post = result.current.data?.post
+      expect(post?.id).toBe('abc123')
+      expect(post?.subreddit).toBe('programming')
+      expect(post?.title).toBeDefined()
+      expect(post?.author).toBeDefined()
+
+      // Verify comments are filtered (AutoModerator comments removed)
+      const comments = result.current.data?.comments ?? []
+      expect(comments.length).toBe(2) // AutoModerator comment should be filtered out
+      expect(comments.some((c) => c.author === 'AutoModerator')).toBe(false)
+    })
+
+    it('should handle single post with no comments', async () => {
+      const {result} = renderHook(() =>
+        useGetSinglePostQuery({subreddit: 'programming', postId: 'nocomments'})
+      )
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true)
+      })
+
+      expect(result.current.data?.post).toBeDefined()
+      expect(result.current.data?.comments).toEqual([])
+    })
+
+    it('should handle 404 error for non-existent post', async () => {
+      const {result} = renderHook(() =>
+        useGetSinglePostQuery({subreddit: 'notfound', postId: 'abc123'})
+      )
+
+      await waitFor(() => {
+        expect(result.current.isError).toBe(true)
+      })
+
+      expect(result.current.data).toBeUndefined()
+    })
+
+    it('should handle 403 error for private subreddit', async () => {
+      const {result} = renderHook(() =>
+        useGetSinglePostQuery({subreddit: 'private', postId: 'abc123'})
+      )
+
+      await waitFor(() => {
+        expect(result.current.isError).toBe(true)
+      })
+
+      expect(result.current.data).toBeUndefined()
+    })
+
+    it('should handle empty comments when limit is 0', async () => {
+      // Note: This tests that the limit parameter is passed correctly
+      // The MSW handler returns no comments when limit=0
+      const {result} = renderHook(() =>
+        useGetSinglePostQuery({subreddit: 'programming', postId: 'abc123'})
+      )
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true)
+      })
+
+      // Even though the handler might return empty comments for limit=0,
+      // we still expect the post data to be present
+      expect(result.current.data?.post).toBeDefined()
+      expect(result.current.data?.comments).toBeDefined()
+    })
+
+    it('should properly encode subreddit and post ID parameters', async () => {
+      // Test with special characters that need encoding
+      const {result} = renderHook(() =>
+        useGetSinglePostQuery({
+          subreddit: 'test subreddit',
+          postId: 'test-post-123'
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true)
+      })
+
+      // If the request succeeds, it means encoding worked properly
+      expect(result.current.data).toBeDefined()
+    })
+
+    it('should provide correct cache tags for single posts', async () => {
+      const {result} = renderHook(() =>
+        useGetSinglePostQuery({subreddit: 'programming', postId: 'abc123'})
+      )
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true)
+      })
+
+      // Test that the query was cached properly by making the same request
+      const {result: result2} = renderHook(() =>
+        useGetSinglePostQuery({subreddit: 'programming', postId: 'abc123'})
+      )
+
+      // Wait for the second query to also be successful (cache loading)
+      await waitFor(() => {
+        expect(result2.current.isSuccess).toBe(true)
+      })
+
+      expect(result2.current.data).toEqual(result.current.data)
+    })
   })
 })

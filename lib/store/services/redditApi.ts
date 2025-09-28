@@ -500,6 +500,80 @@ export const redditApi = createApi({
         // Return comments as-is, filtering can be done at component level if needed
         return response
       }
+    }),
+
+    /**
+     * Fetches a single Reddit post with its comments in a unified response.
+     *
+     * Retrieves both post data and comments from Reddit's permalink endpoint, which
+     * returns a two-element array containing post listing and comments listing.
+     * This provides a complete view of a single post for dedicated post pages.
+     *
+     * Key features:
+     * - Unified post and comments in single request
+     * - Automatic comment filtering (removes AutoModerator)
+     * - Type-safe response transformation
+     * - Handles Reddit's dual response array format
+     *
+     * @param {Object} params - Query parameters
+     * @param {string} params.subreddit - The subreddit name (e.g., "programming")
+     * @param {string} params.postId - The Reddit post ID (e.g., "abc123")
+     *
+     * @returns {Object} Object containing post data and filtered comments array
+     * @returns {AutoPostChildData} returns.post - The post data with all metadata
+     * @returns {AutoCommentData[]} returns.comments - Array of filtered comment data
+     *
+     * @example
+     * // Fetch a single post with comments
+     * const {data, isLoading} = useGetSinglePostQuery({
+     *   subreddit: 'programming',
+     *   postId: 'abc123'
+     * })
+     * // data = { post: {...}, comments: [...] }
+     */
+    getSinglePost: builder.query<
+      {post: AutoPostChildData; comments: AutoCommentData[]},
+      {subreddit: string; postId: string}
+    >({
+      query: ({subreddit, postId}) => {
+        const params = new URLSearchParams({limit: String(COMMENTS_LIMIT)})
+        const encodedSubreddit = encodeURIComponent(subreddit)
+        const encodedPostId = encodeURIComponent(postId)
+        return `/r/${encodedSubreddit}/comments/${encodedPostId}.json?${params.toString()}`
+      },
+      transformResponse: (
+        response: AutoPostCommentsResponse
+      ): {
+        post: AutoPostChildData
+        comments: AutoCommentData[]
+      } => {
+        // Reddit returns [postListing, commentsListing] array for single post requests
+        if (!Array.isArray(response) || response.length < 2) {
+          throw new Error('Invalid single post response format')
+        }
+
+        const [postListing, commentsListing] = response
+
+        // Extract post data from first listing
+        const postChildren = postListing?.data?.children ?? []
+        if (postChildren.length === 0) {
+          throw new Error('Post not found')
+        }
+        const post = postChildren[0].data as AutoPostChildData
+        if (!post) {
+          throw new Error('Post data is missing')
+        }
+
+        // Extract and filter comments from second listing
+        const commentChildren = commentsListing?.data?.children ?? []
+        const comments = extractAndFilterComments(commentChildren)
+
+        return {post, comments}
+      },
+      // Cache by subreddit and post ID combination
+      providesTags: (_result, _err, {subreddit, postId}) => [
+        {type: 'SubredditPosts', id: `${subreddit}:${postId}`}
+      ]
     })
   })
 })
@@ -517,5 +591,6 @@ export const {
   useLazyGetSubredditAboutQuery,
   useGetUserProfileQuery,
   useGetUserPostsInfiniteQuery,
-  useGetUserCommentsInfiniteQuery
+  useGetUserCommentsInfiniteQuery,
+  useGetSinglePostQuery
 } = redditApi

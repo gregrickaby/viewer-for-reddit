@@ -14,7 +14,7 @@ export type DeepPartial<T> = {
 /**
  * Next.js dynamic route parameters.
  */
-export type Params = Promise<{slug: string}>
+export type Params = Promise<{subreddit: string}>
 export type UserParams = Promise<{username: string}>
 export type SearchParams = Promise<{
   [key: string]: string | string[] | undefined

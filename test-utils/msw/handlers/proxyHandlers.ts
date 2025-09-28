@@ -75,11 +75,30 @@ function handleUserComments(path: string): Response | null {
  */
 async function handlePostComments(path: string): Promise<Response | null> {
   // Post comments (from subreddit permalink with .json)
-  const postCommentsRegex = /^\/r\/.+\/comments\/[^/]+(?:\/[^/]*)?\.json$/
+  const postCommentsRegex = /^\/r\/(.+)\/comments\/([^/]+)(?:\/[^/]*)?\.json$/
   const pathWithoutQuery = path.split('?')[0]
-  if (postCommentsRegex.test(pathWithoutQuery)) {
-    const {postCommentsMock} = await import('../../mocks/postComments')
-    return HttpResponse.json(postCommentsMock)
+  const match = postCommentsRegex.exec(pathWithoutQuery)
+
+  if (match) {
+    const [, subreddit, postId] = match
+
+    // Handle test cases for single post endpoint
+    if (subreddit === 'notfound' || postId === 'notfound') {
+      return new HttpResponse(null, {status: 404})
+    }
+
+    if (subreddit === 'private') {
+      return new HttpResponse(null, {status: 403})
+    }
+
+    if (postId === 'nocomments') {
+      const {singlePostNoCommentsMock} = await import('../../mocks/singlePost')
+      return HttpResponse.json(singlePostNoCommentsMock)
+    }
+
+    // Use the new single post mock for better test data
+    const {singlePostMock} = await import('../../mocks/singlePost')
+    return HttpResponse.json(singlePostMock)
   }
 
   // Post comments (general pattern for comments pages)

@@ -12,6 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run lint        # ESLint with Mantine config - must pass
 npm run typecheck   # TypeScript strict checking - must pass
 npm run test        # Vitest unit tests - must pass
+npm run dev         # Start dev server. Review changes using Playwright MCP
 ```
 
 **Critical**: Run these commands in sequence for any code changes. Stop if any step fails.
@@ -48,7 +49,7 @@ npm run typegen:validate  # Validate OpenAPI specification
 ### Tech Stack
 
 - **Framework**: Next.js 15+ (App Router)
-- **UI**: Mantine v8 component library
+- **UI**: Mantine v8 component library. Documentation URL: <https://mantine.dev/llms.txt>
 - **State Management**: Redux Toolkit + RTK Query
 - **Authentication**: Reddit OAuth 2.0 (Server Actions)
 - **Testing**: Vitest + React Testing Library + MSW v2
@@ -156,6 +157,10 @@ npm run test
 
 # 3. For UI changes, also run:
 npm run test:e2e
+
+# 4. For feature completion, run dev server and validate with Playwright:
+npm run dev               # Start development server
+# Use Playwright MCP to validate feature works as expected
 ```
 
 > **Note**: This matches the validation gate in copilot-instructions.md for consistency across all AI agents.
@@ -224,3 +229,13 @@ Reference timeouts from copilot-instructions.md:
 - **Type generation**: 60s
 - **Test suite**: 120s
 - **Lint**: 30s
+
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex business logic or non-obvious Next.js patterns
+- Let code be self-documenting through clear naming and structure
+- Focus on code clarity over comment density

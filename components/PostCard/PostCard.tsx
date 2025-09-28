@@ -24,6 +24,7 @@ import classes from './PostCard.module.css'
 
 interface PostCardProps {
   post: AutoPostChildData
+  useInternalRouting?: boolean
 }
 
 /**
@@ -34,15 +35,35 @@ interface PostCardProps {
  * - Renders media (image, video, YouTube, etc.) using the Media component
  * - Shows a comments toggle with animated collapse for in-place comment viewing
  * - Uses Mantine UI for layout, icons, and accessibility
- * - All links are accessible and open in new tabs where appropriate
+ * - Supports both internal app routing and external Reddit links
  *
  * @param post - The Reddit post data (AutoPostChildData)
+ * @param useInternalRouting - Whether to use internal app routes (default: true) or external Reddit links
  * @returns JSX.Element for a styled, interactive Reddit post card
  */
-export function PostCard({post}: Readonly<PostCardProps>) {
+export function PostCard({
+  post,
+  useInternalRouting = true
+}: Readonly<PostCardProps>) {
   const preview = (post as any).preview?.images?.[0]?.resolutions
   const image = getMediumImage(preview ?? [])
-  const postLink = `https://reddit.com${post.permalink}`
+
+  // Generate the appropriate link based on routing preference
+  const postLink = useInternalRouting
+    ? (() => {
+        // Extract subreddit and postId from permalink: /r/{subreddit}/comments/{postId}/{title}/
+        const match = post.permalink?.match(
+          /^\/r\/([^/]+)\/comments\/([^/]+)\//
+        )
+        if (match) {
+          const [, subreddit, postId] = match
+          return `/r/${subreddit}/comments/${postId}`
+        }
+        // Fallback to external link if parsing fails
+        return `https://reddit.com${post.permalink}`
+      })()
+    : `https://reddit.com${post.permalink}`
+
   const created = post.created_utc
     ? dayjs.unix(post.created_utc).toISOString()
     : ''
@@ -80,17 +101,25 @@ export function PostCard({post}: Readonly<PostCardProps>) {
           </Text>
         </Group>
 
-        <Anchor
-          className={classes.link}
-          href={postLink}
-          rel="noopener noreferrer"
-          target="_blank"
-          underline="never"
-        >
-          <Title className={classes.title} order={2} size="xl" mt="xs">
-            {post.title}
-          </Title>
-        </Anchor>
+        {useInternalRouting ? (
+          <Link className={classes.link} href={postLink}>
+            <Title className={classes.title} order={2} size="xl" mt="xs">
+              {post.title}
+            </Title>
+          </Link>
+        ) : (
+          <Anchor
+            className={classes.link}
+            href={postLink}
+            rel="noopener noreferrer"
+            target="_blank"
+            underline="never"
+          >
+            <Title className={classes.title} order={2} size="xl" mt="xs">
+              {post.title}
+            </Title>
+          </Anchor>
+        )}
       </Stack>
 
       {image?.url && (
@@ -102,16 +131,24 @@ export function PostCard({post}: Readonly<PostCardProps>) {
       <Group gap="xs" mt="xs">
         <Group gap={2}>
           <BiSolidUpvote size={16} color="red" />
-          <Anchor
-            href={postLink}
-            rel="noopener noreferrer"
-            target="_blank"
-            underline="never"
-          >
-            <Text size="sm" c="dimmed">
-              <NumberFormatter value={post.ups} thousandSeparator />
-            </Text>
-          </Anchor>
+          {useInternalRouting ? (
+            <Link href={postLink} className={classes.link}>
+              <Text size="sm" c="dimmed">
+                <NumberFormatter value={post.ups} thousandSeparator />
+              </Text>
+            </Link>
+          ) : (
+            <Anchor
+              href={postLink}
+              rel="noopener noreferrer"
+              target="_blank"
+              underline="never"
+            >
+              <Text size="sm" c="dimmed">
+                <NumberFormatter value={post.ups} thousandSeparator />
+              </Text>
+            </Anchor>
+          )}
         </Group>
 
         <Button
