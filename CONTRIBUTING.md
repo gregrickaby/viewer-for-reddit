@@ -74,8 +74,19 @@ cp .env.example .env
 ```bash
 REDDIT_CLIENT_ID="your_client_id_here"
 REDDIT_CLIENT_SECRET="your_client_secret_here"
-ALLOWED_HOST="yourdomain.com" # Do not set https:// or http://
 ```
+
+**Analytics Setup** (Optional):
+
+For tracking website analytics, add these optional environment variables:
+
+```bash
+ENABLE_ANALYTICS="true"
+ANALYTICS_SCRIPT_URL="https://your-analytics-provider.com/script.js"
+ANALYTICS_ID="your-analytics-site-id"
+```
+
+> **Note**: Analytics are only loaded in production when `ENABLE_ANALYTICS` is not `"false"`
 
 > **Note**: The app will not work without Reddit credentials!
 
