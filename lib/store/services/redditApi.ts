@@ -549,7 +549,9 @@ export const redditApi = createApi({
       } => {
         // Reddit returns [postListing, commentsListing] array for single post requests
         if (!Array.isArray(response) || response.length < 2) {
-          throw new Error('Invalid single post response format')
+          throw new Error(
+            `Invalid single post response format: expected an array of length >= 2, but received: ${JSON.stringify(response)}`
+          )
         }
 
         const [postListing, commentsListing] = response

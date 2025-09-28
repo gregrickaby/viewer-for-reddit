@@ -3,6 +3,7 @@ import {Media} from '@/components/Media/Media'
 import type {AutoPostChildData} from '@/lib/store/services/redditApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
+import {parsePostLink} from '@/lib/utils/parsePostLink'
 import {
   Anchor,
   Button,
@@ -47,23 +48,7 @@ export function PostCard({
 }: Readonly<PostCardProps>) {
   const preview = (post as any).preview?.images?.[0]?.resolutions
   const image = getMediumImage(preview ?? [])
-
-  // Generate the appropriate link based on routing preference
-  const postLink = useInternalRouting
-    ? (() => {
-        // Extract subreddit and postId from permalink: /r/{subreddit}/comments/{postId}/{title}/
-        const match = post.permalink?.match(
-          /^\/r\/([^/]+)\/comments\/([^/]+)\//
-        )
-        if (match) {
-          const [, subreddit, postId] = match
-          return `/r/${subreddit}/comments/${postId}`
-        }
-        // Fallback to external link if parsing fails
-        return `https://reddit.com${post.permalink}`
-      })()
-    : `https://reddit.com${post.permalink}`
-
+  const postLink = parsePostLink(post.permalink, useInternalRouting)
   const created = post.created_utc
     ? dayjs.unix(post.created_utc).toISOString()
     : ''

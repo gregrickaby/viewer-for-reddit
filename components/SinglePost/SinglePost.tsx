@@ -145,7 +145,7 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Reddit
+                  View original post on Reddit
                 </Link>
                 !
               </Text>
