@@ -1,88 +1,246 @@
-<!-- AGENT-ONLY: concise machine-readable runbook for automated agents -->
+# AI Agent Instructions
 
-# copilot-instructions (agent-only)
+**Audience**: All AI agents (GitHub Copilot, Claude Code, Cursor, etc.)
+**Purpose**: Machine-readable operational runbook for viewer-for-reddit
+**Human Docs**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for comprehensive developer guide
 
-last-updated: 2025-09-27
-audience: ai-agent
-see-also: CLAUDE.md (for comprehensive guidance)
+## Core Development Commands
 
-purpose: >-
-Minimal, deterministic runbook for automated agents working on viewer-for-reddit.
-This file is NOT intended for human onboarding; it encodes required validation
-gates, timeouts, and preferred tools (Playwright MCP) for visual debugging.
+### Quality Gates (Required for all code changes)
 
-invariants:
+```bash
+npm run format      # Prettier formatting - auto-fixes formatting issues
+npm run lint        # ESLint with Mantine config - must pass
+npm run typecheck   # TypeScript strict checking - must pass
+npm run test        # Vitest unit tests - must pass
+npm run dev         # Start dev server. Review changes using Playwright MCP
+```
 
-- do-not-exfiltrate-secrets: true
-- node: 22.x (use `.nvmrc`)
-- npm: 11.x
+**Critical**: Run these commands in sequence for any code changes. Stop if any step fails.
 
-timeouts:
+### Testing Commands
 
-- install: 60s
-- typegen: 60s
-- test-suite: 120s
-- lint: 30s
+```bash
+npm run test              # Run all unit tests
+npm run coverage          # Run tests with coverage report (aim for 90%+)
+npx vitest <component>    # Run specific component tests
+npx vitest <path> --run   # Run failing tests locally for debugging
+```
 
-validation-gate (code-edit): |
-For any change that modifies code (files with extensions: .ts, .tsx, .js, .jsx, .css, .scss, .json, .html):
+### Reddit API Type Generation
 
-1. If you changed API spec files (scripts/_.json or scripts/reddit-openapi_.json) or anything under lib/types, run:
-   - npm run typegen:types
-2. Run in order (stop if a step fails):
-   - npm run lint
-   - npm run typecheck
-   - npm run test
-3. For UI changes, also run:
-   - npm run test:e2e
-4. If tests fail, run the failing tests locally (npx vitest <path> --run) and collect errors. Check `test-utils/msw/handlers.ts` before editing production code.
+```bash
+npm run typegen           # Full type generation workflow
+npm run typegen:fetch     # Fetch samples from Reddit API
+npm run typegen:types     # Generate TypeScript types from OpenAPI spec
+npm run typegen:validate  # Validate OpenAPI specification
+```
 
-skip-validation (docs-only): |
-If the change touches only documentation, markdown, or non-code comments, SKIP the full validation gate. Detect by comparing changed file paths.
+## Validation Gate Protocol
 
-playwright-mcp (visual-debugging): |
-Use Playwright MCP for UI reproduction and visual debugging before changing UI code. Preferred workflow:
+### For Code Changes (.ts, .tsx, .js, .jsx, .css, .json)
 
-1. Open page via Playwright MCP (navigate to http://localhost:3000 or the route under test).
-2. Capture accessibility snapshot / network requests via MCP.
-3. Use MCP actions (click/type) to reproduce the failing flow and capture a final snapshot.
-4. Attach snapshot and network logs to bug/generate a minimal failing test.
+1. **If API spec or types changed:**
 
-agent-workflow (recommended): |
+   ```bash
+   npm run typegen:types
+   ```
 
-1. Read large, relevant files with semantic_search/read_file.
-2. Reproduce the issue with narrow tests or Playwright MCP snapshots.
-3. Propose a minimal patch with a 2–3 line contract (inputs, outputs, success criteria).
-4. Apply patch (apply_patch). Keep changes small and focused.
-5. Run the validation-gate (if code-edit).
-6. Report concise delta: files changed, tests run (PASS/FAIL), next steps.
+2. **Always run in sequence (stop if any fail):**
 
-bailout-rules:
+   ```bash
+   npm run format
+   npm run lint
+   npm run typecheck
+   npm run test
+   ```
 
-- give-up-after-attempts: 3
-- avoid-repeating-failed-tool-calls: true
-- long-running-commands: abort and report if > 2x timeout above
+3. **For feature completion:**
+   ```bash
+   npm run dev  # Use Playwright MCP to validate functionality
+   ```
 
-debugging-tips:
+### Skip Validation
 
-- If tests fail and appear network-related, check `test-utils/msw/handlers.ts` first.
-- For flaky tests: ensure `userEvent.setup()` per test and reset mocks between tests.
-- For TypeScript errors: run `npm run typecheck` and inspect the top-level failing files.
-- For build issues caused by Google Fonts in CI: prefer `npm run dev` locally or self-host fonts in CI.
+Skip full validation gate for documentation-only changes (\*.md, comments, README updates).
 
-reporting:
+## Test-Driven Development Requirements
 
-- Always include the exact commands run and their exit codes.
-- For failing CI gates, attach full `npm run typecheck` and `npm run test` outputs and any Playwright MCP snapshots.
+This is a **test-driven codebase**. Tests must be written/updated alongside code changes.
 
-test-driven-development:
+**Coverage Expectations:**
 
-- coverage-target: 90%+ (not 100%, edge cases acceptable)
-- test-first: write/update tests alongside code changes
-- components: every component must have .test.tsx
-- mocking: use MSW v2 handlers in test-utils/msw/handlers.ts
+- Aim for **90%+ test coverage** (not 100%)
+- Focus on control flow coverage
+- Some unreachable edge cases are acceptable
 
-notes:
+**Testing Strategy:**
 
-- This file is machine-focused. Keep it terse; update `last-updated` on edits.
-- For comprehensive guidance and context, see CLAUDE.md
+- **Unit Tests**: Every component has `.test.tsx`
+- **Integration Tests**: RTK Query + MSW mocking
+- **API Mocking**: MSW v2 handlers in `test-utils/msw/handlers.ts`
+
+### Debugging with Playwright MCP
+
+**Visual Debugging Workflow:**
+
+1. Use Playwright MCP to navigate to `http://localhost:3000`
+2. Capture accessibility snapshots before making UI changes
+3. Use MCP actions (click/type) to reproduce failing flows
+4. Generate screenshots and network logs for bug reports
+5. Create minimal failing tests with visual evidence
+
+**When to Use Playwright MCP:**
+
+- Before changing UI components
+- When reproducing user-reported issues
+- For complex interaction flows
+- To validate responsive design changes
+
+## Architecture Patterns
+
+### Tech Stack
+
+- **Framework**: Next.js 15+ (App Router)
+- **UI**: Mantine v8 component library
+- **State Management**: Redux Toolkit + RTK Query
+- **Authentication**: Reddit OAuth 2.0 (Server Actions)
+- **Testing**: Vitest + React Testing Library + MSW v2
+- **TypeScript**: Strict mode enabled
+
+### Component Structure (One per folder)
+
+```text
+components/ComponentName/
+├── ComponentName.tsx           # Main component
+├── ComponentName.module.css    # Styles
+└── ComponentName.test.tsx      # Tests
+```
+
+### Server Actions Pattern
+
+- `lib/actions/redditToken.ts` - OAuth token management
+- Automatic token rotation and caching
+- Error handling with retry logic
+
+## Environment Setup
+
+### Prerequisites
+
+- **Node.js**: v22 (see `.nvmrc`)
+- **npm**: v11+
+- **Reddit API credentials**: Required for development
+
+### Environment Configuration
+
+```bash
+cp .env.example .env
+# Add Reddit credentials:
+REDDIT_CLIENT_ID="your_client_id_here"
+REDDIT_CLIENT_SECRET="your_client_secret_here"
+ALLOWED_HOST="yourdomain.com"  # No http/https prefix
+```
+
+Create Reddit app at: https://www.reddit.com/prefs/apps (type: "personal use script")
+
+## Failure Handling
+
+### Common Issues & Debugging
+
+**Test Failures:**
+
+- **Network-related**: Check `test-utils/msw/handlers.ts` first
+- **Flaky tests**: Ensure `userEvent.setup()` per test and reset mocks
+- **TypeScript errors**: Run `npm run typecheck` and inspect top-level failures
+
+**Build Issues:**
+
+- **Missing types**: Run `npm run typegen` to regenerate Reddit API types
+- **Long-running commands**: Abort if exceeding 2x expected timeout
+
+### Reporting Requirements
+
+Include in failure reports:
+
+- Exact commands run and their exit codes
+- Full `npm run typecheck` and `npm run test` outputs for failing CI gates
+- Playwright MCP snapshots for UI issues
+- Concise delta: files changed, tests run (PASS/FAIL), next steps
+
+## GitHub Workflow (Feature Development)
+
+**Required Process:**
+
+1. **Create GitHub Issue**
+
+   ```bash
+   gh issue create --title "Feature: description" --body "Requirements..."
+   ```
+
+2. **Create Feature Branch**
+
+   ```bash
+   git checkout -b {ticket-number}-{feature-name}
+   ```
+
+3. **Development Process**
+
+   ```bash
+   # Always format before committing to avoid pre-commit hook amendments
+   npm run format
+
+   # Run validation gate
+   npm run lint
+   npm run typecheck
+   npm run test
+
+   # Validate with Playwright if UI changes
+   npm run dev  # Use Playwright MCP to test functionality
+   ```
+
+4. **Commit and Push**
+
+   ```bash
+   git add .
+   git commit -m "feat: descriptive commit message"
+
+   # If pre-commit hooks modify files, amend the commit
+   git add . && git commit --amend --no-edit
+
+   git push -u origin {branch-name}
+   ```
+
+5. **Create Pull Request**
+   ```bash
+   gh pr create --title "feat: description" --body "Summary and test plan"
+   ```
+
+## Code Quality Standards
+
+### Comment Guidelines
+
+- Do NOT insert superfluous comments or explanatory comments
+- Do NOT leave comments explaining why you changed something from a previous edit
+- Only add comments when documenting complex business logic or non-obvious patterns
+- Let code be self-documenting through clear naming and structure
+
+### Important Instruction Reminders
+
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless absolutely necessary for achieving your goal
+- ALWAYS prefer editing an existing file to creating a new one
+- NEVER proactively create documentation files (\*.md) or README files unless explicitly requested
+
+## Operational Timeouts
+
+Reference timeouts for automated agents:
+
+- **Build**: 20s
+- **Format**: 5s
+- **Install**: 60s
+- **Lint**: 30s
+- **Test suite**: 120s
+- **Type generation**: 60s
+- **Typecheck**: 5s
+
+Stop after 3 failed attempts on any task.
