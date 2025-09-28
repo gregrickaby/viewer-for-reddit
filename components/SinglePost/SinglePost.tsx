@@ -57,18 +57,18 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
 
   // Error state
   if (isError) {
-    const errorMessage =
-      error &&
-      typeof error === 'object' &&
-      'status' in error &&
-      error.status === 404
-        ? 'Post not found'
-        : error &&
-            typeof error === 'object' &&
-            'status' in error &&
-            error.status === 403
-          ? 'This subreddit is private or restricted'
-          : 'Failed to load post'
+    let errorMessage = 'Failed to load post'
+
+    if (error && typeof error === 'object' && 'status' in error) {
+      switch (error.status) {
+        case 404:
+          errorMessage = 'Post not found'
+          break
+        case 403:
+          errorMessage = 'This subreddit is private or restricted'
+          break
+      }
+    }
 
     return (
       <Container size="md">
