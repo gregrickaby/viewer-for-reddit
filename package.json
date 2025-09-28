@@ -15,7 +15,7 @@
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "engines": {
     "node": ">=22.19 <23",
-    "npm": ">=11"
+    "npm": ">=10"
   },
   "scripts": {
     "build": "next build",
