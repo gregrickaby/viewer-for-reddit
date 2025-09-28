@@ -92,8 +92,16 @@ export function validateOrigin(request: NextRequest): boolean {
     const refererHost = parseHostname(referer)
 
     // Exact domain match or legitimate subdomain only
-    const isAllowedDomain = (host: string | null) =>
-      host === allowedHost || (host && host.endsWith(`.${allowedHost}`))
+    const isAllowedDomain = (host: string | null) => {
+      if (!host) return false
+      if (host === allowedHost) return true
+      // Match valid subdomains only: e.g., sub.example.com, but not evil.com.example.com
+      // Subdomain labels: [a-zA-Z0-9-], not starting/ending with hyphen, at least one label
+      const subdomainPattern = new RegExp(
+        `^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+${allowedHost.replace(/\./g, '\\.')}$`
+      )
+      return subdomainPattern.test(host)
+    }
 
     if (isAllowedDomain(originHost) || isAllowedDomain(refererHost)) {
       return true

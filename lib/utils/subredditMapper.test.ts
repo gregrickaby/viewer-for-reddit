@@ -15,7 +15,8 @@ describe('subredditMapper', () => {
       over18: true,
       value: 'r/foo',
       subscribers: 42,
-      public_description: 'desc'
+      public_description: 'desc',
+      fromSearch: true
     })
   })
 
@@ -62,7 +63,8 @@ describe('subredditMapper', () => {
       over18: false,
       value: 'r/',
       subscribers: 0,
-      public_description: ''
+      public_description: '',
+      fromSearch: true
     })
   })
 })

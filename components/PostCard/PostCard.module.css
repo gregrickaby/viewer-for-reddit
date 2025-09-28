@@ -23,12 +23,21 @@
   }
 }
 
+.link {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: hover;
+    color: var(--mantine-color-text);
+  }
+}
+
 .title {
   color: var(--mantine-color-text);
 
   &:hover {
     color: var(--mantine-color-red);
-    text-decoration: none;
+    text-decoration: underline;
   }
 }
 

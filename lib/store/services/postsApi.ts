@@ -16,6 +16,7 @@ type AutoSubredditAboutResponse =
   components['schemas']['GetSubredditAboutResponse']
 type AutoPopularSubredditsResponse =
   components['schemas']['GetPopularSubredditsResponse']
+type AutoPostCommentsResponse = components['schemas']['GetPostCommentsResponse']
 
 /** Extracted data type for popular subreddit children responses */
 type AutoPopularChildData = NonNullable<
@@ -237,7 +238,9 @@ export const postsApi = createApi({
         const encodedPostId = encodeURIComponent(postId)
         return `/r/${encodedSubreddit}/comments/${encodedPostId}.json?${params.toString()}`
       },
-      transformResponse: (response: any): AutoPostChildData => {
+      transformResponse: (
+        response: AutoPostCommentsResponse
+      ): AutoPostChildData => {
         // Reddit returns [postListing, commentsListing] array for single post requests
         if (!Array.isArray(response) || response.length === 0) {
           throw new Error('Invalid single post response format')

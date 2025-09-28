@@ -192,11 +192,14 @@ export const singlePostNoCommentsMock: DeepPartial<
       children: [
         {
           kind: 't3',
-          data: {
-            ...singlePostMock[0]?.data?.children?.[0]?.data,
-            id: 'nocomments',
-            name: 't3_nocomments'
-          }
+          data: (() => {
+            const baseData = singlePostMock[0]?.data?.children?.[0]?.data
+            return {
+              ...baseData,
+              id: 'nocomments',
+              name: 't3_nocomments'
+            }
+          })()
         }
       ]
     }
