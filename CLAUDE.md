@@ -61,7 +61,7 @@ npm run typegen:validate  # Validate OpenAPI specification
 
 **Next.js App Router Structure:**
 
-```
+```text
 app/(default)/              # Route group for main pages
 ├── page.tsx               # Homepage (/)
 ├── r/[slug]/page.tsx      # Subreddit pages (/r/pics)
@@ -71,7 +71,7 @@ app/(default)/              # Route group for main pages
 
 **Component Structure (One per folder):**
 
-```
+```text
 components/ComponentName/
 ├── ComponentName.tsx           # Main component
 ├── ComponentName.module.css    # Styles
@@ -142,7 +142,7 @@ This is a **test-driven codebase**. Tests should be written/updated alongside co
 - For complex interaction flows
 - To validate responsive design changes
 
-## Development Workflow
+## Code Quality & Validation
 
 ### Validation Gate (Required for Code Changes)
 
@@ -186,17 +186,20 @@ npm run dev               # Start development server
 **Step-by-Step Process:**
 
 1. **Create GitHub Issue**
+
    ```bash
    gh issue create --title "Feature: description" --body "Detailed requirements..."
    ```
 
 2. **Create Feature Branch**
+
    ```bash
    git checkout -b {ticket-number}-{feature-name}
    # Example: git checkout -b 621-display-single-posts
    ```
 
 3. **Development Process**
+
    ```bash
    # Always format before committing to avoid pre-commit hook amendments
    npm run format
@@ -211,6 +214,7 @@ npm run dev               # Start development server
    ```
 
 4. **Commit and Push**
+
    ```bash
    git add .
    git commit -m "feat: descriptive commit message
@@ -228,6 +232,7 @@ npm run dev               # Start development server
    ```
 
 5. **Create Pull Request**
+
    ```bash
    gh pr create --title "feat: description" --body "Summary and test plan"
    ```
@@ -238,6 +243,7 @@ npm run dev               # Start development server
    - Address any review feedback and push updates
 
 **Important Notes:**
+
 - Always run `npm run format` before committing to avoid amendment cycles
 - Use conventional commit format: `feat:`, `fix:`, `refactor:`, etc.
 - Include issue number: `Fixes #123`
