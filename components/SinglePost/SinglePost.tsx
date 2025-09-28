@@ -128,7 +128,7 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
         </Group>
 
         {/* Post content */}
-        <PostCard post={post} useInternalRouting={false} />
+        <PostCard post={post} />
 
         {/* Comments section */}
         <Card padding="md" radius="md" shadow="sm" withBorder>

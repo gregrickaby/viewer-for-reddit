@@ -1,11 +1,9 @@
 import {SinglePost} from '@/components/SinglePost/SinglePost'
 import type {Metadata} from 'next'
 
+// Try using Next.js official PageProps helper
 export interface SinglePostPageProps {
-  params: Promise<{
-    subreddit: string
-    postId: string
-  }>
+  params: Promise<{subreddit: string; postId: string}>
 }
 
 /**
