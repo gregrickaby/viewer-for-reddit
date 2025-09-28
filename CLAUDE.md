@@ -181,6 +181,68 @@ npm run dev               # Start development server
 5. Run validation gate
 6. Use Playwright MCP for visual verification
 
+### GitHub Workflow (Required for Feature Development)
+
+**Step-by-Step Process:**
+
+1. **Create GitHub Issue**
+   ```bash
+   gh issue create --title "Feature: description" --body "Detailed requirements..."
+   ```
+
+2. **Create Feature Branch**
+   ```bash
+   git checkout -b {ticket-number}-{feature-name}
+   # Example: git checkout -b 621-display-single-posts
+   ```
+
+3. **Development Process**
+   ```bash
+   # Always format before committing to avoid pre-commit hook amendments
+   npm run format
+
+   # Run validation gate
+   npm run lint
+   npm run typecheck
+   npm run test
+
+   # Validate with Playwright if UI changes
+   npm run dev  # Use Playwright MCP to test functionality
+   ```
+
+4. **Commit and Push**
+   ```bash
+   git add .
+   git commit -m "feat: descriptive commit message
+
+   Fixes #{issue-number}
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>"
+
+   # If pre-commit hooks modify files, amend the commit
+   git add . && git commit --amend --no-edit
+
+   git push -u origin {branch-name}
+   ```
+
+5. **Create Pull Request**
+   ```bash
+   gh pr create --title "feat: description" --body "Summary and test plan"
+   ```
+
+6. **Request Code Review**
+   - Claude Code will automatically review the PR on GitHub
+   - Coolify will generate ephemeral environment for testing
+   - Address any review feedback and push updates
+
+**Important Notes:**
+- Always run `npm run format` before committing to avoid amendment cycles
+- Use conventional commit format: `feat:`, `fix:`, `refactor:`, etc.
+- Include issue number: `Fixes #123`
+- Test in ephemeral environment before merging
+
 ## Environment Setup
 
 ### Prerequisites
