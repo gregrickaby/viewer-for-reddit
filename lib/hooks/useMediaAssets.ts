@@ -1,6 +1,6 @@
 'use client'
 
-import type {AutoPostChildData} from '@/lib/store/services/redditApi'
+import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {useMemo} from 'react'
 

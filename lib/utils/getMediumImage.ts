@@ -1,4 +1,4 @@
-import type {AutoPostWithMedia} from '@/lib/store/services/redditApi'
+import type {AutoPostWithMedia} from '@/lib/store/services/postsApi'
 
 // Extract the resolution type from auto-generated schema
 type ImageResolution = NonNullable<AutoPostWithMedia['preview']>['images']

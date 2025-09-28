@@ -1,8 +1,8 @@
+import {useGetUserCommentsInfiniteQuery} from '@/lib/store/services/commentsApi'
 import {
-  useGetUserCommentsInfiniteQuery,
   useGetUserPostsInfiniteQuery,
   useGetUserProfileQuery
-} from '@/lib/store/services/redditApi'
+} from '@/lib/store/services/userApi'
 import {renderHook} from '@/test-utils'
 import {waitFor} from '@testing-library/react'
 

@@ -1,24 +1,13 @@
 import {
   useGetPopularSubredditsQuery,
+  useGetSinglePostQuery,
   useGetSubredditAboutQuery,
   useGetSubredditPostsInfiniteQuery,
-  useGetSinglePostQuery,
-  useLazyGetSubredditAboutQuery,
-  useSearchSubredditsQuery
-} from '@/lib/store/services/redditApi'
+  useLazyGetSubredditAboutQuery
+} from '@/lib/store/services/postsApi'
 import {renderHook, waitFor} from '@/test-utils'
 
-describe('redditApi', () => {
-  it('should handle empty search results', async () => {
-    const {result} = renderHook(() =>
-      useSearchSubredditsQuery({query: 'notarealsubreddit', enableNsfw: false})
-    )
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-    })
-    expect(result.current.data?.length).toBe(0)
-  })
-
+describe('postsApi', () => {
   it('should handle getSubredditAbout error', async () => {
     const {result} = renderHook(() =>
       useGetSubredditAboutQuery('notarealsubreddit')
@@ -50,32 +39,6 @@ describe('redditApi', () => {
     const pages = result.current.data?.pages ?? []
     expect(pages.length).toBeGreaterThan(0)
     expect(pages[0]?.data?.children?.length).toBe(0)
-  })
-
-  it('should search subreddits', async () => {
-    const {result} = renderHook(() =>
-      useSearchSubredditsQuery({query: 'aww', enableNsfw: false})
-    )
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-    })
-
-    expect(result.current.data?.length).toBeGreaterThan(0)
-    expect(result.current.data?.[0]?.display_name).toBe('aww')
-  })
-
-  it('should search subreddits with NSFW enabled', async () => {
-    const {result} = renderHook(() =>
-      useSearchSubredditsQuery({query: 'aww', enableNsfw: true})
-    )
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-    })
-
-    expect(result.current.data?.length).toBeGreaterThan(0)
-    expect(result.current.data?.[0]?.display_name).toBe('aww')
   })
 
   it('should fetch subreddit about data', async () => {
@@ -182,19 +145,6 @@ describe('redditApi', () => {
     expect(result.current.data).toBeDefined()
   })
 
-  it('should handle transform response for search results', async () => {
-    const {result} = renderHook(() =>
-      useSearchSubredditsQuery({query: 'aww', enableNsfw: false})
-    )
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-    })
-
-    expect(Array.isArray(result.current.data)).toBe(true)
-    expect(result.current.data?.[0]).toHaveProperty('display_name')
-  })
-
   it('should handle transform response for popular subreddits', async () => {
     const {result} = renderHook(() => useGetPopularSubredditsQuery({limit: 25}))
 
@@ -286,20 +236,13 @@ describe('redditApi', () => {
       })
 
       expect(result.current.data).toBeDefined()
-      expect(result.current.data?.post).toBeDefined()
-      expect(result.current.data?.comments).toBeDefined()
 
-      // Verify post structure
-      const post = result.current.data?.post
+      // Verify post structure - getSinglePost now returns just the post data
+      const post = result.current.data
       expect(post?.id).toBe('abc123')
       expect(post?.subreddit).toBe('programming')
       expect(post?.title).toBeDefined()
       expect(post?.author).toBeDefined()
-
-      // Verify comments are filtered (AutoModerator comments removed)
-      const comments = result.current.data?.comments ?? []
-      expect(comments.length).toBe(2) // AutoModerator comment should be filtered out
-      expect(comments.some((c) => c.author === 'AutoModerator')).toBe(false)
     })
 
     it('should handle single post with no comments', async () => {
@@ -311,8 +254,9 @@ describe('redditApi', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(result.current.data?.post).toBeDefined()
-      expect(result.current.data?.comments).toEqual([])
+      // For posts with no comments, we still get the post data
+      expect(result.current.data).toBeDefined()
+      expect(result.current.data?.id).toBe('nocomments')
     })
 
     it('should handle 404 error for non-existent post', async () => {
@@ -351,9 +295,9 @@ describe('redditApi', () => {
       })
 
       // Even though the handler might return empty comments for limit=0,
-      // we still expect the post data to be present
-      expect(result.current.data?.post).toBeDefined()
-      expect(result.current.data?.comments).toBeDefined()
+      // we still expect the post data to be present (comments are handled separately now)
+      expect(result.current.data).toBeDefined()
+      expect(result.current.data?.id).toBe('abc123')
     })
 
     it('should properly encode subreddit and post ID parameters', async () => {

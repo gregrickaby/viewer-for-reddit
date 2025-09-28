@@ -12,10 +12,8 @@ import {
   setSearchQuery
 } from '@/lib/store/features/transientSlice'
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
-import {
-  useGetPopularSubredditsQuery,
-  useSearchSubredditsQuery
-} from '@/lib/store/services/redditApi'
+import {useGetPopularSubredditsQuery} from '@/lib/store/services/postsApi'
+import {useSearchSubredditsQuery} from '@/lib/store/services/searchApi'
 import type {SubredditItem} from '@/lib/types'
 import {fromSearch} from '@/lib/utils/subredditMapper'
 import {useDebouncedValue, useMediaQuery} from '@mantine/hooks'

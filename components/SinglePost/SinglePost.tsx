@@ -2,7 +2,7 @@
 
 import {Comments} from '@/components/Comments/Comments'
 import {PostCard} from '@/components/PostCard/PostCard'
-import {useGetSinglePostQuery} from '@/lib/store/services/redditApi'
+import {useGetSinglePostQuery} from '@/lib/store/services/postsApi'
 import {
   Alert,
   Card,
@@ -112,7 +112,7 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
     )
   }
 
-  const {post} = data
+  const post = data
 
   return (
     <Container size="md">

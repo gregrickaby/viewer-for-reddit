@@ -16,7 +16,7 @@
 - **Linting**: ESLint with Mantine config
 - **State Management**: Redux Toolkit + RTK Query
 - **Testing**: Vitest + React Testing Library + MSW v2
-- **TypeScript**: Strict mode enabled
+- **TypeScript**: Strict mode enabled. Never use `any` type
 
 ## Core Development Commands
 

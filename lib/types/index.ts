@@ -42,6 +42,7 @@ export interface SubredditItem {
   public_description?: string
   subscribers: number
   value: string
+  fromSearch?: boolean // Flag to indicate this item came from search results
 }
 
 /**

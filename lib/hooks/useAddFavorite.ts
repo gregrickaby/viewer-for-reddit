@@ -2,7 +2,7 @@
 
 import {toggleFavoriteSubreddit} from '@/lib/store/features/settingsSlice'
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
-import {useLazyGetSubredditAboutQuery} from '@/lib/store/services/redditApi'
+import {useLazyGetSubredditAboutQuery} from '@/lib/store/services/postsApi'
 import {logError} from '@/lib/utils/logError'
 import {notifications} from '@mantine/notifications'
 import {useState} from 'react'

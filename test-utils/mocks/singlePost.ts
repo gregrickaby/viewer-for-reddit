@@ -181,8 +181,26 @@ export const singlePostNotFoundMock = {
 export const singlePostNoCommentsMock: DeepPartial<
   [Record<string, any>, Record<string, any>]
 > = [
-  // Post listing (same as above)
-  singlePostMock[0],
+  // Post listing with different ID
+  {
+    kind: 'Listing',
+    data: {
+      after: null,
+      dist: 1,
+      modhash: '',
+      geo_filter: null,
+      children: [
+        {
+          kind: 't3',
+          data: {
+            ...singlePostMock[0]?.data?.children?.[0]?.data,
+            id: 'nocomments',
+            name: 't3_nocomments'
+          }
+        }
+      ]
+    }
+  },
   // Empty comments listing
   {
     kind: 'Listing',

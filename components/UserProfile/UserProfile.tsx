@@ -1,11 +1,11 @@
 'use client'
 
 import {PostCard} from '@/components/PostCard/PostCard'
+import {useGetUserCommentsInfiniteQuery} from '@/lib/store/services/commentsApi'
 import {
-  useGetUserCommentsInfiniteQuery,
   useGetUserPostsInfiniteQuery,
   useGetUserProfileQuery
-} from '@/lib/store/services/redditApi'
+} from '@/lib/store/services/userApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
 import {

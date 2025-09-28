@@ -1,6 +1,9 @@
 import {settingsSlice} from '@/lib/store/features/settingsSlice'
 import {transientSlice} from '@/lib/store/features/transientSlice'
-import {redditApi} from '@/lib/store/services/redditApi'
+import {commentsApi} from '@/lib/store/services/commentsApi'
+import {postsApi} from '@/lib/store/services/postsApi'
+import {searchApi} from '@/lib/store/services/searchApi'
+import {userApi} from '@/lib/store/services/userApi'
 import {
   combineSlices,
   configureStore,
@@ -10,7 +13,14 @@ import {
 import {setupListeners} from '@reduxjs/toolkit/query'
 
 // Combine all slices into a single reducer function.
-const rootReducer = combineSlices(redditApi, settingsSlice, transientSlice)
+const rootReducer = combineSlices(
+  postsApi,
+  searchApi,
+  commentsApi,
+  userApi,
+  settingsSlice,
+  transientSlice
+)
 
 // Infer the `RootState` type from the root reducer.
 export type RootState = ReturnType<typeof rootReducer>
@@ -27,7 +37,11 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
   const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(redditApi.middleware),
+      getDefaultMiddleware()
+        .concat(postsApi.middleware)
+        .concat(searchApi.middleware)
+        .concat(commentsApi.middleware)
+        .concat(userApi.middleware),
     preloadedState
   })
   setupListeners(store.dispatch)

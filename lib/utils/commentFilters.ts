@@ -1,7 +1,7 @@
 import type {
   AutoCommentData,
   AutoCommentWithText
-} from '@/lib/store/services/redditApi'
+} from '@/lib/store/services/commentsApi'
 
 /**
  * Content filtering constants for Reddit comments

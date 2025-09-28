@@ -1,6 +1,6 @@
 import {Comments} from '@/components/Comments/Comments'
 import {Media} from '@/components/Media/Media'
-import type {AutoPostChildData} from '@/lib/store/services/redditApi'
+import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {parsePostLink} from '@/lib/utils/parsePostLink'

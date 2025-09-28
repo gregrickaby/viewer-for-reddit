@@ -42,8 +42,10 @@ function baseSubredditItem(input: {
   }
 }
 
-export const fromSearch = (sub: AutoSearchChildData): SubredditItem =>
-  baseSubredditItem(sub)
+export const fromSearch = (sub: AutoSearchChildData): SubredditItem => ({
+  ...baseSubredditItem(sub),
+  fromSearch: true
+})
 
 export const fromPopular = (sub: AutoPopularChildData): SubredditItem =>
   baseSubredditItem(sub)

@@ -4,7 +4,7 @@ import {
   useGetPostCommentsPagesInfiniteQuery,
   useLazyGetPostCommentsQuery,
   type AutoCommentData
-} from '@/lib/store/services/redditApi'
+} from '@/lib/store/services/commentsApi'
 import {extractAndFilterComments} from '@/lib/utils/commentFilters'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
