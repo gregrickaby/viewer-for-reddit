@@ -99,8 +99,14 @@ describe('SinglePost', () => {
       expect(screen.queryByText('Loading post...')).not.toBeInTheDocument()
     })
 
-    // Check for comment scores (25 points for first comment)
-    expect(screen.getByText('25')).toBeInTheDocument()
+    // Wait for comments to load via infinite query
+    await waitFor(
+      () => {
+        // Check for comment scores (25 points for first comment)
+        expect(screen.getByText('25')).toBeInTheDocument()
+      },
+      {timeout: 5000}
+    )
   })
 
   it('should handle HTML content in comments safely', async () => {
@@ -110,11 +116,17 @@ describe('SinglePost', () => {
       expect(screen.queryByText('Loading post...')).not.toBeInTheDocument()
     })
 
-    // Comments should render with HTML content
-    const commentElements = screen.getAllByText(
-      /Great post|Not another JavaScript/
+    // Wait for comments to load via infinite query
+    await waitFor(
+      () => {
+        // Comments should render with HTML content
+        const commentElements = screen.getAllByText(
+          /Great post|Not another JavaScript/
+        )
+        expect(commentElements).toHaveLength(2)
+      },
+      {timeout: 5000}
     )
-    expect(commentElements).toHaveLength(2)
   })
 
   it('should not show inline comments toggle in SinglePost view', async () => {

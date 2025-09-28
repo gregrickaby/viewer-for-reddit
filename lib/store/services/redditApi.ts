@@ -358,7 +358,58 @@ export const redditApi = createApi({
     }),
 
     /**
-     * Fetches comments for a specific Reddit post.
+     * Fetches comments for a specific Reddit post with infinite loading support.
+     *
+     * Enables loading more comments beyond the initial limit through pagination.
+     * This allows users to access all available comments (e.g., all 600+ comments
+     * instead of just the first 25).
+     *
+     * Key features:
+     * - Infinite pagination using Reddit's "after" cursor
+     * - Confidence sorting for best comments first
+     * - Automatic AutoModerator comment filtering
+     * - Memory-efficient with page limits
+     * - Processes nested comment threads
+     *
+     * @param {string} permalink - The Reddit post permalink (e.g., "/r/programming/comments/abc123/title/")
+     *
+     * @returns {AutoPostCommentsResponse} Comments response with pagination support
+     *
+     * @example
+     * // Fetch comments with infinite loading
+     * const {data, fetchNextPage, hasNextPage} = useGetPostCommentsPagesInfiniteQuery('/r/programming/comments/abc123/title/')
+     */
+    getPostCommentsPages: builder.infiniteQuery<
+      AutoPostCommentsResponse,
+      string,
+      string | undefined
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: undefined,
+        getNextPageParam: (lastPage) => {
+          // For comments, we need to check if there are more comments to load
+          // Reddit comments API returns an array with [post, comments]
+          const commentsListing = Array.isArray(lastPage)
+            ? lastPage[1]
+            : lastPage
+          return commentsListing?.data?.after ?? undefined
+        },
+        getPreviousPageParam: () => undefined,
+        maxPages: 20 // Allow more pages for comments than posts
+      },
+      query({queryArg: permalink, pageParam}) {
+        const params = new URLSearchParams({
+          limit: String(100), // Increase limit to get more comments
+          sort: 'confidence', // Use confidence sorting for best comments first
+          ...(pageParam && {after: pageParam})
+        })
+        return `${permalink}.json?${params.toString()}`
+      },
+      transformResponse: (response: AutoPostCommentsResponse) => response
+    }),
+
+    /**
+     * Fetches comments for a specific Reddit post (legacy single request).
      *
      * Retrieves and processes comments from a post's permalink, automatically filtering
      * out AutoModerator comments and handling Reddit's dual response format. The API
@@ -589,6 +640,7 @@ export const {
   useGetSubredditAboutQuery,
   useGetPopularSubredditsQuery,
   useGetSubredditPostsInfiniteQuery,
+  useGetPostCommentsPagesInfiniteQuery,
   useLazyGetPostCommentsQuery,
   useLazyGetSubredditAboutQuery,
   useGetUserProfileQuery,

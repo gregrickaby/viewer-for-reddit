@@ -112,7 +112,7 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
     )
   }
 
-  const {post, comments} = data
+  const {post} = data
 
   return (
     <Container size="md">
@@ -134,29 +134,15 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
         <Card padding="md" radius="md" shadow="sm" withBorder>
           <Stack gap="md">
             <Title order={3} size="lg">
-              Comments ({comments.length})
+              Comments
             </Title>
 
-            {comments.length === 0 ? (
-              <Text c="dimmed" ta="center" py="xl">
-                No comments yet. Be the first to comment on{' '}
-                <Link
-                  href={`https://reddit.com${post.permalink}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View original post on Reddit
-                </Link>
-                !
-              </Text>
-            ) : (
-              <Comments
-                permalink={post.permalink || ''}
-                postLink={`https://reddit.com${post.permalink || ''}`}
-                open
-                comments={comments}
-              />
-            )}
+            <Comments
+              permalink={post.permalink || ''}
+              postLink={`https://reddit.com${post.permalink || ''}`}
+              open
+              enableInfiniteLoading
+            />
           </Stack>
         </Card>
       </Stack>
