@@ -82,15 +82,31 @@ describe('Reddit API Route', () => {
       expect(data).toEqual({error: 'Forbidden'})
     })
 
-    it('should allow requests from allowed origin in production', async () => {
+    it('should allow requests from allowed domain in production', async () => {
       vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('PRODUCTION_URL', 'https://example.com')
+      vi.stubEnv('ALLOWED_HOST', 'reddit-viewer.com')
 
       const request = new NextRequest(
         'http://localhost:3000/api/reddit?path=/test',
         {
           headers: {
-            origin: 'https://example.com'
+            origin: 'https://reddit-viewer.com'
+          }
+        }
+      )
+      const response = await GET(request)
+      expect(response.status).toBe(200)
+    })
+
+    it('should allow requests from preview deployment subdomains', async () => {
+      vi.stubEnv('NODE_ENV', 'production')
+      vi.stubEnv('ALLOWED_HOST', 'reddit-viewer.com')
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/reddit?path=/test',
+        {
+          headers: {
+            origin: 'https://preview-branch-123.reddit-viewer.com'
           }
         }
       )
@@ -100,7 +116,7 @@ describe('Reddit API Route', () => {
 
     it('should block requests from unauthorized origins in production', async () => {
       vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('PRODUCTION_URL', 'https://example.com')
+      vi.stubEnv('ALLOWED_HOST', 'reddit-viewer.com')
 
       const request = new NextRequest(
         'http://localhost:3000/api/reddit?path=/test',
