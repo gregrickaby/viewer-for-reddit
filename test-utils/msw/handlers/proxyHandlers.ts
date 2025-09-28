@@ -91,6 +91,10 @@ async function handlePostComments(path: string): Promise<Response | null> {
       return new HttpResponse(null, {status: 403})
     }
 
+    if (subreddit === 'error') {
+      return new HttpResponse(null, {status: 500})
+    }
+
     if (postId === 'nocomments') {
       const {singlePostNoCommentsMock} = await import('../../mocks/singlePost')
       return HttpResponse.json(singlePostNoCommentsMock)

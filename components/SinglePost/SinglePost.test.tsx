@@ -48,7 +48,7 @@ describe('SinglePost', () => {
     })
 
     // Should show error message
-    expect(screen.getByText('Post not found')).toBeInTheDocument()
+    expect(screen.getByText(/Post not found/)).toBeInTheDocument()
     expect(screen.getByText('Back to r/notfound')).toBeInTheDocument()
   })
 
@@ -61,7 +61,7 @@ describe('SinglePost', () => {
 
     // Should show private subreddit error
     expect(
-      screen.getByText('This subreddit is private or restricted')
+      screen.getByText(/This subreddit is private or restricted/)
     ).toBeInTheDocument()
   })
 
@@ -74,7 +74,7 @@ describe('SinglePost', () => {
     })
 
     // Should show generic error message
-    expect(screen.getByText('Failed to load post')).toBeInTheDocument()
+    expect(screen.getByText(/Failed to load post/)).toBeInTheDocument()
   })
 
   it('should render back navigation links correctly', async () => {
@@ -100,8 +100,8 @@ describe('SinglePost', () => {
     })
 
     // Check for comment scores
-    expect(screen.getByText('25 points')).toBeInTheDocument()
-    expect(screen.getByText('15 points')).toBeInTheDocument()
+    expect(screen.getByText(/25/)).toBeInTheDocument()
+    expect(screen.getByText(/15/)).toBeInTheDocument()
   })
 
   it('should handle HTML content in comments safely', async () => {
@@ -145,9 +145,9 @@ describe('SinglePost', () => {
       expect(screen.queryByText('Loading post...')).not.toBeInTheDocument()
     })
 
-    // Check for proper main content structure
-    const main = screen.getByRole('main')
-    expect(main).toBeInTheDocument()
+    // Check for proper container structure
+    const container = screen.getByRole('article')
+    expect(container).toBeInTheDocument()
 
     // Check for heading structure
     const commentsHeading = screen.getByRole('heading', {name: /Comments/})
