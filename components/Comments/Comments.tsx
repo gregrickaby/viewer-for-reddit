@@ -26,8 +26,8 @@ import {
 } from '@mantine/core'
 import {useEffect, useMemo} from 'react'
 import {BiSolidUpvote} from 'react-icons/bi'
-import classes from './Comments.module.css'
 import {CommentItem} from './CommentItem'
+import classes from './Comments.module.css'
 
 interface CommentsProps {
   permalink: string
