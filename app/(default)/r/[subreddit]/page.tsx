@@ -2,25 +2,25 @@ import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
 import {Posts} from '@/components/Posts/Posts'
 import config from '@/lib/config'
-import type {Params, SearchParams, SortingOption} from '@/lib/types'
+import type {SearchParams, SortingOption, SubredditParams} from '@/lib/types'
 
 /**
  * Generate metadata.
  */
-export async function generateMetadata(props: {params: Params}) {
+export async function generateMetadata(props: {params: SubredditParams}) {
   const params = await props.params
-  const slug = params.slug
+  const subreddit = params.subreddit
 
   return {
-    title: `/r/${slug} - ${config.siteName}`,
-    description: `Browse posts in /r/${slug} anonymously with Viewer for Reddit.`,
+    title: `/r/${subreddit} - ${config.siteName}`,
+    description: `Browse posts in /r/${subreddit} anonymously with Viewer for Reddit.`,
     alternates: {
-      canonical: `${config.siteUrl}r/${slug}`
+      canonical: `${config.siteUrl}r/${subreddit}`
     },
     openGraph: {
-      title: `/r/${slug} - ${config.siteName}`,
-      description: `Posts in /r/${slug}, updated in real time.`,
-      url: `${config.siteUrl}r/${slug}`,
+      title: `/r/${subreddit} - ${config.siteName}`,
+      description: `Posts in /r/${subreddit}, updated in real time.`,
+      url: `${config.siteUrl}r/${subreddit}`,
       images: [
         {
           url: `${config.siteUrl}social-share.webp`,
@@ -37,17 +37,17 @@ export async function generateMetadata(props: {params: Params}) {
  * The single subreddit page.
  */
 export default async function Page(props: {
-  params: Params
+  params: SubredditParams
   searchParams: SearchParams
 }) {
   const params = await props.params
-  const slug = params.slug
+  const subreddit = params.subreddit
   const searchParams = await props.searchParams
   const sort = searchParams.sort as SortingOption
 
   return (
     <>
-      <Posts subreddit={slug} sort={sort} />
+      <Posts subreddit={subreddit} sort={sort} />
       <BossButton />
       <BackToTop />
     </>

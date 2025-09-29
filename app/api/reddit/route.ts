@@ -1,49 +1,13 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
+import {validateOrigin} from '@/lib/utils/validateOrigin'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
- * Validates that the request comes from an allowed origin.
- *
- * @param {NextRequest} request - The incoming request object.
- * @returns {boolean} True if the origin is allowed, false otherwise.
- */
-function validateOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get('origin')
-  const referer = request.headers.get('referer')
-
-  // Allow localhost for development and local testing (both dev and production builds)
-  const isLocalhost =
-    origin?.includes('localhost') || referer?.includes('localhost')
-  if (isLocalhost) {
-    return true
-  }
-
-  // In production, check against your domain.
-  const productionUrl = process.env.PRODUCTION_URL
-  if (productionUrl) {
-    if (origin === productionUrl || referer?.startsWith(productionUrl)) {
-      return true
-    }
-  }
-
-  // Log blocked request with structured context
-  logError('Request blocked due to invalid origin', {
-    component: 'redditApiRoute',
-    action: 'validateOrigin',
-    origin: origin || 'none',
-    referer: referer || 'none',
-    nodeEnv: process.env.NODE_ENV,
-    productionUrl: productionUrl || 'not-set'
-  })
-  return false
-}
-
-/**
  * Validates that the provided path is a safe and legal Reddit API path.
+ *
  * @param path The path to validate.
- * @returns {boolean}
  */
 function isSafeRedditPath(path: string): boolean {
   // Must start with exactly one /
@@ -54,9 +18,6 @@ function isSafeRedditPath(path: string): boolean {
   if (path.startsWith('http:') || path.startsWith('https:')) return false
   // Disallow fragments or dangerous characters
   if (path.includes('#')) return false
-  // Optionally allow-list known prefixes (e.g. /r/, /user/, /api/, /subreddits/, etc.)
-  // Example:
-  //    if (!/^\/(r|user|subreddits|api|comments|by_id|message|live|prefs|search|mod)/.test(path)) return false;
   return true
 }
 
@@ -67,7 +28,6 @@ function isSafeRedditPath(path: string): boolean {
  * fetch('/api/reddit?path=/r/programming/hot.json?limit=25')
  *
  * @param {NextRequest} request - The incoming request object.
- * @returns {Promise<NextResponse>} The response from the Reddit API or an error.
  */
 export async function GET(request: NextRequest) {
   // Validate request origin to prevent external abuse

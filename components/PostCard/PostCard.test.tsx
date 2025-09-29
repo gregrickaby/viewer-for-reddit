@@ -57,4 +57,42 @@ describe('PostCard', () => {
     expect(time).toBeInTheDocument()
     expect(time).toHaveAttribute('dateTime', '')
   })
+
+  it('should use internal routing by default', () => {
+    const post: any = {
+      id: 'abc123',
+      subreddit_name_prefixed: 'r/programming',
+      permalink: '/r/programming/comments/abc123/title/',
+      title: 'Test post',
+      preview: {images: [{resolutions: []}]},
+      ups: 10,
+      num_comments: 2
+    }
+
+    render(<PostCard post={post} />)
+
+    const titleLink = screen.getByRole('heading', {level: 2}).closest('a')
+    expect(titleLink).toHaveAttribute('href', '/r/programming/comments/abc123')
+  })
+
+  it('should use external Reddit links when useInternalRouting is false', () => {
+    const post: any = {
+      id: 'abc123',
+      subreddit_name_prefixed: 'r/programming',
+      permalink: '/r/programming/comments/abc123/title/',
+      title: 'Test post',
+      preview: {images: [{resolutions: []}]},
+      ups: 10,
+      num_comments: 2
+    }
+
+    render(<PostCard post={post} useInternalRouting={false} />)
+
+    const titleLink = screen.getByRole('heading', {level: 2}).closest('a')
+    expect(titleLink).toHaveAttribute(
+      'href',
+      'https://reddit.com/r/programming/comments/abc123/title/'
+    )
+    expect(titleLink).toHaveAttribute('target', '_blank')
+  })
 })

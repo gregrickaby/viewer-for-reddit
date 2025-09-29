@@ -4,7 +4,7 @@ import {useAppSelector} from '@/lib/store/hooks'
 import {
   useGetSubredditPostsInfiniteQuery,
   type AutoPostChild
-} from '@/lib/store/services/redditApi'
+} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
 import {useIntersection} from '@mantine/hooks'
 import {useEffect, useMemo} from 'react'

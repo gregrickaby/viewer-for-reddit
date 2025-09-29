@@ -71,7 +71,20 @@ describe('Reddit API Route', () => {
       expect(response.status).toBe(200)
     })
 
+    it('should allow requests without proper origin or referer in development', async () => {
+      vi.stubEnv('NODE_ENV', 'development')
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/reddit?path=/test'
+      )
+      const response = await GET(request)
+
+      expect(response.status).toBe(200)
+    })
+
     it('should block requests without proper origin or referer', async () => {
+      vi.stubEnv('NODE_ENV', 'production')
+
       const request = new NextRequest(
         'http://localhost:3000/api/reddit?path=/test'
       )
@@ -82,15 +95,15 @@ describe('Reddit API Route', () => {
       expect(data).toEqual({error: 'Forbidden'})
     })
 
-    it('should allow requests from allowed origin in production', async () => {
+    it('should allow requests from Coolify FQDN in production', async () => {
       vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('PRODUCTION_URL', 'https://example.com')
+      vi.stubEnv('COOLIFY_FQDN', 'pr-123.example.com')
 
       const request = new NextRequest(
-        'http://localhost:3000/api/reddit?path=/test',
+        'https://pr-123.example.com/api/reddit?path=/test',
         {
           headers: {
-            origin: 'https://example.com'
+            origin: 'https://pr-123.example.com'
           }
         }
       )
@@ -100,7 +113,6 @@ describe('Reddit API Route', () => {
 
     it('should block requests from unauthorized origins in production', async () => {
       vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('PRODUCTION_URL', 'https://example.com')
 
       const request = new NextRequest(
         'http://localhost:3000/api/reddit?path=/test',

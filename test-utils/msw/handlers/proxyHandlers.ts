@@ -75,47 +75,43 @@ function handleUserComments(path: string): Response | null {
  */
 async function handlePostComments(path: string): Promise<Response | null> {
   // Post comments (from subreddit permalink with .json)
-  const postCommentsRegex = /^\/r\/.+\/comments\/[^/]+(?:\/[^/]*)?\.json$/
+  const postCommentsRegex = /^\/r\/(.+)\/comments\/([^/]+)(?:\/[^/]*)?\.json$/
   const pathWithoutQuery = path.split('?')[0]
-  if (postCommentsRegex.test(pathWithoutQuery)) {
-    const {postCommentsMock} = await import('../../mocks/postComments')
-    return HttpResponse.json(postCommentsMock)
+  const match = postCommentsRegex.exec(pathWithoutQuery)
+
+  if (match) {
+    const [, subreddit, postId] = match
+
+    // Handle test cases for single post endpoint
+    if (subreddit === 'notfound' || postId === 'notfound') {
+      return new HttpResponse(null, {status: 404})
+    }
+
+    if (subreddit === 'private') {
+      return new HttpResponse(null, {status: 403})
+    }
+
+    if (subreddit === 'error') {
+      return new HttpResponse(null, {status: 500})
+    }
+
+    if (postId === 'nocomments') {
+      const {singlePostNoCommentsMock} = await import('../../mocks/singlePost')
+      return HttpResponse.json(singlePostNoCommentsMock)
+    }
+
+    // Use the new single post mock for better test data
+    const {singlePostMock} = await import('../../mocks/singlePost')
+    return HttpResponse.json(singlePostMock)
   }
 
   // Post comments (general pattern for comments pages)
   const commentsRegex = /^\/r\/[^/]+\/comments\/[^/]+/
   if (commentsRegex.exec(path)) {
-    const commentsListing = {
-      kind: 'Listing',
-      data: {
-        after: null,
-        dist: 2,
-        modhash: '',
-        geo_filter: '',
-        children: [
-          {
-            kind: 't1',
-            data: {
-              id: 'comment1',
-              author: 'testuser',
-              body: 'First comment',
-              body_html:
-                '&lt;div class="md"&gt;&lt;p&gt;First comment&lt;/p&gt;&lt;/div&gt;'
-            }
-          },
-          {
-            kind: 't1',
-            data: {
-              id: 'comment2',
-              author: 'anotheruser',
-              body: 'Second comment with a link',
-              body_html:
-                '&lt;div class="md"&gt;&lt;p&gt;Second comment with a &lt;a href="https://example.com"&gt;link&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;'
-            }
-          }
-        ]
-      }
-    }
+    // Use the same comments data as the singlePostMock to ensure test consistency
+    const {singlePostMock} = await import('../../mocks/singlePost')
+    // Extract just the comments listing (second element of the array)
+    const commentsListing = singlePostMock[1]
     return HttpResponse.json([{}, commentsListing])
   }
   return null

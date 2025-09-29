@@ -28,9 +28,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
-      - name: Upgrade npm to v11
-        run: npm install -g npm@11
-
       - name: Install Dependencies
         run: npm i
 

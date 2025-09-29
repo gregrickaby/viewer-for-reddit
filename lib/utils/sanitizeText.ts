@@ -58,14 +58,23 @@ const HTML_ENTITY_MAP: Record<string, string> = {
 /**
  * Sanitizes text content while preserving safe HTML markup.
  *
- * @param text - The text content to sanitize
- * @returns Sanitized text with safe HTML tags preserved
+ * Removes potentially dangerous HTML elements and attributes while preserving
+ * safe formatting like paragraphs, links, lists, and basic text styling.
+ * Uses the sanitize-html library with a predefined allowlist of safe elements.
+ *
+ * @param text - The text content to sanitize (may contain HTML)
+ * @returns Sanitized text with only safe HTML tags preserved
  *
  * @example
- * ```ts
+ * ```typescript
  * const clean = sanitizeText('<p>Hello <script>alert("xss")</script></p>')
  * // Returns: '<p>Hello </p>'
  * ```
+ *
+ * @security
+ * - Removes dangerous tags like script, iframe, object
+ * - Filters attributes to prevent JavaScript injection
+ * - Enables entity decoding for proper text display
  */
 export function sanitizeText(text: string): string {
   return sanitizeHtml(text || '', BASE_OPTIONS)
@@ -74,8 +83,18 @@ export function sanitizeText(text: string): string {
 /**
  * Decodes HTML entities manually for cross-environment compatibility.
  *
+ * Provides a lightweight HTML entity decoder that works consistently across
+ * browser and server environments. Handles the most common entities returned
+ * by Reddit's API without requiring a full DOM parser.
+ *
  * @param str - String containing HTML entities to decode
- * @returns String with HTML entities decoded
+ * @returns String with HTML entities converted to their character equivalents
+ *
+ * @example
+ * ```typescript
+ * const decoded = decodeHtmlEntities('&lt;Hello &amp; goodbye&gt;')
+ * // Returns: '<Hello & goodbye>'
+ * ```
  */
 export function decodeHtmlEntities(str: string): string {
   return str.replace(
@@ -87,15 +106,26 @@ export function decodeHtmlEntities(str: string): string {
 /**
  * Decodes Reddit's double-encoded HTML and sanitizes it for safe DOM insertion.
  *
+ * Reddit's API returns HTML content that is double-encoded (HTML entities are
+ * encoded again). This function first decodes the entities back to HTML,
+ * then sanitizes the resulting HTML for safe browser rendering. All links
+ * are automatically configured to open in new tabs with security attributes.
+ *
  * @param encodedHtml - Double-encoded HTML string from Reddit API (e.g., `body_html`)
  * @returns Sanitized HTML string safe for dangerouslySetInnerHTML
  *
  * @example
- * ```ts
+ * ```typescript
  * const redditHtml = '&lt;p&gt;Check out &lt;a href="https://example.com"&gt;this link&lt;/a&gt;&lt;/p&gt;'
  * const safe = decodeAndSanitizeHtml(redditHtml)
  * // Returns: '<p>Check out <a href="https://example.com" target="_blank" rel="noopener noreferrer">this link</a></p>'
  * ```
+ *
+ * @security
+ * - Decodes double-encoded HTML entities from Reddit API
+ * - Applies comprehensive HTML sanitization
+ * - Forces all links to open in new tabs with security attributes
+ * - Prevents XSS attacks through malicious HTML content
  */
 export function decodeAndSanitizeHtml(encodedHtml: string): string {
   if (!encodedHtml) return ''

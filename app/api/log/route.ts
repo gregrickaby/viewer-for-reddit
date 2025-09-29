@@ -1,10 +1,41 @@
 import {logError} from '@/lib/utils/logError'
+import {validateOrigin} from '@/lib/utils/validateOrigin'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
- * API endpoint to receive client-side logs and log them server-side
+ * Client-Side Logging API Endpoint
+ *
+ * Receives structured log messages from client-side applications and processes them
+ * server-side for centralized logging, monitoring, and debugging purposes.
+ *
+ * @example
+ * ```ts
+ * // Client-side usage with our logging utilities
+ * import { logClientError, logClientInfo } from '@/lib/utils/clientLogger'
+ *
+ * // Log an error with context
+ * try {
+ *   const userData = await fetchUserData(userId)
+ * } catch (error) {
+ *   logClientError('Failed to load user data', {
+ *     component: 'UserProfile',
+ *     action: 'fetchUserData',
+ *     userId: '12345',
+ *     error: error.message,
+ *     stackTrace: error.stack
+ *   })
+ * }
+ * ```
+ *
+ * @param request - Next.js request object containing the log payload
+ * @returns JSON response indicating success or failure
  */
 export async function POST(request: NextRequest) {
+  // Validate request origin to prevent external log injection attacks
+  if (!validateOrigin(request)) {
+    return NextResponse.json({error: 'Forbidden'}, {status: 403})
+  }
+
   try {
     const body = await request.json()
 

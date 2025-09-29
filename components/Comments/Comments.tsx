@@ -1,13 +1,16 @@
 'use client'
 
 import {
+  useGetPostCommentsPagesInfiniteQuery,
   useLazyGetPostCommentsQuery,
   type AutoCommentData
-} from '@/lib/store/services/redditApi'
+} from '@/lib/store/services/commentsApi'
+import {extractAndFilterComments} from '@/lib/utils/commentFilters'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
 import {
   Anchor,
+  Button,
   Card,
   Center,
   Group,
@@ -15,7 +18,7 @@ import {
   NumberFormatter,
   Text
 } from '@mantine/core'
-import {useEffect} from 'react'
+import {useEffect, useMemo} from 'react'
 import {BiSolidUpvote} from 'react-icons/bi'
 import classes from './Comments.module.css'
 
@@ -23,19 +26,76 @@ interface CommentsProps {
   permalink: string
   postLink: string
   open: boolean
+  comments?: AutoCommentData[]
+  enableInfiniteLoading?: boolean
 }
 
-export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
-  const [fetchComments, {data: comments, isLoading}] =
+export function Comments({
+  permalink,
+  postLink,
+  open,
+  comments: providedComments,
+  enableInfiniteLoading = false
+}: Readonly<CommentsProps>) {
+  const [fetchComments, {data: fetchedComments, isLoading}] =
     useLazyGetPostCommentsQuery()
 
+  // Use infinite query only when explicitly enabled
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isInfiniteLoading
+  } = useGetPostCommentsPagesInfiniteQuery(permalink, {
+    skip: !enableInfiniteLoading || !open
+  })
+
+  // Combine all pages of infinite comments into a single array
+  const infiniteComments = useMemo(() => {
+    if (!infiniteData?.pages?.length) return []
+
+    const allComments: AutoCommentData[] = []
+
+    // Process each page of comments
+    infiniteData.pages.forEach((page) => {
+      // Extract comments from the response (Reddit returns [post, comments])
+      const commentsListing = Array.isArray(page) ? page[1] : page
+      const children = commentsListing?.data?.children ?? []
+      const pageComments = extractAndFilterComments(children)
+      allComments.push(...pageComments)
+    })
+
+    return allComments
+  }, [infiniteData])
+
+  // Determine which comments to show and loading state
+  const comments =
+    providedComments ||
+    (enableInfiniteLoading ? infiniteComments : fetchedComments)
+  const showLoading = enableInfiniteLoading ? isInfiniteLoading : isLoading
+
   useEffect(() => {
-    if (open && !comments && !isLoading) {
+    if (
+      open &&
+      !providedComments &&
+      !enableInfiniteLoading &&
+      !fetchedComments &&
+      !isLoading
+    ) {
       void fetchComments(permalink)
     }
-  }, [open, comments, isLoading, fetchComments, permalink])
+  }, [
+    open,
+    providedComments,
+    enableInfiniteLoading,
+    fetchedComments,
+    isLoading,
+    fetchComments,
+    permalink
+  ])
 
-  if (isLoading) {
+  if (showLoading) {
     return (
       <Center>
         <Loader />
@@ -104,6 +164,19 @@ export function Comments({permalink, postLink, open}: Readonly<CommentsProps>) {
               </Card>
             )
           })}
+
+        {/* Load More button for infinite loading */}
+        {enableInfiniteLoading && hasNextPage && (
+          <Center pt="md">
+            <Button
+              variant="subtle"
+              loading={isFetchingNextPage}
+              onClick={() => fetchNextPage()}
+            >
+              Load More Comments
+            </Button>
+          </Center>
+        )}
 
         <Anchor
           className={classes.readMoreLink}

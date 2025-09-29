@@ -13,9 +13,13 @@ export type DeepPartial<T> = {
 
 /**
  * Next.js dynamic route parameters.
+ *
+ * Note: Next.js provides auto-generated PageProps<RouteType> helpers, but for explicit typing
+ * we define specific parameter types for each route pattern.
  */
-export type Params = Promise<{slug: string}>
+export type SubredditParams = Promise<{subreddit: string}>
 export type UserParams = Promise<{username: string}>
+export type SinglePostParams = Promise<{subreddit: string; postId: string}>
 export type SearchParams = Promise<{
   [key: string]: string | string[] | undefined
 }>
