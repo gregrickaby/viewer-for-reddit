@@ -95,4 +95,23 @@ describe('PostCard', () => {
     )
     expect(titleLink).toHaveAttribute('target', '_blank')
   })
+
+  it('should display upvotes in a Badge component in the upper meta area', () => {
+    const post: any = {
+      id: '1',
+      subreddit_name_prefixed: 'r/test',
+      author: 'testuser',
+      created_utc: 123,
+      permalink: '/r/test/1',
+      title: 'Test post',
+      preview: {images: [{resolutions: []}]},
+      ups: 42,
+      num_comments: 2
+    }
+
+    render(<PostCard post={post} />)
+
+    expect(screen.getByText('42')).toBeInTheDocument()
+    expect(screen.getByText('42')).toBeVisible()
+  })
 })

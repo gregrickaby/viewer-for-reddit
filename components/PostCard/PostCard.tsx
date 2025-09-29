@@ -6,6 +6,7 @@ import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {parsePostLink} from '@/lib/utils/parsePostLink'
 import {
   Anchor,
+  Badge,
   Button,
   Card,
   Collapse,
@@ -79,6 +80,13 @@ export function PostCard({
             <Text size="xs">u/{post.author}</Text>
           </Link>
           &middot;
+          <Badge variant="light" size="sm" color="gray">
+            <Group gap={4} align="center">
+              <BiSolidUpvote size={14} color="red" />
+              <NumberFormatter value={post.ups} thousandSeparator />
+            </Group>
+          </Badge>
+          &middot;
           <Text size="xs">
             <time dateTime={created}>
               {post.created_utc ? formatTimeAgo(post.created_utc) : ''}
@@ -114,28 +122,6 @@ export function PostCard({
       )}
 
       <Group gap="xs" mt="xs">
-        <Group gap={2}>
-          <BiSolidUpvote size={16} color="red" />
-          {useInternalRouting ? (
-            <Link href={postLink} className={classes.link}>
-              <Text size="sm" c="dimmed">
-                <NumberFormatter value={post.ups} thousandSeparator />
-              </Text>
-            </Link>
-          ) : (
-            <Anchor
-              href={postLink}
-              rel="noopener noreferrer"
-              target="_blank"
-              underline="never"
-            >
-              <Text size="sm" c="dimmed">
-                <NumberFormatter value={post.ups} thousandSeparator />
-              </Text>
-            </Anchor>
-          )}
-        </Group>
-
         <Button
           aria-expanded={commentsOpen}
           aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
@@ -159,6 +145,7 @@ export function PostCard({
           open={commentsOpen}
           permalink={postPermalink}
           postLink={postLink}
+          enableNestedComments
         />
       </Collapse>
     </Card>

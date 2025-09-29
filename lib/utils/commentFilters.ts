@@ -4,6 +4,27 @@ import type {
 } from '@/lib/store/services/commentsApi'
 
 /**
+ * Extended comment data type that includes nesting information and reply structure.
+ */
+export interface NestedCommentData {
+  // Include all properties from AutoCommentData that we commonly use
+  id?: string
+  name?: string
+  author?: string
+  body?: string
+  body_html?: string
+  created_utc?: number
+  permalink?: string
+  ups?: number
+  score?: number
+  depth: number
+  hasReplies: boolean
+  replies?: NestedCommentData[]
+  // Allow for additional properties from the original AutoCommentData
+  [key: string]: any
+}
+
+/**
  * Content filtering constants for Reddit comments
  */
 export const COMMENT_CONTENT_MARKERS = {
@@ -125,4 +146,110 @@ export function extractAndFilterComments(children: any[]): AutoCommentData[] {
     .filter((data): data is AutoCommentData => Boolean(data))
 
   return filterValidComments(commentData)
+}
+
+/**
+ * Recursively processes Reddit comment data to extract nested comment structure.
+ *
+ * Transforms raw Reddit API comment data into a hierarchical structure with depth
+ * information and filtered replies. Handles the complex Reddit API format where
+ * replies can be nested objects or continuation markers.
+ *
+ * @param children - Array of comment child objects from Reddit API response
+ * @param depth - Current nesting depth (starts at 0 for top-level comments)
+ * @returns Array of nested comment data with reply hierarchy preserved
+ *
+ * @example
+ * ```typescript
+ * const nestedComments = extractNestedComments(response.data.children)
+ * // Returns comments with depth info and nested replies
+ * ```
+ */
+export function extractNestedComments(
+  children: any[],
+  depth: number = 0
+): NestedCommentData[] {
+  if (!children || !Array.isArray(children)) {
+    return []
+  }
+
+  const processedComments: NestedCommentData[] = []
+
+  for (const child of children) {
+    if (!child?.data) continue
+
+    const commentData = child.data as AutoCommentData
+
+    // Skip invalid comments using existing validation
+    if (!isValidComment(commentData) || isAutoModeratorComment(commentData)) {
+      continue
+    }
+
+    // Process replies recursively
+    let replies: NestedCommentData[] = []
+    const commentDataWithReplies = commentData as any
+    if (
+      commentDataWithReplies.replies &&
+      typeof commentDataWithReplies.replies === 'object'
+    ) {
+      const repliesData = commentDataWithReplies.replies?.data?.children
+      if (Array.isArray(repliesData)) {
+        replies = extractNestedComments(repliesData, depth + 1)
+      }
+    }
+
+    // Create nested comment with metadata
+    const nestedComment: NestedCommentData = {
+      ...commentData,
+      depth,
+      hasReplies: replies.length > 0,
+      replies: replies.length > 0 ? replies : undefined
+    }
+
+    processedComments.push(nestedComment)
+  }
+
+  return processedComments
+}
+
+/**
+ * Flattens nested comment structure into a single array while preserving hierarchy.
+ *
+ * Converts nested comment tree into a flat array where each comment includes
+ * its depth level. This is useful for rendering comments with proper indentation
+ * while maintaining a simple iteration structure.
+ *
+ * @param nestedComments - Array of nested comment data
+ * @param maxDepth - Maximum depth to flatten (default: 10)
+ * @returns Flattened array of comments with depth information preserved
+ *
+ * @example
+ * ```typescript
+ * const flatComments = flattenComments(nestedComments, 5)
+ * // Returns flat array where each comment has depth property
+ * ```
+ */
+export function flattenComments(
+  nestedComments: NestedCommentData[],
+  maxDepth: number = 10
+): NestedCommentData[] {
+  const flattened: NestedCommentData[] = []
+
+  function processComment(comment: NestedCommentData) {
+    // Add the current comment
+    flattened.push(comment)
+
+    // Process replies if within depth limit
+    if (comment.replies && comment.depth < maxDepth) {
+      for (const reply of comment.replies) {
+        processComment(reply)
+      }
+    }
+  }
+
+  for (const comment of nestedComments) {
+    processComment(comment)
+  }
+
+  return flattened
 }

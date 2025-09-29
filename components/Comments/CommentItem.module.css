@@ -1,0 +1,93 @@
+/* CommentItem component styles */
+
+.commentItem {
+  position: relative;
+}
+
+.commentContent {
+  position: relative;
+}
+
+/* Thread lines for nested comments */
+.threadLine {
+  position: absolute;
+  left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--mantine-color-gray-3);
+  opacity: 0.6;
+}
+
+.threadLine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 12px;
+  height: 2px;
+  background-color: var(--mantine-color-gray-3);
+}
+
+/* Dark theme support */
+[data-mantine-color-scheme='dark'] .threadLine {
+  background-color: var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme='dark'] .threadLine::before {
+  background-color: var(--mantine-color-dark-4);
+}
+
+/* Indentation for nested comments */
+.nestedComment {
+  margin-left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
+}
+
+/* Expand/collapse button styling */
+.expandButton {
+  transition: transform 0.2s ease;
+}
+
+.expandButton[data-expanded='true'] {
+  transform: rotate(90deg);
+}
+
+/* Reply count badge */
+.replyCount {
+  font-size: var(--mantine-font-size-xs);
+  min-width: auto;
+  height: auto;
+  padding: 2px 6px;
+}
+
+/* Comment body styling */
+.commentBody {
+  margin-top: var(--mantine-spacing-xs);
+  margin-bottom: var(--mantine-spacing-sm);
+  line-height: 1.6;
+}
+
+.commentBody p {
+  margin: 0 0 var(--mantine-spacing-xs) 0;
+}
+
+.commentBody p:last-child {
+  margin-bottom: 0;
+}
+
+/* Meta information styling */
+.commentMeta {
+  margin-top: var(--mantine-spacing-sm);
+  gap: var(--mantine-spacing-md);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nestedComment {
+    margin-left: calc(var(--comment-depth) * var(--mantine-spacing-md));
+  }
+
+  .threadLine {
+    left: calc(var(--comment-depth) * var(--mantine-spacing-md));
+  }
+}
