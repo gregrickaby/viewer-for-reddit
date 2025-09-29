@@ -106,17 +106,22 @@ export function Comments({
     if (providedComments) {
       // Recursively preserve any existing hierarchy in providedComments
       function mapToNested(comment: any, depth = 0): NestedCommentData {
-        const hasReplies = Array.isArray(comment.replies) && comment.replies.length > 0
+        const hasReplies =
+          Array.isArray(comment.replies) && comment.replies.length > 0
         return {
           ...comment,
           depth: comment.depth ?? depth,
           hasReplies,
           replies: hasReplies
-            ? comment.replies.map((reply: any) => mapToNested(reply, (comment.depth ?? depth) + 1))
+            ? comment.replies.map((reply: any) =>
+                mapToNested(reply, (comment.depth ?? depth) + 1)
+              )
             : undefined
         }
       }
-      return providedComments.map((comment) => mapToNested(comment)) as NestedCommentData[]
+      return providedComments.map((comment) =>
+        mapToNested(comment)
+      ) as NestedCommentData[]
     }
 
     if (enableInfiniteLoading && infiniteDataRaw?.pages?.length) {

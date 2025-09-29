@@ -167,7 +167,9 @@ export function filterValidComments(
  * // Returns only valid, non-deleted, non-AutoModerator comments
  * ```
  */
-export function extractAndFilterComments(children: RedditCommentChild[]): AutoCommentData[] {
+export function extractAndFilterComments(
+  children: RedditCommentChild[]
+): AutoCommentData[] {
   const commentData = children
     .map((c) => c.data)
     .filter((data): data is AutoCommentData => isAutoCommentData(data))
