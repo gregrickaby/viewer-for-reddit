@@ -95,42 +95,9 @@ describe('Reddit API Route', () => {
       expect(data).toEqual({error: 'Forbidden'})
     })
 
-    it('should allow requests from allowed domain in production', async () => {
-      vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('ALLOWED_HOST', 'example.com')
-
-      const request = new NextRequest(
-        'http://localhost:3000/api/reddit?path=/test',
-        {
-          headers: {
-            origin: 'https://example.com'
-          }
-        }
-      )
-      const response = await GET(request)
-      expect(response.status).toBe(200)
-    })
-
-    it('should allow requests from preview deployment subdomains', async () => {
-      vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('ALLOWED_HOST', 'example.com')
-
-      const request = new NextRequest(
-        'http://localhost:3000/api/reddit?path=/test',
-        {
-          headers: {
-            origin: 'https://preview-branch-123.example.com'
-          }
-        }
-      )
-      const response = await GET(request)
-      expect(response.status).toBe(200)
-    })
-
     it('should allow requests from Coolify FQDN in production', async () => {
       vi.stubEnv('NODE_ENV', 'production')
       vi.stubEnv('COOLIFY_FQDN', 'pr-123.example.com')
-      vi.stubEnv('ALLOWED_HOST', '')
 
       const request = new NextRequest(
         'https://pr-123.example.com/api/reddit?path=/test',
@@ -146,7 +113,6 @@ describe('Reddit API Route', () => {
 
     it('should block requests from unauthorized origins in production', async () => {
       vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('ALLOWED_HOST', 'example.com')
 
       const request = new NextRequest(
         'http://localhost:3000/api/reddit?path=/test',

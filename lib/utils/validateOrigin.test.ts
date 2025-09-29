@@ -88,83 +88,12 @@ describe('validateOrigin', () => {
     })
   })
 
-  describe('ALLOWED_HOST validation', () => {
-    it('should allow exact ALLOWED_HOST match in origin', () => {
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
-
-      const request = createRequest({
-        origin: 'https://myapp.com'
-      })
-
-      expect(validateOrigin(request)).toBe(true)
-      expect(mockLogError).not.toHaveBeenCalled()
-    })
-
-    it('should allow ALLOWED_HOST subdomain match in origin', () => {
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
-
-      const request = createRequest({
-        origin: 'https://api.myapp.com'
-      })
-
-      expect(validateOrigin(request)).toBe(true)
-      expect(mockLogError).not.toHaveBeenCalled()
-    })
-
-    it('should allow ALLOWED_HOST match in referer', () => {
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
-
-      const request = createRequest({
-        referer: 'https://myapp.com/some-path'
-      })
-
-      expect(validateOrigin(request)).toBe(true)
-      expect(mockLogError).not.toHaveBeenCalled()
-    })
-
-    it('should reject non-matching domain when ALLOWED_HOST is set', () => {
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
-
-      const request = createRequest({
-        origin: 'https://evil.com'
-      })
-
-      expect(validateOrigin(request)).toBe(false)
-      expect(mockLogError).toHaveBeenCalled()
-    })
-  })
-
   describe('priority and fallback behavior', () => {
     it('should prioritize localhost over other settings', () => {
       vi.stubEnv('COOLIFY_FQDN', 'myapp.example.com')
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
 
       const request = createRequest({
         origin: 'http://localhost:3000'
-      })
-
-      expect(validateOrigin(request)).toBe(true)
-      expect(mockLogError).not.toHaveBeenCalled()
-    })
-
-    it('should prioritize COOLIFY_FQDN over ALLOWED_HOST', () => {
-      vi.stubEnv('COOLIFY_FQDN', 'myapp.example.com')
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
-
-      const request = createRequest({
-        origin: 'https://myapp.example.com'
-      })
-
-      expect(validateOrigin(request)).toBe(true)
-      expect(mockLogError).not.toHaveBeenCalled()
-    })
-
-    it('should fall back to ALLOWED_HOST when COOLIFY_FQDN does not match', () => {
-      vi.stubEnv('COOLIFY_FQDN', 'different.example.com')
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
-
-      const request = createRequest({
-        origin: 'https://myapp.com'
       })
 
       expect(validateOrigin(request)).toBe(true)
@@ -206,7 +135,6 @@ describe('validateOrigin', () => {
       expect(mockLogError).toHaveBeenCalledWith(
         'Request blocked due to invalid origin',
         expect.objectContaining({
-          hasAllowedHost: false,
           hasCoolifyFqdn: false
         })
       )
@@ -214,7 +142,6 @@ describe('validateOrigin', () => {
 
     it('should include all context in error log', () => {
       vi.stubEnv('NODE_ENV', 'production')
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
       vi.stubEnv('COOLIFY_FQDN', 'myapp.example.com')
 
       const request = createRequest({
@@ -232,7 +159,6 @@ describe('validateOrigin', () => {
           origin: 'https://evil.com',
           referer: 'https://evil.com/bad-path',
           nodeEnv: 'production',
-          hasAllowedHost: true,
           hasCoolifyFqdn: true
         }
       )
@@ -240,17 +166,6 @@ describe('validateOrigin', () => {
   })
 
   describe('URL parsing edge cases', () => {
-    it('should handle URLs with ports correctly', () => {
-      vi.stubEnv('ALLOWED_HOST', 'myapp.com')
-
-      const request = createRequest({
-        origin: 'https://myapp.com:8443'
-      })
-
-      expect(validateOrigin(request)).toBe(true)
-      expect(mockLogError).not.toHaveBeenCalled()
-    })
-
     it('should handle URLs with paths correctly', () => {
       vi.stubEnv('COOLIFY_FQDN', 'myapp.example.com')
 
@@ -340,7 +255,6 @@ describe('validateOrigin', () => {
 
     it('should not log sensitive environment variables', () => {
       vi.stubEnv('COOLIFY_FQDN', 'secret-domain.com')
-      vi.stubEnv('ALLOWED_HOST', 'secret-host.com')
 
       const request = createRequest({
         origin: 'https://evil.com'
@@ -352,12 +266,10 @@ describe('validateOrigin', () => {
       const logCall = mockLogError.mock.calls[0]
       const loggedContext = logCall[1]
 
-      expect(loggedContext).not.toHaveProperty('allowedHost', 'secret-host.com')
       expect(loggedContext).not.toHaveProperty(
         'coolifyFqdn',
         'secret-domain.com'
       )
-      expect(loggedContext).toHaveProperty('hasAllowedHost', true)
       expect(loggedContext).toHaveProperty('hasCoolifyFqdn', true)
     })
   })

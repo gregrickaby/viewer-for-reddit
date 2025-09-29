@@ -58,22 +58,20 @@ function baseSubredditItem(input: {
  * Maps search API response data to a SubredditItem.
  *
  * Converts subreddit data from Reddit's search API into the standardized
- * SubredditItem format. Adds a 'fromSearch' flag to indicate the source.
+ * SubredditItem format.
  *
  * @param sub - Subreddit data from search API response
- * @returns SubredditItem with search source flag
+ * @returns SubredditItem object
  *
  * @example
  * ```typescript
  * const searchResult = { display_name: 'javascript', subscribers: 50000 }
  * const item = fromSearch(searchResult)
- * // Returns: { display_name: 'javascript', value: 'r/javascript', fromSearch: true, ... }
+ * // Returns: { display_name: 'javascript', value: 'r/javascript', ... }
  * ```
  */
-export const fromSearch = (sub: AutoSearchChildData): SubredditItem => ({
-  ...baseSubredditItem(sub),
-  fromSearch: true
-})
+export const fromSearch = (sub: AutoSearchChildData): SubredditItem =>
+  baseSubredditItem(sub)
 
 /**
  * Maps popular subreddits API response data to a SubredditItem.

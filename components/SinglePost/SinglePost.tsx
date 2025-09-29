@@ -3,6 +3,7 @@
 import {Comments} from '@/components/Comments/Comments'
 import {PostCard} from '@/components/PostCard/PostCard'
 import {useGetSinglePostQuery} from '@/lib/store/services/postsApi'
+import {parsePostLink} from '@/lib/utils/parsePostLink'
 import {
   Alert,
   Card,
@@ -20,6 +21,7 @@ import classes from './SinglePost.module.css'
 export interface SinglePostProps {
   readonly subreddit: string
   readonly postId: string
+  readonly useInternalRouting?: boolean
 }
 
 /**
@@ -35,9 +37,14 @@ export interface SinglePostProps {
  *
  * @param subreddit - The subreddit name (e.g., "programming")
  * @param postId - The Reddit post ID (e.g., "abc123")
+ * @param useInternalRouting - Whether to use internal app routes (default: true) or external Reddit links
  * @returns JSX.Element for the complete single post view
  */
-export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
+export function SinglePost({
+  subreddit,
+  postId,
+  useInternalRouting = true
+}: Readonly<SinglePostProps>) {
   const {data, isLoading, isError, error} = useGetSinglePostQuery({
     subreddit,
     postId
@@ -128,7 +135,7 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
         </Group>
 
         {/* Post content */}
-        <PostCard post={post} />
+        <PostCard post={post} useInternalRouting={useInternalRouting} />
 
         {/* Comments section */}
         <Card padding="md" radius="md" shadow="sm" withBorder>
@@ -139,7 +146,7 @@ export function SinglePost({subreddit, postId}: Readonly<SinglePostProps>) {
 
             <Comments
               permalink={post.permalink || ''}
-              postLink={`https://reddit.com${post.permalink || ''}`}
+              postLink={parsePostLink(post.permalink, useInternalRouting)}
               open
               enableInfiniteLoading
             />

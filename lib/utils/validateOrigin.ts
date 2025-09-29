@@ -52,13 +52,6 @@ export function validateOrigin(request: NextRequest): boolean {
     }
   }
 
-  /**
-   * Escapes regex metacharacters in a string.
-   * Prevents regex injection from environment variables (ALLOWED_HOST).
-   */
-  const escapeRegex = (s: string): string =>
-    s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
   // Development mode allows all origins for easier development
   if (process.env.NODE_ENV === 'development') {
     return true
@@ -92,29 +85,6 @@ export function validateOrigin(request: NextRequest): boolean {
     }
   }
 
-  // Fallback to ALLOWED_HOST for non-Coolify deployments
-  const allowedHost = process.env.ALLOWED_HOST
-  if (allowedHost) {
-    const originHost = parseHostname(origin)
-    const refererHost = parseHostname(referer)
-
-    // Exact domain match or legitimate subdomain only
-    const isAllowedDomain = (host: string | null) => {
-      if (!host) return false
-      if (host === allowedHost) return true
-      // Match valid subdomains only: e.g., sub.example.com, but not evil.com.example.com
-      // Subdomain labels: [a-zA-Z0-9-], not starting/ending with hyphen, at least one label
-      const subdomainPattern = new RegExp(
-        `^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+${escapeRegex(allowedHost)}$`
-      )
-      return subdomainPattern.test(host)
-    }
-
-    if (isAllowedDomain(originHost) || isAllowedDomain(refererHost)) {
-      return true
-    }
-  }
-
   // Log blocked request without exposing sensitive config
   logError('Request blocked due to invalid origin', {
     component: 'validateOrigin',
@@ -122,7 +92,6 @@ export function validateOrigin(request: NextRequest): boolean {
     origin: origin || 'none',
     referer: referer || 'none',
     nodeEnv: process.env.NODE_ENV,
-    hasAllowedHost: !!allowedHost,
     hasCoolifyFqdn: !!coolifyFqdn
   })
   return false

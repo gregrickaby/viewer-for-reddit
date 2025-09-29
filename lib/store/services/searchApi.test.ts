@@ -25,9 +25,10 @@ describe('searchApi', () => {
       expect(result.current.data).toBeDefined()
       expect(Array.isArray(result.current.data)).toBe(true)
       expect(result.current.data!.length).toBeGreaterThan(0)
-      // Check that each result has the fromSearch flag
+      // Check that results have required properties
       result.current.data!.forEach((item) => {
-        expect(item).toHaveProperty('fromSearch', true)
+        expect(item).toHaveProperty('display_name')
+        expect(item).toHaveProperty('value')
       })
     })
 
@@ -86,7 +87,7 @@ describe('searchApi', () => {
       expect(result.current.isUninitialized).toBe(true)
     })
 
-    it('should add fromSearch flag to all results', async () => {
+    it('should map search results to SubredditItem format', async () => {
       const {result} = renderHook(() =>
         useSearchSubredditsQuery({query: 'test', enableNsfw: false})
       )
@@ -97,7 +98,10 @@ describe('searchApi', () => {
 
       if (result.current.data && result.current.data.length > 0) {
         result.current.data.forEach((item) => {
-          expect(item).toHaveProperty('fromSearch', true)
+          expect(item).toHaveProperty('display_name')
+          expect(item).toHaveProperty('value')
+          expect(item).toHaveProperty('over18')
+          expect(item).toHaveProperty('subscribers')
         })
       }
     })
