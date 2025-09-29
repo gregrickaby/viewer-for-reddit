@@ -57,10 +57,6 @@ export function validateOrigin(request: NextRequest): boolean {
     return true
   }
 
-  // TEMPORARY HOT FIX: Allow all origins in production until environment variables are properly configured
-  // TODO: Remove this after fixing environment variable configuration
-  return true
-
   // Production mode allows specific localhost patterns only
   // (useful for Docker, CI/CD, local production testing)
   const localhostPattern =
@@ -73,13 +69,23 @@ export function validateOrigin(request: NextRequest): boolean {
   }
 
   // For Coolify deployments, use COOLIFY_FQDN if available
+  // COOLIFY_FQDN can be comma-separated: "reddit-viewer.com,www.reddit-viewer.com"
   const coolifyFqdn = process.env.COOLIFY_FQDN
   if (coolifyFqdn) {
     const originHost = parseHostname(origin)
     const refererHost = parseHostname(referer)
 
-    // Exact hostname match only - prevents subdomain attacks
-    const isAllowedCoolifyDomain = (host: string | null) => host === coolifyFqdn
+    // Parse comma-separated domains and trim whitespace
+    const allowedDomains = coolifyFqdn
+      .split(',')
+      .map(domain => domain.trim())
+      .filter(domain => domain.length > 0)
+
+    // Check if hostname matches any of the allowed domains
+    const isAllowedCoolifyDomain = (host: string | null) => {
+      if (!host) return false
+      return allowedDomains.includes(host)
+    }
 
     if (
       isAllowedCoolifyDomain(originHost) ||

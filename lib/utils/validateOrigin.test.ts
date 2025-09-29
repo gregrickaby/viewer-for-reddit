@@ -99,6 +99,44 @@ describe('validateOrigin', () => {
       expect(validateOrigin(request)).toBe(true)
       expect(mockLogError).not.toHaveBeenCalled()
     })
+
+    it('should handle comma-separated COOLIFY_FQDN domains', () => {
+      vi.stubEnv('COOLIFY_FQDN', 'reddit-viewer.com,www.reddit-viewer.com')
+
+      const request1 = createRequest({
+        origin: 'https://reddit-viewer.com'
+      })
+
+      const request2 = createRequest({
+        origin: 'https://www.reddit-viewer.com'
+      })
+
+      expect(validateOrigin(request1)).toBe(true)
+      expect(validateOrigin(request2)).toBe(true)
+      expect(mockLogError).not.toHaveBeenCalled()
+    })
+
+    it('should handle comma-separated COOLIFY_FQDN with referer', () => {
+      vi.stubEnv('COOLIFY_FQDN', 'reddit-viewer.com, www.reddit-viewer.com')
+
+      const request = createRequest({
+        referer: 'https://www.reddit-viewer.com/some-path'
+      })
+
+      expect(validateOrigin(request)).toBe(true)
+      expect(mockLogError).not.toHaveBeenCalled()
+    })
+
+    it('should reject domains not in comma-separated COOLIFY_FQDN', () => {
+      vi.stubEnv('COOLIFY_FQDN', 'reddit-viewer.com,www.reddit-viewer.com')
+
+      const request = createRequest({
+        origin: 'https://evil.com'
+      })
+
+      expect(validateOrigin(request)).toBe(false)
+      expect(mockLogError).toHaveBeenCalled()
+    })
   })
 
   describe('edge cases and error conditions', () => {
