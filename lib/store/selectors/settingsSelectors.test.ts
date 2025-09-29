@@ -48,7 +48,8 @@ const createMockState = (
   postsApi: {} as any,
   searchApi: {} as any,
   commentsApi: {} as any,
-  userApi: {} as any
+  userApi: {} as any,
+  subredditApi: {} as any
 })
 
 describe('settingsSelectors', () => {

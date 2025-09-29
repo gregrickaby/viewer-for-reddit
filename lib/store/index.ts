@@ -3,6 +3,7 @@ import {transientSlice} from '@/lib/store/features/transientSlice'
 import {commentsApi} from '@/lib/store/services/commentsApi'
 import {postsApi} from '@/lib/store/services/postsApi'
 import {searchApi} from '@/lib/store/services/searchApi'
+import {subredditApi} from '@/lib/store/services/subredditApi'
 import {userApi} from '@/lib/store/services/userApi'
 import {
   combineSlices,
@@ -18,6 +19,7 @@ const rootReducer = combineSlices(
   searchApi,
   commentsApi,
   userApi,
+  subredditApi,
   settingsSlice,
   transientSlice
 )
@@ -41,7 +43,8 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
         .concat(postsApi.middleware)
         .concat(searchApi.middleware)
         .concat(commentsApi.middleware)
-        .concat(userApi.middleware),
+        .concat(userApi.middleware)
+        .concat(subredditApi.middleware),
     preloadedState
   })
   setupListeners(store.dispatch)
