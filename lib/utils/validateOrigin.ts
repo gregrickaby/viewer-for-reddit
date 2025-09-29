@@ -57,6 +57,10 @@ export function validateOrigin(request: NextRequest): boolean {
     return true
   }
 
+  // TEMPORARY HOT FIX: Allow all origins in production until environment variables are properly configured
+  // TODO: Remove this after fixing environment variable configuration
+  return true
+
   // Production mode allows specific localhost patterns only
   // (useful for Docker, CI/CD, local production testing)
   const localhostPattern =
