@@ -52,6 +52,13 @@ export function validateOrigin(request: NextRequest): boolean {
     }
   }
 
+  /**
+   * Escapes regex metacharacters in a string.
+   * Prevents regex injection from environment variables (ALLOWED_HOST).
+   */
+  const escapeRegex = (s: string): string =>
+    s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
   // Development mode allows all origins for easier development
   if (process.env.NODE_ENV === 'development') {
     return true
@@ -98,7 +105,7 @@ export function validateOrigin(request: NextRequest): boolean {
       // Match valid subdomains only: e.g., sub.example.com, but not evil.com.example.com
       // Subdomain labels: [a-zA-Z0-9-], not starting/ending with hyphen, at least one label
       const subdomainPattern = new RegExp(
-        `^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+${allowedHost.replace(/\./g, '\\.')}$`
+        `^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+${escapeRegex(allowedHost)}$`
       )
       return subdomainPattern.test(host)
     }
