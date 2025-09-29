@@ -104,14 +104,19 @@ export function Comments({
 
     // Determine which raw response to use
     if (providedComments) {
-      // When provided comments are available, we can't access raw data
-      // Fall back to converting flat comments to nested structure
-      return providedComments.map((comment) => ({
-        ...comment,
-        depth: 0,
-        hasReplies: false,
-        replies: undefined
-      })) as NestedCommentData[]
+      // Recursively preserve any existing hierarchy in providedComments
+      function mapToNested(comment: any, depth = 0): NestedCommentData {
+        const hasReplies = Array.isArray(comment.replies) && comment.replies.length > 0
+        return {
+          ...comment,
+          depth: comment.depth ?? depth,
+          hasReplies,
+          replies: hasReplies
+            ? comment.replies.map((reply: any) => mapToNested(reply, (comment.depth ?? depth) + 1))
+            : undefined
+        }
+      }
+      return providedComments.map((comment) => mapToNested(comment)) as NestedCommentData[]
     }
 
     if (enableInfiniteLoading && infiniteDataRaw?.pages?.length) {

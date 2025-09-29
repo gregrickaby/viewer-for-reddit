@@ -4,6 +4,33 @@ import type {
 } from '@/lib/store/services/commentsApi'
 
 /**
+ * Reddit API comment child structure
+ */
+interface RedditCommentChild {
+  data?: AutoCommentData
+  [key: string]: any
+}
+
+/**
+ * Comment data with potential replies structure
+ */
+interface CommentDataWithReplies {
+  replies?: {
+    data?: {
+      children?: RedditCommentChild[]
+    }
+  }
+  [key: string]: any
+}
+
+/**
+ * Type guard to check if data is valid AutoCommentData
+ */
+function isAutoCommentData(data: any): data is AutoCommentData {
+  return data && typeof data === 'object' && 'author' in data
+}
+
+/**
  * Extended comment data type that includes nesting information and reply structure.
  */
 export interface NestedCommentData {
@@ -140,10 +167,10 @@ export function filterValidComments(
  * // Returns only valid, non-deleted, non-AutoModerator comments
  * ```
  */
-export function extractAndFilterComments(children: any[]): AutoCommentData[] {
+export function extractAndFilterComments(children: RedditCommentChild[]): AutoCommentData[] {
   const commentData = children
     .map((c) => c.data)
-    .filter((data): data is AutoCommentData => Boolean(data))
+    .filter((data): data is AutoCommentData => isAutoCommentData(data))
 
   return filterValidComments(commentData)
 }
@@ -166,7 +193,7 @@ export function extractAndFilterComments(children: any[]): AutoCommentData[] {
  * ```
  */
 export function extractNestedComments(
-  children: any[],
+  children: RedditCommentChild[],
   depth: number = 0
 ): NestedCommentData[] {
   if (!children || !Array.isArray(children)) {
@@ -178,21 +205,25 @@ export function extractNestedComments(
   for (const child of children) {
     if (!child?.data) continue
 
-    const commentData = child.data as AutoCommentData
+    // Use type guard to validate data
+    if (!isAutoCommentData(child.data)) {
+      continue
+    }
+    const commentData = child.data
 
     // Skip invalid comments using existing validation
     if (!isValidComment(commentData) || isAutoModeratorComment(commentData)) {
       continue
     }
 
-    // Process replies recursively
+    // Process replies recursively with proper typing
     let replies: NestedCommentData[] = []
-    const commentDataWithReplies = commentData as any
+    const commentWithReplies = commentData as CommentDataWithReplies
     if (
-      commentDataWithReplies.replies &&
-      typeof commentDataWithReplies.replies === 'object'
+      commentWithReplies.replies &&
+      typeof commentWithReplies.replies === 'object'
     ) {
-      const repliesData = commentDataWithReplies.replies?.data?.children
+      const repliesData = commentWithReplies.replies?.data?.children
       if (Array.isArray(repliesData)) {
         replies = extractNestedComments(repliesData, depth + 1)
       }
