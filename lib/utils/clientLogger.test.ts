@@ -1,4 +1,3 @@
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {logClientError, logClientInfo} from './clientLogger'
 
 // Mock fetch globally

@@ -1,5 +1,4 @@
 import {sanitizeLocationData, sanitizeUrl} from '@/lib/utils/urlSanitizer'
-import {describe, expect, it} from 'vitest'
 
 describe('urlSanitizer', () => {
   describe('sanitizeUrl', () => {

@@ -1,4 +1,3 @@
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {MediaCache, getCachedUrl, prefetchMedia} from './mediaCache'
 
 describe('MediaCache', () => {

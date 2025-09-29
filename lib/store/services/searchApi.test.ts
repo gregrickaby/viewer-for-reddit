@@ -4,7 +4,6 @@ import {
   useSearchSubredditsQuery
 } from '@/lib/store/services/searchApi'
 import {renderHook, waitFor} from '@/test-utils'
-import {afterEach, describe, expect, it} from 'vitest'
 
 afterEach(() => {
   store.dispatch(searchApi.util.resetApiState())

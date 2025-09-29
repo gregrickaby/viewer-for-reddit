@@ -1,4 +1,3 @@
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {baseQuery} from './baseQuery'
 
 // Mock fetchBaseQuery to avoid actual network requests

@@ -4,7 +4,6 @@ import {
   clearSearchHistory,
   removeFromSearchHistory
 } from '@/lib/utils/searchHistory'
-import {describe, expect, it} from 'vitest'
 
 const mockSubreddit1: SubredditItem = {
   display_name: 'pics',

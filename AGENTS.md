@@ -4,6 +4,18 @@
 **Purpose**: Machine-readable operational runbook for viewer-for-reddit
 **Human Docs**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for comprehensive developer guide
 
+## Available Sub-agents
+
+- **Accessibility Tester**: [accessibility-tester](.github/agents/accessibility-tester.md)
+- **Architect Reviewer**: [architect-reviewer](.github/agents/architect-reviewer.md)
+- **Code Reviewer**: [code-reviewer](.github/agents/code-reviewer.md)
+- **Full-stack Developer**: [fullstack-developer](.github/agents/fullstack-developer.md)
+- **Next.js Developer**: [nextjs-developer](.github/agents/nextjs-developer.md)
+- **Performance Engineer**: [performance-engineer](.github/agents/performance-engineer.md)
+- **QA Expert**: [qa-expert](.github/agents/qa-expert.md)
+- **Security Engineer**: [security-engineer](.github/agents/security-engineer.md)
+- **TypeScript Professional**: [typescript-professional](.github/agents/typescript-pro.md)
+
 ## Architecture Overview
 
 - **Framework**: Next.js 15+ (App Router)
@@ -17,6 +29,7 @@
 - **State Management**: Redux Toolkit + RTK Query
 - **Testing**: Vitest + React Testing Library + MSW v2
 - **TypeScript**: Strict mode enabled. Never use `any` type
+- **Coolify**: This app is self-hosted and deployed with Coolify using Nixpacks
 
 ## Core Development Commands
 

@@ -78,8 +78,8 @@ export function validateOrigin(request: NextRequest): boolean {
     // Parse comma-separated domains and trim whitespace
     const allowedDomains = coolifyFqdn
       .split(',')
-      .map(domain => domain.trim())
-      .filter(domain => domain.length > 0)
+      .map((domain) => domain.trim())
+      .filter((domain) => domain.length > 0)
 
     // Exact hostname match only - prevents subdomain attacks
     const isAllowedCoolifyDomain = (host: string | null) =>

@@ -1,4 +1,3 @@
-import {describe, expect, it} from 'vitest'
 import {parsePostLink} from './parsePostLink'
 
 describe('parsePostLink', () => {

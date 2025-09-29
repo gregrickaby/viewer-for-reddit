@@ -3,8 +3,7 @@ import {
   useGetUserPostsInfiniteQuery,
   useGetUserProfileQuery
 } from '@/lib/store/services/userApi'
-import {renderHook} from '@/test-utils'
-import {waitFor} from '@testing-library/react'
+import {renderHook, waitFor} from '@/test-utils'
 
 describe('Reddit API User Endpoints', () => {
   it('should fetch user profile successfully', async () => {
@@ -109,7 +108,6 @@ describe('Reddit API User Endpoints', () => {
       expect(result.current.isSuccess).toBe(true)
     })
 
-    // eslint-disable-next-line testing-library/no-node-access
     const children = result.current.data?.pages[0].data?.children
     expect(children).toBeDefined()
     expect(children).toHaveLength(0)
@@ -124,7 +122,6 @@ describe('Reddit API User Endpoints', () => {
       expect(result.current.isSuccess).toBe(true)
     })
 
-    // eslint-disable-next-line testing-library/no-node-access
     const children = result.current.data?.pages[0].data?.children
     expect(children).toBeDefined()
     expect(children).toHaveLength(0)

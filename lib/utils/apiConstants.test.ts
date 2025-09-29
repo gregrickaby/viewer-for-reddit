@@ -1,4 +1,3 @@
-import {describe, expect, it} from 'vitest'
 import {COMMENTS_LIMIT, MAX_LIMIT, MIN_LIMIT} from './apiConstants'
 
 describe('apiConstants', () => {

@@ -16,20 +16,6 @@ const nextConfig: NextConfig = {
       }
     ]
   },
-  experimental: {
-    globalNotFound: true,
-    useCache: true,
-    optimizePackageImports: [
-      '@mantine/core',
-      '@mantine/hooks',
-      '@mantine/notifications'
-    ]
-  },
-  logging: {
-    fetches: {
-      fullUrl: true
-    }
-  },
   async headers() {
     return [
       {
@@ -70,6 +56,20 @@ const nextConfig: NextConfig = {
         ]
       }
     ]
+  },
+  experimental: {
+    globalNotFound: true,
+    useCache: true,
+    optimizePackageImports: [
+      '@mantine/core',
+      '@mantine/hooks',
+      '@mantine/notifications'
+    ]
+  },
+  logging: {
+    fetches: {
+      fullUrl: true
+    }
   }
 }
 
