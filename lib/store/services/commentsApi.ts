@@ -117,6 +117,46 @@ export const commentsApi = createApi({
     }),
 
     /**
+     * Fetches raw comments for a specific Reddit post with infinite pagination support.
+     *
+     * Similar to getPostCommentsPages but preserves the complete nested structure
+     * for nested comment rendering. Returns unprocessed Reddit API responses.
+     *
+     * @param {string} permalink - The Reddit post permalink
+     * @returns {AutoPostCommentsResponse} Raw comments response with nested structure
+     *
+     * @example
+     * // Fetch raw comments with infinite loading for nested rendering
+     * const {data, fetchNextPage, hasNextPage} = useGetPostCommentsPagesRawInfiniteQuery('/r/programming/comments/abc123/title/')
+     */
+    getPostCommentsPagesRaw: builder.infiniteQuery<
+      AutoPostCommentsResponse,
+      string,
+      string | undefined
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: undefined,
+        getNextPageParam: (lastPage) => {
+          const commentsListing = Array.isArray(lastPage)
+            ? lastPage[1]
+            : lastPage
+          return commentsListing?.data?.after ?? undefined
+        },
+        getPreviousPageParam: () => undefined,
+        maxPages: 20
+      },
+      query({queryArg: permalink, pageParam}) {
+        const params = new URLSearchParams({
+          limit: String(100),
+          sort: 'confidence',
+          ...(pageParam && {after: pageParam})
+        })
+        return `${permalink}.json?${params.toString()}`
+      },
+      transformResponse: (response: AutoPostCommentsResponse) => response
+    }),
+
+    /**
      * Fetches comments for a specific Reddit post (legacy single request).
      *
      * Retrieves and processes comments from a post's permalink, automatically filtering
@@ -158,6 +198,28 @@ export const commentsApi = createApi({
         // Apply comment filtering (removes AutoModerator, processes nested threads)
         return extractAndFilterComments(children)
       }
+    }),
+
+    /**
+     * Fetches raw comments for a specific Reddit post preserving nested structure.
+     *
+     * This endpoint returns the unprocessed Reddit API response, preserving the nested
+     * comment structure with replies objects intact. Use this for nested comment rendering.
+     *
+     * @param {string} permalink - The Reddit post permalink
+     * @returns {AutoPostCommentsResponse} Raw Reddit API response with nested structure
+     *
+     * @example
+     * // Fetch raw comments for nested rendering
+     * const [trigger] = useLazyGetPostCommentsRawQuery()
+     * trigger('/r/programming/comments/abc123/my_post/')
+     */
+    getPostCommentsRaw: builder.query<AutoPostCommentsResponse, string>({
+      query: (permalink) => {
+        const params = new URLSearchParams({limit: String(COMMENTS_LIMIT)})
+        return `${permalink}.json?${params.toString()}`
+      },
+      transformResponse: (response: AutoPostCommentsResponse) => response
     }),
 
     /**
@@ -207,6 +269,8 @@ export const commentsApi = createApi({
  */
 export const {
   useGetPostCommentsPagesInfiniteQuery,
+  useGetPostCommentsPagesRawInfiniteQuery,
   useLazyGetPostCommentsQuery,
+  useLazyGetPostCommentsRawQuery,
   useGetUserCommentsInfiniteQuery
 } = commentsApi

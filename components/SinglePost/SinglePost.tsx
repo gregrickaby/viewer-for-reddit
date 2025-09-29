@@ -149,6 +149,7 @@ export function SinglePost({
               postLink={parsePostLink(post.permalink, useInternalRouting)}
               open
               enableInfiniteLoading
+              enableNestedComments
             />
           </Stack>
         </Card>

@@ -4,6 +4,54 @@ import type {
 } from '@/lib/store/services/commentsApi'
 
 /**
+ * Reddit API comment child structure
+ */
+interface RedditCommentChild {
+  data?: AutoCommentData
+  [key: string]: any
+}
+
+/**
+ * Comment data with potential replies structure
+ */
+interface CommentDataWithReplies {
+  replies?: {
+    data?: {
+      children?: RedditCommentChild[]
+    }
+  }
+  [key: string]: any
+}
+
+/**
+ * Type guard to check if data is valid AutoCommentData
+ */
+function isAutoCommentData(data: any): data is AutoCommentData {
+  return data && typeof data === 'object' && 'author' in data
+}
+
+/**
+ * Extended comment data type that includes nesting information and reply structure.
+ */
+export interface NestedCommentData {
+  // Include all properties from AutoCommentData that we commonly use
+  id?: string
+  name?: string
+  author?: string
+  body?: string
+  body_html?: string
+  created_utc?: number
+  permalink?: string
+  ups?: number
+  score?: number
+  depth: number
+  hasReplies: boolean
+  replies?: NestedCommentData[]
+  // Allow for additional properties from the original AutoCommentData
+  [key: string]: any
+}
+
+/**
  * Content filtering constants for Reddit comments
  */
 export const COMMENT_CONTENT_MARKERS = {
@@ -119,10 +167,122 @@ export function filterValidComments(
  * // Returns only valid, non-deleted, non-AutoModerator comments
  * ```
  */
-export function extractAndFilterComments(children: any[]): AutoCommentData[] {
+export function extractAndFilterComments(
+  children: RedditCommentChild[]
+): AutoCommentData[] {
   const commentData = children
     .map((c) => c.data)
-    .filter((data): data is AutoCommentData => Boolean(data))
+    .filter((data): data is AutoCommentData => isAutoCommentData(data))
 
   return filterValidComments(commentData)
+}
+
+/**
+ * Recursively processes Reddit comment data to extract nested comment structure.
+ *
+ * Transforms raw Reddit API comment data into a hierarchical structure with depth
+ * information and filtered replies. Handles the complex Reddit API format where
+ * replies can be nested objects or continuation markers.
+ *
+ * @param children - Array of comment child objects from Reddit API response
+ * @param depth - Current nesting depth (starts at 0 for top-level comments)
+ * @returns Array of nested comment data with reply hierarchy preserved
+ *
+ * @example
+ * ```typescript
+ * const nestedComments = extractNestedComments(response.data.children)
+ * // Returns comments with depth info and nested replies
+ * ```
+ */
+export function extractNestedComments(
+  children: RedditCommentChild[],
+  depth: number = 0
+): NestedCommentData[] {
+  if (!children || !Array.isArray(children)) {
+    return []
+  }
+
+  const processedComments: NestedCommentData[] = []
+
+  for (const child of children) {
+    if (!child?.data) continue
+
+    // Use type guard to validate data
+    if (!isAutoCommentData(child.data)) {
+      continue
+    }
+    const commentData = child.data
+
+    // Skip invalid comments using existing validation
+    if (!isValidComment(commentData) || isAutoModeratorComment(commentData)) {
+      continue
+    }
+
+    // Process replies recursively with proper typing
+    let replies: NestedCommentData[] = []
+    const commentWithReplies = commentData as CommentDataWithReplies
+    if (
+      commentWithReplies.replies &&
+      typeof commentWithReplies.replies === 'object'
+    ) {
+      const repliesData = commentWithReplies.replies?.data?.children
+      if (Array.isArray(repliesData)) {
+        replies = extractNestedComments(repliesData, depth + 1)
+      }
+    }
+
+    // Create nested comment with metadata
+    const nestedComment: NestedCommentData = {
+      ...commentData,
+      depth,
+      hasReplies: replies.length > 0,
+      replies: replies.length > 0 ? replies : undefined
+    }
+
+    processedComments.push(nestedComment)
+  }
+
+  return processedComments
+}
+
+/**
+ * Flattens nested comment structure into a single array while preserving hierarchy.
+ *
+ * Converts nested comment tree into a flat array where each comment includes
+ * its depth level. This is useful for rendering comments with proper indentation
+ * while maintaining a simple iteration structure.
+ *
+ * @param nestedComments - Array of nested comment data
+ * @param maxDepth - Maximum depth to flatten (default: 10)
+ * @returns Flattened array of comments with depth information preserved
+ *
+ * @example
+ * ```typescript
+ * const flatComments = flattenComments(nestedComments, 5)
+ * // Returns flat array where each comment has depth property
+ * ```
+ */
+export function flattenComments(
+  nestedComments: NestedCommentData[],
+  maxDepth: number = 10
+): NestedCommentData[] {
+  const flattened: NestedCommentData[] = []
+
+  function processComment(comment: NestedCommentData) {
+    // Add the current comment
+    flattened.push(comment)
+
+    // Process replies if within depth limit
+    if (comment.replies && comment.depth < maxDepth) {
+      for (const reply of comment.replies) {
+        processComment(reply)
+      }
+    }
+  }
+
+  for (const comment of nestedComments) {
+    processComment(comment)
+  }
+
+  return flattened
 }
