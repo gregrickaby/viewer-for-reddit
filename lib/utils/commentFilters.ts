@@ -26,7 +26,15 @@ export function isAutoModeratorComment(comment: AutoCommentData): boolean {
 }
 
 /**
- * Type guard to check if a comment has text content
+ * Type guard to check if a comment has text content properties.
+ *
+ * Validates that the comment object contains both 'body' and 'body_html'
+ * properties required for text rendering.
+ *
+ * @param comment - The comment data to check for text properties
+ * @returns True if the comment has both body and body_html properties
+ *
+ * @internal This is a private helper function for internal validation
  */
 function hasCommentText(
   comment: AutoCommentData
@@ -96,10 +104,20 @@ export function filterValidComments(
 }
 
 /**
- * Safely extracts and filters comment data from Reddit API response children
+ * Safely extracts and filters comment data from Reddit API response children.
  *
- * @param children - Array of comment child objects from Reddit API
- * @returns Array of filtered, valid comment data objects
+ * Processes raw Reddit API comment children by extracting the data property
+ * from each child object, filtering out any null/undefined entries, and then
+ * applying comment validation and filtering rules.
+ *
+ * @param children - Array of comment child objects from Reddit API response
+ * @returns Array of filtered, valid comment data objects ready for display
+ *
+ * @example
+ * ```typescript
+ * const comments = extractAndFilterComments(response.data.children)
+ * // Returns only valid, non-deleted, non-AutoModerator comments
+ * ```
  */
 export function extractAndFilterComments(children: any[]): AutoCommentData[] {
   const commentData = children

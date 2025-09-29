@@ -6,12 +6,22 @@ import type {SubredditItem} from '@/lib/types'
 const MAX_SEARCH_HISTORY = 10
 
 /**
- * Adds a subreddit to the search history, ensuring no duplicates
- * and maintaining the maximum limit.
+ * Adds a subreddit to the search history, ensuring no duplicates and maintaining the maximum limit.
+ *
+ * Manages search history by adding new entries to the beginning of the list,
+ * removing any existing duplicates, and enforcing the maximum history size.
+ * This creates a "most recently searched" ordering for better user experience.
  *
  * @param history - Current search history array
- * @param subreddit - Subreddit to add to history
- * @returns Updated search history array
+ * @param subreddit - Subreddit item to add to history
+ * @returns Updated search history array with the new item at the beginning
+ *
+ * @example
+ * ```typescript
+ * const history = [{ value: 'programming', label: 'r/programming' }]
+ * const updated = addToSearchHistory(history, { value: 'javascript', label: 'r/javascript' })
+ * // Returns: [{ value: 'javascript', label: 'r/javascript' }, { value: 'programming', label: 'r/programming' }]
+ * ```
  */
 export function addToSearchHistory(
   history: SubredditItem[],
@@ -27,9 +37,22 @@ export function addToSearchHistory(
 /**
  * Removes a subreddit from the search history.
  *
+ * Filters out a specific subreddit from the search history based on its value.
+ * Used when users want to clean up their search history or remove unwanted entries.
+ *
  * @param history - Current search history array
- * @param subredditValue - Value of the subreddit to remove
- * @returns Updated search history array
+ * @param subredditValue - Value of the subreddit to remove (e.g., 'programming')
+ * @returns Updated search history array with the specified item removed
+ *
+ * @example
+ * ```typescript
+ * const history = [
+ *   { value: 'javascript', label: 'r/javascript' },
+ *   { value: 'programming', label: 'r/programming' }
+ * ]
+ * const updated = removeFromSearchHistory(history, 'programming')
+ * // Returns: [{ value: 'javascript', label: 'r/javascript' }]
+ * ```
  */
 export function removeFromSearchHistory(
   history: SubredditItem[],
@@ -41,7 +64,16 @@ export function removeFromSearchHistory(
 /**
  * Clears all search history.
  *
+ * Completely empties the search history, typically used when users
+ * want to reset their search history or clear all data.
+ *
  * @returns Empty search history array
+ *
+ * @example
+ * ```typescript
+ * const cleared = clearSearchHistory()
+ * // Returns: []
+ * ```
  */
 export function clearSearchHistory(): SubredditItem[] {
   return []

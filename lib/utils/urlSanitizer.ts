@@ -28,10 +28,27 @@ const SENSITIVE_PARAMS = [
 ]
 
 /**
- * Sanitizes a URL by removing sensitive query parameters
+ * Sanitizes a URL by removing sensitive query parameters before logging.
  *
- * @param url - The URL to sanitize
+ * Removes potentially sensitive information from URLs including tokens, API keys,
+ * passwords, session IDs, and OAuth-related parameters. This prevents accidental
+ * exposure of sensitive data in logs, error reports, or analytics.
+ *
+ * @param url - The URL string to sanitize
  * @returns The sanitized URL with sensitive parameters removed
+ *
+ * @example
+ * ```typescript
+ * const cleanUrl = sanitizeUrl('https://api.example.com?token=secret&page=1')
+ * // Returns: 'https://api.example.com?page=1'
+ * ```
+ *
+ * @security
+ * - Removes sensitive parameters like tokens, API keys, passwords
+ * - Uses case-insensitive matching to catch variations
+ * - Returns safe fallback '[INVALID_URL]' for malformed URLs
+ *
+ * @throws Never throws - handles malformed URLs gracefully
  */
 export function sanitizeUrl(url: string): string {
   try {
@@ -63,10 +80,25 @@ export function sanitizeUrl(url: string): string {
 }
 
 /**
- * Sanitizes location object properties that may contain sensitive information
+ * Sanitizes location object properties that may contain sensitive information.
  *
- * @param location - Browser location object or similar
- * @returns Sanitized location data
+ * Processes browser location objects or similar data structures to remove
+ * sensitive query parameters while preserving the overall structure and
+ * non-sensitive location information.
+ *
+ * @param location - Browser location object or similar with URL properties
+ * @returns Sanitized location data with sensitive parameters removed
+ *
+ * @example
+ * ```typescript
+ * const cleanLocation = sanitizeLocationData(window.location)
+ * // Returns location object with sanitized href and search properties
+ * ```
+ *
+ * @security
+ * - Sanitizes href and search properties using sanitizeUrl/sanitizeQueryString
+ * - Preserves hash fragments (client-side only, not sent to server)
+ * - Maintains all other location properties unchanged
  */
 export function sanitizeLocationData(location: {
   pathname?: string
@@ -95,10 +127,24 @@ export function sanitizeLocationData(location: {
 }
 
 /**
- * Sanitizes a query string by removing sensitive parameters
+ * Sanitizes a query string by removing sensitive parameters.
+ *
+ * Internal helper function that processes query strings to remove sensitive
+ * parameters while preserving the query string format. Handles both formats
+ * with and without leading question mark.
  *
  * @param queryString - Query string to sanitize (with or without leading ?)
- * @returns Sanitized query string
+ * @returns Sanitized query string with leading ? if parameters remain
+ *
+ * @example
+ * ```typescript
+ * const clean = sanitizeQueryString('?token=secret&page=1')
+ * // Returns: '?page=1'
+ * ```
+ *
+ * @internal This is a private helper function for URL sanitization
+ *
+ * @throws Never throws - handles malformed query strings gracefully
  */
 function sanitizeQueryString(queryString: string): string {
   try {

@@ -3,8 +3,14 @@ import type {UserSettings} from '@/lib/types'
 const STORAGE_KEY = 'redditViewer'
 
 /**
- * Check if the code is running in a browser environment
- * This prevents errors during server-side rendering
+ * Check if the code is running in a browser environment.
+ *
+ * This prevents errors during server-side rendering by ensuring localStorage
+ * operations only occur in browser contexts where localStorage is available.
+ *
+ * @returns True if running in browser with window object available
+ *
+ * @internal This is a private helper function for SSR safety
  */
 function isBrowser() {
   return typeof window !== 'undefined'
@@ -13,7 +19,16 @@ function isBrowser() {
 /**
  * Retrieves the initial default settings for a new user.
  *
- * @returns {UserSettings} The default settings object.
+ * Provides sensible defaults for all user settings including sorting preferences,
+ * NSFW content visibility, and empty collections for favorites and history.
+ *
+ * @returns The default settings object with all required properties
+ *
+ * @example
+ * ```typescript
+ * const defaults = getInitialSettings()
+ * // Returns: { currentSort: 'hot', enableNsfw: true, favorites: [], ... }
+ * ```
  */
 export function getInitialSettings(): UserSettings {
   return {
@@ -28,12 +43,21 @@ export function getInitialSettings(): UserSettings {
 }
 
 /**
- * Loads user settings from localStorage.
+ * Loads user settings from localStorage with SSR safety and error handling.
  *
- * If no settings are found, returns default settings.
- * If settings are found, they are merged with defaults to ensure all keys are present.
+ * Safely retrieves user settings from browser localStorage with comprehensive
+ * error handling. If no settings exist or parsing fails, returns sensible defaults.
+ * Merges saved settings with defaults to ensure all required properties exist.
  *
- * @returns {UserSettings} The merged user settings object.
+ * @returns The complete user settings object with all required properties
+ *
+ * @example
+ * ```typescript
+ * const settings = loadSettings()
+ * // Always returns valid UserSettings object, never null/undefined
+ * ```
+ *
+ * @throws Never throws - handles all errors gracefully with fallbacks
  */
 export function loadSettings(): UserSettings {
   try {
@@ -63,14 +87,21 @@ export function loadSettings(): UserSettings {
 }
 
 /**
- * Saves the current user settings to localStorage.
+ * Saves the current user settings to localStorage with error handling.
  *
- * Converts the settings object to a JSON string and stores it under the designated key.
- * Errors are caught and logged to prevent the app from crashing.
+ * Safely persists user settings to browser localStorage with SSR protection.
+ * Serializes the settings object to JSON and handles storage quota errors gracefully.
+ * Only operates in browser environments to prevent SSR issues.
  *
- * Note: Even if modal state values are present in the settings, they will be ignored on load.
+ * @param settings - The complete user settings object to persist
  *
- * @param {UserSettings} settings - The user settings to save.
+ * @example
+ * ```typescript
+ * const updatedSettings = { ...currentSettings, enableNsfw: false }
+ * saveSettings(updatedSettings)
+ * ```
+ *
+ * @throws Never throws - handles localStorage errors gracefully with logging
  */
 export function saveSettings(settings: UserSettings): void {
   try {
@@ -86,7 +117,17 @@ export function saveSettings(settings: UserSettings): void {
 /**
  * Clears all saved user settings from localStorage.
  *
- * This is typically used when resetting the app to its default state.
+ * Completely removes the stored settings from browser localStorage, effectively
+ * resetting the user's preferences to defaults. Used when users explicitly
+ * request to reset all settings or clear their data.
+ *
+ * @example
+ * ```typescript
+ * clearSettings()
+ * // Next call to loadSettings() will return initial defaults
+ * ```
+ *
+ * @throws Never throws - handles localStorage errors gracefully with logging
  */
 export function clearSettings(): void {
   try {
