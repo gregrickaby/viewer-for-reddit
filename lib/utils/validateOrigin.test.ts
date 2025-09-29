@@ -86,6 +86,54 @@ describe('validateOrigin', () => {
       expect(validateOrigin(request)).toBe(false)
       expect(mockLogError).toHaveBeenCalled()
     })
+
+    it('should handle comma-separated COOLIFY_FQDN domains', () => {
+      vi.stubEnv('COOLIFY_FQDN', 'myapp.example.com,www.myapp.example.com')
+
+      const firstDomainRequest = createRequest({
+        origin: 'https://myapp.example.com'
+      })
+      const secondDomainRequest = createRequest({
+        origin: 'https://www.myapp.example.com'
+      })
+
+      expect(validateOrigin(firstDomainRequest)).toBe(true)
+      expect(validateOrigin(secondDomainRequest)).toBe(true)
+      expect(mockLogError).not.toHaveBeenCalled()
+    })
+
+    it('should handle comma-separated domains with whitespace', () => {
+      vi.stubEnv('COOLIFY_FQDN', ' myapp.example.com , www.myapp.example.com ')
+
+      const request = createRequest({
+        origin: 'https://www.myapp.example.com'
+      })
+
+      expect(validateOrigin(request)).toBe(true)
+      expect(mockLogError).not.toHaveBeenCalled()
+    })
+
+    it('should reject invalid domains in comma-separated list', () => {
+      vi.stubEnv('COOLIFY_FQDN', 'myapp.example.com,www.myapp.example.com')
+
+      const request = createRequest({
+        origin: 'https://evil.com'
+      })
+
+      expect(validateOrigin(request)).toBe(false)
+      expect(mockLogError).toHaveBeenCalled()
+    })
+
+    it('should handle empty domains in comma-separated list', () => {
+      vi.stubEnv('COOLIFY_FQDN', 'myapp.example.com,,www.myapp.example.com,')
+
+      const request = createRequest({
+        origin: 'https://www.myapp.example.com'
+      })
+
+      expect(validateOrigin(request)).toBe(true)
+      expect(mockLogError).not.toHaveBeenCalled()
+    })
   })
 
   describe('priority and fallback behavior', () => {
