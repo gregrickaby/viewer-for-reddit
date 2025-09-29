@@ -13,10 +13,16 @@ import {
   Group,
   NumberFormatter,
   Stack,
-  Text
+  Text,
+  Tooltip
 } from '@mantine/core'
-import {useState} from 'react'
-import {BiChevronRight, BiSolidUpvote} from 'react-icons/bi'
+import {
+  BiChevronRight,
+  BiSolidUpvote,
+  BiExpandVertical,
+  BiCollapseVertical
+} from 'react-icons/bi'
+import {useCommentExpansion} from './CommentExpansionContext'
 import classes from './CommentItem.module.css'
 
 interface CommentItemProps {
@@ -28,10 +34,24 @@ export function CommentItem({
   comment,
   maxDepth = 4
 }: Readonly<CommentItemProps>) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const {
+    isCommentExpanded,
+    isSubtreeExpanded,
+    toggleComment,
+    toggleCommentSubtree
+  } = useCommentExpansion()
+
+  // Use the comment's ID or permalink as the unique identifier
+  const commentId = comment.id || comment.permalink || ''
+  const isExpanded = isCommentExpanded(commentId)
+  const isSubtreeFullyExpanded = isSubtreeExpanded(commentId)
 
   const toggleExpansion = () => {
-    setIsExpanded(!isExpanded)
+    toggleComment(commentId)
+  }
+
+  const toggleSubtreeExpansion = () => {
+    toggleCommentSubtree(commentId, comment)
   }
 
   const hasReplies =
@@ -119,18 +139,54 @@ export function CommentItem({
                     {comment.replies!.length}{' '}
                     {comment.replies!.length === 1 ? 'reply' : 'replies'}
                   </Badge>
-                  <ActionIcon
-                    variant="subtle"
-                    size="sm"
-                    onClick={toggleExpansion}
-                    className={classes.expandButton}
-                    data-expanded={isExpanded}
-                    aria-label={
-                      isExpanded ? 'Collapse replies' : 'Expand replies'
-                    }
+
+                  {/* Regular expand/collapse button */}
+                  <Tooltip
+                    label={isExpanded ? 'Collapse replies' : 'Expand replies'}
+                    position="top"
                   >
-                    <BiChevronRight size={16} />
-                  </ActionIcon>
+                    <ActionIcon
+                      variant="subtle"
+                      size="sm"
+                      onClick={toggleExpansion}
+                      className={classes.expandButton}
+                      data-expanded={isExpanded}
+                      aria-label={
+                        isExpanded ? 'Collapse replies' : 'Expand replies'
+                      }
+                    >
+                      <BiChevronRight size={16} />
+                    </ActionIcon>
+                  </Tooltip>
+
+                  {/* Expand/collapse ALL descendants button */}
+                  <Tooltip
+                    label={
+                      isSubtreeFullyExpanded
+                        ? 'Collapse all descendants'
+                        : 'Expand all descendants'
+                    }
+                    position="top"
+                  >
+                    <ActionIcon
+                      variant="subtle"
+                      size="sm"
+                      onClick={toggleSubtreeExpansion}
+                      className={classes.expandAllButton}
+                      data-expanded={isSubtreeFullyExpanded}
+                      aria-label={
+                        isSubtreeFullyExpanded
+                          ? 'Collapse all descendants'
+                          : 'Expand all descendants'
+                      }
+                    >
+                      {isSubtreeFullyExpanded ? (
+                        <BiCollapseVertical size={16} />
+                      ) : (
+                        <BiExpandVertical size={16} />
+                      )}
+                    </ActionIcon>
+                  </Tooltip>
                 </Group>
               ) : (
                 <div />

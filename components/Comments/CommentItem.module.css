@@ -52,6 +52,27 @@
   transform: rotate(90deg);
 }
 
+/* Expand all button styling */
+.expandAllButton {
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.expandAllButton:hover {
+  opacity: 1;
+}
+
+.expandAllButton[data-expanded='true'] {
+  color: var(--mantine-color-blue-6);
+  background-color: var(--mantine-color-blue-0);
+}
+
+/* Dark theme support for expand all button */
+[data-mantine-color-scheme='dark'] .expandAllButton[data-expanded='true'] {
+  color: var(--mantine-color-blue-4);
+  background-color: var(--mantine-color-blue-9);
+}
+
 /* Reply count badge */
 .replyCount {
   font-size: var(--mantine-font-size-xs);

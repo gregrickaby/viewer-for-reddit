@@ -27,6 +27,7 @@ import {
 import {useEffect, useMemo} from 'react'
 import {BiSolidUpvote} from 'react-icons/bi'
 import {CommentItem} from './CommentItem'
+import {CommentExpansionProvider} from './CommentExpansionContext'
 import classes from './Comments.module.css'
 
 interface CommentsProps {
@@ -216,106 +217,108 @@ export function Comments({
 
   if (hasCommentsToShow) {
     return (
-      <section className={classes.comments}>
-        {enableNestedComments
-          ? // Render nested comments with CommentItem
-            nestedComments
-              .filter((comment) => comment.id || comment.permalink)
-              .map((comment) => (
-                <CommentItem
-                  key={comment.id || comment.permalink}
-                  comment={comment}
-                  maxDepth={maxCommentDepth}
-                />
-              ))
-          : // Render flat comments (original implementation)
-            comments!
-              .filter(
-                (c: AutoCommentData) => (c as any).id || (c as any).permalink
-              )
-              .map((c: AutoCommentData) => {
-                const comment = c as any
-                return (
-                  <Card
+      <CommentExpansionProvider>
+        <section className={classes.comments}>
+          {enableNestedComments
+            ? // Render nested comments with CommentItem
+              nestedComments
+                .filter((comment) => comment.id || comment.permalink)
+                .map((comment) => (
+                  <CommentItem
                     key={comment.id || comment.permalink}
-                    component="article"
-                    padding="md"
-                    radius="md"
-                    shadow="none"
-                    withBorder
-                  >
-                    <Group gap="xs">
-                      <Anchor
-                        href={`https://reddit.com/user/${comment.author}`}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
+                    comment={comment}
+                    maxDepth={maxCommentDepth}
+                  />
+                ))
+            : // Render flat comments (original implementation)
+              comments!
+                .filter(
+                  (c: AutoCommentData) => (c as any).id || (c as any).permalink
+                )
+                .map((c: AutoCommentData) => {
+                  const comment = c as any
+                  return (
+                    <Card
+                      key={comment.id || comment.permalink}
+                      component="article"
+                      padding="md"
+                      radius="md"
+                      shadow="none"
+                      withBorder
+                    >
+                      <Group gap="xs">
+                        <Anchor
+                          href={`https://reddit.com/user/${comment.author}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <Text c="dimmed" size="sm">
+                            {comment.author}
+                          </Text>
+                        </Anchor>
+                        &middot;
                         <Text c="dimmed" size="sm">
-                          {comment.author}
-                        </Text>
-                      </Anchor>
-                      &middot;
-                      <Text c="dimmed" size="sm">
-                        {formatTimeAgo(comment.created_utc ?? 0)}
-                      </Text>
-                    </Group>
-
-                    <div
-                      className={classes.commentBody}
-                      dangerouslySetInnerHTML={{
-                        __html: decodeAndSanitizeHtml(
-                          comment.body_html ?? comment.body ?? ''
-                        )
-                      }}
-                    />
-
-                    <Group gap="md">
-                      <Group className={classes.meta}>
-                        <BiSolidUpvote size={16} color="red" />
-                        <Text size="sm" c="dimmed">
-                          <NumberFormatter
-                            value={comment.ups}
-                            thousandSeparator
-                          />
+                          {formatTimeAgo(comment.created_utc ?? 0)}
                         </Text>
                       </Group>
-                      <Anchor
-                        href={`https://reddit.com${comment.permalink}`}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        <Text size="sm" c="dimmed">
-                          View on Reddit
-                        </Text>
-                      </Anchor>
-                    </Group>
-                  </Card>
-                )
-              })}
 
-        {/* Load More button for infinite loading */}
-        {enableInfiniteLoading && currentHasNextPage && (
-          <Center pt="md">
-            <Button
-              variant="subtle"
-              loading={currentIsFetchingNextPage}
-              onClick={() => currentFetchNextPage()}
-            >
-              Load More Comments
-            </Button>
-          </Center>
-        )}
+                      <div
+                        className={classes.commentBody}
+                        dangerouslySetInnerHTML={{
+                          __html: decodeAndSanitizeHtml(
+                            comment.body_html ?? comment.body ?? ''
+                          )
+                        }}
+                      />
 
-        <Anchor
-          className={classes.readMoreLink}
-          href={postLink}
-          rel="noopener noreferrer"
-          target="_blank"
-          underline="always"
-        >
-          See all comments on Reddit
-        </Anchor>
-      </section>
+                      <Group gap="md">
+                        <Group className={classes.meta}>
+                          <BiSolidUpvote size={16} color="red" />
+                          <Text size="sm" c="dimmed">
+                            <NumberFormatter
+                              value={comment.ups}
+                              thousandSeparator
+                            />
+                          </Text>
+                        </Group>
+                        <Anchor
+                          href={`https://reddit.com${comment.permalink}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          <Text size="sm" c="dimmed">
+                            View on Reddit
+                          </Text>
+                        </Anchor>
+                      </Group>
+                    </Card>
+                  )
+                })}
+
+          {/* Load More button for infinite loading */}
+          {enableInfiniteLoading && currentHasNextPage && (
+            <Center pt="md">
+              <Button
+                variant="subtle"
+                loading={currentIsFetchingNextPage}
+                onClick={() => currentFetchNextPage()}
+              >
+                Load More Comments
+              </Button>
+            </Center>
+          )}
+
+          <Anchor
+            className={classes.readMoreLink}
+            href={postLink}
+            rel="noopener noreferrer"
+            target="_blank"
+            underline="always"
+          >
+            See all comments on Reddit
+          </Anchor>
+        </section>
+      </CommentExpansionProvider>
     )
   }
 
