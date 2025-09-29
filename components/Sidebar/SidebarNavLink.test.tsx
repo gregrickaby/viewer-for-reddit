@@ -38,27 +38,24 @@ beforeEach(() => {
 })
 
 describe('SidebarNavLink', () => {
-  it('calls toggle when navbar is shown', async () => {
+  it('calls mobile toggle handler when clicked', async () => {
     const user = userEvent.setup()
-    const toggle = vi.fn()
+    const toggleOnMobile = vi.fn()
     mockUseHeaderState.mockReturnValue({
       showNavbar: true,
-      toggleNavbarHandler: toggle
+      toggleNavbarOnMobileHandler: toggleOnMobile
     })
     render(<SidebarNavLink name="test" icon="i" />)
     await user.click(screen.getByRole('link'))
-    expect(toggle).toHaveBeenCalled()
+    expect(toggleOnMobile).toHaveBeenCalled()
   })
 
-  it('does not call toggle when navbar hidden', async () => {
-    const user = userEvent.setup()
-    const toggle = vi.fn()
+  it('renders with correct href and SubredditName', () => {
     mockUseHeaderState.mockReturnValue({
-      showNavbar: false,
-      toggleNavbarHandler: toggle
+      showNavbar: true,
+      toggleNavbarOnMobileHandler: vi.fn()
     })
     render(<SidebarNavLink name="test" icon="i" />)
-    await user.click(screen.getByRole('link'))
-    expect(toggle).not.toHaveBeenCalled()
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/r/test')
   })
 })

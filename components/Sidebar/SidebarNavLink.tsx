@@ -9,14 +9,14 @@ import {NavLink} from '@mantine/core'
 import Link from 'next/link'
 
 export function SidebarNavLink(props: Readonly<SubredditNameProps>) {
-  const {showNavbar, toggleNavbarHandler} = useHeaderState()
+  const {toggleNavbarOnMobileHandler} = useHeaderState()
 
   return (
     <NavLink
       component={Link}
       href={`/r/${props.name}`}
       label={<SubredditName {...props} />}
-      onClick={showNavbar ? toggleNavbarHandler : undefined}
+      onClick={toggleNavbarOnMobileHandler}
     />
   )
 }

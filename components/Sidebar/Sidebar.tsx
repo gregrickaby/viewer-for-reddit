@@ -29,18 +29,18 @@ export function Sidebar() {
   const {remove: removeFromHistory} = useRemoveItemFromHistory()
   const {remove: removeFromFavorites} = useRemoveFromFavorites()
   const {data: trending = []} = useGetPopularSubredditsQuery({limit: 10})
-  const {showNavbar, toggleNavbarHandler} = useHeaderState()
+  const {toggleNavbarOnMobileHandler} = useHeaderState()
 
   if (!mounted) return null
 
   return (
-    <ScrollArea type="auto" h="100%">
+    <ScrollArea type="never" h="100%">
       <Stack gap="xs">
         <NavLink
           label="Home"
           component={Link}
           href="/"
-          onClick={showNavbar ? toggleNavbarHandler : undefined}
+          onClick={toggleNavbarOnMobileHandler}
           leftSection={<FaHome />}
         />
 
@@ -48,7 +48,7 @@ export function Sidebar() {
           label="All"
           component={Link}
           href="/r/all"
-          onClick={showNavbar ? toggleNavbarHandler : undefined}
+          onClick={toggleNavbarOnMobileHandler}
           leftSection={<MdDynamicFeed />}
         />
 
@@ -56,7 +56,7 @@ export function Sidebar() {
           label="Popular"
           component={Link}
           href="/r/popular"
-          onClick={showNavbar ? toggleNavbarHandler : undefined}
+          onClick={toggleNavbarOnMobileHandler}
           leftSection={<FaRegArrowAltCircleUp />}
         />
 
@@ -88,7 +88,7 @@ export function Sidebar() {
           label="About"
           component={Link}
           href="/about"
-          onClick={showNavbar ? toggleNavbarHandler : undefined}
+          onClick={toggleNavbarOnMobileHandler}
           leftSection={<FaInfoCircle />}
         />
       </Stack>

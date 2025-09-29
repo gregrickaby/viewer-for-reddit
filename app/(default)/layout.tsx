@@ -4,7 +4,7 @@ import {Header} from '@/components/Header/Header'
 import {Sidebar} from '@/components/Sidebar/Sidebar'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {AppShell, Container} from '@mantine/core'
-import {useViewportSize} from '@mantine/hooks'
+import {useMediaQuery} from '@mantine/hooks'
 
 /**
  * The client-side layout component with the AppShell.
@@ -14,16 +14,19 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const {showNavbar: isNavbarCollapsed} = useHeaderState()
-  const isMobile = useViewportSize().width < 480
+  const {showNavbar} = useHeaderState()
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
   return (
     <AppShell
       header={{height: 84, collapsed: false}}
       footer={{collapsed: isMobile, height: 54}}
       navbar={{
-        breakpoint: 'sm',
-        collapsed: {mobile: !isNavbarCollapsed, desktop: !isNavbarCollapsed},
+        breakpoint: 'md',
+        collapsed: {
+          mobile: !showNavbar, // Mobile: overlay behavior
+          desktop: !showNavbar // Desktop: push behavior
+        },
         width: 320
       }}
       padding="md"
@@ -36,8 +39,10 @@ export default function Layout({
         <Sidebar />
       </AppShell.Navbar>
 
-      <AppShell.Main pl="0" pr="0">
-        <Container maw={700}>{children}</Container>
+      <AppShell.Main>
+        <Container maw={700} px="md">
+          {children}
+        </Container>
       </AppShell.Main>
     </AppShell>
   )

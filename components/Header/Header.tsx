@@ -16,13 +16,10 @@ export function Header() {
   const {setQuery} = useSubredditSearch()
 
   /**
-   * When clicking the logo, clear the search query and close the navbar.
+   * When clicking the logo, clear the search query.
    */
   const onClickHandler = () => {
     setQuery('')
-    if (showNavbar) {
-      toggleNavbarHandler()
-    }
   }
 
   return (

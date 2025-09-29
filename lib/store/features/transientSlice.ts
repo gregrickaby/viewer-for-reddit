@@ -14,7 +14,7 @@ export interface TransientState {
 }
 
 const initialState: TransientState = {
-  toggleNavbar: false,
+  toggleNavbar: false, // Start with navbar closed by default
   mobileSearchState: 'closed',
   searchQuery: ''
 }

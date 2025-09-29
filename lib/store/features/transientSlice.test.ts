@@ -15,7 +15,7 @@ interface TestState {
 }
 
 const baseState: TestState = {
-  toggleNavbar: false,
+  toggleNavbar: false, // Updated to match new initial state
   mobileSearchState: 'closed',
   searchQuery: ''
 }
