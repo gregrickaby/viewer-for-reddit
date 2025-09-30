@@ -104,6 +104,25 @@ export function decodeHtmlEntities(str: string): string {
 }
 
 /**
+ * Validates that a URL is safe for use in links.
+ * Only allows http/https protocols to prevent javascript: and other dangerous protocols.
+ *
+ * @param url - URL to validate
+ * @returns True if URL is safe, false otherwise
+ */
+function isValidUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false
+
+  try {
+    const parsedUrl = new URL(url)
+    return ['http:', 'https:'].includes(parsedUrl.protocol)
+  } catch {
+    // Handle relative URLs
+    return url.startsWith('/') || url.startsWith('#')
+  }
+}
+
+/**
  * Decodes Reddit's double-encoded HTML and sanitizes it for safe DOM insertion.
  *
  * Reddit's API returns HTML content that is double-encoded (HTML entities are
@@ -124,6 +143,7 @@ export function decodeHtmlEntities(str: string): string {
  * @security
  * - Decodes double-encoded HTML entities from Reddit API
  * - Applies comprehensive HTML sanitization
+ * - Validates all URLs to prevent javascript: and data: protocol attacks
  * - Forces all links to open in new tabs with security attributes
  * - Prevents XSS attacks through malicious HTML content
  */
@@ -134,19 +154,52 @@ export function decodeAndSanitizeHtml(encodedHtml: string): string {
   // This converts "&lt;p&gt;" back to "<p>"
   const decoded = decodeHtmlEntities(encodedHtml)
 
-  // Then sanitize the decoded HTML with enhanced link security.
+  // Then sanitize the decoded HTML with enhanced security
   return sanitizeHtml(decoded, {
     ...BASE_OPTIONS,
-    // Force anchors to open in a new tab and add safe rel attributes.
+    // Enhanced URL filtering to prevent protocol-based attacks
+    allowedSchemes: ['http', 'https'],
+    allowedSchemesByTag: {
+      a: ['http', 'https']
+    },
+    // Force anchors to open in a new tab and add safe rel attributes
     transformTags: {
-      a: (_tagName, attribs) => ({
-        tagName: 'a',
-        attribs: {
-          href: attribs.href || '#',
-          target: '_blank',
-          rel: 'noopener noreferrer'
+      a: (_tagName, attribs) => {
+        const href = attribs.href
+
+        // If href is missing or empty, provide a safe placeholder
+        if (!href) {
+          return {
+            tagName: 'a',
+            attribs: {
+              href: '#',
+              target: '_blank',
+              rel: 'noopener noreferrer'
+            }
+          }
         }
-      })
+
+        // Validate URL safety - if invalid, convert to safe placeholder
+        if (!isValidUrl(href)) {
+          return {
+            tagName: 'a',
+            attribs: {
+              href: '#',
+              target: '_blank',
+              rel: 'noopener noreferrer'
+            }
+          }
+        }
+
+        return {
+          tagName: 'a',
+          attribs: {
+            href,
+            target: '_blank',
+            rel: 'noopener noreferrer'
+          }
+        }
+      }
     }
   })
 }

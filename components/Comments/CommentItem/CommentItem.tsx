@@ -18,11 +18,11 @@ import {
 } from '@mantine/core'
 import {
   BiChevronRight,
-  BiSolidUpvote,
+  BiCollapseVertical,
   BiExpandVertical,
-  BiCollapseVertical
+  BiSolidUpvote
 } from 'react-icons/bi'
-import {useCommentExpansion} from './CommentExpansionContext'
+import {useCommentExpansion} from '../CommentExpansionContext/CommentExpansionContext'
 import classes from './CommentItem.module.css'
 
 interface CommentItemProps {

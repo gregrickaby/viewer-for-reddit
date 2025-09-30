@@ -1,5 +1,3 @@
-/* CommentItem component styles */
-
 .commentItem {
   position: relative;
 }
@@ -8,7 +6,6 @@
   position: relative;
 }
 
-/* Thread lines for nested comments */
 .threadLine {
   position: absolute;
   left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
@@ -29,7 +26,6 @@
   background-color: var(--mantine-color-gray-3);
 }
 
-/* Dark theme support */
 [data-mantine-color-scheme='dark'] .threadLine {
   background-color: var(--mantine-color-dark-4);
 }
@@ -38,12 +34,10 @@
   background-color: var(--mantine-color-dark-4);
 }
 
-/* Indentation for nested comments */
 .nestedComment {
   margin-left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
 }
 
-/* Expand/collapse button styling */
 .expandButton {
   transition: transform 0.2s ease;
 }
@@ -52,7 +46,6 @@
   transform: rotate(90deg);
 }
 
-/* Expand all button styling */
 .expandAllButton {
   transition: all 0.2s ease;
   opacity: 0.7;
@@ -67,13 +60,11 @@
   background-color: var(--mantine-color-blue-0);
 }
 
-/* Dark theme support for expand all button */
 [data-mantine-color-scheme='dark'] .expandAllButton[data-expanded='true'] {
   color: var(--mantine-color-blue-4);
   background-color: var(--mantine-color-blue-9);
 }
 
-/* Reply count badge */
 .replyCount {
   font-size: var(--mantine-font-size-xs);
   min-width: auto;
@@ -81,7 +72,6 @@
   padding: 2px 6px;
 }
 
-/* Comment body styling */
 .commentBody {
   margin-top: var(--mantine-spacing-xs);
   margin-bottom: var(--mantine-spacing-sm);
@@ -96,13 +86,11 @@
   margin-bottom: 0;
 }
 
-/* Meta information styling */
 .commentMeta {
   margin-top: var(--mantine-spacing-sm);
   gap: var(--mantine-spacing-md);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .nestedComment {
     margin-left: calc(var(--comment-depth) * var(--mantine-spacing-md));

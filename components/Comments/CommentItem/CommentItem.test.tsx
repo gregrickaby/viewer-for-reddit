@@ -1,7 +1,7 @@
 import type {NestedCommentData} from '@/lib/utils/commentFilters'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
-import {CommentExpansionProvider} from './CommentExpansionContext'
+import {CommentExpansionProvider} from '../CommentExpansionContext/CommentExpansionContext'
 import {CommentItem} from './CommentItem'
 
 const mockBasicComment: NestedCommentData = {

@@ -1,7 +1,6 @@
 import type {NestedCommentData} from '@/lib/utils/commentFilters'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
-import {vi} from 'vitest'
 import {
   CommentExpansionProvider,
   useCommentExpansion

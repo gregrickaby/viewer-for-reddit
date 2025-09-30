@@ -1,7 +1,13 @@
 'use client'
 
 import type {NestedCommentData} from '@/lib/utils/commentFilters'
-import {createContext, useContext, useState, type ReactNode} from 'react'
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode
+} from 'react'
 
 interface CommentExpansionState {
   expandedComments: Set<string>
@@ -52,7 +58,7 @@ interface CommentExpansionProviderProps {
 
 export function CommentExpansionProvider({
   children
-}: CommentExpansionProviderProps) {
+}: Readonly<CommentExpansionProviderProps>) {
   const [state, setState] = useState<CommentExpansionState>({
     expandedComments: new Set(),
     expandedSubtrees: new Set()
@@ -156,17 +162,30 @@ export function CommentExpansionProvider({
     return state.expandedSubtrees.has(commentId)
   }
 
-  const value: CommentExpansionContextValue = {
-    state,
-    expandComment,
-    collapseComment,
-    expandCommentSubtree,
-    collapseCommentSubtree,
-    toggleComment,
-    toggleCommentSubtree,
-    isCommentExpanded,
-    isSubtreeExpanded
-  }
+  const value: CommentExpansionContextValue = useMemo(
+    () => ({
+      state,
+      expandComment,
+      collapseComment,
+      expandCommentSubtree,
+      collapseCommentSubtree,
+      toggleComment,
+      toggleCommentSubtree,
+      isCommentExpanded,
+      isSubtreeExpanded
+    }),
+    [
+      state,
+      expandComment,
+      collapseComment,
+      expandCommentSubtree,
+      collapseCommentSubtree,
+      toggleComment,
+      toggleCommentSubtree,
+      isCommentExpanded,
+      isSubtreeExpanded
+    ]
+  )
 
   return (
     <CommentExpansionContext.Provider value={value}>

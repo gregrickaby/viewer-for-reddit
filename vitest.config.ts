@@ -21,7 +21,8 @@ export default defineConfig({
       '**/cypress/**',
       '**/.{idea,git,cache,output,temp}/**',
       '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
-      '**/tests/e2e/**'
+      '**/tests/e2e/**',
+      '**/vitest.config.*'
     ],
     coverage: {
       enabled: true,
@@ -35,7 +36,8 @@ export default defineConfig({
         '**/tests/e2e/**',
         '**/types/**',
         '*.config.ts',
-        '*.d.ts'
+        '*.d.ts',
+        '**/vitest.config.*'
       ],
       reporter: ['text', 'json', 'html']
     }

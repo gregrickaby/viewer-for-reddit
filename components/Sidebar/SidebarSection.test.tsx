@@ -5,15 +5,14 @@ import userEvent from '@testing-library/user-event'
 const {handleDelete, navLinkMock} = vi.hoisted(() => ({
   handleDelete: vi.fn(),
   navLinkMock: vi.fn((props: any) => (
-    <div
+    <button
+      type="button"
       data-testid="nav-link"
-      role="button"
-      tabIndex={0}
       onClick={() => props.onDelete?.()}
       onKeyDown={() => props.onDelete?.()}
     >
       {props.name}
-    </div>
+    </button>
   ))
 }))
 

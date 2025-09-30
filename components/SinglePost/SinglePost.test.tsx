@@ -26,7 +26,7 @@ describe('SinglePost', () => {
     expect(screen.getByText('Back to r/programming')).toBeInTheDocument()
 
     // Check for comments section (might be empty initially)
-    expect(screen.getByText(/Comments/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', {name: 'Comments'})).toBeInTheDocument()
   })
 
   it('should render post with no comments', async () => {
@@ -37,7 +37,7 @@ describe('SinglePost', () => {
     })
 
     // Should show comments section
-    expect(screen.getByText(/Comments/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', {name: 'Comments'})).toBeInTheDocument()
   })
 
   it('should render 404 error state', async () => {
