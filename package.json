@@ -60,7 +60,7 @@
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^24.5.2",
+    "@types/node": "^24.6.0",
     "@types/react": "^19.1.15",
     "@types/react-dom": "^19.1.9",
     "@types/sanitize-html": "^2.16.0",
@@ -75,7 +75,7 @@
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-testing-library": "^7.10.0",
+    "eslint-plugin-testing-library": "^7.11.0",
     "jsdom": "^27.0.0",
     "msw": "^2.11.3",
     "openapi-typescript": "^7.9.1",
@@ -88,7 +88,7 @@
     "sharp": "^0.34.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.1",
+    "typescript-eslint": "^8.45.0",
     "yaml": "^2.8.1"
   }
 }
