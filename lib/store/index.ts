@@ -1,3 +1,4 @@
+import {authSlice} from '@/lib/store/features/authSlice'
 import {settingsSlice} from '@/lib/store/features/settingsSlice'
 import {transientSlice} from '@/lib/store/features/transientSlice'
 import {commentsApi} from '@/lib/store/services/commentsApi'
@@ -20,6 +21,7 @@ const rootReducer = combineSlices(
   commentsApi,
   userApi,
   subredditApi,
+  authSlice,
   settingsSlice,
   transientSlice
 )

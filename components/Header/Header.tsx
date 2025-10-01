@@ -1,6 +1,6 @@
 'use client'
 
-import {HeaderIcons} from '@/components/Header/HeaderIcons'
+import {UserMenu} from '@/components/Auth/UserMenu'
 import {Search} from '@/components/Search/Search'
 import config from '@/lib/config'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
@@ -40,7 +40,7 @@ export function Header() {
       </div>
       <div className={classes.headerRight}>
         <Search />
-        <HeaderIcons />
+        <UserMenu />
       </div>
     </div>
   )

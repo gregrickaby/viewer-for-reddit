@@ -58,6 +58,8 @@ beforeAll(() => {
 
   vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
   vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
+  vi.stubEnv('SESSION_SECRET', 'test-session-secret-at-least-32-chars-long')
+  vi.stubEnv('AUTH_URL', 'http://localhost:3000')
 
   vi.spyOn(console, 'error').mockImplementation(() => {})
   vi.spyOn(console, 'warn').mockImplementation(() => {})

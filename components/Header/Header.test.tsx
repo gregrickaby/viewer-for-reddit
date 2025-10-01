@@ -8,6 +8,15 @@ vi.mock('next/navigation', () => ({
   })
 }))
 
+// Mock next-auth/react
+vi.mock('next-auth/react', () => ({
+  useSession: vi.fn(() => ({
+    data: null,
+    status: 'unauthenticated',
+    update: vi.fn()
+  }))
+}))
+
 describe('Header', () => {
   beforeEach(() => {
     mockPush.mockClear()

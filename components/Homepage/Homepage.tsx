@@ -7,6 +7,7 @@ import {
   selectFavoriteSubreddits,
   selectHasFavorites
 } from '@/lib/store/selectors/settingsSelectors'
+import {useEffect} from 'react'
 
 /**
  * Homepage component
@@ -16,6 +17,17 @@ import {
 export function Homepage() {
   const hasFavorites = useAppSelector(selectHasFavorites)
   const favoriteSubreddits = useAppSelector(selectFavoriteSubreddits)
+
+  // Clean up hash from OAuth redirect
+  useEffect(() => {
+    if (window.location.hash === '#_') {
+      window.history.replaceState(
+        null,
+        '',
+        window.location.pathname + window.location.search
+      )
+    }
+  }, [])
 
   if (hasFavorites) {
     return <FavoritePosts favorites={favoriteSubreddits} sort="hot" />
