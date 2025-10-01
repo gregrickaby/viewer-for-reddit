@@ -2,31 +2,33 @@
 
 **Audience**: All AI agents (GitHub Copilot, Claude Code, Cursor, etc.)
 **Purpose**: Machine-readable operational runbook for viewer-for-reddit
-**Human Docs**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for comprehensive developer guide
+**Human Docs**: See [CONTRIBUTING.md](./CONTRIBUTING.md) for comprehensive developer guide
 
 ## Available Sub-agents
 
-- **Accessibility Tester**: [accessibility-tester](.github/agents/accessibility-tester.md)
-- **Architect Reviewer**: [architect-reviewer](.github/agents/architect-reviewer.md)
-- **Code Reviewer**: [code-reviewer](.github/agents/code-reviewer.md)
-- **Full-stack Developer**: [fullstack-developer](.github/agents/fullstack-developer.md)
-- **Next.js Developer**: [nextjs-developer](.github/agents/nextjs-developer.md)
-- **Performance Engineer**: [performance-engineer](.github/agents/performance-engineer.md)
-- **QA Expert**: [qa-expert](.github/agents/qa-expert.md)
-- **Security Engineer**: [security-engineer](.github/agents/security-engineer.md)
-- **TypeScript Professional**: [typescript-professional](.github/agents/typescript-pro.md)
+- **Accessibility Tester**: [accessibility-tester](./.claude/agents/accessibility-tester.md)
+- **Architect Reviewer**: [architect-reviewer](./.claude/agents/architect-reviewer.md)
+- **Code Reviewer**: [code-reviewer](./.claude/agents/code-reviewer.md)
+- **Full-stack Developer**: [fullstack-developer](./.claude/agents/fullstack-developer.md)
+- **Next.js Developer**: [nextjs-developer](./.claude/agents/nextjs-developer.md)
+- **Performance Engineer**: [performance-engineer](./.claude/agents/performance-engineer.md)
+- **QA Expert**: [qa-expert](./.claude/agents/qa-expert.md)
+- **Security Engineer**: [security-engineer](./.claude/agents/security-engineer.md)
+- **TypeScript Professional**: [typescript-professional](./.claude/agents/typescript-pro.md)
 
 ## Architecture Overview
 
 - **Framework**: Next.js 15+ (App Router)
-- **UI**: Mantine v8 component library. Please use Mantine primitives. Fetch official <https://mantine.dev/llms.txt>
+- **UI**: Mantine v8 component library.
+  - Please use Mantine primitives. Fetch official docs: <https://mantine.dev/llms.txt>
 - **API**: Reddit API v2 with OpenAPI spec and auto-generated types
 - **Authentication**: Reddit OAuth 2.0 (Server Actions)
 - **CI/CD**: GitHub Actions with validation gates
-- **CSS**: CSS Modules with Mantine theming
+- **CSS**: CSS Modules with Mantine CSS variables
+- **Data Fetching**: RTK Query
 - **Formatting**: Prettier
 - **Linting**: ESLint with Mantine config
-- **State Management**: Redux Toolkit + RTK Query
+- **State Management**: Redux Toolkit
 - **Testing**: Vitest + React Testing Library + MSW v2
 - **TypeScript**: Strict mode enabled. Never use `any` type
 - **Coolify**: This app is self-hosted and deployed with Coolify using Nixpacks
