@@ -13,7 +13,8 @@ const mockBasicComment: NestedCommentData = {
   ups: 42,
   permalink: '/r/test/comments/abc123/test/comment1',
   depth: 0,
-  hasReplies: false
+  hasReplies: false,
+  name: 't1_comment1'
 }
 
 const mockCommentWithReplies: NestedCommentData = {
@@ -36,7 +37,8 @@ const mockCommentWithReplies: NestedCommentData = {
       ups: 8,
       permalink: '/r/test/comments/abc123/test/reply1',
       depth: 1,
-      hasReplies: false
+      hasReplies: false,
+      name: 't1_reply1'
     }
   ]
 }
@@ -56,6 +58,7 @@ describe('CommentItem', () => {
 
     expect(screen.getByText('testuser')).toBeInTheDocument()
     expect(screen.getByText('This is a test comment')).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: /upvote/i})).toBeInTheDocument()
     expect(screen.getByText('42')).toBeInTheDocument()
     expect(screen.getByText('View on Reddit')).toBeInTheDocument()
   })
@@ -81,7 +84,11 @@ describe('CommentItem', () => {
       ...mockCommentWithReplies,
       replies: [
         mockCommentWithReplies.replies![0],
-        {...mockCommentWithReplies.replies![0], id: 'reply2'}
+        {
+          ...mockCommentWithReplies.replies![0],
+          id: 'reply2',
+          name: 't1_reply2'
+        }
       ]
     }
 
@@ -142,7 +149,8 @@ describe('CommentItem', () => {
               ups: 3,
               permalink: '/r/test/comments/abc123/test/nested-reply',
               depth: 2,
-              hasReplies: false
+              hasReplies: false,
+              name: 't1_nested'
             }
           ]
         }

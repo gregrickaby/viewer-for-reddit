@@ -1,3 +1,4 @@
+import type {SubredditItem} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
 import {MAX_LIMIT} from '@/lib/utils/apiConstants'
 import {baseQuery} from '@/lib/utils/baseQuery/baseQuery'
@@ -16,6 +17,89 @@ import {createApi} from '@reduxjs/toolkit/query/react'
 // failures when the OpenAPI spec is narrower than runtime responses.
 type AutoUserPostsResponse = components['schemas']['GetSubredditPostsResponse']
 type AutoUserProfileResponse = components['schemas']['GetUserProfileResponse']
+
+interface MineSubredditChild {
+  data?: {
+    display_name?: string
+    icon_img?: string
+    community_icon?: string
+    over18?: boolean
+    public_description?: string
+    subscribers?: number
+  }
+}
+
+interface MineSubredditResponse {
+  data?: {
+    children?: MineSubredditChild[]
+  }
+}
+
+interface MultiResponseItem {
+  data?: {
+    display_name?: string
+    name?: string
+    path?: string
+    icon_url?: string
+    description_md?: string
+  }
+}
+
+const normalizeIcon = (icon?: string | null) => {
+  if (!icon) return undefined
+  const [cleanIcon] = icon.split('?')
+  return cleanIcon
+}
+
+const mapMineSubscriptions = (
+  response: MineSubredditResponse
+): SubredditItem[] => {
+  const children = response.data?.children ?? []
+  return children
+    .map((child) => child.data)
+    .filter(
+      (
+        data
+      ): data is NonNullable<MineSubredditChild['data']> & {
+        display_name: string
+      } => Boolean(data?.display_name)
+    )
+    .map((data) => ({
+      display_name: data.display_name,
+      icon_img: normalizeIcon(
+        data.icon_img ?? data.community_icon ?? undefined
+      ),
+      over18: Boolean(data.over18),
+      public_description: data.public_description ?? '',
+      subscribers: data.subscribers ?? 0,
+      value: `r/${data.display_name}`
+    }))
+}
+
+const mapCustomFeeds = (response: unknown): SubredditItem[] => {
+  const items: MultiResponseItem[] = Array.isArray(response)
+    ? (response as MultiResponseItem[])
+    : ((response as {data?: MultiResponseItem[]})?.data ?? [])
+
+  return items
+    .map((item) => item?.data)
+    .filter(
+      (
+        data
+      ): data is NonNullable<MultiResponseItem['data']> & {
+        display_name: string
+        path: string
+      } => Boolean(data?.display_name && data?.path)
+    )
+    .map((data) => ({
+      display_name: data.display_name,
+      icon_img: normalizeIcon(data.icon_url),
+      over18: false,
+      public_description: data.description_md ?? '',
+      subscribers: 0,
+      value: data.path.startsWith('/') ? data.path.slice(1) : data.path
+    }))
+}
 
 /** Extracted data type for user posts responses */
 export type AutoUserPostChild = NonNullable<
@@ -39,7 +123,12 @@ export type AutoUserProfileData = NonNullable<AutoUserProfileResponse['data']>
  */
 export const userApi = createApi({
   reducerPath: 'userApi',
-  tagTypes: ['UserProfile', 'UserPosts'],
+  tagTypes: [
+    'UserProfile',
+    'UserPosts',
+    'UserSubscriptions',
+    'UserCustomFeeds'
+  ],
   baseQuery,
   endpoints: (builder) => ({
     /**
@@ -140,6 +229,46 @@ export const userApi = createApi({
       providesTags: (_result, _err, username) => [
         {type: 'UserPosts', id: username}
       ]
+    }),
+
+    /**
+     * Fetches authenticated user's subscribed subreddits.
+     */
+    getUserSubscriptions: builder.query<SubredditItem[], void>({
+      query: () => {
+        const params = new URLSearchParams({limit: String(MAX_LIMIT)})
+        return `/subreddits/mine/subscriber.json?${params.toString()}`
+      },
+      transformResponse: (response: MineSubredditResponse) =>
+        mapMineSubscriptions(response),
+      providesTags: (result) =>
+        result?.length
+          ? [
+              ...result.map((item) => ({
+                type: 'UserSubscriptions' as const,
+                id: item.display_name
+              })),
+              {type: 'UserSubscriptions' as const}
+            ]
+          : [{type: 'UserSubscriptions' as const}]
+    }),
+
+    /**
+     * Fetches authenticated user's custom multi-reddits.
+     */
+    getUserCustomFeeds: builder.query<SubredditItem[], void>({
+      query: () => '/api/multi/mine.json',
+      transformResponse: (response: unknown) => mapCustomFeeds(response),
+      providesTags: (result) =>
+        result?.length
+          ? [
+              ...result.map((item) => ({
+                type: 'UserCustomFeeds' as const,
+                id: item.display_name
+              })),
+              {type: 'UserCustomFeeds' as const}
+            ]
+          : [{type: 'UserCustomFeeds' as const}]
     })
   })
 })
@@ -148,4 +277,9 @@ export const userApi = createApi({
  * Exported RTK Query hooks for User API endpoints.
  * @see {@link https://redux-toolkit.js.org/rtk-query/usage/queries} RTK Query Usage Guide
  */
-export const {useGetUserProfileQuery, useGetUserPostsInfiniteQuery} = userApi
+export const {
+  useGetUserProfileQuery,
+  useGetUserPostsInfiniteQuery,
+  useGetUserSubscriptionsQuery,
+  useGetUserCustomFeedsQuery
+} = userApi

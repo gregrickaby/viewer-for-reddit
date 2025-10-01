@@ -1,6 +1,7 @@
 'use client'
 
 import {HeaderIcons} from '@/components/Header/HeaderIcons'
+import {UserMenu} from '@/components/Header/UserMenu'
 import {Search} from '@/components/Search/Search'
 import config from '@/lib/config'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
@@ -8,7 +9,6 @@ import {useSubredditSearch} from '@/lib/hooks/useSubredditSearch'
 import {Burger, Group, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
-import Snoo from '../../app/icon.png'
 import classes from './Header.module.css'
 
 export function Header() {
@@ -32,7 +32,7 @@ export function Header() {
         />
         <Link href="/" onClick={onClickHandler}>
           <Group>
-            <Image alt="Logo" height={38} src={Snoo} width={38} priority />
+            <Image alt="Logo" height={38} src="/icon.png" width={38} priority />
             <Title visibleFrom="md">{config.siteName}</Title>
           </Group>
         </Link>
@@ -41,6 +41,7 @@ export function Header() {
       <div className={classes.headerRight}>
         <Search />
         <HeaderIcons />
+        <UserMenu />
       </div>
     </div>
   )

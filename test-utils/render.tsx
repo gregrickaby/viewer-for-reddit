@@ -2,11 +2,14 @@ import {makeStore, type AppStore, type RootState} from '@/lib/store'
 import {StoreProvider} from '@/lib/store/StoreProvider'
 import {MantineProvider} from '@mantine/core'
 import {render as rtlRender, type RenderOptions} from '@testing-library/react'
+import {SessionProvider} from 'next-auth/react'
+import type {Session} from 'next-auth'
 import type {PropsWithChildren, ReactElement} from 'react'
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   preloadedState?: Partial<RootState>
   store?: AppStore
+  session?: Session | null
 }
 
 /**
@@ -18,12 +21,19 @@ export function render(
   {
     preloadedState,
     store = makeStore(preloadedState),
+    session = null,
     ...renderOptions
   }: ExtendedRenderOptions = {}
 ) {
   const Wrapper = ({children}: PropsWithChildren) => (
     <StoreProvider store={store}>
-      <MantineProvider defaultColorScheme="auto">{children}</MantineProvider>
+      <SessionProvider
+        session={session}
+        refetchOnWindowFocus={false}
+        refetchWhenOffline={false}
+      >
+        <MantineProvider defaultColorScheme="auto">{children}</MantineProvider>
+      </SessionProvider>
     </StoreProvider>
   )
 

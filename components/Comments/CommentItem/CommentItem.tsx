@@ -11,7 +11,6 @@ import {
   Card,
   Collapse,
   Group,
-  NumberFormatter,
   Stack,
   Text,
   Tooltip
@@ -19,9 +18,9 @@ import {
 import {
   BiChevronRight,
   BiCollapseVertical,
-  BiExpandVertical,
-  BiSolidUpvote
+  BiExpandVertical
 } from 'react-icons/bi'
+import {VoteButtonGroup} from '@/components/Vote/VoteButtonGroup'
 import {useCommentExpansion} from '../CommentExpansionContext/CommentExpansionContext'
 import classes from './CommentItem.module.css'
 
@@ -100,16 +99,19 @@ export function CommentItem({
                 &middot;
               </Text>
 
-              <Badge variant="light" size="sm" color="gray">
-                <Group gap={4} align="center">
-                  <BiSolidUpvote size={14} color="red" />
-                  <NumberFormatter value={comment.ups} thousandSeparator />
-                </Group>
-              </Badge>
-
-              <Text c="dimmed" size="sm">
-                &middot;
-              </Text>
+              {comment.name && (
+                <>
+                  <Text c="dimmed" size="sm">
+                    &middot;
+                  </Text>
+                  <VoteButtonGroup
+                    id={comment.name}
+                    score={comment.ups ?? 0}
+                    likes={(comment as {likes?: boolean | null}).likes}
+                    size="sm"
+                  />
+                </>
+              )}
 
               <Text c="dimmed" size="sm">
                 {formatTimeAgo(comment.created_utc ?? 0)}

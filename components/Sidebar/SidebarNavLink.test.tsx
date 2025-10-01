@@ -45,7 +45,9 @@ describe('SidebarNavLink', () => {
       showNavbar: true,
       toggleNavbarOnMobileHandler: toggleOnMobile
     })
-    render(<SidebarNavLink name="test" icon="i" />)
+    render(
+      <SidebarNavLink name="test" icon="i" href="/r/test" label="r/test" />
+    )
     await user.click(screen.getByRole('link'))
     expect(toggleOnMobile).toHaveBeenCalled()
   })
@@ -55,7 +57,9 @@ describe('SidebarNavLink', () => {
       showNavbar: true,
       toggleNavbarOnMobileHandler: vi.fn()
     })
-    render(<SidebarNavLink name="test" icon="i" />)
+    render(
+      <SidebarNavLink name="test" icon="i" href="/r/test" label="r/test" />
+    )
     expect(screen.getByRole('link')).toHaveAttribute('href', '/r/test')
   })
 })

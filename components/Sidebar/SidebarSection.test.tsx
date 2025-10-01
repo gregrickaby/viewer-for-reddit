@@ -54,7 +54,15 @@ describe('SidebarSection', () => {
   it('renders subreddits and handles delete when enabled', async () => {
     const user = userEvent.setup()
     navLinkMock.mockClear()
-    const subs: any = [{display_name: 'a', icon_img: ''}]
+    const subs: any = [
+      {
+        display_name: 'a',
+        icon_img: '',
+        value: 'r/a',
+        over18: false,
+        subscribers: 1
+      }
+    ]
     render(
       <SidebarSection label="L" subreddits={subs} enableDelete enableFavorite />
     )
@@ -68,7 +76,15 @@ describe('SidebarSection', () => {
 
   it('renders without delete when disabled', () => {
     navLinkMock.mockClear()
-    const subs: any = [{display_name: 'b', icon_img: ''}]
+    const subs: any = [
+      {
+        display_name: 'b',
+        icon_img: '',
+        value: 'r/b',
+        over18: false,
+        subscribers: 1
+      }
+    ]
     render(<SidebarSection label="L" subreddits={subs} enableFavorite />)
     const props = navLinkMock.mock.calls[0][0]
     expect(props.onDelete).toBeUndefined()

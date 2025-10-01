@@ -1,3 +1,4 @@
+import {auth} from '@/auth'
 import {getRedditToken} from '@/lib/actions/redditToken'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
@@ -65,16 +66,24 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const token = await getRedditToken()
+    const session = await auth()
+    const sessionToken = session?.accessToken
+    let accessToken = sessionToken
+    let tokenSource: 'session' | 'application' = 'session'
 
-    if (!token?.access_token) {
+    if (!accessToken) {
+      const token = await getRedditToken()
+      accessToken = token?.access_token
+      tokenSource = 'application'
+    }
+
+    if (!accessToken) {
       logError('Reddit token unavailable for API request', {
         component: 'redditApiRoute',
         action: 'validateToken',
         path,
-        tokenExists: !!token,
-        hasAccessToken: !!token?.access_token,
-        tokenType: token?.token_type
+        tokenSource,
+        hasSession: !!session
       })
       return NextResponse.json(
         {error: 'No Reddit token available'},
@@ -84,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     const response = await fetch(`https://oauth.reddit.com${path}`, {
       headers: {
-        Authorization: `Bearer ${token.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
         'User-Agent': config.userAgent
       }
     })

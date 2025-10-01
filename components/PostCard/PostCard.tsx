@@ -1,12 +1,12 @@
 import {Comments} from '@/components/Comments/Comments'
 import {Media} from '@/components/Media/Media'
+import {VoteButtonGroup} from '@/components/Vote/VoteButtonGroup'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {parsePostLink} from '@/lib/utils/parsePostLink'
 import {
   Anchor,
-  Badge,
   Button,
   Card,
   Collapse,
@@ -19,7 +19,6 @@ import {
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import {useState} from 'react'
-import {BiSolidUpvote} from 'react-icons/bi'
 import {FaComment} from 'react-icons/fa'
 import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
 import classes from './PostCard.module.css'
@@ -75,17 +74,21 @@ export function PostCard({
           </Text>
         </Link>
 
-        <Group gap={4} c="dimmed">
+        <Group gap={8} c="dimmed" align="center">
           <Link className={classes.metaLink} href={`/u/${post.author}`}>
             <Text size="xs">u/{post.author}</Text>
           </Link>
-          &middot;
-          <Badge variant="light" size="sm" color="gray">
-            <Group gap={4} align="center">
-              <BiSolidUpvote size={14} color="red" />
-              <NumberFormatter value={post.ups} thousandSeparator />
-            </Group>
-          </Badge>
+          <Text size="xs" aria-hidden="true">
+            &middot;
+          </Text>
+          {post.name && (
+            <VoteButtonGroup
+              id={post.name}
+              score={post.ups ?? 0}
+              likes={(post as {likes?: boolean | null}).likes}
+              size="sm"
+            />
+          )}
           &middot;
           <Text size="xs">
             <time dateTime={created}>

@@ -79,6 +79,7 @@ export const singlePostMock: DeepPartial<
           kind: 't1',
           data: {
             id: 'comment1',
+            name: 't1_comment1',
             author: 'commentuser1',
             body: 'Great post! This framework looks really promising.',
             body_html:
@@ -108,6 +109,7 @@ export const singlePostMock: DeepPartial<
           kind: 't1',
           data: {
             id: 'comment2',
+            name: 't1_comment2',
             author: 'commentuser2',
             body: 'Not another JavaScript framework... 😩',
             body_html:
@@ -137,6 +139,7 @@ export const singlePostMock: DeepPartial<
           kind: 't1',
           data: {
             id: 'comment3',
+            name: 't1_comment3',
             author: 'AutoModerator',
             body: 'This is an AutoModerator comment that should be filtered out.',
             body_html:

@@ -1,11 +1,11 @@
 import type {AutoCommentWithText} from '@/lib/store/services/commentsApi'
+import {VoteButtonGroup} from '@/components/Vote/VoteButtonGroup'
 import {hasRequiredCommentFields} from '@/lib/utils/commentHelpers'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {logError} from '@/lib/utils/logError'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
-import {Anchor, Card, Group, NumberFormatter, Text} from '@mantine/core'
+import {Anchor, Card, Group, Text} from '@mantine/core'
 import {memo} from 'react'
-import {BiSolidUpvote} from 'react-icons/bi'
 import styles from './CommentCard.module.css'
 
 interface CommentCardProps {
@@ -85,17 +85,15 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
           }}
         />
 
-        <Group gap="md">
-          <Group className={styles.meta}>
-            <BiSolidUpvote size={16} color="red" aria-hidden="true" />
-            <Text size="sm" c="dimmed">
-              <NumberFormatter
-                value={comment.ups ?? 0}
-                thousandSeparator
-                aria-label={`${comment.ups ?? 0} upvotes`}
-              />
-            </Text>
-          </Group>
+        <Group gap="md" align="center" justify="space-between">
+          {comment.name && (
+            <VoteButtonGroup
+              id={comment.name}
+              score={comment.ups ?? 0}
+              likes={(comment as {likes?: boolean | null}).likes}
+              size="sm"
+            />
+          )}
           <Anchor
             href={`https://reddit.com${comment.permalink ?? ''}`}
             rel="noopener noreferrer"

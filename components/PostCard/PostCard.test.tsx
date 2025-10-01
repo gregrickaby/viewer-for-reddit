@@ -17,6 +17,7 @@ describe('PostCard', () => {
   it('should render post information', () => {
     const post: any = {
       id: '1',
+      name: 't3_1',
       subreddit_name_prefixed: 'r/test',
       created_utc: 123,
       permalink: '/r/test/1',
@@ -43,6 +44,7 @@ describe('PostCard', () => {
   it('should render empty time when created_utc is missing', () => {
     const post: any = {
       id: '1',
+      name: 't3_1',
       subreddit_name_prefixed: 'r/test',
       permalink: '/r/test/1',
       title: 'Test post',
@@ -61,6 +63,7 @@ describe('PostCard', () => {
   it('should use internal routing by default', () => {
     const post: any = {
       id: 'abc123',
+      name: 't3_abc123',
       subreddit_name_prefixed: 'r/programming',
       permalink: '/r/programming/comments/abc123/title/',
       title: 'Test post',
@@ -78,6 +81,7 @@ describe('PostCard', () => {
   it('should use external Reddit links when useInternalRouting is false', () => {
     const post: any = {
       id: 'abc123',
+      name: 't3_abc123',
       subreddit_name_prefixed: 'r/programming',
       permalink: '/r/programming/comments/abc123/title/',
       title: 'Test post',
@@ -96,9 +100,10 @@ describe('PostCard', () => {
     expect(titleLink).toHaveAttribute('target', '_blank')
   })
 
-  it('should display upvotes in a Badge component in the upper meta area', () => {
+  it('should render vote controls for posts', () => {
     const post: any = {
       id: '1',
+      name: 't3_1',
       subreddit_name_prefixed: 'r/test',
       author: 'testuser',
       created_utc: 123,
@@ -111,7 +116,7 @@ describe('PostCard', () => {
 
     render(<PostCard post={post} />)
 
-    expect(screen.getByText('42')).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: /upvote/i})).toBeInTheDocument()
     expect(screen.getByText('42')).toBeVisible()
   })
 })

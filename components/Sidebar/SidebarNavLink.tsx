@@ -2,19 +2,26 @@
 
 import {
   SubredditName,
-  SubredditNameProps
+  type SubredditNameProps
 } from '@/components/SubredditName/SubredditName'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {NavLink} from '@mantine/core'
 import Link from 'next/link'
 
-export function SidebarNavLink(props: Readonly<SubredditNameProps>) {
+interface SidebarNavLinkProps extends SubredditNameProps {
+  href: string
+}
+
+export function SidebarNavLink({
+  href,
+  ...props
+}: Readonly<SidebarNavLinkProps>) {
   const {toggleNavbarOnMobileHandler} = useHeaderState()
 
   return (
     <NavLink
       component={Link}
-      href={`/r/${props.name}`}
+      href={href}
       label={<SubredditName {...props} />}
       onClick={toggleNavbarOnMobileHandler}
     />

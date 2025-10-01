@@ -6,15 +6,22 @@ import {useRemoveFromFavorites} from '@/lib/hooks/useRemoveFromFavorites'
 import {useRemoveItemFromHistory} from '@/lib/hooks/useRemoveItemFromHistory'
 import {useAppSelector} from '@/lib/store/hooks'
 import {useGetPopularSubredditsQuery} from '@/lib/store/services/subredditApi'
+import {
+  useGetUserCustomFeedsQuery,
+  useGetUserSubscriptionsQuery
+} from '@/lib/store/services/userApi'
 import {NavLink, ScrollArea, Stack} from '@mantine/core'
 import {useMounted} from '@mantine/hooks'
 import Link from 'next/link'
+import {useSession} from 'next-auth/react'
 import {
   FaHeart,
   FaHistory,
   FaHome,
   FaInfoCircle,
-  FaRegArrowAltCircleUp
+  FaListUl,
+  FaRegArrowAltCircleUp,
+  FaStream
 } from 'react-icons/fa'
 import {FaArrowTrendUp} from 'react-icons/fa6'
 import {MdDynamicFeed} from 'react-icons/md'
@@ -30,6 +37,16 @@ export function Sidebar() {
   const {remove: removeFromFavorites} = useRemoveFromFavorites()
   const {data: trending = []} = useGetPopularSubredditsQuery({limit: 10})
   const {toggleNavbarOnMobileHandler} = useHeaderState()
+  const {data: session} = useSession()
+  const isAuthenticated = Boolean(session?.accessToken)
+  const {data: subscriptions = [], isLoading: subscriptionsLoading} =
+    useGetUserSubscriptionsQuery(undefined, {
+      skip: !isAuthenticated
+    })
+  const {data: customFeeds = [], isLoading: customFeedsLoading} =
+    useGetUserCustomFeedsQuery(undefined, {
+      skip: !isAuthenticated
+    })
 
   if (!mounted) return null
 
@@ -74,6 +91,23 @@ export function Sidebar() {
           subreddits={trending}
           leftSection={<FaArrowTrendUp />}
         />
+
+        {isAuthenticated && (
+          <>
+            <SidebarSection
+              label="My Subreddits"
+              subreddits={subscriptions}
+              leftSection={<FaListUl />}
+              isLoading={subscriptionsLoading}
+            />
+            <SidebarSection
+              label="Custom Feeds"
+              subreddits={customFeeds}
+              leftSection={<FaStream />}
+              isLoading={customFeedsLoading}
+            />
+          </>
+        )}
 
         <SidebarSection
           enableDelete

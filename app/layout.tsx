@@ -1,8 +1,10 @@
 'use cache'
 
 import {Analytics} from '@/components/Analytics/Analytics'
+import {AuthProvider} from '@/components/Auth/AuthProvider'
 import config from '@/lib/config'
 import {StoreProvider} from '@/lib/store/StoreProvider'
+import {auth} from '@/auth'
 import {
   ColorSchemeScript,
   MantineProvider,
@@ -114,20 +116,24 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await auth()
+
   return (
     <StoreProvider>
-      <html lang="en" {...mantineHtmlProps} className={redditSans.className}>
-        <head>
-          <ColorSchemeScript defaultColorScheme="auto" />
-          <Analytics />
-        </head>
-        <body>
-          <MantineProvider theme={theme} defaultColorScheme="auto">
-            {children}
-            <Notifications />
-          </MantineProvider>
-        </body>
-      </html>
+      <AuthProvider session={session}>
+        <html lang="en" {...mantineHtmlProps} className={redditSans.className}>
+          <head>
+            <ColorSchemeScript defaultColorScheme="auto" />
+            <Analytics />
+          </head>
+          <body>
+            <MantineProvider theme={theme} defaultColorScheme="auto">
+              {children}
+              <Notifications />
+            </MantineProvider>
+          </body>
+        </html>
+      </AuthProvider>
     </StoreProvider>
   )
 }

@@ -1,8 +1,14 @@
 import {NextRequest} from 'next/server'
 import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
-import {GET} from './route'
+
+const {authMock} = vi.hoisted(() => ({
+  authMock: vi.fn()
+}))
 
 // Mock the dependencies
+vi.mock('@/auth', () => ({
+  auth: authMock
+}))
 vi.mock('@/lib/actions/redditToken', () => ({
   getRedditToken: vi.fn()
 }))
@@ -10,6 +16,8 @@ vi.mock('@/lib/actions/redditToken', () => ({
 vi.mock('@/lib/utils/logError', () => ({
   logError: vi.fn()
 }))
+
+import {GET} from './route'
 
 // Setup mocks
 const mockGetRedditToken = vi.mocked(
@@ -32,6 +40,8 @@ describe('Reddit API Route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.stubEnv('NODE_ENV', 'development')
+    authMock.mockReset()
+    authMock.mockResolvedValue(null)
     mockGetRedditToken.mockResolvedValue({
       access_token: 'reddit-token',
       token_type: 'bearer',

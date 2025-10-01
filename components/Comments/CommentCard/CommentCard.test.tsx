@@ -9,6 +9,7 @@ describe('CommentCard', () => {
     author: string
     created_utc: number
     ups: number
+    name: string
   } = {
     id: 'test123',
     permalink: '/r/test/comments/test123',
@@ -16,7 +17,8 @@ describe('CommentCard', () => {
     body: 'This is a test comment',
     body_html: '<p>This is a test comment</p>',
     created_utc: 1234567890,
-    ups: 10
+    ups: 10,
+    name: 't1_test123'
   }
 
   it('should render comment card with all metadata', () => {
@@ -24,6 +26,7 @@ describe('CommentCard', () => {
 
     expect(screen.getByText('testuser')).toBeInTheDocument()
     expect(screen.getByText('This is a test comment')).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: /upvote/i})).toBeInTheDocument()
     expect(screen.getByText('10')).toBeInTheDocument()
     expect(screen.getByText('View on Reddit')).toBeInTheDocument()
   })
