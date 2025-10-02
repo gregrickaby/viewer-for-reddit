@@ -1,7 +1,6 @@
 'use client'
 
 import {Button} from '@mantine/core'
-import {useRouter} from 'next/navigation'
 import {FaReddit} from 'react-icons/fa'
 
 export interface LoginButtonProps {
@@ -31,10 +30,11 @@ export function LoginButton({
   size = 'md',
   fullWidth = false
 }: Readonly<LoginButtonProps>) {
-  const router = useRouter()
-
   const handleLogin = () => {
-    router.push('/api/auth/login')
+    // Must use window.location.href for OAuth flow to ensure full page navigation
+    // router.push() causes CORS errors because Next.js tries to fetch the OAuth endpoint
+    // as an RSC request instead of performing a full redirect
+    window.location.href = '/api/auth/login'
   }
 
   return (
