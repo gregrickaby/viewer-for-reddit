@@ -45,12 +45,12 @@ export function LogoutButton({
 
   return (
     <Button
-      leftSection={<FaSignOutAlt />}
-      variant={variant}
-      size={size}
-      fullWidth={fullWidth}
-      onClick={handleLogout}
       aria-label="Sign out"
+      fullWidth={fullWidth}
+      leftSection={<FaSignOutAlt />}
+      onClick={handleLogout}
+      size={size}
+      variant={variant}
     >
       Sign out
     </Button>

@@ -22,7 +22,7 @@ export function UserMenu() {
   const router = useRouter()
 
   useEffect(() => {
-    // Fetch client-safe session on mount (no tokens)
+    // Fetch client-safe session on mount
     fetch('/api/auth/session')
       .then((res) => res.json())
       .then((data) => {
@@ -95,7 +95,7 @@ export function UserMenu() {
 
   // Not authenticated - show login button
   if (!session) {
-    return <LoginButton variant="light" size="sm" />
+    return <LoginButton variant="light" size="md" />
   }
 
   // Authenticated - show user menu
@@ -125,7 +125,16 @@ export function UserMenu() {
       <Menu.Dropdown>
         <Menu.Label>
           <Group gap="xs">
-            <FaUser size={12} />
+            <Avatar
+              src={session.avatarUrl}
+              radius="xl"
+              size="xs"
+              color="redditColorScheme"
+              style={{cursor: 'pointer'}}
+              aria-label={`User menu for ${session.username}`}
+            >
+              {!session.avatarUrl && <FaReddit />}
+            </Avatar>
             <Text size="sm" fw={600}>
               u/{session.username}
             </Text>

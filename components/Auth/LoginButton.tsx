@@ -1,6 +1,6 @@
 'use client'
 
-import {Button} from '@mantine/core'
+import {Button, Tooltip} from '@mantine/core'
 import {FaReddit} from 'react-icons/fa'
 
 export interface LoginButtonProps {
@@ -38,15 +38,21 @@ export function LoginButton({
   }
 
   return (
-    <Button
-      leftSection={<FaReddit />}
-      variant={variant}
-      size={size}
-      fullWidth={fullWidth}
-      onClick={handleLogin}
-      aria-label="Sign in with Reddit"
+    <Tooltip
+      label="New! Sign in with your Reddit account to view your feeds and vote!"
+      withArrow
     >
-      Sign in with Reddit
-    </Button>
+      <Button
+        aria-label="Sign in with Reddit"
+        fullWidth={fullWidth}
+        rightSection={<FaReddit size={24} />}
+        onClick={handleLogin}
+        size={size}
+        variant={variant}
+        h={45}
+      >
+        Sign in
+      </Button>
+    </Tooltip>
   )
 }
