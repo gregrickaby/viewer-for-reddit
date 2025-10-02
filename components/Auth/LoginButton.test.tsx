@@ -1,6 +1,5 @@
 import {LoginButton} from '@/components/Auth/LoginButton'
 import {render, screen, userEvent} from '@/test-utils'
-import {describe, expect, it, beforeEach} from 'vitest'
 
 describe('LoginButton', () => {
   beforeEach(() => {
