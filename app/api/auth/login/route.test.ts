@@ -86,7 +86,8 @@ describe('POST /api/auth/login', () => {
         sameSite: 'lax',
         secure: false, // Development mode
         maxAge: 600, // 10 minutes
-        path: '/'
+        path: '/',
+        domain: undefined // Empty string SESSION_DOMAIN becomes undefined
       }
     )
   })
@@ -102,11 +103,10 @@ describe('POST /api/auth/login', () => {
       'reddit_oauth_state',
       expect.any(String),
       expect.objectContaining({
-        secure: true
+        secure: true,
+        domain: undefined // Empty string SESSION_DOMAIN becomes undefined
       })
     )
-
-    vi.unstubAllEnvs()
   })
 
   it('should log audit event for login initiation', async () => {

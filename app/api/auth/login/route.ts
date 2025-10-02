@@ -1,6 +1,7 @@
 import {reddit} from '@/lib/auth/arctic'
 import {getClientInfo, logAuditEvent} from '@/lib/auth/auditLog'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
+import config from '@/lib/config'
 import {generateState} from 'arctic'
 import {cookies} from 'next/headers'
 import {NextRequest, NextResponse} from 'next/server'
@@ -41,13 +42,15 @@ export async function GET(request: NextRequest) {
     'https://reddit-viewer.com'
 
   // Store state in cookie for CSRF protection
+  // Share across subdomains for multi-environment OAuth support
   const cookieStore = await cookies()
   cookieStore.set('reddit_oauth_state', state, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 10, // 10 minutes
-    path: '/'
+    path: '/',
+    domain: config.sessionDomain
   })
 
   // Store origin for post-auth redirect (multi-environment support)
@@ -56,7 +59,8 @@ export async function GET(request: NextRequest) {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 10, // 10 minutes
-    path: '/'
+    path: '/',
+    domain: config.sessionDomain
   })
 
   return NextResponse.redirect(url)
