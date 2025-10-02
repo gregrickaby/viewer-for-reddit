@@ -1,8 +1,9 @@
 import {VoteButtons} from '@/components/VoteButtons/VoteButtons'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {ActionIcon, Group, Text} from '@mantine/core'
-import {FaComment, FaShare} from 'react-icons/fa'
+import {Button, Group, Text, Tooltip} from '@mantine/core'
+import {FaComment} from 'react-icons/fa'
 import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
+import classes from './PostActions.module.css'
 
 interface PostActionsProps {
   post: AutoPostChildData
@@ -30,39 +31,31 @@ export function PostActions({
         id={post.name ?? ''}
         score={post.ups ?? 0}
         userVote={post.likes}
-        size="sm"
+        size="md"
       />
 
-      <ActionIcon.Group>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="lg"
-          onClick={onCommentsToggle}
+      <Tooltip label="View Comments" withinPortal>
+        <Button
           aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
-        >
-          <Group gap={6} wrap="nowrap">
-            <FaComment size={16} />
-            <Text size="sm" fw={700} c="dimmed">
-              {post.num_comments}
-            </Text>
-            {commentsOpen ? (
+          className={classes.commentButton}
+          color="gray"
+          leftSection={<FaComment size={14} />}
+          onClick={onCommentsToggle}
+          radius="sm"
+          variant="subtle"
+          rightSection={
+            commentsOpen ? (
               <IoChevronUp size={12} />
             ) : (
               <IoChevronDown size={12} />
-            )}
-          </Group>
-        </ActionIcon>
-      </ActionIcon.Group>
-
-      <ActionIcon
-        variant="subtle"
-        color="gray"
-        size="lg"
-        aria-label="Share post"
-      >
-        <FaShare size={14} />
-      </ActionIcon>
+            )
+          }
+        >
+          <Text size="sm" fw={500}>
+            {post.num_comments}
+          </Text>
+        </Button>
+      </Tooltip>
     </Group>
   )
 }

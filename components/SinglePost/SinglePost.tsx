@@ -15,7 +15,7 @@ import {
   Title
 } from '@mantine/core'
 import Link from 'next/link'
-import {IoAlert, IoArrowBack} from 'react-icons/io5'
+import {IoAlert, IoHome} from 'react-icons/io5'
 import classes from './SinglePost.module.css'
 
 export interface SinglePostProps {
@@ -81,10 +81,16 @@ export function SinglePost({
       <Container size="md">
         <Stack gap="md" py="md">
           <Group>
+            <Link href="/">
+              <Group gap="xs" c="red">
+                <IoHome />
+                <Text size="sm">Home</Text>
+              </Group>
+            </Link>
+            <Text c="dimmed">•</Text>
             <Link href={`/r/${subreddit}`}>
-              <Group gap="xs" c="blue">
-                <IoArrowBack />
-                <Text size="sm">Back to r/{subreddit}</Text>
+              <Group gap="xs" c="red">
+                <Text size="sm">r/{subreddit}</Text>
               </Group>
             </Link>
           </Group>
@@ -126,10 +132,16 @@ export function SinglePost({
       <Stack gap="md" py="md">
         {/* Navigation back to subreddit */}
         <Group>
+          <Link href="/" className={classes.backLink}>
+            <Group gap="xs" c="red">
+              <IoHome />
+              <Text size="sm">Home</Text>
+            </Group>
+          </Link>
+          <Text c="dimmed">•</Text>
           <Link href={`/r/${subreddit}`} className={classes.backLink}>
-            <Group gap="xs" c="blue">
-              <IoArrowBack />
-              <Text size="sm">Back to r/{subreddit}</Text>
+            <Group gap="xs" c="red">
+              <Text size="sm">r/{subreddit}</Text>
             </Group>
           </Link>
         </Group>

@@ -33,9 +33,7 @@ describe('UserMenu', () => {
     render(<UserMenu />)
 
     await waitFor(() => {
-      expect(screen.getByRole('button')).toHaveTextContent(
-        'Sign in with Reddit'
-      )
+      expect(screen.getByRole('button')).toHaveTextContent('Sign in')
     })
   })
 

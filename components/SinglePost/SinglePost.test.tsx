@@ -22,8 +22,11 @@ describe('SinglePost', () => {
       expect(screen.queryByText('Loading post...')).not.toBeInTheDocument()
     })
 
-    // Check for back navigation link
-    expect(screen.getByText('Back to r/programming')).toBeInTheDocument()
+    // Check for navigation links
+    expect(screen.getByText('Home')).toBeInTheDocument()
+    // Check for link by href attribute since text appears multiple times
+    const subredditNavLink = document.querySelector('a[href="/r/programming"]')
+    expect(subredditNavLink).toBeInTheDocument()
 
     // Check for comments section (might be empty initially)
     expect(screen.getByRole('heading', {name: 'Comments'})).toBeInTheDocument()
@@ -49,7 +52,9 @@ describe('SinglePost', () => {
 
     // Should show error message
     expect(screen.getByText(/Post not found/)).toBeInTheDocument()
-    expect(screen.getByText('Back to r/notfound')).toBeInTheDocument()
+    // Check for link by href attribute since text appears multiple times
+    const subredditNavLink = document.querySelector('a[href="/r/notfound"]')
+    expect(subredditNavLink).toBeInTheDocument()
   })
 
   it('should render 403 error state for private subreddit', async () => {
@@ -84,12 +89,14 @@ describe('SinglePost', () => {
       expect(screen.queryByText('Loading post...')).not.toBeInTheDocument()
     })
 
-    const backLinks = screen.getAllByText('Back to r/programming')
-    expect(backLinks).toHaveLength(1)
+    // Check for Home link
+    const homeLink = screen.getByText('Home').closest('a')
+    expect(homeLink).toHaveAttribute('href', '/')
 
-    // Check that the link has correct href
-    const backLink = backLinks[0].closest('a')
-    expect(backLink).toHaveAttribute('href', '/r/programming')
+    // Check for subreddit link - query by href since text appears multiple times
+    const subredditLink = document.querySelector('a[href="/r/programming"]')
+    expect(subredditLink).toBeInTheDocument()
+    expect(subredditLink).toHaveAttribute('href', '/r/programming')
   })
 
   it('should render comment scores correctly', async () => {

@@ -45,6 +45,16 @@ export function Sidebar() {
     skip: !isAuthenticated
   })
 
+  // Sort subscriptions alphabetically by display_name
+  const sortedSubscriptions = [...subscriptions].sort((a, b) =>
+    a.display_name.localeCompare(b.display_name)
+  )
+
+  // Sort custom feeds alphabetically by display_name or name
+  const sortedCustomFeeds = [...customFeeds].sort((a, b) =>
+    (a.display_name || a.name).localeCompare(b.display_name || b.name)
+  )
+
   if (!mounted) return null
 
   return (
@@ -56,6 +66,55 @@ export function Sidebar() {
           href="/"
           onClick={toggleNavbarOnMobileHandler}
           leftSection={<FaHome />}
+        />
+
+        {isAuthenticated && sortedSubscriptions.length > 0 && (
+          <SidebarSection
+            enableFavorite
+            label="My Communities"
+            subreddits={sortedSubscriptions}
+            leftSection={<FaUserCircle />}
+          />
+        )}
+
+        {isAuthenticated && sortedCustomFeeds.length > 0 && (
+          <NavLink label="My Custom Feeds" leftSection={<FaLayerGroup />}>
+            {sortedCustomFeeds.map((feed) => (
+              <NavLink
+                key={feed.path}
+                label={feed.display_name || feed.name}
+                component={Link}
+                href={feed.path}
+                onClick={toggleNavbarOnMobileHandler}
+              />
+            ))}
+          </NavLink>
+        )}
+
+        <SidebarSection
+          enableDelete
+          enableFavorite
+          label="Viewing History"
+          onDelete={(sub) => removeFromHistory(sub.display_name)}
+          subreddits={recent}
+          leftSection={<FaHistory />}
+        />
+
+        {!isAuthenticated && (
+          <SidebarSection
+            enableDelete
+            label="Favorites"
+            onDelete={(sub) => removeFromFavorites(sub.display_name)}
+            subreddits={favorites}
+            leftSection={<FaHeart />}
+          />
+        )}
+
+        <SidebarSection
+          enableFavorite
+          label="Trending"
+          subreddits={trending}
+          leftSection={<FaArrowTrendUp />}
         />
 
         <NavLink
@@ -72,53 +131,6 @@ export function Sidebar() {
           href="/r/popular"
           onClick={toggleNavbarOnMobileHandler}
           leftSection={<FaRegArrowAltCircleUp />}
-        />
-
-        <SidebarSection
-          enableDelete
-          label="Favorites"
-          onDelete={(sub) => removeFromFavorites(sub.display_name)}
-          subreddits={favorites}
-          leftSection={<FaHeart />}
-        />
-
-        {isAuthenticated && subscriptions.length > 0 && (
-          <SidebarSection
-            enableFavorite
-            label="My Communities"
-            subreddits={subscriptions}
-            leftSection={<FaUserCircle />}
-          />
-        )}
-
-        {isAuthenticated && customFeeds.length > 0 && (
-          <NavLink label="My Custom Feeds" leftSection={<FaLayerGroup />}>
-            {customFeeds.map((feed) => (
-              <NavLink
-                key={feed.path}
-                label={feed.display_name || feed.name}
-                component={Link}
-                href={feed.path}
-                onClick={toggleNavbarOnMobileHandler}
-              />
-            ))}
-          </NavLink>
-        )}
-
-        <SidebarSection
-          enableFavorite
-          label="Trending"
-          subreddits={trending}
-          leftSection={<FaArrowTrendUp />}
-        />
-
-        <SidebarSection
-          enableDelete
-          enableFavorite
-          label="History"
-          onDelete={(sub) => removeFromHistory(sub.display_name)}
-          subreddits={recent}
-          leftSection={<FaHistory />}
         />
 
         <NavLink

@@ -10,7 +10,7 @@ describe('LoginButton', () => {
 
   it('should render login button with correct text', () => {
     render(<LoginButton />)
-    expect(screen.getByRole('button')).toHaveTextContent('Sign in with Reddit')
+    expect(screen.getByRole('button')).toHaveTextContent('Sign in')
   })
 
   it('should have correct aria-label', () => {

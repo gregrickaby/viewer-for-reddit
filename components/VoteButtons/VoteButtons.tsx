@@ -2,7 +2,7 @@
 
 import {useVoteMutation} from '@/lib/store/services/voteApi'
 import type {VoteDirection} from '@/lib/types'
-import {ActionIcon, NumberFormatter, Stack, Text, Tooltip} from '@mantine/core'
+import {ActionIcon, Group, NumberFormatter, Text, Tooltip} from '@mantine/core'
 import {notifications} from '@mantine/notifications'
 import {useState} from 'react'
 import {BiSolidDownvote, BiSolidUpvote} from 'react-icons/bi'
@@ -163,7 +163,7 @@ export function VoteButtons({
   if (size === 'lg') textSize = 'md'
 
   return (
-    <Stack gap={4} align="center" className={classes.voteButtons}>
+    <Group gap={4} align="center" className={classes.voteButtons} p={6}>
       <Tooltip label="Upvote" withinPortal>
         <ActionIcon
           variant="subtle"
@@ -199,6 +199,6 @@ export function VoteButtons({
           <BiSolidDownvote size={iconSize} />
         </ActionIcon>
       </Tooltip>
-    </Stack>
+    </Group>
   )
 }

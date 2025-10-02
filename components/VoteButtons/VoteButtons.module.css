@@ -1,8 +1,9 @@
-/* Reddit-style voting buttons with vertical layout */
 .voteButtons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: light-dark(
+    var(--mantine-color-gray-1),
+    var(--mantine-color-dark-8)
+  );
+  border-radius: var(--mantine-radius-sm);
 }
 
 .upvoteButton,

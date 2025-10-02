@@ -4,19 +4,14 @@ import {ActionIcon, Anchor, Avatar, Group, Text} from '@mantine/core'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import {IoEllipsisHorizontal} from 'react-icons/io5'
+import AppIcon from '../../app/icon.png'
 
 interface PostHeaderProps {
   post: AutoPostChildData
 }
 
 /**
- * PostHeader component displays subreddit info, author, and post metadata.
- *
- * Features:
- * - Subreddit avatar and name
- * - Author and post age
- * - More options menu button
- * - Compact horizontal layout matching Reddit's design
+ * PostHeader component.
  */
 export function PostHeader({post}: Readonly<PostHeaderProps>) {
   const created = post.created_utc
@@ -27,7 +22,7 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
     <Group justify="space-between" wrap="nowrap">
       <Group gap="xs" wrap="nowrap">
         <Avatar
-          src={`https://www.reddit.com/${post.subreddit_name_prefixed}/about.json`}
+          src={AppIcon.src}
           alt={post.subreddit_name_prefixed}
           size="sm"
           radius="sm"
