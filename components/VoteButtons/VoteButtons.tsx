@@ -149,15 +149,22 @@ export function VoteButtons({
   const isUpvoted = optimisticVote === true
   const isDownvoted = optimisticVote === false
 
-  // Determine score color based on vote state (Reddit style: orange for upvote, blue for downvote)
-  let scoreColor: 'orange.6' | 'blue.6' | 'dimmed' = 'dimmed'
-  if (isUpvoted) scoreColor = 'orange.6'
-  if (isDownvoted) scoreColor = 'blue.6'
+  // Determine text color based on vote state (Reddit style: orange for upvote, blue for downvote)
+  let scoreColor: string = 'dimmed'
+  if (isUpvoted) scoreColor = 'orange'
+  if (isDownvoted) scoreColor = 'blue'
 
-  const actionIconSize = size === 'sm' ? 'sm' : size === 'lg' ? 'md' : 'sm'
+  // Set action icon size based on button size
+  let actionIconSize: 'sm' | 'md' = 'sm'
+  if (size === 'lg') actionIconSize = 'md'
+
+  // Set text size based on button size
+  let textSize: 'xs' | 'sm' | 'md' = 'sm'
+  if (size === 'sm') textSize = 'xs'
+  if (size === 'lg') textSize = 'md'
 
   return (
-    <Stack gap={0} align="center" className={classes.voteButtons}>
+    <Stack gap={4} align="center" className={classes.voteButtons}>
       <Tooltip label="Upvote" withinPortal>
         <ActionIcon
           variant="subtle"
@@ -174,12 +181,7 @@ export function VoteButtons({
         </ActionIcon>
       </Tooltip>
 
-      <Text
-        size={size === 'sm' ? 'xs' : 'sm'}
-        fw={700}
-        c={scoreColor}
-        className={classes.score}
-      >
+      <Text size={textSize} fw={700} c={scoreColor} className={classes.score}>
         <NumberFormatter value={optimisticScore} thousandSeparator />
       </Text>
 
