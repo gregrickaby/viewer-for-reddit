@@ -10,11 +10,14 @@ vi.mock('next/navigation', () => ({
 
 describe('LogoutButton', () => {
   const mockPush = vi.fn()
+  const mockRefresh = vi.fn()
 
   beforeEach(() => {
     mockPush.mockClear()
+    mockRefresh.mockClear()
     vi.mocked(useRouter).mockReturnValue({
-      push: mockPush
+      push: mockPush,
+      refresh: mockRefresh
     } as any)
   })
 
@@ -37,6 +40,7 @@ describe('LogoutButton', () => {
     await user.click(button)
 
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/'))
+    expect(mockRefresh).toHaveBeenCalled()
   })
 
   it('should render with custom variant', () => {

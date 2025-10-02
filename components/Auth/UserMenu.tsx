@@ -102,7 +102,9 @@ export function UserMenu() {
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {method: 'POST'})
     dispatch(clearAuth())
+    setSession(null)
     router.push('/')
+    router.refresh()
   }
 
   return (

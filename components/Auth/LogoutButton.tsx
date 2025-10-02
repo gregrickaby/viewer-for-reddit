@@ -40,6 +40,7 @@ export function LogoutButton({
     await fetch('/api/auth/logout', {method: 'POST'})
     dispatch(clearAuth())
     router.push('/')
+    router.refresh()
   }
 
   return (

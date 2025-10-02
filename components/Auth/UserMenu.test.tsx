@@ -11,9 +11,15 @@ vi.mock('next/navigation', () => ({
 }))
 
 describe('UserMenu', () => {
+  const mockPush = vi.fn()
+  const mockRefresh = vi.fn()
+
   beforeEach(() => {
+    mockPush.mockClear()
+    mockRefresh.mockClear()
     vi.mocked(useRouter).mockReturnValue({
-      push: vi.fn()
+      push: mockPush,
+      refresh: mockRefresh
     } as any)
   })
 
