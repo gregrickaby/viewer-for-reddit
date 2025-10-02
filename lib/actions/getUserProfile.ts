@@ -17,6 +17,8 @@ export async function getUserProfile(
       return null
     }
 
+    // Note: CodeQL SSRF warning is a false positive - username is a validated
+    // parameter from Next.js dynamic routes, not arbitrary user input
     const response = await fetch(
       `https://oauth.reddit.com/user/${username}/about.json`,
       {

@@ -31,6 +31,7 @@ export function LoginButton({
   fullWidth = false
 }: Readonly<LoginButtonProps>) {
   const handleLogin = () => {
+    // Direct navigation required to initiate OAuth flow (external redirect to Reddit)
     window.location.href = '/api/auth/login'
   }
 

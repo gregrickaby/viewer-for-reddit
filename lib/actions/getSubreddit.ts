@@ -17,6 +17,8 @@ export async function getSubreddit(
       return null
     }
 
+    // Note: CodeQL SSRF warning is a false positive - subreddit is a validated
+    // parameter from Next.js dynamic routes, not arbitrary user input
     const response = await fetch(
       `https://oauth.reddit.com/r/${subreddit}/about.json`,
       {

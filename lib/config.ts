@@ -26,6 +26,7 @@ const config = {
         'SESSION_DOMAIN environment variable is required. Set it to ".reddit-viewer.com" for production/preview or empty string "" for local development.'
       )
     }
+    // Convert empty string to undefined for cookie domain attribute
     return domain || undefined
   },
   get baseUrl() {

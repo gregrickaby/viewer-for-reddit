@@ -50,6 +50,8 @@ export async function GET(request: NextRequest) {
   }
 
   // Validate path to prevent SSRF and abuse
+  // Note: CodeQL SSRF warning is a false positive - isSafeRedditPath() validates
+  // all paths against allowed patterns before constructing the URL
   if (!isSafeRedditPath(path)) {
     logError('Invalid or dangerous Reddit API path', {
       component: 'redditMeApiRoute',
@@ -72,6 +74,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Safe to use user-provided path - validated by isSafeRedditPath() above
     const response = await fetch(`https://oauth.reddit.com${path}`, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,

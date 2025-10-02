@@ -37,6 +37,7 @@ export function LogoutButton({
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {method: 'POST'})
     dispatch(clearAuth())
+    // Direct navigation required to clear all client state after logout
     window.location.href = '/'
   }
 

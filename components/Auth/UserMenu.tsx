@@ -25,7 +25,7 @@ export function UserMenu() {
       .then((res) => res.json())
       .then((data) => {
         setSession(data)
-        if (data && data.isAuthenticated) {
+        if (data?.isAuthenticated) {
           dispatch(
             setAuth({
               username: data.username,
@@ -100,6 +100,7 @@ export function UserMenu() {
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {method: 'POST'})
     dispatch(clearAuth())
+    // Direct navigation required to clear all client state after logout
     window.location.href = '/'
   }
 

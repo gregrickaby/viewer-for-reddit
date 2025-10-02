@@ -45,10 +45,11 @@ export async function GET(request: NextRequest) {
     const tokens = await reddit.validateAuthorizationCode(code)
 
     // Get user info
+    const config = await import('@/lib/config')
     const response = await fetch('https://oauth.reddit.com/api/v1/me', {
       headers: {
         Authorization: `Bearer ${tokens.accessToken()}`,
-        'User-Agent': 'viewer-for-reddit/1.0'
+        'User-Agent': config.default.userAgent
       }
     })
 
