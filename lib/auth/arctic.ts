@@ -12,25 +12,33 @@ const ALLOWED_REDIRECT_URIS = [
 
 /**
  * Get and validate redirect URI.
+ *
+ * Multi-environment strategy:
+ * - Production & preview deployments: Use production URL as callback handler
+ * - Local development: Use localhost callback
+ *
+ * This works because preview deployments share the parent domain (.reddit-viewer.com)
+ * and can read session cookies set by the production callback handler.
  */
 function getRedirectUri(): string {
-  const authUrl = process.env.AUTH_URL
+  // Production and all preview deployments (.reddit-viewer.com subdomains)
+  // use production callback as the OAuth handler
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://reddit-viewer.com/api/auth/callback/reddit'
+  }
+
+  // Local development uses localhost callback
+  // Note: This requires Reddit app to be configured with localhost callback,
+  // OR developers can test OAuth on preview deployments instead
+  const authUrl = process.env.AUTH_URL || 'http://localhost:3000'
 
   if (!authUrl) {
     throw new Error('AUTH_URL environment variable is required')
   }
 
-  // Validate HTTPS in production
-  if (
-    process.env.NODE_ENV === 'production' &&
-    !authUrl.startsWith('https://')
-  ) {
-    throw new Error('AUTH_URL must use HTTPS in production')
-  }
-
   const redirectUri = `${authUrl}/api/auth/callback/reddit`
 
-  // Validate against allowlist
+  // Validate against allowlist for local development
   const isAllowed = ALLOWED_REDIRECT_URIS.some((allowed) =>
     redirectUri.startsWith(allowed)
   )

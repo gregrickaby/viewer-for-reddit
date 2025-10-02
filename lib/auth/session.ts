@@ -30,6 +30,11 @@ const SESSION_TTL = 14 * 24 * 60 * 60 // 14 days in seconds
 /**
  * Session configuration for iron-session.
  * Requires SESSION_SECRET environment variable (min 32 characters).
+ *
+ * Multi-environment support:
+ * - Production: Sets cookie domain to .reddit-viewer.com (shared across all subdomains)
+ * - Preview deployments: Read cookies from parent domain (.reddit-viewer.com)
+ * - Local dev: No domain restriction (localhost only)
  */
 function getSessionConfig() {
   const secret = process.env.SESSION_SECRET
@@ -48,7 +53,11 @@ function getSessionConfig() {
       httpOnly: true,
       sameSite: 'lax' as const,
       maxAge: SESSION_TTL,
-      path: '/'
+      path: '/',
+      // Share session across all reddit-viewer.com subdomains (production + previews)
+      // Local development uses no domain restriction (localhost only)
+      domain:
+        process.env.NODE_ENV === 'production' ? '.reddit-viewer.com' : undefined
     }
   }
 }

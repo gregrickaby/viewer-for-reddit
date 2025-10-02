@@ -144,15 +144,16 @@ describe('POST /api/auth/login', () => {
     await GET(request1)
     await GET(request2)
 
-    const [call1] = mockCookieStore.set.mock.calls[0]
-    const [call2] = mockCookieStore.set.mock.calls[1]
+    // Each request sets two cookies: reddit_oauth_state and reddit_oauth_origin
+    const [call1Name] = mockCookieStore.set.mock.calls[0]
+    const [call3Name] = mockCookieStore.set.mock.calls[2]
 
-    expect(call1).toBe('reddit_oauth_state')
-    expect(call2).toBe('reddit_oauth_state')
+    expect(call1Name).toBe('reddit_oauth_state')
+    expect(call3Name).toBe('reddit_oauth_state')
 
     // State values should be different
     const state1 = mockCookieStore.set.mock.calls[0][1]
-    const state2 = mockCookieStore.set.mock.calls[1][1]
+    const state2 = mockCookieStore.set.mock.calls[2][1]
     expect(state1).not.toBe(state2)
   })
 })

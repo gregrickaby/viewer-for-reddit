@@ -32,9 +32,26 @@ export async function GET(request: NextRequest) {
   // to permanent duration when offline_access/refresh tokens are requested
   const url = reddit.createAuthorizationURL(state, scopes)
 
+  // Capture origin URL for post-authentication redirect
+  // This enables preview deployments to redirect through production callback
+  const origin =
+    request.headers.get('origin') ||
+    request.headers.get('referer')?.replace(/\/$/, '') ||
+    process.env.AUTH_URL ||
+    'https://reddit-viewer.com'
+
   // Store state in cookie for CSRF protection
   const cookieStore = await cookies()
   cookieStore.set('reddit_oauth_state', state, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 10, // 10 minutes
+    path: '/'
+  })
+
+  // Store origin for post-auth redirect (multi-environment support)
+  cookieStore.set('reddit_oauth_origin', origin, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

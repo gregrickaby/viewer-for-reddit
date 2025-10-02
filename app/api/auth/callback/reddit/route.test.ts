@@ -54,6 +54,17 @@ describe('GET /api/auth/callback/reddit', () => {
       mockTokens as any
     )
 
+    // Default mock for cookies: state and origin
+    mockCookieStore.get.mockImplementation((name: string) => {
+      if (name === 'reddit_oauth_state') {
+        return {value: 'test_state'}
+      }
+      if (name === 'reddit_oauth_origin') {
+        return {value: 'http://localhost:3000'}
+      }
+      return undefined
+    })
+
     // Setup MSW handler for Reddit user info
     server.use(
       http.get('https://oauth.reddit.com/api/v1/me', () => {
@@ -69,8 +80,6 @@ describe('GET /api/auth/callback/reddit', () => {
 
   it('should complete OAuth flow and create session', async () => {
     const {setSession} = await import('@/lib/auth/session')
-
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
 
     const url =
       'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
@@ -105,8 +114,6 @@ describe('GET /api/auth/callback/reddit', () => {
       })
     )
 
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
     const url =
       'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
     const request = new NextRequest(url)
@@ -118,6 +125,163 @@ describe('GET /api/auth/callback/reddit', () => {
         avatarUrl: 'https://example.com/snoovatar.png'
       })
     )
+  })
+
+  it('should handle HTML entity in avatar URLs', async () => {
+    const {setSession} = await import('@/lib/auth/session')
+
+    server.use(
+      http.get('https://oauth.reddit.com/api/v1/me', () => {
+        return HttpResponse.json({
+          name: 'testuser',
+          icon_img: 'https://example.com/avatar.png?v=1&amp;s=2'
+        })
+      })
+    )
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    await GET(request)
+
+    expect(setSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        avatarUrl: 'https://example.com/avatar.png?v=1&s=2'
+      })
+    )
+  })
+
+  it('should handle missing refresh token', async () => {
+    const {setSession} = await import('@/lib/auth/session')
+    const {reddit} = await import('@/lib/auth/arctic')
+
+    const tokensWithoutRefresh = {
+      accessToken: () => 'access_token_123',
+      refreshToken: () => {
+        throw new Error('No refresh token')
+      },
+      accessTokenExpiresAt: () => new Date(Date.now() + 3600000)
+    }
+
+    vi.mocked(reddit.validateAuthorizationCode).mockResolvedValue(
+      tokensWithoutRefresh as any
+    )
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    await GET(request)
+
+    expect(setSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        refreshToken: ''
+      })
+    )
+  })
+
+  it('should redirect with error when code is missing', async () => {
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=invalid_state')
+  })
+
+  it('should redirect with error when state is missing', async () => {
+    const url = 'http://localhost:3000/api/auth/callback/reddit?code=auth_code'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=invalid_state')
+  })
+
+  it('should redirect with error when stored state is missing', async () => {
+    mockCookieStore.get.mockReturnValue(undefined)
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=invalid_state')
+  })
+
+  it('should redirect with error when state does not match', async () => {
+    mockCookieStore.get.mockImplementation((name: string) => {
+      if (name === 'reddit_oauth_state') {
+        return {value: 'different_state'}
+      }
+      if (name === 'reddit_oauth_origin') {
+        return {value: 'http://localhost:3000'}
+      }
+      return undefined
+    })
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=invalid_state')
+  })
+
+  it('should redirect with error when user info fetch fails', async () => {
+    server.use(
+      http.get('https://oauth.reddit.com/api/v1/me', () => {
+        return HttpResponse.json({error: 'failed'}, {status: 500})
+      })
+    )
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=authentication_failed')
+    expect(location).toContain('Unable%20to%20complete%20sign%20in')
+  })
+
+  it('should redirect with OAuth error for OAuth2RequestError', async () => {
+    const {reddit} = await import('@/lib/auth/arctic')
+    const {OAuth2RequestError} = await import('arctic')
+
+    const oauthError = new OAuth2RequestError(
+      'https://test.com',
+      'invalid_grant',
+      'Invalid authorization code',
+      null
+    )
+
+    vi.mocked(reddit.validateAuthorizationCode).mockRejectedValue(oauthError)
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=oauth_error')
+    expect(location).toContain('Authentication%20failed')
   })
 
   it('should handle HTML entity in avatar URLs', async () => {
