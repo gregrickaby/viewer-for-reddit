@@ -4,6 +4,7 @@ import type {ClientSession} from '@/lib/auth/session'
 import {clearAuth, setAuth} from '@/lib/store/features/authSlice'
 import {useAppDispatch} from '@/lib/store/hooks'
 import {Avatar, Group, Menu, Text} from '@mantine/core'
+import {useRouter} from 'next/navigation'
 import {useEffect, useState} from 'react'
 import {FaReddit, FaSignOutAlt, FaUser} from 'react-icons/fa'
 import {LoginButton} from './LoginButton'
@@ -18,6 +19,7 @@ export function UserMenu() {
   const [session, setSession] = useState<ClientSession | null>(null)
   const [loading, setLoading] = useState(true)
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   useEffect(() => {
     // Fetch client-safe session on mount (no tokens)
@@ -100,8 +102,7 @@ export function UserMenu() {
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {method: 'POST'})
     dispatch(clearAuth())
-    // Direct navigation required to clear all client state after logout
-    window.location.href = '/'
+    router.push('/')
   }
 
   return (

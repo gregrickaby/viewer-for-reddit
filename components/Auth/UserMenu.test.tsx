@@ -2,9 +2,21 @@ import {UserMenu} from '@/components/Auth/UserMenu'
 import {render, screen, waitFor} from '@/test-utils'
 import {http, HttpResponse} from 'msw'
 import {server} from '@/test-utils/msw/server'
-import {describe, expect, it} from 'vitest'
+import {useRouter} from 'next/navigation'
+import {describe, expect, it, vi} from 'vitest'
+
+// Mock Next.js navigation
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn()
+}))
 
 describe('UserMenu', () => {
+  beforeEach(() => {
+    vi.mocked(useRouter).mockReturnValue({
+      push: vi.fn()
+    } as any)
+  })
+
   it('should show loading state initially', () => {
     render(<UserMenu />)
     const avatar = document.querySelector('.mantine-Avatar-root')

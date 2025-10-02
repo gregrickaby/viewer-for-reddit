@@ -3,6 +3,7 @@
 import {clearAuth} from '@/lib/store/features/authSlice'
 import {useAppDispatch} from '@/lib/store/hooks'
 import {Button} from '@mantine/core'
+import {useRouter} from 'next/navigation'
 import {FaSignOutAlt} from 'react-icons/fa'
 
 export interface LogoutButtonProps {
@@ -33,12 +34,12 @@ export function LogoutButton({
   fullWidth = false
 }: Readonly<LogoutButtonProps>) {
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', {method: 'POST'})
     dispatch(clearAuth())
-    // Direct navigation required to clear all client state after logout
-    window.location.href = '/'
+    router.push('/')
   }
 
   return (

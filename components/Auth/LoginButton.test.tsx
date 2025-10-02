@@ -1,14 +1,21 @@
 import {LoginButton} from '@/components/Auth/LoginButton'
 import {render, screen, userEvent} from '@/test-utils'
-import {describe, expect, it} from 'vitest'
+import {useRouter} from 'next/navigation'
+import {describe, expect, it, vi} from 'vitest'
 
-// Mock window.location
-delete (window as any).location
-window.location = {href: ''} as any
+// Mock Next.js navigation
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn()
+}))
 
 describe('LoginButton', () => {
+  const mockPush = vi.fn()
+
   beforeEach(() => {
-    window.location.href = ''
+    mockPush.mockClear()
+    vi.mocked(useRouter).mockReturnValue({
+      push: mockPush
+    } as any)
   })
 
   it('should render login button with correct text', () => {
@@ -31,7 +38,7 @@ describe('LoginButton', () => {
 
     await user.click(button)
 
-    expect(window.location.href).toBe('/api/auth/login')
+    expect(mockPush).toHaveBeenCalledWith('/api/auth/login')
   })
 
   it('should render with custom variant', () => {

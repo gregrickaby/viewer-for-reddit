@@ -1,8 +1,23 @@
 import {LogoutButton} from '@/components/Auth/LogoutButton'
 import {render, screen, userEvent, waitFor} from '@/test-utils'
-import {describe, expect, it} from 'vitest'
+import {useRouter} from 'next/navigation'
+import {describe, expect, it, vi} from 'vitest'
+
+// Mock Next.js navigation
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn()
+}))
 
 describe('LogoutButton', () => {
+  const mockPush = vi.fn()
+
+  beforeEach(() => {
+    mockPush.mockClear()
+    vi.mocked(useRouter).mockReturnValue({
+      push: mockPush
+    } as any)
+  })
+
   it('should render logout button with correct text', () => {
     render(<LogoutButton />)
     expect(screen.getByRole('button')).toHaveTextContent('Sign out')
@@ -15,15 +30,13 @@ describe('LogoutButton', () => {
 
   it('should call logout endpoint and redirect when clicked', async () => {
     const user = userEvent.setup()
-    const originalHref = window.location.href
 
     render(<LogoutButton />)
     const button = screen.getByRole('button')
 
     await user.click(button)
 
-    await waitFor(() => expect(window.location.href).not.toBe(originalHref))
-    expect(window.location.href).toContain('/')
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/'))
   })
 
   it('should render with custom variant', () => {

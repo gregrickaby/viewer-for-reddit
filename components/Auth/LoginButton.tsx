@@ -1,6 +1,7 @@
 'use client'
 
 import {Button} from '@mantine/core'
+import {useRouter} from 'next/navigation'
 import {FaReddit} from 'react-icons/fa'
 
 export interface LoginButtonProps {
@@ -30,9 +31,10 @@ export function LoginButton({
   size = 'md',
   fullWidth = false
 }: Readonly<LoginButtonProps>) {
+  const router = useRouter()
+
   const handleLogin = () => {
-    // Direct navigation required to initiate OAuth flow (external redirect to Reddit)
-    window.location.href = '/api/auth/login'
+    router.push('/api/auth/login')
   }
 
   return (
