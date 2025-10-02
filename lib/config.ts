@@ -30,9 +30,12 @@ const config = {
     return domain || undefined
   },
   get baseUrl() {
-    const url = process.env.AUTH_URL
+    // For Coolify preview deployments, prefer COOLIFY_URL over AUTH_URL
+    const url = process.env.COOLIFY_URL || process.env.AUTH_URL
     if (!url) {
-      throw new Error('AUTH_URL environment variable is required')
+      throw new Error(
+        'AUTH_URL or COOLIFY_URL environment variable is required'
+      )
     }
     return url
   }

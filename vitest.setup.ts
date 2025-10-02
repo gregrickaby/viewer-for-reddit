@@ -70,7 +70,6 @@ beforeAll(() => {
 
 afterEach(() => {
   server.resetHandlers()
-  // Note: Don't unstub env vars here - required config values need to persist
 })
 
 afterAll(() => {

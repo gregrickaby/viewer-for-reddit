@@ -1,7 +1,7 @@
 import {UserMenu} from '@/components/Auth/UserMenu'
 import {render, screen, waitFor} from '@/test-utils'
-import {http, HttpResponse} from 'msw'
 import {server} from '@/test-utils/msw/server'
+import {http, HttpResponse} from 'msw'
 import {useRouter} from 'next/navigation'
 import {describe, expect, it, vi} from 'vitest'
 
