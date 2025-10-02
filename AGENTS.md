@@ -1,8 +1,18 @@
 # AI Agent Instructions
 
 **Audience**: All AI agents (GitHub Copilot, Claude Code, Cursor, etc.)
-**Purpose**: Machine-readable operational runbook for viewer-for-reddit
+**Purpose**: Machine-readable operational runbook for reddit-viewer.com
 **Human Docs**: See [CONTRIBUTING.md](./CONTRIBUTING.md) for comprehensive developer guide
+
+## About reddit-viewer.com
+
+A Reddit viewing web app enabling users to browse Reddit content without ads or distractions.
+
+It has two modes:
+
+- **Read-only Mode**: Browse public communities, posts, users, and comments without logging in. This mode uses a developer API key to authenticate calls to oauth.reddit.com with limited rate and scope via Reddit's personal use script.
+
+- **Authenticated Mode**: Log in with a Reddit account to access personalized features like viewing home feed, custom feeds, voting, commenting, and subscribing. This mode uses OAuth 2.0 to obtain user-specific access tokens with broader scopes.
 
 ## Available Sub-agents
 
@@ -19,19 +29,47 @@
 ## Architecture Overview
 
 - **Framework**: Next.js 15+ (App Router)
-- **UI**: Mantine v8 component library.
-  - Please use Mantine primitives. Fetch official docs: <https://mantine.dev/llms.txt>
-- **API**: Reddit API v2 with OpenAPI spec and auto-generated types
-- **Authentication**: Reddit OAuth 2.0 (Server Actions)
+- **UI**: Mantine v8 component library. Use Mantine primitives. Fetch official docs: <https://mantine.dev/llms.txt>
+- **API**: Reddit API v2 with OpenAPI spec and auto-generated types. Fetch official docs: <https://developers.reddit.com/docs/llms-full.txt>
+- **Analytics**: Umami (production only) <https://umami.is/docs>
+- **Authentication**: Reddit OAuth 2.0 with server actions (Read-only mode) and Arctic (Authenticated Mode). <https://arcticjs.dev/providers/reddit>
 - **CI/CD**: GitHub Actions with validation gates
 - **CSS**: CSS Modules with Mantine CSS variables
+- **Coolify**: This app is self-hosted and deployed with Coolify using Nixpacks. Preview deployments for each pull request: <https://[pull-request-id].reddit-viewer.com>
 - **Data Fetching**: RTK Query
 - **Formatting**: Prettier
+- **Github MCP**: Interacting with Github issues and pull requests
 - **Linting**: ESLint with Mantine config
+- **Playwright MCP**: Used for visual debugging and manual QA
 - **State Management**: Redux Toolkit
 - **Testing**: Vitest + React Testing Library + MSW v2
 - **TypeScript**: Strict mode enabled. Never use `any` type
-- **Coolify**: This app is self-hosted and deployed with Coolify using Nixpacks
+
+## Multi-Environment Authentication
+
+**OAuth Strategy**: Shared domain cookie approach for seamless multi-environment support
+
+- **Arctic library**: Reddit OAuth 2.0 provider (<https://arcticjs.dev/providers/reddit>)
+- **Production callback**: All environments route through `https://reddit-viewer.com/api/auth/callback/reddit`
+- **Preview deployments**: Use shared parent domain cookie (`.reddit-viewer.com`)
+- **Local development**: Uses localhost callback for read-only mode testing OR relies on preview deployments for OAuth testing
+- **CSRF protection**: State parameter validation with httpOnly cookies
+- **Session encryption**: iron-session with encrypted cookies (domain: `.reddit-viewer.com` in production)
+- **Rate limiting**: Per-IP request limiting with audit logging
+- **Token refresh**: Automatic token rotation before expiration
+- **Security**: httpOnly cookies, secure flag in production, sameSite: 'lax'
+
+**Multi-Environment Flow**:
+
+1. User clicks "Sign in" on any environment (production/preview/local)
+2. Login route captures origin URL in `reddit_oauth_origin` cookie
+3. Redirects to Reddit OAuth with state parameter
+4. Reddit redirects back to production callback (`reddit-viewer.com/api/auth/callback/reddit`)
+5. Callback handler:
+   - Validates state and exchanges code for tokens
+   - Creates session cookie with `domain: .reddit-viewer.com`
+   - Redirects back to origin URL from cookie
+6. User is authenticated on original environment (session cookie shared across subdomains)
 
 ## Core Development Commands
 
@@ -42,7 +80,7 @@ npm run format      # Prettier formatting - auto-fixes formatting issues
 npm run lint        # ESLint with Mantine config - must pass
 npm run typecheck   # TypeScript strict checking - must pass
 npm run test        # Vitest unit tests - must pass
-npm run dev         # Start dev server. Review changes using Playwright MCP
+npm run dev         # Start dev server. Verify changes using Playwright MCP
 ```
 
 **Critical**: Run these commands in sequence for any code changes. Stop if any step fails.
@@ -50,10 +88,9 @@ npm run dev         # Start dev server. Review changes using Playwright MCP
 ### Testing Commands
 
 ```bash
+npx vitest <path> --run   # Run specific test file
 npm run test              # Run all unit tests
 npm run coverage          # Run tests with coverage report (aim for 90%+)
-npx vitest <component>    # Run specific component tests
-npx vitest <path> --run   # Run failing tests locally for debugging
 ```
 
 ### Reddit API Type Generation
@@ -81,12 +118,13 @@ npm run typegen:validate  # Validate OpenAPI specification
    npm run format
    npm run lint
    npm run typecheck
-   npm run test
+   npx vitest <path> --run # Specific tests related to changes
    ```
 
 3. **For feature completion:**
 
    ```bash
+   npm run test  # Full test suite
    npm run dev  # Use Playwright MCP to validate functionality
    ```
 
@@ -106,8 +144,8 @@ This is a **test-driven codebase**. Tests must be written/updated alongside code
 
 **Testing Strategy:**
 
-- **Unit Tests**: Every component has `.test.tsx`
-- **Integration Tests**: RTK Query + MSW mocking
+- **Unit Tests**: Everything has `.test.ts`. If possible, create loops for tests to minimize code duplication. Do not create superfluous tests that do not add value or directly contribute to coverage.
+- **Integration Tests**: RTK Query + MSW mocking. Never mock fetch or RTK Query directly.
 - **API Mocking**: MSW v2 handlers in `test-utils/msw/handlers.ts`
 
 ### Debugging with Playwright MCP
@@ -135,7 +173,7 @@ This is a **test-driven codebase**. Tests must be written/updated alongside code
 components/ComponentName/
 ├── ComponentName.tsx           # Main component
 ├── ComponentName.module.css    # Styles
-└── ComponentName.test.tsx      # Tests
+└── ComponentName.test.ts       # Tests
 ```
 
 ### Server Actions Pattern
@@ -149,7 +187,7 @@ components/ComponentName/
 ### Prerequisites
 
 - **Node.js**: v22 (see `.nvmrc`)
-- **npm**: v11+
+- **npm**: v10+
 - **Reddit API credentials**: Required for development
 
 ### Environment Configuration

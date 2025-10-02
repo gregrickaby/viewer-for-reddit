@@ -270,23 +270,47 @@ Component (auto-cached, auto-refetched)
 
 ### Authentication Setup
 
-The app uses **Reddit OAuth 2.0** for API access with automatic token management:
+The app uses **Reddit OAuth 2.0** for API access with multi-environment support:
 
 **Creating Reddit App:**
 
 1. **Visit**: <https://www.reddit.com/prefs/apps>
 2. **Create new app**:
-   - **Name**: `Local Dev`
-   - **Type**: `script`
-   - **Description**: `Local development app`
-   - **About URL**: `http://localhost:3000`
-   - **Redirect URI**: `http://localhost:3000`
+   - **Name**: `reddit-viewer`
+   - **Type**: `web app`
+   - **Description**: `A Reddit viewing web app`
+   - **About URL**: `https://reddit-viewer.com`
+   - **Redirect URI**: `https://reddit-viewer.com/api/auth/callback/reddit`
 3. **Copy credentials** to your `.env` file
+
+**Multi-Environment OAuth:**
+
+The app uses a **shared domain cookie strategy** that enables OAuth to work seamlessly across:
+
+- **Production**: `https://reddit-viewer.com`
+- **Preview Deployments**: `https://[pr-id].reddit-viewer.com`
+- **Local Development**: `http://localhost:3000` (read-only mode recommended)
+
+**How it works:**
+
+1. All environments redirect to Reddit OAuth
+2. Reddit redirects back to production callback (`reddit-viewer.com/api/auth/callback/reddit`)
+3. Production callback:
+   - Validates OAuth code and exchanges for tokens
+   - Creates encrypted session with domain `.reddit-viewer.com`
+   - Redirects back to original environment
+4. Session cookie is readable by all `reddit-viewer.com` subdomains
+
+**Local Development Options:**
+
+- **Option A (Recommended)**: Use read-only mode locally, test OAuth on preview deployments
+- **Option B**: Configure Reddit app with localhost callback (requires manual toggling)
 
 **Server-Side Token Management:**
 
-- **Location**: `lib/actions/redditToken.ts`
-- **Features**: Automatic token rotation, caching, error handling
+- **Read-only Mode**: `lib/actions/redditToken.ts` - Application-only OAuth
+- **Authenticated Mode**: `lib/auth/arctic.ts` + `lib/auth/session.ts` - User OAuth with Arctic
+- **Features**: Automatic token rotation, caching, error handling, multi-environment support
 - **Flow**: Server Action → OAuth token → RTK Query → Components
 
 ### Type Generation System
