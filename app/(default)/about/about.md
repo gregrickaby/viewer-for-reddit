@@ -2,15 +2,15 @@
 
 If you landed here from Google, welcome! Since most first time visitors arrive on this page, you should:
 
-**👉 [Go to Homepage (r/all)](/) 👈**
+**👉 [Go to Homepage](/) 👈**
 
 If you're still here, below is brief guide to get you started and some info about the app.
 
 ## Quick start
 
 1. Explore popular posts: go to [the homepage](/).
-2. Find a subreddit: type a subreddit name (e.g. `pics`) into the search at the top of this page, and select a result to view posts.
-3. Favorite subreddits: click the heart icon next to a subreddit name to add it to your favorites. After, you can view your favorite posts on the [homepage](/).
+2. Find a community: type a community name (e.g. `pics`) into the search at the top of this page, and select a result to view posts.
+3. Favorite communities: click the heart icon next to a community name to add it to your favorites. After, your favorite communities will appear on the [homepage](/).
 
 ## Why Viewer for Reddit?
 

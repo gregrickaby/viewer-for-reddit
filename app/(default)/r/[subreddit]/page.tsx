@@ -3,11 +3,14 @@ import BossButton from '@/components/BossButton/BossButton'
 import {Posts} from '@/components/Posts/Posts'
 import config from '@/lib/config'
 import type {SearchParams, SortingOption, SubredditParams} from '@/lib/types'
+import type {Metadata} from 'next'
 
 /**
  * Generate metadata.
  */
-export async function generateMetadata(props: {params: SubredditParams}) {
+export async function generateMetadata(props: {
+  params: SubredditParams
+}): Promise<Metadata> {
   const params = await props.params
   const subreddit = params.subreddit
 

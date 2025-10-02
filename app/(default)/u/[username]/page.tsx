@@ -3,11 +3,14 @@ import BossButton from '@/components/BossButton/BossButton'
 import {UserProfile} from '@/components/UserProfile/UserProfile'
 import config from '@/lib/config'
 import type {UserParams} from '@/lib/types'
+import type {Metadata} from 'next'
 
 /**
  * Generate metadata.
  */
-export async function generateMetadata(props: {params: UserParams}) {
+export async function generateMetadata(props: {
+  params: UserParams
+}): Promise<Metadata> {
   const params = await props.params
   const username = params.username
 

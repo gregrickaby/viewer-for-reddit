@@ -25,8 +25,7 @@ export async function GET(request: NextRequest) {
   const state = generateState()
 
   // Request minimal scopes (principle of least privilege)
-  // Removed 'vote' and 'mysubreddits' - only request what's needed
-  const scopes = ['identity', 'read']
+  const scopes = ['identity', 'read', 'mysubreddits']
 
   // Create authorization URL
   // Note: Arctic doesn't expose duration param directly, but Reddit defaults

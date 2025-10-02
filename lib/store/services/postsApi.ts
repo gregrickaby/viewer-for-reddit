@@ -36,7 +36,7 @@ export type AutoPostWithMedia = Extract<
  * Query parameters for fetching subreddit posts.
  *
  * @interface SubredditPostsArgs
- * @property {string} subreddit - Subreddit name or multi-subreddit string (e.g., "programming" or "gifs+aww+cats")
+ * @property {string} subreddit - Subreddit name or custom feeds string (e.g., "programming" or "gifs+aww+cats")
  * @property {SortingOption} sort - How to sort posts (hot, new, top, etc.)
  */
 export interface SubredditPostsArgs {
@@ -60,18 +60,18 @@ export const postsApi = createApi({
     /**
      * Fetches paginated posts from a specific subreddit with infinite scrolling support.
      *
-     * Supports both single subreddits and multi-subreddit queries (e.g., "gifs+aww+cats").
+     * Supports both single subreddits and custom feeds queries (e.g., "gifs+aww+cats").
      * Automatically filters out stickied posts and provides pagination cursors for
      * infinite scrolling functionality.
      *
      * Key features:
-     * - Multi-subreddit support with proper URL encoding
+     * - custom feeds support with proper URL encoding
      * - Infinite pagination with "after" cursors
      * - Automatic sticky post filtering
      * - Configurable sorting options
      *
      * @param {SubredditPostsArgs} args - Query arguments
-     * @param {string} args.subreddit - Single subreddit or multi-subreddit string (e.g., "programming" or "gifs+aww")
+     * @param {string} args.subreddit - Single subreddit or custom feeds string (e.g., "programming" or "gifs+aww")
      * @param {SortingOption} args.sort - Sort method (hot, new, top, rising, etc.)
      * @param {string} [pageParam] - Pagination cursor for next page (Reddit's "after" parameter)
      *
@@ -100,7 +100,8 @@ export const postsApi = createApi({
         const params = new URLSearchParams({limit: String(MAX_LIMIT)})
         if (pageParam) params.set('after', pageParam) // Add pagination cursor
 
-        // Handle multi-subreddit syntax: encode individual subreddit names but preserve + separators.
+        // Handle regular subreddit or custom feeds syntax (e.g., "gifs+aww+cats")
+        // Encode individual subreddit names but preserve + separators
         const encodedSubreddit = subreddit
           .split('+')
           .map((sub) => encodeURIComponent(sub))

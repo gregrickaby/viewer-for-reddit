@@ -1,4 +1,4 @@
-import {getRedditToken} from '@/lib/actions/redditToken'
+import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
 import {validateOrigin} from '@/lib/utils/validateOrigin'
@@ -6,20 +6,23 @@ import {isSafeRedditPath} from '@/lib/utils/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
- * Anonymous Reddit API Proxy Route Handler.
+ * User-Authenticated Reddit API Proxy Route Handler (/me).
  *
- * This endpoint handles read-only, anonymous requests using app-level tokens.
- * Use this for public content that doesn't require user authentication:
- * - Subreddit posts (/r/{subreddit})
- * - Post comments (/r/{subreddit}/comments/{post_id})
- * - User profiles (/user/{username}/about)
- * - Search results (/search)
+ * This endpoint handles requests that require user authentication (user session tokens).
+ * The "/me" convention follows REST patterns and mirrors Reddit's own /api/v1/me/* endpoints.
  *
- * For user-specific content (custom feeds, voting, saved posts, etc.),
- * use /api/reddit/me instead.
+ * Use this for user-specific resources:
+ * - Custom Feeds (/user/{username}/m/{customFeedName})
+ * - User home feed (/api/v1/me)
+ * - Voting (/api/vote)
+ * - Subscriptions (/subreddits/mine/subscriber)
+ * - Saved posts (/user/{username}/saved)
+ * - User preferences (/api/v1/me/prefs)
+ *
+ * Anonymous/read-only requests should use /api/reddit instead.
  *
  * @example
- * fetch('/api/reddit?path=/r/programming/hot.json?limit=25')
+ * fetch('/api/reddit/me?path=/user/baxuche/m/one/hot.json')
  *
  * @param {NextRequest} request - The incoming request object.
  */
@@ -35,7 +38,7 @@ export async function GET(request: NextRequest) {
 
   if (!path) {
     logError('Missing required path parameter', {
-      component: 'redditApiRoute',
+      component: 'redditMeApiRoute',
       action: 'validatePath',
       url: request.url,
       searchParams: Object.fromEntries(searchParams.entries())
@@ -49,7 +52,7 @@ export async function GET(request: NextRequest) {
   // Validate path to prevent SSRF and abuse
   if (!isSafeRedditPath(path)) {
     logError('Invalid or dangerous Reddit API path', {
-      component: 'redditApiRoute',
+      component: 'redditMeApiRoute',
       action: 'validatePath',
       path,
       url: request.url,
@@ -59,39 +62,30 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // This proxy is for anonymous/read-only access only
-    // User-authenticated requests should use /api/reddit/me
-    const token = await getRedditToken()
+    // Get user session token
+    const session = await getSession()
 
-    if (!token) {
+    if (!session?.accessToken) {
       return NextResponse.json(
-        {error: 'Failed to obtain Reddit API token'},
-        {status: 500}
+        {error: 'Authentication required'},
+        {status: 401}
       )
     }
 
     const response = await fetch(`https://oauth.reddit.com${path}`, {
       headers: {
-        Authorization: `Bearer ${token.access_token}`,
+        Authorization: `Bearer ${session.accessToken}`,
         'User-Agent': config.userAgent
       }
     })
 
     if (!response.ok) {
-      logError('Reddit API request failed', {
-        component: 'redditApiRoute',
-        action: 'fetchRedditApi',
+      logError('Reddit /me API request failed', {
+        component: 'redditMeApiRoute',
+        action: 'fetchReddit',
         path,
         status: response.status,
-        statusText: response.statusText,
-        redditUrl: `https://oauth.reddit.com${path}`,
-        headers: {
-          'content-type': response.headers.get('content-type'),
-          'x-ratelimit-remaining': response.headers.get(
-            'x-ratelimit-remaining'
-          ),
-          'x-ratelimit-reset': response.headers.get('x-ratelimit-reset')
-        }
+        statusText: response.statusText
       })
       return NextResponse.json(
         {error: 'Reddit API error'},
@@ -102,14 +96,11 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
     return NextResponse.json(data)
   } catch (error) {
-    logError(error, {
-      component: 'redditApiRoute',
+    logError('Reddit /me API proxy error', {
+      component: 'redditMeApiRoute',
       action: 'proxyRequest',
       path,
-      url: request.url,
-      method: request.method,
-      origin: request.headers.get('origin'),
-      userAgent: request.headers.get('user-agent')
+      error
     })
     return NextResponse.json({error: 'Internal server error'}, {status: 500})
   }

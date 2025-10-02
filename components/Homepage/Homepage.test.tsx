@@ -57,7 +57,7 @@ describe('Homepage', () => {
       http.get('https://oauth.reddit.com/r/all/hot.json', () => {
         return HttpResponse.json(mockAllPostsResponse)
       }),
-      // Use wildcard to match any multi-subreddit requests
+      // Use wildcard to match any custom feeds requests
       http.get('https://oauth.reddit.com/r/*/hot.json', () => {
         return HttpResponse.json(mockFavoritePostsResponse)
       })

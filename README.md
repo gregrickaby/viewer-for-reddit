@@ -5,8 +5,8 @@ Viewer for Reddit features a private, distraction-free way to experience Reddit.
 ## Quick start
 
 1. Explore popular posts: go to [the homepage](https://reddit-viewer.com).
-2. Find a subreddit: type a subreddit name (e.g. `pics`) into the search at the top of this page, and select a result to view posts.
-3. Favorite subreddits: click the heart icon next to a subreddit name to add it to your favorites. After, you can view your favorite posts on the [homepage](https://reddit-viewer.com).
+2. Find a community: type a community name (e.g. `pics`) into the search at the top of this page, and select a result to view posts.
+3. Favorite communities: click the heart icon next to a community name to add it to your favorites. After, you can view your favorite posts on the [homepage](https://reddit-viewer.com).
 
 ## What's under the hood?
 

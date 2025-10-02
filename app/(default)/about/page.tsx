@@ -2,10 +2,11 @@ import config from '@/lib/config'
 import {Typography} from '@mantine/core'
 import fs from 'fs'
 import matter from 'gray-matter'
+import type {Metadata} from 'next'
 import path from 'path'
 import ReactMarkdown from 'react-markdown'
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `About - ${config.siteName}`,
     description: `${config.siteName} has been a private, distraction-free way to browse Reddit media since 2020.`,

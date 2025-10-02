@@ -24,8 +24,8 @@ interface FavoritePostsProps {
 /**
  * FavoritePosts component
  *
- * Uses Reddit's multi-subreddit syntax (r/pics+gaming+funny) to fetch
- * posts from all favorite subreddits in a single request, then displays
+ * Uses Reddit's custom feeds syntax (r/pics+gaming+funny) to fetch
+ * posts from all favorite communities in a single request, then displays
  * them with a unified feed with special "My Feed" header and heart icon.
  *
  * @param favorites - Array of favorite subreddit names
@@ -37,7 +37,7 @@ export function FavoritePosts({
 }: Readonly<FavoritePostsProps>) {
   const [selectedSort, setSelectedSort] = useState<SortingOption>(sort)
 
-  // Combine all favorites into Reddit's multi-subreddit format: r/sub1+sub2+sub3
+  // Combine all favorites into Reddit's custom feed format: r/sub1+sub2+sub3
   const combinedSubreddits = favorites.length > 0 ? favorites.join('+') : 'all'
 
   const {

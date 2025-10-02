@@ -1,31 +1,27 @@
 import {SinglePost} from '@/components/SinglePost/SinglePost'
+import type {SinglePostPageParams} from '@/lib/types'
 import type {Metadata} from 'next'
-
-// Try using Next.js official PageProps helper
-export interface SinglePostPageProps {
-  params: Promise<{subreddit: string; postId: string}>
-}
 
 /**
  * Generate metadata for the single post page.
  */
 export async function generateMetadata({
   params
-}: SinglePostPageProps): Promise<Metadata> {
+}: SinglePostPageParams): Promise<Metadata> {
   const {subreddit, postId} = await params
 
   return {
     title: `Post in r/${subreddit} - Reddit Viewer`,
-    description: `View post ${postId} in r/${subreddit} subreddit`,
+    description: `View post ${postId} in ${subreddit} community`,
     openGraph: {
       title: `Post in r/${subreddit}`,
-      description: `View post ${postId} in r/${subreddit} subreddit`,
+      description: `View post ${postId} in ${subreddit} community`,
       type: 'article'
     },
     twitter: {
       card: 'summary',
       title: `Post in r/${subreddit}`,
-      description: `View post ${postId} in r/${subreddit} subreddit`
+      description: `View post ${postId} in ${subreddit} community`
     }
   }
 }
@@ -43,7 +39,7 @@ export async function generateMetadata({
  * @param params - Route parameters containing subreddit and postId
  * @returns Single post page with post content and comments
  */
-export default async function SinglePostPage({params}: SinglePostPageProps) {
+export default async function SinglePostPage({params}: SinglePostPageParams) {
   const {subreddit, postId} = await params
 
   return (
