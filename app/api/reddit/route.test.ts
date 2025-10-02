@@ -171,7 +171,7 @@ describe('Reddit API Route', () => {
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer reddit-token',
-            'User-Agent': 'web-app:viewer-for-reddit:* (by Greg Rickaby)'
+            'User-Agent': 'test-user-agent'
           })
         })
       )

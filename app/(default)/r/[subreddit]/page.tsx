@@ -1,6 +1,7 @@
 import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
 import {Posts} from '@/components/Posts/Posts'
+import {getSubreddit} from '@/lib/actions/getSubreddit'
 import config from '@/lib/config'
 import type {SearchParams, SortingOption, SubredditParams} from '@/lib/types'
 import type {Metadata} from 'next'
@@ -13,23 +14,36 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   const params = await props.params
   const subreddit = params.subreddit
+  const data = await getSubreddit(subreddit)
+
+  const title = data?.display_name
+    ? `/r/${data.display_name} - ${config.siteName}`
+    : `/r/${subreddit} - ${config.siteName}`
+
+  const description =
+    data?.public_description ||
+    `Browse posts in /r/${subreddit} with Viewer for Reddit.`
 
   return {
-    title: `/r/${subreddit} - ${config.siteName}`,
-    description: `Browse posts in /r/${subreddit} anonymously with Viewer for Reddit.`,
+    title,
+    description,
     alternates: {
-      canonical: `${config.siteUrl}r/${subreddit}`
+      canonical: `/r/${subreddit}`
+    },
+    robots: {
+      index: true,
+      follow: true
     },
     openGraph: {
-      title: `/r/${subreddit} - ${config.siteName}`,
-      description: `Posts in /r/${subreddit}, updated in real time.`,
-      url: `${config.siteUrl}r/${subreddit}`,
+      title,
+      description,
+      url: `/r/${subreddit}`,
       images: [
         {
-          url: `${config.siteUrl}social-share.webp`,
-          width: 1200,
-          height: 630,
-          alt: config.siteName
+          url: data?.icon_img || '/social-share.webp',
+          width: data?.icon_img ? 256 : 1200,
+          height: data?.icon_img ? 256 : 630,
+          alt: data?.display_name || config.siteName
         }
       ]
     }

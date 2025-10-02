@@ -11,15 +11,15 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `About - ${config.siteName}`,
     description: `${config.siteName} has been a private, distraction-free way to browse Reddit media since 2020.`,
     alternates: {
-      canonical: `${config.siteUrl}about`
+      canonical: '/about'
     },
     openGraph: {
       title: `About - ${config.siteName}`,
       description: `${config.siteName} has been a private, distraction-free way to browse Reddit media since 2020.`,
-      url: `${config.siteUrl}about`,
+      url: '/about',
       images: [
         {
-          url: `${config.siteUrl}social-share.webp`,
+          url: '/social-share.webp',
           width: 1200,
           height: 630,
           alt: config.siteName

@@ -1,3 +1,4 @@
+import config from '@/lib/config'
 import {getIronSession, type IronSession} from 'iron-session'
 import {cookies} from 'next/headers'
 
@@ -56,8 +57,7 @@ function getSessionConfig() {
       path: '/',
       // Share session across all reddit-viewer.com subdomains (production + previews)
       // Local development uses no domain restriction (localhost only)
-      domain:
-        process.env.NODE_ENV === 'production' ? '.reddit-viewer.com' : undefined
+      domain: config.sessionDomain
     }
   }
 }

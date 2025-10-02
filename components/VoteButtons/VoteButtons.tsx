@@ -61,10 +61,9 @@ export function VoteButtons({
     userVote ?? null
   )
 
-  // Calculate icon size based on button size
-  let iconSize = 20
-  if (size === 'sm') iconSize = 16
-  if (size === 'lg') iconSize = 24
+  // Icon size mapping based on button size variant
+  const iconSizes = {sm: 16, md: 20, lg: 24} as const
+  const iconSize = iconSizes[size]
 
   /**
    * Calculate new vote direction based on current state

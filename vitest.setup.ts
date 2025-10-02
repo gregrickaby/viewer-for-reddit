@@ -60,6 +60,8 @@ beforeAll(() => {
   vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
   vi.stubEnv('SESSION_SECRET', 'test-session-secret-at-least-32-chars-long')
   vi.stubEnv('AUTH_URL', 'http://localhost:3000')
+  vi.stubEnv('USER_AGENT', 'test-user-agent')
+  vi.stubEnv('SESSION_DOMAIN', '') // Empty string for localhost-only in tests
 
   vi.spyOn(console, 'error').mockImplementation(() => {})
   vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -68,7 +70,7 @@ beforeAll(() => {
 
 afterEach(() => {
   server.resetHandlers()
-  vi.unstubAllEnvs()
+  // Note: Don't unstub env vars here - required config values need to persist
 })
 
 afterAll(() => {

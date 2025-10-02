@@ -1,4 +1,5 @@
 import {SinglePost} from '@/components/SinglePost/SinglePost'
+import {getSinglePost} from '@/lib/actions/getSinglePost'
 import type {SinglePostPageParams} from '@/lib/types'
 import type {Metadata} from 'next'
 
@@ -9,19 +10,33 @@ export async function generateMetadata({
   params
 }: SinglePostPageParams): Promise<Metadata> {
   const {subreddit, postId} = await params
+  const post = await getSinglePost(subreddit, postId)
+  const title = `${post?.title} - r/${subreddit}`
 
   return {
-    title: `Post in r/${subreddit} - Reddit Viewer`,
-    description: `View post ${postId} in ${subreddit} community`,
-    openGraph: {
-      title: `Post in r/${subreddit}`,
-      description: `View post ${postId} in ${subreddit} community`,
-      type: 'article'
+    title,
+    description: post?.title,
+    alternates: {
+      canonical: `/r/${subreddit}/comments/${postId}`
     },
-    twitter: {
-      card: 'summary',
-      title: `Post in r/${subreddit}`,
-      description: `View post ${postId} in ${subreddit} community`
+    robots: {
+      index: true,
+      follow: true
+    },
+    openGraph: {
+      title,
+      description: post?.title,
+      url: `/r/${subreddit}/comments/${postId}`,
+      type: 'article',
+      ...(post?.thumbnail &&
+        post.thumbnail !== 'self' &&
+        post.thumbnail !== 'default' && {
+          images: [
+            {
+              url: post.thumbnail
+            }
+          ]
+        })
     }
   }
 }
@@ -42,9 +57,5 @@ export async function generateMetadata({
 export default async function SinglePostPage({params}: SinglePostPageParams) {
   const {subreddit, postId} = await params
 
-  return (
-    <main>
-      <SinglePost subreddit={subreddit} postId={postId} />
-    </main>
-  )
+  return <SinglePost subreddit={subreddit} postId={postId} />
 }

@@ -43,7 +43,7 @@ const popularSubreddits = [
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = config.siteUrl
+  const base = config.baseUrl
   const lastModified = new Date()
 
   const staticPages: MetadataRoute.Sitemap = [

@@ -18,7 +18,7 @@ export async function generateMetadata(props: {
     title: `${customfeed} - ${config.siteName}`,
     description: `Viewing posts from custom feed "${customfeed}"`,
     alternates: {
-      canonical: `${config.siteUrl}user/${params.username}/m/${customfeed}`
+      canonical: `/user/${params.username}/m/${customfeed}`
     },
     robots: {
       index: false,
@@ -27,7 +27,7 @@ export async function generateMetadata(props: {
     openGraph: {
       title: `${customfeed} - ${config.siteName}`,
       description: `Viewing posts from custom feed "${customfeed}"`,
-      url: `${config.siteUrl}user/${params.username}/m/${customfeed}`
+      url: `/user/${params.username}/m/${customfeed}`
     },
     twitter: {
       card: 'summary',

@@ -1,3 +1,4 @@
+import config from '@/lib/config'
 import {fetchBaseQuery, type BaseQueryFn} from '@reduxjs/toolkit/query/react'
 
 /**
@@ -21,7 +22,7 @@ export function createRedditBaseQuery(proxyPath: string): BaseQueryFn {
     // Use absolute URL for tests to avoid URL parsing issues in Node.js environment
     const baseUrl =
       typeof window === 'undefined' || process.env.NODE_ENV === 'test'
-        ? `http://localhost:3000${proxyPath}`
+        ? `${config.baseUrl}${proxyPath}`
         : proxyPath
 
     // Create the proxy query function with proper headers

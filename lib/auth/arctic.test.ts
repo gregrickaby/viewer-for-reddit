@@ -8,23 +8,25 @@ async function importArctic() {
 describe('arctic', () => {
   beforeEach(() => {
     vi.resetModules()
+    // Re-stub required env vars after reset
+    vi.stubEnv('AUTH_URL', 'http://localhost:3000')
   })
 
   afterEach(() => {
-    vi.unstubAllEnvs()
+    // Don't unstub all envs - required config values need to persist
   })
 
   describe('getRedirectUri validation', () => {
     describe('AUTH_URL requirement', () => {
       it('should use production redirect URI when NODE_ENV is production', async () => {
         vi.stubEnv('NODE_ENV', 'production')
-        vi.stubEnv('AUTH_URL', '')
+        vi.stubEnv('AUTH_URL', 'https://reddit-viewer.com')
         vi.stubEnv('REDDIT_CLIENT_ID', 'test_client_id')
         vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
-        // Production uses hardcoded redirect URI, so missing AUTH_URL is OK
+        // Production uses AUTH_URL for redirect URI
       })
 
       it('should throw error when AUTH_URL is undefined in development', async () => {

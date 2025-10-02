@@ -22,22 +22,22 @@ import {Reddit_Sans} from 'next/font/google'
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-metadata
  */
 export const metadata: Metadata = {
-  metadataBase: new URL(config.siteUrl),
+  metadataBase: new URL(config.baseUrl),
   title: `${config.siteName} - ${config.siteDescription}`,
   description: config.metaDescription,
   robots: 'follow, index',
   alternates: {
-    canonical: config.siteUrl
+    canonical: config.baseUrl
   },
   openGraph: {
     description: config.metaDescription,
     locale: 'en_US',
     title: config.siteName,
     type: 'website',
-    url: config.siteUrl,
+    url: config.baseUrl,
     images: [
       {
-        url: `${config.siteUrl}social-share.webp`,
+        url: 'social-share.webp',
         width: 1200,
         height: 630,
         alt: config.siteName
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
  */
 export const viewport: Viewport = {
   colorScheme: 'dark',
-  themeColor: '#18181b'
+  themeColor: '#242424'
 }
 
 /**

@@ -1,3 +1,4 @@
+import config from '@/lib/config'
 import {Reddit} from 'arctic'
 
 /**
@@ -24,13 +25,14 @@ function getRedirectUri(): string {
   // Production and all preview deployments (.reddit-viewer.com subdomains)
   // use production callback as the OAuth handler
   if (process.env.NODE_ENV === 'production') {
-    return 'https://reddit-viewer.com/api/auth/callback/reddit'
+    // In production, AUTH_URL should be set to https://reddit-viewer.com
+    return `${config.baseUrl}/api/auth/callback/reddit`
   }
 
   // Local development uses localhost callback
   // Note: This requires Reddit app to be configured with localhost callback,
   // OR developers can test OAuth on preview deployments instead
-  const authUrl = process.env.AUTH_URL || 'http://localhost:3000'
+  const authUrl = config.baseUrl
 
   if (!authUrl) {
     throw new Error('AUTH_URL environment variable is required')

@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
     ]
   },
   async headers() {
+    // Allow unsafe-eval in development for Next.js HMR and React Server Components
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const scriptSrc = isDevelopment
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:"
+      : "script-src 'self' 'unsafe-inline' https: data:"
+
     return [
       {
         source: '/(.*)',
@@ -25,7 +31,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self' data:",
-              "script-src 'self' 'unsafe-inline' https: data:",
+              scriptSrc,
               "img-src 'self' 'unsafe-inline' data: https: http:",
               "connect-src 'self' https: wss:",
               "frame-src 'self' https:",
