@@ -1,14 +1,9 @@
 import {makeStore} from '@/lib/store'
 import {authenticatedApi} from '@/lib/store/services/authenticatedApi'
-import {server} from '@/test-utils/msw/server'
-import {http, HttpResponse} from 'msw'
-import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
+import {http, HttpResponse, server} from '@/test-utils'
+import {describe, expect, it} from 'vitest'
 
 describe('Custom Feed Integration Flow', () => {
-  beforeAll(() => server.listen())
-  afterEach(() => server.resetHandlers())
-  afterAll(() => server.close())
-
   describe('getUserCustomFeeds', () => {
     it('should fetch and transform custom feeds list', async () => {
       // Mock the custom feeds API response

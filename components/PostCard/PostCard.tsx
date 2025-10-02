@@ -1,12 +1,12 @@
 import {Comments} from '@/components/Comments/Comments'
 import {Media} from '@/components/Media/Media'
+import {VoteButtons} from '@/components/VoteButtons/VoteButtons'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {parsePostLink} from '@/lib/utils/parsePostLink'
 import {
   Anchor,
-  Badge,
   Button,
   Card,
   Collapse,
@@ -19,7 +19,6 @@ import {
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import {useState} from 'react'
-import {BiSolidUpvote} from 'react-icons/bi'
 import {FaComment} from 'react-icons/fa'
 import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
 import classes from './PostCard.module.css'
@@ -80,12 +79,12 @@ export function PostCard({
             <Text size="xs">u/{post.author}</Text>
           </Link>
           &middot;
-          <Badge variant="light" size="sm" color="gray">
-            <Group gap={4} align="center">
-              <BiSolidUpvote size={14} color="red" />
-              <NumberFormatter value={post.ups} thousandSeparator />
-            </Group>
-          </Badge>
+          <VoteButtons
+            id={post.name ?? ''}
+            score={post.ups ?? 0}
+            userVote={post.likes}
+            size="sm"
+          />
           &middot;
           <Text size="xs">
             <time dateTime={created}>
