@@ -24,8 +24,22 @@ export function SubredditName({
 }: Readonly<SubredditNameProps>) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
 
-  // If icon styles.redditmedia.com, use default icon.
-  const iconSrc = icon?.includes('styles.redditmedia.com') ? AppIcon : icon
+  // If icon host is styles.redditmedia.com, use default icon.
+  let iconSrc: string | undefined
+  try {
+    if (
+      icon &&
+      // Use URL constructor for robust parsing, must use absolute URL
+      new URL(icon).hostname === 'styles.redditmedia.com'
+    ) {
+      iconSrc = AppIcon
+    } else {
+      iconSrc = icon
+    }
+  } catch {
+    // If parsing fails, fallback to icon
+    iconSrc = icon
+  }
 
   return (
     <Group className={classes.name} justify="space-between" wrap="nowrap">
