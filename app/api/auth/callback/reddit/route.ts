@@ -92,6 +92,10 @@ export async function GET(request: NextRequest) {
     // Clean up state cookie
     cookieStore.delete('reddit_oauth_state')
 
+    // Clean up any stale auth cookies from previous implementations
+    cookieStore.delete('authjs.callback-url')
+    cookieStore.delete('authjs.session-token')
+
     // Get origin URL for redirect (enables multi-environment OAuth)
     const origin = cookieStore.get('reddit_oauth_origin')?.value
     cookieStore.delete('reddit_oauth_origin')

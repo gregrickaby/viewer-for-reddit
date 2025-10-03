@@ -44,6 +44,11 @@ export async function GET(request: NextRequest) {
   // Store state in cookie for CSRF protection
   // Share across subdomains for multi-environment OAuth support
   const cookieStore = await cookies()
+
+  // Clear any stale auth cookies from previous implementations
+  cookieStore.delete('authjs.callback-url')
+  cookieStore.delete('authjs.session-token')
+
   cookieStore.set('reddit_oauth_state', state, {
     httpOnly: true,
     sameSite: 'lax',
