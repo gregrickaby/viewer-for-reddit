@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
   // Verify state to prevent CSRF attacks
   if (!code || !state || !storedState || state !== storedState) {
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')
+    const {default: appConfig} = await import('@/lib/config')
 
     logAuditEvent({
       type: 'csrf_validation_failed',
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         '/?error=invalid_state&message=Security validation failed. Please try signing in again.',
-        url.origin
+        appConfig.baseUrl
       )
     )
   }
@@ -105,7 +106,10 @@ export async function GET(request: NextRequest) {
       ...getClientInfo(request)
     })
 
-    const redirectResponse = NextResponse.redirect(new URL('/', url.origin))
+    const {default: appConfig} = await import('@/lib/config')
+    const redirectResponse = NextResponse.redirect(
+      new URL('/', appConfig.baseUrl)
+    )
 
     // Prevent caching by CDN/proxies
     redirectResponse.headers.set(
@@ -119,6 +123,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     // Sanitized error logging (no tokens or sensitive data)
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')
+    const {default: appConfig} = await import('@/lib/config')
 
     logAuditEvent({
       type: 'login_failed',
@@ -133,7 +138,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           '/?error=oauth_error&message=Authentication failed. Please try again.',
-          url.origin
+          appConfig.baseUrl
         )
       )
     }
@@ -141,7 +146,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         '/?error=authentication_failed&message=Unable to complete sign in.',
-        url.origin
+        appConfig.baseUrl
       )
     )
   }
