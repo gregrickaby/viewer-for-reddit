@@ -96,13 +96,6 @@ export async function GET(request: NextRequest) {
     cookieStore.delete('authjs.callback-url')
     cookieStore.delete('authjs.session-token')
 
-    // Get origin URL for redirect (enables multi-environment OAuth)
-    const origin = cookieStore.get('reddit_oauth_origin')?.value
-    cookieStore.delete('reddit_oauth_origin')
-
-    // Redirect to origin environment (production or preview deployment)
-    const redirectUrl = origin || url.origin
-
     // Audit log success
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')
     logAuditEvent({
@@ -111,7 +104,7 @@ export async function GET(request: NextRequest) {
       ...getClientInfo(request)
     })
 
-    return NextResponse.redirect(new URL('/', redirectUrl))
+    return NextResponse.redirect(new URL('/', url.origin))
   } catch (error) {
     // Sanitized error logging (no tokens or sensitive data)
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')

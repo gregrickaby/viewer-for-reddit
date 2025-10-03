@@ -19,23 +19,10 @@ const config = {
     }
     return agent
   },
-  get sessionDomain() {
-    const domain = process.env.SESSION_DOMAIN
-    if (domain === undefined) {
-      throw new Error(
-        'SESSION_DOMAIN environment variable is required. Set it to ".reddit-viewer.com" for production/preview or empty string "" for local development.'
-      )
-    }
-    // Convert empty string to undefined for cookie domain attribute
-    return domain || undefined
-  },
   get baseUrl() {
-    // For Coolify preview deployments, prefer COOLIFY_URL over AUTH_URL
-    const url = process.env.COOLIFY_URL || process.env.AUTH_URL
+    const url = process.env.APP_URL
     if (!url) {
-      throw new Error(
-        'AUTH_URL or COOLIFY_URL environment variable is required'
-      )
+      throw new Error('APP_URL environment variable is required')
     }
     return url
   }

@@ -1,20 +1,33 @@
 'use server'
 
 import {getRedditToken} from '@/lib/actions/redditToken'
+import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import type {SubredditItem} from '@/lib/types'
 import {logError} from '@/lib/utils/logError'
 
 /**
  * Fetch subreddit data for metadata generation.
+ * Uses authenticated user session if available, falls back to app token.
  */
 export async function getSubreddit(
   subreddit: string
 ): Promise<SubredditItem | null> {
   try {
-    const token = await getRedditToken()
-    if (!token) {
-      return null
+    // Try to use user's session first
+    const session = await getSession()
+    let accessToken: string | null = null
+
+    if (session) {
+      // User is authenticated - use their token
+      accessToken = session.accessToken
+    } else {
+      // No user session - use app token (read-only mode)
+      const token = await getRedditToken()
+      if (!token) {
+        return null
+      }
+      accessToken = token.access_token
     }
 
     // Note: CodeQL SSRF warning is a false positive - subreddit is a validated
@@ -23,7 +36,7 @@ export async function getSubreddit(
       `https://oauth.reddit.com/r/${subreddit}/about.json`,
       {
         headers: {
-          Authorization: `Bearer ${token.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           'User-Agent': config.userAgent
         },
         next: {revalidate: 300} // Cache for 5 minutes

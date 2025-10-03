@@ -224,31 +224,28 @@ expect(mockLogClientError).toHaveBeenCalledWith(
 5. **Log at appropriate level** - Use error for failures, info for events
 6. **Include error details** - For caught errors, include error message and type in context
 
-## Multi-Environment Authentication
+## Authentication
 
-**OAuth Strategy**: Shared domain cookie approach for seamless multi-environment support
+**OAuth Strategy**: Reddit OAuth 2.0 with Arctic library
 
 - **Arctic library**: Reddit OAuth 2.0 provider (<https://arcticjs.dev/providers/reddit>)
-- **Production callback**: All environments route through `https://reddit-viewer.com/api/auth/callback/reddit`
-- **Preview deployments**: Use shared parent domain cookie (`.reddit-viewer.com`)
-- **Local development**: Uses localhost callback for read-only mode testing OR relies on preview deployments for OAuth testing
 - **CSRF protection**: State parameter validation with httpOnly cookies
-- **Session encryption**: iron-session with encrypted cookies (domain: `.reddit-viewer.com` in production)
+- **Session encryption**: iron-session with encrypted cookies
 - **Rate limiting**: Per-IP request limiting with audit logging
 - **Token refresh**: Automatic token rotation before expiration
 - **Security**: httpOnly cookies, secure flag in production, sameSite: 'lax'
 
-**Multi-Environment Flow**:
+**Authentication Flow**:
 
-1. User clicks "Sign in" on any environment (production/preview/local)
-2. Login route captures origin URL in `reddit_oauth_origin` cookie
-3. Redirects to Reddit OAuth with state parameter
-4. Reddit redirects back to production callback (`reddit-viewer.com/api/auth/callback/reddit`)
-5. Callback handler:
-   - Validates state and exchanges code for tokens
-   - Creates session cookie with `domain: .reddit-viewer.com`
-   - Redirects back to origin URL from cookie
-6. User is authenticated on original environment (session cookie shared across subdomains)
+1. User clicks "Sign in"
+2. Login route generates state parameter and redirects to Reddit OAuth
+3. Reddit redirects back to `/api/auth/callback/reddit` with authorization code
+4. Callback handler:
+   - Validates state parameter (CSRF protection)
+   - Exchanges code for access/refresh tokens
+   - Creates encrypted session cookie
+   - Redirects to homepage
+5. User is authenticated and can access personalized features
 
 ## Core Development Commands
 

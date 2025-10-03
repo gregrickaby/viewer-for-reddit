@@ -2,9 +2,8 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Hoist env stubs to run before module imports
 vi.hoisted(() => {
-  process.env.AUTH_URL = 'http://localhost:3000'
+  process.env.APP_URL = 'http://localhost:3000'
   process.env.USER_AGENT = 'test-user-agent'
-  process.env.SESSION_DOMAIN = ''
 })
 
 import {baseQuery} from './baseQuery'

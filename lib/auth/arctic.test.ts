@@ -9,7 +9,7 @@ describe('arctic', () => {
   beforeEach(() => {
     vi.resetModules()
     // Re-stub required env vars after reset
-    vi.stubEnv('AUTH_URL', 'http://localhost:3000')
+    vi.stubEnv('APP_URL', 'http://localhost:3000')
   })
 
   afterEach(() => {
@@ -17,26 +17,26 @@ describe('arctic', () => {
   })
 
   describe('getRedirectUri validation', () => {
-    describe('AUTH_URL requirement', () => {
+    describe('APP_URL requirement', () => {
       it('should use production redirect URI when NODE_ENV is production', async () => {
         vi.stubEnv('NODE_ENV', 'production')
-        vi.stubEnv('AUTH_URL', 'https://reddit-viewer.com')
+        vi.stubEnv('APP_URL', 'https://reddit-viewer.com')
         vi.stubEnv('REDDIT_CLIENT_ID', 'test_client_id')
         vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
-        // Production uses AUTH_URL for redirect URI
+        // Production uses APP_URL for redirect URI
       })
 
-      it('should throw error when AUTH_URL is undefined in development', async () => {
+      it('should throw error when APP_URL is undefined in development', async () => {
         vi.stubEnv('NODE_ENV', 'development')
         vi.stubEnv('REDDIT_CLIENT_ID', 'test_client_id')
         vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
-        // In development, AUTH_URL is required for local callback
+        // In development, APP_URL is required for local callback
         const {reddit} = await importArctic()
-        // With our new logic, missing AUTH_URL defaults to localhost:3000
+        // With our new logic, missing APP_URL defaults to localhost:3000
         expect(reddit).toBeDefined()
       })
     })
@@ -48,8 +48,8 @@ describe('arctic', () => {
         vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
       })
 
-      it('should use production redirect URI regardless of AUTH_URL', async () => {
-        vi.stubEnv('AUTH_URL', 'http://example.com')
+      it('should use production redirect URI regardless of APP_URL', async () => {
+        vi.stubEnv('APP_URL', 'http://example.com')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
@@ -57,14 +57,14 @@ describe('arctic', () => {
       })
 
       it('should allow HTTPS in production', async () => {
-        vi.stubEnv('AUTH_URL', 'https://example.com')
+        vi.stubEnv('APP_URL', 'https://example.com')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
       })
 
-      it('should use production callback even with localhost AUTH_URL', async () => {
-        vi.stubEnv('AUTH_URL', 'http://localhost:3000')
+      it('should use production callback even with localhost APP_URL', async () => {
+        vi.stubEnv('APP_URL', 'http://localhost:3000')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
@@ -80,14 +80,14 @@ describe('arctic', () => {
       })
 
       it('should allow HTTP in development', async () => {
-        vi.stubEnv('AUTH_URL', 'http://localhost:3000')
+        vi.stubEnv('APP_URL', 'http://localhost:3000')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
       })
 
       it('should allow HTTPS in development', async () => {
-        vi.stubEnv('AUTH_URL', 'https://example.com')
+        vi.stubEnv('APP_URL', 'https://example.com')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
@@ -101,22 +101,22 @@ describe('arctic', () => {
         vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
       })
 
-      it('should allow AUTH_URL in allowlist', async () => {
-        vi.stubEnv('AUTH_URL', 'http://localhost:3000')
+      it('should allow APP_URL in allowlist', async () => {
+        vi.stubEnv('APP_URL', 'http://localhost:3000')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
       })
 
       it('should allow localhost:3000 in allowlist', async () => {
-        vi.stubEnv('AUTH_URL', 'http://localhost:3000')
+        vi.stubEnv('APP_URL', 'http://localhost:3000')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()
       })
 
       it('should allow localhost:3001 in allowlist', async () => {
-        vi.stubEnv('AUTH_URL', 'http://localhost:3001')
+        vi.stubEnv('APP_URL', 'http://localhost:3001')
 
         const {reddit} = await importArctic()
         expect(reddit).toBeDefined()

@@ -40,8 +40,7 @@ describe('session', () => {
 
     // Set required environment variables (re-stub after resetModules)
     vi.stubEnv('SESSION_SECRET', 'a'.repeat(32))
-    vi.stubEnv('SESSION_DOMAIN', '')
-    vi.stubEnv('AUTH_URL', 'http://localhost:3000')
+    vi.stubEnv('APP_URL', 'http://localhost:3000')
   })
 
   afterEach(() => {

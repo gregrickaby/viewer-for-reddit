@@ -32,13 +32,15 @@ vi.mock('@/lib/auth/auditLog', () => ({
 describe('POST /api/auth/login', () => {
   let mockCookieStore: {
     set: ReturnType<typeof vi.fn>
+    delete: ReturnType<typeof vi.fn>
   }
 
   beforeEach(async () => {
     vi.clearAllMocks()
 
     mockCookieStore = {
-      set: vi.fn()
+      set: vi.fn(),
+      delete: vi.fn()
     }
 
     const {cookies} = await import('next/headers')
@@ -86,8 +88,7 @@ describe('POST /api/auth/login', () => {
         sameSite: 'lax',
         secure: false, // Development mode
         maxAge: 600, // 10 minutes
-        path: '/',
-        domain: undefined // Empty string SESSION_DOMAIN becomes undefined
+        path: '/'
       }
     )
   })
@@ -103,8 +104,7 @@ describe('POST /api/auth/login', () => {
       'reddit_oauth_state',
       expect.any(String),
       expect.objectContaining({
-        secure: true,
-        domain: undefined // Empty string SESSION_DOMAIN becomes undefined
+        secure: true
       })
     )
   })
@@ -144,16 +144,16 @@ describe('POST /api/auth/login', () => {
     await GET(request1)
     await GET(request2)
 
-    // Each request sets two cookies: reddit_oauth_state and reddit_oauth_origin
+    // Each request sets one cookie: reddit_oauth_state
     const [call1Name] = mockCookieStore.set.mock.calls[0]
-    const [call3Name] = mockCookieStore.set.mock.calls[2]
+    const [call2Name] = mockCookieStore.set.mock.calls[1]
 
     expect(call1Name).toBe('reddit_oauth_state')
-    expect(call3Name).toBe('reddit_oauth_state')
+    expect(call2Name).toBe('reddit_oauth_state')
 
     // State values should be different
     const state1 = mockCookieStore.set.mock.calls[0][1]
-    const state2 = mockCookieStore.set.mock.calls[2][1]
+    const state2 = mockCookieStore.set.mock.calls[1][1]
     expect(state1).not.toBe(state2)
   })
 })

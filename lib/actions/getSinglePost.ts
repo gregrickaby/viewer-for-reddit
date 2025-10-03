@@ -1,21 +1,34 @@
 'use server'
 
 import {getRedditToken} from '@/lib/actions/redditToken'
+import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {logError} from '@/lib/utils/logError'
 
 /**
  * Fetch post data for metadata generation.
+ * Uses authenticated user session if available, falls back to app token.
  */
 export async function getSinglePost(
   subreddit: string,
   postId: string
 ): Promise<AutoPostChildData | null> {
   try {
-    const token = await getRedditToken()
-    if (!token) {
-      return null
+    // Try to use user's session first
+    const session = await getSession()
+    let accessToken: string | null = null
+
+    if (session) {
+      // User is authenticated - use their token
+      accessToken = session.accessToken
+    } else {
+      // No user session - use app token (read-only mode)
+      const token = await getRedditToken()
+      if (!token) {
+        return null
+      }
+      accessToken = token.access_token
     }
 
     // Note: CodeQL SSRF warning is a false positive - subreddit and postId are
@@ -24,7 +37,7 @@ export async function getSinglePost(
       `https://oauth.reddit.com/r/${subreddit}/comments/${postId}.json`,
       {
         headers: {
-          Authorization: `Bearer ${token.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           'User-Agent': config.userAgent
         },
         next: {revalidate: 300} // Cache for 5 minutes

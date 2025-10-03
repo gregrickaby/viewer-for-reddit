@@ -1,7 +1,6 @@
 import {reddit} from '@/lib/auth/arctic'
 import {getClientInfo, logAuditEvent} from '@/lib/auth/auditLog'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
-import config from '@/lib/config'
 import {generateState} from 'arctic'
 import {cookies} from 'next/headers'
 import {NextRequest, NextResponse} from 'next/server'
@@ -33,16 +32,7 @@ export async function GET(request: NextRequest) {
   // to permanent duration when offline_access/refresh tokens are requested
   const url = reddit.createAuthorizationURL(state, scopes)
 
-  // Capture origin URL for post-authentication redirect
-  // This enables preview deployments to redirect through production callback
-  const origin =
-    request.headers.get('origin') ||
-    request.headers.get('referer')?.replace(/\/$/, '') ||
-    process.env.AUTH_URL ||
-    'https://reddit-viewer.com'
-
   // Store state in cookie for CSRF protection
-  // Share across subdomains for multi-environment OAuth support
   const cookieStore = await cookies()
 
   // Clear any stale auth cookies from previous implementations
@@ -54,18 +44,7 @@ export async function GET(request: NextRequest) {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 10, // 10 minutes
-    path: '/',
-    domain: config.sessionDomain
-  })
-
-  // Store origin for post-auth redirect (multi-environment support)
-  cookieStore.set('reddit_oauth_origin', origin, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 10, // 10 minutes
-    path: '/',
-    domain: config.sessionDomain
+    path: '/'
   })
 
   return NextResponse.redirect(url)
