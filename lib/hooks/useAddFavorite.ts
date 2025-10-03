@@ -2,7 +2,10 @@
 
 import {toggleFavoriteSubreddit} from '@/lib/store/features/settingsSlice'
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
-import {authenticatedApi} from '@/lib/store/services/authenticatedApi'
+import {
+  authenticatedApi,
+  useGetUserSubscriptionsQuery
+} from '@/lib/store/services/authenticatedApi'
 import {useLazyGetSubredditAboutQuery} from '@/lib/store/services/subredditApi'
 import {logClientError} from '@/lib/utils/clientLogger'
 import {notifications} from '@mantine/notifications'
@@ -14,7 +17,18 @@ export function useAddFavorite(subreddit: string) {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
   const [trigger] = useLazyGetSubredditAboutQuery()
   const [loading, setLoading] = useState(false)
-  const isFavorite = favorites.some((sub) => sub.display_name === subreddit)
+
+  // Get user subscriptions if authenticated
+  const {data: subscriptions = []} = useGetUserSubscriptionsQuery(undefined, {
+    skip: !isAuthenticated
+  })
+
+  // For authenticated users, check subscriptions; for read-only, check favorites
+  const isFavorite = isAuthenticated
+    ? subscriptions.some(
+        (sub) => sub.display_name.toLowerCase() === subreddit.toLowerCase()
+      )
+    : favorites.some((sub) => sub.display_name === subreddit)
 
   const toggleSubscription = async () => {
     const response = await fetch('/api/reddit/subscribe', {
