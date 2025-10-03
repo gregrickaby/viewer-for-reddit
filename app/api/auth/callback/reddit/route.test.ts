@@ -4,11 +4,14 @@ import {NextRequest, NextResponse} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {GET} from './route'
 
+// Mock Reddit client
+const mockReddit = {
+  validateAuthorizationCode: vi.fn()
+}
+
 // Mock dependencies
 vi.mock('@/lib/auth/arctic', () => ({
-  reddit: {
-    validateAuthorizationCode: vi.fn()
-  }
+  getRedditClient: vi.fn(() => mockReddit)
 }))
 
 vi.mock('next/headers', () => ({
@@ -49,8 +52,7 @@ describe('GET /api/auth/callback/reddit', () => {
     const {checkRateLimit} = await import('@/lib/auth/rateLimit')
     vi.mocked(checkRateLimit).mockResolvedValue(null)
 
-    const {reddit} = await import('@/lib/auth/arctic')
-    vi.mocked(reddit.validateAuthorizationCode).mockResolvedValue(
+    vi.mocked(mockReddit.validateAuthorizationCode).mockResolvedValue(
       mockTokens as any
     )
 
@@ -154,7 +156,6 @@ describe('GET /api/auth/callback/reddit', () => {
 
   it('should handle missing refresh token', async () => {
     const {setSession} = await import('@/lib/auth/session')
-    const {reddit} = await import('@/lib/auth/arctic')
 
     const tokensWithoutRefresh = {
       accessToken: () => 'access_token_123',
@@ -164,7 +165,7 @@ describe('GET /api/auth/callback/reddit', () => {
       accessTokenExpiresAt: () => new Date(Date.now() + 3600000)
     }
 
-    vi.mocked(reddit.validateAuthorizationCode).mockResolvedValue(
+    vi.mocked(mockReddit.validateAuthorizationCode).mockResolvedValue(
       tokensWithoutRefresh as any
     )
 
@@ -260,7 +261,6 @@ describe('GET /api/auth/callback/reddit', () => {
   })
 
   it('should redirect with OAuth error for OAuth2RequestError', async () => {
-    const {reddit} = await import('@/lib/auth/arctic')
     const {OAuth2RequestError} = await import('arctic')
 
     const oauthError = new OAuth2RequestError(
@@ -270,7 +270,9 @@ describe('GET /api/auth/callback/reddit', () => {
       null
     )
 
-    vi.mocked(reddit.validateAuthorizationCode).mockRejectedValue(oauthError)
+    vi.mocked(mockReddit.validateAuthorizationCode).mockRejectedValue(
+      oauthError
+    )
 
     const url =
       'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
@@ -313,7 +315,6 @@ describe('GET /api/auth/callback/reddit', () => {
 
   it('should handle missing refresh token', async () => {
     const {setSession} = await import('@/lib/auth/session')
-    const {reddit} = await import('@/lib/auth/arctic')
 
     const tokensWithoutRefresh = {
       accessToken: () => 'access_token_123',
@@ -323,7 +324,7 @@ describe('GET /api/auth/callback/reddit', () => {
       accessTokenExpiresAt: () => new Date(Date.now() + 3600000)
     }
 
-    vi.mocked(reddit.validateAuthorizationCode).mockResolvedValue(
+    vi.mocked(mockReddit.validateAuthorizationCode).mockResolvedValue(
       tokensWithoutRefresh as any
     )
 
@@ -420,7 +421,6 @@ describe('GET /api/auth/callback/reddit', () => {
   })
 
   it('should redirect with OAuth error for OAuth2RequestError', async () => {
-    const {reddit} = await import('@/lib/auth/arctic')
     const {OAuth2RequestError} = await import('arctic')
 
     const oauthError = new OAuth2RequestError(
@@ -430,7 +430,9 @@ describe('GET /api/auth/callback/reddit', () => {
       null
     )
 
-    vi.mocked(reddit.validateAuthorizationCode).mockRejectedValue(oauthError)
+    vi.mocked(mockReddit.validateAuthorizationCode).mockRejectedValue(
+      oauthError
+    )
 
     mockCookieStore.get.mockReturnValue({value: 'test_state'})
 

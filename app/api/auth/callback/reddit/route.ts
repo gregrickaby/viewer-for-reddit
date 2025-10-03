@@ -1,4 +1,4 @@
-import {reddit} from '@/lib/auth/arctic'
+import {getRedditClient} from '@/lib/auth/arctic'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {setSession} from '@/lib/auth/session'
 import {OAuth2RequestError} from 'arctic'
@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Exchange code for tokens
+    const reddit = getRedditClient()
     const tokens = await reddit.validateAuthorizationCode(code)
 
     // Get user info

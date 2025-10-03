@@ -2,15 +2,18 @@ import {NextRequest, NextResponse} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {GET} from './route'
 
+// Mock Reddit client
+const mockReddit = {
+  createAuthorizationURL: vi.fn((state: string, scopes: string[]) => {
+    return new URL(
+      `https://www.reddit.com/api/v1/authorize?state=${state}&scope=${scopes.join(' ')}`
+    )
+  })
+}
+
 // Mock dependencies
 vi.mock('@/lib/auth/arctic', () => ({
-  reddit: {
-    createAuthorizationURL: vi.fn((state: string, scopes: string[]) => {
-      return new URL(
-        `https://www.reddit.com/api/v1/authorize?state=${state}&scope=${scopes.join(' ')}`
-      )
-    })
-  }
+  getRedditClient: vi.fn(() => mockReddit)
 }))
 
 vi.mock('next/headers', () => ({
@@ -64,12 +67,11 @@ describe('POST /api/auth/login', () => {
   })
 
   it('should request correct OAuth scopes', async () => {
-    const {reddit} = await import('@/lib/auth/arctic')
     const request = new NextRequest('http://localhost:3000/api/auth/login')
 
     await GET(request)
 
-    expect(reddit.createAuthorizationURL).toHaveBeenCalledWith(
+    expect(mockReddit.createAuthorizationURL).toHaveBeenCalledWith(
       expect.any(String),
       ['identity', 'read', 'mysubreddits', 'vote', 'subscribe']
     )

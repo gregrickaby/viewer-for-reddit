@@ -2,11 +2,14 @@ import {NextRequest, NextResponse} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {POST} from './route'
 
+// Mock Reddit client
+const mockReddit = {
+  refreshAccessToken: vi.fn()
+}
+
 // Mock dependencies
 vi.mock('@/lib/auth/arctic', () => ({
-  reddit: {
-    refreshAccessToken: vi.fn()
-  }
+  getRedditClient: vi.fn(() => mockReddit)
 }))
 
 vi.mock('@/lib/auth/rateLimit', () => ({
@@ -28,7 +31,6 @@ describe('POST /api/auth/refresh', () => {
 
   it('should refresh access token successfully', async () => {
     const {getSession, updateSessionTokens} = await import('@/lib/auth/session')
-    const {reddit} = await import('@/lib/auth/arctic')
 
     const mockSession = {
       username: 'testuser',
@@ -47,7 +49,9 @@ describe('POST /api/auth/refresh', () => {
     }
 
     vi.mocked(getSession).mockResolvedValue(mockSession)
-    vi.mocked(reddit.refreshAccessToken).mockResolvedValue(mockTokens as any)
+    vi.mocked(mockReddit.refreshAccessToken).mockResolvedValue(
+      mockTokens as any
+    )
 
     const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
       method: 'POST'
@@ -71,7 +75,6 @@ describe('POST /api/auth/refresh', () => {
 
   it('should handle refresh without new refresh token', async () => {
     const {getSession, updateSessionTokens} = await import('@/lib/auth/session')
-    const {reddit} = await import('@/lib/auth/arctic')
 
     const mockSession = {
       username: 'testuser',
@@ -89,7 +92,9 @@ describe('POST /api/auth/refresh', () => {
     }
 
     vi.mocked(getSession).mockResolvedValue(mockSession)
-    vi.mocked(reddit.refreshAccessToken).mockResolvedValue(mockTokens as any)
+    vi.mocked(mockReddit.refreshAccessToken).mockResolvedValue(
+      mockTokens as any
+    )
 
     const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
       method: 'POST'
@@ -151,7 +156,6 @@ describe('POST /api/auth/refresh', () => {
 
   it('should return 401 when token refresh fails', async () => {
     const {getSession} = await import('@/lib/auth/session')
-    const {reddit} = await import('@/lib/auth/arctic')
 
     const mockSession = {
       username: 'testuser',
@@ -162,7 +166,7 @@ describe('POST /api/auth/refresh', () => {
     }
 
     vi.mocked(getSession).mockResolvedValue(mockSession)
-    vi.mocked(reddit.refreshAccessToken).mockRejectedValue(
+    vi.mocked(mockReddit.refreshAccessToken).mockRejectedValue(
       new Error('Invalid refresh token')
     )
 
@@ -200,7 +204,6 @@ describe('POST /api/auth/refresh', () => {
   it('should log error when token refresh fails', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const {getSession} = await import('@/lib/auth/session')
-    const {reddit} = await import('@/lib/auth/arctic')
 
     const mockSession = {
       username: 'testuser',
@@ -211,7 +214,7 @@ describe('POST /api/auth/refresh', () => {
     }
 
     vi.mocked(getSession).mockResolvedValue(mockSession)
-    vi.mocked(reddit.refreshAccessToken).mockRejectedValue(
+    vi.mocked(mockReddit.refreshAccessToken).mockRejectedValue(
       new Error('Network error')
     )
 

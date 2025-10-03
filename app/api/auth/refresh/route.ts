@@ -1,4 +1,4 @@
-import {reddit} from '@/lib/auth/arctic'
+import {getRedditClient} from '@/lib/auth/arctic'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession, updateSessionTokens} from '@/lib/auth/session'
 import {NextRequest, NextResponse} from 'next/server'
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession()
 
-    if (!session || !session.refreshToken) {
+    if (!session?.refreshToken) {
       return NextResponse.json(
         {error: 'no_session', message: 'No active session or refresh token'},
         {status: 401}
@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Exchange refresh token for new access token
+    const reddit = getRedditClient()
     const tokens = await reddit.refreshAccessToken(session.refreshToken)
 
     // Update session with new tokens

@@ -24,7 +24,8 @@ describe('arctic', () => {
         vi.stubEnv('REDDIT_CLIENT_ID', 'test_client_id')
         vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
         // Production uses APP_URL for redirect URI
       })
@@ -35,7 +36,8 @@ describe('arctic', () => {
         vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
         // In development, APP_URL is required for local callback
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         // With our new logic, missing APP_URL defaults to localhost:3000
         expect(reddit).toBeDefined()
       })
@@ -51,7 +53,8 @@ describe('arctic', () => {
       it('should use production redirect URI regardless of APP_URL', async () => {
         vi.stubEnv('APP_URL', 'http://example.com')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
         // Production always uses https://reddit-viewer.com/api/auth/callback/reddit
       })
@@ -59,14 +62,16 @@ describe('arctic', () => {
       it('should allow HTTPS in production', async () => {
         vi.stubEnv('APP_URL', 'https://example.com')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
 
       it('should use production callback even with localhost APP_URL', async () => {
         vi.stubEnv('APP_URL', 'http://localhost:3000')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
         // Production always uses https://reddit-viewer.com/api/auth/callback/reddit
       })
@@ -82,14 +87,16 @@ describe('arctic', () => {
       it('should allow HTTP in development', async () => {
         vi.stubEnv('APP_URL', 'http://localhost:3000')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
 
       it('should allow HTTPS in development', async () => {
         vi.stubEnv('APP_URL', 'https://example.com')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
     })
@@ -104,28 +111,32 @@ describe('arctic', () => {
       it('should allow APP_URL in allowlist', async () => {
         vi.stubEnv('APP_URL', 'http://localhost:3000')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
 
       it('should allow localhost:3000 in allowlist', async () => {
         vi.stubEnv('APP_URL', 'http://localhost:3000')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
 
       it('should allow localhost:3001 in allowlist', async () => {
         vi.stubEnv('APP_URL', 'http://localhost:3001')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
 
       it('should construct redirect URI with /api/auth/callback/reddit path', async () => {
         vi.stubEnv('AUTH_URL', 'http://localhost:3000')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
     })
@@ -140,21 +151,24 @@ describe('arctic', () => {
       it('should allow valid production HTTPS URL', async () => {
         vi.stubEnv('AUTH_URL', 'https://viewer-for-reddit.com')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
 
       it('should allow HTTPS URL with subdomain', async () => {
         vi.stubEnv('AUTH_URL', 'https://app.example.com')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
 
       it('should allow HTTPS URL with port', async () => {
         vi.stubEnv('AUTH_URL', 'https://example.com:8443')
 
-        const {reddit} = await importArctic()
+        const {getRedditClient} = await importArctic()
+        const reddit = getRedditClient()
         expect(reddit).toBeDefined()
       })
     })
@@ -170,7 +184,8 @@ describe('arctic', () => {
       vi.stubEnv('REDDIT_CLIENT_ID', 'test_client_id')
       vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
       expect(reddit).toBeInstanceOf(Object)
     })
@@ -180,7 +195,8 @@ describe('arctic', () => {
       vi.stubEnv('REDDIT_CLIENT_ID', clientId)
       vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
 
@@ -189,7 +205,8 @@ describe('arctic', () => {
       vi.stubEnv('REDDIT_CLIENT_ID', 'test_client_id')
       vi.stubEnv('REDDIT_CLIENT_SECRET', clientSecret)
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
   })
@@ -204,14 +221,16 @@ describe('arctic', () => {
     it('should handle AUTH_URL with trailing slash', async () => {
       vi.stubEnv('AUTH_URL', 'http://localhost:3000/')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
 
     it('should handle AUTH_URL with path', async () => {
       vi.stubEnv('AUTH_URL', 'http://localhost:3000')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
 
@@ -219,7 +238,8 @@ describe('arctic', () => {
       vi.stubEnv('NODE_ENV', 'production')
       vi.stubEnv('AUTH_URL', 'HTTPS://example.com')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
       // Production uses hardcoded redirect URI
     })
@@ -228,7 +248,8 @@ describe('arctic', () => {
       vi.stubEnv('NODE_ENV', 'production')
       vi.stubEnv('AUTH_URL', 'httpss://example.com')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
       // Production uses hardcoded redirect URI
     })
@@ -244,7 +265,8 @@ describe('arctic', () => {
       vi.stubEnv('NODE_ENV', 'production')
       vi.stubEnv('AUTH_URL', 'http://example.com')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
       // Production always uses https://reddit-viewer.com/api/auth/callback/reddit
     })
@@ -253,7 +275,8 @@ describe('arctic', () => {
       vi.stubEnv('NODE_ENV', 'test')
       vi.stubEnv('AUTH_URL', 'http://localhost:3000')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
 
@@ -261,7 +284,8 @@ describe('arctic', () => {
       vi.stubEnv('NODE_ENV', 'development')
       vi.stubEnv('AUTH_URL', 'http://localhost:3000')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
   })
@@ -275,8 +299,10 @@ describe('arctic', () => {
 
       const module = await importArctic()
 
-      expect(module.reddit).toBeDefined()
-      expect(typeof module.reddit).toBe('object')
+      expect(module.getRedditClient).toBeDefined()
+      expect(typeof module.getRedditClient).toBe('function')
+      const reddit = module.getRedditClient()
+      expect(reddit).toBeDefined()
     })
 
     it('should initialize with production callback in production', async () => {
@@ -285,7 +311,8 @@ describe('arctic', () => {
       vi.stubEnv('REDDIT_CLIENT_ID', 'test_client_id')
       vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
       // Production uses hardcoded redirect URI
     })
@@ -301,7 +328,8 @@ describe('arctic', () => {
     it('should filter out falsy values from allowlist', async () => {
       vi.stubEnv('AUTH_URL', 'http://localhost:3000')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
 
@@ -309,7 +337,8 @@ describe('arctic', () => {
       vi.stubEnv('AUTH_URL', 'https://custom-domain.com')
       vi.stubEnv('NODE_ENV', 'production')
 
-      const {reddit} = await importArctic()
+      const {getRedditClient} = await importArctic()
+      const reddit = getRedditClient()
       expect(reddit).toBeDefined()
     })
   })

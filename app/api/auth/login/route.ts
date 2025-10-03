@@ -1,4 +1,4 @@
-import {reddit} from '@/lib/auth/arctic'
+import {getRedditClient} from '@/lib/auth/arctic'
 import {getClientInfo, logAuditEvent} from '@/lib/auth/auditLog'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {generateState} from 'arctic'
@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
   // Create authorization URL
   // Note: Arctic doesn't expose duration param directly, but Reddit defaults
   // to permanent duration when offline_access/refresh tokens are requested
+  const reddit = getRedditClient()
   const url = reddit.createAuthorizationURL(state, scopes)
 
   // Store state in cookie for CSRF protection
