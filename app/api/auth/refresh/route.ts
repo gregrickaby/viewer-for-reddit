@@ -36,19 +36,39 @@ export async function POST(request: NextRequest) {
       expiresAt: tokens.accessTokenExpiresAt().getTime()
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       expiresAt: tokens.accessTokenExpiresAt().getTime()
     })
+
+    // Prevent caching by CDN/proxies
+    response.headers.set(
+      'Cache-Control',
+      'private, no-cache, no-store, must-revalidate'
+    )
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+
+    return response
   } catch (error) {
     console.error('Token refresh failed:', {
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     })
 
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       {error: 'refresh_failed', message: 'Failed to refresh token'},
       {status: 401}
     )
+
+    // Prevent caching by CDN/proxies
+    errorResponse.headers.set(
+      'Cache-Control',
+      'private, no-cache, no-store, must-revalidate'
+    )
+    errorResponse.headers.set('Pragma', 'no-cache')
+    errorResponse.headers.set('Expires', '0')
+
+    return errorResponse
   }
 }

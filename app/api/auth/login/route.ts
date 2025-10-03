@@ -48,5 +48,15 @@ export async function GET(request: NextRequest) {
     path: '/'
   })
 
-  return NextResponse.redirect(url)
+  const response = NextResponse.redirect(url)
+
+  // Prevent caching by CDN/proxies
+  response.headers.set(
+    'Cache-Control',
+    'private, no-cache, no-store, must-revalidate'
+  )
+  response.headers.set('Pragma', 'no-cache')
+  response.headers.set('Expires', '0')
+
+  return response
 }

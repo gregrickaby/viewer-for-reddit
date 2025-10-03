@@ -105,7 +105,17 @@ export async function GET(request: NextRequest) {
       ...getClientInfo(request)
     })
 
-    return NextResponse.redirect(new URL('/', url.origin))
+    const redirectResponse = NextResponse.redirect(new URL('/', url.origin))
+
+    // Prevent caching by CDN/proxies
+    redirectResponse.headers.set(
+      'Cache-Control',
+      'private, no-cache, no-store, must-revalidate'
+    )
+    redirectResponse.headers.set('Pragma', 'no-cache')
+    redirectResponse.headers.set('Expires', '0')
+
+    return redirectResponse
   } catch (error) {
     // Sanitized error logging (no tokens or sensitive data)
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')

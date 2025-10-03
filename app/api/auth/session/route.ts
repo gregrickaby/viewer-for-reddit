@@ -6,5 +6,16 @@ import {NextResponse} from 'next/server'
  */
 export async function GET() {
   const session = await getClientSession()
-  return NextResponse.json(session)
+
+  const response = NextResponse.json(session)
+
+  // Prevent caching by CDN/proxies
+  response.headers.set(
+    'Cache-Control',
+    'private, no-cache, no-store, must-revalidate'
+  )
+  response.headers.set('Pragma', 'no-cache')
+  response.headers.set('Expires', '0')
+
+  return response
 }
