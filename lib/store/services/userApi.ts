@@ -4,68 +4,47 @@ import {baseQuery} from '@/lib/utils/baseQuery/baseQuery'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 /**
- * Auto-generated type aliases for user-related Reddit API responses.
- * These types are extracted from the OpenAPI schema and provide type safety
- * for user-related Reddit API responses while maintaining compatibility with existing code.
+ * Type aliases for user-related Reddit API responses.
+ *
+ * Note: Reddit's API does not provide a dedicated user posts endpoint schema.
+ * User posts use the same structure as subreddit posts, so we reuse the
+ * GetSubredditPostsResponse schema for type safety.
  */
-
-// User-related auto-generated types
-// The OpenAPI schema in this repo does not include dedicated user posts
-// response shapes named `GetUserPostsResponse`.
-// Reuse compatible generated types to keep typings accurate and avoid hard
-// failures when the OpenAPI spec is narrower than runtime responses.
 type AutoUserPostsResponse = components['schemas']['GetSubredditPostsResponse']
 type AutoUserProfileResponse = components['schemas']['GetUserProfileResponse']
 
-/** Extracted data type for user posts responses */
+/** Individual post item from user's submission history */
 export type AutoUserPostChild = NonNullable<
   NonNullable<AutoUserPostsResponse['data']>['children']
 >[number]
 
-/** User post child data type containing post metadata */
+/** Post metadata and content from user's submission history */
 export type AutoUserPostData = NonNullable<AutoUserPostChild['data']>
 
-/** User profile data type */
+/** User account information and statistics */
 export type AutoUserProfileData = NonNullable<AutoUserProfileResponse['data']>
 
 /**
- * User API service using RTK Query.
+ * RTK Query API for user profiles and submission history.
  *
- * Handles all user-related operations including profile information,
- * submitted posts, and user activity data from Reddit's API.
+ * This API uses anonymous baseQuery (/api/reddit) instead of authenticated
+ * baseQuery (/api/reddit/me) because user profiles are public data.
  *
- * @see {@link https://redux-toolkit.js.org/rtk-query/overview} RTK Query Documentation
- * @see {@link https://www.reddit.com/dev/api/} Reddit API Documentation
+ * @see {@link https://redux-toolkit.js.org/rtk-query/overview} RTK Query Overview
  */
 export const userApi = createApi({
   reducerPath: 'userApi',
-  tagTypes: ['UserProfile', 'UserPosts'],
   baseQuery,
+  tagTypes: ['User', 'UserProfile', 'UserPosts'],
   endpoints: (builder) => ({
     /**
-     * Fetches user profile information.
+     * Fetch user profile information.
      *
-     * Retrieves detailed information about a Reddit user including karma,
-     * account age, profile description, and other public profile data.
-     *
-     * Key features:
-     * - Complete user profile metadata
-     * - Karma breakdown (link + comment)
-     * - Account status flags (employee, moderator, etc.)
-     * - Privacy settings and verification status
-     *
-     * @param {string} username - The Reddit username (without the u/ prefix)
-     *
-     * @returns {AutoUserProfileData} User profile information
+     * @param username - Reddit username without the u/ prefix
+     * @returns User profile with karma, account age, and settings
      *
      * @example
-     * // Fetch profile for a specific user
-     * const {data: profile, isLoading} = useGetUserProfileQuery('spez')
-     *
-     * // Access profile data
-     * if (profile) {
-     *   console.log(`${profile.name} has ${profile.total_karma} total karma`)
-     * }
+     * const {data, isLoading} = useGetUserProfileQuery('spez')
      */
     getUserProfile: builder.query<AutoUserProfileData, string>({
       query: (username) => `/user/${encodeURIComponent(username)}/about.json`,
@@ -77,40 +56,20 @@ export const userApi = createApi({
         }
         return response.data
       },
-      // Cache per user profile
       providesTags: (_result, _err, username) => [
         {type: 'UserProfile', id: username}
       ]
     }),
 
     /**
-     * Fetches posts submitted by a specific user with infinite scrolling support.
+     * Fetch user's submitted posts with infinite scroll pagination.
      *
-     * Retrieves paginated list of posts that a user has submitted across all subreddits.
-     * Supports infinite pagination for smooth scrolling experience in user profiles.
-     *
-     * Key features:
-     * - Infinite scroll pagination with Reddit's "after" cursors
-     * - Cross-subreddit post history
-     * - Memory-efficient with page limits
-     * - Automatic URL encoding for usernames with special characters
-     *
-     * @param {string} username - The Reddit username (without the u/ prefix)
-     * @param {string} [pageParam] - Pagination cursor for next page (Reddit's "after" parameter)
-     *
-     * @returns {AutoUserPostsResponse} User's submitted posts with pagination info
+     * @param username - Reddit username without the u/ prefix
+     * @param pageParam - Pagination cursor (Reddit's "after" token)
+     * @returns Paginated list of user's posts across all subreddits
      *
      * @example
-     * // Fetch posts from a user with infinite scroll
-     * const {
-     *   data,
-     *   fetchNextPage,
-     *   hasNextPage,
-     *   isLoading
-     * } = useGetUserPostsInfiniteQuery('spez')
-     *
-     * // Access paginated data
-     * const allPosts = data?.pages.flatMap(page => page.data?.children ?? [])
+     * const {data, fetchNextPage, hasNextPage} = useGetUserPostsInfiniteQuery('spez')
      */
     getUserPosts: builder.infiniteQuery<
       AutoUserPostsResponse,
@@ -120,12 +79,12 @@ export const userApi = createApi({
       infiniteQueryOptions: {
         initialPageParam: undefined,
         getNextPageParam: (lastPage) => lastPage?.data?.after ?? undefined,
-        getPreviousPageParam: () => undefined, // Reddit doesn't support backward pagination
-        maxPages: 10 // Limit memory usage for infinite scroll
+        getPreviousPageParam: () => undefined,
+        maxPages: 10
       },
       query({queryArg: username, pageParam}) {
         const params = new URLSearchParams({limit: String(MAX_LIMIT)})
-        if (pageParam) params.set('after', pageParam) // Add pagination cursor
+        if (pageParam) params.set('after', pageParam)
 
         const encodedUsername = encodeURIComponent(username)
         return `/user/${encodedUsername}/submitted.json?${params.toString()}`
@@ -133,10 +92,8 @@ export const userApi = createApi({
       transformResponse: (
         response: AutoUserPostsResponse
       ): AutoUserPostsResponse => {
-        // Return posts as-is, filtering can be done at component level if needed
         return response
       },
-      // Cache per user's post history
       providesTags: (_result, _err, username) => [
         {type: 'UserPosts', id: username}
       ]
@@ -145,7 +102,8 @@ export const userApi = createApi({
 })
 
 /**
- * Exported RTK Query hooks for User API endpoints.
- * @see {@link https://redux-toolkit.js.org/rtk-query/usage/queries} RTK Query Usage Guide
+ * Auto-generated hooks for user API endpoints.
+ *
+ * @see {@link https://redux-toolkit.js.org/rtk-query/usage/queries}
  */
 export const {useGetUserProfileQuery, useGetUserPostsInfiniteQuery} = userApi
