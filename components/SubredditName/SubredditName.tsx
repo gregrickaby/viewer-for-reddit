@@ -4,7 +4,7 @@ import {Favorite} from '@/components/Favorite/Favorite'
 import {selectIsAuthenticated} from '@/lib/store/features/authSlice'
 import {useAppSelector} from '@/lib/store/hooks'
 import {ActionIcon, Group, Tooltip} from '@mantine/core'
-import Image from 'next/image'
+import Image, {type StaticImageData} from 'next/image'
 import {FaTrashAlt} from 'react-icons/fa'
 import AppIcon from '../../app/icon.png'
 import classes from './SubredditName.module.css'
@@ -25,7 +25,7 @@ export function SubredditName({
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
 
   // If icon host is styles.redditmedia.com, use default icon.
-  let iconSrc: string | undefined
+  let iconSrc: string | StaticImageData | undefined
   try {
     if (
       icon &&
