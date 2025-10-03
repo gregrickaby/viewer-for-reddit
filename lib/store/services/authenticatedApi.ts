@@ -139,7 +139,7 @@ export const authenticatedApi = createApi({
      *
      * @example
      * const {data, fetchNextPage} = useGetCustomFeedPostsInfiniteQuery({
-     *   username: 'baxuche',
+     *   username: 'abc123',
      *   customFeedName: 'one',
      *   sort: 'hot'
      * })

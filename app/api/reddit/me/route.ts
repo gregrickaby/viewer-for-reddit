@@ -29,7 +29,7 @@ import {NextRequest, NextResponse} from 'next/server'
  * Anonymous/read-only requests should use /api/reddit instead.
  *
  * @example
- * fetch('/api/reddit/me?path=/user/baxuche/m/one/hot.json')
+ * fetch('/api/reddit/me?path=/user/abc123/m/one/hot.json')
  *
  * @param {NextRequest} request - The incoming request object.
  */

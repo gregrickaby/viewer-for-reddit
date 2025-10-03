@@ -32,7 +32,7 @@ interface CustomFeedPostsProps {
  * - Authentication-aware
  *
  * @example
- * <CustomFeedPosts username="baxuche" customFeedName="one" sort="hot" />
+ * <CustomFeedPosts username="abc123" customFeedName="one" sort="hot" />
  */
 export function CustomFeedPosts({
   username,
