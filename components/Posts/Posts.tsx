@@ -13,12 +13,10 @@ import {
   Loader,
   SegmentedControl,
   Stack,
-  Text,
   Title
 } from '@mantine/core'
 import Link from 'next/link'
 import {useState} from 'react'
-import {IoHome} from 'react-icons/io5'
 import {MdError} from 'react-icons/md'
 import styles from './Posts.module.css'
 
@@ -99,19 +97,6 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
 
   return (
     <Stack>
-      <Group mb="md">
-        <Link href="/">
-          <Group gap="xs" c="red">
-            <IoHome />
-            <Text size="sm">Home</Text>
-          </Group>
-        </Link>
-        <Text c="dimmed">•</Text>
-        <Group gap="xs" c="red">
-          <Text size="sm">r/{subreddit}</Text>
-        </Group>
-      </Group>
-
       <Group justify="space-between" gap="xs">
         <Group gap="xs" className={styles.header}>
           <Title order={1} size="h2">

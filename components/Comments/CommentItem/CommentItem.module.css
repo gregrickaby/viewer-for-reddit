@@ -91,6 +91,10 @@
   gap: var(--mantine-spacing-md);
 }
 
+.link {
+  text-decoration: none;
+}
+
 @media (max-width: 768px) {
   .nestedComment {
     margin-left: calc(var(--comment-depth) * var(--mantine-spacing-md));

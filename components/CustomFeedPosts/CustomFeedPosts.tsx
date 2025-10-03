@@ -8,11 +8,9 @@ import {
 } from '@/lib/store/services/authenticatedApi'
 import type {AutoPostChild} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
-import {Box, Button, Group, Loader, Stack, Text} from '@mantine/core'
+import {Box, Button, Loader, Stack, Text} from '@mantine/core'
 import {useIntersection} from '@mantine/hooks'
-import Link from 'next/link'
 import {useEffect, useMemo} from 'react'
-import {IoHome} from 'react-icons/io5'
 
 interface CustomFeedPostsProps {
   username: string
@@ -131,47 +129,32 @@ export function CustomFeedPosts({
   }
 
   return (
-    <>
-      <Group mb="md">
-        <Link href="/">
-          <Group gap="xs" c="red">
-            <IoHome />
-            <Text size="sm">Home</Text>
-          </Group>
-        </Link>
-        <Text c="dimmed">•</Text>
-        <Group gap="xs" c="red">
-          <Text size="sm">Custom Feed: {customFeedName}</Text>
-        </Group>
-      </Group>
+    <Stack>
+      {allPosts.map((post: AutoPostChild, index: number) => {
+        const isLastPost = index === allPosts.length - 1
+        const postData = post.data
 
-      <Stack gap="md">
-        {allPosts.map((post: AutoPostChild, index: number) => {
-          const isLastPost = index === allPosts.length - 1
-          const postData = post.data
+        // Skip posts without data
+        if (!postData) return null
 
-          // Skip posts without data
-          if (!postData) return null
+        return (
+          <div key={postData.id} ref={isLastPost ? ref : null}>
+            <PostCard post={postData} />
+          </div>
+        )
+      })}
 
-          return (
-            <div key={postData.id} ref={isLastPost ? ref : null}>
-              <PostCard post={postData} />
-            </div>
-          )
-        })}
+      {query.isFetchingNextPage && (
+        <Box ta="center" py="md">
+          <Loader size="md" />
+        </Box>
+      )}
 
-        {query.isFetchingNextPage && (
-          <Box ta="center" py="md">
-            <Loader size="md" />
-          </Box>
-        )}
-
-        {!query.hasNextPage && allPosts.length > 0 && (
-          <Text ta="center" c="dimmed" py="md">
-            You've reached the end
-          </Text>
-        )}
-      </Stack>
-    </>
+      {!query.hasNextPage && allPosts.length > 0 && (
+        <Text ta="center" c="dimmed" py="md">
+          You've reached the end
+        </Text>
+      )}
+    </Stack>
   )
 }

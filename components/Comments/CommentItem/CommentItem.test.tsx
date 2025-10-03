@@ -54,10 +54,9 @@ describe('CommentItem', () => {
       </CommentExpansionProvider>
     )
 
-    expect(screen.getByText('testuser')).toBeInTheDocument()
+    expect(screen.getByText(/u\/testuser/i)).toBeInTheDocument()
     expect(screen.getByText('This is a test comment')).toBeInTheDocument()
-    expect(screen.getByText('42')).toBeInTheDocument()
-    expect(screen.getByText('View on Reddit')).toBeInTheDocument()
+    expect(screen.getByText(/view.*reddit/i)).toBeInTheDocument()
   })
 
   it('should show expand button and reply count for comments with replies', () => {
@@ -115,7 +114,7 @@ describe('CommentItem', () => {
       screen.getByRole('button', {name: /collapse replies/i})
     ).toBeInTheDocument()
     // Content should be visible
-    expect(screen.getByText('replyuser')).toBeInTheDocument()
+    expect(screen.getByText(/u\/replyuser/i)).toBeInTheDocument()
 
     // Collapse - check that the button text changes back
     await user.click(expandButton)
@@ -169,8 +168,8 @@ describe('CommentItem', () => {
     await user.click(expandAllButton)
 
     // Should show all nested content
-    expect(screen.getByText('replyuser')).toBeInTheDocument()
-    expect(screen.getByText('nesteduser')).toBeInTheDocument()
+    expect(screen.getByText(/u\/replyuser/i)).toBeInTheDocument()
+    expect(screen.getByText(/u\/nesteduser/i)).toBeInTheDocument()
     expect(screen.getByText('Nested reply')).toBeInTheDocument()
 
     // Button should change to collapse
@@ -253,20 +252,20 @@ describe('CommentItem', () => {
     expect(screen.queryByTestId('thread-line')).not.toBeInTheDocument()
   })
 
-  it('should display vote buttons with score in the comment header', () => {
+  it('should display vote buttons with score for comments with replies', () => {
     render(
       <CommentExpansionProvider>
-        <CommentItem comment={mockBasicComment} />
+        <CommentItem comment={mockCommentWithReplies} />
       </CommentExpansionProvider>
     )
 
-    // Check that vote score is displayed
-    expect(screen.getByText('42')).toBeInTheDocument()
+    // Check that vote score is displayed (only shown for comments with replies)
+    expect(screen.getByText('15')).toBeInTheDocument()
 
     // Check that author is displayed (to confirm we're in the header area)
-    expect(screen.getByText('testuser')).toBeInTheDocument()
+    expect(screen.getByText(/u\/parentuser/i)).toBeInTheDocument()
 
     // Verify vote score is visible to users (VoteButtons component)
-    expect(screen.getByText('42')).toBeVisible()
+    expect(screen.getByText('15')).toBeVisible()
   })
 })

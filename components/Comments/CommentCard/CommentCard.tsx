@@ -5,6 +5,7 @@ import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {logError} from '@/lib/utils/logError'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
 import {Anchor, Card, Group, Text} from '@mantine/core'
+import Link from 'next/link'
 import {memo} from 'react'
 import styles from './CommentCard.module.css'
 
@@ -33,9 +34,9 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
 
     return (
       <article
+        aria-label="Invalid comment error"
         className={styles.commentCard}
         role="alert"
-        aria-label="Invalid comment error"
       >
         <Text size="sm" c="dimmed">
           <span className={styles.srOnly}>Error: </span>
@@ -51,16 +52,14 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
     >
       <Card padding="md" radius="md" shadow="none" withBorder>
         <Group gap="xs">
-          <Anchor
-            href={`https://reddit.com/user/${comment.author || 'unknown'}`}
-            rel="noopener noreferrer"
-            target="_blank"
+          <Link
             aria-label={`View profile of ${comment.author || 'Unknown'}`}
+            href={`/u/${comment.author || 'unknown'}`}
           >
             <Text c="dimmed" size="sm">
               {comment.author || 'Unknown'}
             </Text>
-          </Anchor>
+          </Link>
           <Text c="dimmed" size="sm" aria-hidden="true">
             &middot;
           </Text>

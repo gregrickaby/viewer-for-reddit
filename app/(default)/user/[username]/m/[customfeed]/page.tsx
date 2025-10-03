@@ -1,5 +1,6 @@
 import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
+import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {CustomFeedPosts} from '@/components/CustomFeedPosts/CustomFeedPosts'
 import config from '@/lib/config'
 import type {CustomFeedParams, SearchParams, SortingOption} from '@/lib/types'
@@ -61,10 +62,19 @@ export default async function CustomFeedPage(props: {
 
   return (
     <>
+      <Breadcrumb
+        items={[
+          {label: `u/${username}`, href: `/u/${username}`},
+          {
+            label: `m/${customfeed}`,
+            href: `/user/${username}/m/${customfeed}`
+          }
+        ]}
+      />
       <CustomFeedPosts
-        username={username}
         customFeedName={customfeed}
         sort={sort}
+        username={username}
       />
       <BossButton />
       <BackToTop />

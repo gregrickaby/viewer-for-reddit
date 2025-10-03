@@ -1,3 +1,4 @@
+import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import config from '@/lib/config'
 import {Typography} from '@mantine/core'
 import fs from 'fs'
@@ -41,8 +42,11 @@ export default async function About() {
   const {content} = matter(fileContent)
 
   return (
-    <Typography>
-      <ReactMarkdown>{content}</ReactMarkdown>
-    </Typography>
+    <>
+      <Breadcrumb items={[{label: 'About', href: '/about'}]} />
+      <Typography>
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </Typography>
+    </>
   )
 }

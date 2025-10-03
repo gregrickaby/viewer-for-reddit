@@ -1,5 +1,6 @@
 import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
+import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {UserProfile} from '@/components/UserProfile/UserProfile'
 import {getUserProfile} from '@/lib/actions/getUserProfile'
 import config from '@/lib/config'
@@ -53,6 +54,7 @@ export default async function UserProfilePage(props: {params: UserParams}) {
 
   return (
     <>
+      <Breadcrumb items={[{label: `u/${username}`, href: `/u/${username}`}]} />
       <UserProfile username={username} />
       <BossButton />
       <BackToTop />

@@ -1,6 +1,7 @@
 'use client'
 
 import {useAddFavorite} from '@/lib/hooks/useAddFavorite'
+import {useAppSelector} from '@/lib/store/hooks'
 import {ActionIcon, Tooltip} from '@mantine/core'
 import {FaHeart, FaRegHeart} from 'react-icons/fa'
 
@@ -10,10 +11,18 @@ interface FavoriteProps {
 
 export function Favorite({subreddit}: Readonly<FavoriteProps>) {
   const {isFavorite, loading, toggle} = useAddFavorite(subreddit)
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
 
   if (subreddit === 'all' || subreddit === 'popular') return null
 
-  const label = isFavorite ? 'Remove from favorites' : 'Add to favorites'
+  // Use "Join" for authenticated users, "Favorite" for read-only users
+  let label: string
+  if (isAuthenticated) {
+    label = isFavorite ? 'Leave' : 'Join'
+  } else {
+    label = isFavorite ? 'Remove from favorites' : 'Add to favorites'
+  }
+
   const icon = isFavorite ? <FaHeart /> : <FaRegHeart />
   const color = isFavorite ? 'red' : 'gray'
 

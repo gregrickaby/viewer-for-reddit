@@ -4,19 +4,9 @@ import {Comments} from '@/components/Comments/Comments'
 import {PostCard} from '@/components/PostCard/PostCard'
 import {useGetSinglePostQuery} from '@/lib/store/services/postsApi'
 import {parsePostLink} from '@/lib/utils/parsePostLink'
-import {
-  Alert,
-  Card,
-  Container,
-  Group,
-  Loader,
-  Stack,
-  Text,
-  Title
-} from '@mantine/core'
+import {Alert, Card, Container, Loader, Stack, Text, Title} from '@mantine/core'
 import Link from 'next/link'
-import {IoAlert, IoHome} from 'react-icons/io5'
-import classes from './SinglePost.module.css'
+import {IoAlert} from 'react-icons/io5'
 
 export interface SinglePostProps {
   readonly subreddit: string
@@ -80,21 +70,6 @@ export function SinglePost({
     return (
       <Container size="md">
         <Stack gap="md" py="md">
-          <Group>
-            <Link href="/">
-              <Group gap="xs" c="red">
-                <IoHome />
-                <Text size="sm">Home</Text>
-              </Group>
-            </Link>
-            <Text c="dimmed">•</Text>
-            <Link href={`/r/${subreddit}`}>
-              <Group gap="xs" c="red">
-                <Text size="sm">r/{subreddit}</Text>
-              </Group>
-            </Link>
-          </Group>
-
           <Alert
             icon={<IoAlert size={16} />}
             title="Error"
@@ -128,44 +103,22 @@ export function SinglePost({
   const post = data
 
   return (
-    <Container size="md">
-      <Stack gap="md" py="md">
-        {/* Navigation back to subreddit */}
-        <Group>
-          <Link href="/" className={classes.backLink}>
-            <Group gap="xs" c="red">
-              <IoHome />
-              <Text size="sm">Home</Text>
-            </Group>
-          </Link>
-          <Text c="dimmed">•</Text>
-          <Link href={`/r/${subreddit}`} className={classes.backLink}>
-            <Group gap="xs" c="red">
-              <Text size="sm">r/{subreddit}</Text>
-            </Group>
-          </Link>
-        </Group>
-
-        {/* Post content */}
-        <PostCard post={post} useInternalRouting={useInternalRouting} />
-
-        {/* Comments section */}
-        <Card padding="md" radius="md" shadow="sm" withBorder>
-          <Stack gap="md">
-            <Title order={3} size="lg">
-              Comments
-            </Title>
-
-            <Comments
-              permalink={post.permalink || ''}
-              postLink={parsePostLink(post.permalink, useInternalRouting)}
-              open
-              enableInfiniteLoading
-              enableNestedComments
-            />
-          </Stack>
-        </Card>
-      </Stack>
-    </Container>
+    <Stack gap="md" py="md">
+      <PostCard post={post} useInternalRouting={useInternalRouting} />
+      <Card padding="md" radius="md" shadow="sm" withBorder>
+        <Stack gap="md">
+          <Title order={3} size="lg">
+            Comments
+          </Title>
+          <Comments
+            permalink={post.permalink || ''}
+            postLink={parsePostLink(post.permalink, useInternalRouting)}
+            open
+            enableInfiniteLoading
+            enableNestedComments
+          />
+        </Stack>
+      </Card>
+    </Stack>
   )
 }

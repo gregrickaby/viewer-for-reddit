@@ -99,7 +99,14 @@ const redditColorScheme: MantineColorsTuple = [
 const theme = createTheme({
   colors: {redditColorScheme},
   fontFamily: redditSans.style.fontFamily,
-  primaryColor: 'redditColorScheme'
+  primaryColor: 'redditColorScheme',
+  components: {
+    Anchor: {
+      defaultProps: {
+        underline: 'never'
+      }
+    }
+  }
 })
 
 /**

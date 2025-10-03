@@ -1,5 +1,6 @@
 import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
+import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {Posts} from '@/components/Posts/Posts'
 import {getSubreddit} from '@/lib/actions/getSubreddit'
 import config from '@/lib/config'
@@ -64,6 +65,9 @@ export default async function Page(props: {
 
   return (
     <>
+      <Breadcrumb
+        items={[{label: `r/${subreddit}`, href: `/r/${subreddit}`}]}
+      />
       <Posts subreddit={subreddit} sort={sort} />
       <BossButton />
       <BackToTop />
