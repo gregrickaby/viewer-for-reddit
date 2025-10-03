@@ -1,7 +1,9 @@
 /**
  * Security audit logging for authentication events.
- * In production, these should be sent to a centralized logging system.
+ * Logs are sent to the centralized logging system via logError/logClientInfo.
  */
+
+import {logError} from '@/lib/utils/logError'
 
 export type AuditEventType =
   | 'login_initiated'
@@ -25,30 +27,19 @@ export interface AuditEvent {
 }
 
 /**
- * Log a security audit event.
- * In production, integrate with your logging service (DataDog, LogRocket, etc.)
+ * Log a security audit event using centralized logging.
  */
 export function logAuditEvent(event: Omit<AuditEvent, 'timestamp'>): void {
-  const auditEvent: AuditEvent = {
-    ...event,
-    timestamp: new Date().toISOString()
-  }
-
-  // In development, log to console
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line no-console
-    console.log('[AUDIT]', auditEvent)
-    return
-  }
-
-  // In production, send to logging service
-  // Example integrations:
-  // - DataDog: datadogLogs.logger.info('audit_event', auditEvent)
-  // - LogRocket: LogRocket.track('audit_event', auditEvent)
-  // - Custom endpoint: fetch('/api/audit', { method: 'POST', body: JSON.stringify(auditEvent) })
-
-  // eslint-disable-next-line no-console
-  console.log('[AUDIT]', JSON.stringify(auditEvent))
+  // Use centralized logging system
+  logError(`[AUDIT] ${event.type}`, {
+    component: 'AuditLog',
+    action: event.type,
+    username: event.username,
+    ip: event.ip,
+    userAgent: event.userAgent,
+    timestamp: new Date().toISOString(),
+    ...event.metadata
+  })
 }
 
 /**

@@ -1,3 +1,4 @@
+import {logError} from '@/lib/utils/logError'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
@@ -61,11 +62,12 @@ export async function checkRateLimit(
     const resetTime = oldestTimestamp + RATE_LIMIT.WINDOW_MS
     const retryAfter = Math.ceil((resetTime - now) / 1000)
 
-    console.warn('Rate limit exceeded:', {
+    logError('Rate limit exceeded', {
+      component: 'RateLimit',
+      action: 'checkRateLimit',
       identifier: id,
       remaining: 0,
-      resetAt: new Date(resetTime).toISOString(),
-      timestamp: new Date().toISOString()
+      resetAt: new Date(resetTime).toISOString()
     })
 
     return NextResponse.json(

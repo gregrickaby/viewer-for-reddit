@@ -7,6 +7,12 @@ import {
   voteDirectionToState
 } from './useVote'
 
+// Mock client logger
+vi.mock('@/lib/utils/clientLogger', () => ({
+  logClientError: vi.fn(),
+  logClientInfo: vi.fn()
+}))
+
 // Mock the vote mutation
 const mockVote = vi.fn()
 vi.mock('@/lib/store/services/voteApi', async (importOriginal) => {
@@ -335,6 +341,43 @@ describe('useVote', () => {
         expect(result.current.currentVote).toBe(null)
       })
       expect(result.current.currentScore).toBe(10)
+    })
+
+    it('should show sign-in message for authentication errors', async () => {
+      const initialScore = 100
+      const initialVote = null
+
+      // Mock vote mutation to return 401 error via unwrap()
+      mockVote.mockReturnValue({
+        unwrap: vi.fn().mockRejectedValue({
+          status: 401,
+          data: {error: 'Authentication required'}
+        })
+      })
+
+      const {result} = renderHook(() =>
+        useVote({
+          id: 't3_abc123',
+          initialScore,
+          initialVote
+        })
+      )
+
+      // Attempt to upvote
+      await result.current.handleVote(1)
+
+      await waitFor(() => {
+        expect(notifications.show).toHaveBeenCalledWith({
+          title: 'Sign in required',
+          message: 'Please sign in to vote on posts and comments.',
+          color: 'blue',
+          autoClose: 3000
+        })
+      })
+
+      // Should rollback to initial state
+      expect(result.current.currentScore).toBe(initialScore)
+      expect(result.current.currentVote).toBe(initialVote)
     })
   })
 })

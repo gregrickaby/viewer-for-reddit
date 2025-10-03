@@ -2,6 +2,12 @@ import {NextRequest} from 'next/server'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {checkRateLimit} from './rateLimit'
 
+vi.mock('@/lib/utils/logError', () => ({
+  logError: vi.fn()
+}))
+
+import {logError} from '@/lib/utils/logError'
+
 // Mock NextRequest for testing
 function createMockNextRequest(
   url = 'http://localhost:3000',
@@ -16,7 +22,11 @@ function createMockNextRequest(
 }
 
 describe('checkRateLimit', () => {
+  let mockLogError: ReturnType<typeof vi.fn>
+
   beforeEach(() => {
+    mockLogError = vi.mocked(logError)
+    mockLogError.mockClear()
     vi.useFakeTimers()
   })
 
@@ -368,12 +378,8 @@ describe('checkRateLimit', () => {
     })
   })
 
-  describe('console warnings', () => {
-    it('should log warning when rate limit exceeded', async () => {
-      const consoleWarnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {})
-
+  describe('error logging', () => {
+    it('should log error when rate limit exceeded', async () => {
       const request = createMockNextRequest('http://localhost:3000', {
         'x-forwarded-for': '192.168.1.27'
       })
@@ -383,19 +389,20 @@ describe('checkRateLimit', () => {
         await checkRateLimit(request)
       }
 
+      mockLogError.mockClear()
+
       await checkRateLimit(request)
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Rate limit exceeded:',
+      expect(mockLogError).toHaveBeenCalledWith(
+        'Rate limit exceeded',
         expect.objectContaining({
-          identifier: expect.any(String),
+          component: 'RateLimit',
+          action: 'checkRateLimit',
+          identifier: '192.168.1.27',
           remaining: 0,
-          resetAt: expect.any(String),
-          timestamp: expect.any(String)
+          resetAt: expect.any(String)
         })
       )
-
-      consoleWarnSpy.mockRestore()
     })
   })
 })

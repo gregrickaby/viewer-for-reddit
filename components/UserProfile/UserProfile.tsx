@@ -24,7 +24,9 @@ import {
   Text,
   Title
 } from '@mantine/core'
+import Link from 'next/link'
 import {BiSolidUpvote} from 'react-icons/bi'
+import {IoHome} from 'react-icons/io5'
 import {MdVerified} from 'react-icons/md'
 import classes from './UserProfile.module.css'
 
@@ -83,6 +85,19 @@ export function UserProfile({username}: Readonly<UserProfileProps>) {
 
   return (
     <div className={classes.container}>
+      <Group mb="md">
+        <Link href="/">
+          <Group gap="xs" c="red">
+            <IoHome />
+            <Text size="sm">Home</Text>
+          </Group>
+        </Link>
+        <Text c="dimmed">•</Text>
+        <Group gap="xs" c="red">
+          <Text size="sm">u/{username}</Text>
+        </Group>
+      </Group>
+
       <Title order={1} className={classes.header}>
         User Profile: u/{username}
       </Title>

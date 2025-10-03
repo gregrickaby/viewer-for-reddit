@@ -10,9 +10,9 @@ A Reddit viewing web app enabling users to browse Reddit content without ads or 
 
 It has two modes:
 
-- **Read-only Mode**: Browse public communities, posts, users, and comments without logging in. This mode uses a developer API key to authenticate calls to oauth.reddit.com with limited rate and scope via Reddit's personal use script.
+- **Read-only Mode**: Browse public communities, posts, users, and comments without logging in. This mode uses a developer API key to authenticate calls to <https://oauth.reddit.com> with limited rate and scope via Reddit's personal use script.
 
-- **Authenticated Mode**: Log in with a Reddit account to access personalized features like viewing home feed, custom feeds, voting, commenting, and subscribing. This mode uses OAuth 2.0 to obtain user-specific access tokens with broader scopes.
+- **Authenticated Mode**: User logs in with via OAuth2 with their Reddit account to access personalized features like viewing home feed, custom feeds, voting, commenting, and subscribing. This mode uses OAuth 2.0 to obtain user-specific access tokens with broader scopes.
 
 ## Available Sub-agents
 
@@ -37,6 +37,7 @@ It has two modes:
 - **CSS**: CSS Modules with Mantine CSS variables
 - **Coolify**: This app is self-hosted and deployed with Coolify using Nixpacks. Preview deployments for each pull request: <https://[pull-request-id].reddit-viewer.com>
 - **Data Fetching**: RTK Query
+- **Error Logging**: Custom logging solution.
 - **Formatting**: Prettier
 - **Github MCP**: Interacting with Github issues and pull requests
 - **Linting**: ESLint with Mantine config
@@ -44,6 +45,184 @@ It has two modes:
 - **State Management**: Redux Toolkit
 - **Testing**: Vitest + React Testing Library + MSW v2
 - **TypeScript**: Strict mode enabled. Never use `any` type
+
+## Error Logging
+
+A custom error logging solution is implemented to capture and log errors occurring in the application. This includes both client-side and server-side errors.
+
+### Critical Rules
+
+**NEVER use `console.log` or `console.error` directly in the codebase** (except in specific exempted files - see below). Always use the centralized logging utilities to ensure consistent log formatting, proper log levels, and easier management of log outputs across different environments.
+
+### Server-Side Logging
+
+Use `logError` from `lib/utils/logError.ts` for all server-side logging (API routes, server actions, middleware).
+
+**Import:**
+
+```typescript
+import {logError} from '@/lib/utils/logError'
+```
+
+**Usage:**
+
+```typescript
+// Log an error with context
+try {
+  const data = await fetchData()
+} catch (error) {
+  logError(error, {
+    component: 'ApiRoute',
+    action: 'fetchData',
+    userId: '12345'
+    // Any additional context
+  })
+}
+
+// Log validation errors
+logError('Invalid vote request: missing id', {
+  component: 'voteApiRoute',
+  action: 'validateRequest',
+  body: requestBody
+})
+```
+
+**Features:**
+
+- Automatically handles different error types (Error objects, RTK Query errors, plain objects, strings)
+- Structured JSON output with timestamp, error details, and context
+- Extracts stack traces from Error objects
+- Handles RTK Query error format (`{status, data}`)
+
+### Client-Side Logging
+
+Use `logClientError` or `logClientInfo` from `lib/utils/clientLogger.ts` for all client-side logging (React components, hooks, client-side utilities).
+
+**Import:**
+
+```typescript
+import {logClientError, logClientInfo} from '@/lib/utils/clientLogger'
+```
+
+**Usage:**
+
+```typescript
+// Log client-side errors
+try {
+  const userData = await fetchUserData(userId)
+} catch (error) {
+  logClientError('Failed to load user data', {
+    component: 'UserProfile',
+    action: 'fetchUserData',
+    userId: '12345',
+    errorMessage: error instanceof Error ? error.message : String(error)
+  })
+}
+
+// Log informational events
+logClientInfo('User navigated to 404 page', {
+  component: 'NotFoundClient',
+  action: '404',
+  path: window.location.pathname,
+  referrer: document.referrer
+})
+```
+
+**Features:**
+
+- Sends logs to server via `/api/log` endpoint
+- Server enriches logs with IP address, user agent, and server timestamp
+- Fallback to console if API call fails
+- Structured context object for rich debugging information
+
+### Context Object Guidelines
+
+Always provide a context object with relevant information:
+
+**Required fields:**
+
+- `component`: Component/route/file name where the error occurred
+- `action`: Specific operation that failed
+
+**Optional but recommended:**
+
+- `userId`: User identifier (if applicable)
+- `requestId`: Request tracking ID
+- Error-specific details (validation errors, API responses, etc.)
+- Environmental context (URL, referrer, state, etc.)
+
+**Example:**
+
+```typescript
+logError(error, {
+  component: 'VoteButtons',
+  action: 'handleUpvote',
+  postId: 't3_abc123',
+  userId: 'user_123',
+  voteDirection: 1,
+  errorType: error instanceof Error ? error.name : typeof error
+})
+```
+
+### Allowed Console Usage
+
+Direct `console.*` usage is **only** permitted in these specific cases:
+
+1. **Build scripts** (`scripts/**/*.ts`) - for CLI output during builds
+2. **Development-only debugging** - Must be removed before commit
+3. **Test files** (`**/*.test.ts`, `**/*.test.tsx`) - for test debugging only
+4. **Code examples in JSDoc comments** - documentation purposes
+
+### Mocking in Tests
+
+When testing code that uses logging utilities, mock them properly:
+
+**Server-side logging:**
+
+```typescript
+import {logError} from '@/lib/utils/logError'
+
+vi.mock('@/lib/utils/logError')
+const mockLogError = vi.mocked(logError)
+
+// In tests
+expect(mockLogError).toHaveBeenCalledWith(
+  expect.any(Error),
+  expect.objectContaining({
+    component: 'MyComponent',
+    action: 'myAction'
+  })
+)
+```
+
+**Client-side logging:**
+
+```typescript
+const mockLogClientError = vi.hoisted(() => vi.fn())
+
+vi.mock('@/lib/utils/clientLogger', () => ({
+  logClientError: mockLogClientError,
+  logClientInfo: vi.fn()
+}))
+
+// In tests
+expect(mockLogClientError).toHaveBeenCalledWith(
+  'Error message',
+  expect.objectContaining({
+    component: 'MyComponent',
+    action: 'myAction'
+  })
+)
+```
+
+### Best Practices
+
+1. **Always include context** - The more context, the easier debugging becomes
+2. **Use descriptive messages** - Clear, actionable error messages
+3. **Log before returning errors** - Log the error, then return appropriate response
+4. **Don't log sensitive data** - Avoid logging passwords, tokens, or PII
+5. **Log at appropriate level** - Use error for failures, info for events
+6. **Include error details** - For caught errors, include error message and type in context
 
 ## Multi-Environment Authentication
 

@@ -28,6 +28,7 @@ export function Settings() {
   const isDark = colorScheme === 'dark'
   const nsfw = useAppSelector((state) => state.settings.enableNsfw)
   const isMuted = useAppSelector((state) => state.settings.isMuted)
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
 
   return (
     <Menu position="bottom-end" shadow="md" width={220} withArrow zIndex={999}>
@@ -113,21 +114,23 @@ export function Settings() {
           Clear Recently Viewed
         </Menu.Item>
 
-        <Menu.Item
-          data-testid="clear-favorites-button"
-          onClick={() => {
-            dispatch(clearFavorites())
-            showNotification({
-              title: 'Success',
-              message:
-                'All favorites have been removed. You can always add them again.',
-              color: 'green'
-            })
-          }}
-        >
-          <GoBookmarkSlashFill style={{marginRight: '8px'}} />
-          Clear All Favorites
-        </Menu.Item>
+        {!isAuthenticated && (
+          <Menu.Item
+            data-testid="clear-favorites-button"
+            onClick={() => {
+              dispatch(clearFavorites())
+              showNotification({
+                title: 'Success',
+                message:
+                  'All favorites have been removed. You can always add them again.',
+                color: 'green'
+              })
+            }}
+          >
+            <GoBookmarkSlashFill style={{marginRight: '8px'}} />
+            Clear All Favorites
+          </Menu.Item>
+        )}
 
         <Menu.Divider />
 

@@ -1,335 +1,310 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {getClientInfo, logAuditEvent} from './auditLog'
 
+vi.mock('@/lib/utils/logError', () => ({
+  logError: vi.fn()
+}))
+
+import {logError} from '@/lib/utils/logError'
+
 describe('logAuditEvent', () => {
-  let consoleLogSpy: ReturnType<typeof vi.spyOn>
+  let mockLogError: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    mockLogError = vi.mocked(logError)
+    mockLogError.mockClear()
     vi.useFakeTimers()
   })
 
   afterEach(() => {
-    consoleLogSpy.mockRestore()
     vi.useRealTimers()
-    vi.unstubAllEnvs()
   })
 
-  describe('development environment', () => {
-    beforeEach(() => {
-      vi.stubEnv('NODE_ENV', 'development')
+  it('should log audit event with timestamp using logError', () => {
+    const fixedDate = new Date('2025-10-01T12:00:00.000Z')
+    vi.setSystemTime(fixedDate)
+
+    logAuditEvent({
+      type: 'login_success',
+      username: 'testuser',
+      ip: '192.168.1.1'
     })
 
-    it('should log audit event with timestamp', () => {
-      const fixedDate = new Date('2025-10-01T12:00:00.000Z')
-      vi.setSystemTime(fixedDate)
-
-      logAuditEvent({
-        type: 'login_success',
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] login_success',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_success',
         username: 'testuser',
-        ip: '192.168.1.1'
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'login_success',
-          username: 'testuser',
-          ip: '192.168.1.1',
-          timestamp: '2025-10-01T12:00:00.000Z'
-        })
-      )
-    })
-
-    it('should log login_initiated event', () => {
-      logAuditEvent({
-        type: 'login_initiated',
         ip: '192.168.1.1',
-        userAgent: 'Mozilla/5.0'
+        timestamp: '2025-10-01T12:00:00.000Z'
       })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'login_initiated',
-          ip: '192.168.1.1',
-          userAgent: 'Mozilla/5.0'
-        })
-      )
-    })
-
-    it('should log login_failed event with metadata', () => {
-      logAuditEvent({
-        type: 'login_failed',
-        ip: '192.168.1.1',
-        metadata: {
-          error: 'Invalid credentials',
-          attemptCount: 3
-        }
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'login_failed',
-          ip: '192.168.1.1',
-          metadata: {
-            error: 'Invalid credentials',
-            attemptCount: 3
-          }
-        })
-      )
-    })
-
-    it('should log logout event', () => {
-      logAuditEvent({
-        type: 'logout',
-        username: 'testuser'
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'logout',
-          username: 'testuser'
-        })
-      )
-    })
-
-    it('should log token_refresh_success event', () => {
-      logAuditEvent({
-        type: 'token_refresh_success',
-        username: 'testuser',
-        ip: '192.168.1.1'
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'token_refresh_success',
-          username: 'testuser'
-        })
-      )
-    })
-
-    it('should log token_refresh_failed event', () => {
-      logAuditEvent({
-        type: 'token_refresh_failed',
-        username: 'testuser',
-        metadata: {error: 'Token expired'}
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'token_refresh_failed',
-          username: 'testuser',
-          metadata: {error: 'Token expired'}
-        })
-      )
-    })
-
-    it('should log session_expired event', () => {
-      logAuditEvent({
-        type: 'session_expired',
-        username: 'testuser'
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'session_expired',
-          username: 'testuser'
-        })
-      )
-    })
-
-    it('should log rate_limit_exceeded event', () => {
-      logAuditEvent({
-        type: 'rate_limit_exceeded',
-        ip: '192.168.1.1',
-        metadata: {
-          endpoint: '/api/auth/login',
-          limit: 10
-        }
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'rate_limit_exceeded',
-          ip: '192.168.1.1'
-        })
-      )
-    })
-
-    it('should log csrf_validation_failed event', () => {
-      logAuditEvent({
-        type: 'csrf_validation_failed',
-        ip: '192.168.1.1',
-        metadata: {reason: 'Missing token'}
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'csrf_validation_failed',
-          ip: '192.168.1.1'
-        })
-      )
-    })
-
-    it('should log invalid_state event', () => {
-      logAuditEvent({
-        type: 'invalid_state',
-        ip: '192.168.1.1',
-        metadata: {expected: 'abc123', received: 'xyz789'}
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'invalid_state',
-          ip: '192.168.1.1'
-        })
-      )
-    })
-
-    it('should handle event without optional fields', () => {
-      logAuditEvent({
-        type: 'login_success'
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'login_success',
-          timestamp: expect.any(String)
-        })
-      )
-    })
-
-    it('should return early in development mode', () => {
-      logAuditEvent({
-        type: 'login_success',
-        username: 'testuser'
-      })
-
-      // Should be called once (development log)
-      expect(consoleLogSpy).toHaveBeenCalledTimes(1)
-
-      // First call should be the development log
-      expect(consoleLogSpy).toHaveBeenNthCalledWith(
-        1,
-        '[AUDIT]',
-        expect.objectContaining({
-          type: 'login_success',
-          username: 'testuser'
-        })
-      )
-    })
+    )
   })
 
-  describe('production environment', () => {
-    beforeEach(() => {
-      vi.stubEnv('NODE_ENV', 'production')
+  it('should log login_initiated event', () => {
+    logAuditEvent({
+      type: 'login_initiated',
+      ip: '192.168.1.1',
+      userAgent: 'Mozilla/5.0'
     })
 
-    it('should log stringified JSON in production', () => {
-      const fixedDate = new Date('2025-10-01T12:00:00.000Z')
-      vi.setSystemTime(fixedDate)
-
-      logAuditEvent({
-        type: 'login_success',
-        username: 'testuser',
-        ip: '192.168.1.1'
-      })
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        JSON.stringify({
-          type: 'login_success',
-          username: 'testuser',
-          ip: '192.168.1.1',
-          timestamp: '2025-10-01T12:00:00.000Z'
-        })
-      )
-    })
-
-    it('should include all fields in production log', () => {
-      logAuditEvent({
-        type: 'login_failed',
-        username: 'testuser',
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] login_initiated',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_initiated',
         ip: '192.168.1.1',
         userAgent: 'Mozilla/5.0',
-        metadata: {error: 'Invalid password', attempts: 3}
-      })
-
-      const expectedLog = expect.stringContaining('login_failed')
-      expect(consoleLogSpy).toHaveBeenCalledWith('[AUDIT]', expectedLog)
-
-      const loggedString = consoleLogSpy.mock.calls[0][1] as string
-      const parsedLog = JSON.parse(loggedString)
-
-      expect(parsedLog).toEqual({
-        type: 'login_failed',
-        username: 'testuser',
-        ip: '192.168.1.1',
-        userAgent: 'Mozilla/5.0',
-        metadata: {error: 'Invalid password', attempts: 3},
         timestamp: expect.any(String)
       })
-    })
+    )
   })
 
-  describe('timestamp generation', () => {
-    beforeEach(() => {
-      vi.stubEnv('NODE_ENV', 'development')
+  it('should log login_failed event with metadata', () => {
+    logAuditEvent({
+      type: 'login_failed',
+      ip: '192.168.1.1',
+      metadata: {
+        error: 'Invalid credentials',
+        attemptCount: 3
+      }
     })
 
-    it('should generate ISO 8601 timestamp', () => {
-      const fixedDate = new Date('2025-10-01T15:30:45.123Z')
-      vi.setSystemTime(fixedDate)
-
-      logAuditEvent({
-        type: 'login_success'
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] login_failed',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_failed',
+        ip: '192.168.1.1',
+        error: 'Invalid credentials',
+        attemptCount: 3,
+        timestamp: expect.any(String)
       })
+    )
+  })
 
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        '[AUDIT]',
-        expect.objectContaining({
-          timestamp: '2025-10-01T15:30:45.123Z'
-        })
-      )
+  it('should log logout event', () => {
+    logAuditEvent({
+      type: 'logout',
+      username: 'testuser'
     })
 
-    it('should generate unique timestamps for sequential events', () => {
-      const firstTime = new Date('2025-10-01T12:00:00.000Z')
-      vi.setSystemTime(firstTime)
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] logout',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'logout',
+        username: 'testuser',
+        timestamp: expect.any(String)
+      })
+    )
+  })
 
-      logAuditEvent({type: 'login_initiated'})
-
-      const secondTime = new Date('2025-10-01T12:00:01.000Z')
-      vi.setSystemTime(secondTime)
-
-      logAuditEvent({type: 'login_success'})
-
-      expect(consoleLogSpy).toHaveBeenNthCalledWith(
-        1,
-        '[AUDIT]',
-        expect.objectContaining({
-          timestamp: '2025-10-01T12:00:00.000Z'
-        })
-      )
-
-      expect(consoleLogSpy).toHaveBeenNthCalledWith(
-        2,
-        '[AUDIT]',
-        expect.objectContaining({
-          timestamp: '2025-10-01T12:00:01.000Z'
-        })
-      )
+  it('should log token_refresh_success event', () => {
+    logAuditEvent({
+      type: 'token_refresh_success',
+      username: 'testuser',
+      ip: '192.168.1.1'
     })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] token_refresh_success',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'token_refresh_success',
+        username: 'testuser',
+        ip: '192.168.1.1',
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
+  it('should log token_refresh_failed event', () => {
+    logAuditEvent({
+      type: 'token_refresh_failed',
+      username: 'testuser',
+      metadata: {error: 'Token expired'}
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] token_refresh_failed',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'token_refresh_failed',
+        username: 'testuser',
+        error: 'Token expired',
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
+  it('should log session_expired event', () => {
+    logAuditEvent({
+      type: 'session_expired',
+      username: 'testuser'
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] session_expired',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'session_expired',
+        username: 'testuser',
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
+  it('should log rate_limit_exceeded event', () => {
+    logAuditEvent({
+      type: 'rate_limit_exceeded',
+      ip: '192.168.1.1',
+      metadata: {
+        endpoint: '/api/auth/login',
+        limit: 10
+      }
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] rate_limit_exceeded',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'rate_limit_exceeded',
+        ip: '192.168.1.1',
+        endpoint: '/api/auth/login',
+        limit: 10,
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
+  it('should log csrf_validation_failed event', () => {
+    logAuditEvent({
+      type: 'csrf_validation_failed',
+      ip: '192.168.1.1',
+      metadata: {reason: 'Missing token'}
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] csrf_validation_failed',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'csrf_validation_failed',
+        ip: '192.168.1.1',
+        reason: 'Missing token',
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
+  it('should log invalid_state event', () => {
+    logAuditEvent({
+      type: 'invalid_state',
+      ip: '192.168.1.1',
+      metadata: {expected: 'abc123', received: 'xyz789'}
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] invalid_state',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'invalid_state',
+        ip: '192.168.1.1',
+        expected: 'abc123',
+        received: 'xyz789',
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
+  it('should handle event without optional fields', () => {
+    logAuditEvent({
+      type: 'login_success'
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] login_success',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_success',
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
+  it('should generate ISO 8601 timestamp', () => {
+    const fixedDate = new Date('2025-10-01T15:30:45.123Z')
+    vi.setSystemTime(fixedDate)
+
+    logAuditEvent({
+      type: 'login_success'
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] login_success',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_success',
+        timestamp: '2025-10-01T15:30:45.123Z'
+      })
+    )
+  })
+
+  it('should generate unique timestamps for sequential events', () => {
+    const firstTime = new Date('2025-10-01T12:00:00.000Z')
+    vi.setSystemTime(firstTime)
+
+    logAuditEvent({type: 'login_initiated'})
+
+    const secondTime = new Date('2025-10-01T12:00:01.000Z')
+    vi.setSystemTime(secondTime)
+
+    logAuditEvent({type: 'login_success'})
+
+    expect(mockLogError).toHaveBeenNthCalledWith(
+      1,
+      '[AUDIT] login_initiated',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_initiated',
+        timestamp: '2025-10-01T12:00:00.000Z'
+      })
+    )
+
+    expect(mockLogError).toHaveBeenNthCalledWith(
+      2,
+      '[AUDIT] login_success',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_success',
+        timestamp: '2025-10-01T12:00:01.000Z'
+      })
+    )
+  })
+
+  it('should include all fields from event', () => {
+    logAuditEvent({
+      type: 'login_failed',
+      username: 'testuser',
+      ip: '192.168.1.1',
+      userAgent: 'Mozilla/5.0',
+      metadata: {error: 'Invalid password', attempts: 3}
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] login_failed',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'login_failed',
+        username: 'testuser',
+        ip: '192.168.1.1',
+        userAgent: 'Mozilla/5.0',
+        error: 'Invalid password',
+        attempts: 3,
+        timestamp: expect.any(String)
+      })
+    )
   })
 })
 

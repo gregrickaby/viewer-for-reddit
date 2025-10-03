@@ -1,5 +1,6 @@
 import {useVoteMutation} from '@/lib/store/services/voteApi'
 import type {VoteDirection} from '@/lib/types'
+import {logClientError} from '@/lib/utils/clientLogger'
 import {notifications} from '@mantine/notifications'
 import {useState} from 'react'
 
@@ -188,21 +189,38 @@ export function useVote({
     try {
       // Call mutation - voteApi will handle cache updates via onQueryStarted
       await vote({id, dir: newDir}).unwrap()
-    } catch (error) {
+    } catch (error: unknown) {
       // Rollback optimistic updates on error
       setOptimisticScore(previousScore)
       setOptimisticVote(previousVote)
 
+      // Check if error is authentication-related (401 status)
+      const isAuthError =
+        error !== null &&
+        typeof error === 'object' &&
+        'status' in error &&
+        (error as {status: number}).status === 401
+
       // Show user-friendly error notification
       notifications.show({
-        title: 'Vote failed',
-        message: 'Unable to submit vote. Please try again.',
-        color: 'red',
+        title: isAuthError ? 'Sign in required' : 'Vote failed',
+        message: isAuthError
+          ? 'Please sign in to vote on posts and comments.'
+          : 'Unable to submit vote. Please try again.',
+        color: isAuthError ? 'blue' : 'red',
         autoClose: 3000
       })
 
       // Log error for debugging
-      console.error('Vote error:', error)
+      logClientError('Vote operation failed', {
+        component: 'useVote',
+        action: 'handleVote',
+        id,
+        direction,
+        isAuthError,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorType: typeof error
+      })
     }
   }
 
