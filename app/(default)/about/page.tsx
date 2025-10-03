@@ -31,13 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function About() {
-  const filePath = path.join(
-    process.cwd(),
-    'app',
-    '(default)',
-    'about',
-    'about.md'
-  )
+  const filePath = path.join(process.cwd(), 'README.md')
   const fileContent = fs.readFileSync(filePath, 'utf8')
   const {content} = matter(fileContent)
 
