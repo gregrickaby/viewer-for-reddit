@@ -4,7 +4,6 @@ import {GET} from './route'
 
 // Mock dependencies
 const mockLogError = vi.hoisted(() => vi.fn())
-const mockLogAuditEvent = vi.hoisted(() => vi.fn())
 const mockGetClientInfo = vi.hoisted(() =>
   vi.fn(() => ({ip: '127.0.0.1', userAgent: 'test-agent'}))
 )
@@ -19,7 +18,6 @@ vi.mock('@/lib/utils/logError', () => ({
 }))
 
 vi.mock('@/lib/auth/auditLog', () => ({
-  logAuditEvent: mockLogAuditEvent,
   getClientInfo: mockGetClientInfo
 }))
 
@@ -50,17 +48,6 @@ describe('GET /api/auth/session', () => {
     expect(response.status).toBe(200)
     const data = await response.json()
     expect(data).toEqual(mockSession)
-
-    // Verify audit logging
-    expect(mockLogAuditEvent).toHaveBeenCalledWith({
-      type: 'session_check',
-      username: 'testuser',
-      ip: '127.0.0.1',
-      userAgent: 'test-agent',
-      metadata: {
-        authenticated: true
-      }
-    })
   })
 
   it('should return null when no session exists', async () => {
@@ -72,17 +59,6 @@ describe('GET /api/auth/session', () => {
     expect(response.status).toBe(200)
     const data = await response.json()
     expect(data).toBeNull()
-
-    // Verify audit logging with authenticated: false
-    expect(mockLogAuditEvent).toHaveBeenCalledWith({
-      type: 'session_check',
-      username: undefined,
-      ip: '127.0.0.1',
-      userAgent: 'test-agent',
-      metadata: {
-        authenticated: false
-      }
-    })
   })
 
   it('should not include tokens in response', async () => {

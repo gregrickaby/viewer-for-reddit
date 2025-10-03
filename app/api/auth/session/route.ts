@@ -1,4 +1,4 @@
-import {getClientInfo, logAuditEvent} from '@/lib/auth/auditLog'
+import {getClientInfo} from '@/lib/auth/auditLog'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getClientSession} from '@/lib/auth/session'
 import {logError} from '@/lib/utils/logError'
@@ -10,13 +10,11 @@ import {NextRequest, NextResponse} from 'next/server'
  * Returns client-safe session information without sensitive tokens:
  * 1. Checking rate limits to prevent enumeration
  * 2. Retrieving session data (client-safe, no tokens)
- * 3. Logging session check for security monitoring
- * 4. Returning session status with cache prevention headers
+ * 3. Returning session status with cache prevention headers
  *
  * @security
  * - Rate limiting to prevent session enumeration and DoS
  * - Returns only client-safe fields (no access/refresh tokens)
- * - Audit logging for security monitoring and compliance
  * - Cache prevention headers prevent CDN/proxy caching
  * - Graceful error handling prevents info disclosure
  *
@@ -32,7 +30,7 @@ import {NextRequest, NextResponse} from 'next/server'
  * excludes tokens - those are stored server-side in encrypted cookies.
  * Use this for UI state, not for authenticating API calls.
  *
- * @param request - Next.js request object (for rate limiting and audit logging)
+ * @param request - Next.js request object (for rate limiting)
  * @returns Client-safe session data or null if not authenticated
  */
 export async function GET(request: NextRequest) {
@@ -45,16 +43,6 @@ export async function GET(request: NextRequest) {
   try {
     // Get client-safe session (excludes tokens)
     const session = await getClientSession()
-
-    // Audit log for security monitoring
-    logAuditEvent({
-      type: 'session_check',
-      username: session?.username,
-      ...getClientInfo(request),
-      metadata: {
-        authenticated: session !== null
-      }
-    })
 
     const response = NextResponse.json(session)
 
