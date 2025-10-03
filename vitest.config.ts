@@ -16,28 +16,24 @@ export default defineConfig({
     globals: true,
     setupFiles: './vitest.setup.ts',
     exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/cypress/**',
       '**/.{idea,git,cache,output,temp}/**',
-      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
+      '**/dist/**',
+      '**/node_modules/**',
       '**/tests/e2e/**',
-      '**/vitest.config.*'
+      '**/vitest.config.*',
+      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*'
     ],
     coverage: {
       enabled: true,
       include: ['**/*.{ts,tsx}'],
       exclude: [
-        '**/*.spec.{ts,tsx}',
-        '**/*.test.{ts,tsx}',
-        '**/app/**/*.{ts,tsx}',
+        '**/*.config.*',
+        '**/*.{spec,test}.{ts,tsx}',
+        '**/app/**/{page,layout,manifest,robots,sitemap,global-not-found}.{ts,tsx}',
         '**/scripts/**',
         '**/test-utils/**',
-        '**/tests/e2e/**',
         '**/types/**',
-        '*.config.ts',
-        '*.d.ts',
-        '**/vitest.config.*'
+        '**/*.d.ts'
       ],
       reporter: ['text', 'json', 'html']
     }
