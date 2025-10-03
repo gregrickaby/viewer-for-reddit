@@ -35,15 +35,13 @@ vi.mock('@/lib/auth/auditLog', () => ({
 describe('POST /api/auth/login', () => {
   let mockCookieStore: {
     set: ReturnType<typeof vi.fn>
-    delete: ReturnType<typeof vi.fn>
   }
 
   beforeEach(async () => {
     vi.clearAllMocks()
 
     mockCookieStore = {
-      set: vi.fn(),
-      delete: vi.fn()
+      set: vi.fn()
     }
 
     const {cookies} = await import('next/headers')
@@ -157,5 +155,17 @@ describe('POST /api/auth/login', () => {
     const state1 = mockCookieStore.set.mock.calls[0][1]
     const state2 = mockCookieStore.set.mock.calls[1][1]
     expect(state1).not.toBe(state2)
+  })
+
+  it('should set cache control headers to prevent caching', async () => {
+    const request = new NextRequest('http://localhost:3000/api/auth/login')
+
+    const response = await GET(request)
+
+    expect(response.headers.get('Cache-Control')).toBe(
+      'private, no-cache, no-store, must-revalidate'
+    )
+    expect(response.headers.get('Pragma')).toBe('no-cache')
+    expect(response.headers.get('Expires')).toBe('0')
   })
 })

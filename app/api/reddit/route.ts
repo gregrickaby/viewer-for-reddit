@@ -1,4 +1,5 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
+import {checkRateLimit} from '@/lib/auth/rateLimit'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
 import {validateOrigin} from '@/lib/utils/validateOrigin'
@@ -15,6 +16,11 @@ import {NextRequest, NextResponse} from 'next/server'
  * - User profiles (/user/{username}/about)
  * - Search results (/search)
  *
+ * Security measures:
+ * - Origin validation
+ * - Rate limiting (DoS protection)
+ * - Path validation (SSRF protection)
+ *
  * For user-specific content (custom feeds, voting, saved posts, etc.),
  * use /api/reddit/me instead.
  *
@@ -26,7 +32,21 @@ import {NextRequest, NextResponse} from 'next/server'
 export async function GET(request: NextRequest) {
   // Validate request origin to prevent external abuse
   if (!validateOrigin(request)) {
-    return NextResponse.json({error: 'Forbidden'}, {status: 403})
+    return NextResponse.json(
+      {error: 'Forbidden'},
+      {
+        status: 403,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
+  }
+
+  // Rate limiting
+  const rateLimitResponse = await checkRateLimit(request)
+  if (rateLimitResponse) {
+    return rateLimitResponse
   }
 
   // Extract the Reddit API path from query parameters
@@ -42,7 +62,12 @@ export async function GET(request: NextRequest) {
     })
     return NextResponse.json(
       {error: 'Path parameter is required'},
-      {status: 400}
+      {
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
     )
   }
 
@@ -55,7 +80,15 @@ export async function GET(request: NextRequest) {
       url: request.url,
       searchParams: Object.fromEntries(searchParams.entries())
     })
-    return NextResponse.json({error: 'Invalid path parameter'}, {status: 400})
+    return NextResponse.json(
+      {error: 'Invalid path parameter'},
+      {
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   }
 
   try {
@@ -66,7 +99,12 @@ export async function GET(request: NextRequest) {
     if (!token) {
       return NextResponse.json(
         {error: 'Failed to obtain Reddit API token'},
-        {status: 500}
+        {
+          status: 500,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
@@ -95,12 +133,21 @@ export async function GET(request: NextRequest) {
       })
       return NextResponse.json(
         {error: 'Reddit API error'},
-        {status: response.status}
+        {
+          status: response.status,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
     const data = await response.json()
-    return NextResponse.json(data)
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'private, max-age=60'
+      }
+    })
   } catch (error) {
     logError(error, {
       component: 'redditApiRoute',
@@ -111,6 +158,14 @@ export async function GET(request: NextRequest) {
       origin: request.headers.get('origin'),
       userAgent: request.headers.get('user-agent')
     })
-    return NextResponse.json({error: 'Internal server error'}, {status: 500})
+    return NextResponse.json(
+      {error: 'Internal server error'},
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   }
 }

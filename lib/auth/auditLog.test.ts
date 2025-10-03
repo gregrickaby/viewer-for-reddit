@@ -139,6 +139,29 @@ describe('logAuditEvent', () => {
     )
   })
 
+  it('should log session_check event', () => {
+    logAuditEvent({
+      type: 'session_check',
+      username: 'testuser',
+      ip: '192.168.1.1',
+      metadata: {
+        authenticated: true
+      }
+    })
+
+    expect(mockLogError).toHaveBeenCalledWith(
+      '[AUDIT] session_check',
+      expect.objectContaining({
+        component: 'AuditLog',
+        action: 'session_check',
+        username: 'testuser',
+        ip: '192.168.1.1',
+        authenticated: true,
+        timestamp: expect.any(String)
+      })
+    )
+  })
+
   it('should log session_expired event', () => {
     logAuditEvent({
       type: 'session_expired',

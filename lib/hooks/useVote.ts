@@ -212,14 +212,12 @@ export function useVote({
       })
 
       // Log error for debugging
-      logClientError('Vote operation failed', {
+      logClientError('Vote operation failed', error, {
         component: 'useVote',
         action: 'handleVote',
         id,
         direction,
-        isAuthError,
-        errorMessage: error instanceof Error ? error.message : String(error),
-        errorType: typeof error
+        isAuthError
       })
     }
   }

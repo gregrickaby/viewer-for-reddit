@@ -12,6 +12,7 @@ export type AuditEventType =
   | 'logout'
   | 'token_refresh_success'
   | 'token_refresh_failed'
+  | 'session_check'
   | 'session_expired'
   | 'rate_limit_exceeded'
   | 'csrf_validation_failed'

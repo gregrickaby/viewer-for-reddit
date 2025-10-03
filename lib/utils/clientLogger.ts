@@ -9,6 +9,19 @@ interface ClientLogContext {
 }
 
 /**
+ * Serialize an error to a string for logging
+ */
+function serializeError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  if (typeof error === 'object' && error !== null) {
+    return JSON.stringify(error)
+  }
+  return String(error)
+}
+
+/**
  * Send log data to server-side logging endpoint
  */
 async function sendLogToServer(
@@ -39,13 +52,54 @@ async function sendLogToServer(
 }
 
 /**
- * Client-side error logger that sends to server
+ * Client-side error logger that sends to server.
+ * Automatically serializes error objects.
+ *
+ * @param message - Error message
+ * @param errorOrContext - Error object or context object
+ * @param context - Optional context if error is provided as second parameter
  */
 export function logClientError(
   message: string,
+  errorOrContext?: unknown,
   context?: ClientLogContext
 ): void {
-  sendLogToServer('error', message, context)
+  let finalContext: ClientLogContext = {}
+
+  // If third parameter is provided, second parameter is treated as the error
+  if (context !== undefined) {
+    // Second param is the error, third param is context
+    finalContext = {
+      ...context,
+      errorMessage: serializeError(errorOrContext),
+      errorType: typeof errorOrContext
+    }
+  } else if (errorOrContext !== undefined && errorOrContext !== null) {
+    // Only second param provided - need to determine if it's error or context
+    // Check if it looks like a ClientLogContext object (has component or action)
+    const isContext =
+      typeof errorOrContext === 'object' &&
+      !Array.isArray(errorOrContext) &&
+      ('component' in errorOrContext || 'action' in errorOrContext) &&
+      // But not if it also has error-like properties
+      !(
+        errorOrContext instanceof Error ||
+        ('status' in errorOrContext && 'data' in errorOrContext)
+      )
+
+    if (isContext) {
+      // It's a context object (old API)
+      finalContext = errorOrContext as ClientLogContext
+    } else {
+      // It's an error (could be Error, object, string, number, etc.)
+      finalContext = {
+        errorMessage: serializeError(errorOrContext),
+        errorType: typeof errorOrContext
+      }
+    }
+  }
+
+  sendLogToServer('error', message, finalContext)
 }
 
 /**

@@ -94,6 +94,86 @@ describe('clientLogger', () => {
       expect(body.message).toBe('Test message')
       expect(body.context.clientTimestamp).toBeDefined()
     })
+
+    it('should serialize Error objects automatically', async () => {
+      const error = new Error('Something went wrong')
+      const context = {component: 'TestComponent', action: 'handleClick'}
+
+      logClientError('Operation failed', error, context)
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      const call = mockFetch.mock.calls[0]
+      const body = JSON.parse(call[1].body)
+
+      expect(body.level).toBe('error')
+      expect(body.message).toBe('Operation failed')
+      expect(body.context.component).toBe('TestComponent')
+      expect(body.context.errorMessage).toBe('Something went wrong')
+      expect(body.context.errorType).toBe('object')
+    })
+
+    it('should serialize RTK Query error objects', async () => {
+      const rtkError = {status: 401, data: 'Unauthorized'}
+      const context = {component: 'VoteComponent'}
+
+      logClientError('Vote failed', rtkError, context)
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      const call = mockFetch.mock.calls[0]
+      const body = JSON.parse(call[1].body)
+
+      expect(body.context.errorMessage).toBe(
+        '{"status":401,"data":"Unauthorized"}'
+      )
+      expect(body.context.errorType).toBe('object')
+      expect(body.context.component).toBe('VoteComponent')
+    })
+
+    it('should serialize generic objects', async () => {
+      const errorObj = {code: 'ERR_NETWORK', details: 'Connection failed'}
+
+      logClientError('Network error', errorObj, {component: 'API'})
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      const call = mockFetch.mock.calls[0]
+      const body = JSON.parse(call[1].body)
+
+      expect(body.context.errorMessage).toBe(
+        '{"code":"ERR_NETWORK","details":"Connection failed"}'
+      )
+      expect(body.context.component).toBe('API')
+    })
+
+    it('should handle string errors', async () => {
+      const error = 'Simple string error'
+
+      logClientError('Error occurred', error, {component: 'Test'})
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      const call = mockFetch.mock.calls[0]
+      const body = JSON.parse(call[1].body)
+
+      expect(body.context.errorMessage).toBe('Simple string error')
+      expect(body.context.errorType).toBe('string')
+    })
+
+    it('should handle number errors', async () => {
+      const error = 404
+
+      logClientError('Status code error', error, {component: 'API'})
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      const call = mockFetch.mock.calls[0]
+      const body = JSON.parse(call[1].body)
+
+      expect(body.context.errorMessage).toBe('404')
+      expect(body.context.errorType).toBe('number')
+    })
   })
 
   describe('logClientInfo', () => {

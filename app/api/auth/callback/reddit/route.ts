@@ -1,16 +1,105 @@
 import {getRedditClient} from '@/lib/auth/arctic'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {setSession} from '@/lib/auth/session'
+import appConfig from '@/lib/config'
+import {fetchWithTimeout} from '@/lib/utils/fetchWithTimeout'
+import {
+  cleanupOAuthCookies,
+  extractRefreshToken
+} from '@/lib/utils/oauthHelpers'
+import {
+  extractAvatarUrl,
+  validateRedditUser,
+  type RedditUserResponse
+} from '@/lib/utils/redditUserValidator'
+import {createUncachedRedirect} from '@/lib/utils/redirectHelpers'
 import {OAuth2RequestError} from 'arctic'
 import {cookies} from 'next/headers'
-import {NextRequest, NextResponse} from 'next/server'
+import {NextRequest} from 'next/server'
 
+/**
+ * OAuth error message constants for consistent user-facing errors.
+ */
+const OAUTH_ERRORS = {
+  INVALID_STATE: {
+    code: 'invalid_state',
+    message: 'Security validation failed. Please try signing in again.'
+  },
+  OAUTH_ERROR: {
+    code: 'oauth_error',
+    message: 'Authentication failed. Please try again.'
+  },
+  AUTH_FAILED: {
+    code: 'authentication_failed',
+    message: 'Unable to complete sign in.'
+  }
+} as const
+
+/**
+ * Fetch Reddit user profile with timeout protection.
+ *
+ * @param accessToken - OAuth access token
+ * @returns Reddit user profile data
+ * @throws {Error} On timeout, network error, or invalid response
+ */
+async function fetchRedditUserWithTimeout(
+  accessToken: string
+): Promise<RedditUserResponse> {
+  const response = await fetchWithTimeout(
+    'https://oauth.reddit.com/api/v1/me',
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'User-Agent': appConfig.userAgent
+      }
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(`Reddit API returned ${response.status}`)
+  }
+
+  const userData = await response.json()
+  return validateRedditUser(userData)
+}
+
+/**
+ * OAuth 2.0 callback handler for Reddit authentication.
+ *
+ * Handles the OAuth redirect from Reddit after user authorization.
+ * Validates CSRF token, exchanges authorization code for access tokens,
+ * fetches user profile, and establishes encrypted session.
+ *
+ * @security
+ * - CSRF protection via state parameter validation
+ * - Rate limiting applied before processing
+ * - Comprehensive audit logging for security events
+ * - Session data encrypted with iron-session
+ * - Cache-Control headers prevent sensitive data caching
+ * - Request timeout protection (10s)
+ * - Input validation for all external data
+ * - Error message sanitization prevents token leakage
+ *
+ * @flow
+ * 1. Apply rate limiting
+ * 2. Verify CSRF state parameter
+ * 3. Exchange authorization code for tokens
+ * 4. Fetch user profile from Reddit API (with timeout)
+ * 5. Validate user data
+ * 6. Create encrypted session cookie
+ * 7. Cleanup OAuth state cookies
+ * 8. Redirect to homepage
+ *
+ * @param request - Next.js request object with OAuth callback parameters
+ * @returns Redirect response to homepage or error page
+ */
 export async function GET(request: NextRequest) {
   // Apply rate limiting
   const rateLimitResponse = await checkRateLimit(request)
   if (rateLimitResponse) {
     return rateLimitResponse
   }
+
   const url = new URL(request.url)
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state')
@@ -21,7 +110,6 @@ export async function GET(request: NextRequest) {
   // Verify state to prevent CSRF attacks
   if (!code || !state || !storedState || state !== storedState) {
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')
-    const {default: appConfig} = await import('@/lib/config')
 
     logAuditEvent({
       type: 'csrf_validation_failed',
@@ -33,9 +121,9 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.redirect(
+    return createUncachedRedirect(
       new URL(
-        '/?error=invalid_state&message=Security validation failed. Please try signing in again.',
+        `/?error=${OAUTH_ERRORS.INVALID_STATE.code}&message=${OAUTH_ERRORS.INVALID_STATE.message}`,
         appConfig.baseUrl
       )
     )
@@ -46,43 +134,16 @@ export async function GET(request: NextRequest) {
     const reddit = getRedditClient()
     const tokens = await reddit.validateAuthorizationCode(code)
 
-    // Get user info
-    const config = await import('@/lib/config')
-    const response = await fetch('https://oauth.reddit.com/api/v1/me', {
-      headers: {
-        Authorization: `Bearer ${tokens.accessToken()}`,
-        'User-Agent': config.default.userAgent
-      }
-    })
+    // Fetch user info with timeout protection
+    const user = await fetchRedditUserWithTimeout(tokens.accessToken())
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user info')
-    }
+    // Extract and validate avatar URL
+    const avatarUrl = extractAvatarUrl(user)
 
-    const user = (await response.json()) as {
-      name: string
-      icon_img?: string
-      snoovatar_img?: string
-    }
+    // Safely extract refresh token (may not always be provided)
+    const refreshToken = await extractRefreshToken(tokens, user.name)
 
-    // Get avatar URL (prefer snoovatar, fallback to icon_img)
-    let avatarUrl: string | undefined
-    if (user.snoovatar_img) {
-      avatarUrl = user.snoovatar_img.replace(/&amp;/g, '&')
-    } else if (user.icon_img) {
-      avatarUrl = user.icon_img.replace(/&amp;/g, '&')
-    }
-
-    // Create session
-    // Note: Reddit may not always provide a refresh token
-    let refreshToken = ''
-    try {
-      refreshToken = tokens.refreshToken() ?? ''
-    } catch {
-      // Refresh token not provided - that's okay for Reddit
-      refreshToken = ''
-    }
-
+    // Create encrypted session
     await setSession({
       username: user.name,
       accessToken: tokens.accessToken(),
@@ -91,12 +152,8 @@ export async function GET(request: NextRequest) {
       avatarUrl
     })
 
-    // Clean up state cookie
-    cookieStore.delete('reddit_oauth_state')
-
-    // Clean up any stale auth cookies from previous implementations
-    cookieStore.delete('authjs.callback-url')
-    cookieStore.delete('authjs.session-token')
+    // Clean up OAuth cookies
+    await cleanupOAuthCookies(cookieStore)
 
     // Audit log success
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')
@@ -106,46 +163,33 @@ export async function GET(request: NextRequest) {
       ...getClientInfo(request)
     })
 
-    const {default: appConfig} = await import('@/lib/config')
-    const redirectResponse = NextResponse.redirect(
-      new URL('/', appConfig.baseUrl)
-    )
-
-    // Prevent caching by CDN/proxies
-    redirectResponse.headers.set(
-      'Cache-Control',
-      'private, no-cache, no-store, must-revalidate'
-    )
-    redirectResponse.headers.set('Pragma', 'no-cache')
-    redirectResponse.headers.set('Expires', '0')
-
-    return redirectResponse
+    return createUncachedRedirect(new URL('/', appConfig.baseUrl))
   } catch (error) {
-    // Sanitized error logging (no tokens or sensitive data)
     const {logAuditEvent, getClientInfo} = await import('@/lib/auth/auditLog')
-    const {default: appConfig} = await import('@/lib/config')
+    const errorId = crypto.randomUUID()
 
+    // logAuditEvent uses logError internally, which handles all error types automatically
     logAuditEvent({
       type: 'login_failed',
       ...getClientInfo(request),
       metadata: {
-        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        errorId,
+        error
       }
     })
 
     if (error instanceof OAuth2RequestError) {
-      return NextResponse.redirect(
+      return createUncachedRedirect(
         new URL(
-          '/?error=oauth_error&message=Authentication failed. Please try again.',
+          `/?error=${OAUTH_ERRORS.OAUTH_ERROR.code}&message=${OAUTH_ERRORS.OAUTH_ERROR.message}&error_id=${errorId}`,
           appConfig.baseUrl
         )
       )
     }
 
-    return NextResponse.redirect(
+    return createUncachedRedirect(
       new URL(
-        '/?error=authentication_failed&message=Unable to complete sign in.',
+        `/?error=${OAUTH_ERRORS.AUTH_FAILED.code}&message=${OAUTH_ERRORS.AUTH_FAILED.message}&error_id=${errorId}`,
         appConfig.baseUrl
       )
     )

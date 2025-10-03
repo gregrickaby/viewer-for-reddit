@@ -1,3 +1,4 @@
+import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
@@ -6,18 +7,40 @@ import {isSafeRedditPath} from '@/lib/utils/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
- * Reddit Authenticated API Proxy Route Handler.
+ * Reddit User Subscriptions API Proxy Route Handler.
  *
- * Handles user-authenticated Reddit API requests using session tokens.
- * Similar to /api/reddit but uses user session instead of app-level tokens.
+ * Handles user-authenticated Reddit API requests for subscription data.
+ * Returns empty data gracefully when user is not authenticated.
+ *
+ * Security measures:
+ * - Origin validation
+ * - Rate limiting
+ * - Path validation (SSRF protection)
+ * - Graceful degradation for unauthenticated requests
  *
  * @example
  * fetch('/api/reddit/subscriptions?path=/subreddits/mine/subscriber')
+ *
+ * @param {NextRequest} request - The incoming request object.
  */
 export async function GET(request: NextRequest) {
   // Validate request origin
   if (!validateOrigin(request)) {
-    return NextResponse.json({error: 'Forbidden'}, {status: 403})
+    return NextResponse.json(
+      {error: 'Forbidden'},
+      {
+        status: 403,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
+  }
+
+  // Rate limiting
+  const rateLimitResponse = await checkRateLimit(request)
+  if (rateLimitResponse) {
+    return rateLimitResponse
   }
 
   // Extract the Reddit API path from query parameters
@@ -26,13 +49,18 @@ export async function GET(request: NextRequest) {
 
   if (!path) {
     logError('Missing required path parameter', {
-      component: 'redditAuthApiRoute',
+      component: 'subscriptionsApiRoute',
       action: 'validatePath',
       url: request.url
     })
     return NextResponse.json(
       {error: 'Path parameter is required'},
-      {status: 400}
+      {
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
     )
   }
 
@@ -41,11 +69,19 @@ export async function GET(request: NextRequest) {
   // all paths against allowed patterns before constructing the URL
   if (!isSafeRedditPath(path)) {
     logError('Invalid or dangerous Reddit API path', {
-      component: 'redditAuthApiRoute',
+      component: 'subscriptionsApiRoute',
       action: 'validatePath',
       path
     })
-    return NextResponse.json({error: 'Invalid path parameter'}, {status: 400})
+    return NextResponse.json(
+      {error: 'Invalid path parameter'},
+      {
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   }
 
   try {
@@ -53,7 +89,14 @@ export async function GET(request: NextRequest) {
 
     // Not authenticated - return empty response (graceful degradation)
     if (!session?.accessToken) {
-      return NextResponse.json({data: {children: []}})
+      return NextResponse.json(
+        {data: {children: []}},
+        {
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
+      )
     }
 
     // Safe to use user-provided path - validated by isSafeRedditPath() above
@@ -65,27 +108,45 @@ export async function GET(request: NextRequest) {
     })
 
     if (!response.ok) {
-      logError('Reddit authenticated API request failed', {
-        component: 'redditAuthApiRoute',
+      logError('Reddit subscriptions API request failed', {
+        component: 'subscriptionsApiRoute',
         action: 'fetchRedditApi',
         path,
         status: response.status,
         statusText: response.statusText
       })
       // Return empty response for graceful degradation
-      return NextResponse.json({data: {children: []}})
+      return NextResponse.json(
+        {data: {children: []}},
+        {
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
+      )
     }
 
     const data = await response.json()
-    return NextResponse.json(data)
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0'
+      }
+    })
   } catch (error) {
-    logError('Unexpected error in authenticated Reddit API proxy', {
-      component: 'redditAuthApiRoute',
+    logError('Unexpected error in subscriptions API proxy', {
+      component: 'subscriptionsApiRoute',
       action: 'handleRequest',
       path,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
     // Return empty response for graceful degradation
-    return NextResponse.json({data: {children: []}})
+    return NextResponse.json(
+      {data: {children: []}},
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   }
 }

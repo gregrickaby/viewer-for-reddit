@@ -1,13 +1,46 @@
+import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
+import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
+import {validateOrigin} from '@/lib/utils/validateOrigin'
 import {type NextRequest, NextResponse} from 'next/server'
 
 /**
- * Subscribe or unsubscribe from a subreddit
+ * Subscribe/Unsubscribe API Route Handler.
+ *
+ * This endpoint handles subscription changes for subreddits.
+ * Requires user authentication and 'subscribe' OAuth scope.
+ *
+ * Security measures:
+ * - Origin validation (CSRF protection)
+ * - Rate limiting (prevents subscription spam)
+ * - Authentication required
+ * - Input validation
  *
  * @see https://www.reddit.com/dev/api#POST_api_subscribe
+ *
+ * @param {NextRequest} request - The incoming request object.
  */
 export async function POST(request: NextRequest) {
+  // Validate request origin to prevent CSRF attacks
+  if (!validateOrigin(request)) {
+    return NextResponse.json(
+      {error: 'Forbidden'},
+      {
+        status: 403,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
+  }
+
+  // Rate limiting: Prevent subscription spam
+  const rateLimitResponse = await checkRateLimit(request)
+  if (rateLimitResponse) {
+    return rateLimitResponse
+  }
+
   try {
     // Get the session
     const session = await getSession()
@@ -17,7 +50,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {error: 'Unauthorized'},
         {
-          status: 401
+          status: 401,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
         }
       )
     }
@@ -36,7 +72,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {error: 'Missing required fields: action and sr_name'},
         {
-          status: 400
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
         }
       )
     }
@@ -51,7 +90,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {error: 'Invalid action. Must be "sub" or "unsub"'},
         {
-          status: 400
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
         }
       )
     }
@@ -62,7 +104,7 @@ export async function POST(request: NextRequest) {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'web:reddit-viewer:v1.0.0'
+        'User-Agent': config.userAgent
       },
       body: new URLSearchParams({
         action,
@@ -85,17 +127,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {error: 'Failed to update subscription'},
         {
-          status: response.status
+          status: response.status,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
         }
       )
     }
 
     // Return success
-    return NextResponse.json({
-      success: true,
-      action,
-      sr_name
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        action,
+        sr_name
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   } catch (error) {
     logError(error, {
       component: 'subscribeApiRoute',
@@ -104,7 +156,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {error: 'Internal server error'},
       {
-        status: 500
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
       }
     )
   }

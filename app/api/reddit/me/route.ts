@@ -1,3 +1,4 @@
+import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
@@ -10,6 +11,12 @@ import {NextRequest, NextResponse} from 'next/server'
  *
  * This endpoint handles requests that require user authentication (user session tokens).
  * The "/me" convention follows REST patterns and mirrors Reddit's own /api/v1/me/* endpoints.
+ *
+ * Security measures:
+ * - Origin validation (CSRF protection)
+ * - Rate limiting (DoS protection)
+ * - Path validation (SSRF protection)
+ * - Authentication required
  *
  * Use this for user-specific resources:
  * - Custom Feeds (/user/{username}/m/{customFeedName})
@@ -29,7 +36,21 @@ import {NextRequest, NextResponse} from 'next/server'
 export async function GET(request: NextRequest) {
   // Validate request origin to prevent external abuse
   if (!validateOrigin(request)) {
-    return NextResponse.json({error: 'Forbidden'}, {status: 403})
+    return NextResponse.json(
+      {error: 'Forbidden'},
+      {
+        status: 403,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
+  }
+
+  // Rate limiting
+  const rateLimitResponse = await checkRateLimit(request)
+  if (rateLimitResponse) {
+    return rateLimitResponse
   }
 
   // Extract the Reddit API path from query parameters
@@ -45,7 +66,12 @@ export async function GET(request: NextRequest) {
     })
     return NextResponse.json(
       {error: 'Path parameter is required'},
-      {status: 400}
+      {
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
     )
   }
 
@@ -60,7 +86,15 @@ export async function GET(request: NextRequest) {
       url: request.url,
       searchParams: Object.fromEntries(searchParams.entries())
     })
-    return NextResponse.json({error: 'Invalid path parameter'}, {status: 400})
+    return NextResponse.json(
+      {error: 'Invalid path parameter'},
+      {
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   }
 
   try {
@@ -70,7 +104,12 @@ export async function GET(request: NextRequest) {
     if (!session?.accessToken) {
       return NextResponse.json(
         {error: 'Authentication required'},
-        {status: 401}
+        {
+          status: 401,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
@@ -92,12 +131,21 @@ export async function GET(request: NextRequest) {
       })
       return NextResponse.json(
         {error: 'Reddit API error'},
-        {status: response.status}
+        {
+          status: response.status,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
     const data = await response.json()
-    return NextResponse.json(data)
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0'
+      }
+    })
   } catch (error) {
     logError('Reddit /me API proxy error', {
       component: 'redditMeApiRoute',
@@ -105,6 +153,14 @@ export async function GET(request: NextRequest) {
       path,
       error
     })
-    return NextResponse.json({error: 'Internal server error'}, {status: 500})
+    return NextResponse.json(
+      {error: 'Internal server error'},
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   }
 }

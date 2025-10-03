@@ -150,19 +150,13 @@ describe('validateOrigin', () => {
   })
 
   describe('edge cases and error conditions', () => {
-    it('should reject request with no origin or referer headers', () => {
+    it('should allow request with no origin or referer headers', () => {
+      // This handles legitimate same-origin requests where browsers don't send headers
+      // (e.g., privacy settings, browser policies, or navigation requests)
       const request = createRequest({})
 
-      expect(validateOrigin(request)).toBe(false)
-      expect(mockLogError).toHaveBeenCalledWith(
-        'Request blocked due to invalid origin',
-        expect.objectContaining({
-          component: 'validateOrigin',
-          action: 'validateOrigin',
-          origin: 'none',
-          referer: 'none'
-        })
-      )
+      expect(validateOrigin(request)).toBe(true)
+      expect(mockLogError).not.toHaveBeenCalled()
     })
 
     it('should reject request with malformed origin URL', () => {
@@ -181,9 +175,10 @@ describe('validateOrigin', () => {
 
       expect(validateOrigin(request)).toBe(false)
       expect(mockLogError).toHaveBeenCalledWith(
-        'Request blocked due to invalid origin',
+        'Request blocked: origin validation failed',
         expect.objectContaining({
-          hasCoolifyFqdn: false
+          hasCoolifyFqdn: false,
+          reason: 'No COOLIFY_FQDN configured and not localhost'
         })
       )
     })
@@ -200,14 +195,15 @@ describe('validateOrigin', () => {
       validateOrigin(request)
 
       expect(mockLogError).toHaveBeenCalledWith(
-        'Request blocked due to invalid origin',
+        'Request blocked: origin validation failed',
         {
           component: 'validateOrigin',
           action: 'validateOrigin',
           origin: 'https://evil.com',
           referer: 'https://evil.com/bad-path',
           nodeEnv: 'production',
-          hasCoolifyFqdn: true
+          hasCoolifyFqdn: true,
+          reason: 'Both headers present but neither matches COOLIFY_FQDN'
         }
       )
     })
@@ -261,9 +257,10 @@ describe('validateOrigin', () => {
 
         expect(validateOrigin(request)).toBe(false)
         expect(mockLogError).toHaveBeenCalledWith(
-          'Request blocked due to invalid origin',
+          'Request blocked: origin validation failed',
           expect.objectContaining({
-            origin: maliciousOrigin
+            origin: maliciousOrigin,
+            reason: 'No COOLIFY_FQDN configured and not localhost'
           })
         )
       })
@@ -283,11 +280,11 @@ describe('validateOrigin', () => {
 
     it('should handle malformed URLs without crashing', () => {
       const malformedUrls = [
-        'not-a-url',
-        'https://',
-        'https://[invalid',
-        'ftp://invalid.com',
-        ''
+        // eslint-disable-next-line no-script-url -- Testing malformed URL handling
+        'javascript:alert(1)',
+        'data:text/html,<script>alert(1)</script>',
+        '//evil.com',
+        'https://[invalid'
       ]
 
       malformedUrls.forEach((malformedUrl) => {
@@ -297,6 +294,7 @@ describe('validateOrigin', () => {
 
         // Should not throw an exception
         expect(() => validateOrigin(request)).not.toThrow()
+        // Malformed URLs should be blocked (invalid origin header present)
         expect(validateOrigin(request)).toBe(false)
       })
     })

@@ -11,11 +11,18 @@ vi.mock('@/lib/utils/logError', () => ({
   logError: vi.fn()
 }))
 
+vi.mock('@/lib/auth/rateLimit', () => ({
+  checkRateLimit: vi.fn()
+}))
+
 // Setup mocks
 const mockGetRedditToken = vi.mocked(
   (await import('@/lib/actions/redditToken')).getRedditToken
 )
 const mockLogError = vi.mocked((await import('@/lib/utils/logError')).logError)
+const mockCheckRateLimit = vi.mocked(
+  (await import('@/lib/auth/rateLimit')).checkRateLimit
+)
 
 // Mock global fetch
 const mockFetch = vi.fn()
@@ -32,6 +39,7 @@ describe('Reddit API Route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.stubEnv('NODE_ENV', 'development')
+    mockCheckRateLimit.mockResolvedValue(null)
     mockGetRedditToken.mockResolvedValue({
       access_token: 'reddit-token',
       token_type: 'bearer',
@@ -82,7 +90,7 @@ describe('Reddit API Route', () => {
       expect(response.status).toBe(200)
     })
 
-    it('should block requests without proper origin or referer', async () => {
+    it('should allow requests without origin or referer headers', async () => {
       vi.stubEnv('NODE_ENV', 'production')
 
       const request = new NextRequest(
@@ -90,9 +98,8 @@ describe('Reddit API Route', () => {
       )
       const response = await GET(request)
 
-      expect(response.status).toBe(403)
-      const data = await response.json()
-      expect(data).toEqual({error: 'Forbidden'})
+      // Should allow when both headers are missing (privacy-conscious browsers)
+      expect(response.status).toBe(200)
     })
 
     it('should allow requests from Coolify FQDN in production', async () => {
@@ -130,6 +137,27 @@ describe('Reddit API Route', () => {
     })
   })
 
+  describe('Rate Limiting', () => {
+    it('should return rate limit response if rate limited', async () => {
+      const rateLimitResponse = new Response(
+        JSON.stringify({error: 'Rate limit exceeded'}),
+        {
+          status: 429,
+          headers: {'Retry-After': '60'}
+        }
+      )
+      mockCheckRateLimit.mockResolvedValue(rateLimitResponse as any)
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/reddit?path=/r/programming/hot.json'
+      )
+      const response = await GET(request)
+
+      expect(response.status).toBe(429)
+      expect(mockCheckRateLimit).toHaveBeenCalledWith(request)
+    })
+  })
+
   describe('Path validation', () => {
     it('should require path parameter', async () => {
       const request = new NextRequest('http://localhost:3000/api/reddit', {
@@ -142,6 +170,30 @@ describe('Reddit API Route', () => {
 
       expect(response.status).toBe(400)
       expect(data.error).toBe('Path parameter is required')
+    })
+
+    it('should reject invalid path parameter', async () => {
+      const request = new NextRequest(
+        'http://localhost:3000/api/reddit?path=//evil.com/api',
+        {
+          headers: {
+            origin: 'http://localhost:3000'
+          }
+        }
+      )
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(data.error).toBe('Invalid path parameter')
+      expect(mockLogError).toHaveBeenCalledWith(
+        'Invalid or dangerous Reddit API path',
+        expect.objectContaining({
+          component: 'redditApiRoute',
+          action: 'validatePath',
+          path: '//evil.com/api'
+        })
+      )
     })
   })
 

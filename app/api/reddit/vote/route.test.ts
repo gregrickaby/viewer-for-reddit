@@ -1,11 +1,14 @@
 import {POST} from '@/app/api/reddit/vote/route'
+import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import {validateOrigin} from '@/lib/utils/validateOrigin'
-import {http, HttpResponse, server} from '@/test-utils'
+import {server} from '@/test-utils/msw/server'
+import {http, HttpResponse} from 'msw'
 import {NextRequest} from 'next/server'
 import {type Mock} from 'vitest'
 
 vi.mock('@/lib/auth/session')
+vi.mock('@/lib/auth/rateLimit')
 vi.mock('@/lib/utils/validateOrigin')
 vi.mock('@/lib/utils/logError')
 
@@ -13,6 +16,7 @@ describe('POST /api/reddit/vote', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     ;(validateOrigin as Mock).mockReturnValue(true)
+    ;(checkRateLimit as Mock).mockResolvedValue(null)
     ;(getSession as Mock).mockResolvedValue({
       accessToken: 'test-token',
       username: 'testuser'
@@ -29,6 +33,27 @@ describe('POST /api/reddit/vote', () => {
 
     const response = await POST(request)
     expect(response.status).toBe(403)
+  })
+
+  it('should return rate limit response if rate limited', async () => {
+    const rateLimitResponse = new Response(
+      JSON.stringify({error: 'Rate limit exceeded'}),
+      {
+        status: 429,
+        headers: {'Retry-After': '60'}
+      }
+    )
+    ;(checkRateLimit as Mock).mockResolvedValue(rateLimitResponse)
+
+    const request = new NextRequest('http://localhost:3000/api/reddit/vote', {
+      method: 'POST',
+      body: JSON.stringify({id: 't3_abc123', dir: 1})
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(429)
+    expect(checkRateLimit).toHaveBeenCalledWith(request)
   })
 
   it('should return 400 if id is missing', async () => {
@@ -150,5 +175,18 @@ describe('POST /api/reddit/vote', () => {
 
     const response = await POST(request)
     expect(response.status).toBe(200)
+  })
+
+  it('should handle JSON parse errors', async () => {
+    const request = new NextRequest('http://localhost:3000/api/reddit/vote', {
+      method: 'POST',
+      body: 'invalid json'
+    })
+
+    const response = await POST(request)
+    expect(response.status).toBe(500)
+
+    const data = await response.json()
+    expect(data.error).toBe('Internal server error')
   })
 })

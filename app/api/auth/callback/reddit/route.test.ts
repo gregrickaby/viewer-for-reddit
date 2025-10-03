@@ -492,4 +492,187 @@ describe('GET /api/auth/callback/reddit', () => {
       })
     )
   })
+
+  it('should reject non-HTTPS avatar URLs', async () => {
+    const {setSession} = await import('@/lib/auth/session')
+
+    server.use(
+      http.get('https://oauth.reddit.com/api/v1/me', () => {
+        return HttpResponse.json({
+          name: 'testuser',
+          id: 'test123',
+          icon_img: 'http://example.com/avatar.png' // HTTP, not HTTPS
+        })
+      })
+    )
+
+    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    await GET(request)
+
+    // Should not include the HTTP avatar URL
+    expect(setSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        username: 'testuser',
+        avatarUrl: undefined
+      })
+    )
+  })
+
+  it('should handle Reddit API timeout', async () => {
+    // Mock AbortController to simulate timeout
+    const originalAbortController = globalThis.AbortController
+    const mockAbortController = vi.fn(() => ({
+      signal: {aborted: false, addEventListener: vi.fn()},
+      abort: vi.fn()
+    }))
+    globalThis.AbortController = mockAbortController as any
+
+    // Mock fetch to throw AbortError
+    const originalFetch = globalThis.fetch
+    globalThis.fetch = vi.fn(() => {
+      const error = new Error('The operation was aborted')
+      error.name = 'AbortError'
+      return Promise.reject(error)
+    }) as any
+
+    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=authentication_failed')
+    expect(location).toContain('error_id=') // Should include error ID
+
+    // Restore original
+    globalThis.AbortController = originalAbortController
+    globalThis.fetch = originalFetch
+  })
+
+  it('should include error_id in failed login redirects', async () => {
+    server.use(
+      http.get('https://oauth.reddit.com/api/v1/me', () => {
+        return new HttpResponse(null, {status: 500})
+      })
+    )
+
+    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    const location = response.headers.get('location')
+    expect(location).toMatch(/error_id=[a-f0-9-]{36}/) // UUID format
+  })
+
+  it('should validate Reddit user data structure', async () => {
+    server.use(
+      http.get('https://oauth.reddit.com/api/v1/me', () => {
+        // Invalid response - missing name
+        return HttpResponse.json({
+          id: 'test123'
+          // name is missing
+        })
+      })
+    )
+
+    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toContain('error=authentication_failed')
+  })
+
+  it('should sanitize invalid icon_img types', async () => {
+    const {setSession} = await import('@/lib/auth/session')
+
+    server.use(
+      http.get('https://oauth.reddit.com/api/v1/me', () => {
+        return HttpResponse.json({
+          name: 'testuser',
+          id: 'test123',
+          icon_img: 12345 // Invalid type - should be string
+        })
+      })
+    )
+
+    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    await GET(request)
+
+    // Should handle gracefully and not include invalid avatar
+    expect(setSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        username: 'testuser',
+        avatarUrl: undefined
+      })
+    )
+  })
+
+  it('should decode all common HTML entities in avatar URLs', async () => {
+    const {setSession} = await import('@/lib/auth/session')
+
+    server.use(
+      http.get('https://oauth.reddit.com/api/v1/me', () => {
+        return HttpResponse.json({
+          name: 'testuser',
+          id: 'test123',
+          icon_img:
+            'https://example.com/avatar.png?param=value&amp;other=test&lt;tag&gt;'
+        })
+      })
+    )
+
+    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    await GET(request)
+
+    expect(setSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        avatarUrl: 'https://example.com/avatar.png?param=value&other=test<tag>'
+      })
+    )
+  })
+
+  it('should set cache control headers on redirect responses', async () => {
+    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+
+    const url =
+      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+    const request = new NextRequest(url)
+
+    const response = await GET(request)
+
+    expect(response.headers.get('Cache-Control')).toBe(
+      'private, no-cache, no-store, must-revalidate'
+    )
+    expect(response.headers.get('Pragma')).toBe('no-cache')
+    expect(response.headers.get('Expires')).toBe('0')
+  })
 })

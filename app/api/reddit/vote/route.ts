@@ -1,3 +1,4 @@
+import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
@@ -9,6 +10,12 @@ import {NextRequest, NextResponse} from 'next/server'
  *
  * This endpoint handles upvote/downvote requests for posts and comments.
  * Requires user authentication and 'vote' OAuth scope.
+ *
+ * Security measures:
+ * - Origin validation (CSRF protection)
+ * - Rate limiting (prevents vote manipulation)
+ * - Authentication required
+ * - Input validation (id format, vote direction)
  *
  * Reddit Vote API:
  * - Endpoint: POST /api/vote
@@ -25,7 +32,21 @@ import {NextRequest, NextResponse} from 'next/server'
 export async function POST(request: NextRequest) {
   // Validate request origin to prevent external abuse
   if (!validateOrigin(request)) {
-    return NextResponse.json({error: 'Forbidden'}, {status: 403})
+    return NextResponse.json(
+      {error: 'Forbidden'},
+      {
+        status: 403,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
+  }
+
+  // Rate limiting: Prevent vote manipulation
+  const rateLimitResponse = await checkRateLimit(request)
+  if (rateLimitResponse) {
+    return rateLimitResponse
   }
 
   try {
@@ -42,7 +63,12 @@ export async function POST(request: NextRequest) {
       })
       return NextResponse.json(
         {error: 'Invalid vote request: id is required and must be a string'},
-        {status: 400}
+        {
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
@@ -54,7 +80,12 @@ export async function POST(request: NextRequest) {
       })
       return NextResponse.json(
         {error: 'Invalid vote request: dir must be 1, 0, or -1'},
-        {status: 400}
+        {
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
@@ -68,7 +99,12 @@ export async function POST(request: NextRequest) {
       })
       return NextResponse.json(
         {error: 'Invalid vote request: id must be in format t1_xxx or t3_xxx'},
-        {status: 400}
+        {
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
@@ -78,7 +114,12 @@ export async function POST(request: NextRequest) {
     if (!session?.accessToken) {
       return NextResponse.json(
         {error: 'Authentication required'},
-        {status: 401}
+        {
+          status: 401,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
@@ -112,12 +153,24 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {error: 'Failed to submit vote to Reddit'},
-        {status: response.status}
+        {
+          status: response.status,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
       )
     }
 
     // Reddit vote API returns empty JSON object {} on success
-    return NextResponse.json({success: true})
+    return NextResponse.json(
+      {success: true},
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   } catch (error) {
     logError(error, {
       component: 'voteApiRoute',
@@ -125,6 +178,14 @@ export async function POST(request: NextRequest) {
       url: request.url,
       method: request.method
     })
-    return NextResponse.json({error: 'Internal server error'}, {status: 500})
+    return NextResponse.json(
+      {error: 'Internal server error'},
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0'
+        }
+      }
+    )
   }
 }

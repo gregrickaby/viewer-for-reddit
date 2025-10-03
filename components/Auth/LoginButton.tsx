@@ -4,19 +4,8 @@ import {Button, Tooltip} from '@mantine/core'
 import {FaReddit} from 'react-icons/fa'
 
 export interface LoginButtonProps {
-  /**
-   * Button variant style.
-   */
   variant?: 'filled' | 'light' | 'outline' | 'subtle' | 'default'
-
-  /**
-   * Button size.
-   */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-
-  /**
-   * Full width button.
-   */
   fullWidth?: boolean
 }
 

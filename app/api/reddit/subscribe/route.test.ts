@@ -1,22 +1,79 @@
+import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import {logError} from '@/lib/utils/logError'
+import {validateOrigin} from '@/lib/utils/validateOrigin'
 import {NextRequest} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {POST} from './route'
 
 vi.mock('@/lib/auth/session')
+vi.mock('@/lib/auth/rateLimit')
 vi.mock('@/lib/utils/logError')
+vi.mock('@/lib/utils/validateOrigin')
 
 const mockGetSession = vi.mocked(getSession)
+const mockCheckRateLimit = vi.mocked(checkRateLimit)
 const mockLogError = vi.mocked(logError)
+const mockValidateOrigin = vi.mocked(validateOrigin)
 
 describe('/api/reddit/subscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     global.fetch = vi.fn()
+    mockValidateOrigin.mockReturnValue(true)
+    mockCheckRateLimit.mockResolvedValue(null)
   })
 
   describe('POST', () => {
+    it('should return 403 if origin validation fails', async () => {
+      mockValidateOrigin.mockReturnValue(false)
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/reddit/subscribe',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'sub',
+            sr_name: 'technology'
+          })
+        }
+      )
+
+      const response = await POST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(403)
+      expect(data).toEqual({error: 'Forbidden'})
+      expect(response.headers.get('Cache-Control')).toBe('no-store, max-age=0')
+    })
+
+    it('should return rate limit response if rate limited', async () => {
+      const rateLimitResponse = new Response(
+        JSON.stringify({error: 'Rate limit exceeded'}),
+        {
+          status: 429,
+          headers: {'Retry-After': '60'}
+        }
+      )
+      mockCheckRateLimit.mockResolvedValue(rateLimitResponse as any)
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/reddit/subscribe',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'sub',
+            sr_name: 'technology'
+          })
+        }
+      )
+
+      const response = await POST(request)
+
+      expect(response.status).toBe(429)
+      expect(mockCheckRateLimit).toHaveBeenCalledWith(request)
+    })
+
     it('should return 401 if user is not authenticated', async () => {
       mockGetSession.mockResolvedValue(null)
 

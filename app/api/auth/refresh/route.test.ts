@@ -21,6 +21,21 @@ vi.mock('@/lib/auth/session', () => ({
   updateSessionTokens: vi.fn()
 }))
 
+// Mock audit log module
+vi.mock('@/lib/auth/auditLog', () => ({
+  logAuditEvent: vi.fn(),
+  getClientInfo: vi.fn(() => ({
+    ip: '127.0.0.1',
+    userAgent: 'test-agent'
+  }))
+}))
+
+// Mock error logging
+const mockLogError = vi.hoisted(() => vi.fn())
+vi.mock('@/lib/utils/logError', () => ({
+  logError: mockLogError
+}))
+
 describe('POST /api/auth/refresh', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -31,6 +46,7 @@ describe('POST /api/auth/refresh', () => {
 
   it('should refresh access token successfully', async () => {
     const {getSession, updateSessionTokens} = await import('@/lib/auth/session')
+    const {logAuditEvent} = await import('@/lib/auth/auditLog')
 
     const mockSession = {
       username: 'testuser',
@@ -71,6 +87,13 @@ describe('POST /api/auth/refresh', () => {
       refreshToken: 'new_refresh_token',
       expiresAt: newExpiresAt
     })
+
+    expect(logAuditEvent).toHaveBeenCalledWith({
+      type: 'token_refresh_success',
+      username: 'testuser',
+      ip: '127.0.0.1',
+      userAgent: 'test-agent'
+    })
   })
 
   it('should handle refresh without new refresh token', async () => {
@@ -109,8 +132,46 @@ describe('POST /api/auth/refresh', () => {
     })
   })
 
+  it('should set cache control headers on success', async () => {
+    const {getSession} = await import('@/lib/auth/session')
+
+    const mockSession = {
+      username: 'testuser',
+      accessToken: 'old_token',
+      refreshToken: 'refresh_token',
+      expiresAt: Date.now() + 3600000,
+      sessionVersion: 1234567890
+    }
+
+    const newExpiresAt = Date.now() + 7200000
+    const mockTokens = {
+      accessToken: () => 'new_access_token',
+      refreshToken: () => 'new_refresh_token',
+      hasRefreshToken: () => true,
+      accessTokenExpiresAt: () => new Date(newExpiresAt)
+    }
+
+    vi.mocked(getSession).mockResolvedValue(mockSession)
+    vi.mocked(mockReddit.refreshAccessToken).mockResolvedValue(
+      mockTokens as any
+    )
+
+    const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
+      method: 'POST'
+    })
+
+    const response = await POST(request)
+
+    expect(response.headers.get('Cache-Control')).toBe(
+      'private, no-cache, no-store, must-revalidate'
+    )
+    expect(response.headers.get('Pragma')).toBe('no-cache')
+    expect(response.headers.get('Expires')).toBe('0')
+  })
+
   it('should return 401 when no session exists', async () => {
     const {getSession} = await import('@/lib/auth/session')
+    const {logAuditEvent} = await import('@/lib/auth/auditLog')
     vi.mocked(getSession).mockResolvedValue(null)
 
     const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
@@ -125,10 +186,18 @@ describe('POST /api/auth/refresh', () => {
       error: 'no_session',
       message: 'No active session or refresh token'
     })
+
+    expect(logAuditEvent).toHaveBeenCalledWith({
+      type: 'token_refresh_failed',
+      username: undefined,
+      ip: '127.0.0.1',
+      userAgent: 'test-agent'
+    })
   })
 
   it('should return 401 when no refresh token exists', async () => {
     const {getSession} = await import('@/lib/auth/session')
+    const {logAuditEvent} = await import('@/lib/auth/auditLog')
 
     const mockSession = {
       username: 'testuser',
@@ -152,10 +221,18 @@ describe('POST /api/auth/refresh', () => {
       error: 'no_session',
       message: 'No active session or refresh token'
     })
+
+    expect(logAuditEvent).toHaveBeenCalledWith({
+      type: 'token_refresh_failed',
+      username: 'testuser',
+      ip: '127.0.0.1',
+      userAgent: 'test-agent'
+    })
   })
 
   it('should return 401 when token refresh fails', async () => {
     const {getSession} = await import('@/lib/auth/session')
+    const {logAuditEvent} = await import('@/lib/auth/auditLog')
 
     const mockSession = {
       username: 'testuser',
@@ -182,6 +259,13 @@ describe('POST /api/auth/refresh', () => {
       error: 'refresh_failed',
       message: 'Failed to refresh token'
     })
+
+    expect(logAuditEvent).toHaveBeenCalledWith({
+      type: 'token_refresh_failed',
+      username: 'testuser',
+      ip: '127.0.0.1',
+      userAgent: 'test-agent'
+    })
   })
 
   it('should return rate limit response when rate limited', async () => {
@@ -202,7 +286,6 @@ describe('POST /api/auth/refresh', () => {
   })
 
   it('should log error when token refresh fails', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const {getSession} = await import('@/lib/auth/session')
 
     const mockSession = {
@@ -224,14 +307,45 @@ describe('POST /api/auth/refresh', () => {
 
     await POST(request)
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Token refresh failed:',
+    // Should use centralized error logging
+    expect(mockLogError).toHaveBeenCalledWith(
+      expect.any(Error),
       expect.objectContaining({
-        error: 'Network error',
-        timestamp: expect.any(String)
+        component: 'RefreshRoute',
+        action: 'refreshToken',
+        username: 'testuser',
+        ip: '127.0.0.1',
+        userAgent: 'test-agent'
       })
     )
+  })
 
-    consoleSpy.mockRestore()
+  it('should set cache control headers on error', async () => {
+    const {getSession} = await import('@/lib/auth/session')
+
+    const mockSession = {
+      username: 'testuser',
+      accessToken: 'token',
+      refreshToken: 'refresh_token',
+      expiresAt: Date.now() + 3600000,
+      sessionVersion: 1234567890
+    }
+
+    vi.mocked(getSession).mockResolvedValue(mockSession)
+    vi.mocked(mockReddit.refreshAccessToken).mockRejectedValue(
+      new Error('Network error')
+    )
+
+    const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
+      method: 'POST'
+    })
+
+    const response = await POST(request)
+
+    expect(response.headers.get('Cache-Control')).toBe(
+      'private, no-cache, no-store, must-revalidate'
+    )
+    expect(response.headers.get('Pragma')).toBe('no-cache')
+    expect(response.headers.get('Expires')).toBe('0')
   })
 })
