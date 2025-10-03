@@ -79,12 +79,13 @@ describe('CustomFeedPosts', () => {
     render(<CustomFeedPosts {...defaultProps} />)
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Unable to load custom feed posts. Please try again.')
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Post Not Available/i)).toBeInTheDocument()
     })
 
-    expect(screen.getByRole('button', {name: 'Retry'})).toBeInTheDocument()
+    expect(
+      screen.getByText(/Reddit servers are experiencing issues/i)
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', {name: 'Go Back'})).toBeInTheDocument()
   })
 
   it('should render authentication error for 401 status', async () => {
@@ -97,14 +98,11 @@ describe('CustomFeedPosts', () => {
     render(<CustomFeedPosts {...defaultProps} />)
 
     await waitFor(() => {
-      expect(
-        screen.getByText('You must be logged in to view custom feeds')
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Post Not Available/i)).toBeInTheDocument()
     })
 
-    expect(
-      screen.queryByRole('button', {name: 'Retry'})
-    ).not.toBeInTheDocument()
+    expect(screen.getByText(/Failed to load post/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', {name: 'Go Back'})).toBeInTheDocument()
   })
 
   it('should render empty state when no posts are available', async () => {

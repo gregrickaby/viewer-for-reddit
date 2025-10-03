@@ -34,6 +34,8 @@ interface UseCommentDataReturn {
   currentIsFetchingNextPage: boolean
   enableNestedComments: boolean
   enableInfiniteLoading: boolean
+  isError: boolean
+  error: unknown
 }
 
 export function useCommentData({
@@ -45,13 +47,18 @@ export function useCommentData({
   maxCommentDepth = 4
 }: UseCommentDataParams): UseCommentDataReturn {
   // Hooks for flat comments (legacy)
-  const [fetchComments, {data: fetchedComments, isLoading}] =
+  const [fetchComments, {data: fetchedComments, isLoading, error, isError}] =
     useLazyGetPostCommentsQuery()
 
   // Hooks for raw comments (nested)
   const [
     fetchCommentsRaw,
-    {data: fetchedCommentsRaw, isLoading: isLoadingRaw}
+    {
+      data: fetchedCommentsRaw,
+      isLoading: isLoadingRaw,
+      error: errorRaw,
+      isError: isErrorRaw
+    }
   ] = useLazyGetPostCommentsRawQuery()
 
   // Use infinite query for flat comments
@@ -60,7 +67,9 @@ export function useCommentData({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading: isInfiniteLoading
+    isLoading: isInfiniteLoading,
+    error: infiniteError,
+    isError: isInfiniteError
   } = useGetPostCommentsPagesInfiniteQuery(permalink, {
     skip: !enableInfiniteLoading || !open || enableNestedComments
   })
@@ -71,7 +80,9 @@ export function useCommentData({
     fetchNextPage: fetchNextPageRaw,
     hasNextPage: hasNextPageRaw,
     isFetchingNextPage: isFetchingNextPageRaw,
-    isLoading: isInfiniteLoadingRaw
+    isLoading: isInfiniteLoadingRaw,
+    error: infiniteErrorRaw,
+    isError: isInfiniteErrorRaw
   } = useGetPostCommentsPagesRawInfiniteQuery(permalink, {
     skip: !enableInfiniteLoading || !open || !enableNestedComments
   })
@@ -218,6 +229,18 @@ export function useCommentData({
     ? nestedComments.length > 0
     : displayComments?.length > 0
 
+  // Determine current error state based on mode
+  let currentIsError = false
+  let currentError: unknown = undefined
+
+  if (enableInfiniteLoading) {
+    currentIsError = enableNestedComments ? isInfiniteErrorRaw : isInfiniteError
+    currentError = enableNestedComments ? infiniteErrorRaw : infiniteError
+  } else {
+    currentIsError = enableNestedComments ? isErrorRaw : isError
+    currentError = enableNestedComments ? errorRaw : error
+  }
+
   return {
     displayComments,
     nestedComments,
@@ -227,6 +250,8 @@ export function useCommentData({
     currentHasNextPage,
     currentIsFetchingNextPage,
     enableNestedComments,
-    enableInfiniteLoading
+    enableInfiniteLoading,
+    isError: currentIsError,
+    error: currentError
   }
 }

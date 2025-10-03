@@ -72,7 +72,11 @@ describe('PostCard', () => {
     render(<PostCard post={post} />)
 
     const titleLink = screen.getByRole('heading', {level: 2}).closest('a')
-    expect(titleLink).toHaveAttribute('href', '/r/programming/comments/abc123')
+    // Next.js Link normalizes trailing slashes
+    expect(titleLink).toHaveAttribute(
+      'href',
+      '/r/programming/comments/abc123/title'
+    )
   })
 
   it('should use external Reddit links when useInternalRouting is false', () => {

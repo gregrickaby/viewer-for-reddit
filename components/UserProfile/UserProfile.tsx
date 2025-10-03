@@ -1,5 +1,6 @@
 'use client'
 
+import {ErrorMessage} from '@/components/ErrorMessage/ErrorMessage'
 import {PostCard} from '@/components/PostCard/PostCard'
 import {useGetUserCommentsInfiniteQuery} from '@/lib/store/services/commentsApi'
 import {
@@ -12,7 +13,6 @@ import {
   Anchor,
   Avatar,
   Badge,
-  Button,
   Card,
   Center,
   Divider,
@@ -25,36 +25,12 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import Link from 'next/link'
 import {BiSolidUpvote} from 'react-icons/bi'
-import {MdError, MdVerified} from 'react-icons/md'
+import {MdVerified} from 'react-icons/md'
 import classes from './UserProfile.module.css'
 
 interface UserProfileProps {
   username: string
-}
-
-/**
- * Get a user-friendly error message based on the error status.
- */
-function getErrorMessage(error: unknown, username: string): string {
-  const errorObj = error as {status?: number}
-  const status = errorObj?.status
-
-  switch (status) {
-    case 404:
-      return `User u/${username} not found. This account may have been deleted, suspended, or does not exist.`
-    case 403:
-      return `Access denied. User u/${username} may have privacy settings enabled or the account is restricted.`
-    case 429:
-      return 'Too many requests. Please wait a moment and try again.'
-    case 500:
-    case 502:
-    case 503:
-      return 'Reddit servers are experiencing issues. Please try again later.'
-    default:
-      return 'Unable to load profile from Reddit API. Please try again later.'
-  }
 }
 
 /**
@@ -95,21 +71,7 @@ export function UserProfile({username}: Readonly<UserProfileProps>) {
   // Determine which error to show (prioritize profile error)
   const error = profileError || postsError || commentsError
   if (error) {
-    const errorMessage = getErrorMessage(error, username)
-
-    return (
-      <Stack align="center" mt="lg" gap="md">
-        <Title order={3} c="red">
-          <MdError size={16} /> Profile Not Available
-        </Title>
-        <Text size="sm" c="dimmed" ta="center" maw={500}>
-          {errorMessage}
-        </Text>
-        <Button color="gray" component={Link} href={`/u/${username}`}>
-          Try Again
-        </Button>
-      </Stack>
-    )
+    return <ErrorMessage error={error} type="user" resourceName={username} />
   }
 
   // Extract posts from the infinite query structure

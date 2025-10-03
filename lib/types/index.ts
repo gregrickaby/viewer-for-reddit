@@ -19,7 +19,11 @@ export type DeepPartial<T> = {
  */
 export type SubredditParams = Promise<{subreddit: string}>
 export type UserParams = Promise<{username: string}>
-export type SinglePostParams = Promise<{subreddit: string; postId: string}>
+export type SinglePostParams = Promise<{
+  subreddit: string
+  postId: string
+  slug?: string[]
+}>
 export type CustomFeedParams = Promise<{
   username: string
   customfeed: string
@@ -28,7 +32,7 @@ export type SearchParams = Promise<{
   [key: string]: string | string[] | undefined
 }>
 export interface SinglePostPageParams {
-  params: Promise<{subreddit: string; postId: string}>
+  params: Promise<{subreddit: string; postId: string; slug?: string[]}>
 }
 
 /**

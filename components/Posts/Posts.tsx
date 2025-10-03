@@ -1,5 +1,6 @@
 'use client'
 
+import {ErrorMessage} from '@/components/ErrorMessage/ErrorMessage'
 import {Favorite} from '@/components/Favorite/Favorite'
 import {PostCard} from '@/components/PostCard/PostCard'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
@@ -8,16 +9,13 @@ import type {AutoPostChild} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
 import {
   Button,
-  Code,
   Group,
   Loader,
   SegmentedControl,
   Stack,
   Title
 } from '@mantine/core'
-import Link from 'next/link'
 import {useState} from 'react'
-import {MdError} from 'react-icons/md'
 import styles from './Posts.module.css'
 
 interface PostsProps {
@@ -66,15 +64,12 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
 
   if (isError) {
     return (
-      <Stack align="center" mt="lg">
-        <Title order={2} c="red">
-          <MdError size={20} /> Unable to load posts from Reddit
-        </Title>
-        <Code>{JSON.stringify(error, null, 2)}</Code>
-        <Button color="gray" component={Link} href="/">
-          Reload Page
-        </Button>
-      </Stack>
+      <ErrorMessage
+        error={error}
+        type="subreddit"
+        resourceName={subreddit}
+        fallbackUrl="/"
+      />
     )
   }
 

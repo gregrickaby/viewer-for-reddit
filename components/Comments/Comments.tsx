@@ -1,5 +1,6 @@
 'use client'
 
+import {ErrorMessage} from '@/components/ErrorMessage/ErrorMessage'
 import {useCommentData} from '@/lib/hooks/useCommentData'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import {CommentExpansionProvider} from './CommentExpansionContext/CommentExpansionContext'
@@ -33,7 +34,9 @@ export function Comments({
     hasCommentsToShow,
     currentFetchNextPage,
     currentHasNextPage,
-    currentIsFetchingNextPage
+    currentIsFetchingNextPage,
+    isError,
+    error
   } = useCommentData({
     permalink,
     open,
@@ -44,6 +47,18 @@ export function Comments({
 
   if (showLoading) {
     return <CommentsLoading />
+  }
+
+  if (isError) {
+    return (
+      <ErrorMessage
+        error={error}
+        type="post"
+        resourceName="comments"
+        fallbackUrl={postLink}
+        compact
+      />
+    )
   }
 
   if (!hasCommentsToShow) {

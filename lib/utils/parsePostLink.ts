@@ -7,13 +7,13 @@
  *
  * @example
  * ```typescript
- * // Internal routing
- * parsePostLink("/r/programming/comments/abc123/my-post/", true)
- * // Returns: "/r/programming/comments/abc123"
+ * // Internal routing - preserves title in URL for SEO
+ * parsePostLink("/r/programming/comments/abc123/my_awesome_post/", true)
+ * // Returns: "/r/programming/comments/abc123/my_awesome_post/"
  *
  * // External routing
- * parsePostLink("/r/programming/comments/abc123/my-post/", false)
- * // Returns: "https://reddit.com/r/programming/comments/abc123/my-post/"
+ * parsePostLink("/r/programming/comments/abc123/my_awesome_post/", false)
+ * // Returns: "https://reddit.com/r/programming/comments/abc123/my_awesome_post/"
  * ```
  */
 export function parsePostLink(
@@ -30,14 +30,8 @@ export function parsePostLink(
     return '#'
   }
 
-  // Extract subreddit and postId from permalink: /r/{subreddit}/comments/{postId}/{title}/
-  const match = permalink.match(/^\/r\/([^/]+)\/comments\/([^/]+)\//)
-
-  if (match) {
-    const [, subreddit, postId] = match
-    return `/r/${subreddit}/comments/${postId}`
-  }
-
-  // Fallback to external link if parsing fails
-  return `https://reddit.com${permalink}`
+  // For internal routing, preserve the full permalink including title
+  // This supports SEO-friendly URLs like /r/baseball/comments/1nwopua/padres_dugout_reaction/
+  // The [[...slug]] route parameter handles backward compatibility for URLs without titles
+  return permalink
 }

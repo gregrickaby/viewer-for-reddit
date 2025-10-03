@@ -116,12 +116,20 @@ export async function GET(request: NextRequest) {
     })
 
     if (!response.ok) {
-      // Don't log 404s for user endpoints - they're expected for non-existent users
+      // Skip logging expected errors for user and subreddit endpoints
       const isUserEndpoint = path.includes('/user/')
+      const subredditRegex = /^\/r\/[^/]+\/(hot|new|top)\.json/
+      const isSubredditEndpoint = subredditRegex.exec(path) !== null
       const is404 = response.status === 404
+      const is403 = response.status === 403
 
-      // Skip logging for expected 404s on user endpoints
-      if (!isUserEndpoint || !is404) {
+      // Don't log expected errors:
+      // - 404 on user endpoints (deleted/suspended users)
+      // - 404/403 on subreddit endpoints (banned/private/non-existent communities)
+      const isExpectedError =
+        (isUserEndpoint && is404) || (isSubredditEndpoint && (is404 || is403))
+
+      if (!isExpectedError) {
         // Log all other errors normally
         logError('Reddit API request failed', {
           component: 'redditApiRoute',

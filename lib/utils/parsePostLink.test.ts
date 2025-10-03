@@ -2,47 +2,42 @@ import {parsePostLink} from './parsePostLink'
 
 describe('parsePostLink', () => {
   describe('Internal routing', () => {
-    it('should parse valid Reddit permalink to internal route', () => {
-      const permalink = '/r/programming/comments/abc123/my-awesome-post/'
+    it('should preserve full permalink with title for SEO', () => {
+      const permalink = '/r/programming/comments/abc123/my_awesome_post/'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('/r/programming/comments/abc123')
+      expect(result).toBe('/r/programming/comments/abc123/my_awesome_post/')
     })
 
     it('should handle permalinks without trailing slash', () => {
-      const permalink = '/r/javascript/comments/xyz789/cool-library'
+      const permalink = '/r/javascript/comments/xyz789/cool_library'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('/r/javascript/comments/xyz789')
+      expect(result).toBe('/r/javascript/comments/xyz789/cool_library')
     })
 
     it('should handle permalinks with complex subreddit names', () => {
-      const permalink = '/r/webdev-discussions/comments/def456/title-here/'
+      const permalink = '/r/webdev-discussions/comments/def456/title_here/'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('/r/webdev-discussions/comments/def456')
+      expect(result).toBe('/r/webdev-discussions/comments/def456/title_here/')
     })
 
     it('should handle permalinks with special characters in title', () => {
       const permalink =
-        '/r/programming/comments/ghi789/title_with-special.chars/'
+        '/r/programming/comments/ghi789/title_with_special_chars/'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('/r/programming/comments/ghi789')
+      expect(result).toBe(
+        '/r/programming/comments/ghi789/title_with_special_chars/'
+      )
     })
 
-    it('should fallback to external link for malformed permalinks', () => {
-      const permalink = '/invalid/permalink/format/'
+    it('should handle permalinks without title (backward compatibility)', () => {
+      const permalink = '/r/programming/comments/abc123/'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('https://reddit.com/invalid/permalink/format/')
-    })
-
-    it('should fallback to external link for non-comment permalinks', () => {
-      const permalink = '/r/programming/hot/'
-      const result = parsePostLink(permalink, true)
-
-      expect(result).toBe('https://reddit.com/r/programming/hot/')
+      expect(result).toBe('/r/programming/comments/abc123/')
     })
 
     it('should return # for undefined permalink', () => {
@@ -82,26 +77,28 @@ describe('parsePostLink', () => {
   })
 
   describe('Edge cases', () => {
-    it('should handle very short post IDs', () => {
+    it('should handle very short post IDs with title', () => {
       const permalink = '/r/test/comments/a/title/'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('/r/test/comments/a')
+      expect(result).toBe('/r/test/comments/a/title/')
     })
 
-    it('should handle very long post IDs', () => {
+    it('should handle very long post IDs with title', () => {
       const permalink =
         '/r/test/comments/verylongpostidentifier123456789/title/'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('/r/test/comments/verylongpostidentifier123456789')
+      expect(result).toBe(
+        '/r/test/comments/verylongpostidentifier123456789/title/'
+      )
     })
 
     it('should handle subreddits with numbers and underscores', () => {
       const permalink = '/r/programming_2024/comments/abc123/title/'
       const result = parsePostLink(permalink, true)
 
-      expect(result).toBe('/r/programming_2024/comments/abc123')
+      expect(result).toBe('/r/programming_2024/comments/abc123/title/')
     })
   })
 })

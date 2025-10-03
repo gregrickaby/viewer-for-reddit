@@ -78,8 +78,8 @@ describe('Posts', () => {
 
   it('shows error message when request fails', () => {
     mockUseInfinitePosts.mockReturnValue({
-      data: undefined,
-      error: {message: 'error'},
+      data: {pages: [], pageParams: []},
+      error: {status: 500, message: 'Internal Server Error'},
       fetchNextPage: vi.fn(),
       hasNextPage: false,
       isError: true,
@@ -90,8 +90,51 @@ describe('Posts', () => {
       wasFiltered: false
     })
     render(<Posts subreddit="test" />)
+    expect(screen.getByText(/Subreddit Not Available/)).toBeInTheDocument()
     expect(
-      screen.getByText(/Unable to load posts from Reddit/)
+      screen.getByText(
+        /Reddit servers are experiencing issues. Please try again later./
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('shows 404 error message for non-existent subreddit', () => {
+    mockUseInfinitePosts.mockReturnValue({
+      data: undefined,
+      error: {status: 404},
+      fetchNextPage: vi.fn(),
+      hasNextPage: false,
+      isError: true,
+      isFetchingNextPage: false,
+      isLoading: false,
+      noVisiblePosts: false,
+      ref: vi.fn(),
+      wasFiltered: false
+    })
+    render(<Posts subreddit="nonexistent" />)
+    expect(screen.getByText(/Subreddit Not Available/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Subreddit r\/nonexistent not found/)
+    ).toBeInTheDocument()
+  })
+
+  it('shows 403 error message for private subreddit', () => {
+    mockUseInfinitePosts.mockReturnValue({
+      data: undefined,
+      error: {status: 403},
+      fetchNextPage: vi.fn(),
+      hasNextPage: false,
+      isError: true,
+      isFetchingNextPage: false,
+      isLoading: false,
+      noVisiblePosts: false,
+      ref: vi.fn(),
+      wasFiltered: false
+    })
+    render(<Posts subreddit="private" />)
+    expect(screen.getByText(/Subreddit Not Available/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Subreddit r\/private is private or restricted/)
     ).toBeInTheDocument()
   })
 

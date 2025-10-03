@@ -1,5 +1,6 @@
 'use client'
 
+import {ErrorMessage} from '@/components/ErrorMessage/ErrorMessage'
 import {PostCard} from '@/components/PostCard/PostCard'
 import {useAppSelector} from '@/lib/store/hooks'
 import {
@@ -8,7 +9,7 @@ import {
 } from '@/lib/store/services/authenticatedApi'
 import type {AutoPostChild} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
-import {Box, Button, Loader, Stack, Text} from '@mantine/core'
+import {Box, Loader, Stack, Text} from '@mantine/core'
 import {useIntersection} from '@mantine/hooks'
 import {useEffect, useMemo} from 'react'
 
@@ -98,24 +99,13 @@ export function CustomFeedPosts({
 
   // Error state
   if (query.isError) {
-    const errorMessage =
-      query.error && 'status' in query.error && query.error.status === 401
-        ? 'You must be logged in to view custom feeds'
-        : 'Unable to load custom feed posts. Please try again.'
-
     return (
-      <Box ta="center" py="xl">
-        <Text c="red" fw={500}>
-          {errorMessage}
-        </Text>
-        {query.error &&
-          'status' in query.error &&
-          query.error.status !== 401 && (
-            <Button onClick={() => query.refetch()} mt="md">
-              Retry
-            </Button>
-          )}
-      </Box>
+      <ErrorMessage
+        error={query.error}
+        type="post"
+        resourceName={`${username}/m/${customFeedName}`}
+        fallbackUrl={`/u/${username}`}
+      />
     )
   }
 
