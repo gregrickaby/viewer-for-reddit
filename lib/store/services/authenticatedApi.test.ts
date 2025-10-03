@@ -6,23 +6,27 @@ import {describe, expect, it} from 'vitest'
 describe('Custom Feed Integration Flow', () => {
   describe('getUserCustomFeeds', () => {
     it('should fetch and transform custom feeds list', async () => {
-      // Mock the custom feeds API response
+      // Mock the Reddit API response (via /api/reddit/me proxy)
       server.use(
-        http.get('http://localhost:3000/api/reddit/customfeeds', () => {
+        http.get('http://localhost:3000/api/reddit/me', () => {
           return HttpResponse.json([
             {
-              name: 'test_multi',
-              display_name: 'Test Multi',
-              path: '/user/testuser/m/test_multi',
-              icon_url: 'https://example.com/icon.png',
-              subreddits: ['programming', 'webdev']
+              data: {
+                name: 'test_multi',
+                display_name: 'Test Multi',
+                path: '/user/testuser/m/test_multi/',
+                icon_url: 'https://example.com/icon.png',
+                subreddits: [{name: 'programming'}, {name: 'webdev'}]
+              }
             },
             {
-              name: 'news_multi',
-              display_name: 'News Multi',
-              path: '/user/testuser/m/news_multi',
-              icon_url: '',
-              subreddits: ['news', 'worldnews']
+              data: {
+                name: 'news_multi',
+                display_name: 'News Multi',
+                path: '/user/testuser/m/news_multi/',
+                icon_url: '',
+                subreddits: [{name: 'news'}, {name: 'worldnews'}]
+              }
             }
           ])
         })
@@ -53,7 +57,7 @@ describe('Custom Feed Integration Flow', () => {
 
     it('should return empty array when not authenticated', async () => {
       server.use(
-        http.get('http://localhost:3000/api/reddit/customfeeds', () => {
+        http.get('http://localhost:3000/api/reddit/me', () => {
           return HttpResponse.json([])
         })
       )
@@ -68,7 +72,7 @@ describe('Custom Feed Integration Flow', () => {
 
     it('should handle API errors gracefully', async () => {
       server.use(
-        http.get('http://localhost:3000/api/reddit/customfeeds', () => {
+        http.get('http://localhost:3000/api/reddit/me', () => {
           return new HttpResponse(null, {status: 500})
         })
       )
@@ -78,8 +82,9 @@ describe('Custom Feed Integration Flow', () => {
         authenticatedApi.endpoints.getUserCustomFeeds.initiate()
       )
 
-      // Should return empty array on error for graceful degradation
-      expect(result.data).toEqual([])
+      // RTK Query returns error object on failure, not data
+      expect(result.error).toBeDefined()
+      expect(result.data).toBeUndefined()
     })
   })
 

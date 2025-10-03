@@ -92,34 +92,33 @@ export const authenticatedApi = createApi({
      * Returns an empty array if the user is not authenticated, enabling
      * graceful degradation of UI features.
      *
-     * Note: This endpoint uses a special proxy route at /api/reddit/customfeeds
-     * because the custom feeds API requires the username in the path.
-     *
      * @returns {CustomFeed[]} Array of user's custom feeds
      *
      * @example
      * const {data, isLoading} = useGetUserCustomFeedsQuery()
      */
     getUserCustomFeeds: builder.query<CustomFeed[], void>({
-      queryFn: async () => {
-        try {
-          // Use the custom feeds-specific endpoint
-          const baseUrl =
-            typeof window === 'undefined' || process.env.NODE_ENV === 'test'
-              ? 'http://localhost:3000/api/reddit/customfeeds'
-              : '/api/reddit/customfeeds'
-
-          const response = await fetch(baseUrl)
-
-          if (!response.ok) {
-            return {data: []}
-          }
-
-          const data = await response.json()
-          return {data: data || []}
-        } catch {
-          return {data: []}
+      query: () => '/api/multi/mine.json',
+      transformResponse: (response: any) => {
+        // Handle empty/invalid response
+        if (!Array.isArray(response)) {
+          return []
         }
+
+        // Reddit's /api/multi/mine.json returns an array directly
+        return response.map((item: any) => {
+          // Reddit returns path like "/user/username/m/customFeedName/"
+          // Remove trailing slash for consistency with Next.js routing
+          const path = item.data?.path?.replace(/\/$/, '') || ''
+
+          return {
+            name: item.data?.name || '',
+            display_name: item.data?.display_name || item.data?.name || '',
+            path,
+            icon_url: item.data?.icon_url || '',
+            subreddits: item.data?.subreddits?.map((sub: any) => sub.name) || []
+          }
+        })
       },
       providesTags: ['UserCustomFeeds']
     }),
