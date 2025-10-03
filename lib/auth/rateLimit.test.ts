@@ -1,6 +1,6 @@
 import {NextRequest} from 'next/server'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-import {checkRateLimit} from './rateLimit'
+import {checkRateLimit, cleanupRateLimitStore} from './rateLimit'
 
 vi.mock('@/lib/utils/logError', () => ({
   logError: vi.fn()
@@ -51,25 +51,25 @@ describe('checkRateLimit', () => {
         'x-forwarded-for': '192.168.1.2'
       })
 
-      // Make 9 requests (under limit of 10)
-      for (let i = 0; i < 9; i++) {
+      // Make 199 requests (under limit of 200)
+      for (let i = 0; i < 199; i++) {
         const result = await checkRateLimit(request)
         expect(result).toBeNull()
       }
     })
 
-    it('should block 11th request when limit exceeded', async () => {
+    it('should block 201st request when limit exceeded', async () => {
       const request = createMockNextRequest('http://localhost:3000', {
         'x-forwarded-for': '192.168.1.3'
       })
 
-      // Make 10 requests (at limit)
-      for (let i = 0; i < 10; i++) {
+      // Make 200 requests (at limit)
+      for (let i = 0; i < 200; i++) {
         const result = await checkRateLimit(request)
         expect(result).toBeNull()
       }
 
-      // 11th request should be blocked
+      // 201st request should be blocked
       const result = await checkRateLimit(request)
       expect(result).not.toBeNull()
       expect(result?.status).toBe(429)
@@ -81,7 +81,7 @@ describe('checkRateLimit', () => {
       })
 
       // Exhaust rate limit
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
@@ -102,7 +102,7 @@ describe('checkRateLimit', () => {
       })
 
       // Exhaust rate limit
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
@@ -122,7 +122,7 @@ describe('checkRateLimit', () => {
       })
 
       // Exhaust limit for this IP
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
@@ -146,7 +146,7 @@ describe('checkRateLimit', () => {
       const customId = 'user_123'
 
       // Exhaust limit for custom identifier
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request, customId)
       }
 
@@ -163,7 +163,7 @@ describe('checkRateLimit', () => {
       const request = createMockNextRequest('http://localhost:3000', {})
 
       // Exhaust limit for anonymous
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
@@ -176,11 +176,11 @@ describe('checkRateLimit', () => {
       const request2 = createMockNextRequest('http://localhost:3000', {})
 
       // All anonymous requests share the same rate limit
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 100; i++) {
         await checkRateLimit(request1)
       }
 
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 100; i++) {
         await checkRateLimit(request2)
       }
 
@@ -200,7 +200,7 @@ describe('checkRateLimit', () => {
       })
 
       // Exhaust rate limit
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
@@ -208,8 +208,8 @@ describe('checkRateLimit', () => {
       let result = await checkRateLimit(request)
       expect(result?.status).toBe(429)
 
-      // Advance time past 10 minute window
-      vi.setSystemTime(now + 10 * 60 * 1000 + 1000)
+      // Advance time past 1 minute window
+      vi.setSystemTime(now + 60 * 1000 + 1000)
 
       // Should be allowed again
       result = await checkRateLimit(request)
@@ -225,12 +225,12 @@ describe('checkRateLimit', () => {
       })
 
       // Exhaust rate limit
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
-      // Advance time but not past window
-      vi.setSystemTime(now + 5 * 60 * 1000)
+      // Advance time but not past window (30 seconds)
+      vi.setSystemTime(now + 30 * 1000)
 
       // Should still be blocked
       const result = await checkRateLimit(request)
@@ -245,21 +245,21 @@ describe('checkRateLimit', () => {
         'x-forwarded-for': '192.168.1.11'
       })
 
-      // Make 5 requests
-      for (let i = 0; i < 5; i++) {
+      // Make 100 requests
+      for (let i = 0; i < 100; i++) {
         await checkRateLimit(request)
       }
 
-      // Advance time past window
-      vi.setSystemTime(now + 11 * 60 * 1000)
+      // Advance time past window (61 seconds)
+      vi.setSystemTime(now + 61 * 1000)
 
-      // Make 10 more requests (old ones should be expired)
-      for (let i = 0; i < 10; i++) {
+      // Make 200 more requests (old ones should be expired)
+      for (let i = 0; i < 200; i++) {
         const result = await checkRateLimit(request)
         expect(result).toBeNull()
       }
 
-      // 11th should be blocked
+      // 201st should be blocked
       const result = await checkRateLimit(request)
       expect(result?.status).toBe(429)
     })
@@ -273,16 +273,16 @@ describe('checkRateLimit', () => {
       })
 
       // Exhaust rate limit
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
       const result = await checkRateLimit(request)
       const json = await result?.json()
 
-      // Should be approximately 10 minutes (600 seconds)
-      expect(json.retryAfter).toBeGreaterThan(595)
-      expect(json.retryAfter).toBeLessThanOrEqual(600)
+      // Should be approximately 1 minute (60 seconds)
+      expect(json.retryAfter).toBeGreaterThan(55)
+      expect(json.retryAfter).toBeLessThanOrEqual(60)
     })
   })
 
@@ -292,16 +292,16 @@ describe('checkRateLimit', () => {
         'x-forwarded-for': '192.168.1.13'
       })
 
-      // Simulate 15 concurrent requests
-      const promises = Array.from({length: 15}, () => checkRateLimit(request))
+      // Simulate 210 concurrent requests
+      const promises = Array.from({length: 210}, () => checkRateLimit(request))
       const results = await Promise.all(promises)
 
-      // First 10 should pass, rest should be blocked
+      // First 200 should pass, rest should be blocked
       const passed = results.filter((r) => r === null).length
       const blocked = results.filter((r) => r !== null).length
 
-      expect(passed).toBe(10)
-      expect(blocked).toBe(5)
+      expect(passed).toBe(200)
+      expect(blocked).toBe(10)
     })
 
     it('should handle requests from different IPs concurrently', async () => {
@@ -324,10 +324,10 @@ describe('checkRateLimit', () => {
         })
       ]
 
-      // Each IP makes 10 concurrent requests
+      // Each IP makes 200 concurrent requests
       const allPromises: Promise<any>[] = []
       for (const request of requests) {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 200; i++) {
           allPromises.push(checkRateLimit(request))
         }
       }
@@ -336,7 +336,7 @@ describe('checkRateLimit', () => {
 
       // All should pass (each IP has its own limit)
       const passed = results.filter((r) => r === null).length
-      expect(passed).toBe(50)
+      expect(passed).toBe(1000)
     })
   })
 
@@ -366,8 +366,8 @@ describe('checkRateLimit', () => {
         'x-forwarded-for': '192.168.1.26'
       })
 
-      // Make exactly 10 requests
-      for (let i = 0; i < 10; i++) {
+      // Make exactly 200 requests
+      for (let i = 0; i < 200; i++) {
         const result = await checkRateLimit(request)
         expect(result).toBeNull()
       }
@@ -385,7 +385,7 @@ describe('checkRateLimit', () => {
       })
 
       // Exhaust rate limit
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 200; i++) {
         await checkRateLimit(request)
       }
 
@@ -403,6 +403,200 @@ describe('checkRateLimit', () => {
           resetAt: expect.any(String)
         })
       )
+    })
+  })
+
+  describe('cleanup functionality', () => {
+    it('should clean up expired entries from store', async () => {
+      const now = Date.now()
+      vi.setSystemTime(now)
+
+      // Create requests that will expire
+      const request1 = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.100'
+      })
+      const request2 = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.101'
+      })
+
+      // Make some requests
+      for (let i = 0; i < 50; i++) {
+        await checkRateLimit(request1)
+        await checkRateLimit(request2)
+      }
+
+      // Advance time past window
+      vi.setSystemTime(now + 61 * 1000)
+
+      // Call cleanup function directly
+      cleanupRateLimitStore()
+
+      // Make new requests - should have fresh quota since old entries were cleaned up
+      for (let i = 0; i < 200; i++) {
+        const result1 = await checkRateLimit(request1)
+        const result2 = await checkRateLimit(request2)
+        expect(result1).toBeNull()
+        expect(result2).toBeNull()
+      }
+    })
+
+    it('should handle store with mix of expired and valid entries', async () => {
+      const now = Date.now()
+      vi.setSystemTime(now)
+
+      const request = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.102'
+      })
+
+      // Make 100 requests at time T
+      for (let i = 0; i < 100; i++) {
+        await checkRateLimit(request)
+      }
+
+      // Advance 30 seconds (still within window)
+      vi.setSystemTime(now + 30 * 1000)
+
+      // Make 100 more requests at time T+30s
+      for (let i = 0; i < 100; i++) {
+        await checkRateLimit(request)
+      }
+
+      // Should be at limit (200 requests)
+      let result = await checkRateLimit(request)
+      expect(result?.status).toBe(429)
+
+      // Advance to 61 seconds (first 100 should expire)
+      vi.setSystemTime(now + 61 * 1000)
+
+      // Should allow 100 more requests now
+      for (let i = 0; i < 100; i++) {
+        result = await checkRateLimit(request)
+        expect(result).toBeNull()
+      }
+
+      // Should be at limit again
+      result = await checkRateLimit(request)
+      expect(result?.status).toBe(429)
+    })
+
+    it('should remove entries with no valid timestamps', async () => {
+      const now = Date.now()
+      vi.setSystemTime(now)
+
+      const request = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.103'
+      })
+
+      // Make some requests
+      for (let i = 0; i < 10; i++) {
+        await checkRateLimit(request)
+      }
+
+      // Advance time past window (all entries should expire)
+      vi.setSystemTime(now + 61 * 1000)
+
+      // Run cleanup
+      cleanupRateLimitStore()
+
+      // Make full quota of requests - should work since entry was deleted
+      for (let i = 0; i < 200; i++) {
+        const result = await checkRateLimit(request)
+        expect(result).toBeNull()
+      }
+    })
+
+    it('should preserve entries with valid timestamps', async () => {
+      const now = Date.now()
+      vi.setSystemTime(now)
+
+      const request = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.104'
+      })
+
+      // Make 100 requests
+      for (let i = 0; i < 100; i++) {
+        await checkRateLimit(request)
+      }
+
+      // Advance time but stay within window (30 seconds)
+      vi.setSystemTime(now + 30 * 1000)
+
+      // Run cleanup - should preserve all entries
+      cleanupRateLimitStore()
+
+      // Should only be able to make 100 more requests
+      for (let i = 0; i < 100; i++) {
+        const result = await checkRateLimit(request)
+        expect(result).toBeNull()
+      }
+
+      // 201st should be blocked
+      const result = await checkRateLimit(request)
+      expect(result?.status).toBe(429)
+    })
+
+    it('should handle empty store gracefully', () => {
+      // Just run cleanup on potentially empty store
+      expect(() => cleanupRateLimitStore()).not.toThrow()
+    })
+
+    it('should cleanup multiple IPs with different expiration times', async () => {
+      const now = Date.now()
+      vi.setSystemTime(now)
+
+      const request1 = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.105'
+      })
+      const request2 = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.106'
+      })
+      const request3 = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '192.168.1.107'
+      })
+
+      // IP1: Make requests at T=0
+      for (let i = 0; i < 50; i++) {
+        await checkRateLimit(request1)
+      }
+
+      // Advance 30 seconds
+      vi.setSystemTime(now + 30 * 1000)
+
+      // IP2: Make requests at T=30s
+      for (let i = 0; i < 50; i++) {
+        await checkRateLimit(request2)
+      }
+
+      // Advance to 61 seconds (IP1 entries should expire, IP2 should remain)
+      vi.setSystemTime(now + 61 * 1000)
+
+      // IP3: Make requests at T=61s
+      for (let i = 0; i < 50; i++) {
+        await checkRateLimit(request3)
+      }
+
+      // Run cleanup
+      cleanupRateLimitStore()
+
+      // IP1 should have full quota (old entries cleaned up)
+      for (let i = 0; i < 200; i++) {
+        const result = await checkRateLimit(request1)
+        expect(result).toBeNull()
+      }
+
+      // IP2 should have 150 remaining (50 used, still valid)
+      for (let i = 0; i < 150; i++) {
+        const result = await checkRateLimit(request2)
+        expect(result).toBeNull()
+      }
+      expect((await checkRateLimit(request2))?.status).toBe(429)
+
+      // IP3 should have 150 remaining (50 used)
+      for (let i = 0; i < 150; i++) {
+        const result = await checkRateLimit(request3)
+        expect(result).toBeNull()
+      }
+      expect((await checkRateLimit(request3))?.status).toBe(429)
     })
   })
 })

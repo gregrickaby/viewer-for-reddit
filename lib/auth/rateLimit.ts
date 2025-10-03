@@ -9,16 +9,18 @@ const rateLimitStore = new Map<string, number[]>()
 
 /**
  * Rate limit configuration.
+ * Production: 200 requests per minute
+ * Development: Higher limits for local testing
  */
 const RATE_LIMIT = {
-  MAX_REQUESTS: 10,
-  WINDOW_MS: 10 * 60 * 1000 // 10 minutes
+  MAX_REQUESTS: process.env.NODE_ENV === 'development' ? 1000 : 200,
+  WINDOW_MS: 60 * 1000 // 1 minute
 }
 
 /**
  * Clean up old entries from rate limit store.
  */
-function cleanupRateLimitStore() {
+export function cleanupRateLimitStore() {
   const now = Date.now()
   for (const [key, timestamps] of rateLimitStore.entries()) {
     const validTimestamps = timestamps.filter(
@@ -37,7 +39,8 @@ setInterval(cleanupRateLimitStore, 5 * 60 * 1000)
 
 /**
  * Apply in-memory rate limiting to a request.
- * 10 requests per 10 minutes per IP.
+ * Production: 100 requests per minute per IP
+ * Development: 1000 requests per minute per IP
  * Returns null if allowed, NextResponse if rate limited.
  */
 export async function checkRateLimit(
