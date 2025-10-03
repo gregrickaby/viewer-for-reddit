@@ -253,21 +253,20 @@ describe('CommentItem', () => {
     expect(screen.queryByTestId('thread-line')).not.toBeInTheDocument()
   })
 
-  it('should display upvotes in a Badge component in the comment header', () => {
+  it('should display vote buttons with score in the comment header', () => {
     render(
       <CommentExpansionProvider>
         <CommentItem comment={mockBasicComment} />
       </CommentExpansionProvider>
     )
 
-    // Check that upvote count is displayed
+    // Check that vote score is displayed
     expect(screen.getByText('42')).toBeInTheDocument()
 
     // Check that author is displayed (to confirm we're in the header area)
     expect(screen.getByText('testuser')).toBeInTheDocument()
 
-    // Verify upvote count is displayed (Badge component presence is implementation detail)
-    // The important thing is that the upvote count is visible to users
+    // Verify vote score is visible to users (VoteButtons component)
     expect(screen.getByText('42')).toBeVisible()
   })
 })

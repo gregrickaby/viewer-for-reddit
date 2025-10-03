@@ -31,8 +31,8 @@ export const voteApi = createApi({
     /**
      * Submit a vote for a post or comment.
      *
-     * Performs optimistic update for immediate UI feedback, with automatic
-     * rollback on error. Vote is persisted to Reddit's servers.
+     * Performs server-side vote submission. The useVote hook handles
+     * optimistic UI updates for immediate feedback.
      *
      * Vote directions:
      * - 1: Upvote
@@ -59,9 +59,7 @@ export const voteApi = createApi({
         url: '',
         method: 'POST',
         body: {id, dir}
-      }),
-      // Invalidate Vote tags to trigger refetch of affected data
-      invalidatesTags: (_result, error) => (error ? [] : ['Vote'])
+      })
     })
   })
 })

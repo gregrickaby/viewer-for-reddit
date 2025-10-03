@@ -1,7 +1,7 @@
 import type {SortingOption} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
 import {MAX_LIMIT} from '@/lib/utils/apiConstants'
-import {baseQuery} from '@/lib/utils/baseQuery/baseQuery'
+import {dynamicBaseQuery} from '@/lib/utils/baseQuery/dynamicBaseQuery'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 /**
@@ -55,7 +55,7 @@ export interface SubredditPostsArgs {
 export const postsApi = createApi({
   reducerPath: 'postsApi',
   tagTypes: ['SubredditPosts'],
-  baseQuery,
+  baseQuery: dynamicBaseQuery,
   endpoints: (builder) => ({
     /**
      * Fetches paginated posts from a specific subreddit with infinite scrolling support.

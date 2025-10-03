@@ -1,10 +1,7 @@
 'use client'
 
-import {useVoteMutation} from '@/lib/store/services/voteApi'
-import type {VoteDirection} from '@/lib/types'
+import {useVote} from '@/lib/hooks/useVote'
 import {ActionIcon, Group, NumberFormatter, Text, Tooltip} from '@mantine/core'
-import {notifications} from '@mantine/notifications'
-import {useState} from 'react'
 import {BiSolidDownvote, BiSolidUpvote} from 'react-icons/bi'
 import classes from './VoteButtons.module.css'
 
@@ -40,7 +37,7 @@ export interface VoteButtonsProps {
  * Features:
  * - Upvote and downvote buttons (vertical layout like Reddit)
  * - Visual feedback for current vote state
- * - Optimistic UI updates
+ * - Optimistic UI updates via useVote hook
  * - Error handling with notifications
  * - Keyboard accessible
  * - Disabled state when not authenticated
@@ -53,100 +50,19 @@ export function VoteButtons({
   userVote,
   size = 'md'
 }: Readonly<VoteButtonsProps>) {
-  const [vote, {isLoading}] = useVoteMutation()
-
-  // Local state for optimistic updates
-  const [optimisticScore, setOptimisticScore] = useState(score)
-  const [optimisticVote, setOptimisticVote] = useState<boolean | null>(
-    userVote ?? null
-  )
+  // Use the vote hook for all business logic
+  const {handleVote, currentVote, currentScore, isVoting} = useVote({
+    id,
+    initialScore: score,
+    initialVote: userVote
+  })
 
   // Icon size mapping based on button size variant
   const iconSizes = {sm: 16, md: 20, lg: 24} as const
   const iconSize = iconSizes[size]
 
-  /**
-   * Calculate new vote direction based on current state
-   */
-  const calculateVoteDirection = (
-    direction: 1 | -1,
-    currentVote: boolean | null
-  ): VoteDirection => {
-    // If clicking the same button, unvote (dir = 0)
-    if (
-      (direction === 1 && currentVote === true) ||
-      (direction === -1 && currentVote === false)
-    ) {
-      return 0
-    }
-    return direction
-  }
-
-  /**
-   * Calculate score change for optimistic update
-   */
-  const calculateScoreDelta = (
-    newDir: VoteDirection,
-    currentVote: boolean | null
-  ): number => {
-    if (newDir === 1) {
-      // Upvoting: +2 if downvoted, +1 otherwise
-      return currentVote === false ? 2 : 1
-    }
-    if (newDir === -1) {
-      // Downvoting: -2 if upvoted, -1 otherwise
-      return currentVote === true ? -2 : -1
-    }
-    // Unvoting
-    if (currentVote === true) return -1
-    if (currentVote === false) return 1
-    return 0
-  }
-
-  /**
-   * Convert vote direction to boolean state
-   */
-  const voteDirectionToState = (dir: VoteDirection): boolean | null => {
-    if (dir === 1) return true
-    if (dir === -1) return false
-    return null
-  }
-
-  /**
-   * Handle vote button click
-   */
-  const handleVote = async (direction: 1 | -1) => {
-    const newDir = calculateVoteDirection(direction, optimisticVote)
-    const scoreDelta = calculateScoreDelta(newDir, optimisticVote)
-
-    // Store previous state for rollback
-    const previousScore = optimisticScore
-    const previousVote = optimisticVote
-
-    // Optimistic update
-    setOptimisticScore(optimisticScore + scoreDelta)
-    setOptimisticVote(voteDirectionToState(newDir))
-
-    try {
-      await vote({id, dir: newDir}).unwrap()
-    } catch (error) {
-      // Rollback on error
-      setOptimisticScore(previousScore)
-      setOptimisticVote(previousVote)
-
-      notifications.show({
-        title: 'Vote failed',
-        message: 'Unable to submit vote. Please try again.',
-        color: 'red',
-        autoClose: 3000
-      })
-
-      console.error('Vote error:', error)
-    }
-  }
-
-  const isUpvoted = optimisticVote === true
-  const isDownvoted = optimisticVote === false
+  const isUpvoted = currentVote === true
+  const isDownvoted = currentVote === false
 
   // Determine text color based on vote state (Reddit style: orange for upvote, blue for downvote)
   let scoreColor: string = 'dimmed'
@@ -170,7 +86,7 @@ export function VoteButtons({
           color={isUpvoted ? 'orange' : 'gray'}
           size={actionIconSize}
           onClick={() => handleVote(1)}
-          disabled={isLoading}
+          disabled={isVoting}
           aria-label="Upvote"
           aria-pressed={isUpvoted}
           className={classes.upvoteButton}
@@ -181,7 +97,7 @@ export function VoteButtons({
       </Tooltip>
 
       <Text size={textSize} fw={700} c={scoreColor} className={classes.score}>
-        <NumberFormatter value={optimisticScore} thousandSeparator />
+        <NumberFormatter value={currentScore} thousandSeparator />
       </Text>
 
       <Tooltip label="Downvote" withinPortal>
@@ -190,7 +106,7 @@ export function VoteButtons({
           color={isDownvoted ? 'blue' : 'gray'}
           size={actionIconSize}
           onClick={() => handleVote(-1)}
-          disabled={isLoading}
+          disabled={isVoting}
           aria-label="Downvote"
           aria-pressed={isDownvoted}
           className={classes.downvoteButton}

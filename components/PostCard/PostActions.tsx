@@ -1,6 +1,6 @@
 import {VoteButtons} from '@/components/VoteButtons/VoteButtons'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {Button, Group, Text, Tooltip} from '@mantine/core'
+import {Button, Group, NumberFormatter, Text, Tooltip} from '@mantine/core'
 import {FaComment} from 'react-icons/fa'
 import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
 import classes from './PostActions.module.css'
@@ -51,8 +51,8 @@ export function PostActions({
             )
           }
         >
-          <Text size="sm" fw={500}>
-            {post.num_comments}
+          <Text size="sm" fw={700}>
+            <NumberFormatter value={post.num_comments} thousandSeparator />
           </Text>
         </Button>
       </Tooltip>

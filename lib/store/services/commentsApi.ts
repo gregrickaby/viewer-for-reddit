@@ -1,6 +1,6 @@
 import type {components} from '@/lib/types/reddit-api'
 import {COMMENTS_LIMIT, MAX_LIMIT} from '@/lib/utils/apiConstants'
-import {baseQuery} from '@/lib/utils/baseQuery/baseQuery'
+import {dynamicBaseQuery} from '@/lib/utils/baseQuery/dynamicBaseQuery'
 import {extractAndFilterComments} from '@/lib/utils/commentFilters'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
@@ -63,7 +63,7 @@ export type AutoCommentWithText = Extract<
 export const commentsApi = createApi({
   reducerPath: 'commentsApi',
   tagTypes: ['PostComments', 'UserComments'],
-  baseQuery,
+  baseQuery: dynamicBaseQuery,
   endpoints: (builder) => ({
     /**
      * Fetches comments for a specific Reddit post with infinite pagination support.

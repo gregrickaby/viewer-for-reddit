@@ -1,5 +1,6 @@
 'use client'
 
+import {VoteButtons} from '@/components/VoteButtons/VoteButtons'
 import type {NestedCommentData} from '@/lib/utils/commentFilters'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
@@ -11,7 +12,6 @@ import {
   Card,
   Collapse,
   Group,
-  NumberFormatter,
   Stack,
   Text,
   Tooltip
@@ -19,8 +19,7 @@ import {
 import {
   BiChevronRight,
   BiCollapseVertical,
-  BiExpandVertical,
-  BiSolidUpvote
+  BiExpandVertical
 } from 'react-icons/bi'
 import {useCommentExpansion} from '../CommentExpansionContext/CommentExpansionContext'
 import classes from './CommentItem.module.css'
@@ -100,12 +99,12 @@ export function CommentItem({
                 &middot;
               </Text>
 
-              <Badge variant="light" size="sm" color="gray">
-                <Group gap={4} align="center">
-                  <BiSolidUpvote size={14} color="red" />
-                  <NumberFormatter value={comment.ups} thousandSeparator />
-                </Group>
-              </Badge>
+              <VoteButtons
+                id={comment.name ?? ''}
+                score={comment.ups ?? 0}
+                userVote={comment.likes}
+                size="sm"
+              />
 
               <Text c="dimmed" size="sm">
                 &middot;

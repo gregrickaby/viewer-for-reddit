@@ -1,9 +1,8 @@
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
-import {ActionIcon, Anchor, Avatar, Group, Text} from '@mantine/core'
+import {Anchor, Avatar, Group, Text} from '@mantine/core'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import {IoEllipsisHorizontal} from 'react-icons/io5'
 import AppIcon from '../../app/icon.png'
 
 interface PostHeaderProps {
@@ -20,7 +19,7 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
 
   return (
     <Group justify="space-between" wrap="nowrap">
-      <Group gap="xs" wrap="nowrap">
+      <Group gap="xs" wrap="nowrap" mb="xs">
         <Avatar
           src={AppIcon.src}
           alt={post.subreddit_name_prefixed}
@@ -59,10 +58,6 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
           </Text>
         </Group>
       </Group>
-
-      <ActionIcon variant="subtle" color="gray" size="sm">
-        <IoEllipsisHorizontal size={16} />
-      </ActionIcon>
     </Group>
   )
 }
