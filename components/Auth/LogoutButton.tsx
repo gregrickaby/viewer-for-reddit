@@ -7,19 +7,8 @@ import {useRouter} from 'next/navigation'
 import {FaSignOutAlt} from 'react-icons/fa'
 
 export interface LogoutButtonProps {
-  /**
-   * Button variant style.
-   */
   variant?: 'filled' | 'light' | 'outline' | 'subtle' | 'default'
-
-  /**
-   * Button size.
-   */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-
-  /**
-   * Full width button.
-   */
   fullWidth?: boolean
 }
 
@@ -46,7 +35,9 @@ export function LogoutButton({
   return (
     <Button
       aria-label="Sign out"
+      data-umami-event="logout button"
       fullWidth={fullWidth}
+      id="logout-button"
       leftSection={<FaSignOutAlt />}
       onClick={handleLogout}
       size={size}

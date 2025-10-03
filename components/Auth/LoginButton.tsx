@@ -33,12 +33,14 @@ export function LoginButton({
     >
       <Button
         aria-label="Sign in with Reddit"
+        data-umami-event="login button"
         fullWidth={fullWidth}
-        rightSection={<FaReddit size={24} />}
+        h={45}
+        id="login-button"
         onClick={handleLogin}
+        rightSection={<FaReddit size={24} />}
         size={size}
         variant={variant}
-        h={45}
       >
         Sign in
       </Button>

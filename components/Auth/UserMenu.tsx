@@ -143,7 +143,12 @@ export function UserMenu() {
 
         <Menu.Divider />
 
-        <Menu.Item leftSection={<FaSignOutAlt />} onClick={handleLogout}>
+        <Menu.Item
+          data-umami-event="sign-out button"
+          id="sign-out-button"
+          leftSection={<FaSignOutAlt />}
+          onClick={handleLogout}
+        >
           Sign out
         </Menu.Item>
       </Menu.Dropdown>
