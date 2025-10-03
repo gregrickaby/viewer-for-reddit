@@ -255,7 +255,7 @@ expect(mockLogClientError).toHaveBeenCalledWith(
 npm run format      # Prettier formatting - auto-fixes formatting issues
 npm run lint        # ESLint with Mantine config - must pass
 npm run typecheck   # TypeScript strict checking - must pass
-npm run test        # Vitest unit tests - must pass
+npm run test        # Run all tests (components, lib, API routes) - must pass
 npm run dev         # Start dev server. Check if dev server is already running on port 3000. Then verify changes using Playwright MCP
 ```
 
@@ -265,8 +265,7 @@ npm run dev         # Start dev server. Check if dev server is already running o
 
 ```bash
 npx vitest <path> --run   # Run specific test file
-npm run test              # Run all unit tests
-npm run coverage          # Run tests with coverage report (aim for 90%+)
+npm run test              # Run all unit tests and produce coverage report
 ```
 
 ### Reddit API Type Generation
@@ -320,7 +319,9 @@ This is a **test-driven codebase**. Tests must be written/updated alongside code
 
 **Testing Strategy:**
 
-- **Unit Tests**: Everything has `.test.ts`. If possible, create loops for tests to minimize code duplication. Do not create superfluous tests that do not add value or directly contribute to coverage.
+- **Unit Tests**: Everything has `.test.ts`.
+  - If possible, create loops using it.each() for tests to minimize code duplication.
+  - Do not create superfluous tests that do not add value or directly contribute to coverage.
 - **Integration Tests**: RTK Query + MSW mocking. Never mock `global.fetch` or RTK Query directly.
 
 **MSW v2 HTTP Mocking (CRITICAL):**
@@ -525,11 +526,11 @@ Include in failure reports:
 
 Reference timeouts for automated agents:
 
-- **Build**: 20s
+- **Build**: 30s
 - **Format**: 5s
 - **Install**: 60s
-- **Lint**: 30s
-- **Test suite**: 120s
+- **Lint**: 5s
+- **Test suite**: 30s
 - **Type generation**: 60s
 - **Typecheck**: 5s
 

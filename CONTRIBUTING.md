@@ -13,6 +13,12 @@ Welcome! 👋 This guide will help you contribute to Viewer for Reddit, whether 
   - [Quality Gates](#quality-gates)
 - [Project Architecture](#project-architecture)
   - [Tech Stack](#tech-stack)
+  - [API Architecture](#api-architecture)
+    - [Anonymous Mode (Read-Only)](#anonymous-mode-read-only)
+    - [Authenticated Mode (Interactive)](#authenticated-mode-interactive)
+    - [Key Design Principles](#key-design-principles)
+    - [Request Flow](#request-flow)
+    - [Security Features](#security-features)
   - [File Structure](#file-structure)
   - [NPM Scripts Reference](#npm-scripts-reference)
 - [Reddit API Integration](#reddit-api-integration)
@@ -68,25 +74,14 @@ cp .env.example .env
 **Reddit API Setup**:
 
 - Visit <https://www.reddit.com/prefs/apps>
-- Create a new app (type: `personal use script`)
+- Create a new app (type: `web app`)
 - Add your credentials to `.env`:
+- Set the callback URL to `http://localhost:3000/api/auth/callback/reddit`
 
 ```bash
 REDDIT_CLIENT_ID="your_client_id_here"
 REDDIT_CLIENT_SECRET="your_client_secret_here"
 ```
-
-**Analytics Setup** (Optional):
-
-For tracking website analytics, add these optional environment variables:
-
-```bash
-ENABLE_ANALYTICS="true"
-ANALYTICS_SCRIPT_URL="https://your-analytics-provider.com/script.js"
-ANALYTICS_ID="your-analytics-site-id"
-```
-
-> **Note**: Analytics are only loaded in production when `ENABLE_ANALYTICS` is not `"false"`
 
 > **Note**: The app will not work without Reddit credentials!
 
@@ -108,8 +103,7 @@ npm run dev
 npm run format      # Prettier formatting
 npm run lint        # ESLint with Mantine config
 npm run typecheck   # TypeScript strict checking
-npm run test        # Vitest unit tests
-npm run coverage    # Test coverage (aim for 90%+)
+npm run test        # Vitest unit tests with coverage
 ```
 
 **For production:**

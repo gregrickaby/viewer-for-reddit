@@ -4,11 +4,11 @@ New here? Welcome! **Start browsing at the homepage:** [reddit-viewer.com](https
 
 ## Why Viewer for Reddit?
 
-Experience Reddit without distractions. No ads, no tracking, no algorithmic feeds—just the content you want to see.
+Experience Reddit without distractions. No targeted ads or algorithmic feeds, just the content you want to see!
 
 **Perfect for:**
 
-- Quickly browsing images, GIFs, and videos without clutter
+- Quickly browsing posts, comments, images, GIFs, and videos without clutter
 - Reading communities at work (boss button included!)
 - Enjoying Reddit privately without being tracked
 - Accessing Reddit content in a clean, fast interface
