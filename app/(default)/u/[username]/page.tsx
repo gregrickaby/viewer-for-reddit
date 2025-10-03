@@ -1,32 +1,44 @@
 import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
+import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {UserProfile} from '@/components/UserProfile/UserProfile'
+import {getUserProfile} from '@/lib/actions/getUserProfile'
 import config from '@/lib/config'
 import type {UserParams} from '@/lib/types'
+import type {Metadata} from 'next'
 
 /**
  * Generate metadata.
  */
-export async function generateMetadata(props: {params: UserParams}) {
+export async function generateMetadata(props: {
+  params: UserParams
+}): Promise<Metadata> {
   const params = await props.params
   const username = params.username
+  const data = await getUserProfile(username)
+
+  const displayName = data?.name ? `/u/${data.name}` : `/u/${username}`
+  const title = `${displayName} - ${config.siteName}`
+  const description = data?.subreddit?.public_description
+    ? data.subreddit.public_description
+    : `View ${displayName} profile, posts, and comments with Viewer for Reddit.`
 
   return {
-    title: `/u/${username} - ${config.siteName}`,
-    description: `View /u/${username} profile, posts, and comments anonymously with Viewer for Reddit.`,
+    title,
+    description,
     alternates: {
-      canonical: `${config.siteUrl}u/${username}`
+      canonical: `/u/${username}`
     },
     openGraph: {
-      title: `/u/${username} - ${config.siteName}`,
-      description: `Profile and posts by /u/${username}, updated in real time.`,
-      url: `${config.siteUrl}u/${username}`,
+      title,
+      description,
+      url: `/u/${username}`,
       images: [
         {
-          url: `${config.siteUrl}social-share.webp`,
-          width: 1200,
-          height: 630,
-          alt: config.siteName
+          url: data?.icon_img || '/social-share.webp',
+          width: data?.icon_img ? 256 : 1200,
+          height: data?.icon_img ? 256 : 630,
+          alt: displayName
         }
       ]
     }
@@ -42,6 +54,7 @@ export default async function UserProfilePage(props: {params: UserParams}) {
 
   return (
     <>
+      <Breadcrumb items={[{label: `u/${username}`, href: `/u/${username}`}]} />
       <UserProfile username={username} />
       <BossButton />
       <BackToTop />

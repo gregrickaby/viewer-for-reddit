@@ -1,28 +1,14 @@
 import {Comments} from '@/components/Comments/Comments'
 import {Media} from '@/components/Media/Media'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {getMediumImage} from '@/lib/utils/getMediumImage'
 import {parsePostLink} from '@/lib/utils/parsePostLink'
-import {
-  Anchor,
-  Badge,
-  Button,
-  Card,
-  Collapse,
-  Group,
-  NumberFormatter,
-  Stack,
-  Text,
-  Title
-} from '@mantine/core'
-import dayjs from 'dayjs'
+import {Anchor, Card, Collapse, Title} from '@mantine/core'
 import Link from 'next/link'
 import {useState} from 'react'
-import {BiSolidUpvote} from 'react-icons/bi'
-import {FaComment} from 'react-icons/fa'
-import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
+import {PostActions} from './PostActions'
 import classes from './PostCard.module.css'
+import {PostHeader} from './PostHeader'
 
 interface PostCardProps {
   post: AutoPostChildData
@@ -50,9 +36,6 @@ export function PostCard({
   const preview = (post as any).preview?.images?.[0]?.resolutions
   const image = getMediumImage(preview ?? [])
   const postLink = parsePostLink(post.permalink, useInternalRouting)
-  const created = post.created_utc
-    ? dayjs.unix(post.created_utc).toISOString()
-    : ''
   const postPermalink = post.permalink ?? post.id ?? ''
   const [commentsOpen, setCommentsOpen] = useState(false)
 
@@ -65,55 +48,27 @@ export function PostCard({
       shadow="sm"
       withBorder
     >
-      <Stack gap={0}>
-        <Link
-          className={classes.subredditLink}
-          href={`/${post.subreddit_name_prefixed}`}
-        >
-          <Text className={classes.subreddit} size="sm" fw={700}>
-            {post.subreddit_name_prefixed}
-          </Text>
+      <PostHeader post={post} />
+
+      {useInternalRouting ? (
+        <Link className={classes.link} href={postLink}>
+          <Title className={classes.title} order={2} size="lg" mt="xs" mb="xs">
+            {post.title}
+          </Title>
         </Link>
-
-        <Group gap={4} c="dimmed">
-          <Link className={classes.metaLink} href={`/u/${post.author}`}>
-            <Text size="xs">u/{post.author}</Text>
-          </Link>
-          &middot;
-          <Badge variant="light" size="sm" color="gray">
-            <Group gap={4} align="center">
-              <BiSolidUpvote size={14} color="red" />
-              <NumberFormatter value={post.ups} thousandSeparator />
-            </Group>
-          </Badge>
-          &middot;
-          <Text size="xs">
-            <time dateTime={created}>
-              {post.created_utc ? formatTimeAgo(post.created_utc) : ''}
-            </time>
-          </Text>
-        </Group>
-
-        {useInternalRouting ? (
-          <Link className={classes.link} href={postLink}>
-            <Title className={classes.title} order={2} size="xl" mt="xs">
-              {post.title}
-            </Title>
-          </Link>
-        ) : (
-          <Anchor
-            className={classes.link}
-            href={postLink}
-            rel="noopener noreferrer"
-            target="_blank"
-            underline="never"
-          >
-            <Title className={classes.title} order={2} size="xl" mt="xs">
-              {post.title}
-            </Title>
-          </Anchor>
-        )}
-      </Stack>
+      ) : (
+        <Anchor
+          className={classes.link}
+          href={postLink}
+          rel="noopener noreferrer"
+          target="_blank"
+          underline="never"
+        >
+          <Title className={classes.title} order={2} size="lg" mt="xs" mb="xs">
+            {post.title}
+          </Title>
+        </Anchor>
+      )}
 
       {image?.url && (
         <Card.Section>
@@ -121,24 +76,11 @@ export function PostCard({
         </Card.Section>
       )}
 
-      <Group gap="xs" mt="xs">
-        <Button
-          aria-expanded={commentsOpen}
-          aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
-          className={`${classes.bottomMeta} ${classes.commentsToggle}`}
-          onClick={() => setCommentsOpen(!commentsOpen)}
-          variant="subtle"
-        >
-          <Group gap={4}>
-            <FaComment size={16} color="red" />
-            <Text size="sm" c="dimmed">
-              <NumberFormatter value={post.num_comments} thousandSeparator />{' '}
-              comments
-            </Text>
-            {commentsOpen ? <IoChevronUp /> : <IoChevronDown />}
-          </Group>
-        </Button>
-      </Group>
+      <PostActions
+        post={post}
+        commentsOpen={commentsOpen}
+        onCommentsToggle={() => setCommentsOpen(!commentsOpen)}
+      />
 
       <Collapse in={commentsOpen}>
         <Comments

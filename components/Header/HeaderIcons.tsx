@@ -1,3 +1,4 @@
+import {UserMenu} from '@/components/Auth/UserMenu'
 import {Settings} from '@/components/Settings/Settings'
 import config from '@/lib/config'
 import {ActionIcon, Group, Tooltip} from '@mantine/core'
@@ -38,6 +39,7 @@ export function HeaderIcons() {
           <SiBuymeacoffee size={18} />
         </ActionIcon>
       </Tooltip>
+      <UserMenu />
     </Group>
   )
 }

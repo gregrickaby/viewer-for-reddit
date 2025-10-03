@@ -12,6 +12,7 @@ import {
   Anchor,
   Avatar,
   Badge,
+  Button,
   Card,
   Center,
   Divider,
@@ -24,8 +25,9 @@ import {
   Text,
   Title
 } from '@mantine/core'
+import Link from 'next/link'
 import {BiSolidUpvote} from 'react-icons/bi'
-import {MdVerified} from 'react-icons/md'
+import {MdError, MdVerified} from 'react-icons/md'
 import classes from './UserProfile.module.css'
 
 interface UserProfileProps {
@@ -69,9 +71,14 @@ export function UserProfile({username}: Readonly<UserProfileProps>) {
 
   if (profileError || postsError || commentsError) {
     return (
-      <Center>
-        <Text c="red">Error loading user data.</Text>
-      </Center>
+      <Stack align="center" mt="lg">
+        <Title order={3} c="red">
+          <MdError size={16} /> Unable to load profile from Reddit API
+        </Title>
+        <Button color="gray" component={Link} href={`/u/${username}`}>
+          Reload Page
+        </Button>
+      </Stack>
     )
   }
 
@@ -83,9 +90,19 @@ export function UserProfile({username}: Readonly<UserProfileProps>) {
 
   return (
     <div className={classes.container}>
-      <Title order={1} className={classes.header}>
-        User Profile: u/{username}
-      </Title>
+      <Group mb="md" align="center">
+        <Avatar
+          size="lg"
+          radius="md"
+          src={profile?.icon_img || profile?.snoovatar_img}
+          alt={`u/${username}`}
+        >
+          {username.charAt(0).toUpperCase()}
+        </Avatar>
+        <Title order={1} className={classes.header}>
+          u/{username}
+        </Title>
+      </Group>
 
       <Tabs defaultValue="posts">
         <Tabs.List>

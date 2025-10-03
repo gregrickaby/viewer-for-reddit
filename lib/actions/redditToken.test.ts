@@ -47,8 +47,12 @@ describe('fetchToken', () => {
     expect(token).toBeNull()
     expect(logError).toHaveBeenCalledWith(expect.any(Error), expect.any(Object))
 
+    // Re-stub all required env vars
     vi.stubEnv('REDDIT_CLIENT_ID', 'test_id')
     vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
+    vi.stubEnv('USER_AGENT', 'test-user-agent')
+    vi.stubEnv('SESSION_DOMAIN', '')
+    vi.stubEnv('AUTH_URL', 'http://localhost:3000')
   })
 
   it('throws an error when the token request fails', async () => {

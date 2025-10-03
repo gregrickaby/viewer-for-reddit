@@ -160,11 +160,11 @@ export function Search() {
           // Tablet/Desktop: Search input in header
           <Combobox.Target>
             <InputBase
-              aria-label="Search subreddits"
+              aria-label="Search communities"
               autoCapitalize="off"
               autoCorrect="off"
               classNames={{input: styles.searchInput}}
-              placeholder="Search subreddits"
+              placeholder="Search communities"
               size="md"
               spellCheck={false}
               value={query}
@@ -223,7 +223,7 @@ export function Search() {
                 </ActionIcon>
                 <InputBase
                   ref={mobileInputRef}
-                  aria-label="Search subreddits"
+                  aria-label="Search communities"
                   autoCapitalize="off"
                   autoCorrect="off"
                   placeholder="Search Reddit"

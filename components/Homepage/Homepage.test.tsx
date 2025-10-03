@@ -57,7 +57,7 @@ describe('Homepage', () => {
       http.get('https://oauth.reddit.com/r/all/hot.json', () => {
         return HttpResponse.json(mockAllPostsResponse)
       }),
-      // Use wildcard to match any multi-subreddit requests
+      // Use wildcard to match any custom feeds requests
       http.get('https://oauth.reddit.com/r/*/hot.json', () => {
         return HttpResponse.json(mockFavoritePostsResponse)
       })
@@ -152,5 +152,39 @@ describe('Homepage', () => {
     expect(
       await screen.findByRole('heading', {name: /home/i})
     ).toBeInTheDocument()
+  })
+
+  it('should clean up #_ hash from OAuth redirect', () => {
+    // Mock window.location and history
+    const mockReplaceState = vi.fn()
+    Object.defineProperty(window, 'location', {
+      value: {
+        hash: '#_',
+        pathname: '/',
+        search: ''
+      },
+      writable: true
+    })
+    Object.defineProperty(window.history, 'replaceState', {
+      value: mockReplaceState,
+      writable: true
+    })
+
+    render(<Homepage />, {
+      preloadedState: {
+        settings: {
+          favorites: [],
+          enableNsfw: false,
+          isMuted: false,
+          currentSort: 'hot',
+          recent: [],
+          searchHistory: [],
+          currentSubreddit: ''
+        }
+      }
+    })
+
+    // Should call replaceState to remove the hash
+    expect(mockReplaceState).toHaveBeenCalledWith(null, '', '/')
   })
 })

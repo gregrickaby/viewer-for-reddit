@@ -30,6 +30,11 @@ const mockSubredditItem2: SubredditItem = {
 const createMockState = (
   overrides?: Partial<RootState['settings']>
 ): RootState => ({
+  auth: {
+    isAuthenticated: false,
+    username: null,
+    expiresAt: null
+  },
   settings: {
     currentSort: 'hot',
     currentSubreddit: 'all',
@@ -49,7 +54,9 @@ const createMockState = (
   searchApi: {} as any,
   commentsApi: {} as any,
   userApi: {} as any,
-  subredditApi: {} as any
+  subredditApi: {} as any,
+  authenticatedApi: {} as any,
+  voteApi: {} as any
 })
 
 describe('settingsSelectors', () => {

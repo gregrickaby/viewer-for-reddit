@@ -27,13 +27,13 @@ describe('Search', () => {
     it('should render search input on desktop', () => {
       render(<Search />)
       expect(
-        screen.getByRole('textbox', {name: /Search subreddits/i})
+        screen.getByRole('textbox', {name: /Search communities/i})
       ).toBeInTheDocument()
     })
 
     it('should show grouped results when typing on desktop', async () => {
       render(<Search />)
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.type(input, 'aww')
 
       await waitFor(() => {
@@ -43,7 +43,7 @@ describe('Search', () => {
 
     it('should show clear button when input has value on desktop', async () => {
       render(<Search />)
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.type(input, 'test')
 
       await waitFor(() => {
@@ -55,7 +55,7 @@ describe('Search', () => {
 
     it('should clear input when clear button is clicked on desktop', async () => {
       render(<Search />)
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.type(input, 'test')
 
       const clearButton = await screen.findByRole('button', {
@@ -68,7 +68,7 @@ describe('Search', () => {
 
     it('should navigate when option is selected on desktop', async () => {
       render(<Search />)
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.type(input, 'aww')
 
       await waitFor(() => {
@@ -104,7 +104,7 @@ describe('Search', () => {
       await user.click(searchIcon)
 
       await waitFor(() => {
-        const mobileInput = screen.getByLabelText(/Search subreddits/i)
+        const mobileInput = screen.getByLabelText(/Search communities/i)
         expect(mobileInput).toBeInTheDocument()
       })
     })
@@ -157,7 +157,7 @@ describe('Search', () => {
         await user.click(searchIcon)
         await waitFor(() => {
           expect(
-            screen.getByLabelText(/Search subreddits/i)
+            screen.getByLabelText(/Search communities/i)
           ).toBeInTheDocument()
         })
       }
@@ -165,7 +165,7 @@ describe('Search', () => {
 
     it('should show Search History section when query is empty and history exists', async () => {
       await setupSearch()
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.click(input)
 
       await waitFor(() => {
@@ -175,7 +175,7 @@ describe('Search', () => {
 
     it('should show remove button for search history items', async () => {
       await setupSearch()
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.click(input)
 
       await waitFor(() => {
@@ -188,7 +188,7 @@ describe('Search', () => {
 
     it('should show empty state when no results found', async () => {
       await setupSearch()
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.type(input, 'notarealsubreddit')
 
       await waitFor(() => {
@@ -203,7 +203,7 @@ describe('Search', () => {
 
     it('should show loading spinner during search', async () => {
       render(<Search />)
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.click(input)
       await user.type(input, 'te')
 
@@ -217,7 +217,7 @@ describe('Search', () => {
 
     it('should show error state when API fails', async () => {
       render(<Search />)
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.click(input)
 
       await waitFor(() => {
@@ -228,7 +228,7 @@ describe('Search', () => {
 
     it('should update input value when typing', async () => {
       await setupSearch()
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.type(input, 'test')
 
       expect(input).toHaveValue('test')
@@ -236,7 +236,7 @@ describe('Search', () => {
 
     it('should render dropdown structure for searching', async () => {
       await setupSearch()
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.type(input, 'a')
 
       await waitFor(() => {
@@ -246,7 +246,7 @@ describe('Search', () => {
 
     it('should close mobile drawer when option is selected', async () => {
       await setupSearch(true)
-      const input = screen.getByLabelText(/Search subreddits/i)
+      const input = screen.getByLabelText(/Search communities/i)
       await user.type(input, 'aww')
 
       await waitFor(() => {
@@ -271,7 +271,7 @@ describe('Search', () => {
 
     it('should not show no results during loading state', async () => {
       render(<Search />)
-      const input = screen.getByRole('textbox', {name: /Search subreddits/i})
+      const input = screen.getByRole('textbox', {name: /Search communities/i})
       await user.click(input)
       await user.type(input, 'te')
 

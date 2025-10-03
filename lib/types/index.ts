@@ -20,9 +20,16 @@ export type DeepPartial<T> = {
 export type SubredditParams = Promise<{subreddit: string}>
 export type UserParams = Promise<{username: string}>
 export type SinglePostParams = Promise<{subreddit: string; postId: string}>
+export type CustomFeedParams = Promise<{
+  username: string
+  customfeed: string
+}>
 export type SearchParams = Promise<{
   [key: string]: string | string[] | undefined
 }>
+export interface SinglePostPageParams {
+  params: Promise<{subreddit: string; postId: string}>
+}
 
 /**
  * Valid sorting options for Reddit posts.
@@ -82,5 +89,31 @@ export interface TokenResponse {
   token_type: string
   expires_in: number
   scope: string
+  error?: string
+}
+
+/**
+ * Vote direction for Reddit posts and comments.
+ * - 1: Upvote
+ * - 0: Unvote (remove existing vote)
+ * - -1: Downvote
+ */
+export type VoteDirection = 1 | 0 | -1
+
+/**
+ * Vote request payload for Reddit API.
+ */
+export interface VoteRequest {
+  /** Thing fullname (e.g., t1_abc123 for comment, t3_xyz789 for post) */
+  id: string
+  /** Vote direction: 1 (upvote), 0 (unvote), -1 (downvote) */
+  dir: VoteDirection
+}
+
+/**
+ * Vote response from Reddit API.
+ */
+export interface VoteResponse {
+  success: boolean
   error?: string
 }

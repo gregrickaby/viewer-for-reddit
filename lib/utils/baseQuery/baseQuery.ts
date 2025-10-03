@@ -1,23 +1,22 @@
-import {fetchBaseQuery, type BaseQueryFn} from '@reduxjs/toolkit/query/react'
+import {createRedditBaseQuery} from './createRedditBaseQuery'
 
 /**
- * Custom RTK Query base query that proxies requests through the local API route.
+ * Anonymous Reddit API base query for read-only requests.
  *
- * This function handles all Reddit API requests by routing them through our
- * local `/api/reddit` proxy endpoint to avoid CORS issues and provide
- * consistent error handling across all API calls.
+ * This base query handles public Reddit content that doesn't require user authentication:
+ * - Subreddit posts (/r/{subreddit})
+ * - Post comments (/r/{subreddit}/comments/{post_id})
+ * - User profiles (/user/{username}/about)
+ * - Search results (/search)
+ * - Popular/trending content
+ *
+ * Routes through /api/reddit which uses app-level tokens for authentication.
  *
  * Key features:
  * - Automatic CORS handling via local proxy
  * - Environment-aware URL construction (test vs production)
  * - Consistent header management
  * - URL encoding for safe parameter passing
- *
- * @param args - The request arguments (URL string or request options object)
- * @param api - The RTK Query API object containing dispatch, getState, etc.
- * @param extraOptions - Additional options passed through to fetchBaseQuery
- *
- * @returns Promise resolving to the API response data or error
  *
  * @example
  * // Used in API service definitions
@@ -33,31 +32,4 @@ import {fetchBaseQuery, type BaseQueryFn} from '@reduxjs/toolkit/query/react'
  * @see {@link https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#customizing-queries-with-basequery} RTK Query BaseQuery docs
  * @see {@link https://www.reddit.com/dev/api/} Reddit API Documentation
  */
-export const baseQuery: BaseQueryFn = async (args, api, extraOptions) => {
-  // Use absolute URL for tests to avoid URL parsing issues in Node.js environment
-  const baseUrl =
-    typeof window === 'undefined' || process.env.NODE_ENV === 'test'
-      ? 'http://localhost:3000/api/reddit'
-      : '/api/reddit'
-
-  // Create the proxy query function with proper headers
-  const proxyQuery = fetchBaseQuery({
-    baseUrl,
-    prepareHeaders: (headers) => {
-      headers.set('Content-Type', 'application/json')
-      return headers
-    }
-  })
-
-  // Extract the original URL from args (string or object format)
-  const originalUrl = typeof args === 'string' ? args : args.url
-
-  // Construct proxy arguments with URL-encoded path parameter
-  const proxyArgs =
-    typeof args === 'string'
-      ? `?path=${encodeURIComponent(originalUrl)}`
-      : {...args, url: `?path=${encodeURIComponent(originalUrl)}`}
-
-  // Execute the proxied request
-  return await proxyQuery(proxyArgs, api, extraOptions)
-}
+export const baseQuery = createRedditBaseQuery('/api/reddit')

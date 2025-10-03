@@ -1,4 +1,5 @@
 import {http, HttpResponse} from 'msw'
+import {singlePostMock} from '../../mocks/singlePost'
 
 export const commentHandlers = [
   // Comments for a post (permalink.json) — allow multi-segment permalinks
@@ -47,10 +48,10 @@ export const commentHandlers = [
     }
 
     // reddit comments endpoint returns an array: [post, comments]
-    // only respond to requests ending with .json to avoid catching other routes
+    // only respond to requests ending with .json and containing /comments/
     const url = new URL(request.url)
-    if (url.pathname.endsWith('.json')) {
-      return HttpResponse.json([{}, commentsListing])
+    if (url.pathname.endsWith('.json') && url.pathname.includes('/comments/')) {
+      return HttpResponse.json([singlePostMock[0], commentsListing])
     }
     return new HttpResponse(null, {status: 404, statusText: 'Not Found'})
   })

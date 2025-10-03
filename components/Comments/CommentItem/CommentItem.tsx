@@ -1,5 +1,6 @@
 'use client'
 
+import {VoteButtons} from '@/components/VoteButtons/VoteButtons'
 import type {NestedCommentData} from '@/lib/utils/commentFilters'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
@@ -11,16 +12,15 @@ import {
   Card,
   Collapse,
   Group,
-  NumberFormatter,
   Stack,
   Text,
   Tooltip
 } from '@mantine/core'
+import Link from 'next/link'
 import {
   BiChevronRight,
   BiCollapseVertical,
-  BiExpandVertical,
-  BiSolidUpvote
+  BiExpandVertical
 } from 'react-icons/bi'
 import {useCommentExpansion} from '../CommentExpansionContext/CommentExpansionContext'
 import classes from './CommentItem.module.css'
@@ -86,32 +86,17 @@ export function CommentItem({
           <Stack gap="xs">
             {/* Comment header */}
             <Group gap="xs" align="center">
-              <Anchor
-                href={`https://reddit.com/user/${comment.author}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <Text c="dimmed" size="sm" fw={500}>
-                  {comment.author}
+              <Link className={classes.link} href={`/u/${comment.author}`}>
+                <Text c="dimmed" size="sm" fw={700}>
+                  u/{comment.author}
                 </Text>
-              </Anchor>
+              </Link>
 
               <Text c="dimmed" size="sm">
                 &middot;
               </Text>
 
-              <Badge variant="light" size="sm" color="gray">
-                <Group gap={4} align="center">
-                  <BiSolidUpvote size={14} color="red" />
-                  <NumberFormatter value={comment.ups} thousandSeparator />
-                </Group>
-              </Badge>
-
-              <Text c="dimmed" size="sm">
-                &middot;
-              </Text>
-
-              <Text c="dimmed" size="sm">
+              <Text c="dimmed" size="xs">
                 {formatTimeAgo(comment.created_utc ?? 0)}
               </Text>
             </Group>
@@ -131,9 +116,15 @@ export function CommentItem({
               {/* Expand/collapse functionality moved to bottom left */}
               {showReplies ? (
                 <Group gap="xs" align="center">
+                  <VoteButtons
+                    id={comment.name ?? ''}
+                    score={comment.ups ?? 0}
+                    userVote={comment.likes}
+                    size="sm"
+                  />
                   <Badge
                     variant="light"
-                    size="xs"
+                    size="md"
                     className={classes.replyCount}
                   >
                     {comment.replies!.length}{' '}
@@ -199,7 +190,7 @@ export function CommentItem({
                   target="_blank"
                 >
                   <Text size="sm" c="dimmed">
-                    View on Reddit
+                    View comment on Reddit
                   </Text>
                 </Anchor>
               </Group>

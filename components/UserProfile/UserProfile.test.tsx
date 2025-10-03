@@ -7,7 +7,8 @@ describe('UserProfile', () => {
     render(<UserProfile username="testuser" />)
 
     await waitFor(() => {
-      expect(screen.getByText('User Profile: u/testuser')).toBeInTheDocument()
+      const usernames = screen.getAllByText(/u\/testuser/i)
+      expect(usernames.length).toBeGreaterThan(0)
     })
 
     expect(screen.getByRole('tab', {name: /posts/i})).toBeInTheDocument()
@@ -58,7 +59,9 @@ describe('UserProfile', () => {
     render(<UserProfile username="nonexistentuser" />)
 
     await waitFor(() => {
-      expect(screen.getByText('Error loading user data.')).toBeInTheDocument()
+      expect(
+        screen.getByText(/unable to load profile from reddit api/i)
+      ).toBeInTheDocument()
     })
   })
 
@@ -78,7 +81,8 @@ describe('UserProfile', () => {
     render(<UserProfile username="testuser" />)
 
     await waitFor(() => {
-      expect(screen.getByText('User Profile: u/testuser')).toBeInTheDocument()
+      const usernames = screen.getAllByText(/u\/testuser/i)
+      expect(usernames.length).toBeGreaterThan(0)
     })
 
     const profileTab = screen.getByRole('tab', {name: /profile/i})
@@ -93,9 +97,12 @@ describe('UserProfile', () => {
     render(<UserProfile username="testuser" />)
 
     await waitFor(() => {
-      const avatar = screen.getByAltText('u/testuser')
-      expect(avatar).toBeInTheDocument()
+      const avatars = screen.getAllByAltText('u/testuser')
+      expect(avatars.length).toBeGreaterThan(0)
     })
+
+    const avatars = screen.getAllByAltText('u/testuser')
+    expect(avatars[0]).toBeInTheDocument()
   })
 
   it('should display user profile description when available', async () => {

@@ -1,31 +1,43 @@
+import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {SinglePost} from '@/components/SinglePost/SinglePost'
+import {getSinglePost} from '@/lib/actions/getSinglePost'
+import type {SinglePostPageParams} from '@/lib/types'
 import type {Metadata} from 'next'
-
-// Try using Next.js official PageProps helper
-export interface SinglePostPageProps {
-  params: Promise<{subreddit: string; postId: string}>
-}
 
 /**
  * Generate metadata for the single post page.
  */
 export async function generateMetadata({
   params
-}: SinglePostPageProps): Promise<Metadata> {
+}: SinglePostPageParams): Promise<Metadata> {
   const {subreddit, postId} = await params
+  const post = await getSinglePost(subreddit, postId)
+  const title = `${post?.title} - r/${subreddit}`
 
   return {
-    title: `Post in r/${subreddit} - Reddit Viewer`,
-    description: `View post ${postId} in r/${subreddit} subreddit`,
-    openGraph: {
-      title: `Post in r/${subreddit}`,
-      description: `View post ${postId} in r/${subreddit} subreddit`,
-      type: 'article'
+    title,
+    description: post?.title,
+    alternates: {
+      canonical: `/r/${subreddit}/comments/${postId}`
     },
-    twitter: {
-      card: 'summary',
-      title: `Post in r/${subreddit}`,
-      description: `View post ${postId} in r/${subreddit} subreddit`
+    robots: {
+      index: true,
+      follow: true
+    },
+    openGraph: {
+      title,
+      description: post?.title,
+      url: `/r/${subreddit}/comments/${postId}`,
+      type: 'article',
+      ...(post?.thumbnail &&
+        post.thumbnail !== 'self' &&
+        post.thumbnail !== 'default' && {
+          images: [
+            {
+              url: post.thumbnail
+            }
+          ]
+        })
     }
   }
 }
@@ -43,12 +55,22 @@ export async function generateMetadata({
  * @param params - Route parameters containing subreddit and postId
  * @returns Single post page with post content and comments
  */
-export default async function SinglePostPage({params}: SinglePostPageProps) {
+export default async function SinglePostPage({params}: SinglePostPageParams) {
   const {subreddit, postId} = await params
+  const post = await getSinglePost(subreddit, postId)
 
   return (
-    <main>
+    <>
+      <Breadcrumb
+        items={[
+          {label: `r/${subreddit}`, href: `/r/${subreddit}`},
+          {
+            label: post?.title || 'Post',
+            href: `/r/${subreddit}/comments/${postId}`
+          }
+        ]}
+      />
       <SinglePost subreddit={subreddit} postId={postId} />
-    </main>
+    </>
   )
 }

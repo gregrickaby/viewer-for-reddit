@@ -1,0 +1,47 @@
+.breadcrumbNav {
+  padding: var(--mantine-spacing-md) 0;
+}
+
+.breadcrumbList {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--mantine-font-size-sm);
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbLink {
+  color: var(--mantine-color-text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+}
+
+.breadcrumbLink:hover {
+  color: var(--mantine-color-redditColorScheme-5);
+}
+
+.breadcrumbCurrent {
+  font-weight: 700;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumbSeparator {
+  color: var(--mantine-color-dimmed);
+  user-select: none;
+  margin: 0 var(--mantine-spacing-xs);
+  font-weight: 300;
+}

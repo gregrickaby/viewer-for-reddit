@@ -2,27 +2,21 @@ import {getRedditToken} from '@/lib/actions/redditToken'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logError'
 import {validateOrigin} from '@/lib/utils/validateOrigin'
+import {isSafeRedditPath} from '@/lib/utils/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
- * Validates that the provided path is a safe and legal Reddit API path.
+ * Anonymous Reddit API Proxy Route Handler.
  *
- * @param path The path to validate.
- */
-function isSafeRedditPath(path: string): boolean {
-  // Must start with exactly one /
-  if (!path || !path.startsWith('/') || path.startsWith('//')) return false
-  // Disallow path traversal
-  if (path.includes('..')) return false
-  // Disallow protocol-relative, or absolute URLs
-  if (path.startsWith('http:') || path.startsWith('https:')) return false
-  // Disallow fragments or dangerous characters
-  if (path.includes('#')) return false
-  return true
-}
-
-/**
- * Reddit API Proxy Route Handler.
+ * This endpoint handles read-only, anonymous requests using app-level tokens.
+ * Use this for public content that doesn't require user authentication:
+ * - Subreddit posts (/r/{subreddit})
+ * - Post comments (/r/{subreddit}/comments/{post_id})
+ * - User profiles (/user/{username}/about)
+ * - Search results (/search)
+ *
+ * For user-specific content (custom feeds, voting, saved posts, etc.),
+ * use /api/reddit/me instead.
  *
  * @example
  * fetch('/api/reddit?path=/r/programming/hot.json?limit=25')
@@ -65,20 +59,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // This proxy is for anonymous/read-only access only
+    // User-authenticated requests should use /api/reddit/me
     const token = await getRedditToken()
 
-    if (!token?.access_token) {
-      logError('Reddit token unavailable for API request', {
-        component: 'redditApiRoute',
-        action: 'validateToken',
-        path,
-        tokenExists: !!token,
-        hasAccessToken: !!token?.access_token,
-        tokenType: token?.token_type
-      })
+    if (!token) {
       return NextResponse.json(
-        {error: 'No Reddit token available'},
-        {status: 401}
+        {error: 'Failed to obtain Reddit API token'},
+        {status: 500}
       )
     }
 

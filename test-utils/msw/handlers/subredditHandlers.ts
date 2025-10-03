@@ -193,7 +193,7 @@ export const subredditHandlers = [
     }
 
     if (slug === 'gaming+technology+programming') {
-      // Test multi-subreddit request with + separators preserved
+      // Test custom feeds request with + separators preserved
       return HttpResponse.json({
         kind: 'Listing',
         data: {
@@ -205,7 +205,7 @@ export const subredditHandlers = [
             {
               kind: 't3',
               data: {
-                title: 'Gaming post from multi-subreddit',
+                title: 'Gaming post from custom feeds',
                 id: 'multi1',
                 stickied: false
               }
@@ -213,7 +213,7 @@ export const subredditHandlers = [
             {
               kind: 't3',
               data: {
-                title: 'Technology post from multi-subreddit',
+                title: 'Technology post from custom feeds',
                 id: 'multi2',
                 stickied: false
               }

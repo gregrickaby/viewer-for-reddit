@@ -65,8 +65,8 @@ describe('postsApi', () => {
     expect(result.current.isFetchingNextPage).toBeDefined()
   })
 
-  it('should properly encode multi-subreddit URLs with + separators', async () => {
-    // Test that multi-subreddit syntax preserves + separators
+  it('should properly encode custom feeds URLs with + separators', async () => {
+    // Test that custom feeds syntax preserves + separators
     const {result} = renderHook(() =>
       useGetSubredditPostsInfiniteQuery({
         subreddit: 'gaming+technology+programming',

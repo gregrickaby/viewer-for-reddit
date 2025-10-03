@@ -1,11 +1,12 @@
+import {VoteButtons} from '@/components/VoteButtons/VoteButtons'
 import type {AutoCommentWithText} from '@/lib/store/services/commentsApi'
 import {hasRequiredCommentFields} from '@/lib/utils/commentHelpers'
 import {formatTimeAgo} from '@/lib/utils/formatTimeAgo'
 import {logError} from '@/lib/utils/logError'
 import {decodeAndSanitizeHtml} from '@/lib/utils/sanitizeText'
-import {Anchor, Card, Group, NumberFormatter, Text} from '@mantine/core'
+import {Anchor, Card, Group, Text} from '@mantine/core'
+import Link from 'next/link'
 import {memo} from 'react'
-import {BiSolidUpvote} from 'react-icons/bi'
 import styles from './CommentCard.module.css'
 
 interface CommentCardProps {
@@ -33,9 +34,9 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
 
     return (
       <article
+        aria-label="Invalid comment error"
         className={styles.commentCard}
         role="alert"
-        aria-label="Invalid comment error"
       >
         <Text size="sm" c="dimmed">
           <span className={styles.srOnly}>Error: </span>
@@ -51,16 +52,14 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
     >
       <Card padding="md" radius="md" shadow="none" withBorder>
         <Group gap="xs">
-          <Anchor
-            href={`https://reddit.com/user/${comment.author || 'unknown'}`}
-            rel="noopener noreferrer"
-            target="_blank"
+          <Link
             aria-label={`View profile of ${comment.author || 'Unknown'}`}
+            href={`/u/${comment.author || 'unknown'}`}
           >
             <Text c="dimmed" size="sm">
               {comment.author || 'Unknown'}
             </Text>
-          </Anchor>
+          </Link>
           <Text c="dimmed" size="sm" aria-hidden="true">
             &middot;
           </Text>
@@ -86,16 +85,12 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
         />
 
         <Group gap="md">
-          <Group className={styles.meta}>
-            <BiSolidUpvote size={16} color="red" aria-hidden="true" />
-            <Text size="sm" c="dimmed">
-              <NumberFormatter
-                value={comment.ups ?? 0}
-                thousandSeparator
-                aria-label={`${comment.ups ?? 0} upvotes`}
-              />
-            </Text>
-          </Group>
+          <VoteButtons
+            id={comment.name ?? ''}
+            score={comment.ups ?? 0}
+            userVote={comment.likes}
+            size="sm"
+          />
           <Anchor
             href={`https://reddit.com${comment.permalink ?? ''}`}
             rel="noopener noreferrer"

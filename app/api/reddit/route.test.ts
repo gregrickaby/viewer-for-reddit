@@ -171,7 +171,7 @@ describe('Reddit API Route', () => {
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer reddit-token',
-            'User-Agent': 'web-app:viewer-for-reddit:* (by Greg Rickaby)'
+            'User-Agent': 'test-user-agent'
           })
         })
       )
@@ -214,8 +214,8 @@ describe('Reddit API Route', () => {
       const response = await GET(request)
       const data = await response.json()
 
-      expect(response.status).toBe(401)
-      expect(data.error).toBe('No Reddit token available')
+      expect(response.status).toBe(500)
+      expect(data.error).toBe('Failed to obtain Reddit API token')
     })
 
     it('should handle network errors', async () => {

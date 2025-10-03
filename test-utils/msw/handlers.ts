@@ -3,7 +3,8 @@ import {
   commentHandlers,
   proxyHandlers,
   subredditHandlers,
-  userHandlers
+  userHandlers,
+  voteHandlers
 } from './handlers/index'
 
 export const handlers = [
@@ -11,5 +12,6 @@ export const handlers = [
   ...authHandlers,
   ...subredditHandlers,
   ...userHandlers,
-  ...proxyHandlers
+  ...proxyHandlers,
+  ...voteHandlers
 ]
