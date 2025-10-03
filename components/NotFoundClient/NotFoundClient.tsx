@@ -12,7 +12,14 @@ interface NotFoundClientProps {
   readonly serverHeaders: Record<string, string | null>
 }
 
+/**
+ * NotFoundClient Component.
+ *
+ * Renders a custom 404 Not Found page and logs detailed client-side context for debugging.
+ */
 export function NotFoundClient({serverHeaders}: Readonly<NotFoundClientProps>) {
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
+
   useEffect(() => {
     // Capture comprehensive client-side route and request details
     const locationData = sanitizeLocationData({
@@ -55,26 +62,75 @@ export function NotFoundClient({serverHeaders}: Readonly<NotFoundClientProps>) {
       serverHeaders
     }
 
-    logClientError('404 Page Not Found - Client Side', {
-      component: 'NotFoundClient',
-      action: '404',
-      ...clientDetails,
-      context: 'Client-side 404 with full route and browser context'
-    })
+    logClientError(
+      `404 Page Not Found: ${locationData.pathname || window.location.pathname}`,
+      {
+        component: 'NotFoundClient',
+        action: '404',
+        ...clientDetails,
+        context: 'Client-side 404 with full route and browser context'
+      }
+    )
   }, [serverHeaders])
 
   return (
     <html lang="en">
-      <body
-        style={{fontFamily: 'sans-serif', textAlign: 'center', padding: '2rem'}}
-      >
-        <Link href="/">
-          <Image alt="" src={Snoo} height={64} width={64} />
+      <head>
+        <style>
+          {`
+            :root {
+              color-scheme: light dark;
+            }
+
+            body {
+              align-items: center;
+              background-color: light-dark(#ffffff, #242424);
+              color: light-dark(#242424, #ffffff);
+              display: flex;
+              flex-direction: column;
+              font-family: sans-serif;
+              gap: 1rem;
+              padding: 2rem;
+              text-align: center;
+            }
+
+            code {
+              background-color: light-dark(#f5f5f5, #1a1a1a);
+              border-radius: 4px;
+              font-family: monospace;
+              font-size: 0.9em;
+              padding: 0.2rem 0.4rem;
+            }
+
+            .home {
+              border-radius: 10px;
+              border: 1px solid light-dark(#242424, #ffffff);
+              color: light-dark(#242424, #ffffff);
+              font-weight: bold;
+              padding: 1rem 2rem;
+              text-decoration: none;
+              transition: background-color 0.3s, color 0.3s;
+
+              &:hover {
+                background-color: light-dark(#242424, #ffffff);
+                color: light-dark(#ffffff, #242424);
+              }
+            }
+          `}
+        </style>
+      </head>
+      <body>
+        <Link href="/" data-umami-event="404 logo">
+          <Image alt="Reddit Logo" src={Snoo} height={64} width={64} />
         </Link>
         <h1>404 - Not Found</h1>
         <Image alt="Not Found" src={NotFoundAnimation} priority unoptimized />
-        <p>The page you&apos;re looking for cannot be found.</p>
-        <Link href="/">Go back home</Link>
+        <p>
+          The page <code>{pathname}</code> cannot be found.
+        </p>
+        <Link className="home" href="/" data-umami-event="404 go home link">
+          Go to homepage
+        </Link>
       </body>
     </html>
   )

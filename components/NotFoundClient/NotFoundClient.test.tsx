@@ -124,10 +124,14 @@ describe('NotFoundClient', () => {
     expect(screen.getByRole('heading', {level: 1})).toHaveTextContent(
       '404 - Not Found'
     )
+    // Use a function matcher since text is split by <code> element
     expect(
-      screen.getByText("The page you're looking for cannot be found.")
+      screen.getByText((_content, element) => {
+        return element?.textContent === 'The page /test/path cannot be found.'
+      })
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', {name: 'Go back home'})).toHaveAttribute(
+    expect(screen.getByText('/test/path')).toBeInTheDocument()
+    expect(screen.getByRole('link', {name: 'Go to homepage'})).toHaveAttribute(
       'href',
       '/'
     )
@@ -137,8 +141,8 @@ describe('NotFoundClient', () => {
   it('should render images with correct attributes', () => {
     render(<NotFoundClient serverHeaders={defaultServerHeaders} />)
 
-    // Find Snoo icon by its empty alt attribute
-    const snooIcon = screen.getByAltText('')
+    // Find Snoo icon by its alt text
+    const snooIcon = screen.getByAltText('Reddit Logo')
     expect(snooIcon).toHaveAttribute('height', '64')
     expect(snooIcon).toHaveAttribute('width', '64')
 
@@ -152,7 +156,7 @@ describe('NotFoundClient', () => {
 
     expect(mockLogClientError).toHaveBeenCalledOnce()
     expect(mockLogClientError).toHaveBeenCalledWith(
-      '404 Page Not Found - Client Side',
+      '404 Page Not Found: /test/path',
       expect.objectContaining({
         component: 'NotFoundClient',
         action: '404',
@@ -317,21 +321,22 @@ describe('NotFoundClient', () => {
   it('should render valid HTML structure', () => {
     render(<NotFoundClient serverHeaders={defaultServerHeaders} />)
 
-    // Check that body has the correct styling
-    const bodyElement = document.body
-    expect(bodyElement).toHaveStyle({
-      fontFamily: 'sans-serif',
-      textAlign: 'center',
-      padding: '2rem'
-    })
-
     // Check that the HTML content is structured correctly
     expect(screen.getByRole('heading', {level: 1})).toHaveTextContent(
       '404 - Not Found'
     )
+    // Use a function matcher since text is split by <code> element
     expect(
-      screen.getByText("The page you're looking for cannot be found.")
+      screen.getByText((_content, element) => {
+        return element?.textContent === 'The page /test/path cannot be found.'
+      })
     ).toBeInTheDocument()
+    expect(screen.getByText('/test/path')).toBeInTheDocument()
     expect(screen.getAllByRole('link')).toHaveLength(2)
+
+    // Verify code element exists for pathname
+    const codeElement = document.querySelector('code')
+    expect(codeElement).toBeInTheDocument()
+    expect(codeElement).toHaveTextContent('/test/path')
   })
 })
