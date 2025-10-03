@@ -35,6 +35,29 @@ interface UserProfileProps {
 }
 
 /**
+ * Get a user-friendly error message based on the error status.
+ */
+function getErrorMessage(error: unknown, username: string): string {
+  const errorObj = error as {status?: number}
+  const status = errorObj?.status
+
+  switch (status) {
+    case 404:
+      return `User u/${username} not found. This account may have been deleted, suspended, or does not exist.`
+    case 403:
+      return `Access denied. User u/${username} may have privacy settings enabled or the account is restricted.`
+    case 429:
+      return 'Too many requests. Please wait a moment and try again.'
+    case 500:
+    case 502:
+    case 503:
+      return 'Reddit servers are experiencing issues. Please try again later.'
+    default:
+      return 'Unable to load profile from Reddit API. Please try again later.'
+  }
+}
+
+/**
  * Client component that fetches and displays user profile data.
  */
 export function UserProfile({username}: Readonly<UserProfileProps>) {
@@ -69,14 +92,21 @@ export function UserProfile({username}: Readonly<UserProfileProps>) {
     )
   }
 
-  if (profileError || postsError || commentsError) {
+  // Determine which error to show (prioritize profile error)
+  const error = profileError || postsError || commentsError
+  if (error) {
+    const errorMessage = getErrorMessage(error, username)
+
     return (
-      <Stack align="center" mt="lg">
+      <Stack align="center" mt="lg" gap="md">
         <Title order={3} c="red">
-          <MdError size={16} /> Unable to load profile from Reddit API
+          <MdError size={16} /> Profile Not Available
         </Title>
+        <Text size="sm" c="dimmed" ta="center" maw={500}>
+          {errorMessage}
+        </Text>
         <Button color="gray" component={Link} href={`/u/${username}`}>
-          Reload Page
+          Try Again
         </Button>
       </Stack>
     )

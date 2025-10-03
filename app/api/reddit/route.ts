@@ -116,21 +116,30 @@ export async function GET(request: NextRequest) {
     })
 
     if (!response.ok) {
-      logError('Reddit API request failed', {
-        component: 'redditApiRoute',
-        action: 'fetchRedditApi',
-        path,
-        status: response.status,
-        statusText: response.statusText,
-        redditUrl: `https://oauth.reddit.com${path}`,
-        headers: {
-          'content-type': response.headers.get('content-type'),
-          'x-ratelimit-remaining': response.headers.get(
-            'x-ratelimit-remaining'
-          ),
-          'x-ratelimit-reset': response.headers.get('x-ratelimit-reset')
-        }
-      })
+      // Don't log 404s for user endpoints - they're expected for non-existent users
+      const isUserEndpoint = path.includes('/user/')
+      const is404 = response.status === 404
+
+      // Skip logging for expected 404s on user endpoints
+      if (!isUserEndpoint || !is404) {
+        // Log all other errors normally
+        logError('Reddit API request failed', {
+          component: 'redditApiRoute',
+          action: 'fetchRedditApi',
+          path,
+          status: response.status,
+          statusText: response.statusText,
+          redditUrl: `https://oauth.reddit.com${path}`,
+          headers: {
+            'content-type': response.headers.get('content-type'),
+            'x-ratelimit-remaining': response.headers.get(
+              'x-ratelimit-remaining'
+            ),
+            'x-ratelimit-reset': response.headers.get('x-ratelimit-reset')
+          }
+        })
+      }
+
       return NextResponse.json(
         {error: 'Reddit API error'},
         {

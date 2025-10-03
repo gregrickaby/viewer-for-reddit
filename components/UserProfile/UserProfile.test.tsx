@@ -59,10 +59,12 @@ describe('UserProfile', () => {
     render(<UserProfile username="nonexistentuser" />)
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/unable to load profile from reddit api/i)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Profile Not Available/i)).toBeInTheDocument()
     })
+
+    expect(
+      screen.getByText(/User u\/nonexistentuser not found/i)
+    ).toBeInTheDocument()
   })
 
   it('should display karma statistics correctly', async () => {

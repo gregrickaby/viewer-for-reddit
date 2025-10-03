@@ -215,7 +215,8 @@ export const userCommentsApi = createApi({
       query({queryArg: username, pageParam}) {
         const params = new URLSearchParams({limit: String(MAX_LIMIT)})
         if (pageParam) params.set('after', pageParam)
-        return `/user/${username}/comments.json?${params.toString()}`
+        const encodedUsername = encodeURIComponent(username)
+        return `/user/${encodedUsername}/comments.json?${params.toString()}`
       },
       transformResponse: (
         response: AutoUserCommentsResponse
