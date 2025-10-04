@@ -33,10 +33,16 @@
 
 .breadcrumbCurrent {
   font-weight: 700;
-  max-width: 400px;
+  max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .breadcrumbCurrent {
+    max-width: 440px;
+  }
 }
 
 .breadcrumbSeparator {
