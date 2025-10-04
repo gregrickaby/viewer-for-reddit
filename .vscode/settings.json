@@ -40,5 +40,17 @@
       ]
     }
   },
-  "cSpell.words": ["prefs", "Snoo", "subreddits", "umami", "unsub", "unvote"]
+  "cSpell.words": [
+    "authjs",
+    "mantine",
+    "mysubreddits",
+    "prefs",
+    "Snoo",
+    "subreddits",
+    "testuser",
+    "umami",
+    "unsub",
+    "unvote",
+    "upvotes"
+  ]
 }
