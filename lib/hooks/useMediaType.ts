@@ -21,7 +21,8 @@ import {useMemo} from 'react'
  */
 export function useMediaType(post: Readonly<AutoPostChildData>) {
   const postHint = (post as any).post_hint
-  const isImage = postHint === 'image'
+  const isGallery = (post as any).is_gallery === true
+  const isImage = postHint === 'image' && !isGallery
   const isLink = postHint === 'link'
   const isRedditVideo = postHint === 'hosted:video' || postHint === 'rich:video'
 
@@ -62,6 +63,7 @@ export function useMediaType(post: Readonly<AutoPostChildData>) {
   }, [isYouTube, post.media_embed])
 
   return {
+    isGallery,
     isImage,
     isLink,
     isRedditVideo,

@@ -1,9 +1,11 @@
 'use client'
 
+import {Gallery} from '@/components/Gallery/Gallery'
 import {HlsPlayer} from '@/components/HlsPlayer/HlsPlayer'
 import {MediaContainer} from '@/components/MediaContainer/MediaContainer'
 import {ResponsiveImage} from '@/components/ResponsiveImage/ResponsiveImage'
 import {YouTubePlayer} from '@/components/YouTubePlayer/YouTubePlayer'
+import {useGalleryData} from '@/lib/hooks/useGalleryData'
 import {useMediaAssets} from '@/lib/hooks/useMediaAssets'
 import {useMediaType} from '@/lib/hooks/useMediaType'
 import {useAppSelector} from '@/lib/store/hooks'
@@ -33,6 +35,7 @@ const HLS_DEFAULTS = {
  */
 export function Media(post: Readonly<AutoPostChildData>) {
   const {
+    isGallery,
     isImage,
     isLink,
     isRedditVideo,
@@ -40,6 +43,7 @@ export function Media(post: Readonly<AutoPostChildData>) {
     isLinkWithVideo,
     youtubeVideoId
   } = useMediaType(post)
+  const galleryItems = useGalleryData(post)
   const {mediumImage, fallbackUrl} = useMediaAssets(post)
   const isMuted = useAppSelector((state) => state.settings.isMuted)
 
@@ -74,6 +78,16 @@ export function Media(post: Readonly<AutoPostChildData>) {
       )
     }
   }, [isLinkWithVideo, post])
+
+  if (isGallery && galleryItems && galleryItems.length > 0) {
+    return (
+      <Suspense fallback={<div>Loading gallery...</div>}>
+        <MediaContainer isVertical={false}>
+          <Gallery items={galleryItems} title={post.title ?? 'Gallery'} />
+        </MediaContainer>
+      </Suspense>
+    )
+  }
 
   if (isYouTube && youtubeVideoId) {
     return (

@@ -32,6 +32,7 @@
     "typegen:validate": "redocly lint scripts/reddit-openapi-complete.json"
   },
   "dependencies": {
+    "@mantine/carousel": "^8.3.3",
     "@mantine/colors-generator": "^8.3.3",
     "@mantine/core": "^8.3.3",
     "@mantine/hooks": "^8.3.3",
@@ -40,6 +41,8 @@
     "arctic": "^3.7.0",
     "chroma-js": "^3.1.2",
     "dayjs": "^1.11.18",
+    "embla-carousel": "^8.5.2",
+    "embla-carousel-react": "^8.5.2",
     "gray-matter": "^4.0.3",
     "hls.js": "^1.6.13",
     "iron-session": "^8.0.4",

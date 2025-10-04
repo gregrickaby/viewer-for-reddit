@@ -39,6 +39,14 @@ export function PostCard({
   const postPermalink = post.permalink ?? post.id ?? ''
   const [commentsOpen, setCommentsOpen] = useState(false)
 
+  // Check if post has media (image, gallery, video, etc.)
+  const hasMedia =
+    image?.url ||
+    (post as any).is_gallery ||
+    (post as any).post_hint === 'hosted:video' ||
+    (post as any).post_hint === 'rich:video' ||
+    (post as any).media_embed?.provider_name === 'YouTube'
+
   return (
     <Card
       component="article"
@@ -70,7 +78,7 @@ export function PostCard({
         </Anchor>
       )}
 
-      {image?.url && (
+      {hasMedia && (
         <Card.Section>
           <Media {...post} />
         </Card.Section>
