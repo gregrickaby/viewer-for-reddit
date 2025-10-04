@@ -9,7 +9,7 @@ nixpkgsArchive = "25e53aa156d47bad5082ff7618f5feb1f5e02d01"
 [phases.install]
 # Use npm i to resolve linux binaries in dependencies.
 # Ensures native modules are compiled for the target platform.
-cmds = ["npm i --omit=dev"]
+cmds = ["npm i"]
 cacheDirectories = ["/root/.npm"]
 
 [phases.build]
