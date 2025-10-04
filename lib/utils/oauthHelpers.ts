@@ -6,7 +6,7 @@ import {logError} from './logError'
 
 /**
  * Safely extract refresh token from Arctic tokens response.
- * Reddit may not always provide a refresh token depending on OAuth flow.
+ * Reddit provides refresh tokens only for "permanent" duration OAuth flows.
  *
  * @param tokens - Arctic tokens object with refreshToken method
  * @param username - Username for error logging context
@@ -19,19 +19,31 @@ import {logError} from './logError'
  * ```
  *
  * @note
- * Logs when refresh token is unavailable for monitoring purposes.
- * Does not fail authentication if refresh token is missing.
+ * Returns empty string if refresh token unavailable without logging error.
+ * This is expected behavior when duration=temporary or for some Reddit OAuth flows.
  */
 export async function extractRefreshToken(
   tokens: {refreshToken: () => string | null},
   username: string
 ): Promise<string> {
   try {
-    return tokens.refreshToken() ?? ''
+    const refreshToken = tokens.refreshToken()
+
+    // Log informational message if refresh token is missing
+    // This helps monitor OAuth flow issues without creating error noise
+    if (!refreshToken) {
+      logError('Refresh token not provided by Reddit OAuth', {
+        component: 'OAuthHelpers',
+        action: 'extractRefreshToken',
+        username,
+        note: 'User will need to re-login when access token expires'
+      })
+    }
+
+    return refreshToken ?? ''
   } catch (error) {
-    // Reddit may not provide refresh token for some OAuth flows
-    // Log for monitoring but don't fail the authentication
-    logError('Refresh token not available', {
+    // Log error only if there was an actual exception
+    logError('Error extracting refresh token', {
       component: 'OAuthHelpers',
       action: 'extractRefreshToken',
       username,

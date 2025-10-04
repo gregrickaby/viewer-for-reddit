@@ -55,9 +55,11 @@ export async function GET(request: NextRequest) {
   // - subscribe: Subscribe to subreddits
   const scopes = ['identity', 'read', 'mysubreddits', 'vote', 'subscribe']
 
-  // Create Reddit OAuth authorization URL
+  // Create Reddit OAuth authorization URL with permanent duration
+  // Reddit only provides refresh tokens for permanent duration requests
   const reddit = getRedditClient()
   const url = reddit.createAuthorizationURL(state, scopes)
+  url.searchParams.set('duration', 'permanent')
 
   // Store state in httpOnly cookie for CSRF validation in callback
   const cookieStore = await cookies()

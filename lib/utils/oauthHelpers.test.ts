@@ -21,7 +21,8 @@ describe('extractRefreshToken', () => {
     expect(result).toBe('refresh_token_123')
   })
 
-  it('should return empty string when refresh token is null', async () => {
+  it('should return empty string and log when refresh token is null', async () => {
+    const {logError} = await import('./logError')
     const mockTokens = {
       refreshToken: () => null
     }
@@ -29,6 +30,15 @@ describe('extractRefreshToken', () => {
     const result = await extractRefreshToken(mockTokens, 'testuser')
 
     expect(result).toBe('')
+    expect(logError).toHaveBeenCalledWith(
+      'Refresh token not provided by Reddit OAuth',
+      expect.objectContaining({
+        component: 'OAuthHelpers',
+        action: 'extractRefreshToken',
+        username: 'testuser',
+        note: 'User will need to re-login when access token expires'
+      })
+    )
   })
 
   it('should return empty string and log when refreshToken throws error', async () => {
@@ -43,7 +53,7 @@ describe('extractRefreshToken', () => {
 
     expect(result).toBe('')
     expect(logError).toHaveBeenCalledWith(
-      'Refresh token not available',
+      'Error extracting refresh token',
       expect.objectContaining({
         component: 'OAuthHelpers',
         action: 'extractRefreshToken',
@@ -66,7 +76,7 @@ describe('extractRefreshToken', () => {
 
     expect(result).toBe('')
     expect(logError).toHaveBeenCalledWith(
-      'Refresh token not available',
+      'Error extracting refresh token',
       expect.objectContaining({
         component: 'OAuthHelpers',
         action: 'extractRefreshToken',
@@ -88,7 +98,7 @@ describe('extractRefreshToken', () => {
     await extractRefreshToken(mockTokens, 'john_doe')
 
     expect(logError).toHaveBeenCalledWith(
-      'Refresh token not available',
+      'Error extracting refresh token',
       expect.objectContaining({
         username: 'john_doe'
       })
