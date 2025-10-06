@@ -2,6 +2,8 @@
 
 import {ErrorMessage} from '@/components/ErrorMessage/ErrorMessage'
 import {PostCard} from '@/components/PostCard/PostCard'
+import config from '@/lib/config'
+import {useUpdateMeta} from '@/lib/hooks/useUpdateMeta'
 import {useGetUserCommentsInfiniteQuery} from '@/lib/store/services/commentsApi'
 import {
   useGetUserPostsInfiniteQuery,
@@ -59,6 +61,16 @@ export function UserProfile({username}: Readonly<UserProfileProps>) {
     error: commentsError,
     hasNextPage: hasMoreComments
   } = useGetUserCommentsInfiniteQuery(username)
+
+  // Update meta tags for proper social sharing
+  useUpdateMeta(
+    profile?.name ? `u/${profile.name} - ${config.siteName}` : undefined,
+    profile?.subreddit?.public_description ||
+      (profile?.name
+        ? `View u/${profile.name} profile, posts, and comments`
+        : undefined),
+    profile?.icon_img || undefined
+  )
 
   if (profileLoading || postsLoading || commentsLoading) {
     return (

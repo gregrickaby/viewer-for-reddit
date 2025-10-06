@@ -3,8 +3,10 @@
 import {ErrorMessage} from '@/components/ErrorMessage/ErrorMessage'
 import {Favorite} from '@/components/Favorite/Favorite'
 import {PostCard} from '@/components/PostCard/PostCard'
+import config from '@/lib/config'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/useTrackRecentSubreddit'
+import {useUpdateMeta} from '@/lib/hooks/useUpdateMeta'
 import type {AutoPostChild} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
 import {
@@ -53,6 +55,16 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     ref,
     wasFiltered
   } = useInfinitePosts({subreddit, sort: selectedSort})
+
+  // Update meta tags for proper social sharing when data loads
+  useUpdateMeta(
+    data?.pages?.[0]?.data?.children?.[0]?.data?.subreddit
+      ? `r/${data.pages[0].data.children[0].data.subreddit} - ${config.siteName}`
+      : undefined,
+    data?.pages?.[0]?.data?.children?.[0]?.data?.subreddit_name_prefixed
+      ? `Browse posts in ${data.pages[0].data.children[0].data.subreddit_name_prefixed}`
+      : undefined
+  )
 
   if (isLoading) {
     return (

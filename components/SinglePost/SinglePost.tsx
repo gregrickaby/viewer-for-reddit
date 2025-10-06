@@ -2,6 +2,7 @@
 
 import {Comments} from '@/components/Comments/Comments'
 import {PostCard} from '@/components/PostCard/PostCard'
+import {useUpdateMeta} from '@/lib/hooks/useUpdateMeta'
 import {useGetSinglePostQuery} from '@/lib/store/services/postsApi'
 import {parsePostLink} from '@/lib/utils/parsePostLink'
 import {Alert, Card, Container, Loader, Stack, Text, Title} from '@mantine/core'
@@ -39,6 +40,15 @@ export function SinglePost({
     subreddit,
     postId
   })
+
+  // Update meta tags when post data loads for proper social sharing
+  useUpdateMeta(
+    data?.title ? `${data.title} - r/${subreddit}` : undefined,
+    data?.selftext || data?.title || undefined,
+    data?.thumbnail && data.thumbnail !== 'self' && data.thumbnail !== 'default'
+      ? data.thumbnail
+      : undefined
+  )
 
   // Loading state
   if (isLoading) {
