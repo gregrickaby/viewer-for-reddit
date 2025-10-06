@@ -4,7 +4,7 @@ New here? Welcome! **Start browsing at the homepage:** [reddit-viewer.com](https
 
 ## Why Viewer for Reddit?
 
-Experience Reddit without distractions. No targeted ads or algorithmic feeds, just the content you want to see!
+Lurk on Reddit without distractions. No targeted ads or algorithmic feeds, just the content you want to see!
 
 **Perfect for:**
 

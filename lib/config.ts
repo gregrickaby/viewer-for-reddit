@@ -1,8 +1,8 @@
 const config = {
   siteName: 'Viewer for Reddit',
-  siteDescription: 'Anonymously browse Reddit',
+  siteDescription: 'The best way to lurk on Reddit',
   metaDescription:
-    'Anonymously browse images, videos, gifs, and other media from Reddit.',
+    'The best way to lurk on Reddit - browse images, videos, gifs, and posts without targeted ads or algorithms.',
   siteAuthor: 'Greg Rickaby',
   authorUrl: 'https://gregrickaby.com',
   githubUrl: 'https://github.com/gregrickaby/viewer-for-reddit',
