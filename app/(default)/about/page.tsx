@@ -10,13 +10,13 @@ import ReactMarkdown from 'react-markdown'
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `About - ${config.siteName}`,
-    description: `${config.siteName} has been a private, distraction-free way to browse Reddit media since 2020.`,
+    description: `Since 2020 ${config.siteName} has been the best way to lurk on Reddit. Learn more about this project, its features, and the tech behind it.`,
     alternates: {
       canonical: '/about'
     },
     openGraph: {
       title: `About - ${config.siteName}`,
-      description: `${config.siteName} has been a private, distraction-free way to browse Reddit media since 2020.`,
+      description: `Since 2020 ${config.siteName} has been the best way to lurk on Reddit. Learn more about this project, its features, and the tech behind it.`,
       url: '/about',
       images: [
         {
