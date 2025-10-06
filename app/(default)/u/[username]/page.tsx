@@ -2,26 +2,21 @@ import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
 import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {UserProfile} from '@/components/UserProfile/UserProfile'
-import {getUserProfile} from '@/lib/actions/getUserProfile'
 import config from '@/lib/config'
 import type {UserParams} from '@/lib/types'
 import type {Metadata} from 'next'
 
 /**
- * Generate metadata.
+ * Generate static metadata for user profile pages.
  */
 export async function generateMetadata(props: {
   params: UserParams
 }): Promise<Metadata> {
   const params = await props.params
   const username = params.username
-  const data = await getUserProfile(username)
 
-  const displayName = data?.name ? `/u/${data.name}` : `/u/${username}`
-  const title = `${displayName} - ${config.siteName}`
-  const description = data?.subreddit?.public_description
-    ? data.subreddit.public_description
-    : `View ${displayName} profile, posts, and comments with Viewer for Reddit.`
+  const title = `u/${username} - ${config.siteName}`
+  const description = `View u/${username} profile, posts, and comments with Viewer for Reddit.`
 
   return {
     title,
@@ -35,10 +30,10 @@ export async function generateMetadata(props: {
       url: `/u/${username}`,
       images: [
         {
-          url: data?.icon_img || '/social-share.webp',
-          width: data?.icon_img ? 256 : 1200,
-          height: data?.icon_img ? 256 : 630,
-          alt: displayName
+          url: '/social-share.webp',
+          width: 1200,
+          height: 630,
+          alt: config.siteName
         }
       ]
     }

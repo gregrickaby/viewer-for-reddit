@@ -2,28 +2,21 @@ import BackToTop from '@/components/BackToTop/BackToTop'
 import BossButton from '@/components/BossButton/BossButton'
 import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {Posts} from '@/components/Posts/Posts'
-import {getSubreddit} from '@/lib/actions/getSubreddit'
 import config from '@/lib/config'
 import type {SearchParams, SortingOption, SubredditParams} from '@/lib/types'
 import type {Metadata} from 'next'
 
 /**
- * Generate metadata.
+ * Generate static metadata for subreddit pages.
  */
 export async function generateMetadata(props: {
   params: SubredditParams
 }): Promise<Metadata> {
   const params = await props.params
   const subreddit = params.subreddit
-  const data = await getSubreddit(subreddit)
 
-  const title = data?.display_name
-    ? `/r/${data.display_name} - ${config.siteName}`
-    : `/r/${subreddit} - ${config.siteName}`
-
-  const description =
-    data?.public_description ||
-    `Browse posts in /r/${subreddit} with Viewer for Reddit.`
+  const title = `r/${subreddit} - ${config.siteName}`
+  const description = `Browse posts in r/${subreddit} with Viewer for Reddit.`
 
   return {
     title,
@@ -41,10 +34,10 @@ export async function generateMetadata(props: {
       url: `/r/${subreddit}`,
       images: [
         {
-          url: data?.icon_img || '/social-share.webp',
-          width: data?.icon_img ? 256 : 1200,
-          height: data?.icon_img ? 256 : 630,
-          alt: data?.display_name || config.siteName
+          url: '/social-share.webp',
+          width: 1200,
+          height: 630,
+          alt: config.siteName
         }
       ]
     }
