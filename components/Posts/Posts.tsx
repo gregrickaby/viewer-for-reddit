@@ -17,6 +17,7 @@ import {
   Stack,
   Title
 } from '@mantine/core'
+import {usePathname} from 'next/navigation'
 import {useState} from 'react'
 import styles from './Posts.module.css'
 
@@ -42,6 +43,7 @@ interface PostsProps {
 export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
   useTrackRecentSubreddit(subreddit)
   const [selectedSort, setSelectedSort] = useState<SortingOption>(sort)
+  const pathname = usePathname()
 
   const {
     data,
@@ -56,12 +58,16 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
     wasFiltered
   } = useInfinitePosts({subreddit, sort: selectedSort})
 
-  // Update meta tags for proper social sharing when data loads
+  // Only update meta tags when on a subreddit page (not homepage)
+  // Homepage is "/" and subreddit pages are "/r/[subreddit]"
+  const isSubredditPage = pathname?.startsWith('/r/')
+
   useUpdateMeta(
-    data?.pages?.[0]?.data?.children?.[0]?.data?.subreddit
+    isSubredditPage && data?.pages?.[0]?.data?.children?.[0]?.data?.subreddit
       ? `r/${data.pages[0].data.children[0].data.subreddit} - ${config.siteName}`
       : undefined,
-    data?.pages?.[0]?.data?.children?.[0]?.data?.subreddit_name_prefixed
+    isSubredditPage &&
+      data?.pages?.[0]?.data?.children?.[0]?.data?.subreddit_name_prefixed
       ? `Browse posts in ${data.pages[0].data.children[0].data.subreddit_name_prefixed}`
       : undefined
   )
