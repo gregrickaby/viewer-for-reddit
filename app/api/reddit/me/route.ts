@@ -7,6 +7,30 @@ import {isSafeRedditPath} from '@/lib/utils/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
+ * Determines cache max-age for authenticated Reddit API requests.
+ * User-specific content generally needs shorter cache durations than public content.
+ */
+function getCacheMaxAge(path: string): number {
+  // Vote/subscribe actions should not be cached
+  if (path.includes('/api/vote') || path.includes('/api/subscribe')) {
+    return 0
+  }
+  // User's own feed/subscriptions change frequently
+  if (path.includes('/api/v1/me') || path.includes('mine/subscriber')) {
+    return 60 // 1 minute
+  }
+  // Custom feeds are relatively static
+  if (path.includes('/m/')) {
+    return 300 // 5 minutes
+  }
+  // Hot/popular posts for logged-in users
+  if (path.includes('/hot.json') || path.includes('/popular')) {
+    return 180 // 3 minutes
+  }
+  return 120 // 2 minutes default for authenticated content
+}
+
+/**
  * User-Authenticated Reddit API Proxy Route Handler (/me).
  *
  * This endpoint handles requests that require user authentication (user session tokens).
@@ -114,11 +138,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Safe to use user-provided path - validated by isSafeRedditPath() above
+    const cacheMaxAge = getCacheMaxAge(path)
     const response = await fetch(`https://oauth.reddit.com${path}`, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
         'User-Agent': config.userAgent
-      }
+      },
+      // Cache authenticated requests server-side (except actions like voting)
+      next: cacheMaxAge > 0 ? {revalidate: cacheMaxAge} : undefined
     })
 
     if (!response.ok) {
@@ -141,9 +168,15 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json()
+    const responseCacheMaxAge = getCacheMaxAge(path)
+
     return NextResponse.json(data, {
       headers: {
-        'Cache-Control': 'no-store, max-age=0'
+        // Use private cache for user-specific data, no caching for actions
+        'Cache-Control':
+          responseCacheMaxAge > 0
+            ? `private, max-age=${responseCacheMaxAge}, stale-while-revalidate=${responseCacheMaxAge * 2}`
+            : 'no-store, max-age=0'
       }
     })
   } catch (error) {

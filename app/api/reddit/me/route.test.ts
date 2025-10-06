@@ -168,7 +168,10 @@ describe('GET /api/reddit/me', () => {
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockData)
-      expect(response.headers.get('Cache-Control')).toBe('no-store, max-age=0')
+      // Custom feeds are cached for 5 minutes (300 seconds)
+      expect(response.headers.get('Cache-Control')).toBe(
+        'private, max-age=300, stale-while-revalidate=600'
+      )
     })
 
     it('should handle custom feed paths', async () => {
@@ -321,7 +324,7 @@ describe('GET /api/reddit/me', () => {
       })
     })
 
-    it('should set no-store cache headers on success', async () => {
+    it('should set cache headers based on endpoint type', async () => {
       server.use(
         http.get('https://oauth.reddit.com/user/test/m/feed/hot.json', () => {
           return HttpResponse.json({data: {children: []}})
@@ -333,7 +336,10 @@ describe('GET /api/reddit/me', () => {
       )
       const response = await GET(request)
 
-      expect(response.headers.get('Cache-Control')).toBe('no-store, max-age=0')
+      // Custom feeds are cached for 5 minutes
+      expect(response.headers.get('Cache-Control')).toBe(
+        'private, max-age=300, stale-while-revalidate=600'
+      )
     })
 
     it('should set no-store cache headers on errors', async () => {

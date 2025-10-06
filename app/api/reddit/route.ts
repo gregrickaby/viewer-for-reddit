@@ -7,6 +7,26 @@ import {isSafeRedditPath} from '@/lib/utils/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
+ * Determines cache max-age based on Reddit API endpoint type.
+ * More static content gets longer cache durations to reduce API calls.
+ */
+function getCacheMaxAge(path: string): number {
+  if (path.includes('/hot.json') || path.includes('/popular')) {
+    return 600 // 10 minutes - hot posts change slowly
+  }
+  if (path.includes('/user/') && path.includes('/about')) {
+    return 900 // 15 minutes - user profiles are relatively static
+  }
+  if (path.includes('/about.json')) {
+    return 1800 // 30 minutes - subreddit info is very static
+  }
+  if (path.includes('autocomplete') || path.includes('/search')) {
+    return 180 // 3 minutes - search results
+  }
+  return 300 // 5 minutes default
+}
+
+/**
  * Anonymous Reddit API Proxy Route Handler.
  *
  * This endpoint handles read-only, anonymous requests using app-level tokens.
@@ -108,10 +128,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Use Next.js fetch cache with revalidation based on endpoint type
+    const cacheMaxAge = getCacheMaxAge(path)
     const response = await fetch(`https://oauth.reddit.com${path}`, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
         'User-Agent': config.userAgent
+      },
+      next: {
+        revalidate: cacheMaxAge // Cache Reddit responses server-side
       }
     })
 
@@ -160,9 +185,12 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json()
+    const responseCacheMaxAge = getCacheMaxAge(path)
+
     return NextResponse.json(data, {
       headers: {
-        'Cache-Control': 'private, max-age=60'
+        // Use stale-while-revalidate for better UX during high traffic
+        'Cache-Control': `public, s-maxage=${responseCacheMaxAge}, stale-while-revalidate=${responseCacheMaxAge * 2}`
       }
     })
   } catch (error) {
