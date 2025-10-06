@@ -32,7 +32,7 @@ export async function generateMetadata(props: {
       canonical: `/r/${subreddit}`
     },
     robots: {
-      index: true,
+      index: false,
       follow: true
     },
     openGraph: {

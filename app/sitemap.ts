@@ -2,73 +2,28 @@ import config from '@/lib/config'
 import {MetadataRoute} from 'next'
 
 /**
- * Revalidate every 12 hours.
- */
-export const revalidate = 43200
-
-/**
- * Top subreddits from getPopularSubreddits({ limit: 25 })
- */
-const popularSubreddits = [
-  'funny',
-  'AskReddit',
-  'gaming',
-  'worldnews',
-  'movies',
-  'pics',
-  'news',
-  'AmItheAsshole',
-  'Damnthatsinteresting',
-  'pcmasterrace',
-  'interestingasfuck',
-  'Unexpected',
-  'mildlyinfuriating',
-  'politics',
-  'leagueoflegends',
-  'facepalm',
-  'NoStupidQuestions',
-  'AITAH',
-  'LivestreamFail',
-  'BaldursGate3',
-  'Piracy',
-  'PeterExplainsTheJoke',
-  'Helldivers',
-  'Palworld',
-  'Home'
-]
-
-/**
  * Sitemap generator.
+ *
+ * Only includes static pages for brand discovery.
+ * Our value proposition is UX (ad-free viewing), not SEO.
  *
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = config.baseUrl
-  const lastModified = new Date()
 
-  const staticPages: MetadataRoute.Sitemap = [
+  return [
     {
       url: base,
-      lastModified,
-      changeFrequency: 'daily',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
       priority: 1
     },
     {
       url: `${base}about`,
-      lastModified,
+      lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.5
+      priority: 0.8
     }
   ]
-
-  const subredditPages: MetadataRoute.Sitemap = popularSubreddits.map(
-    (slug) => ({
-      url: `${base}r/${slug}`,
-      lastModified,
-      changeFrequency: 'hourly',
-      priority: 0.8
-    })
-  )
-
-  return [...staticPages, ...subredditPages]
 }

@@ -27,7 +27,7 @@ export async function generateMetadata({
       canonical: canonicalUrl
     },
     robots: {
-      index: true,
+      index: false,
       follow: true
     },
     openGraph: {

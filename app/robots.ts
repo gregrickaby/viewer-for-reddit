@@ -8,10 +8,13 @@ import {MetadataRoute} from 'next'
  */
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/'
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        crawlDelay: 2
+      }
+    ],
     sitemap: `${config.baseUrl}/sitemap.xml`
   }
 }
