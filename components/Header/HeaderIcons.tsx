@@ -14,6 +14,7 @@ export function HeaderIcons() {
           aria-label="View source code"
           color="gray"
           component="a"
+          data-umami-event="view source button"
           href={config.githubUrl}
           rel="noopener noreferrer"
           size="xl"
@@ -29,6 +30,7 @@ export function HeaderIcons() {
           aria-label="Buy me a coffee"
           color="gray"
           component="a"
+          data-umami-event="buy me a coffee button"
           href="https://buymeacoffee.com/gregrickaby"
           rel="noopener noreferrer"
           size="xl"

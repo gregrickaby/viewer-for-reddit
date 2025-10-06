@@ -37,7 +37,6 @@ export function LogoutButton({
       aria-label="Sign out"
       data-umami-event="logout button"
       fullWidth={fullWidth}
-      id="logout-button"
       leftSection={<FaSignOutAlt />}
       onClick={handleLogout}
       size={size}

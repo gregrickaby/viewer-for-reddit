@@ -18,6 +18,7 @@ export default function BackToTop() {
       aria-label={buttonText}
       className={classes.backToTop}
       color="gray"
+      data-umami-event="back to top button"
       onClick={() => scrollTo({y: 0})}
       title={buttonText}
     >

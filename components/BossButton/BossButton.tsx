@@ -19,6 +19,7 @@ export default function BossButton() {
         className={classes.bossButton}
         color="gray"
         component="a"
+        data-umami-event="boss button"
         href={redirectUrl}
       >
         <MdExitToApp aria-hidden="true" size={24} />

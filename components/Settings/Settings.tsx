@@ -36,6 +36,7 @@ export function Settings() {
         <Tooltip label="View settings" position="bottom" withArrow>
           <ActionIcon
             aria-label="Settings"
+            data-umami-event="settings button"
             color="gray"
             data-testid="settings-button"
             size="xl"
@@ -52,6 +53,7 @@ export function Settings() {
         <Menu.Item closeMenuOnClick={false}>
           <Switch
             aria-label="Toggle NSFW"
+            data-umami-event="toggle nsfw"
             checked={nsfw}
             data-testid="nsfw-switch"
             label="Allow NSFW"
@@ -62,6 +64,7 @@ export function Settings() {
         <Menu.Item closeMenuOnClick={false}>
           <Switch
             aria-label="Toggle Dark Mode"
+            data-umami-event="toggle dark mode"
             checked={isDark}
             data-testid="dark-mode-switch"
             label="Dark Mode"
@@ -74,6 +77,7 @@ export function Settings() {
         <Menu.Item closeMenuOnClick={false}>
           <Switch
             aria-label="Toggle Mute"
+            data-umami-event="toggle mute"
             checked={isMuted}
             data-testid="mute-switch"
             label="Mute"
@@ -86,6 +90,7 @@ export function Settings() {
 
         <Menu.Item
           data-testid="clear-search-history-button"
+          data-umami-event="clear search history"
           onClick={() => {
             dispatch(clearSearchHistory())
             showNotification({
@@ -101,6 +106,7 @@ export function Settings() {
 
         <Menu.Item
           data-testid="clear-recent-button"
+          data-umami-event="clear recent history"
           onClick={() => {
             dispatch(clearRecent())
             showNotification({
@@ -117,6 +123,7 @@ export function Settings() {
         {!isAuthenticated && (
           <Menu.Item
             data-testid="clear-favorites-button"
+            data-umami-event="clear favorites"
             onClick={() => {
               dispatch(clearFavorites())
               showNotification({
@@ -143,6 +150,7 @@ export function Settings() {
           <Menu.Item
             color="red"
             data-testid="reset-all-button"
+            data-umami-event="delete all data"
             onClick={() => {
               dispatch(resetSettings())
               showNotification({

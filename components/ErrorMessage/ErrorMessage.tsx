@@ -176,7 +176,7 @@ export function ErrorMessage({
         <Button
           color="gray"
           component={Link}
-          data-umami-event="error message button"
+          data-umami-event={`error message button - ${type}`}
           href={fallbackUrl}
         >
           {type === 'subreddit' || type === 'user'

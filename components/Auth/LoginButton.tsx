@@ -36,7 +36,6 @@ export function LoginButton({
         data-umami-event="login button"
         fullWidth={fullWidth}
         h={45}
-        id="login-button"
         onClick={handleLogin}
         rightSection={<FaReddit size={24} />}
         size={size}
