@@ -8,6 +8,12 @@ import {NextRequest, NextResponse} from 'next/server'
 const rateLimitStore = new Map<string, number[]>()
 
 /**
+ * Unique instance identifier to detect multiple running instances.
+ * Generated once per process start.
+ */
+const INSTANCE_ID = Math.random().toString(36).substring(2, 8)
+
+/**
  * Rate limit configuration.
  * Different limits for different types of clients:
  * - Human users: 200 requests/minute
@@ -133,6 +139,7 @@ export async function checkRateLimit(
       botType,
       userAgent,
       maxRequests,
+      instanceId: INSTANCE_ID, // Track which instance handled this request
       remaining: 0,
       resetAt: new Date(resetTime).toISOString()
     })
