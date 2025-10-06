@@ -21,8 +21,9 @@ export const RETRY_CONFIG = {
  * Determines if an error is retryable based on status code or error type.
  *
  * Classifies errors into retryable and non-retryable categories. Network errors,
- * timeouts, and server errors (5xx) are considered retryable, while client
- * errors (4xx) are not retryable as they typically indicate invalid requests.
+ * timeouts, rate limits (429), and server errors (5xx) are considered retryable,
+ * while other client errors (4xx) are not retryable as they typically indicate
+ * invalid requests.
  *
  * @param status - The error status (HTTP status code, error type, or unknown)
  * @returns True if the error should be retried, false otherwise
@@ -30,6 +31,7 @@ export const RETRY_CONFIG = {
  * @example
  * ```typescript
  * isRetryableError(500) // true - server error
+ * isRetryableError(429) // true - rate limit (will retry with backoff)
  * isRetryableError(404) // false - client error
  * isRetryableError('FETCH_ERROR') // true - network error
  * ```
@@ -38,6 +40,7 @@ export function isRetryableError(status: unknown): boolean {
   return (
     status === 'FETCH_ERROR' ||
     status === 'TIMEOUT_ERROR' ||
+    status === 429 || // Rate limit - retry with exponential backoff
     (typeof status === 'number' && status >= 500)
   )
 }

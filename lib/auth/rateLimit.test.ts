@@ -1,6 +1,6 @@
 import {NextRequest} from 'next/server'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-import {checkRateLimit, cleanupRateLimitStore} from './rateLimit'
+import {checkRateLimit, cleanupRateLimitStore, detectBotType} from './rateLimit'
 
 vi.mock('@/lib/utils/logError', () => ({
   logError: vi.fn()
@@ -187,6 +187,94 @@ describe('checkRateLimit', () => {
       // Next request should be blocked
       const result = await checkRateLimit(request1)
       expect(result?.status).toBe(429)
+    })
+  })
+
+  describe('bot-specific rate limits', () => {
+    it('should apply stricter limits to search engine bots', async () => {
+      const botRequest = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '66.249.66.1',
+        'user-agent':
+          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+      })
+
+      // Search bots limited to 30 requests/minute in production
+      // In dev mode this is 1000 like humans
+      const limit = process.env.NODE_ENV === 'development' ? 1000 : 30
+
+      for (let i = 0; i < limit; i++) {
+        const result = await checkRateLimit(botRequest)
+        expect(result).toBeNull()
+      }
+
+      // 31st request should be blocked in production
+      const result = await checkRateLimit(botRequest)
+      if (process.env.NODE_ENV === 'development') {
+        expect(result).toBeNull()
+      } else {
+        expect(result?.status).toBe(429)
+        expect(mockLogError).toHaveBeenCalledWith(
+          'Rate limit exceeded',
+          expect.objectContaining({
+            botType: 'search',
+            maxRequests: 30
+          })
+        )
+      }
+    })
+
+    it('should apply even stricter limits to aggressive bots', async () => {
+      const botRequest = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '1.2.3.4',
+        'user-agent': 'MyCustomBot/1.0'
+      })
+
+      // Aggressive bots limited to 10 requests/minute in production
+      const limit = process.env.NODE_ENV === 'development' ? 1000 : 10
+
+      for (let i = 0; i < limit; i++) {
+        const result = await checkRateLimit(botRequest)
+        expect(result).toBeNull()
+      }
+
+      // 11th request should be blocked in production
+      const result = await checkRateLimit(botRequest)
+      if (process.env.NODE_ENV === 'development') {
+        expect(result).toBeNull()
+      } else {
+        expect(result?.status).toBe(429)
+        expect(mockLogError).toHaveBeenCalledWith(
+          'Rate limit exceeded',
+          expect.objectContaining({
+            botType: 'aggressive',
+            maxRequests: 10
+          })
+        )
+      }
+    })
+
+    it('should allow normal limits for human users', async () => {
+      const humanRequest = createMockNextRequest('http://localhost:3000', {
+        'x-forwarded-for': '10.0.0.100', // Unique IP for this test
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124'
+      })
+
+      // Humans get 200 requests/minute in production
+      const limit = process.env.NODE_ENV === 'development' ? 1000 : 200
+
+      for (let i = 0; i < limit; i++) {
+        const result = await checkRateLimit(humanRequest)
+        expect(result).toBeNull()
+      }
+
+      // Next request should be blocked in production
+      const result = await checkRateLimit(humanRequest)
+      if (process.env.NODE_ENV === 'development') {
+        expect(result).toBeNull()
+      } else {
+        expect(result?.status).toBe(429)
+      }
     })
   })
 
@@ -598,5 +686,69 @@ describe('checkRateLimit', () => {
       }
       expect((await checkRateLimit(request3))?.status).toBe(429)
     })
+  })
+})
+
+describe('detectBotType', () => {
+  it('should detect Google bot', () => {
+    expect(
+      detectBotType(
+        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+      )
+    ).toBe('search')
+  })
+
+  it('should detect Bing bot', () => {
+    expect(
+      detectBotType(
+        'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+      )
+    ).toBe('search')
+  })
+
+  it('should detect various search engines', () => {
+    const searchBots = [
+      'Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)',
+      'DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)',
+      'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)',
+      'Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)',
+      'facebot'
+    ]
+
+    searchBots.forEach((ua) => {
+      expect(detectBotType(ua)).toBe('search')
+    })
+  })
+
+  it('should detect aggressive/unknown bots', () => {
+    const aggressiveBots = [
+      'MyCustomBot/1.0',
+      'SomeCrawler/2.0',
+      'spider-bot',
+      'scraper-tool',
+      'curl/7.68.0',
+      'Wget/1.20.3'
+    ]
+
+    aggressiveBots.forEach((ua) => {
+      expect(detectBotType(ua)).toBe('aggressive')
+    })
+  })
+
+  it('should recognize human browsers', () => {
+    const humanBrowsers = [
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15',
+      'Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0'
+    ]
+
+    humanBrowsers.forEach((ua) => {
+      expect(detectBotType(ua)).toBe('human')
+    })
+  })
+
+  it('should handle case insensitivity', () => {
+    expect(detectBotType('GOOGLEBOT/2.1')).toBe('search')
+    expect(detectBotType('GoogleBot/2.1')).toBe('search')
   })
 })

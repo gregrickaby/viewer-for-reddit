@@ -55,9 +55,9 @@ describe('retryConfig', () => {
       expect(isRetryableError(499)).toBe(false)
     })
 
-    it('should return false for rate limiting 429 status code', () => {
-      // 429 is typically handled differently with respect to retry-after headers
-      expect(isRetryableError(429)).toBe(false)
+    it('should return true for rate limiting 429 status code', () => {
+      // 429 should be retried with exponential backoff
+      expect(isRetryableError(429)).toBe(true)
     })
 
     it('should return false for 2xx and 3xx HTTP status codes', () => {

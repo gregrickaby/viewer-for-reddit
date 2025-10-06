@@ -237,7 +237,8 @@ describe('Search', () => {
     it('should render dropdown structure for searching', async () => {
       await setupSearch()
       const input = screen.getByRole('textbox', {name: /Search communities/i})
-      await user.type(input, 'a')
+      // Type at least 2 characters to trigger search (minimum query length)
+      await user.type(input, 'aw')
 
       await waitFor(() => {
         expect(screen.getByText('Communities')).toBeInTheDocument()

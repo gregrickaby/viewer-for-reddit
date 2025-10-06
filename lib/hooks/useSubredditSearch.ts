@@ -25,7 +25,9 @@ import {useCallback, useEffect, useMemo, useRef} from 'react'
  */
 const SEARCH_CONFIG = {
   /** Debounce delay in milliseconds to prevent excessive API calls */
-  DEBOUNCE_DELAY: 300,
+  DEBOUNCE_DELAY: 500,
+  /** Minimum query length before triggering search to reduce API calls */
+  MIN_QUERY_LENGTH: 2,
   /** Animation duration for mobile transitions in milliseconds */
   ANIMATION_DURATION: 300,
   /** Focus delay for mobile input to ensure proper rendering */
@@ -219,20 +221,21 @@ export function useSubredditSearch(): {
   )
 
   // RTK Query hooks for data fetching with proper error handling
+  const shouldSearch = debounced.length >= SEARCH_CONFIG.MIN_QUERY_LENGTH
   const {
     data: searchResults = [],
     isLoading: isSearchLoading,
     error: searchError
   } = useSearchSubredditsQuery(
     {query: debounced, enableNsfw: nsfw},
-    {skip: debounced.length === 0}
+    {skip: !shouldSearch}
   )
 
   const {
     data: popularSubreddits = [],
     isLoading: isPopularLoading,
     error: popularError
-  } = useGetPopularSubredditsQuery({limit: 10}, {skip: debounced.length > 0})
+  } = useGetPopularSubredditsQuery({limit: 10}, {skip: shouldSearch})
 
   /**
    * Calculate loading state with clear logic breakdown
