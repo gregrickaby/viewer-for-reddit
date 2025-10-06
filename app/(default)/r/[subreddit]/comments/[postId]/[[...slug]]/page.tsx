@@ -1,4 +1,3 @@
-import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {SinglePost} from '@/components/SinglePost/SinglePost'
 import config from '@/lib/config'
 import type {SinglePostPageParams} from '@/lib/types'
@@ -54,18 +53,5 @@ export async function generateMetadata({
 export default async function SinglePostPage({params}: SinglePostPageParams) {
   const {subreddit, postId} = await params
 
-  return (
-    <>
-      <Breadcrumb
-        items={[
-          {label: `r/${subreddit}`, href: `/r/${subreddit}`},
-          {
-            label: 'Post',
-            href: `/r/${subreddit}/comments/${postId}/`
-          }
-        ]}
-      />
-      <SinglePost subreddit={subreddit} postId={postId} />
-    </>
-  )
+  return <SinglePost subreddit={subreddit} postId={postId} />
 }

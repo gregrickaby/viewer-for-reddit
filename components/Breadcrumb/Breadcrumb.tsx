@@ -31,6 +31,10 @@ export function Breadcrumb({items}: Readonly<BreadcrumbProps>) {
   // Always start with Home
   const allItems: BreadcrumbItem[] = [{label: 'Home', href: '/'}, ...items]
 
+  // Get base URL from browser (client-side) or use config siteName as fallback
+  const baseUrl =
+    typeof window !== 'undefined' ? window.location.origin : config.siteName
+
   // Generate Schema.org structured data for SEO
   const structuredData = {
     '@context': 'https://schema.org',
@@ -39,7 +43,7 @@ export function Breadcrumb({items}: Readonly<BreadcrumbProps>) {
       '@type': 'ListItem',
       position: index + 1,
       name: item.label,
-      item: `${config.baseUrl}${item.href}`
+      item: `${baseUrl}${item.href}`
     }))
   }
 

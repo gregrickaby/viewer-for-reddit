@@ -1,5 +1,6 @@
 'use client'
 
+import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
 import {Comments} from '@/components/Comments/Comments'
 import {PostCard} from '@/components/PostCard/PostCard'
 import {useUpdateMeta} from '@/lib/hooks/useUpdateMeta'
@@ -113,22 +114,33 @@ export function SinglePost({
   const post = data
 
   return (
-    <Stack gap="md" py="md">
-      <PostCard post={post} useInternalRouting={useInternalRouting} />
-      <Card padding="md" radius="md" shadow="sm" withBorder>
-        <Stack gap="md">
-          <Title order={3} size="lg">
-            Comments
-          </Title>
-          <Comments
-            permalink={post.permalink || ''}
-            postLink={parsePostLink(post.permalink, useInternalRouting)}
-            open
-            enableInfiniteLoading
-            enableNestedComments
-          />
-        </Stack>
-      </Card>
-    </Stack>
+    <>
+      <Breadcrumb
+        items={[
+          {label: `r/${subreddit}`, href: `/r/${subreddit}`},
+          {
+            label: post.title || 'Post',
+            href: `/r/${subreddit}/comments/${postId}/`
+          }
+        ]}
+      />
+      <Stack gap="md" py="md">
+        <PostCard post={post} useInternalRouting={useInternalRouting} />
+        <Card padding="md" radius="md" shadow="sm" withBorder>
+          <Stack gap="md">
+            <Title order={3} size="lg">
+              Comments
+            </Title>
+            <Comments
+              permalink={post.permalink || ''}
+              postLink={parsePostLink(post.permalink, useInternalRouting)}
+              open
+              enableInfiniteLoading
+              enableNestedComments
+            />
+          </Stack>
+        </Card>
+      </Stack>
+    </>
   )
 }
