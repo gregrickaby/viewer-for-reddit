@@ -1,8 +1,8 @@
 import type {components} from '@/lib/types/reddit-api'
-import {COMMENTS_LIMIT, MAX_LIMIT} from '@/lib/utils/apiConstants'
-import {baseQuery} from '@/lib/utils/baseQuery/baseQuery'
-import {dynamicBaseQuery} from '@/lib/utils/baseQuery/dynamicBaseQuery'
-import {extractAndFilterComments} from '@/lib/utils/commentFilters'
+import {COMMENTS_LIMIT, MAX_LIMIT} from '@/lib/utils/api/apiConstants'
+import {baseQuery} from '@/lib/utils/api/baseQuery/baseQuery'
+import {dynamicBaseQuery} from '@/lib/utils/api/baseQuery/dynamicBaseQuery'
+import {extractAndFilterComments} from '@/lib/utils/formatting/commentFilters'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 /**

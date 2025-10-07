@@ -1,6 +1,6 @@
-import BackToTop from '@/components/BackToTop/BackToTop'
-import BossButton from '@/components/BossButton/BossButton'
-import {Homepage} from '@/components/Homepage/Homepage'
+import BackToTop from '@/components/UI/BackToTop/BackToTop'
+import BossButton from '@/components/UI/BossButton/BossButton'
+import {Homepage} from '@/components/Layout/Homepage/Homepage'
 
 /**
  * The main landing page component.

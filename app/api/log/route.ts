@@ -1,5 +1,5 @@
-import {logError} from '@/lib/utils/logError'
-import {validateOrigin} from '@/lib/utils/validateOrigin'
+import {logError} from '@/lib/utils/logging/logError'
+import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
@@ -11,7 +11,7 @@ import {NextRequest, NextResponse} from 'next/server'
  * @example
  * ```ts
  * // Client-side usage with our logging utilities
- * import { logClientError, logClientInfo } from '@/lib/utils/clientLogger'
+ * import { logClientError, logClientInfo } from '@/lib/utils/logging/clientLogger'
  *
  * // Log an error with context
  * try {

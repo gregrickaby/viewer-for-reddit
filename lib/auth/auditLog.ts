@@ -3,7 +3,7 @@
  * Logs are sent to the centralized logging system via logError/logClientInfo.
  */
 
-import {logError} from '@/lib/utils/logError'
+import {logError} from '@/lib/utils/logging/logError'
 
 export type AuditEventType =
   | 'login_initiated'

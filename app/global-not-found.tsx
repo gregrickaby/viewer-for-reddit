@@ -1,4 +1,4 @@
-import {NotFoundClient} from '@/components/NotFoundClient/NotFoundClient'
+import {NotFoundClient} from '@/components/Layout/NotFoundClient/NotFoundClient'
 import type {Metadata} from 'next'
 import {headers} from 'next/headers'
 

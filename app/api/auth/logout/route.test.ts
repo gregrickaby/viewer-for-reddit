@@ -23,7 +23,7 @@ vi.mock('@/lib/auth/rateLimit', () => ({
 
 // Mock error logging
 const mockLogError = vi.hoisted(() => vi.fn())
-vi.mock('@/lib/utils/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: mockLogError
 }))
 

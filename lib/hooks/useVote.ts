@@ -1,6 +1,6 @@
 import {useVoteMutation} from '@/lib/store/services/voteApi'
 import type {VoteDirection} from '@/lib/types'
-import {logClientError} from '@/lib/utils/clientLogger'
+import {logClientError} from '@/lib/utils/logging/clientLogger'
 import {notifications} from '@mantine/notifications'
 import {useState} from 'react'
 

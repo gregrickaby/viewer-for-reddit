@@ -1,7 +1,7 @@
-import BackToTop from '@/components/BackToTop/BackToTop'
-import BossButton from '@/components/BossButton/BossButton'
-import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
-import {CustomFeedPosts} from '@/components/CustomFeedPosts/CustomFeedPosts'
+import BackToTop from '@/components/UI/BackToTop/BackToTop'
+import BossButton from '@/components/UI/BossButton/BossButton'
+import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
+import {Custom} from '@/components/Feeds/Custom/Custom'
 import config from '@/lib/config'
 import type {CustomFeedParams, SearchParams, SortingOption} from '@/lib/types'
 import type {Metadata} from 'next'
@@ -71,11 +71,7 @@ export default async function CustomFeedPage(props: {
           }
         ]}
       />
-      <CustomFeedPosts
-        customFeedName={customfeed}
-        sort={sort}
-        username={username}
-      />
+      <Custom customFeedName={customfeed} sort={sort} username={username} />
       <BossButton />
       <BackToTop />
     </>

@@ -1,9 +1,9 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import config from '@/lib/config'
-import {logError} from '@/lib/utils/logError'
-import {validateOrigin} from '@/lib/utils/validateOrigin'
-import {isSafeRedditPath} from '@/lib/utils/validateRedditPath'
+import {logError} from '@/lib/utils/logging/logError'
+import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
+import {isSafeRedditPath} from '@/lib/utils/validation/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**

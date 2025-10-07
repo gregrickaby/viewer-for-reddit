@@ -2,7 +2,7 @@ import {getRedditClient} from '@/lib/auth/arctic'
 import {getClientInfo, logAuditEvent} from '@/lib/auth/auditLog'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession, updateSessionTokens} from '@/lib/auth/session'
-import {logError} from '@/lib/utils/logError'
+import {logError} from '@/lib/utils/logging/logError'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**

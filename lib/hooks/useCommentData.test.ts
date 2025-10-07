@@ -33,7 +33,7 @@ vi.mock('@/lib/store/services/commentsApi', async () => {
 })
 
 // Mock the helper functions
-vi.mock('@/lib/utils/commentHelpers', () => ({
+vi.mock('@/lib/utils/formatting/commentHelpers', () => ({
   getDisplayComments: vi.fn(() => []),
   getLoadingState: vi.fn(() => false),
   getNextPageControls: vi.fn(() => ({

@@ -1,7 +1,7 @@
 import {POST} from '@/app/api/reddit/vote/route'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
-import {validateOrigin} from '@/lib/utils/validateOrigin'
+import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
 import {server} from '@/test-utils/msw/server'
 import {http, HttpResponse} from 'msw'
 import {NextRequest} from 'next/server'
@@ -9,8 +9,8 @@ import {type Mock} from 'vitest'
 
 vi.mock('@/lib/auth/session')
 vi.mock('@/lib/auth/rateLimit')
-vi.mock('@/lib/utils/validateOrigin')
-vi.mock('@/lib/utils/logError')
+vi.mock('@/lib/utils/validation/validateOrigin')
+vi.mock('@/lib/utils/logging/logError')
 
 describe('POST /api/reddit/vote', () => {
   beforeEach(() => {

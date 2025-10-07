@@ -7,7 +7,7 @@ import {
   useGetUserSubscriptionsQuery
 } from '@/lib/store/services/authenticatedApi'
 import {useLazyGetSubredditAboutQuery} from '@/lib/store/services/subredditApi'
-import {logClientError} from '@/lib/utils/clientLogger'
+import {logClientError} from '@/lib/utils/logging/clientLogger'
 import {notifications} from '@mantine/notifications'
 import {useState} from 'react'
 

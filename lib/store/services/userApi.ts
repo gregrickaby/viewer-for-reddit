@@ -1,6 +1,6 @@
 import type {components} from '@/lib/types/reddit-api'
-import {MAX_LIMIT} from '@/lib/utils/apiConstants'
-import {baseQuery} from '@/lib/utils/baseQuery/baseQuery'
+import {MAX_LIMIT} from '@/lib/utils/api/apiConstants'
+import {baseQuery} from '@/lib/utils/api/baseQuery/baseQuery'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 /**

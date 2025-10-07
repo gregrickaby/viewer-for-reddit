@@ -7,7 +7,7 @@ vi.mock('@/lib/actions/redditToken', () => ({
   getRedditToken: vi.fn()
 }))
 
-vi.mock('@/lib/utils/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
 }))
 
@@ -19,7 +19,9 @@ vi.mock('@/lib/auth/rateLimit', () => ({
 const mockGetRedditToken = vi.mocked(
   (await import('@/lib/actions/redditToken')).getRedditToken
 )
-const mockLogError = vi.mocked((await import('@/lib/utils/logError')).logError)
+const mockLogError = vi.mocked(
+  (await import('@/lib/utils/logging/logError')).logError
+)
 const mockCheckRateLimit = vi.mocked(
   (await import('@/lib/auth/rateLimit')).checkRateLimit
 )

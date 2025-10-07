@@ -1,4 +1,4 @@
-import {SinglePost} from '@/components/SinglePost/SinglePost'
+import {Single} from '@/components/Feeds/Single/Single'
 import config from '@/lib/config'
 import type {SinglePostPageParams} from '@/lib/types'
 import type {Metadata} from 'next'
@@ -53,5 +53,5 @@ export async function generateMetadata({
 export default async function SinglePostPage({params}: SinglePostPageParams) {
   const {subreddit, postId} = await params
 
-  return <SinglePost subreddit={subreddit} postId={postId} />
+  return <Single subreddit={subreddit} postId={postId} />
 }

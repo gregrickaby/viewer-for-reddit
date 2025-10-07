@@ -2,11 +2,11 @@ import {NextRequest} from 'next/server'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {checkRateLimit, cleanupRateLimitStore, detectBotType} from './rateLimit'
 
-vi.mock('@/lib/utils/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
 }))
 
-import {logError} from '@/lib/utils/logError'
+import {logError} from '@/lib/utils/logging/logError'
 
 // Mock NextRequest for testing
 function createMockNextRequest(

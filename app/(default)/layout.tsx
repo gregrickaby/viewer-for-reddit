@@ -1,7 +1,7 @@
 'use client'
 
-import {Header} from '@/components/Header/Header'
-import {Sidebar} from '@/components/Sidebar/Sidebar'
+import {Header} from '@/components/Layout/Header/Header'
+import {Sidebar} from '@/components/Layout/Sidebar/Sidebar'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {AppShell, Container} from '@mantine/core'
 import {useMediaQuery} from '@mantine/hooks'

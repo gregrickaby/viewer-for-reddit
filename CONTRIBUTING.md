@@ -226,21 +226,95 @@ Component (auto-cached, auto-refetched)
 ### File Structure
 
 ```text
-├── app/(default)/          # Next.js App Router pages
-├── components/             # React components (one per folder)
-│   └── ComponentName/
-│       ├── ComponentName.tsx
-│       ├── ComponentName.module.css
-│       └── ComponentName.test.tsx
-├── lib/
-│   ├── actions/           # Server Actions (Reddit OAuth)
-│   ├── hooks/             # Custom React hooks
-│   ├── store/             # Redux store + RTK Query
-│   ├── types/             # TypeScript definitions (auto-generated)
-│   └── utils/             # Pure utility functions
-├── scripts/               # Build/codegen scripts
-└── test-utils/            # Test setup and utilities
+app/
+├── (default)/              # Default layout routes
+│   ├── r/                  # Subreddit pages (/r/subreddit)
+│   ├── u/                  # User profile pages (/u/username)
+│   ├── user/               # User-specific pages
+│   └── about/              # About page
+├── api/                    # API routes
+│   ├── auth/               # Authentication endpoints
+│   ├── log/                # Logging endpoint
+│   └── reddit/             # Reddit API proxy routes
+
+components/
+├── Feeds/                  # Feed-specific views
+│   ├── Custom/             # Custom feed display (CustomFeedPosts)
+│   ├── Favorites/          # Favorites feed (FavoritesPosts)
+│   ├── Single/             # Single post view (SinglePost)
+│   └── User/               # User profile feed (UserProfile)
+├── Layout/                 # Structural & page-level components
+│   ├── Header/             # Site header
+│   ├── Homepage/           # Homepage component
+│   ├── NotFoundClient/     # 404 page client component
+│   └── Sidebar/            # Sidebar navigation
+└── UI/                     # Reusable UI components
+    ├── Analytics/          # Analytics tracking
+    ├── Auth/               # Login/logout buttons, user menu
+    ├── BackToTop/          # Back to top button
+    ├── BossButton/         # Quick exit button
+    ├── Breadcrumb/         # Breadcrumb navigation
+    ├── ErrorMessage/       # Error display
+    ├── Favorite/           # Favorite button
+    ├── Post/               # Post system (Card, List, Media, Comments, VoteButtons)
+    ├── Search/             # Search functionality
+    ├── Settings/           # Settings panel
+    └── SubredditName/      # Subreddit name display
+
+lib/
+├── actions/                # Server Actions
+│   └── redditToken.ts      # OAuth token management
+├── auth/                   # Authentication utilities
+├── hooks/                  # Custom React hooks
+├── store/                  # Redux store + RTK Query
+├── types/                  # TypeScript definitions (auto-generated)
+└── utils/                  # Pure utility functions
+    ├── api/                # API-related utilities
+    │   ├── apiConstants.ts         # API constants and endpoints
+    │   ├── authenticatedFetch.ts   # Authenticated HTTP requests
+    │   ├── fetchWithTimeout.ts     # Timeout-enabled fetch
+    │   ├── oauthHelpers.ts         # OAuth helper functions
+    │   ├── redditProxyHelpers.ts   # Reddit proxy utilities
+    │   ├── retryConfig.ts          # Retry configuration
+    │   └── baseQuery/              # RTK Query base queries
+    ├── formatting/         # Text and data formatting
+    │   ├── commentFilters.ts       # Comment filtering utilities
+    │   ├── commentHelpers.ts       # Comment manipulation
+    │   ├── extractChildren.ts      # Extract nested children
+    │   ├── formatTimeAgo.ts        # Relative time formatting
+    │   ├── generatePostSlug.ts     # URL slug generation
+    │   ├── getIsVertical.ts        # Media orientation detection
+    │   ├── getMediumImage.ts       # Image size selection
+    │   ├── parsePostLink.ts        # Post URL parsing
+    │   └── subredditMapper.ts      # Subreddit name mapping
+    ├── logging/            # Error and event logging
+    │   ├── clientLogger.ts         # Client-side logging
+    │   └── logError.ts             # Server-side error logging
+    ├── routing/            # Navigation utilities
+    │   └── redirectHelpers.ts      # Redirect utilities
+    ├── storage/            # Client-side storage
+    │   ├── mediaCache.ts           # Media caching
+    │   ├── searchHistory.ts        # Search history
+    │   ├── storage.ts              # Generic storage wrapper
+    │   └── token.ts                # Token storage
+    └── validation/         # Input validation and sanitization
+        ├── errorSanitizer.ts       # Error message sanitization
+        ├── redditUserValidator.ts  # Reddit username validation
+        ├── sanitizeText.ts         # Text sanitization
+        ├── urlSanitizer.ts         # URL sanitization
+        ├── validateOrigin.ts       # Origin validation (CSRF)
+        └── validateRedditPath.ts   # Reddit path validation (SSRF)
+
+scripts/                    # Build and codegen scripts
+test-utils/                 # Test setup and utilities
 ```
+
+**Organizational Principles:**
+
+- **Components**: Organized by purpose (Feeds, Layout, UI) for clear separation of concerns
+- **Utils**: Categorized by function (api, formatting, logging, routing, storage, validation)
+- **One Component Per Folder**: Each component has its own folder with .tsx, .module.css, and .test.tsx
+- **Import Paths**: Use `@/` alias for clean imports (e.g., `@/components/UI/Post/PostCard/PostCard`)
 
 ### NPM Scripts Reference
 

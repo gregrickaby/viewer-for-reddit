@@ -1,4 +1,4 @@
-import {logError} from '@/lib/utils/logError'
+import {logError} from '@/lib/utils/logging/logError'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**

@@ -1,15 +1,15 @@
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
-import {logError} from '@/lib/utils/logError'
-import {validateOrigin} from '@/lib/utils/validateOrigin'
+import {logError} from '@/lib/utils/logging/logError'
+import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
 import {NextRequest} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {POST} from './route'
 
 vi.mock('@/lib/auth/session')
 vi.mock('@/lib/auth/rateLimit')
-vi.mock('@/lib/utils/logError')
-vi.mock('@/lib/utils/validateOrigin')
+vi.mock('@/lib/utils/logging/logError')
+vi.mock('@/lib/utils/validation/validateOrigin')
 
 const mockGetSession = vi.mocked(getSession)
 const mockCheckRateLimit = vi.mocked(checkRateLimit)

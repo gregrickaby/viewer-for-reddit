@@ -8,7 +8,7 @@ import {
 } from './useVote'
 
 // Mock client logger
-vi.mock('@/lib/utils/clientLogger', () => ({
+vi.mock('@/lib/utils/logging/clientLogger', () => ({
   logClientError: vi.fn(),
   logClientInfo: vi.fn()
 }))

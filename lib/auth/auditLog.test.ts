@@ -1,11 +1,11 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {getClientInfo, logAuditEvent} from './auditLog'
 
-vi.mock('@/lib/utils/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
 }))
 
-import {logError} from '@/lib/utils/logError'
+import {logError} from '@/lib/utils/logging/logError'
 
 describe('logAuditEvent', () => {
   let mockLogError: ReturnType<typeof vi.fn>

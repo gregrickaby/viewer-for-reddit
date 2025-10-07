@@ -5,14 +5,14 @@ import {
   useLazyGetPostCommentsRawQuery,
   type AutoCommentData
 } from '@/lib/store/services/commentsApi'
-import type {NestedCommentData} from '@/lib/utils/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {
   getDisplayComments,
   getLoadingState,
   getNextPageControls,
   processInfiniteComments,
   processNestedComments
-} from '@/lib/utils/commentHelpers'
+} from '@/lib/utils/formatting/commentHelpers'
 import {useCallback, useEffect, useMemo} from 'react'
 
 interface UseCommentDataParams {

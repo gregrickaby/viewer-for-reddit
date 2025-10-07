@@ -1,5 +1,5 @@
 import type {SortingOption, SubredditItem, UserSettings} from '@/lib/types'
-import * as storage from '@/lib/utils/storage'
+import * as storage from '@/lib/utils/storage/storage'
 import settingsReducer, {
   addRecentSubreddit,
   addToSearchHistory,

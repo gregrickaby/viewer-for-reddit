@@ -1,9 +1,10 @@
-import BackToTop from '@/components/BackToTop/BackToTop'
-import BossButton from '@/components/BossButton/BossButton'
-import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
-import {Posts} from '@/components/Posts/Posts'
+import BackToTop from '@/components/UI/BackToTop/BackToTop'
+import BossButton from '@/components/UI/BossButton/BossButton'
+import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
+import {List} from '@/components/UI/Post/List'
 import config from '@/lib/config'
 import type {SearchParams, SortingOption, SubredditParams} from '@/lib/types'
+import {Container} from '@mantine/core'
 import type {Metadata} from 'next'
 
 /**
@@ -58,10 +59,12 @@ export default async function Page(props: {
 
   return (
     <>
-      <Breadcrumb
-        items={[{label: `r/${subreddit}`, href: `/r/${subreddit}`}]}
-      />
-      <Posts subreddit={subreddit} sort={sort} />
+      <Container size="md">
+        <Breadcrumb
+          items={[{label: params.subreddit, href: `/${params.subreddit}`}]}
+        />
+        <List subreddit={subreddit} sort={sort} />
+      </Container>
       <BossButton />
       <BackToTop />
     </>

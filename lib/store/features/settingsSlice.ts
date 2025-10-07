@@ -1,11 +1,11 @@
 import type {SortingOption, SubredditItem, UserSettings} from '@/lib/types'
-import {addToSearchHistory as addToSearchHistoryUtil} from '@/lib/utils/searchHistory'
+import {addToSearchHistory as addToSearchHistoryUtil} from '@/lib/utils/storage/searchHistory'
 import {
   clearSettings,
   getInitialSettings,
   loadSettings,
   saveSettings
-} from '@/lib/utils/storage'
+} from '@/lib/utils/storage/storage'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 /**

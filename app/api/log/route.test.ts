@@ -3,18 +3,20 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {POST} from './route'
 
 // Mock the logError utility
-vi.mock('@/lib/utils/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
 }))
 
 // Mock the validateOrigin utility
-vi.mock('@/lib/utils/validateOrigin', () => ({
+vi.mock('@/lib/utils/validation/validateOrigin', () => ({
   validateOrigin: vi.fn()
 }))
 
-const mockLogError = vi.mocked((await import('@/lib/utils/logError')).logError)
+const mockLogError = vi.mocked(
+  (await import('@/lib/utils/logging/logError')).logError
+)
 const mockValidateOrigin = vi.mocked(
-  (await import('@/lib/utils/validateOrigin')).validateOrigin
+  (await import('@/lib/utils/validation/validateOrigin')).validateOrigin
 )
 
 describe('Log API Route', () => {

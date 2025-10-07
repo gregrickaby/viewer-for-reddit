@@ -1,4 +1,4 @@
-import {Breadcrumb} from '@/components/Breadcrumb/Breadcrumb'
+import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
 import config from '@/lib/config'
 import {Typography} from '@mantine/core'
 import fs from 'fs'

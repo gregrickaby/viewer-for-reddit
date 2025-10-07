@@ -1,7 +1,7 @@
 import {getRedditClient} from '@/lib/auth/arctic'
 import {getClientInfo, logAuditEvent} from '@/lib/auth/auditLog'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
-import {createUncachedRedirect} from '@/lib/utils/redirectHelpers'
+import {createUncachedRedirect} from '@/lib/utils/routing/redirectHelpers'
 import {generateState} from 'arctic'
 import {cookies} from 'next/headers'
 import {NextRequest} from 'next/server'

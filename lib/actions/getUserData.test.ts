@@ -15,7 +15,7 @@ vi.mock('@/lib/auth/session', () => ({
   getSession: vi.fn()
 }))
 
-vi.mock('@/lib/utils/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
 }))
 

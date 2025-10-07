@@ -1,5 +1,5 @@
 import type {VoteRequest, VoteResponse} from '@/lib/types'
-import {createRedditBaseQuery} from '@/lib/utils/baseQuery/createRedditBaseQuery'
+import {createRedditBaseQuery} from '@/lib/utils/api/baseQuery/createRedditBaseQuery'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 /**
