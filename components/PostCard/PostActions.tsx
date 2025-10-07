@@ -39,6 +39,7 @@ export function PostActions({
           aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
           className={classes.commentButton}
           color="gray"
+          data-umami-event="comment button"
           leftSection={<FaComment size={14} />}
           onClick={onCommentsToggle}
           radius="sm"

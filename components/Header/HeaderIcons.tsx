@@ -14,7 +14,7 @@ export function HeaderIcons() {
           aria-label="View source code"
           color="gray"
           component="a"
-          data-umami-event="view source button"
+          data-umami-event="github button"
           href={config.githubUrl}
           rel="noopener noreferrer"
           size="xl"

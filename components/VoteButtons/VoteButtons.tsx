@@ -82,15 +82,16 @@ export function VoteButtons({
     <Group gap={4} align="center" className={classes.voteButtons} p={6}>
       <Tooltip label="Upvote" withinPortal>
         <ActionIcon
-          variant="subtle"
-          color={isUpvoted ? 'orange' : 'gray'}
-          size={actionIconSize}
-          onClick={() => handleVote(1)}
-          disabled={isVoting}
           aria-label="Upvote"
           aria-pressed={isUpvoted}
           className={classes.upvoteButton}
+          color={isUpvoted ? 'orange' : 'gray'}
           data-active={isUpvoted}
+          data-umami-event="upvote button"
+          disabled={isVoting}
+          onClick={() => handleVote(1)}
+          size={actionIconSize}
+          variant="subtle"
         >
           <BiSolidUpvote size={iconSize} />
         </ActionIcon>
@@ -102,15 +103,16 @@ export function VoteButtons({
 
       <Tooltip label="Downvote" withinPortal>
         <ActionIcon
-          variant="subtle"
-          color={isDownvoted ? 'blue' : 'gray'}
-          size={actionIconSize}
-          onClick={() => handleVote(-1)}
-          disabled={isVoting}
           aria-label="Downvote"
           aria-pressed={isDownvoted}
           className={classes.downvoteButton}
+          color={isDownvoted ? 'blue' : 'gray'}
           data-active={isDownvoted}
+          data-umami-event="downvote button"
+          disabled={isVoting}
+          onClick={() => handleVote(-1)}
+          size={actionIconSize}
+          variant="subtle"
         >
           <BiSolidDownvote size={iconSize} />
         </ActionIcon>

@@ -118,8 +118,9 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
           <Favorite subreddit={subreddit} />
         </Group>
         <SegmentedControl
-          value={selectedSort}
+          data-umami-event="change sort button"
           onChange={(value) => setSelectedSort(value as SortingOption)}
+          value={selectedSort}
           data={[
             {label: 'Hot', value: 'hot'},
             {label: 'New', value: 'new'},
@@ -137,7 +138,11 @@ export function Posts({subreddit, sort = 'hot'}: Readonly<PostsProps>) {
               <Loader />
             </Group>
           ) : (
-            <Button fullWidth onClick={() => fetchNextPage()}>
+            <Button
+              data-umami-event="load more button"
+              fullWidth
+              onClick={() => fetchNextPage()}
+            >
               Load More
             </Button>
           )}
