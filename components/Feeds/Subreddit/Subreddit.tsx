@@ -2,7 +2,7 @@
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {Favorite} from '@/components/UI/Favorite/Favorite'
-import {Card} from '@/components/UI/Post/Card'
+import {Card} from '@/components/UI/Post/Card/Card'
 import config from '@/lib/config'
 import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/useTrackRecentSubreddit'
@@ -19,15 +19,14 @@ import {
 } from '@mantine/core'
 import {usePathname} from 'next/navigation'
 import {useState} from 'react'
-import styles from './List.module.css'
 
-interface ListProps {
+interface SubredditProps {
   subreddit: string
   sort?: SortingOption
 }
 
 /**
- * List component for rendering a paginated, sortable list of Reddit posts for a subreddit.
+ * Subreddit component for rendering a paginated, sortable list of Reddit posts for a subreddit.
  *
  * Features:
  * - Fetches posts using useInfinitePosts (RTK Query + infinite scroll)
@@ -40,7 +39,7 @@ interface ListProps {
  * @param sort - The initial sorting option (default: 'hot')
  * @returns JSX.Element for a full subreddit post feed with controls
  */
-export function List({subreddit, sort = 'hot'}: Readonly<ListProps>) {
+export function Subreddit({subreddit, sort = 'hot'}: Readonly<SubredditProps>) {
   useTrackRecentSubreddit(subreddit)
   const [selectedSort, setSelectedSort] = useState<SortingOption>(sort)
   const pathname = usePathname()
@@ -111,7 +110,7 @@ export function List({subreddit, sort = 'hot'}: Readonly<ListProps>) {
   return (
     <Stack>
       <Group justify="space-between" gap="xs">
-        <Group gap="xs" className={styles.header}>
+        <Group gap="xs">
           <Title order={1} size="h2">
             {subreddit === 'all' ? 'Home' : `Posts from r/${subreddit}`}
           </Title>

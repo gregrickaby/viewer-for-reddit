@@ -1,7 +1,7 @@
 'use client'
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
-import {Card as PostCard} from '@/components/UI/Post/Card'
+import {Card as PostCard} from '@/components/UI/Post/Card/Card'
 import config from '@/lib/config'
 import {useUpdateMeta} from '@/lib/hooks/useUpdateMeta'
 import {useGetUserCommentsInfiniteQuery} from '@/lib/store/services/commentsApi'

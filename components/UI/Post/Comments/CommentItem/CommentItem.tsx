@@ -86,11 +86,18 @@ export function CommentItem({
           <Stack gap="xs">
             {/* Comment header */}
             <Group gap="xs" align="center">
-              <Link className={classes.link} href={`/u/${comment.author}`}>
+              {comment.author &&
+              !['[deleted]', '[removed]'].includes(comment.author) ? (
+                <Link className={classes.link} href={`/u/${comment.author}`}>
+                  <Text c="dimmed" size="sm" fw={700}>
+                    u/{comment.author}
+                  </Text>
+                </Link>
+              ) : (
                 <Text c="dimmed" size="sm" fw={700}>
-                  u/{comment.author}
+                  u/{comment.author || '[deleted]'}
                 </Text>
-              </Link>
+              )}
 
               <Text c="dimmed" size="sm">
                 &middot;

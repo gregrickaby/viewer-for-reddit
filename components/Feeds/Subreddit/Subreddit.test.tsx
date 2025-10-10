@@ -1,4 +1,4 @@
-import {List} from '@/components/UI/Post/List'
+import {Subreddit} from '@/components/Feeds/Subreddit/Subreddit'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
 
@@ -13,7 +13,7 @@ vi.mock('@/lib/hooks/useInfinitePosts', () => ({
   useInfinitePosts: mockUseInfinitePosts
 }))
 
-vi.mock('@/components/UI/Post/Card', () => ({
+vi.mock('@/components/UI/Post/Card/Card', () => ({
   Card: ({post}: any) => <div data-testid="post-card">{post.id}</div>
 }))
 
@@ -58,7 +58,7 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-describe('List', () => {
+describe('Subreddit', () => {
   it('shows loader when loading', () => {
     mockUseInfinitePosts.mockReturnValue({
       data: undefined,
@@ -72,7 +72,7 @@ describe('List', () => {
       ref: vi.fn(),
       wasFiltered: false
     })
-    render(<List subreddit="test" />)
+    render(<Subreddit subreddit="test" />)
     expect(screen.getByTestId('loader')).toBeInTheDocument()
   })
 
@@ -89,7 +89,7 @@ describe('List', () => {
       ref: vi.fn(),
       wasFiltered: false
     })
-    render(<List subreddit="test" />)
+    render(<Subreddit subreddit="test" />)
     expect(screen.getByText(/Subreddit Not Available/)).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -111,7 +111,7 @@ describe('List', () => {
       ref: vi.fn(),
       wasFiltered: false
     })
-    render(<List subreddit="nonexistent" />)
+    render(<Subreddit subreddit="nonexistent" />)
     expect(screen.getByText(/Subreddit Not Available/)).toBeInTheDocument()
     expect(
       screen.getByText(/Subreddit r\/nonexistent not found/)
@@ -131,7 +131,7 @@ describe('List', () => {
       ref: vi.fn(),
       wasFiltered: false
     })
-    render(<List subreddit="private" />)
+    render(<Subreddit subreddit="private" />)
     expect(screen.getByText(/Subreddit Not Available/)).toBeInTheDocument()
     expect(
       screen.getByText(/Subreddit r\/private is private or restricted/)
@@ -151,7 +151,7 @@ describe('List', () => {
       ref: vi.fn(),
       wasFiltered: false
     })
-    render(<List subreddit="test" />)
+    render(<Subreddit subreddit="test" />)
     expect(
       screen.getByText('No posts found! Try a different subreddit')
     ).toBeInTheDocument()
@@ -170,7 +170,7 @@ describe('List', () => {
       ref: vi.fn(),
       wasFiltered: true
     })
-    render(<List subreddit="test" />)
+    render(<Subreddit subreddit="test" />)
     expect(
       screen.getByText(
         'You need to enable the "Allow NSFW" setting to see posts'
@@ -202,7 +202,7 @@ describe('List', () => {
       wasFiltered: false
     })
     const user = userEvent.setup()
-    render(<List subreddit="test" />)
+    render(<Subreddit subreddit="test" />)
     expect(screen.getAllByTestId('post-card')).toHaveLength(2)
     await user.click(screen.getByRole('button', {name: 'Load More'}))
     expect(fetchNextPage).toHaveBeenCalled()
@@ -230,7 +230,7 @@ describe('List', () => {
       ref: vi.fn(),
       wasFiltered: false
     })
-    render(<List subreddit="test" />)
+    render(<Subreddit subreddit="test" />)
     expect(screen.getByTestId('loader')).toBeInTheDocument()
   })
 })

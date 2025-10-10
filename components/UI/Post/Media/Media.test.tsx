@@ -1,4 +1,4 @@
-import {Media} from '@/components/UI/Post/Media'
+import {Media} from '@/components/UI/Post/Media/Media'
 import {logError} from '@/lib/utils/logging/logError'
 import {render, screen} from '@/test-utils'
 

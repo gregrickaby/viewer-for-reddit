@@ -29,6 +29,8 @@ export function HlsPlayer({
   poster,
   id,
   dataHint,
+  width,
+  height,
   autoPlay = false,
   controls = true,
   loop = true,
@@ -107,7 +109,9 @@ export function HlsPlayer({
             playsInline,
             poster,
             preload,
-            ref: videoRef
+            ref: videoRef,
+            width,
+            height
           }),
 
           isMediaChromeLoaded &&
@@ -124,9 +128,10 @@ export function HlsPlayer({
                   showduration: '',
                   remaining: ''
                 }),
+                React.createElement('media-playback-rate-button'),
+                React.createElement('media-fullscreen-button'),
                 React.createElement('media-mute-button'),
-                React.createElement('media-volume-range'),
-                React.createElement('media-fullscreen-button')
+                React.createElement('media-volume-range')
               )
             )
         )

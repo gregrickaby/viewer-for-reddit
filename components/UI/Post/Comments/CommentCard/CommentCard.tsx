@@ -52,14 +52,21 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
     >
       <Card padding="md" radius="md" shadow="none" withBorder>
         <Group gap="xs">
-          <Link
-            aria-label={`View profile of ${comment.author || 'Unknown'}`}
-            href={`/u/${comment.author || 'unknown'}`}
-          >
+          {comment.author &&
+          !['[deleted]', '[removed]'].includes(comment.author) ? (
+            <Link
+              aria-label={`View profile of ${comment.author}`}
+              href={`/u/${comment.author}`}
+            >
+              <Text c="dimmed" size="sm">
+                {comment.author}
+              </Text>
+            </Link>
+          ) : (
             <Text c="dimmed" size="sm">
               {comment.author || 'Unknown'}
             </Text>
-          </Link>
+          )}
           <Text c="dimmed" size="sm" aria-hidden="true">
             &middot;
           </Text>

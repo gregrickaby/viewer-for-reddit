@@ -24,6 +24,7 @@
 }
 
 .link {
+  margin: var(--mantine-spacing-xs) 0 var(--mantine-spacing-md);
   text-decoration: none;
 
   &:hover {

@@ -29,7 +29,7 @@ export default function Layout({
         },
         width: 320
       }}
-      padding="md"
+      padding={0}
     >
       <AppShell.Header p="md">
         <Header />
@@ -40,7 +40,7 @@ export default function Layout({
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Container maw={700} px="md">
+        <Container maw={700} mt="lg">
           {children}
         </Container>
       </AppShell.Main>

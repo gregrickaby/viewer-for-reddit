@@ -1,0 +1,32 @@
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--mantine-color-dark-8);
+  min-height: 200px;
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+    max-height: 70vh;
+    height: auto;
+    width: 100%;
+    object-fit: contain;
+  }
+}
+
+.vertical {
+  min-height: 400px;
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+    max-height: 90vh;
+    height: auto;
+    width: 100%;
+    object-fit: contain;
+  }
+}

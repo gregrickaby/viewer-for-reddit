@@ -1,5 +1,5 @@
 import {Comments} from '@/components/UI/Post/Comments/Comments'
-import {Media} from '@/components/UI/Post/Media'
+import {Media} from '@/components/UI/Post/Media/Media'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {getMediumImage} from '@/lib/utils/formatting/getMediumImage'
 import {parsePostLink} from '@/lib/utils/formatting/parsePostLink'
@@ -45,19 +45,12 @@ export function Card({post, useInternalRouting = true}: Readonly<CardProps>) {
     (post as any).media_embed?.provider_name === 'YouTube'
 
   return (
-    <MantineCard
-      component="article"
-      className={classes.postCard}
-      padding="md"
-      radius="md"
-      shadow="sm"
-      withBorder
-    >
+    <MantineCard component="article">
       <CardHeader post={post} />
 
       {useInternalRouting ? (
         <Link className={classes.link} href={postLink}>
-          <Title className={classes.title} order={2} size="lg" mt="xs" mb="xs">
+          <Title className={classes.title} order={2} size="lg">
             {post.title}
           </Title>
         </Link>
@@ -69,14 +62,14 @@ export function Card({post, useInternalRouting = true}: Readonly<CardProps>) {
           target="_blank"
           underline="never"
         >
-          <Title className={classes.title} order={2} size="lg" mt="xs" mb="xs">
+          <Title className={classes.title} order={2} size="lg">
             {post.title}
           </Title>
         </Anchor>
       )}
 
       {hasMedia && (
-        <MantineCard.Section>
+        <MantineCard.Section m={0} p={0}>
           <Media {...post} />
         </MantineCard.Section>
       )}

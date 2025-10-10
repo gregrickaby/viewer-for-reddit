@@ -1,4 +1,4 @@
-import {Card} from '@/components/UI/Post/Card'
+import {Card} from '@/components/UI/Post/Card/Card'
 import {render, screen} from '@/test-utils'
 
 vi.mock('@/components/Media/Media', () => ({

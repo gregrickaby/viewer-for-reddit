@@ -9,7 +9,7 @@ vi.mock('@/lib/hooks/useInfinitePosts', () => ({
   useInfinitePosts: mockUseInfinitePosts
 }))
 
-vi.mock('@/components/UI/Post/Card', () => ({
+vi.mock('@/components/UI/Post/Card/Card', () => ({
   Card: ({post}: any) => <div data-testid="post-card">{post.id}</div>
 }))
 

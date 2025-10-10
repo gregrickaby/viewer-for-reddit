@@ -1,7 +1,7 @@
 'use client'
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
-import {Card} from '@/components/UI/Post/Card'
+import {Card} from '@/components/UI/Post/Card/Card'
 import {useAppSelector} from '@/lib/store/hooks'
 import {
   type CustomFeedPostsArgs,

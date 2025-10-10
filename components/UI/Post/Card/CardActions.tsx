@@ -26,7 +26,7 @@ export function CardActions({
   onCommentsToggle
 }: Readonly<CardActionsProps>) {
   return (
-    <Group gap="xs" mt="xs">
+    <Group gap="xs" mt="md">
       <VoteButtons
         id={post.name ?? ''}
         score={post.ups ?? 0}

@@ -160,6 +160,9 @@ export function useSubredditSearch(): {
   useEffect(() => {
     if (isMobile) {
       if (mobileState === 'open') {
+        // Scroll to top so user can see the search drawer
+        window.scrollTo({top: 0, behavior: 'smooth'})
+
         // Store original overflow and prevent scrolling
         const originalOverflow = document.body.style.overflow
         document.body.style.overflow = 'hidden'
@@ -313,7 +316,6 @@ export function useSubredditSearch(): {
         if (isMobile && isDropdownOpen) {
           clearPendingTimeout()
           dispatch(setMobileSearchState('closed'))
-          // HOTFIX: Immediately restore body scrolling when closing drawer
           document.body.style.overflow = ''
         }
 

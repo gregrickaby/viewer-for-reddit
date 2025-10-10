@@ -1,7 +1,7 @@
 'use client'
 
 import {Favorites} from '@/components/Feeds/Favorites/Favorites'
-import {List} from '@/components/UI/Post/List'
+import {Subreddit} from '@/components/Feeds/Subreddit/Subreddit'
 import {useAppSelector} from '@/lib/store/hooks'
 import {
   selectFavoriteSubreddits,
@@ -47,7 +47,7 @@ export function Homepage() {
   // Note: For now, fallback to r/all for authenticated users until we implement
   // a proper home feed component that uses the / endpoint instead of /r/
   if (showHomeFeed && isAuthenticated) {
-    return <List subreddit="all" sort="hot" />
+    return <Subreddit subreddit="all" sort="hot" />
   }
 
   // 2. Users with favorites: show favorites
@@ -56,5 +56,5 @@ export function Homepage() {
   }
 
   // 3. Default: show r/all
-  return <List subreddit="all" sort="hot" />
+  return <Subreddit subreddit="all" sort="hot" />
 }
