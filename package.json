@@ -46,7 +46,7 @@
     "hls.js": "^1.6.13",
     "iron-session": "^8.0.4",
     "media-chrome": "^4.14.0",
-    "next": "^15.5.4",
+    "next": "^15.5.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
