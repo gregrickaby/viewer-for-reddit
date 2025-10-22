@@ -37,9 +37,9 @@ const subreddit: SubredditItem = {
 }
 
 describe('settingsSlice', () => {
-  let saveSpy: ReturnType<typeof vi.spyOn>
-  let clearSpy: ReturnType<typeof vi.spyOn>
-  let getInitialSpy: ReturnType<typeof vi.spyOn>
+  let saveSpy: ReturnType<typeof vi.fn>
+  let clearSpy: ReturnType<typeof vi.fn>
+  let getInitialSpy: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
     saveSpy = vi.spyOn(storage, 'saveSettings').mockImplementation(() => {})

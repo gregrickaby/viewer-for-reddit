@@ -526,36 +526,46 @@ describe('GET /api/auth/callback/reddit', () => {
   it('should handle Reddit API timeout', async () => {
     // Mock AbortController to simulate timeout
     const originalAbortController = globalThis.AbortController
-    const mockAbortController = vi.fn(() => ({
-      signal: {aborted: false, addEventListener: vi.fn()},
-      abort: vi.fn()
-    }))
-    globalThis.AbortController = mockAbortController as any
-
-    // Mock fetch to throw AbortError
     const originalFetch = globalThis.fetch
-    globalThis.fetch = vi.fn(() => {
-      const error = new Error('The operation was aborted')
-      error.name = 'AbortError'
-      return Promise.reject(error)
-    }) as any
 
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+    try {
+      class MockAbortController {
+        signal = {
+          aborted: false,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          onabort: null
+        }
+        abort = vi.fn()
+      }
 
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
+      globalThis.AbortController = MockAbortController as any
 
-    const response = await GET(request)
+      // Mock fetch to throw AbortError
+      globalThis.fetch = vi.fn(() => {
+        const error = new Error('The operation was aborted')
+        error.name = 'AbortError'
+        return Promise.reject(error)
+      }) as any
 
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=authentication_failed')
-    expect(location).toContain('error_id=') // Should include error ID
+      mockCookieStore.get.mockReturnValue({value: 'test_state'})
 
-    // Restore original
-    globalThis.AbortController = originalAbortController
-    globalThis.fetch = originalFetch
+      const url =
+        'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
+      const request = new NextRequest(url)
+
+      const response = await GET(request)
+
+      expect(response.status).toBe(307)
+      const location = response.headers.get('location')
+      expect(location).toContain('error=authentication_failed')
+      expect(location).toContain('error_id=') // Should include error ID
+    } finally {
+      // Always restore original, even if test fails
+      globalThis.AbortController = originalAbortController
+      globalThis.fetch = originalFetch
+    }
   })
 
   it('should include error_id in failed login redirects', async () => {

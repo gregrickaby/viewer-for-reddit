@@ -2,6 +2,7 @@ import {Single} from '@/components/Feeds/Single/Single'
 import config from '@/lib/config'
 import type {SinglePostPageParams} from '@/lib/types'
 import type {Metadata} from 'next'
+import {Suspense} from 'react'
 
 /**
  * Generate static metadata for single post pages.
@@ -53,5 +54,9 @@ export async function generateMetadata({
 export default async function SinglePostPage({params}: SinglePostPageParams) {
   const {subreddit, postId} = await params
 
-  return <Single subreddit={subreddit} postId={postId} />
+  return (
+    <Suspense fallback={null}>
+      <Single subreddit={subreddit} postId={postId} />
+    </Suspense>
+  )
 }

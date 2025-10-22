@@ -6,7 +6,13 @@ vi.mock('@/lib/hooks/useHlsVideo', () => ({
   useHlsVideo: () => ({videoRef, isLoading: false, isMuted: false})
 }))
 
-vi.mock('media-chrome', () => ({}))
+// Mock media-chrome completely to prevent web component registration errors
+vi.mock('media-chrome', async () => {
+  return {
+    __esModule: true,
+    default: {}
+  }
+})
 
 describe('HlsPlayer', () => {
   it('renders video element initially', () => {

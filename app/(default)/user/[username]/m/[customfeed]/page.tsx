@@ -1,10 +1,11 @@
+import {Custom} from '@/components/Feeds/Custom/Custom'
 import BackToTop from '@/components/UI/BackToTop/BackToTop'
 import BossButton from '@/components/UI/BossButton/BossButton'
 import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
-import {Custom} from '@/components/Feeds/Custom/Custom'
 import config from '@/lib/config'
 import type {CustomFeedParams, SearchParams, SortingOption} from '@/lib/types'
 import type {Metadata} from 'next'
+import {Suspense} from 'react'
 
 /**
  * Generate metadata for custom feed page.
@@ -71,7 +72,9 @@ export default async function CustomFeedPage(props: {
           }
         ]}
       />
-      <Custom customFeedName={customfeed} sort={sort} username={username} />
+      <Suspense fallback={null}>
+        <Custom customFeedName={customfeed} sort={sort} username={username} />
+      </Suspense>
       <BossButton />
       <BackToTop />
     </>

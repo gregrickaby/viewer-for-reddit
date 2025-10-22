@@ -1,5 +1,3 @@
-'use cache'
-
 import {Analytics} from '@/components/UI/Analytics/Analytics'
 import config from '@/lib/config'
 import {StoreProvider} from '@/lib/store/StoreProvider'

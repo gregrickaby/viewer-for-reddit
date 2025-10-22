@@ -1,10 +1,11 @@
+import {User} from '@/components/Feeds/User/User'
 import BackToTop from '@/components/UI/BackToTop/BackToTop'
 import BossButton from '@/components/UI/BossButton/BossButton'
 import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
-import {User} from '@/components/Feeds/User/User'
 import config from '@/lib/config'
 import type {UserParams} from '@/lib/types'
 import type {Metadata} from 'next'
+import {Suspense} from 'react'
 
 /**
  * Generate static metadata for user profile pages.
@@ -50,7 +51,9 @@ export default async function UserProfilePage(props: {params: UserParams}) {
   return (
     <>
       <Breadcrumb items={[{label: `u/${username}`, href: `/u/${username}`}]} />
-      <User username={username} />
+      <Suspense fallback={null}>
+        <User username={username} />
+      </Suspense>
       <BossButton />
       <BackToTop />
     </>

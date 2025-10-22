@@ -1,11 +1,12 @@
+import {Subreddit} from '@/components/Feeds/Subreddit/Subreddit'
 import BackToTop from '@/components/UI/BackToTop/BackToTop'
 import BossButton from '@/components/UI/BossButton/BossButton'
 import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
-import {Subreddit} from '@/components/Feeds/Subreddit/Subreddit'
 import config from '@/lib/config'
 import type {SearchParams, SortingOption, SubredditParams} from '@/lib/types'
 import {Container} from '@mantine/core'
 import type {Metadata} from 'next'
+import {Suspense} from 'react'
 
 /**
  * Generate static metadata for subreddit pages.
@@ -63,7 +64,9 @@ export default async function Page(props: {
         <Breadcrumb
           items={[{label: params.subreddit, href: `/${params.subreddit}`}]}
         />
-        <Subreddit subreddit={subreddit} sort={sort} />
+        <Suspense fallback={null}>
+          <Subreddit subreddit={subreddit} sort={sort} />
+        </Suspense>
       </Container>
       <BossButton />
       <BackToTop />

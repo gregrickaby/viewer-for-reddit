@@ -1,6 +1,7 @@
 import type {NextConfig} from 'next'
 
 const nextConfig: NextConfig = {
+  cacheComponents: false,
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
@@ -17,7 +18,6 @@ const nextConfig: NextConfig = {
     ]
   },
   async headers() {
-    // Allow unsafe-eval in development for Next.js HMR and React Server Components
     const isDevelopment = process.env.NODE_ENV === 'development'
     const scriptSrc = isDevelopment
       ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:"
@@ -67,7 +67,6 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     globalNotFound: true,
-    useCache: true,
     optimizePackageImports: [
       '@mantine/core',
       '@mantine/hooks',
