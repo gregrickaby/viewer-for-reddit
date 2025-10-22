@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "EditorConfig.EditorConfig",
-    "bradlc.vscode-tailwindcss",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "sonarsource.sonarlint-vscode",
