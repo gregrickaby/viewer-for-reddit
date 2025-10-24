@@ -99,7 +99,7 @@ npm run typegen:types    # Generate types from OpenAPI spec
 
 ### Tech Stack
 
-- **Framework**: Next.js 15+ (App Router)
+- **Framework**: Next.js 16+ (App Router)
 - **UI**: Mantine v8 component library. Use Mantine primitives. Fetch official docs: <https://mantine.dev/llms.txt>
 - **API**: Reddit API v2 with OpenAPI spec and auto-generated types. Fetch official docs: <https://developers.reddit.com/docs/llms-full.txt>
 - **Analytics**: Umami (production only) <https://umami.is/docs>
@@ -114,7 +114,7 @@ npm run typegen:types    # Generate types from OpenAPI spec
 - **Linting**: ESLint with Mantine config
 - **Playwright MCP**: Visual debugging and manual QA
 - **State Management**: Redux Toolkit
-- **Testing**: Vitest + React Testing Library + MSW v2
+- **Testing**: Vitest 4 + React Testing Library + MSW 2
 - **TypeScript**: Strict mode enabled. Never use `any` type
 
 ### High-Level Architecture
