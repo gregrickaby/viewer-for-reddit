@@ -1,6 +1,7 @@
 import {NotFoundClient} from '@/components/Layout/NotFoundClient/NotFoundClient'
 import type {Metadata} from 'next'
 import {headers} from 'next/headers'
+import {Suspense} from 'react'
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found',
@@ -11,10 +12,7 @@ export const metadata: Metadata = {
   }
 }
 
-/**
- * The Global 404 component.
- */
-export default async function GlobalNotFound() {
+async function GlobalNotFoundContent() {
   const headersList = await headers()
   const serverHeaders: Record<string, string | null> = {
     referer: headersList.get('referer'),
@@ -40,4 +38,15 @@ export default async function GlobalNotFound() {
   }
 
   return <NotFoundClient serverHeaders={serverHeaders} />
+}
+
+/**
+ * The Global 404 component.
+ */
+export default function GlobalNotFound() {
+  return (
+    <Suspense fallback={null}>
+      <GlobalNotFoundContent />
+    </Suspense>
+  )
 }
