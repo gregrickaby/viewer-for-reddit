@@ -99,7 +99,7 @@ npm run typegen:types    # Generate types from OpenAPI spec
 
 ### Tech Stack
 
-- **Framework**: Next.js 16+ (App Router)
+- **Framework**: Next.js 16+ (App Router) with Cache Components and React Compiler enabled
 - **UI**: Mantine v8 component library. Use Mantine primitives. Fetch official docs: <https://mantine.dev/llms.txt>
 - **API**: Reddit API v2 with OpenAPI spec and auto-generated types. Fetch official docs: <https://developers.reddit.com/docs/llms-full.txt>
 - **Analytics**: Umami (production only) <https://umami.is/docs>
@@ -116,6 +116,14 @@ npm run typegen:types    # Generate types from OpenAPI spec
 - **State Management**: Redux Toolkit
 - **Testing**: Vitest 4 + React Testing Library + MSW 2
 - **TypeScript**: Strict mode enabled. Never use `any` type
+
+### Next.js 16 Critical Requirements
+
+**Cache Components** - Dynamic data (headers, cookies, params, searchParams) MUST be wrapped in `<Suspense>` boundaries
+
+**React Compiler** - Do NOT add manual `useMemo`, `useCallback`, or `React.memo` (automatic optimization enabled)
+
+**react-icons** - Always import from sub-packages: `import {FaGithub} from 'react-icons/fa'` (NOT `'react-icons'`)
 
 ### High-Level Architecture
 
