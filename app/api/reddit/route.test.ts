@@ -249,7 +249,7 @@ describe('Reddit API Route', () => {
       const response = await GET(request)
 
       expect(response.status).toBe(200)
-      // Verify fetch was called with normalized URL
+      // Verify fetch was called with the safe reconstructed URL
       expect(mockFetch).toHaveBeenCalledWith(
         'https://oauth.reddit.com/r/programming/hot.json',
         expect.any(Object)
