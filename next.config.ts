@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   images: {
     formats: ['image/avif', 'image/webp'],
+    qualities: [75],
     remotePatterns: [
       {
         protocol: 'https',
@@ -67,11 +68,14 @@ const nextConfig: NextConfig = {
     ]
   },
   experimental: {
+    inlineCss: true,
     globalNotFound: true,
     optimizePackageImports: [
+      '@mantine/carousel',
       '@mantine/core',
       '@mantine/hooks',
-      '@mantine/notifications'
+      '@mantine/notifications',
+      'react-icons'
     ]
   },
   logging: {
