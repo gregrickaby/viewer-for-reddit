@@ -41,18 +41,26 @@ export async function generateMetadata(props: {
   }
 }
 
-/**
- * User profile page displaying profile data, posts, and comments.
- */
-export default async function UserProfilePage(props: {params: UserParams}) {
+async function UserProfileContent(props: {params: UserParams}) {
   const params = await props.params
   const {username} = params
 
   return (
     <>
       <Breadcrumb items={[{label: `u/${username}`, href: `/u/${username}`}]} />
+      <User username={username} />
+    </>
+  )
+}
+
+/**
+ * User profile page displaying profile data, posts, and comments.
+ */
+export default function UserProfilePage(props: {params: UserParams}) {
+  return (
+    <>
       <Suspense fallback={null}>
-        <User username={username} />
+        <UserProfileContent params={props.params} />
       </Suspense>
       <BossButton />
       <BackToTop />

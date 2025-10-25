@@ -42,6 +42,12 @@ export async function generateMetadata({
   }
 }
 
+async function SinglePostContent({params}: SinglePostPageParams) {
+  const {subreddit, postId} = await params
+
+  return <Single subreddit={subreddit} postId={postId} />
+}
+
 /**
  * Single Post Page - displays a Reddit post with its comments
  *
@@ -51,12 +57,10 @@ export async function generateMetadata({
  * @param params - Route parameters containing subreddit, postId, and optional slug
  * @returns Single post page with post content and comments
  */
-export default async function SinglePostPage({params}: SinglePostPageParams) {
-  const {subreddit, postId} = await params
-
+export default function SinglePostPage({params}: SinglePostPageParams) {
   return (
     <Suspense fallback={null}>
-      <Single subreddit={subreddit} postId={postId} />
+      <SinglePostContent params={params} />
     </Suspense>
   )
 }

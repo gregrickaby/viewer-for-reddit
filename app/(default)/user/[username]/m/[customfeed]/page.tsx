@@ -39,20 +39,7 @@ export async function generateMetadata(props: {
   }
 }
 
-/**
- * Custom Feed page component.
- *
- * Displays posts from a user's custom feed using authenticated API.
- * Requires user to be logged in as custom feeds are user-specific.
- *
- * This uses the CustomFeedPosts component which calls the authenticated
- * API endpoint with the user's session token.
- *
- * @example
- * // URL: /user/abc123/m/programming
- * // Reddit API path: /user/abc123/m/programming/hot.json (with user token)
- */
-export default async function CustomFeedPage(props: {
+async function CustomFeedContent(props: {
   params: CustomFeedParams
   searchParams: SearchParams
 }) {
@@ -72,8 +59,35 @@ export default async function CustomFeedPage(props: {
           }
         ]}
       />
+      <Custom customFeedName={customfeed} sort={sort} username={username} />
+    </>
+  )
+}
+
+/**
+ * Custom Feed page component.
+ *
+ * Displays posts from a user's custom feed using authenticated API.
+ * Requires user to be logged in as custom feeds are user-specific.
+ *
+ * This uses the CustomFeedPosts component which calls the authenticated
+ * API endpoint with the user's session token.
+ *
+ * @example
+ * // URL: /user/abc123/m/programming
+ * // Reddit API path: /user/abc123/m/programming/hot.json (with user token)
+ */
+export default function CustomFeedPage(props: {
+  params: CustomFeedParams
+  searchParams: SearchParams
+}) {
+  return (
+    <>
       <Suspense fallback={null}>
-        <Custom customFeedName={customfeed} sort={sort} username={username} />
+        <CustomFeedContent
+          params={props.params}
+          searchParams={props.searchParams}
+        />
       </Suspense>
       <BossButton />
       <BackToTop />

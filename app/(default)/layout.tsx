@@ -5,6 +5,7 @@ import {Sidebar} from '@/components/Layout/Sidebar/Sidebar'
 import {useHeaderState} from '@/lib/hooks/useHeaderState'
 import {AppShell, Container} from '@mantine/core'
 import {useMediaQuery} from '@mantine/hooks'
+import {Suspense} from 'react'
 
 /**
  * The client-side layout component with the AppShell.
@@ -32,11 +33,15 @@ export default function Layout({
       padding={0}
     >
       <AppShell.Header p="md">
-        <Header />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Header />
+        </Suspense>
       </AppShell.Header>
 
       <AppShell.Navbar p="md" h="100%">
-        <Sidebar />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Sidebar />
+        </Suspense>
       </AppShell.Navbar>
 
       <AppShell.Main>

@@ -46,10 +46,7 @@ export async function generateMetadata(props: {
   }
 }
 
-/**
- * The single subreddit page.
- */
-export default async function Page(props: {
+async function SubredditPageContent(props: {
   params: SubredditParams
   searchParams: SearchParams
 }) {
@@ -59,15 +56,30 @@ export default async function Page(props: {
   const sort = searchParams.sort as SortingOption
 
   return (
+    <Container size="md">
+      <Breadcrumb
+        items={[{label: params.subreddit, href: `/${params.subreddit}`}]}
+      />
+      <Subreddit subreddit={subreddit} sort={sort} />
+    </Container>
+  )
+}
+
+/**
+ * The single subreddit page.
+ */
+export default function Page(props: {
+  params: SubredditParams
+  searchParams: SearchParams
+}) {
+  return (
     <>
-      <Container size="md">
-        <Breadcrumb
-          items={[{label: params.subreddit, href: `/${params.subreddit}`}]}
+      <Suspense fallback={null}>
+        <SubredditPageContent
+          params={props.params}
+          searchParams={props.searchParams}
         />
-        <Suspense fallback={null}>
-          <Subreddit subreddit={subreddit} sort={sort} />
-        </Suspense>
-      </Container>
+      </Suspense>
       <BossButton />
       <BackToTop />
     </>
