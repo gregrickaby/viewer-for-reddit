@@ -199,6 +199,64 @@ describe('Reddit API Route', () => {
     })
   })
 
+  describe('SSRF Protection', () => {
+    it.each([
+      {
+        path: 'https://evil.com/api',
+        description: 'absolute URL with https protocol'
+      },
+      {
+        path: 'http://evil.com/api',
+        description: 'absolute URL with http protocol'
+      },
+      {path: '//evil.com/api', description: 'protocol-relative URL'},
+      {path: '/r/../../../etc/passwd', description: 'path traversal attempt'},
+      {
+        path: '/r/%2e%2e/%2e%2e/etc/passwd',
+        description: 'encoded path traversal'
+      }
+    ])('should block $description: $path', async ({path}) => {
+      const request = new NextRequest(
+        `http://localhost:3000/api/reddit?path=${encodeURIComponent(path)}`,
+        {
+          headers: {
+            origin: 'http://localhost:3000'
+          }
+        }
+      )
+      const response = await GET(request)
+
+      expect(response.status).toBe(400)
+      expect(mockLogError).toHaveBeenCalled()
+      // Should never reach the fetch call
+      expect(mockFetch).not.toHaveBeenCalled()
+    })
+
+    it('should normalize valid Reddit paths and enforce origin check', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({data: 'test'})
+      })
+
+      const request = new NextRequest(
+        'http://localhost:3000/api/reddit?path=/r/programming/hot.json',
+        {
+          headers: {
+            origin: 'http://localhost:3000'
+          }
+        }
+      )
+      const response = await GET(request)
+
+      expect(response.status).toBe(200)
+      // Verify fetch was called with normalized URL
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://oauth.reddit.com/r/programming/hot.json',
+        expect.any(Object)
+      )
+    })
+  })
+
   describe('Reddit API integration', () => {
     it('should forward successful Reddit API responses', async () => {
       const mockData = {data: {children: []}}

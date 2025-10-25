@@ -27,6 +27,33 @@ function getCacheMaxAge(path: string): number {
 }
 
 /**
+ * Normalizes and validates a Reddit API path to prevent SSRF attacks.
+ *
+ * @param path - The user-provided path to validate
+ * @returns A validated URL object guaranteed to target oauth.reddit.com
+ * @throws Error if the path is invalid or potentially malicious
+ */
+function normalizeRedditPath(path: string): URL {
+  // Construct URL using path - this normalizes and prevents injection
+  const apiUrl = new URL(path, 'https://oauth.reddit.com')
+
+  // Verify the normalized URL is still targeting oauth.reddit.com only
+  if (
+    apiUrl.origin !== 'https://oauth.reddit.com' ||
+    apiUrl.hostname !== 'oauth.reddit.com'
+  ) {
+    throw new Error('Invalid destination: must be oauth.reddit.com')
+  }
+
+  // Additional validation for encoded traversal attempts
+  if (path.includes('%2e%2e') || path.includes('%2E%2E')) {
+    throw new Error('Encoded path traversal detected')
+  }
+
+  return apiUrl
+}
+
+/**
  * Anonymous Reddit API Proxy Route Handler.
  *
  * This endpoint handles read-only, anonymous requests using app-level tokens.
@@ -130,7 +157,31 @@ export async function GET(request: NextRequest) {
 
     // Use Next.js fetch cache with revalidation based on endpoint type
     const cacheMaxAge = getCacheMaxAge(path)
-    const response = await fetch(`https://oauth.reddit.com${path}`, {
+
+    // Normalize and validate path to prevent SSRF
+    let apiUrl: URL
+    try {
+      apiUrl = normalizeRedditPath(path)
+    } catch (error) {
+      logError('Path normalization failed - potential SSRF attempt', {
+        component: 'redditApiRoute',
+        action: 'normalizePath',
+        path,
+        error: error instanceof Error ? error.message : String(error),
+        url: request.url
+      })
+      return NextResponse.json(
+        {error: 'Invalid Reddit API path'},
+        {
+          status: 400,
+          headers: {
+            'Cache-Control': 'no-store, max-age=0'
+          }
+        }
+      )
+    }
+
+    const response = await fetch(apiUrl.toString(), {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
         'User-Agent': config.userAgent
