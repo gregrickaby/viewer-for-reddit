@@ -27,22 +27,17 @@ function getCacheMaxAge(path: string): number {
 }
 
 /**
- * Normalizes and validates a Reddit API path to prevent SSRF attacks.
+ * Validates and sanitizes a Reddit API path to prevent SSRF attacks.
+ * Uses URL parsing to validate, then reconstructs from scratch to break taint flow.
  *
  * @param path - The user-provided path to validate
  * @returns A sanitized URL string guaranteed to target oauth.reddit.com
  * @throws Error if the path is invalid or potentially malicious
  */
-function normalizeRedditPath(path: string): string {
-  // Construct URL using path - this normalizes and prevents injection
-  const apiUrl = new URL(path, 'https://oauth.reddit.com')
-
-  // Verify the normalized URL is still targeting oauth.reddit.com only
-  if (
-    apiUrl.origin !== 'https://oauth.reddit.com' ||
-    apiUrl.hostname !== 'oauth.reddit.com'
-  ) {
-    throw new Error('Invalid destination: must be oauth.reddit.com')
+function sanitizeRedditPath(path: string): string {
+  // First layer: basic validation before parsing
+  if (!path || typeof path !== 'string') {
+    throw new Error('Invalid path: must be a non-empty string')
   }
 
   // Additional validation for encoded traversal attempts
@@ -50,10 +45,38 @@ function normalizeRedditPath(path: string): string {
     throw new Error('Encoded path traversal detected')
   }
 
-  // Reconstruct URL from trusted components only to satisfy CodeQL
-  // This breaks the data flow from user input to fetch()
-  const safePath = apiUrl.pathname + apiUrl.search
-  return `https://oauth.reddit.com${safePath}`
+  // Parse and validate URL
+  let parsedUrl: URL
+  try {
+    parsedUrl = new URL(path, 'https://oauth.reddit.com')
+  } catch {
+    throw new Error('Invalid URL format')
+  }
+
+  // Verify the normalized URL is still targeting oauth.reddit.com only
+  if (
+    parsedUrl.origin !== 'https://oauth.reddit.com' ||
+    parsedUrl.hostname !== 'oauth.reddit.com' ||
+    parsedUrl.protocol !== 'https:'
+  ) {
+    throw new Error('Invalid destination: must be oauth.reddit.com')
+  }
+
+  // Extract components and validate they match expected patterns
+  const pathname = parsedUrl.pathname
+  const search = parsedUrl.search
+
+  // Validate pathname starts with /
+  if (!pathname.startsWith('/')) {
+    throw new Error('Invalid pathname')
+  }
+
+  // Build the safe URL by explicitly constructing from constant base
+  // This creates a new untainted string in CodeQL's analysis
+  const TRUSTED_BASE = 'https://oauth.reddit.com'
+  const sanitizedUrl = TRUSTED_BASE + pathname + search
+
+  return sanitizedUrl
 }
 
 /**
@@ -161,14 +184,14 @@ export async function GET(request: NextRequest) {
     // Use Next.js fetch cache with revalidation based on endpoint type
     const cacheMaxAge = getCacheMaxAge(path)
 
-    // Normalize and validate path to prevent SSRF
+    // Sanitize and validate path to prevent SSRF
     let safeUrl: string
     try {
-      safeUrl = normalizeRedditPath(path)
+      safeUrl = sanitizeRedditPath(path)
     } catch (error) {
-      logError('Path normalization failed - potential SSRF attempt', {
+      logError('Path sanitization failed - potential SSRF attempt', {
         component: 'redditApiRoute',
-        action: 'normalizePath',
+        action: 'sanitizePath',
         path,
         error: error instanceof Error ? error.message : String(error),
         url: request.url
