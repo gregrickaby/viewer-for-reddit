@@ -11,7 +11,10 @@ import {useAppSelector} from '@/lib/store/hooks'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {getIsVertical} from '@/lib/utils/formatting/getIsVertical'
 import {logError} from '@/lib/utils/logging/logError'
-import {decodeHtmlEntities} from '@/lib/utils/validation/sanitizeText'
+import {
+  decodeAndSanitizeHtml,
+  decodeHtmlEntities
+} from '@/lib/utils/validation/sanitizeText'
 import clsx from 'clsx'
 import {Suspense, useMemo} from 'react'
 import styles from './Media.module.css'
@@ -177,7 +180,7 @@ export function Media(post: Readonly<AutoPostChildData>) {
     return (
       <div
         dangerouslySetInnerHTML={{
-          __html: post.selftext_html ?? ''
+          __html: decodeAndSanitizeHtml(post.selftext_html ?? '')
         }}
       />
     )
