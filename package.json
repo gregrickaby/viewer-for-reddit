@@ -2,7 +2,7 @@
   "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
   "description": "The best way to lurk on Reddit",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "next build",
-    "dev": "rimraf .next && next dev --turbo",
+    "dev": "rimraf .next && next dev",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
     "lint": "eslint",
     "start": "next start",
@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "@mantine/carousel": "^8.3.5",
-    "@mantine/colors-generator": "^8.3.5",
     "@mantine/core": "^8.3.5",
     "@mantine/hooks": "^8.3.5",
     "@mantine/notifications": "^8.3.5",
