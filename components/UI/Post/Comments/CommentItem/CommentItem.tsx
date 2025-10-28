@@ -30,6 +30,142 @@ interface CommentItemProps {
   maxDepth?: number
 }
 
+/**
+ * Render comment author information.
+ */
+function CommentAuthor({author}: Readonly<{author: string | undefined}>) {
+  const isDeletedOrRemoved = ['[deleted]', '[removed]'].includes(author || '')
+
+  if (!author || isDeletedOrRemoved) {
+    return (
+      <Text c="dimmed" size="sm" fw={700}>
+        u/{author || '[deleted]'}
+      </Text>
+    )
+  }
+
+  return (
+    <Link className={classes.link} href={`/u/${author}`}>
+      <Text c="dimmed" size="sm" fw={700}>
+        u/{author}
+      </Text>
+    </Link>
+  )
+}
+
+/**
+ * Render comment metadata (votes, replies, expand buttons).
+ */
+function CommentMetadata({
+  comment,
+  showReplies,
+  isExpanded,
+  isSubtreeFullyExpanded,
+  toggleExpansion,
+  toggleSubtreeExpansion
+}: Readonly<{
+  comment: NestedCommentData
+  showReplies: boolean
+  isExpanded: boolean
+  isSubtreeFullyExpanded: boolean
+  toggleExpansion: () => void
+  toggleSubtreeExpansion: () => void
+}>) {
+  if (!showReplies) {
+    return (
+      <Group className={classes.commentMeta} justify="space-between">
+        <div />
+        <Group gap="md">
+          <Anchor
+            href={`https://reddit.com${comment.permalink}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <Text size="sm" c="dimmed">
+              View comment on Reddit
+            </Text>
+          </Anchor>
+        </Group>
+      </Group>
+    )
+  }
+
+  const replyCount = comment.replies!.length
+  const replyLabel = replyCount === 1 ? 'reply' : 'replies'
+
+  return (
+    <Group className={classes.commentMeta} justify="space-between">
+      <Group gap="xs" align="center">
+        <VoteButtons
+          id={comment.name ?? ''}
+          score={comment.ups ?? 0}
+          userVote={comment.likes}
+          size="sm"
+        />
+        <Badge variant="light" size="md" className={classes.replyCount}>
+          {replyCount} {replyLabel}
+        </Badge>
+
+        <Tooltip
+          label={isExpanded ? 'Collapse replies' : 'Expand replies'}
+          position="top"
+        >
+          <ActionIcon
+            variant="subtle"
+            size="sm"
+            onClick={toggleExpansion}
+            className={classes.expandButton}
+            data-expanded={isExpanded}
+            aria-label={isExpanded ? 'Collapse replies' : 'Expand replies'}
+          >
+            <BiChevronRight size={16} />
+          </ActionIcon>
+        </Tooltip>
+
+        <Tooltip
+          label={
+            isSubtreeFullyExpanded
+              ? 'Collapse all descendants'
+              : 'Expand all descendants'
+          }
+          position="top"
+        >
+          <ActionIcon
+            variant="subtle"
+            size="sm"
+            onClick={toggleSubtreeExpansion}
+            className={classes.expandAllButton}
+            data-expanded={isSubtreeFullyExpanded}
+            aria-label={
+              isSubtreeFullyExpanded
+                ? 'Collapse all descendants'
+                : 'Expand all descendants'
+            }
+          >
+            {isSubtreeFullyExpanded ? (
+              <BiCollapseVertical size={16} />
+            ) : (
+              <BiExpandVertical size={16} />
+            )}
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+
+      <Group gap="md">
+        <Anchor
+          href={`https://reddit.com${comment.permalink}`}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <Text size="sm" c="dimmed">
+            View comment on Reddit
+          </Text>
+        </Anchor>
+      </Group>
+    </Group>
+  )
+}
+
 export function CommentItem({
   comment,
   maxDepth = 4
@@ -41,21 +177,14 @@ export function CommentItem({
     toggleCommentSubtree
   } = useCommentExpansion()
 
-  // Use the comment's ID or permalink as the unique identifier
   const commentId = comment.id || comment.permalink || ''
   const isExpanded = isCommentExpanded(commentId)
   const isSubtreeFullyExpanded = isSubtreeExpanded(commentId)
 
-  const toggleExpansion = () => {
-    toggleComment(commentId)
-  }
+  const toggleExpansion = () => toggleComment(commentId)
+  const toggleSubtreeExpansion = () => toggleCommentSubtree(commentId, comment)
 
-  const toggleSubtreeExpansion = () => {
-    toggleCommentSubtree(commentId, comment)
-  }
-
-  const hasReplies =
-    comment.hasReplies && comment.replies && comment.replies.length > 0
+  const hasReplies = comment.hasReplies && comment.replies?.length
   const showReplies = hasReplies && comment.depth < maxDepth
 
   return (
@@ -68,7 +197,6 @@ export function CommentItem({
       }
       data-testid={`comment-item-depth-${comment.depth}`}
     >
-      {/* Thread line for nested comments */}
       {comment.depth > 0 && (
         <div className={classes.threadLine} data-testid="thread-line" />
       )}
@@ -84,31 +212,16 @@ export function CommentItem({
           withBorder
         >
           <Stack gap="xs">
-            {/* Comment header */}
             <Group gap="xs" align="center">
-              {comment.author &&
-              !['[deleted]', '[removed]'].includes(comment.author) ? (
-                <Link className={classes.link} href={`/u/${comment.author}`}>
-                  <Text c="dimmed" size="sm" fw={700}>
-                    u/{comment.author}
-                  </Text>
-                </Link>
-              ) : (
-                <Text c="dimmed" size="sm" fw={700}>
-                  u/{comment.author || '[deleted]'}
-                </Text>
-              )}
-
+              <CommentAuthor author={comment.author} />
               <Text c="dimmed" size="sm">
                 &middot;
               </Text>
-
               <Text c="dimmed" size="xs">
                 {formatTimeAgo(comment.created_utc ?? 0)}
               </Text>
             </Group>
 
-            {/* Comment body */}
             <div
               className={classes.commentBody}
               dangerouslySetInnerHTML={{
@@ -118,94 +231,17 @@ export function CommentItem({
               }}
             />
 
-            {/* Comment metadata */}
-            <Group className={classes.commentMeta} justify="space-between">
-              {/* Expand/collapse functionality moved to bottom left */}
-              {showReplies ? (
-                <Group gap="xs" align="center">
-                  <VoteButtons
-                    id={comment.name ?? ''}
-                    score={comment.ups ?? 0}
-                    userVote={comment.likes}
-                    size="sm"
-                  />
-                  <Badge
-                    variant="light"
-                    size="md"
-                    className={classes.replyCount}
-                  >
-                    {comment.replies!.length}{' '}
-                    {comment.replies!.length === 1 ? 'reply' : 'replies'}
-                  </Badge>
-
-                  {/* Regular expand/collapse button */}
-                  <Tooltip
-                    label={isExpanded ? 'Collapse replies' : 'Expand replies'}
-                    position="top"
-                  >
-                    <ActionIcon
-                      variant="subtle"
-                      size="sm"
-                      onClick={toggleExpansion}
-                      className={classes.expandButton}
-                      data-expanded={isExpanded}
-                      aria-label={
-                        isExpanded ? 'Collapse replies' : 'Expand replies'
-                      }
-                    >
-                      <BiChevronRight size={16} />
-                    </ActionIcon>
-                  </Tooltip>
-
-                  {/* Expand/collapse ALL descendants button */}
-                  <Tooltip
-                    label={
-                      isSubtreeFullyExpanded
-                        ? 'Collapse all descendants'
-                        : 'Expand all descendants'
-                    }
-                    position="top"
-                  >
-                    <ActionIcon
-                      variant="subtle"
-                      size="sm"
-                      onClick={toggleSubtreeExpansion}
-                      className={classes.expandAllButton}
-                      data-expanded={isSubtreeFullyExpanded}
-                      aria-label={
-                        isSubtreeFullyExpanded
-                          ? 'Collapse all descendants'
-                          : 'Expand all descendants'
-                      }
-                    >
-                      {isSubtreeFullyExpanded ? (
-                        <BiCollapseVertical size={16} />
-                      ) : (
-                        <BiExpandVertical size={16} />
-                      )}
-                    </ActionIcon>
-                  </Tooltip>
-                </Group>
-              ) : (
-                <div />
-              )}
-
-              <Group gap="md">
-                <Anchor
-                  href={`https://reddit.com${comment.permalink}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <Text size="sm" c="dimmed">
-                    View comment on Reddit
-                  </Text>
-                </Anchor>
-              </Group>
-            </Group>
+            <CommentMetadata
+              comment={comment}
+              showReplies={!!showReplies}
+              isExpanded={isExpanded}
+              isSubtreeFullyExpanded={isSubtreeFullyExpanded}
+              toggleExpansion={toggleExpansion}
+              toggleSubtreeExpansion={toggleSubtreeExpansion}
+            />
           </Stack>
         </Card>
 
-        {/* Nested replies */}
         {showReplies && (
           <Collapse in={isExpanded}>
             <Stack gap="sm" mt="sm">
@@ -220,7 +256,6 @@ export function CommentItem({
           </Collapse>
         )}
 
-        {/* Depth limit indicator */}
         {hasReplies && comment.depth >= maxDepth && (
           <Box mt="sm" ml="md">
             <Text size="sm" c="dimmed" fs="italic">
