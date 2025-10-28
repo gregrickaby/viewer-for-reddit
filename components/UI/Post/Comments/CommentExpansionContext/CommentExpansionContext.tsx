@@ -42,9 +42,8 @@ function collectDescendantIds(comment: NestedCommentData): string[] {
   if (comment.replies && comment.replies.length > 0) {
     for (const reply of comment.replies) {
       if (reply.id) {
-        ids.push(reply.id)
-        // Recursively collect from nested replies
-        ids.push(...collectDescendantIds(reply))
+        // Collect this reply and all descendants in one operation
+        ids.push(reply.id, ...collectDescendantIds(reply))
       }
     }
   }
@@ -98,9 +97,9 @@ export function CommentExpansionProvider({
 
       // Add all descendant comment IDs as expanded
       const descendantIds = collectDescendantIds(comment)
-      descendantIds.forEach((id) => {
+      for (const id of descendantIds) {
         newExpandedComments.add(id)
-      })
+      }
 
       return {
         expandedComments: newExpandedComments,
@@ -123,10 +122,10 @@ export function CommentExpansionProvider({
 
       // Remove all descendant comment IDs
       const descendantIds = collectDescendantIds(comment)
-      descendantIds.forEach((id) => {
+      for (const id of descendantIds) {
         newExpandedComments.delete(id)
         newExpandedSubtrees.delete(id)
-      })
+      }
 
       return {
         expandedComments: newExpandedComments,

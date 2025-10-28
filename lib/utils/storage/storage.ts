@@ -13,7 +13,7 @@ const STORAGE_KEY = 'redditViewer'
  * @internal This is a private helper function for SSR safety
  */
 function isBrowser() {
-  return typeof window !== 'undefined'
+  return globalThis.window !== undefined
 }
 
 /**

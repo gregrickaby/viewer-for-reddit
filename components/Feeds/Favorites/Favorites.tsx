@@ -101,7 +101,7 @@ export function Favorites({
             My Feed
           </Title>
           <Text size="sm" c="dimmed">
-            {favorites.length} subreddit{favorites.length !== 1 ? 's' : ''}
+            {favorites.length} subreddit{favorites.length === 1 ? '' : 's'}
           </Text>
         </Group>
         <SegmentedControl

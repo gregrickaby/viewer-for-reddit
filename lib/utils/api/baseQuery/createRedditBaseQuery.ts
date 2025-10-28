@@ -21,7 +21,7 @@ export function createRedditBaseQuery(proxyPath: string): BaseQueryFn {
   return async (args, api, extraOptions) => {
     // Use absolute URL for tests to avoid URL parsing issues in Node.js environment
     const baseUrl =
-      typeof window === 'undefined' || process.env.NODE_ENV === 'test'
+      globalThis.window === undefined || process.env.NODE_ENV === 'test'
         ? `${config.baseUrl}${proxyPath}`
         : proxyPath
 

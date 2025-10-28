@@ -20,5 +20,5 @@ export function getMediumImage(images: Resolution[]): Resolution | null {
   const mediumSize = images.find((res) => res.width === 640)
 
   // Return the medium size, or the last image if not found.
-  return mediumSize ?? images[images.length - 1]
+  return mediumSize ?? images.at(-1) ?? null
 }

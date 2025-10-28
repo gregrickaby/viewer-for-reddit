@@ -21,20 +21,34 @@ export function generatePostSlug(title: string | undefined): string {
     return ''
   }
 
-  return (
-    title
-      .toLowerCase()
-      // Replace spaces and hyphens with underscores
-      .replace(/[\s-]+/g, '_')
-      // Remove special characters except underscores
-      .replace(/[^\w]/g, '')
-      // Remove leading/trailing underscores
-      .replace(/(?:^_+|_+$)/g, '')
-      // Collapse multiple underscores into one
-      .replace(/_+/g, '_')
-      // Truncate to 70 characters (reasonable length for SEO)
-      .substring(0, 70)
-      // Remove trailing underscore if truncation created one
-      .replace(/_$/, '')
-  )
+  // Process the title step by step
+  let slug = title
+    .toLowerCase()
+    // Replace spaces and hyphens with underscores
+    .replaceAll(/[\s-]/g, '_')
+    // Remove special characters except underscores
+    .replaceAll(/[^\w]/g, '')
+
+  // Collapse multiple underscores into one (keep looping until no more doubles)
+  while (slug.includes('__')) {
+    slug = slug.replaceAll('__', '_')
+  }
+
+  // Trim leading and trailing underscores using string methods (no regex)
+  while (slug.startsWith('_')) {
+    slug = slug.slice(1)
+  }
+  while (slug.endsWith('_')) {
+    slug = slug.slice(0, -1)
+  }
+
+  // Truncate to 70 characters
+  slug = slug.substring(0, 70)
+
+  // Remove trailing underscore if truncation created one
+  if (slug.endsWith('_')) {
+    slug = slug.slice(0, -1)
+  }
+
+  return slug
 }

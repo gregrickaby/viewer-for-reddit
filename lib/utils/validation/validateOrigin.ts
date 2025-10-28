@@ -123,15 +123,17 @@ function isCoolifyDomainAllowed(
   const refererHost = parseHostname(referer)
 
   // Parse comma-separated domains and trim whitespace
-  const allowedDomains = coolifyFqdn
-    .split(',')
-    .map((domain) => domain.trim())
-    .filter((domain) => domain.length > 0)
+  const allowedDomains = new Set(
+    coolifyFqdn
+      .split(',')
+      .map((domain) => domain.trim())
+      .filter((domain) => domain.length > 0)
+  )
 
   // Exact hostname match only - prevents subdomain attacks
   const isAllowedDomain = (host: string | null): boolean => {
     if (host === null) return false
-    return allowedDomains.includes(host)
+    return allowedDomains.has(host)
   }
 
   return isAllowedDomain(originHost) || isAllowedDomain(refererHost)

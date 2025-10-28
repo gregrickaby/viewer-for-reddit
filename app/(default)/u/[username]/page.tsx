@@ -41,7 +41,7 @@ export async function generateMetadata(props: {
   }
 }
 
-async function UserProfileContent(props: {params: UserParams}) {
+async function UserProfileContent(props: Readonly<{params: UserParams}>) {
   const params = await props.params
   const {username} = params
 
@@ -56,7 +56,7 @@ async function UserProfileContent(props: {params: UserParams}) {
 /**
  * User profile page displaying profile data, posts, and comments.
  */
-export default function UserProfilePage(props: {params: UserParams}) {
+export default function UserProfilePage(props: Readonly<{params: UserParams}>) {
   return (
     <>
       <Suspense fallback={null}>

@@ -65,7 +65,7 @@ export function useGalleryData(
 
       // Fallback to largest preview if source not available
       if (!imageUrl && preview && preview.length > 0) {
-        const largestPreview = preview[preview.length - 1]
+        const largestPreview = preview.at(-1)
         imageUrl = largestPreview?.u
         width = largestPreview?.x || 0
         height = largestPreview?.y || 0
@@ -74,7 +74,7 @@ export function useGalleryData(
       if (!imageUrl) continue
 
       // Decode HTML entities in URL
-      const decodedUrl = imageUrl.replace(/&amp;/g, '&')
+      const decodedUrl = imageUrl.replaceAll('&amp;', '&')
 
       items.push({
         id: mediaId,

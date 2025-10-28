@@ -119,7 +119,7 @@ export class MediaCache {
         console.warn(`[MediaCache] Prefetch failed (${type}):`, url, error)
       }
     } finally {
-      link?.parentNode?.removeChild(link)
+      link?.remove()
     }
   }
 
@@ -142,7 +142,9 @@ export class MediaCache {
         expired.push(url)
       }
     }
-    expired.forEach((url) => this.cache.delete(url))
+    for (const url of expired) {
+      this.cache.delete(url)
+    }
 
     if (this.cache.size > this.maxSize) {
       const entries = Array.from(this.cache.entries()).sort(

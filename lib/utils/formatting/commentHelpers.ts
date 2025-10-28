@@ -102,13 +102,13 @@ export function processInfiniteComments(infiniteData: any): AutoCommentData[] {
   const allComments: AutoCommentData[] = []
 
   // Process each page of comments
-  infiniteData.pages.forEach((page: any) => {
+  for (const page of infiniteData.pages) {
     // Extract comments from the response (Reddit returns [post, comments])
     const commentsListing = Array.isArray(page) ? page[1] : page
     const children = commentsListing?.data?.children ?? []
     const pageComments = extractAndFilterComments(children)
     allComments.push(...pageComments)
-  })
+  }
 
   return allComments
 }
@@ -135,12 +135,12 @@ export function processNestedComments(
   if (infiniteDataRaw?.pages?.length) {
     const allNestedComments: NestedCommentData[] = []
 
-    infiniteDataRaw.pages.forEach((page: any) => {
+    for (const page of infiniteDataRaw.pages) {
       const commentsListing = Array.isArray(page) ? page[1] : page
       const children = commentsListing?.data?.children ?? []
       const pageNestedComments = extractNestedComments(children)
       allNestedComments.push(...pageNestedComments)
-    })
+    }
 
     return allNestedComments
   }

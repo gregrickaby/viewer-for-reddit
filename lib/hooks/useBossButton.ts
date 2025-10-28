@@ -19,8 +19,8 @@ export function useBossButton(redirectUrl: string) {
       }
     }
 
-    window.addEventListener('keydown', handleKeydown)
-    return () => window.removeEventListener('keydown', handleKeydown)
+    globalThis.window.addEventListener('keydown', handleKeydown)
+    return () => globalThis.window.removeEventListener('keydown', handleKeydown)
   }, [router, redirectUrl])
 
   return {

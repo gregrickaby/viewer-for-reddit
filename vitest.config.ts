@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react-swc'
-import path from 'path'
+import path from 'node:path'
 import {defineConfig} from 'vitest/config'
 
 // https://vitejs.dev/config/
@@ -40,7 +40,7 @@ export default defineConfig({
         '**/types/**',
         '**/*.d.ts'
       ],
-      reporter: ['text', 'json', 'html']
+      reporter: ['text', 'json', 'html', 'lcov']
     }
   }
 })

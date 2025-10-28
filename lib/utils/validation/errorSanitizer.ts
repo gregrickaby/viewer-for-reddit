@@ -23,7 +23,7 @@
  */
 export function sanitizeErrorMessage(message: string): string {
   return message
-    .replace(/[A-Za-z0-9-_]{20,}/g, '[REDACTED]')
-    .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
-    .replace(/token[=:]\s*\S+/gi, 'token=[REDACTED]')
+    .replaceAll(/[A-Za-z0-9-_]{20,}/g, '[REDACTED]')
+    .replaceAll(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+    .replaceAll(/token[=:]\s*\S+/gi, 'token=[REDACTED]')
 }

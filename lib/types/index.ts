@@ -32,7 +32,9 @@ export type SearchParams = Promise<{
   [key: string]: string | string[] | undefined
 }>
 export interface SinglePostPageParams {
-  params: Promise<{subreddit: string; postId: string; slug?: string[]}>
+  params: Readonly<
+    Promise<{subreddit: string; postId: string; slug?: string[]}>
+  >
 }
 
 /**

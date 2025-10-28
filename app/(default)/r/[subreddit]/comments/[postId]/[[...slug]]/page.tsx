@@ -42,7 +42,7 @@ export async function generateMetadata({
   }
 }
 
-async function SinglePostContent({params}: SinglePostPageParams) {
+async function SinglePostContent({params}: Readonly<SinglePostPageParams>) {
   const {subreddit, postId} = await params
 
   return <Single subreddit={subreddit} postId={postId} />
@@ -57,7 +57,9 @@ async function SinglePostContent({params}: SinglePostPageParams) {
  * @param params - Route parameters containing subreddit, postId, and optional slug
  * @returns Single post page with post content and comments
  */
-export default function SinglePostPage({params}: SinglePostPageParams) {
+export default function SinglePostPage({
+  params
+}: Readonly<SinglePostPageParams>) {
   return (
     <Suspense fallback={null}>
       <SinglePostContent params={params} />

@@ -31,7 +31,7 @@ const mockFetch = vi.fn()
 
 describe('Reddit API Route', () => {
   beforeAll(() => {
-    global.fetch = mockFetch
+    globalThis.fetch = mockFetch
   })
 
   afterAll(() => {

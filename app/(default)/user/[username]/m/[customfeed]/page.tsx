@@ -39,10 +39,12 @@ export async function generateMetadata(props: {
   }
 }
 
-async function CustomFeedContent(props: {
-  params: CustomFeedParams
-  searchParams: SearchParams
-}) {
+async function CustomFeedContent(
+  props: Readonly<{
+    params: CustomFeedParams
+    searchParams: SearchParams
+  }>
+) {
   const params = await props.params
   const {username, customfeed} = params
   const searchParams = await props.searchParams
@@ -77,10 +79,12 @@ async function CustomFeedContent(props: {
  * // URL: /user/abc123/m/programming
  * // Reddit API path: /user/abc123/m/programming/hot.json (with user token)
  */
-export default function CustomFeedPage(props: {
-  params: CustomFeedParams
-  searchParams: SearchParams
-}) {
+export default function CustomFeedPage(
+  props: Readonly<{
+    params: CustomFeedParams
+    searchParams: SearchParams
+  }>
+) {
   return (
     <>
       <Suspense fallback={null}>

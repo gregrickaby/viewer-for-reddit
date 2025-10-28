@@ -86,11 +86,11 @@ export const settingsSlice = createSlice({
       const existingIndex = state.favorites.findIndex(
         (sub) => sub.display_name === action.payload.display_name
       )
-      if (existingIndex !== -1) {
-        state.favorites.splice(existingIndex, 1)
-      } else {
+      if (existingIndex === -1) {
         state.favorites.unshift(action.payload)
         state.favorites = state.favorites.slice(0, MAX_LIST_ITEMS) // Keep only 15
+      } else {
+        state.favorites.splice(existingIndex, 1)
       }
       saveSettings(state)
     },

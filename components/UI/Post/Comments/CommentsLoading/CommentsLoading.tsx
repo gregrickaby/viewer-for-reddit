@@ -3,7 +3,7 @@ import styles from './CommentsLoading.module.css'
 
 export function CommentsLoading() {
   return (
-    <div role="status" aria-live="polite" aria-busy="true">
+    <output aria-live="polite" aria-busy="true">
       <Center>
         <Loader
           aria-describedby="loading-description"
@@ -14,6 +14,6 @@ export function CommentsLoading() {
       <div id="loading-description" className={styles.srOnly}>
         Comments are being loaded. Please wait.
       </div>
-    </div>
+    </output>
   )
 }

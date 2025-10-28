@@ -36,7 +36,7 @@ export function ResponsiveImage({
   )
 
   // Decode HTML entities in the URL to fix double-encoding issues from Reddit API.
-  const decodedSrc = src ? src.replace(/&amp;/g, '&') : src
+  const decodedSrc = src ? src.replaceAll('&amp;', '&') : src
 
   const handleLoad = useCallback(() => {
     const img = imgRef.current

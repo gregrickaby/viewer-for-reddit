@@ -1,10 +1,10 @@
 import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
 import config from '@/lib/config'
 import {Typography} from '@mantine/core'
-import fs from 'fs'
 import matter from 'gray-matter'
 import type {Metadata} from 'next'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import ReactMarkdown from 'react-markdown'
 
 export async function generateMetadata(): Promise<Metadata> {

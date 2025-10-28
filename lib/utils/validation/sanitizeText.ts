@@ -97,7 +97,7 @@ export function sanitizeText(text: string): string {
  * ```
  */
 export function decodeHtmlEntities(str: string): string {
-  return str.replace(
+  return str.replaceAll(
     /&(?:#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);/g,
     (entity) => HTML_ENTITY_MAP[entity] || entity
   )

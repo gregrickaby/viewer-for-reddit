@@ -18,20 +18,21 @@ interface NotFoundClientProps {
  * Renders a custom 404 Not Found page and logs detailed client-side context for debugging.
  */
 export function NotFoundClient({serverHeaders}: Readonly<NotFoundClientProps>) {
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
+  const pathname =
+    globalThis.window === undefined ? '' : globalThis.window.location.pathname
 
   useEffect(() => {
     // Capture comprehensive client-side route and request details
     const locationData = sanitizeLocationData({
-      pathname: window.location.pathname,
-      search: window.location.search,
-      hash: window.location.hash,
-      href: window.location.href,
-      origin: window.location.origin,
-      host: window.location.host,
-      hostname: window.location.hostname,
-      port: window.location.port,
-      protocol: window.location.protocol
+      pathname: globalThis.window.location.pathname,
+      search: globalThis.window.location.search,
+      hash: globalThis.window.location.hash,
+      href: globalThis.window.location.href,
+      origin: globalThis.window.location.origin,
+      host: globalThis.window.location.host,
+      hostname: globalThis.window.location.hostname,
+      port: globalThis.window.location.port,
+      protocol: globalThis.window.location.protocol
     })
 
     const clientDetails = {
@@ -50,10 +51,10 @@ export function NotFoundClient({serverHeaders}: Readonly<NotFoundClientProps>) {
       onLine: navigator.onLine,
 
       // Screen/viewport info
-      screenWidth: window.screen.width,
-      screenHeight: window.screen.height,
-      viewportWidth: window.innerWidth,
-      viewportHeight: window.innerHeight,
+      screenWidth: globalThis.window.screen.width,
+      screenHeight: globalThis.window.screen.height,
+      viewportWidth: globalThis.window.innerWidth,
+      viewportHeight: globalThis.window.innerHeight,
 
       // Timing information
       timestamp: new Date().toISOString(),
@@ -63,7 +64,7 @@ export function NotFoundClient({serverHeaders}: Readonly<NotFoundClientProps>) {
     }
 
     logClientError(
-      `404 Page Not Found: ${locationData.pathname || window.location.pathname}`,
+      `404 Page Not Found: ${locationData.pathname || globalThis.window.location.pathname}`,
       {
         component: 'NotFoundClient',
         action: '404',

@@ -25,11 +25,11 @@ export function Homepage() {
 
   // Clean up hash from OAuth redirect
   useEffect(() => {
-    if (window.location.hash === '#_') {
-      window.history.replaceState(
+    if (globalThis.window.location.hash === '#_') {
+      globalThis.window.history.replaceState(
         null,
         '',
-        window.location.pathname + window.location.search
+        globalThis.window.location.pathname + globalThis.window.location.search
       )
     }
   }, [])

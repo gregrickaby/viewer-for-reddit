@@ -38,7 +38,7 @@ export function useUpdateMeta(
     }
 
     // Always update og:url to current page URL (even if no other params)
-    updateMetaTagByProperty('og:url', window.location.href)
+    updateMetaTagByProperty('og:url', globalThis.window.location.href)
 
     if (!title && !description && !image) return
 

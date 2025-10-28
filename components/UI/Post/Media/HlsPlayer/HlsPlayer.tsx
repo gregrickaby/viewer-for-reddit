@@ -51,7 +51,7 @@ export function HlsPlayer({
 
   useEffect(() => {
     const loadMediaChrome = async () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         try {
           await import('media-chrome')
           setIsMediaChromeLoaded(true)

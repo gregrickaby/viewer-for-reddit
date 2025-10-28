@@ -33,7 +33,9 @@ export function Breadcrumb({items}: Readonly<BreadcrumbProps>) {
 
   // Get base URL from browser (client-side) or use config siteName as fallback
   const baseUrl =
-    typeof window !== 'undefined' ? window.location.origin : config.siteName
+    globalThis.window === undefined
+      ? config.siteName
+      : globalThis.window.location.origin
 
   // Generate Schema.org structured data for SEO
   const structuredData = {

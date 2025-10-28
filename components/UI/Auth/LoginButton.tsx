@@ -23,7 +23,7 @@ export function LoginButton({
     // Must use window.location.href for OAuth flow to ensure full page navigation
     // router.push() causes CORS errors because Next.js tries to fetch the OAuth endpoint
     // as an RSC request instead of performing a full redirect
-    window.location.href = '/api/auth/login'
+    globalThis.window.location.href = '/api/auth/login'
   }
 
   return (

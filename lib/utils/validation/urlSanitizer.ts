@@ -58,7 +58,7 @@ export function sanitizeUrl(url: string): string {
     const existingParams = Array.from(urlObj.searchParams.keys())
 
     // Remove parameters that match sensitive names (case-insensitive)
-    existingParams.forEach((param) => {
+    for (const param of existingParams) {
       const paramLower = param.toLowerCase()
       if (
         SENSITIVE_PARAMS.some(
@@ -67,7 +67,7 @@ export function sanitizeUrl(url: string): string {
       ) {
         urlObj.searchParams.delete(param)
       }
-    })
+    }
 
     // Clean up empty query string
     const result = urlObj.toString()
@@ -154,7 +154,7 @@ function sanitizeQueryString(queryString: string): string {
     const existingParams = Array.from(params.keys())
 
     // Remove parameters that match sensitive names (case-insensitive)
-    existingParams.forEach((param) => {
+    for (const param of existingParams) {
       const paramLower = param.toLowerCase()
       if (
         SENSITIVE_PARAMS.some(
@@ -163,7 +163,7 @@ function sanitizeQueryString(queryString: string): string {
       ) {
         params.delete(param)
       }
-    })
+    }
 
     const sanitized = params.toString()
     return sanitized ? `?${sanitized}` : ''

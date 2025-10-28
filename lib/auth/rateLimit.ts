@@ -1,5 +1,6 @@
 import {logError} from '@/lib/utils/logging/logError'
 import {NextRequest, NextResponse} from 'next/server'
+import crypto from 'node:crypto'
 
 /**
  * In-memory rate limiting store.
@@ -9,9 +10,9 @@ const rateLimitStore = new Map<string, number[]>()
 
 /**
  * Unique instance identifier to detect multiple running instances.
- * Generated once per process start.
+ * Generated once per process start using cryptographically secure random.
  */
-const INSTANCE_ID = Math.random().toString(36).substring(2, 8)
+const INSTANCE_ID = crypto.randomBytes(3).toString('hex')
 
 /**
  * Rate limit configuration.

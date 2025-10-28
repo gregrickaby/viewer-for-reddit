@@ -46,10 +46,12 @@ export async function generateMetadata(props: {
   }
 }
 
-async function SubredditPageContent(props: {
-  params: SubredditParams
-  searchParams: SearchParams
-}) {
+async function SubredditPageContent(
+  props: Readonly<{
+    params: SubredditParams
+    searchParams: SearchParams
+  }>
+) {
   const params = await props.params
   const subreddit = params.subreddit
   const searchParams = await props.searchParams
@@ -68,10 +70,12 @@ async function SubredditPageContent(props: {
 /**
  * The single subreddit page.
  */
-export default function Page(props: {
-  params: SubredditParams
-  searchParams: SearchParams
-}) {
+export default function Page(
+  props: Readonly<{
+    params: SubredditParams
+    searchParams: SearchParams
+  }>
+) {
   return (
     <>
       <Suspense fallback={null}>
