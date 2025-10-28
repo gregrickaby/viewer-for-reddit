@@ -46,6 +46,7 @@ npm run format           # Prettier - auto-fixes formatting
 npm run lint             # ESLint - must pass
 npm run typecheck        # TypeScript strict - must pass
 npm run test             # All unit tests and produce coverage report - must pass
+sonar-scanner            # SonarQube analysis - must pass quality gate
 
 # Testing
 npx vitest <path> --run  # Run specific test file
@@ -75,7 +76,15 @@ npm run typegen:types    # Generate types from OpenAPI spec
    npx vitest <path> --run
    ```
 
-3. For feature completion: `npm run test` + Playwright MCP validation
+3. For feature completion: `npm run test` + SonarQube analysis
+4. Optional: Playwright MCP validation for UI changes
+
+**SonarQube Integration:**
+
+- **VS Code Extension**: Real-time code quality feedback during development
+- **Self-hosted Platform**: <http://localhost:9000> - Full analysis and quality gate enforcement
+- **SonarQube MCP**: `mcp_sonarqube_*` tools for programmatic analysis and issue management
+- **Quality Standards**: Maintain <1.5% duplication, zero critical/blocker issues
 
 **Skip validation** for documentation-only changes (\*.md, comments).
 
@@ -105,6 +114,7 @@ npm run typegen:types    # Generate types from OpenAPI spec
 - **Analytics**: Umami (production only) <https://umami.is/docs>
 - **Authentication**: Reddit OAuth 2.0 with server actions (Read-only mode) and Arctic (Authenticated Mode). <https://arcticjs.dev/providers/reddit>
 - **CI/CD**: GitHub Actions with validation gates
+- **Code Quality**: SonarQube Community Edition (self-hosted) + VS Code extension. SonarQube MCP for analysis
 - **CSS**: CSS Modules with Mantine CSS variables
 - **Coolify**: Self-hosted deployment using Nixpacks. Preview deployments: <https://[pull-request-id].reddit-viewer.com>
 - **Data Fetching**: RTK Query
@@ -319,6 +329,7 @@ This is a **test-driven codebase**. Tests must be written/updated alongside code
   - Use `it.each()` loops to minimize code duplication
   - NEVER create superfluous tests that don't add value
 - **Integration Tests**: RTK Query + MSW mocking
+- **Code Quality**: SonarQube analysis for duplication, complexity, and security issues
 
 ### MSW v2 HTTP Mocking (CRITICAL)
 
@@ -394,6 +405,47 @@ it('should fetch data', async () => {
 - For complex interaction flows
 - To validate responsive design changes
 
+### SonarQube Code Quality Analysis
+
+**Three-Tier Integration:**
+
+1. **VS Code Extension** (Real-time):
+   - Install: SonarQube for IDE extension
+   - Provides instant feedback on code quality issues
+   - Highlights duplications, code smells, bugs, and vulnerabilities
+   - Connected mode syncs with self-hosted SonarQube server
+
+2. **Self-hosted Platform** (Comprehensive):
+   - URL: <http://localhost:9000>
+   - Run: `sonar-scanner` in project root
+   - Quality gate enforcement before merge
+   - Project key: `viewer-for-reddit`
+   - Configuration: `sonar-project.properties`
+
+3. **SonarQube MCP** (Programmatic):
+   - Tools: `mcp_sonarqube_*` functions for AI agents
+   - Capabilities:
+     - `search_sonar_issues_in_projects`: Find code quality issues
+     - `get_component_measures`: Get metrics (duplication, complexity, coverage)
+     - `get_project_quality_gate_status`: Check if quality gate passes
+     - `change_sonar_issue_status`: Mark issues as false positives or accept
+   - Use for: Automated quality analysis, issue investigation, metrics tracking
+
+**Quality Standards:**
+
+- **Duplication**: < 1.5% (target: < 1.0%)
+- **Critical/Blocker Issues**: Zero tolerance
+- **Code Smells**: Address high/critical severity
+- **Security Hotspots**: Review and resolve all
+- **Test Coverage**: Maintain 90%+
+
+**When to Run:**
+
+- After completing a feature (before PR)
+- When investigating code quality issues
+- During refactoring work
+- Before major releases
+
 ### Mocking in Tests
 
 Mock logging utilities in tests using standard Vitest mocking patterns. See test files for examples.
@@ -428,6 +480,9 @@ Mock logging utilities in tests using standard Vitest mocking patterns. See test
    npm run lint
    npm run typecheck
    npm run test
+
+   # Run SonarQube analysis (for features, not minor fixes)
+   sonar-scanner
 
    # Validate with Playwright if UI changes
    npm run dev  # Use Playwright MCP to test feature
