@@ -1,30 +1,12 @@
 import {getRedditToken} from '@/lib/actions/redditToken'
-import {checkRateLimit} from '@/lib/auth/rateLimit'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logging/logError'
-import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
-import {isSafeRedditPath} from '@/lib/utils/validation/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
-
-/**
- * Determines cache max-age based on Reddit API endpoint type.
- * More static content gets longer cache durations to reduce API calls.
- */
-function getCacheMaxAge(path: string): number {
-  if (path.includes('/hot.json') || path.includes('/popular')) {
-    return 600 // 10 minutes - hot posts change slowly
-  }
-  if (path.includes('/user/') && path.includes('/about')) {
-    return 900 // 15 minutes - user profiles are relatively static
-  }
-  if (path.includes('/about.json')) {
-    return 1800 // 30 minutes - subreddit info is very static
-  }
-  if (path.includes('autocomplete') || path.includes('/search')) {
-    return 180 // 3 minutes - search results
-  }
-  return 300 // 5 minutes default
-}
+import {
+  createErrorResponse,
+  getAnonymousCacheMaxAge,
+  validateRedditRequest
+} from './utils/routeHelpers'
 
 /**
  * Anonymous Reddit API Proxy Route Handler.
@@ -50,66 +32,12 @@ function getCacheMaxAge(path: string): number {
  * @param {NextRequest} request - The incoming request object.
  */
 export async function GET(request: NextRequest) {
-  // Validate request origin to prevent external abuse
-  if (!validateOrigin(request)) {
-    return NextResponse.json(
-      {error: 'Forbidden'},
-      {
-        status: 403,
-        headers: {
-          'Cache-Control': 'no-store, max-age=0'
-        }
-      }
-    )
-  }
+  // Perform all security validations
+  const {path, error} = await validateRedditRequest(request, 'redditApiRoute')
+  if (error) return error
 
-  // Rate limiting
-  const rateLimitResponse = await checkRateLimit(request)
-  if (rateLimitResponse) {
-    return rateLimitResponse
-  }
-
-  // Extract the Reddit API path from query parameters
-  const {searchParams} = new URL(request.url)
-  const path = searchParams.get('path')
-
-  if (!path) {
-    logError('Missing required path parameter', {
-      component: 'redditApiRoute',
-      action: 'validatePath',
-      url: request.url,
-      searchParams: Object.fromEntries(searchParams.entries())
-    })
-    return NextResponse.json(
-      {error: 'Path parameter is required'},
-      {
-        status: 400,
-        headers: {
-          'Cache-Control': 'no-store, max-age=0'
-        }
-      }
-    )
-  }
-
-  // Validate path to prevent SSRF and abuse
-  if (!isSafeRedditPath(path)) {
-    logError('Invalid or dangerous Reddit API path', {
-      component: 'redditApiRoute',
-      action: 'validatePath',
-      path,
-      url: request.url,
-      searchParams: Object.fromEntries(searchParams.entries())
-    })
-    return NextResponse.json(
-      {error: 'Invalid path parameter'},
-      {
-        status: 400,
-        headers: {
-          'Cache-Control': 'no-store, max-age=0'
-        }
-      }
-    )
-  }
+  // TypeScript: path is guaranteed non-null here (validated above)
+  const validatedPath = path!
 
   try {
     // This proxy is for anonymous/read-only access only
@@ -117,19 +45,11 @@ export async function GET(request: NextRequest) {
     const token = await getRedditToken()
 
     if (!token) {
-      return NextResponse.json(
-        {error: 'Failed to obtain Reddit API token'},
-        {
-          status: 500,
-          headers: {
-            'Cache-Control': 'no-store, max-age=0'
-          }
-        }
-      )
+      return createErrorResponse(500, 'Failed to obtain Reddit API token')
     }
 
     // Use Next.js fetch cache with revalidation based on endpoint type
-    const cacheMaxAge = getCacheMaxAge(path)
+    const cacheMaxAge = getAnonymousCacheMaxAge(validatedPath)
 
     // CodeQL SSRF false positive suppression:
     // This fetch is protected by multiple security layers:
@@ -139,7 +59,7 @@ export async function GET(request: NextRequest) {
     // 4. Rate limiting - prevents DoS attacks
     // The path parameter is validated before reaching this point.
     // lgtm[js/server-side-unvalidated-url-redirection]
-    const response = await fetch(`https://oauth.reddit.com${path}`, {
+    const response = await fetch(`https://oauth.reddit.com${validatedPath}`, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
         'User-Agent': config.userAgent
@@ -151,9 +71,9 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       // Skip logging expected errors for user and subreddit endpoints
-      const isUserEndpoint = path.includes('/user/')
+      const isUserEndpoint = validatedPath.includes('/user/')
       const subredditRegex = /^\/r\/[^/]+\/(hot|new|top)\.json/
-      const isSubredditEndpoint = subredditRegex.exec(path) !== null
+      const isSubredditEndpoint = subredditRegex.exec(validatedPath) !== null
       const is404 = response.status === 404
       const is403 = response.status === 403
 
@@ -168,10 +88,10 @@ export async function GET(request: NextRequest) {
         logError('Reddit API request failed', {
           component: 'redditApiRoute',
           action: 'fetchRedditApi',
-          path,
+          path: validatedPath,
           status: response.status,
           statusText: response.statusText,
-          redditUrl: `https://oauth.reddit.com${path}`,
+          redditUrl: `https://oauth.reddit.com${validatedPath}`,
           headers: {
             'content-type': response.headers.get('content-type'),
             'x-ratelimit-remaining': response.headers.get(
@@ -194,7 +114,7 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json()
-    const responseCacheMaxAge = getCacheMaxAge(path)
+    const responseCacheMaxAge = getAnonymousCacheMaxAge(validatedPath)
 
     return NextResponse.json(data, {
       headers: {
@@ -206,20 +126,12 @@ export async function GET(request: NextRequest) {
     logError(error, {
       component: 'redditApiRoute',
       action: 'proxyRequest',
-      path,
+      path: validatedPath,
       url: request.url,
       method: request.method,
       origin: request.headers.get('origin'),
       userAgent: request.headers.get('user-agent')
     })
-    return NextResponse.json(
-      {error: 'Internal server error'},
-      {
-        status: 500,
-        headers: {
-          'Cache-Control': 'no-store, max-age=0'
-        }
-      }
-    )
+    return createErrorResponse(500, 'Internal server error')
   }
 }

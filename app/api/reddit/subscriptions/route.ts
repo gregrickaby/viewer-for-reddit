@@ -1,10 +1,8 @@
-import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logging/logError'
-import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
-import {isSafeRedditPath} from '@/lib/utils/validation/validateRedditPath'
 import {NextRequest, NextResponse} from 'next/server'
+import {validateRedditRequest} from '../utils/routeHelpers'
 
 /**
  * Reddit User Subscriptions API Proxy Route Handler.
@@ -24,65 +22,15 @@ import {NextRequest, NextResponse} from 'next/server'
  * @param {NextRequest} request - The incoming request object.
  */
 export async function GET(request: NextRequest) {
-  // Validate request origin
-  if (!validateOrigin(request)) {
-    return NextResponse.json(
-      {error: 'Forbidden'},
-      {
-        status: 403,
-        headers: {
-          'Cache-Control': 'no-store, max-age=0'
-        }
-      }
-    )
-  }
+  // Perform all security validations
+  const {path, error} = await validateRedditRequest(
+    request,
+    'subscriptionsApiRoute'
+  )
+  if (error) return error
 
-  // Rate limiting
-  const rateLimitResponse = await checkRateLimit(request)
-  if (rateLimitResponse) {
-    return rateLimitResponse
-  }
-
-  // Extract the Reddit API path from query parameters
-  const {searchParams} = new URL(request.url)
-  const path = searchParams.get('path')
-
-  if (!path) {
-    logError('Missing required path parameter', {
-      component: 'subscriptionsApiRoute',
-      action: 'validatePath',
-      url: request.url
-    })
-    return NextResponse.json(
-      {error: 'Path parameter is required'},
-      {
-        status: 400,
-        headers: {
-          'Cache-Control': 'no-store, max-age=0'
-        }
-      }
-    )
-  }
-
-  // Validate path to prevent SSRF and abuse
-  // Note: CodeQL SSRF warning is a false positive - isSafeRedditPath() validates
-  // all paths against allowed patterns before constructing the URL
-  if (!isSafeRedditPath(path)) {
-    logError('Invalid or dangerous Reddit API path', {
-      component: 'subscriptionsApiRoute',
-      action: 'validatePath',
-      path
-    })
-    return NextResponse.json(
-      {error: 'Invalid path parameter'},
-      {
-        status: 400,
-        headers: {
-          'Cache-Control': 'no-store, max-age=0'
-        }
-      }
-    )
-  }
+  // TypeScript: path is guaranteed non-null here (validated above)
+  const validatedPath = path!
 
   try {
     const session = await getSession()
@@ -100,7 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Safe to use user-provided path - validated by isSafeRedditPath() above
-    const response = await fetch(`https://oauth.reddit.com${path}`, {
+    const response = await fetch(`https://oauth.reddit.com${validatedPath}`, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
         'User-Agent': config.userAgent
@@ -111,7 +59,7 @@ export async function GET(request: NextRequest) {
       logError('Reddit subscriptions API request failed', {
         component: 'subscriptionsApiRoute',
         action: 'fetchRedditApi',
-        path,
+        path: validatedPath,
         status: response.status,
         statusText: response.statusText
       })
@@ -136,7 +84,7 @@ export async function GET(request: NextRequest) {
     logError('Unexpected error in subscriptions API proxy', {
       component: 'subscriptionsApiRoute',
       action: 'handleRequest',
-      path,
+      path: validatedPath,
       error: error instanceof Error ? error.message : 'Unknown error'
     })
     // Return empty response for graceful degradation
