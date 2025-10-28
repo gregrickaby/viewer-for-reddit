@@ -22,7 +22,7 @@
     "dev": "rimraf .next && next dev",
     "format": "prettier  '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
     "lint": "eslint",
-    "sonar": "npm run test:coverage && sonar-scanner",
+    "sonar": "sonar-scanner",
     "start": "next start",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
