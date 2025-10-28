@@ -2,6 +2,10 @@ import type {components} from '@/lib/types/reddit-api'
 import {COMMENTS_LIMIT, MAX_LIMIT} from '@/lib/utils/api/apiConstants'
 import {baseQuery} from '@/lib/utils/api/baseQuery/baseQuery'
 import {dynamicBaseQuery} from '@/lib/utils/api/baseQuery/dynamicBaseQuery'
+import {
+  createCommentsInfiniteConfig,
+  extractCommentsListing
+} from '@/lib/utils/api/commentsPagination'
 import {extractAndFilterComments} from '@/lib/utils/formatting/commentFilters'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
@@ -72,17 +76,7 @@ export const commentsApi = createApi({
       string,
       string | undefined
     >({
-      infiniteQueryOptions: {
-        initialPageParam: undefined,
-        getNextPageParam: (lastPage) => {
-          const commentsListing = Array.isArray(lastPage)
-            ? lastPage[1]
-            : lastPage
-          return commentsListing?.data?.after ?? undefined
-        },
-        getPreviousPageParam: () => undefined,
-        maxPages: 20
-      },
+      infiniteQueryOptions: createCommentsInfiniteConfig<CommentsListing>(20),
       query({queryArg: permalink, pageParam}) {
         const params = new URLSearchParams({
           limit: String(100),
@@ -111,17 +105,7 @@ export const commentsApi = createApi({
       string,
       string | undefined
     >({
-      infiniteQueryOptions: {
-        initialPageParam: undefined,
-        getNextPageParam: (lastPage) => {
-          const commentsListing = Array.isArray(lastPage)
-            ? lastPage[1]
-            : lastPage
-          return commentsListing?.data?.after ?? undefined
-        },
-        getPreviousPageParam: () => undefined,
-        maxPages: 20
-      },
+      infiniteQueryOptions: createCommentsInfiniteConfig<CommentsListing>(20),
       query({queryArg: permalink, pageParam}) {
         const params = new URLSearchParams({
           limit: String(100),
@@ -152,7 +136,7 @@ export const commentsApi = createApi({
         return `${permalink}.json?${params.toString()}`
       },
       transformResponse: (response: AutoPostCommentsResponse) => {
-        const listing = Array.isArray(response) ? response[1] : response
+        const listing = extractCommentsListing(response)
         const children = listing?.data?.children ?? []
         return extractAndFilterComments(children)
       }
@@ -206,12 +190,8 @@ export const userCommentsApi = createApi({
       string,
       string | undefined
     >({
-      infiniteQueryOptions: {
-        initialPageParam: undefined,
-        getNextPageParam: (lastPage) => lastPage?.data?.after ?? undefined,
-        getPreviousPageParam: () => undefined,
-        maxPages: 10
-      },
+      infiniteQueryOptions:
+        createCommentsInfiniteConfig<AutoUserCommentsResponse>(10),
       query({queryArg: username, pageParam}) {
         const params = new URLSearchParams({limit: String(MAX_LIMIT)})
         if (pageParam) params.set('after', pageParam)

@@ -134,4 +134,22 @@ describe('Breadcrumb', () => {
     const currentPage = screen.getByText('Post Title')
     expect(currentPage).toHaveAttribute('aria-current', 'page')
   })
+
+  it('should use window.location.origin for baseUrl when window is defined', () => {
+    const {container} = render(
+      <Breadcrumb items={[{label: 'About', href: '/about'}]} />
+    )
+
+    // eslint-disable-next-line testing-library/no-container
+    const script = container.querySelector('script[type="application/ld+json"]')
+    expect(script).toBeInTheDocument()
+
+    if (script?.textContent) {
+      const structuredData = JSON.parse(script.textContent)
+      // When window is defined, baseUrl should be window.location.origin
+      expect(structuredData.itemListElement[0].item).toContain(
+        globalThis.window.location.origin
+      )
+    }
+  })
 })
