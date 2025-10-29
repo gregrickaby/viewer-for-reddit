@@ -43,6 +43,7 @@ const createMockState = (
     favorites: [],
     recent: [],
     searchHistory: [],
+    commentSort: 'best',
     ...overrides
   },
   transient: {

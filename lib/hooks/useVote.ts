@@ -25,6 +25,11 @@ export interface UseVoteProps {
    * - null/undefined: no vote
    */
   initialVote?: boolean | null
+
+  /**
+   * Type of content being voted on
+   */
+  type?: 'post' | 'comment'
 }
 
 /**

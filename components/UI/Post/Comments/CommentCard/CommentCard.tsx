@@ -97,6 +97,7 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
             score={comment.ups ?? 0}
             userVote={comment.likes}
             size="sm"
+            type="comment"
           />
           <Anchor
             href={`https://reddit.com${comment.permalink ?? ''}`}

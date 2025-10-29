@@ -9,6 +9,7 @@ interface CardActionsProps {
   post: AutoPostChildData
   commentsOpen: boolean
   onCommentsToggle: () => void
+  hideCommentToggle?: boolean
 }
 
 /**
@@ -23,7 +24,8 @@ interface CardActionsProps {
 export function CardActions({
   post,
   commentsOpen,
-  onCommentsToggle
+  onCommentsToggle,
+  hideCommentToggle = false
 }: Readonly<CardActionsProps>) {
   return (
     <Group gap="xs" mt="md">
@@ -34,29 +36,31 @@ export function CardActions({
         size="md"
       />
 
-      <Tooltip label="View Comments" withinPortal>
-        <Button
-          aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
-          className={classes.commentButton}
-          color="gray"
-          data-umami-event="comment button"
-          leftSection={<FaComment size={14} />}
-          onClick={onCommentsToggle}
-          radius="sm"
-          variant="subtle"
-          rightSection={
-            commentsOpen ? (
-              <IoChevronUp size={12} />
-            ) : (
-              <IoChevronDown size={12} />
-            )
-          }
-        >
-          <Text size="sm" fw={700}>
-            <NumberFormatter value={post.num_comments} thousandSeparator />
-          </Text>
-        </Button>
-      </Tooltip>
+      {!hideCommentToggle && (
+        <Tooltip label="View Comments" withinPortal>
+          <Button
+            aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
+            className={classes.commentButton}
+            color="gray"
+            data-umami-event="comment button"
+            leftSection={<FaComment size={14} />}
+            onClick={onCommentsToggle}
+            radius="sm"
+            variant="subtle"
+            rightSection={
+              commentsOpen ? (
+                <IoChevronUp size={12} />
+              ) : (
+                <IoChevronDown size={12} />
+              )
+            }
+          >
+            <Text size="sm" fw={700}>
+              <NumberFormatter value={post.num_comments} thousandSeparator />
+            </Text>
+          </Button>
+        </Tooltip>
+      )}
     </Group>
   )
 }

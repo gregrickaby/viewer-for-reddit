@@ -147,7 +147,8 @@ describe('Search', () => {
             enableNsfw: true,
             favorites: [],
             isMuted: true,
-            recent: []
+            recent: [],
+            commentSort: 'best'
           }
         }
       })

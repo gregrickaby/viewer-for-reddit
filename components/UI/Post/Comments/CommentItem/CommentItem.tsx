@@ -71,6 +71,14 @@ function CommentMetadata({
   toggleExpansion: () => void
   toggleSubtreeExpansion: () => void
 }>) {
+  const depth = comment.depth
+  let depthLevel = 'level-3+'
+  if (depth === 1) {
+    depthLevel = 'level-1'
+  } else if (depth === 2) {
+    depthLevel = 'level-2'
+  }
+
   if (!showReplies) {
     return (
       <Group className={classes.commentMeta} justify="space-between">
@@ -101,6 +109,7 @@ function CommentMetadata({
           score={comment.ups ?? 0}
           userVote={comment.likes}
           size="sm"
+          type="comment"
         />
         <Badge variant="light" size="md" className={classes.replyCount}>
           {replyCount} {replyLabel}
@@ -116,6 +125,7 @@ function CommentMetadata({
             onClick={toggleExpansion}
             className={classes.expandButton}
             data-expanded={isExpanded}
+            data-umami-event={`comment ${isExpanded ? 'collapse' : 'expand'} ${depthLevel}`}
             aria-label={isExpanded ? 'Collapse replies' : 'Expand replies'}
           >
             <BiChevronRight size={16} />
@@ -125,8 +135,8 @@ function CommentMetadata({
         <Tooltip
           label={
             isSubtreeFullyExpanded
-              ? 'Collapse all descendants'
-              : 'Expand all descendants'
+              ? 'Collapse all descendants (Shift+O)'
+              : 'Expand all descendants (O)'
           }
           position="top"
         >
@@ -136,10 +146,15 @@ function CommentMetadata({
             onClick={toggleSubtreeExpansion}
             className={classes.expandAllButton}
             data-expanded={isSubtreeFullyExpanded}
+            data-umami-event={
+              isSubtreeFullyExpanded
+                ? 'collapse all comments'
+                : 'expand all comments'
+            }
             aria-label={
               isSubtreeFullyExpanded
-                ? 'Collapse all descendants'
-                : 'Expand all descendants'
+                ? 'Collapse all descendants (Shift+O)'
+                : 'Expand all descendants (O)'
             }
           >
             {isSubtreeFullyExpanded ? (

@@ -13,6 +13,7 @@ import {CardHeader} from './CardHeader'
 interface CardProps {
   post: AutoPostChildData
   useInternalRouting?: boolean
+  hideCommentToggle?: boolean
 }
 
 /**
@@ -27,9 +28,14 @@ interface CardProps {
  *
  * @param post - The Reddit post data (AutoPostChildData)
  * @param useInternalRouting - Whether to use internal app routes (default: true) or external Reddit links
+ * @param hideCommentToggle - Whether to hide the comment toggle button (used on single post pages)
  * @returns JSX.Element for a styled, interactive Reddit post card
  */
-export function Card({post, useInternalRouting = true}: Readonly<CardProps>) {
+export function Card({
+  post,
+  useInternalRouting = true,
+  hideCommentToggle = false
+}: Readonly<CardProps>) {
   const preview = (post as any).preview?.images?.[0]?.resolutions
   const image = getMediumImage(preview ?? [])
   const postLink = parsePostLink(post.permalink, useInternalRouting)
@@ -78,6 +84,7 @@ export function Card({post, useInternalRouting = true}: Readonly<CardProps>) {
         post={post}
         commentsOpen={commentsOpen}
         onCommentsToggle={() => setCommentsOpen(!commentsOpen)}
+        hideCommentToggle={hideCommentToggle}
       />
 
       <Collapse in={commentsOpen}>

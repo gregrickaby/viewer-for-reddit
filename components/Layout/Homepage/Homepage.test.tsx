@@ -75,7 +75,8 @@ describe('Homepage', () => {
           currentSort: 'hot',
           recent: [],
           searchHistory: [],
-          currentSubreddit: ''
+          currentSubreddit: '',
+          commentSort: 'best'
         }
       }
     })
@@ -115,7 +116,8 @@ describe('Homepage', () => {
           currentSort: 'hot',
           recent: [],
           searchHistory: [],
-          currentSubreddit: ''
+          currentSubreddit: '',
+          commentSort: 'best'
         }
       }
     })
@@ -143,7 +145,8 @@ describe('Homepage', () => {
           currentSort: 'hot',
           recent: [],
           searchHistory: [],
-          currentSubreddit: ''
+          currentSubreddit: '',
+          commentSort: 'best'
         }
       }
     })
@@ -157,7 +160,7 @@ describe('Homepage', () => {
   it('should clean up #_ hash from OAuth redirect', () => {
     // Mock window.location and history
     const mockReplaceState = vi.fn()
-    Object.defineProperty(window, 'location', {
+    Object.defineProperty(globalThis, 'location', {
       value: {
         hash: '#_',
         pathname: '/',
@@ -165,7 +168,7 @@ describe('Homepage', () => {
       },
       writable: true
     })
-    Object.defineProperty(window.history, 'replaceState', {
+    Object.defineProperty(globalThis.history, 'replaceState', {
       value: mockReplaceState,
       writable: true
     })
@@ -179,7 +182,8 @@ describe('Homepage', () => {
           currentSort: 'hot',
           recent: [],
           searchHistory: [],
-          currentSubreddit: ''
+          currentSubreddit: '',
+          commentSort: 'best'
         }
       }
     })

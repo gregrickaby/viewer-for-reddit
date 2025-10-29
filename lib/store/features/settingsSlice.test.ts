@@ -1,4 +1,9 @@
-import type {SortingOption, SubredditItem, UserSettings} from '@/lib/types'
+import type {
+  CommentSortingOption,
+  SortingOption,
+  SubredditItem,
+  UserSettings
+} from '@/lib/types'
 import * as storage from '@/lib/utils/storage/storage'
 import settingsReducer, {
   addRecentSubreddit,
@@ -10,6 +15,7 @@ import settingsReducer, {
   clearSingleRecent,
   clearSingleSearchHistory,
   resetSettings,
+  setCommentSortingOption,
   setCurrentSubreddit,
   setSortingOption,
   toggleFavoriteSubreddit,
@@ -18,6 +24,7 @@ import settingsReducer, {
 } from './settingsSlice'
 
 const baseState: UserSettings = {
+  commentSort: 'best',
   currentSort: 'hot',
   currentSubreddit: '',
   enableNsfw: true,
@@ -187,5 +194,19 @@ describe('settingsSlice', () => {
     const next = settingsReducer(state, clearSingleSearchHistory('test'))
     expect(next.searchHistory).toEqual([subreddit2])
     expect(saveSpy).toHaveBeenCalled()
+  })
+
+  it('setCommentSortingOption sets comment sorting option', () => {
+    const sortOptions: CommentSortingOption[] = [
+      'best',
+      'top',
+      'new',
+      'controversial'
+    ]
+    for (const option of sortOptions) {
+      const next = settingsReducer(baseState, setCommentSortingOption(option))
+      expect(next.commentSort).toBe(option)
+      expect(saveSpy).toHaveBeenCalled()
+    }
   })
 })

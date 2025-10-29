@@ -28,6 +28,11 @@ export interface VoteButtonsProps {
    * Size variant for the buttons
    */
   size?: 'sm' | 'md' | 'lg'
+
+  /**
+   * Type of content being voted on
+   */
+  type?: 'post' | 'comment'
 }
 
 /**
@@ -48,13 +53,15 @@ export function VoteButtons({
   id,
   score,
   userVote,
-  size = 'md'
+  size = 'md',
+  type = 'post'
 }: Readonly<VoteButtonsProps>) {
   // Use the vote hook for all business logic
   const {handleVote, currentVote, currentScore, isVoting} = useVote({
     id,
     initialScore: score,
-    initialVote: userVote
+    initialVote: userVote,
+    type
   })
 
   // Icon size mapping based on button size variant
@@ -78,6 +85,11 @@ export function VoteButtons({
   if (size === 'sm') textSize = 'xs'
   if (size === 'lg') textSize = 'md'
 
+  // Determine analytics event names based on type
+  const upvoteEvent = type === 'comment' ? 'comment upvote' : 'upvote button'
+  const downvoteEvent =
+    type === 'comment' ? 'comment downvote' : 'downvote button'
+
   return (
     <Group gap={4} align="center" className={classes.voteButtons} p={6}>
       <Tooltip label="Upvote" withinPortal>
@@ -87,7 +99,7 @@ export function VoteButtons({
           className={classes.upvoteButton}
           color={isUpvoted ? 'orange' : 'gray'}
           data-active={isUpvoted}
-          data-umami-event="upvote button"
+          data-umami-event={upvoteEvent}
           disabled={isVoting}
           onClick={() => handleVote(1)}
           size={actionIconSize}
@@ -108,7 +120,7 @@ export function VoteButtons({
           className={classes.downvoteButton}
           color={isDownvoted ? 'blue' : 'gray'}
           data-active={isDownvoted}
-          data-umami-event="downvote button"
+          data-umami-event={downvoteEvent}
           disabled={isVoting}
           onClick={() => handleVote(-1)}
           size={actionIconSize}

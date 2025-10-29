@@ -1,8 +1,8 @@
 import {
+  clearSettings,
   getInitialSettings,
   loadSettings,
-  saveSettings,
-  clearSettings
+  saveSettings
 } from './storage'
 
 describe('storage utilities', () => {
@@ -12,6 +12,7 @@ describe('storage utilities', () => {
 
   it('getInitialSettings returns defaults', () => {
     expect(getInitialSettings()).toEqual({
+      commentSort: 'best',
       currentSort: 'hot',
       currentSubreddit: '',
       enableNsfw: true,

@@ -10,7 +10,8 @@ export const mockUserSettings: UserSettings = {
   enableNsfw: false,
   isMuted: false,
   recent: [],
-  searchHistory: []
+  searchHistory: [],
+  commentSort: 'best'
 }
 
 /**

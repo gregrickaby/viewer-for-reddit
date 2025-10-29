@@ -32,6 +32,7 @@ function isBrowser() {
  */
 export function getInitialSettings(): UserSettings {
   return {
+    commentSort: 'best',
     currentSort: 'hot',
     currentSubreddit: '',
     enableNsfw: true,

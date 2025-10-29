@@ -161,7 +161,7 @@ describe('CommentItem', () => {
     // Initially collapsed
     expect(expandAllButton).toHaveAttribute(
       'aria-label',
-      'Expand all descendants'
+      'Expand all descendants (O)'
     )
 
     // Expand all

@@ -43,6 +43,11 @@ export interface SinglePostPageParams {
 export type SortingOption = 'hot' | 'new' | 'top' | 'controversial' | 'rising'
 
 /**
+ * Valid sorting options for Reddit comments.
+ */
+export type CommentSortingOption = 'best' | 'top' | 'new' | 'controversial'
+
+/**
  * Subreddit shape used internally throughout the app for:
  * - Favorites
  * - Recent history
@@ -61,6 +66,7 @@ export interface SubredditItem {
  * User settings persisted in localStorage.
  */
 export interface UserSettings {
+  commentSort: CommentSortingOption // Current comment sorting method
   currentSort: SortingOption // Current post sorting method
   currentSubreddit: string | null // Currently selected subreddit
   enableNsfw: boolean // NSFW content toggle

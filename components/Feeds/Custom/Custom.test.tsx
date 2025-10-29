@@ -142,7 +142,8 @@ describe('CustomFeedPosts', () => {
           favorites: [],
           isMuted: false,
           recent: [],
-          searchHistory: []
+          searchHistory: [],
+          commentSort: 'best'
         }
       }
     })
@@ -175,7 +176,8 @@ describe('CustomFeedPosts', () => {
           favorites: [],
           isMuted: false,
           recent: [],
-          searchHistory: []
+          searchHistory: [],
+          commentSort: 'best'
         }
       }
     })

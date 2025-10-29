@@ -27,6 +27,8 @@ interface CommentExpansionContextValue {
   toggleCommentSubtree: (commentId: string, comment: NestedCommentData) => void
   isCommentExpanded: (commentId: string) => boolean
   isSubtreeExpanded: (commentId: string) => boolean
+  expandAllComments: (comments: NestedCommentData[]) => void
+  collapseAllComments: () => void
 }
 
 const CommentExpansionContext = createContext<
@@ -161,6 +163,43 @@ export function CommentExpansionProvider({
     return state.expandedSubtrees.has(commentId)
   }
 
+  const expandAllComments = (comments: NestedCommentData[]) => {
+    setState((prev) => {
+      const newExpandedComments = new Set(prev.expandedComments)
+      const newExpandedSubtrees = new Set(prev.expandedSubtrees)
+
+      // Recursively expand all comments and their descendants
+      const expandComment = (comment: NestedCommentData) => {
+        if (comment.id) {
+          newExpandedComments.add(comment.id)
+          newExpandedSubtrees.add(comment.id)
+        }
+        if (comment.replies && comment.replies.length > 0) {
+          for (const reply of comment.replies) {
+            expandComment(reply)
+          }
+        }
+      }
+
+      // Expand all top-level comments and their children
+      for (const comment of comments) {
+        expandComment(comment)
+      }
+
+      return {
+        expandedComments: newExpandedComments,
+        expandedSubtrees: newExpandedSubtrees
+      }
+    })
+  }
+
+  const collapseAllComments = () => {
+    setState({
+      expandedComments: new Set(),
+      expandedSubtrees: new Set()
+    })
+  }
+
   const value: CommentExpansionContextValue = useMemo(
     () => ({
       state,
@@ -171,7 +210,9 @@ export function CommentExpansionProvider({
       toggleComment,
       toggleCommentSubtree,
       isCommentExpanded,
-      isSubtreeExpanded
+      isSubtreeExpanded,
+      expandAllComments,
+      collapseAllComments
     }),
     [
       state,
@@ -182,7 +223,9 @@ export function CommentExpansionProvider({
       toggleComment,
       toggleCommentSubtree,
       isCommentExpanded,
-      isSubtreeExpanded
+      isSubtreeExpanded,
+      expandAllComments,
+      collapseAllComments
     ]
   )
 

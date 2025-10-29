@@ -1,4 +1,5 @@
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
+import type {CommentSortingOption} from '@/lib/types'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {
   getDisplayComments,
@@ -6,7 +7,8 @@ import {
   getNextPageControls,
   hasRequiredCommentFields,
   processInfiniteComments,
-  processNestedComments
+  processNestedComments,
+  sortComments
 } from './commentHelpers'
 
 // Mock the comment filters
@@ -346,6 +348,150 @@ describe('commentHelpers', () => {
       )
 
       expect(result).toEqual([])
+    })
+  })
+
+  describe('sortComments', () => {
+    const mockAutoComments: AutoCommentData[] = [
+      {ups: 100, created_utc: 1000, body: 'Comment 1'} as AutoCommentData,
+      {ups: 50, created_utc: 3000, body: 'Comment 2'} as AutoCommentData,
+      {ups: 200, created_utc: 2000, body: 'Comment 3'} as AutoCommentData,
+      {ups: 10, created_utc: 4000, body: 'Comment 4'} as AutoCommentData
+    ]
+
+    const mockNestedComments: NestedCommentData[] = [
+      {ups: 100, created_utc: 1000, depth: 0, hasReplies: false},
+      {ups: 50, created_utc: 3000, depth: 1, hasReplies: false},
+      {ups: 200, created_utc: 2000, depth: 0, hasReplies: false},
+      {ups: 10, created_utc: 4000, depth: 1, hasReplies: false}
+    ]
+
+    describe('best sorting', () => {
+      it('should preserve original order for best sorting', () => {
+        const result = sortComments(mockAutoComments, 'best')
+        expect(result).toEqual(mockAutoComments)
+        expect(result).toBe(mockAutoComments)
+      })
+
+      it('should preserve original order for nested comments', () => {
+        const result = sortComments(mockNestedComments, 'best')
+        expect(result).toEqual(mockNestedComments)
+      })
+    })
+
+    describe('top sorting', () => {
+      it('should sort by highest ups first', () => {
+        const result = sortComments(mockAutoComments, 'top')
+        expect(result[0].ups).toBe(200)
+        expect(result[1].ups).toBe(100)
+        expect(result[2].ups).toBe(50)
+        expect(result[3].ups).toBe(10)
+      })
+
+      it('should sort nested comments by highest ups first', () => {
+        const result = sortComments(mockNestedComments, 'top')
+        expect(result[0].ups).toBe(200)
+        expect(result[1].ups).toBe(100)
+        expect(result[2].ups).toBe(50)
+        expect(result[3].ups).toBe(10)
+      })
+
+      it('should handle missing ups values', () => {
+        const commentsWithMissingUps: AutoCommentData[] = [
+          {body: 'No ups'} as AutoCommentData,
+          {ups: 50, body: 'Has ups'} as AutoCommentData
+        ]
+        const result = sortComments(commentsWithMissingUps, 'top')
+        expect(result[0].ups).toBe(50)
+        expect(result[1].ups).toBeUndefined()
+      })
+    })
+
+    describe('new sorting', () => {
+      it('should sort by most recent created_utc first', () => {
+        const result = sortComments(mockAutoComments, 'new')
+        expect(result[0].created_utc).toBe(4000)
+        expect(result[1].created_utc).toBe(3000)
+        expect(result[2].created_utc).toBe(2000)
+        expect(result[3].created_utc).toBe(1000)
+      })
+
+      it('should sort nested comments by most recent first', () => {
+        const result = sortComments(mockNestedComments, 'new')
+        expect(result[0].created_utc).toBe(4000)
+        expect(result[1].created_utc).toBe(3000)
+        expect(result[2].created_utc).toBe(2000)
+        expect(result[3].created_utc).toBe(1000)
+      })
+
+      it('should handle missing created_utc values', () => {
+        const commentsWithMissingTime: AutoCommentData[] = [
+          {body: 'No time'} as AutoCommentData,
+          {created_utc: 5000, body: 'Has time'} as AutoCommentData
+        ]
+        const result = sortComments(commentsWithMissingTime, 'new')
+        expect(result[0].created_utc).toBe(5000)
+        expect(result[1].created_utc).toBeUndefined()
+      })
+    })
+
+    describe('controversial sorting', () => {
+      it('should sort by lowest ups first', () => {
+        const result = sortComments(mockAutoComments, 'controversial')
+        expect(result[0].ups).toBe(10)
+        expect(result[1].ups).toBe(50)
+        expect(result[2].ups).toBe(100)
+        expect(result[3].ups).toBe(200)
+      })
+
+      it('should sort nested comments by lowest ups first', () => {
+        const result = sortComments(mockNestedComments, 'controversial')
+        expect(result[0].ups).toBe(10)
+        expect(result[1].ups).toBe(50)
+        expect(result[2].ups).toBe(100)
+        expect(result[3].ups).toBe(200)
+      })
+    })
+
+    describe('immutability', () => {
+      it('should not mutate original array for top sorting', () => {
+        const original = [...mockAutoComments]
+        sortComments(mockAutoComments, 'top')
+        expect(mockAutoComments).toEqual(original)
+      })
+
+      it('should not mutate original array for new sorting', () => {
+        const original = [...mockAutoComments]
+        sortComments(mockAutoComments, 'new')
+        expect(mockAutoComments).toEqual(original)
+      })
+
+      it('should not mutate original array for controversial sorting', () => {
+        const original = [...mockAutoComments]
+        sortComments(mockAutoComments, 'controversial')
+        expect(mockAutoComments).toEqual(original)
+      })
+    })
+
+    describe('edge cases', () => {
+      it('should handle empty arrays', () => {
+        const result = sortComments([] as AutoCommentData[], 'top')
+        expect(result).toEqual([])
+      })
+
+      it('should handle single comment', () => {
+        const singleComment = [mockAutoComments[0]]
+        const result = sortComments(singleComment, 'top')
+        expect(result).toEqual(singleComment)
+      })
+
+      it('should handle invalid sort option gracefully', () => {
+        const result = sortComments(
+          mockAutoComments,
+          'invalid' as CommentSortingOption
+        )
+        expect(result).toEqual(mockAutoComments)
+      })
     })
   })
 })

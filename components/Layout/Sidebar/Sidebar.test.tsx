@@ -112,7 +112,8 @@ describe('Sidebar', () => {
               subscribers: 1000,
               value: 'test'
             }
-          ]
+          ],
+          commentSort: 'best'
         }
       }
     })

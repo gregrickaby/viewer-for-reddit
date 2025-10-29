@@ -1,4 +1,9 @@
-import type {SortingOption, SubredditItem, UserSettings} from '@/lib/types'
+import type {
+  CommentSortingOption,
+  SortingOption,
+  SubredditItem,
+  UserSettings
+} from '@/lib/types'
 import {addToSearchHistory as addToSearchHistoryUtil} from '@/lib/utils/storage/searchHistory'
 import {
   clearSettings,
@@ -49,6 +54,18 @@ export const settingsSlice = createSlice({
      */
     setSortingOption: (state, action: PayloadAction<SortingOption>) => {
       state.currentSort = action.payload
+      saveSettings(state)
+    },
+
+    /**
+     * Update the current sorting method for Reddit comments.
+     * @param action.payload - The new comment sorting option (best, top, new, controversial)
+     */
+    setCommentSortingOption: (
+      state,
+      action: PayloadAction<CommentSortingOption>
+    ) => {
+      state.commentSort = action.payload
       saveSettings(state)
     },
 
@@ -163,6 +180,7 @@ export const {
   clearSingleRecent,
   clearSingleSearchHistory,
   resetSettings,
+  setCommentSortingOption,
   setCurrentSubreddit,
   setSortingOption,
   toggleFavoriteSubreddit,

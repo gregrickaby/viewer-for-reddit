@@ -84,7 +84,8 @@ describe('useSubredditSearch', () => {
           enableNsfw: true,
           favorites: [],
           isMuted: true,
-          recent: []
+          recent: [],
+          commentSort: 'best'
         }
       }
     })
@@ -128,7 +129,8 @@ describe('useSubredditSearch', () => {
           enableNsfw: true,
           favorites: [],
           isMuted: true,
-          recent: []
+          recent: [],
+          commentSort: 'best'
         }
       }
     })
@@ -165,7 +167,8 @@ describe('useSubredditSearch', () => {
           enableNsfw: true,
           favorites: [],
           isMuted: true,
-          recent: []
+          recent: [],
+          commentSort: 'best'
         },
         transient: {
           toggleNavbar: false,

@@ -125,7 +125,11 @@ export function Single({
         ]}
       />
       <Stack gap="md" py="md">
-        <PostCard post={post} useInternalRouting={useInternalRouting} />
+        <PostCard
+          post={post}
+          useInternalRouting={useInternalRouting}
+          hideCommentToggle
+        />
         <Card padding="md" radius="md" shadow="sm" withBorder>
           <Stack gap="md">
             <Title order={3} size="lg">
@@ -137,6 +141,7 @@ export function Single({
               open
               enableInfiniteLoading
               enableNestedComments
+              showSortControls
             />
           </Stack>
         </Card>
