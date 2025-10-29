@@ -180,4 +180,30 @@ describe('Sidebar', () => {
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
   })
+
+  it('should not show Saved Posts link when not authenticated', () => {
+    render(<Sidebar />, {
+      preloadedState: {
+        auth: {isAuthenticated: false, username: null, expiresAt: null}
+      }
+    })
+    expect(
+      screen.queryByRole('link', {name: 'My Saved Posts'})
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show Saved Posts link when authenticated with username', () => {
+    render(<Sidebar />, {
+      preloadedState: {
+        auth: {
+          isAuthenticated: true,
+          username: 'testuser',
+          expiresAt: Date.now() + 3600000
+        }
+      }
+    })
+    const savedLink = screen.getByRole('link', {name: 'My Saved Posts'})
+    expect(savedLink).toBeInTheDocument()
+    expect(savedLink).toHaveAttribute('href', '/user/testuser/saved')
+  })
 })

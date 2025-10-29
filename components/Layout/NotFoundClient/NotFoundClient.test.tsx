@@ -52,27 +52,27 @@ const mockDocument = {
 }
 
 // Setup browser API mocks
-Object.defineProperty(window, 'location', {
+Object.defineProperty(globalThis.window, 'location', {
   value: mockLocation,
   writable: true
 })
 
-Object.defineProperty(window, 'navigator', {
+Object.defineProperty(globalThis.window, 'navigator', {
   value: mockNavigator,
   writable: true
 })
 
-Object.defineProperty(window, 'screen', {
+Object.defineProperty(globalThis.window, 'screen', {
   value: mockScreen,
   writable: true
 })
 
-Object.defineProperty(window, 'innerWidth', {
+Object.defineProperty(globalThis.window, 'innerWidth', {
   value: mockWindow.innerWidth,
   writable: true
 })
 
-Object.defineProperty(window, 'innerHeight', {
+Object.defineProperty(globalThis.window, 'innerHeight', {
   value: mockWindow.innerHeight,
   writable: true
 })
@@ -244,7 +244,7 @@ describe('NotFoundClient', () => {
 
   it('should truncate long user agent strings', () => {
     const longUserAgent = 'A'.repeat(300)
-    Object.defineProperty(window, 'navigator', {
+    Object.defineProperty(globalThis.window, 'navigator', {
       value: {...mockNavigator, userAgent: longUserAgent},
       writable: true
     })
@@ -258,7 +258,7 @@ describe('NotFoundClient', () => {
   })
 
   it('should limit languages array to first 3 items', () => {
-    Object.defineProperty(window, 'navigator', {
+    Object.defineProperty(globalThis.window, 'navigator', {
       value: {
         ...mockNavigator,
         languages: ['en-US', 'en', 'es', 'fr', 'de', 'it']

@@ -29,6 +29,13 @@ export interface CustomFeedPostsArgs {
 }
 
 /**
+ * Query parameters for fetching user's saved posts.
+ */
+export interface UserSavedPostsArgs {
+  username: string
+}
+
+/**
  * Authenticated API service using RTK Query.
  *
  * Handles user-authenticated Reddit API requests including:
@@ -52,7 +59,12 @@ export interface CustomFeedPostsArgs {
  */
 export const authenticatedApi = createApi({
   reducerPath: 'authenticatedApi',
-  tagTypes: ['UserSubscriptions', 'UserCustomFeeds', 'CustomFeedPosts'],
+  tagTypes: [
+    'UserSubscriptions',
+    'UserCustomFeeds',
+    'CustomFeedPosts',
+    'UserSavedPosts'
+  ],
   baseQuery: authenticatedBaseQuery,
   endpoints: (builder) => ({
     /**
@@ -175,6 +187,57 @@ export const authenticatedApi = createApi({
         }
       }),
       providesTags: ['CustomFeedPosts']
+    }),
+
+    /**
+     * Fetches the authenticated user's saved posts with infinite scroll support.
+     *
+     * This endpoint requires user authentication and uses the user's session
+     * token to access their private saved content. Filters to posts only,
+     * excluding saved comments.
+     *
+     * @param {UserSavedPostsArgs} args - Query arguments
+     * @param {string} args.username - Reddit username
+     * @param {string} [pageParam] - Pagination cursor for next page
+     *
+     * @returns {AutoSubredditPostsResponse} Posts response with pagination
+     *
+     * @example
+     * const {data, fetchNextPage} = useGetUserSavedPostsInfiniteQuery({
+     *   username: 'testuser'
+     * })
+     */
+    getUserSavedPosts: builder.infiniteQuery<
+      AutoSubredditPostsResponse,
+      UserSavedPostsArgs,
+      string | undefined
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: undefined,
+        getNextPageParam: (lastPage) => lastPage?.data?.after ?? undefined,
+        getPreviousPageParam: () => undefined,
+        maxPages: 10
+      },
+      query({queryArg: {username}, pageParam}) {
+        const params = new URLSearchParams({limit: String(MAX_LIMIT)})
+        if (pageParam) params.set('after', pageParam)
+
+        // Build saved posts path: /user/{username}/saved.json
+        return `/user/${username}/saved.json?${params.toString()}`
+      },
+      transformResponse: (
+        response: AutoSubredditPostsResponse
+      ): AutoSubredditPostsResponse => ({
+        ...response,
+        data: {
+          ...response.data,
+          // Filter to posts only (kind === 't3') and exclude stickied posts
+          children: response.data?.children?.filter(
+            (child) => child.kind === 't3' && !child.data?.stickied
+          )
+        }
+      }),
+      providesTags: ['UserSavedPosts']
     })
   })
 })
@@ -185,5 +248,6 @@ export const authenticatedApi = createApi({
 export const {
   useGetUserSubscriptionsQuery,
   useGetUserCustomFeedsQuery,
-  useGetCustomFeedPostsInfiniteQuery
+  useGetCustomFeedPostsInfiniteQuery,
+  useGetUserSavedPostsInfiniteQuery
 } = authenticatedApi

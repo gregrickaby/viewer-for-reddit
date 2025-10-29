@@ -53,7 +53,15 @@ export async function GET(request: NextRequest) {
   // - mysubreddits: Access user's subscribed subreddits
   // - vote: Upvote/downvote content
   // - subscribe: Subscribe to subreddits
-  const scopes = ['identity', 'read', 'mysubreddits', 'vote', 'subscribe']
+  // - history: Access user's saved posts and comments
+  const scopes = [
+    'identity',
+    'read',
+    'mysubreddits',
+    'vote',
+    'subscribe',
+    'history'
+  ]
 
   // Create Reddit OAuth authorization URL with permanent duration
   // Reddit only provides refresh tokens for permanent duration requests

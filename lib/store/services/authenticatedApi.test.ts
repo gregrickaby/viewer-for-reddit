@@ -355,4 +355,297 @@ describe('Custom Feed Integration Flow', () => {
       expect(result.data).toEqual([])
     })
   })
+
+  describe('getUserSavedPosts', () => {
+    it('should fetch saved posts with pagination', async () => {
+      const mockSavedPosts = {
+        kind: 'Listing',
+        data: {
+          after: 't3_next123',
+          children: [
+            {
+              kind: 't3',
+              data: {
+                id: 'saved1',
+                title: 'Saved Post 1',
+                subreddit: 'technology',
+                author: 'author1',
+                score: 200,
+                num_comments: 20,
+                created_utc: 1234567890,
+                permalink: '/r/technology/comments/saved1/saved_post_1/',
+                url: 'https://example.com/saved1',
+                stickied: false,
+                over_18: false
+              }
+            },
+            {
+              kind: 't3',
+              data: {
+                id: 'saved2',
+                title: 'Saved Post 2',
+                subreddit: 'programming',
+                author: 'author2',
+                score: 150,
+                num_comments: 15,
+                created_utc: 1234567891,
+                permalink: '/r/programming/comments/saved2/saved_post_2/',
+                url: 'https://example.com/saved2',
+                stickied: false,
+                over_18: false
+              }
+            }
+          ]
+        }
+      }
+
+      server.use(
+        http.get('http://localhost:3000/api/reddit/me', ({request}) => {
+          const url = new URL(request.url)
+          const path = url.searchParams.get('path')
+
+          if (path?.includes('/user/testuser/saved.json')) {
+            return HttpResponse.json(mockSavedPosts)
+          }
+
+          return new HttpResponse(null, {status: 404})
+        })
+      )
+
+      const store = makeStore()
+      const result = await store.dispatch(
+        authenticatedApi.endpoints.getUserSavedPosts.initiate({
+          username: 'testuser'
+        })
+      )
+
+      expect(result.data).toBeDefined()
+      expect(Array.isArray(result.data?.pages)).toBe(true)
+      expect(result.data?.pages?.[0]?.data?.children).toHaveLength(2)
+      expect(result.data?.pages?.[0]?.data?.children?.[0]?.data?.title).toBe(
+        'Saved Post 1'
+      )
+      expect(result.data?.pages?.[0]?.data?.children?.[1]?.data?.title).toBe(
+        'Saved Post 2'
+      )
+      expect(result.data?.pages?.[0]?.data?.after).toBe('t3_next123')
+    })
+
+    it('should filter out comments (kind !== t3)', async () => {
+      const mockMixedContent = {
+        kind: 'Listing',
+        data: {
+          after: null,
+          children: [
+            {
+              kind: 't1',
+              data: {
+                id: 'comment1',
+                body: 'This is a saved comment',
+                author: 'commenter'
+              }
+            },
+            {
+              kind: 't3',
+              data: {
+                id: 'post1',
+                title: 'This is a saved post',
+                subreddit: 'technology',
+                stickied: false
+              }
+            },
+            {
+              kind: 't1',
+              data: {
+                id: 'comment2',
+                body: 'Another saved comment',
+                author: 'commenter2'
+              }
+            }
+          ]
+        }
+      }
+
+      server.use(
+        http.get('http://localhost:3000/api/reddit/me', () => {
+          return HttpResponse.json(mockMixedContent)
+        })
+      )
+
+      const store = makeStore()
+      const result = await store.dispatch(
+        authenticatedApi.endpoints.getUserSavedPosts.initiate({
+          username: 'testuser'
+        })
+      )
+
+      // Should only return posts (t3), filtering out comments (t1)
+      expect(result.data?.pages?.[0]?.data?.children).toHaveLength(1)
+      expect(result.data?.pages?.[0]?.data?.children?.[0]?.kind).toBe('t3')
+      expect(result.data?.pages?.[0]?.data?.children?.[0]?.data?.id).toBe(
+        'post1'
+      )
+    })
+
+    it('should filter out stickied posts', async () => {
+      const mockPostsWithSticky = {
+        kind: 'Listing',
+        data: {
+          after: null,
+          children: [
+            {
+              kind: 't3',
+              data: {
+                id: 'sticky1',
+                title: 'Stickied Saved Post',
+                stickied: true,
+                subreddit: 'announcements'
+              }
+            },
+            {
+              kind: 't3',
+              data: {
+                id: 'normal1',
+                title: 'Normal Saved Post',
+                stickied: false,
+                subreddit: 'technology'
+              }
+            }
+          ]
+        }
+      }
+
+      server.use(
+        http.get('http://localhost:3000/api/reddit/me', () => {
+          return HttpResponse.json(mockPostsWithSticky)
+        })
+      )
+
+      const store = makeStore()
+      const result = await store.dispatch(
+        authenticatedApi.endpoints.getUserSavedPosts.initiate({
+          username: 'testuser'
+        })
+      )
+
+      // Should filter out stickied posts
+      expect(result.data?.pages?.[0]?.data?.children).toHaveLength(1)
+      expect(result.data?.pages?.[0]?.data?.children?.[0]?.data?.id).toBe(
+        'normal1'
+      )
+      expect(result.data?.pages?.[0]?.data?.children?.[0]?.data?.stickied).toBe(
+        false
+      )
+    })
+
+    it('should handle empty saved posts', async () => {
+      const mockEmpty = {
+        kind: 'Listing',
+        data: {
+          after: null,
+          children: []
+        }
+      }
+
+      server.use(
+        http.get('http://localhost:3000/api/reddit/me', () => {
+          return HttpResponse.json(mockEmpty)
+        })
+      )
+
+      const store = makeStore()
+      const result = await store.dispatch(
+        authenticatedApi.endpoints.getUserSavedPosts.initiate({
+          username: 'testuser'
+        })
+      )
+
+      expect(result.data?.pages?.[0]?.data?.children).toHaveLength(0)
+      expect(result.data?.pages?.[0]?.data?.after).toBeNull()
+    })
+
+    it('should support pagination with after parameter', async () => {
+      const firstPage = {
+        kind: 'Listing',
+        data: {
+          after: 't3_page2_token',
+          children: [
+            {
+              kind: 't3',
+              data: {
+                id: 'saved_post1',
+                title: 'First Saved Post',
+                stickied: false
+              }
+            }
+          ]
+        }
+      }
+
+      const secondPage = {
+        kind: 'Listing',
+        data: {
+          after: null,
+          children: [
+            {
+              kind: 't3',
+              data: {
+                id: 'saved_post2',
+                title: 'Second Saved Post',
+                stickied: false
+              }
+            }
+          ]
+        }
+      }
+
+      let callCount = 0
+      server.use(
+        http.get('http://localhost:3000/api/reddit/me', ({request}) => {
+          const url = new URL(request.url)
+          const path = url.searchParams.get('path')
+          const after = new URL(`http://dummy${path}`).searchParams.get('after')
+
+          callCount++
+          if (!after) {
+            return HttpResponse.json(firstPage)
+          } else if (after === 't3_page2_token') {
+            return HttpResponse.json(secondPage)
+          }
+
+          return new HttpResponse(null, {status: 404})
+        })
+      )
+
+      const store = makeStore()
+
+      // First page
+      const result = await store.dispatch(
+        authenticatedApi.endpoints.getUserSavedPosts.initiate({
+          username: 'testuser'
+        })
+      )
+
+      expect(result.data?.pages?.[0]?.data?.after).toBe('t3_page2_token')
+      expect(callCount).toBeGreaterThanOrEqual(1)
+    })
+
+    it('should handle API errors gracefully', async () => {
+      server.use(
+        http.get('http://localhost:3000/api/reddit/me', () => {
+          return new HttpResponse(null, {status: 500})
+        })
+      )
+
+      const store = makeStore()
+      const result = await store.dispatch(
+        authenticatedApi.endpoints.getUserSavedPosts.initiate({
+          username: 'testuser'
+        })
+      )
+
+      expect(result.error).toBeDefined()
+      expect(result.data).toBeUndefined()
+    })
+  })
 })

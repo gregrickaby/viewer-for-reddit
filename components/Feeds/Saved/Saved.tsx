@@ -4,46 +4,39 @@ import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {Card} from '@/components/UI/Post/Card/Card'
 import {useInfiniteFeed} from '@/lib/hooks/useInfiniteFeed'
 import {
-  type CustomFeedPostsArgs,
-  useGetCustomFeedPostsInfiniteQuery
+  type UserSavedPostsArgs,
+  useGetUserSavedPostsInfiniteQuery
 } from '@/lib/store/services/authenticatedApi'
 import type {AutoPostChild} from '@/lib/store/services/postsApi'
-import type {SortingOption} from '@/lib/types'
 import {Box, Loader, Stack, Text} from '@mantine/core'
 
-interface CustomFeedPostsProps {
+interface SavedPostsProps {
   username: string
-  customFeedName: string
-  sort?: SortingOption
 }
 
 /**
- * CustomFeedPosts Component
+ * Saved Posts Component
  *
- * Displays posts from a user's custom feed using authenticated API.
- * Requires user to be logged in as custom feeds are user-specific.
+ * Displays posts from a user's saved content using authenticated API.
+ * Requires user to be logged in as saved posts are user-specific.
+ * Filters to posts only (excludes saved comments).
  *
  * Features:
  * - Infinite scroll pagination
  * - Automatic loading states
  * - Error handling with retry
  * - Authentication-aware
+ * - NSFW filtering
  *
  * @example
- * <CustomFeedPosts username="abc123" customFeedName="one" sort="hot" />
+ * <Saved username="testuser" />
  */
-export function Custom({
-  username,
-  customFeedName,
-  sort = 'hot'
-}: Readonly<CustomFeedPostsProps>) {
-  const queryArgs: CustomFeedPostsArgs = {
-    username,
-    customFeedName,
-    sort
+export function Saved({username}: Readonly<SavedPostsProps>) {
+  const queryArgs: UserSavedPostsArgs = {
+    username
   }
 
-  const query = useGetCustomFeedPostsInfiniteQuery(queryArgs)
+  const query = useGetUserSavedPostsInfiniteQuery(queryArgs)
   const {
     allPosts,
     isLoading,
@@ -59,7 +52,7 @@ export function Custom({
     return (
       <Box ta="center" py="xl">
         <Loader size="lg" />
-        <Text mt="md">Loading custom feed posts...</Text>
+        <Text mt="md">Loading saved posts...</Text>
       </Box>
     )
   }
@@ -70,7 +63,7 @@ export function Custom({
       <ErrorMessage
         error={error}
         type="post"
-        resourceName={`${username}/m/${customFeedName}`}
+        resourceName="saved posts"
         fallbackUrl={`/u/${username}`}
       />
     )
@@ -80,7 +73,10 @@ export function Custom({
   if (!allPosts || allPosts.length === 0) {
     return (
       <Box ta="center" py="xl">
-        <Text>No posts found in this custom feed.</Text>
+        <Text>
+          You haven't saved any posts yet. Save posts on Reddit to view them
+          here.
+        </Text>
       </Box>
     )
   }

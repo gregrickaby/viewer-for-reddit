@@ -14,6 +14,7 @@ import {NavLink, ScrollArea, Stack} from '@mantine/core'
 import {useMounted} from '@mantine/hooks'
 import Link from 'next/link'
 import {
+  FaBookmark,
   FaHeart,
   FaHistory,
   FaHome,
@@ -32,6 +33,7 @@ export function Sidebar() {
   const recent = useAppSelector((state) => state.settings.recent)
   const favorites = useAppSelector((state) => state.settings.favorites)
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
+  const username = useAppSelector((state) => state.auth.username)
   const {remove: removeFromHistory} = useRemoveItemFromHistory()
   const {remove: removeFromFavorites} = useRemoveFromFavorites()
   const {data: trending = []} = useGetPopularSubredditsQuery({limit: 10})
@@ -89,6 +91,16 @@ export function Sidebar() {
               />
             ))}
           </NavLink>
+        )}
+
+        {isAuthenticated && username && (
+          <NavLink
+            label="My Saved Posts"
+            component={Link}
+            href={`/user/${username}/saved`}
+            onClick={toggleNavbarOnMobileHandler}
+            leftSection={<FaBookmark />}
+          />
         )}
 
         <SidebarSection
