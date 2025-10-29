@@ -14,6 +14,7 @@ export function SidebarNavLink(props: Readonly<SubredditNameProps>) {
   return (
     <NavLink
       component={Link}
+      data-umami-event="sidebar subreddit click"
       href={`/r/${props.name}`}
       label={<SubredditName {...props} />}
       onClick={toggleNavbarOnMobileHandler}

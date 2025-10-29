@@ -63,30 +63,36 @@ export function Sidebar() {
     <ScrollArea type="never" h="100%">
       <Stack gap="xs">
         <NavLink
-          label="Home"
           component={Link}
+          data-umami-event="sidebar home"
           href="/"
-          onClick={toggleNavbarOnMobileHandler}
+          label="Home"
           leftSection={<FaHome />}
+          onClick={toggleNavbarOnMobileHandler}
         />
 
         {isAuthenticated && sortedSubscriptions.length > 0 && (
           <SidebarSection
             enableFavorite
             label="My Communities"
-            subreddits={sortedSubscriptions}
             leftSection={<FaUserCircle />}
+            subreddits={sortedSubscriptions}
           />
         )}
 
         {isAuthenticated && sortedCustomFeeds.length > 0 && (
-          <NavLink label="My Custom Feeds" leftSection={<FaLayerGroup />}>
+          <NavLink
+            data-umami-event="sidebar custom feeds section"
+            label="My Custom Feeds"
+            leftSection={<FaLayerGroup />}
+          >
             {sortedCustomFeeds.map((feed) => (
               <NavLink
+                component={Link}
+                data-umami-event="sidebar custom feed click"
+                href={feed.path}
                 key={feed.path}
                 label={feed.display_name || feed.name}
-                component={Link}
-                href={feed.path}
                 onClick={toggleNavbarOnMobileHandler}
               />
             ))}
@@ -95,11 +101,12 @@ export function Sidebar() {
 
         {isAuthenticated && username && (
           <NavLink
-            label="My Saved Posts"
             component={Link}
+            data-umami-event="sidebar saved posts"
             href={`/user/${username}/saved`}
-            onClick={toggleNavbarOnMobileHandler}
+            label="My Saved Posts"
             leftSection={<FaBookmark />}
+            onClick={toggleNavbarOnMobileHandler}
           />
         )}
 
@@ -107,50 +114,53 @@ export function Sidebar() {
           enableDelete
           enableFavorite
           label="Viewing History"
+          leftSection={<FaHistory />}
           onDelete={(sub) => removeFromHistory(sub.display_name)}
           subreddits={recent}
-          leftSection={<FaHistory />}
         />
 
         {!isAuthenticated && (
           <SidebarSection
             enableDelete
             label="Favorites"
+            leftSection={<FaHeart />}
             onDelete={(sub) => removeFromFavorites(sub.display_name)}
             subreddits={favorites}
-            leftSection={<FaHeart />}
           />
         )}
 
         <SidebarSection
           enableFavorite
           label="Trending"
-          subreddits={trending}
           leftSection={<FaArrowTrendUp />}
+          subreddits={trending}
         />
 
         <NavLink
-          label="All"
           component={Link}
+          data-umami-event="sidebar all"
           href="/r/all"
-          onClick={toggleNavbarOnMobileHandler}
+          label="All"
           leftSection={<MdDynamicFeed />}
+          onClick={toggleNavbarOnMobileHandler}
         />
 
         <NavLink
-          label="Popular"
           component={Link}
+          data-umami-event="sidebar popular"
           href="/r/popular"
-          onClick={toggleNavbarOnMobileHandler}
+          label="Popular"
           leftSection={<FaRegArrowAltCircleUp />}
+          onClick={toggleNavbarOnMobileHandler}
         />
 
         <NavLink
-          label="About"
           component={Link}
+          data-umami-event="sidebar about"
           href="/about"
-          onClick={toggleNavbarOnMobileHandler}
+          label="About"
           leftSection={<FaInfoCircle />}
+          onClick={toggleNavbarOnMobileHandler}
         />
       </Stack>
     </ScrollArea>

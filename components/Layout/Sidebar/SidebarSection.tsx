@@ -26,8 +26,16 @@ export function SidebarSection({
 
   if (!subreddits.length) return null
 
+  // Generate event name from label (e.g., "My Communities" -> "sidebar my communities section")
+  const sectionEvent = `sidebar ${label.toLowerCase()} section`
+
   return (
-    <NavLink label={label} childrenOffset={8} leftSection={leftSection}>
+    <NavLink
+      data-umami-event={sectionEvent}
+      label={label}
+      childrenOffset={8}
+      leftSection={leftSection}
+    >
       {subreddits.map((sub) => (
         <SidebarNavLink
           key={sub.display_name}
