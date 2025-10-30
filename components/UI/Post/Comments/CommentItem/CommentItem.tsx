@@ -1,6 +1,7 @@
 'use client'
 
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
+import {COMMENT_CONFIG} from '@/lib/config'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
@@ -183,7 +184,7 @@ function CommentMetadata({
 
 export function CommentItem({
   comment,
-  maxDepth = 4
+  maxDepth = COMMENT_CONFIG.MAX_DEPTH
 }: Readonly<CommentItemProps>) {
   const {
     isCommentExpanded,

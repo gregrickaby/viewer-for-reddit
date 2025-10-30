@@ -91,7 +91,9 @@ describe('CommentCard', () => {
     // This comment should render normally as the validation still passes with undefined bodies
     // (the 'in' operator returns true for properties that exist even if undefined)
     expect(screen.getByText('testuser')).toBeInTheDocument()
-    expect(screen.getByLabelText('Comment content')).toBeInTheDocument()
+    // The comment body div should still render, just empty
+    const commentBody = document.querySelector('._commentBody_232675')
+    expect(commentBody).toBeInTheDocument()
 
     // Console should not be called as this passes validation
     expect(consoleSpy).not.toHaveBeenCalled()

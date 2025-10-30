@@ -3,11 +3,11 @@
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {useCommentData} from '@/lib/hooks/useCommentData'
 import {useAppSelector} from '@/lib/store/hooks'
+import {COMMENT_CONFIG} from '@/lib/config'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {sortComments} from '@/lib/utils/formatting/commentHelpers'
 import {useHotkeys} from '@mantine/hooks'
-import {useMemo} from 'react'
 import {
   CommentExpansionProvider,
   useCommentExpansion
@@ -35,7 +35,7 @@ export function Comments({
   comments: providedComments,
   enableInfiniteLoading = false,
   enableNestedComments = false,
-  maxCommentDepth = 4,
+  maxCommentDepth = COMMENT_CONFIG.MAX_DEPTH,
   showSortControls = false
 }: Readonly<CommentsProps>) {
   const commentSort = useAppSelector((state) => state.settings.commentSort)
@@ -58,22 +58,16 @@ export function Comments({
     enableNestedComments
   })
 
-  const sortedDisplayComments = useMemo(() => {
-    if (Array.isArray(displayComments)) {
-      return sortComments<AutoCommentData | NestedCommentData>(
+  const sortedDisplayComments = Array.isArray(displayComments)
+    ? sortComments<AutoCommentData | NestedCommentData>(
         displayComments,
         commentSort
       )
-    }
-    return displayComments
-  }, [displayComments, commentSort])
+    : displayComments
 
-  const sortedNestedComments = useMemo(() => {
-    if (Array.isArray(nestedComments)) {
-      return sortComments(nestedComments, commentSort)
-    }
-    return nestedComments
-  }, [nestedComments, commentSort])
+  const sortedNestedComments = Array.isArray(nestedComments)
+    ? sortComments(nestedComments, commentSort)
+    : nestedComments
 
   if (showLoading) {
     return <CommentsLoading />

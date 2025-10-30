@@ -38,15 +38,16 @@ const CommentExpansionContext = createContext<
 /**
  * Recursively collect all descendant comment IDs from a comment
  */
-function collectDescendantIds(comment: NestedCommentData): string[] {
-  const ids: string[] = []
+function collectDescendantIds(
+  comment: NestedCommentData,
+  ids: string[] = []
+): string[] {
+  if (!comment.replies?.length) return ids
 
-  if (comment.replies && comment.replies.length > 0) {
-    for (const reply of comment.replies) {
-      if (reply.id) {
-        // Collect this reply and all descendants in one operation
-        ids.push(reply.id, ...collectDescendantIds(reply))
-      }
+  for (const reply of comment.replies) {
+    if (reply.id) {
+      ids.push(reply.id)
+      collectDescendantIds(reply, ids)
     }
   }
 

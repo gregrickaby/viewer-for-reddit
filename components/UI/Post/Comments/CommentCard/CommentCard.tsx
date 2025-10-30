@@ -81,9 +81,8 @@ function CommentCardComponent({comment}: Readonly<CommentCardProps>) {
           </Text>
         </Group>
 
-        <section
+        <div
           className={styles.commentBody}
-          aria-label="Comment content"
           dangerouslySetInnerHTML={{
             __html: decodeAndSanitizeHtml(
               comment.body_html ?? comment.body ?? ''

@@ -1,8 +1,11 @@
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
+import {axe, toHaveNoViolations} from 'jest-axe'
 import {CommentExpansionProvider} from '../CommentExpansionContext/CommentExpansionContext'
 import {CommentItem} from './CommentItem'
+
+expect.extend(toHaveNoViolations)
 
 const mockBasicComment: NestedCommentData = {
   id: 'comment1',
@@ -267,5 +270,29 @@ describe('CommentItem', () => {
 
     // Verify vote score is visible to users (VoteButtons component)
     expect(screen.getByText('15')).toBeVisible()
+  })
+
+  describe('Accessibility', () => {
+    it('should have no axe violations', async () => {
+      const {container} = render(
+        <CommentExpansionProvider>
+          <CommentItem comment={mockBasicComment} />
+        </CommentExpansionProvider>
+      )
+      const results = await axe(container)
+      expect(results).toHaveNoViolations()
+    })
+
+    it('should have proper ARIA labels on expand buttons', () => {
+      render(
+        <CommentExpansionProvider>
+          <CommentItem comment={mockCommentWithReplies} />
+        </CommentExpansionProvider>
+      )
+
+      expect(
+        screen.getByRole('button', {name: /expand all descendants \(o\)/i})
+      ).toBeInTheDocument()
+    })
   })
 })
