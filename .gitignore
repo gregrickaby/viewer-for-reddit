@@ -43,3 +43,6 @@ letsencrypt
 
 # SonarQube
 .scannerwork/
+
+# agents
+/docs/
