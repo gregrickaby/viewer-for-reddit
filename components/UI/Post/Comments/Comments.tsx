@@ -2,16 +2,19 @@
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {useCommentData} from '@/lib/hooks/useCommentData'
-import {useAppSelector} from '@/lib/store/hooks'
+import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
+import {
+  collapseAllComments,
+  expandAllComments
+} from '@/lib/store/features/commentExpansionSlice'
 import {COMMENT_CONFIG} from '@/lib/config'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {sortComments} from '@/lib/utils/formatting/commentHelpers'
-import {useHotkeys} from '@mantine/hooks'
 import {
-  CommentExpansionProvider,
-  useCommentExpansion
-} from './CommentExpansionContext/CommentExpansionContext'
+  collectAllCommentIds,
+  sortComments
+} from '@/lib/utils/formatting/commentHelpers'
+import {useHotkeys} from '@mantine/hooks'
 import {CommentsEmpty} from './CommentsEmpty/CommentsEmpty'
 import {CommentsList} from './CommentsList/CommentsList'
 import {CommentsLoading} from './CommentsLoading/CommentsLoading'
@@ -90,20 +93,18 @@ export function Comments({
   }
 
   return (
-    <CommentExpansionProvider>
-      <CommentsWithKeyboard
-        sortedDisplayComments={sortedDisplayComments}
-        sortedNestedComments={sortedNestedComments}
-        enableNestedComments={enableNestedComments}
-        enableInfiniteLoading={enableInfiniteLoading}
-        maxCommentDepth={maxCommentDepth}
-        currentHasNextPage={currentHasNextPage}
-        currentIsFetchingNextPage={currentIsFetchingNextPage}
-        currentFetchNextPage={currentFetchNextPage}
-        postLink={postLink}
-        showSortControls={showSortControls}
-      />
-    </CommentExpansionProvider>
+    <CommentsWithKeyboard
+      sortedDisplayComments={sortedDisplayComments}
+      sortedNestedComments={sortedNestedComments}
+      enableNestedComments={enableNestedComments}
+      enableInfiniteLoading={enableInfiniteLoading}
+      maxCommentDepth={maxCommentDepth}
+      currentHasNextPage={currentHasNextPage}
+      currentIsFetchingNextPage={currentIsFetchingNextPage}
+      currentFetchNextPage={currentFetchNextPage}
+      postLink={postLink}
+      showSortControls={showSortControls}
+    />
   )
 }
 
@@ -132,7 +133,7 @@ function CommentsWithKeyboard({
   postLink,
   showSortControls
 }: Readonly<CommentsWithKeyboardProps>) {
-  const {expandAllComments, collapseAllComments} = useCommentExpansion()
+  const dispatch = useAppDispatch()
 
   // Keyboard shortcuts (RES-style)
   useHotkeys([
@@ -145,7 +146,8 @@ function CommentsWithKeyboard({
           Array.isArray(sortedNestedComments) &&
           sortedNestedComments.length > 0
         ) {
-          expandAllComments(sortedNestedComments)
+          const commentIds = collectAllCommentIds(sortedNestedComments)
+          dispatch(expandAllComments(commentIds))
         }
       }
     ],
@@ -153,7 +155,7 @@ function CommentsWithKeyboard({
       'shift+o',
       () => {
         // Collapse all comments
-        collapseAllComments()
+        dispatch(collapseAllComments())
       }
     ]
   ])
