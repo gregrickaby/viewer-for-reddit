@@ -1,5 +1,5 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import type {RootState} from '@/lib/store'
+import {createSlice, type PayloadAction, createSelector} from '@reduxjs/toolkit'
+import type {RootState} from '../index'
 
 interface CommentExpansionState {
   expandedComments: Record<string, boolean>
@@ -80,7 +80,13 @@ export const selectIsCommentExpanded = (state: RootState, commentId: string) =>
 export const selectIsSubtreeExpanded = (state: RootState, commentId: string) =>
   state.commentExpansion.expandedSubtrees[commentId] ?? false
 
-export const selectExpandedCommentCount = (state: RootState) =>
-  Object.values(state.commentExpansion.expandedComments).filter(Boolean).length
+// Memoized selector for counting expanded comments
+const selectExpandedCommentsObject = (state: RootState) =>
+  state.commentExpansion.expandedComments
+
+export const selectExpandedCommentCount = createSelector(
+  [selectExpandedCommentsObject],
+  (expandedComments) => Object.values(expandedComments).filter(Boolean).length
+)
 
 export default commentExpansionSlice.reducer
