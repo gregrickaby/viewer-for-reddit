@@ -291,17 +291,35 @@ export function CommentItem({
         </Card>
 
         {showReplies && (
-          <Collapse in={isExpanded}>
-            <Stack gap="sm" mt="sm">
-              {comment.replies!.map((reply) => (
-                <CommentItem
-                  key={reply.id || reply.permalink}
-                  comment={reply}
-                  maxDepth={maxDepth}
-                />
-              ))}
-            </Stack>
-          </Collapse>
+          <>
+            <Collapse in={isExpanded}>
+              <Stack gap="sm" mt="sm">
+                {comment.replies!.map((reply) => (
+                  <CommentItem
+                    key={reply.id || reply.permalink}
+                    comment={reply}
+                    maxDepth={maxDepth}
+                  />
+                ))}
+              </Stack>
+            </Collapse>
+
+            {!isExpanded && comment.replies && comment.replies.length > 0 && (
+              <Box className={classes.collapsedPreview} mt="xs">
+                <Text size="xs" c="dimmed" mb={4}>
+                  {comment.replies.length}{' '}
+                  {comment.replies.length === 1 ? 'reply' : 'replies'} collapsed
+                </Text>
+                {comment.replies[0]?.body && (
+                  <Text size="xs" c="dimmed" lineClamp={1}>
+                    {comment.replies[0].author}:{' '}
+                    {comment.replies[0].body.slice(0, 100)}
+                    {comment.replies[0].body.length > 100 ? '...' : ''}
+                  </Text>
+                )}
+              </Box>
+            )}
+          </>
         )}
 
         {hasReplies && comment.depth >= maxDepth && (

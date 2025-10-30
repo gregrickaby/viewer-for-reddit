@@ -105,7 +105,7 @@ describe('CommentItem', () => {
 
     // Expand again
     await user.click(button)
-    
+
     // Re-query for collapse button
     button = screen.getByRole('button', {name: /collapse replies/i})
     expect(button).toBeInTheDocument()
@@ -145,10 +145,7 @@ describe('CommentItem', () => {
     let button = expandAllButtons[0] // Get parent's button
 
     // Initially not fully expanded (grandchild at depth 2 is collapsed)
-    expect(button).toHaveAttribute(
-      'aria-label',
-      'Expand all descendants (O)'
-    )
+    expect(button).toHaveAttribute('aria-label', 'Expand all descendants (O)')
 
     // Expand all
     await user.click(button)
@@ -202,6 +199,29 @@ describe('CommentItem', () => {
       screen.queryByRole('button', {name: /expand all descendants/i})
     ).not.toBeInTheDocument()
     expect(screen.queryByText(/reply/)).not.toBeInTheDocument()
+  })
+
+  it('should show collapsed preview when comment is collapsed', async () => {
+    const user = userEvent.setup()
+    render(<CommentItem comment={mockCommentWithReplies} />)
+
+    // With Reddit-style defaults, depth 0 starts expanded
+    const button = screen.getByRole('button', {name: /collapse replies/i})
+
+    // Collapse the comment
+    await user.click(button)
+
+    // Should show preview with count and first reply snippet
+    expect(screen.getByText(/1 reply collapsed/i)).toBeInTheDocument()
+    expect(screen.getByText(/replyuser: Reply to parent/i)).toBeInTheDocument()
+  })
+
+  it('should hide collapsed preview when comment is expanded', () => {
+    render(<CommentItem comment={mockCommentWithReplies} />)
+
+    // With Reddit-style defaults, depth 0 starts expanded
+    // Preview should not be visible
+    expect(screen.queryByText(/1 reply collapsed/i)).not.toBeInTheDocument()
   })
 
   it('should render thread line for nested comments', () => {
