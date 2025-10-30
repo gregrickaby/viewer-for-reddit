@@ -2,7 +2,16 @@
 
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
 import {COMMENT_CONFIG} from '@/lib/config'
+import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
+import {
+  selectIsCommentExpanded,
+  selectIsSubtreeExpanded,
+  toggleComment,
+  expandSubtree,
+  collapseSubtree
+} from '@/lib/store/features/commentExpansionSlice'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import {collectDescendantIds} from '@/lib/utils/formatting/commentHelpers'
 import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
 import {
@@ -23,7 +32,6 @@ import {
   BiCollapseVertical,
   BiExpandVertical
 } from 'react-icons/bi'
-import {useCommentExpansion} from '../CommentExpansionContext/CommentExpansionContext'
 import classes from './CommentItem.module.css'
 
 interface CommentItemProps {
@@ -186,19 +194,26 @@ export function CommentItem({
   comment,
   maxDepth = COMMENT_CONFIG.MAX_DEPTH
 }: Readonly<CommentItemProps>) {
-  const {
-    isCommentExpanded,
-    isSubtreeExpanded,
-    toggleComment,
-    toggleCommentSubtree
-  } = useCommentExpansion()
+  const dispatch = useAppDispatch()
 
   const commentId = comment.id || comment.permalink || ''
-  const isExpanded = isCommentExpanded(commentId)
-  const isSubtreeFullyExpanded = isSubtreeExpanded(commentId)
+  const isExpanded = useAppSelector((state) =>
+    selectIsCommentExpanded(state, commentId)
+  )
+  const isSubtreeFullyExpanded = useAppSelector((state) =>
+    selectIsSubtreeExpanded(state, commentId)
+  )
 
-  const toggleExpansion = () => toggleComment(commentId)
-  const toggleSubtreeExpansion = () => toggleCommentSubtree(commentId, comment)
+  const toggleExpansion = () => dispatch(toggleComment(commentId))
+
+  const toggleSubtreeExpansion = () => {
+    const descendantIds = collectDescendantIds(comment)
+    if (isSubtreeFullyExpanded) {
+      dispatch(collapseSubtree({id: commentId, descendantIds}))
+    } else {
+      dispatch(expandSubtree({id: commentId, descendantIds}))
+    }
+  }
 
   const hasReplies = comment.hasReplies && comment.replies?.length
   const showReplies = hasReplies && comment.depth < maxDepth

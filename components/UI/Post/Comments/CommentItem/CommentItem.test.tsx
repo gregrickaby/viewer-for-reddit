@@ -2,7 +2,6 @@ import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
 import {axe, toHaveNoViolations} from 'jest-axe'
-import {CommentExpansionProvider} from '../CommentExpansionContext/CommentExpansionContext'
 import {CommentItem} from './CommentItem'
 
 expect.extend(toHaveNoViolations)
@@ -51,11 +50,7 @@ const mockNestedComment: NestedCommentData = {
 
 describe('CommentItem', () => {
   it('should render basic comment information', () => {
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockBasicComment} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockBasicComment} />)
 
     expect(screen.getByText(/u\/testuser/i)).toBeInTheDocument()
     expect(screen.getByText('This is a test comment')).toBeInTheDocument()
@@ -63,11 +58,7 @@ describe('CommentItem', () => {
   })
 
   it('should show expand button and reply count for comments with replies', () => {
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockCommentWithReplies} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockCommentWithReplies} />)
 
     expect(
       screen.getByRole('button', {name: /expand replies/i})
@@ -87,22 +78,14 @@ describe('CommentItem', () => {
       ]
     }
 
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={commentWithMultipleReplies} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={commentWithMultipleReplies} />)
 
     expect(screen.getByText('2 replies')).toBeInTheDocument()
   })
 
   it('should expand and collapse replies when button is clicked', async () => {
     const user = userEvent.setup()
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockCommentWithReplies} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockCommentWithReplies} />)
 
     const expandButton = screen.getByRole('button', {name: /expand replies/i})
 
@@ -151,11 +134,7 @@ describe('CommentItem', () => {
       ]
     }
 
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={nestedComment} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={nestedComment} />)
 
     const expandAllButton = screen.getByRole('button', {
       name: /expand all descendants/i
@@ -190,11 +169,7 @@ describe('CommentItem', () => {
   })
 
   it('should apply nested comment styling for deeper levels', () => {
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockNestedComment} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockNestedComment} />)
 
     const commentItem = screen.getByTestId('comment-item-depth-2')
     expect(commentItem).toHaveStyle('--comment-depth: 2')
@@ -206,11 +181,7 @@ describe('CommentItem', () => {
       depth: 4
     }
 
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={deepComment} maxDepth={4} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={deepComment} maxDepth={4} />)
 
     expect(
       screen.getByText(/1 more reply.*depth limit reached/)
@@ -218,11 +189,7 @@ describe('CommentItem', () => {
   })
 
   it('should not show expand buttons for comments without replies', () => {
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockBasicComment} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockBasicComment} />)
 
     expect(
       screen.queryByRole('button', {name: /expand replies/i})
@@ -234,33 +201,21 @@ describe('CommentItem', () => {
   })
 
   it('should render thread line for nested comments', () => {
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockNestedComment} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockNestedComment} />)
 
     // Check for thread line element - it should be present for depth > 0
     expect(screen.getByTestId('thread-line')).toBeInTheDocument()
   })
 
   it('should not render thread line for top-level comments', () => {
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockBasicComment} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockBasicComment} />)
 
     // Should not have thread line for depth 0 comments
     expect(screen.queryByTestId('thread-line')).not.toBeInTheDocument()
   })
 
   it('should display vote buttons with score for comments with replies', () => {
-    render(
-      <CommentExpansionProvider>
-        <CommentItem comment={mockCommentWithReplies} />
-      </CommentExpansionProvider>
-    )
+    render(<CommentItem comment={mockCommentWithReplies} />)
 
     // Check that vote score is displayed (only shown for comments with replies)
     expect(screen.getByText('15')).toBeInTheDocument()
@@ -274,21 +229,13 @@ describe('CommentItem', () => {
 
   describe('Accessibility', () => {
     it('should have no axe violations', async () => {
-      const {container} = render(
-        <CommentExpansionProvider>
-          <CommentItem comment={mockBasicComment} />
-        </CommentExpansionProvider>
-      )
+      const {container} = render(<CommentItem comment={mockBasicComment} />)
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
 
     it('should have proper ARIA labels on expand buttons', () => {
-      render(
-        <CommentExpansionProvider>
-          <CommentItem comment={mockCommentWithReplies} />
-        </CommentExpansionProvider>
-      )
+      render(<CommentItem comment={mockCommentWithReplies} />)
 
       expect(
         screen.getByRole('button', {name: /expand all descendants \(o\)/i})

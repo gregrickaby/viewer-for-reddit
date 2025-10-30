@@ -159,6 +159,52 @@ export function processNestedComments(
 }
 
 /**
+ * Recursively collect all descendant comment IDs from a comment.
+ * Optimized to use in-place mutation for O(n) performance.
+ *
+ * @param comment - The comment to collect descendants from
+ * @param ids - Accumulator array for descendant IDs
+ * @returns Array of all descendant comment IDs
+ */
+export function collectDescendantIds(
+  comment: NestedCommentData,
+  ids: string[] = []
+): string[] {
+  if (!comment.replies?.length) return ids
+
+  for (const reply of comment.replies) {
+    if (reply.id) {
+      ids.push(reply.id)
+      collectDescendantIds(reply, ids)
+    }
+  }
+
+  return ids
+}
+
+/**
+ * Collect all comment IDs from a list of nested comments.
+ * Used for expand/collapse all functionality.
+ *
+ * @param comments - Array of nested comments
+ * @returns Array of all comment IDs
+ */
+export function collectAllCommentIds(comments: NestedCommentData[]): string[] {
+  const ids: string[] = []
+
+  for (const comment of comments) {
+    if (comment.id) {
+      ids.push(comment.id)
+      if (comment.replies?.length) {
+        ids.push(...collectAllCommentIds(comment.replies))
+      }
+    }
+  }
+
+  return ids
+}
+
+/**
  * Sort comments based on the selected sorting option.
  *
  * Sorting Logic:
