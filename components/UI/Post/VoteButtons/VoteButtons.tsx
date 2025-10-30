@@ -91,7 +91,7 @@ export function VoteButtons({
     type === 'comment' ? 'comment downvote' : 'downvote button'
 
   return (
-    <Group gap={4} align="center" className={classes.voteButtons} p={6}>
+    <Group gap={4} align="center" className={classes.voteButtons}>
       <Tooltip label="Upvote" withinPortal>
         <ActionIcon
           aria-label="Upvote"

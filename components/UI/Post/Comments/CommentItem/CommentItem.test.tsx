@@ -54,7 +54,9 @@ describe('CommentItem', () => {
 
     expect(screen.getByText(/u\/testuser/i)).toBeInTheDocument()
     expect(screen.getByText('This is a test comment')).toBeInTheDocument()
-    expect(screen.getByText(/view.*reddit/i)).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', {name: /view on reddit/i})
+    ).toBeInTheDocument()
   })
 
   it('should show expand button and reply count for comments with replies', () => {
@@ -67,7 +69,7 @@ describe('CommentItem', () => {
     expect(
       screen.getByRole('button', {name: /expand all descendants/i})
     ).toBeInTheDocument()
-    expect(screen.getByText('1 reply')).toBeInTheDocument()
+    expect(screen.getByText('1')).toBeInTheDocument()
   })
 
   it('should show plural reply count for multiple replies', () => {
@@ -81,7 +83,7 @@ describe('CommentItem', () => {
 
     render(<CommentItem comment={commentWithMultipleReplies} />)
 
-    expect(screen.getByText('2 replies')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 
   it('should expand and collapse replies when button is clicked', async () => {

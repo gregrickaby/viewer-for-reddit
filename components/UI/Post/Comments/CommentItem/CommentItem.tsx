@@ -17,8 +17,6 @@ import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
 import {
   ActionIcon,
-  Anchor,
-  Badge,
   Box,
   Card,
   Collapse,
@@ -31,7 +29,9 @@ import Link from 'next/link'
 import {
   BiChevronRight,
   BiCollapseVertical,
-  BiExpandVertical
+  BiComment,
+  BiExpandVertical,
+  BiLinkExternal
 } from 'react-icons/bi'
 import classes from './CommentItem.module.css'
 
@@ -91,27 +91,7 @@ function CommentMetadata({
     depthLevel = 'level-2'
   }
 
-  if (!showReplies) {
-    return (
-      <Group className={classes.commentMeta} justify="space-between">
-        <div />
-        <Group gap="md">
-          <Anchor
-            href={`https://reddit.com${comment.permalink}`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Text size="sm" c="dimmed">
-              View comment on Reddit
-            </Text>
-          </Anchor>
-        </Group>
-      </Group>
-    )
-  }
-
-  const replyCount = comment.replies!.length
-  const replyLabel = replyCount === 1 ? 'reply' : 'replies'
+  const replyCount = showReplies ? comment.replies!.length : 0
 
   return (
     <Group className={classes.commentMeta} justify="space-between">
@@ -123,75 +103,87 @@ function CommentMetadata({
           size="sm"
           type="comment"
         />
-        <Badge variant="light" size="md" className={classes.replyCount}>
-          {replyCount} {replyLabel}
-        </Badge>
 
-        <Group gap={4}>
-          <Tooltip
-            label={isExpanded ? 'Collapse replies' : 'Expand replies'}
-            position="top"
-          >
-            <ActionIcon
-              variant="subtle"
-              size="sm"
-              onClick={toggleExpansion}
-              className={classes.expandButton}
-              data-expanded={isExpanded}
-              data-umami-event={`comment ${isExpanded ? 'collapse' : 'expand'} ${depthLevel}`}
-              aria-label={isExpanded ? 'Collapse replies' : 'Expand replies'}
-            >
-              <BiChevronRight size={16} />
-            </ActionIcon>
-          </Tooltip>
+        {hasReplies && (
+          <Group gap={4} align="center">
+            <BiComment size={16} style={{opacity: 0.6}} />
+            <Text size="sm" c="dimmed">
+              {replyCount}
+            </Text>
+          </Group>
+        )}
 
-          {hasReplies && comment.replies && comment.replies.length > 0 && (
+        {showReplies && (
+          <Group gap={4}>
             <Tooltip
-              label={
-                isSubtreeFullyExpanded
-                  ? 'Collapse all descendants (Shift+O)'
-                  : 'Expand all descendants (O)'
-              }
+              label={isExpanded ? 'Collapse replies' : 'Expand replies'}
               position="top"
             >
               <ActionIcon
-                variant="subtle"
+                aria-label={isExpanded ? 'Collapse replies' : 'Expand replies'}
+                className={classes.expandButton}
+                data-expanded={isExpanded}
+                data-umami-event={`comment ${isExpanded ? 'collapse' : 'expand'} ${depthLevel}`}
+                onClick={toggleExpansion}
                 size="sm"
-                onClick={toggleSubtreeExpansion}
-                className={classes.expandAllButton}
-                data-expanded={isSubtreeFullyExpanded}
-                data-umami-event={
-                  isSubtreeFullyExpanded
-                    ? 'collapse all comments'
-                    : 'expand all comments'
-                }
-                aria-label={
+                variant="subtle"
+              >
+                <BiChevronRight size={16} />
+              </ActionIcon>
+            </Tooltip>
+
+            {hasReplies && comment.replies && comment.replies.length > 0 && (
+              <Tooltip
+                label={
                   isSubtreeFullyExpanded
                     ? 'Collapse all descendants (Shift+O)'
                     : 'Expand all descendants (O)'
                 }
+                position="top"
               >
-                {isSubtreeFullyExpanded ? (
-                  <BiCollapseVertical size={16} />
-                ) : (
-                  <BiExpandVertical size={16} />
-                )}
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  onClick={toggleSubtreeExpansion}
+                  className={classes.expandAllButton}
+                  data-expanded={isSubtreeFullyExpanded}
+                  data-umami-event={
+                    isSubtreeFullyExpanded
+                      ? 'collapse all comments'
+                      : 'expand all comments'
+                  }
+                  aria-label={
+                    isSubtreeFullyExpanded
+                      ? 'Collapse all descendants (Shift+O)'
+                      : 'Expand all descendants (O)'
+                  }
+                >
+                  {isSubtreeFullyExpanded ? (
+                    <BiCollapseVertical size={16} />
+                  ) : (
+                    <BiExpandVertical size={16} />
+                  )}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
+        )}
       </Group>
 
       <Group gap="md">
-        <Anchor
-          href={`https://reddit.com${comment.permalink}`}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <Text size="sm" c="dimmed">
-            View comment on Reddit
-          </Text>
-        </Anchor>
+        <Tooltip label="View on Reddit" position="top">
+          <ActionIcon
+            aria-label="View on Reddit"
+            component="a"
+            href={`https://reddit.com${comment.permalink}`}
+            rel="noopener noreferrer"
+            size="sm"
+            target="_blank"
+            variant="subtle"
+          >
+            <BiLinkExternal size={16} />
+          </ActionIcon>
+        </Tooltip>
       </Group>
     </Group>
   )
@@ -251,13 +243,7 @@ export function CommentItem({
       <div
         className={`${classes.commentContent} ${comment.depth > 0 ? classes.nestedComment : ''}`}
       >
-        <Card
-          component="article"
-          padding="md"
-          radius="md"
-          shadow="none"
-          withBorder
-        >
+        <Card component="article" padding="md" radius="md" shadow="none">
           <Stack gap="xs">
             <Group gap="xs" align="center">
               <CommentAuthor author={comment.author} />

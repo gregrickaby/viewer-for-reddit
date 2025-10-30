@@ -140,7 +140,6 @@ export function Single({
               postLink={parsePostLink(post.permalink, useInternalRouting)}
               open
               enableInfiniteLoading
-              enableNestedComments
               showSortControls
             />
           </Stack>

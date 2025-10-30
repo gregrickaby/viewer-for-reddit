@@ -80,7 +80,6 @@ describe('Comments', () => {
           permalink="/r/test/comments/1"
           postLink="/r/test/comments/1"
           open
-          enableNestedComments
         />
       )
 
@@ -100,7 +99,6 @@ describe('Comments', () => {
           permalink="/r/test/comments/1"
           postLink="/r/test/comments/1"
           open
-          enableNestedComments
         />
       )
 

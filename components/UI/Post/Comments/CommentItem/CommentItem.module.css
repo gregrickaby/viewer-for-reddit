@@ -3,7 +3,7 @@
 }
 
 .commentItem:focus {
-  outline: 2px solid var(--mantine-color-blue-6);
+  outline: 2px solid var(--mantine-color-red-6);
   outline-offset: 2px;
   border-radius: var(--mantine-radius-md);
 }
@@ -13,7 +13,7 @@
 }
 
 [data-mantine-color-scheme='dark'] .commentItem:focus {
-  outline-color: var(--mantine-color-blue-4);
+  outline-color: var(--mantine-color-red-4);
 }
 
 .commentContent {
@@ -22,65 +22,16 @@
 
 .threadLine {
   position: absolute;
-  left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
+  left: 0;
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(
-    to bottom,
-    var(--mantine-color-blue-5),
-    var(--mantine-color-blue-3)
+  background-color: light-dark(
+    var(--mantine-color-gray-3),
+    var(--mantine-color-dark-4)
   );
-  opacity: calc(1 - (var(--comment-depth, 0) * 0.1));
-  transition:
-    opacity 0.2s ease,
-    background 0.2s ease;
-}
-
-.threadLine::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -6px;
-  width: 12px;
-  height: 2px;
-  background-color: var(--mantine-color-blue-4);
-  transition: background-color 0.2s ease;
-}
-
-.commentItem:hover .threadLine,
-.commentItem:focus-within .threadLine {
-  opacity: 1;
-  background: var(--mantine-color-blue-6);
-}
-
-.commentItem:hover .threadLine::before,
-.commentItem:focus-within .threadLine::before {
-  background-color: var(--mantine-color-blue-6);
-}
-
-[data-mantine-color-scheme='dark'] .threadLine {
-  background: linear-gradient(
-    to bottom,
-    var(--mantine-color-blue-7),
-    var(--mantine-color-blue-9)
-  );
-}
-
-[data-mantine-color-scheme='dark'] .threadLine::before {
-  background-color: var(--mantine-color-blue-8);
-}
-
-[data-mantine-color-scheme='dark'] .commentItem:hover .threadLine,
-[data-mantine-color-scheme='dark'] .commentItem:focus-within .threadLine {
-  background: var(--mantine-color-blue-6);
-}
-
-[data-mantine-color-scheme='dark'] .commentItem:hover .threadLine::before,
-[data-mantine-color-scheme='dark']
-  .commentItem:focus-within
-  .threadLine::before {
-  background-color: var(--mantine-color-blue-6);
+  opacity: light-dark(0.6, 0.5);
+  pointer-events: none;
 }
 
 .nestedComment {
@@ -102,16 +53,6 @@
 
 .expandAllButton:hover {
   opacity: 1;
-}
-
-.expandAllButton[data-expanded='true'] {
-  color: var(--mantine-color-blue-6);
-  background-color: var(--mantine-color-blue-0);
-}
-
-[data-mantine-color-scheme='dark'] .expandAllButton[data-expanded='true'] {
-  color: var(--mantine-color-blue-4);
-  background-color: var(--mantine-color-blue-9);
 }
 
 .replyCount {
@@ -145,11 +86,11 @@
 }
 
 .collapsedPreview {
-  margin-left: var(--mantine-spacing-md);
-  padding: var(--mantine-spacing-xs);
   background: var(--mantine-color-gray-0);
   border-left: 2px solid var(--mantine-color-gray-3);
   border-radius: var(--mantine-radius-sm);
+  margin-left: var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-xs);
   transition: background-color 0.2s ease;
 }
 
