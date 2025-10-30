@@ -2,14 +2,15 @@
 
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
 import {COMMENT_CONFIG} from '@/lib/config'
-import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 import {
-  selectIsCommentExpanded,
-  selectIsSubtreeExpanded,
-  toggleComment,
+  collapseComment,
+  collapseSubtree,
+  expandComment,
   expandSubtree,
-  collapseSubtree
+  selectIsCommentExpanded,
+  selectIsSubtreeExpanded
 } from '@/lib/store/features/commentExpansionSlice'
+import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {collectDescendantIds} from '@/lib/utils/formatting/commentHelpers'
 import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
@@ -68,6 +69,7 @@ function CommentAuthor({author}: Readonly<{author: string | undefined}>) {
 function CommentMetadata({
   comment,
   showReplies,
+  hasReplies,
   isExpanded,
   isSubtreeFullyExpanded,
   toggleExpansion,
@@ -75,6 +77,7 @@ function CommentMetadata({
 }: Readonly<{
   comment: NestedCommentData
   showReplies: boolean
+  hasReplies: boolean | number | undefined
   isExpanded: boolean
   isSubtreeFullyExpanded: boolean
   toggleExpansion: () => void
@@ -124,55 +127,59 @@ function CommentMetadata({
           {replyCount} {replyLabel}
         </Badge>
 
-        <Tooltip
-          label={isExpanded ? 'Collapse replies' : 'Expand replies'}
-          position="top"
-        >
-          <ActionIcon
-            variant="subtle"
-            size="sm"
-            onClick={toggleExpansion}
-            className={classes.expandButton}
-            data-expanded={isExpanded}
-            data-umami-event={`comment ${isExpanded ? 'collapse' : 'expand'} ${depthLevel}`}
-            aria-label={isExpanded ? 'Collapse replies' : 'Expand replies'}
+        <Group gap={4}>
+          <Tooltip
+            label={isExpanded ? 'Collapse replies' : 'Expand replies'}
+            position="top"
           >
-            <BiChevronRight size={16} />
-          </ActionIcon>
-        </Tooltip>
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              onClick={toggleExpansion}
+              className={classes.expandButton}
+              data-expanded={isExpanded}
+              data-umami-event={`comment ${isExpanded ? 'collapse' : 'expand'} ${depthLevel}`}
+              aria-label={isExpanded ? 'Collapse replies' : 'Expand replies'}
+            >
+              <BiChevronRight size={16} />
+            </ActionIcon>
+          </Tooltip>
 
-        <Tooltip
-          label={
-            isSubtreeFullyExpanded
-              ? 'Collapse all descendants (Shift+O)'
-              : 'Expand all descendants (O)'
-          }
-          position="top"
-        >
-          <ActionIcon
-            variant="subtle"
-            size="sm"
-            onClick={toggleSubtreeExpansion}
-            className={classes.expandAllButton}
-            data-expanded={isSubtreeFullyExpanded}
-            data-umami-event={
-              isSubtreeFullyExpanded
-                ? 'collapse all comments'
-                : 'expand all comments'
-            }
-            aria-label={
-              isSubtreeFullyExpanded
-                ? 'Collapse all descendants (Shift+O)'
-                : 'Expand all descendants (O)'
-            }
-          >
-            {isSubtreeFullyExpanded ? (
-              <BiCollapseVertical size={16} />
-            ) : (
-              <BiExpandVertical size={16} />
-            )}
-          </ActionIcon>
-        </Tooltip>
+          {hasReplies && comment.replies && comment.replies.length > 0 && (
+            <Tooltip
+              label={
+                isSubtreeFullyExpanded
+                  ? 'Collapse all descendants (Shift+O)'
+                  : 'Expand all descendants (O)'
+              }
+              position="top"
+            >
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                onClick={toggleSubtreeExpansion}
+                className={classes.expandAllButton}
+                data-expanded={isSubtreeFullyExpanded}
+                data-umami-event={
+                  isSubtreeFullyExpanded
+                    ? 'collapse all comments'
+                    : 'expand all comments'
+                }
+                aria-label={
+                  isSubtreeFullyExpanded
+                    ? 'Collapse all descendants (Shift+O)'
+                    : 'Expand all descendants (O)'
+                }
+              >
+                {isSubtreeFullyExpanded ? (
+                  <BiCollapseVertical size={16} />
+                ) : (
+                  <BiExpandVertical size={16} />
+                )}
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </Group>
       </Group>
 
       <Group gap="md">
@@ -198,13 +205,19 @@ export function CommentItem({
 
   const commentId = comment.id || comment.permalink || ''
   const isExpanded = useAppSelector((state) =>
-    selectIsCommentExpanded(state, commentId)
+    selectIsCommentExpanded(state, commentId, comment.depth)
   )
   const isSubtreeFullyExpanded = useAppSelector((state) =>
     selectIsSubtreeExpanded(state, commentId)
   )
 
-  const toggleExpansion = () => dispatch(toggleComment(commentId))
+  const toggleExpansion = () => {
+    if (isExpanded) {
+      dispatch(collapseComment(commentId))
+    } else {
+      dispatch(expandComment(commentId))
+    }
+  }
 
   const toggleSubtreeExpansion = () => {
     const descendantIds = collectDescendantIds(comment)
@@ -227,6 +240,9 @@ export function CommentItem({
         } as React.CSSProperties
       }
       data-testid={`comment-item-depth-${comment.depth}`}
+      data-comment-id={commentId}
+      data-comment-depth={comment.depth}
+      tabIndex={-1}
     >
       {comment.depth > 0 && (
         <div className={classes.threadLine} data-testid="thread-line" />
@@ -265,6 +281,7 @@ export function CommentItem({
             <CommentMetadata
               comment={comment}
               showReplies={!!showReplies}
+              hasReplies={hasReplies}
               isExpanded={isExpanded}
               isSubtreeFullyExpanded={isSubtreeFullyExpanded}
               toggleExpansion={toggleExpansion}

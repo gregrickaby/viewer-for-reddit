@@ -2,6 +2,20 @@
   position: relative;
 }
 
+.commentItem:focus {
+  outline: 2px solid var(--mantine-color-blue-6);
+  outline-offset: 2px;
+  border-radius: var(--mantine-radius-md);
+}
+
+.commentItem:focus:not(:focus-visible) {
+  outline: none;
+}
+
+[data-mantine-color-scheme='dark'] .commentItem:focus {
+  outline-color: var(--mantine-color-blue-4);
+}
+
 .commentContent {
   position: relative;
 }

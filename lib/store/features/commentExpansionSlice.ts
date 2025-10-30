@@ -1,4 +1,4 @@
-import {createSlice, type PayloadAction, createSelector} from '@reduxjs/toolkit'
+import {createSelector, createSlice, type PayloadAction} from '@reduxjs/toolkit'
 import type {RootState} from '../index'
 
 interface CommentExpansionState {
@@ -74,8 +74,26 @@ export const {
   resetExpansionState
 } = commentExpansionSlice.actions
 
-export const selectIsCommentExpanded = (state: RootState, commentId: string) =>
-  state.commentExpansion.expandedComments[commentId] ?? false
+export const selectIsCommentExpanded = (
+  state: RootState,
+  commentId: string,
+  depth?: number
+): boolean => {
+  const explicitState = state.commentExpansion.expandedComments[commentId]
+
+  // If user has explicitly set state (true or false), use that
+  if (explicitState !== undefined) {
+    return explicitState
+  }
+
+  // Reddit-style defaults: top-level (0) and direct replies (1) expanded, deeper (2+) collapsed
+  if (depth !== undefined) {
+    return depth <= 1
+  }
+
+  // Fallback to collapsed if no depth provided
+  return false
+}
 
 export const selectIsSubtreeExpanded = (state: RootState, commentId: string) =>
   state.commentExpansion.expandedSubtrees[commentId] ?? false

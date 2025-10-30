@@ -60,8 +60,9 @@ describe('CommentItem', () => {
   it('should show expand button and reply count for comments with replies', () => {
     render(<CommentItem comment={mockCommentWithReplies} />)
 
+    // With Reddit-style defaults, depth 0 comments are expanded by default
     expect(
-      screen.getByRole('button', {name: /expand replies/i})
+      screen.getByRole('button', {name: /collapse replies/i})
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', {name: /expand all descendants/i})
@@ -87,26 +88,27 @@ describe('CommentItem', () => {
     const user = userEvent.setup()
     render(<CommentItem comment={mockCommentWithReplies} />)
 
-    const expandButton = screen.getByRole('button', {name: /expand replies/i})
+    // With Reddit-style defaults, depth 0 starts expanded
+    let button = screen.getByRole('button', {name: /collapse replies/i})
 
-    // Check initial state - button should say "Expand"
-    expect(expandButton).toHaveAttribute('aria-label', 'Expand replies')
-
-    // Expand
-    await user.click(expandButton)
-
-    // After expansion, button should change to "Collapse"
-    expect(
-      screen.getByRole('button', {name: /collapse replies/i})
-    ).toBeInTheDocument()
-    // Content should be visible
+    // Check initial state - button should say "Collapse"
+    expect(button).toHaveAttribute('aria-label', 'Collapse replies')
+    // Content should be visible initially
     expect(screen.getByText(/u\/replyuser/i)).toBeInTheDocument()
 
-    // Collapse - check that the button text changes back
-    await user.click(expandButton)
-    expect(
-      screen.getByRole('button', {name: /expand replies/i})
-    ).toBeInTheDocument()
+    // Collapse
+    await user.click(button)
+
+    // Re-query for the button after state change
+    button = screen.getByRole('button', {name: /expand replies/i})
+    expect(button).toBeInTheDocument()
+
+    // Expand again
+    await user.click(button)
+    
+    // Re-query for collapse button
+    button = screen.getByRole('button', {name: /collapse replies/i})
+    expect(button).toBeInTheDocument()
   })
 
   it('should expand and collapse all descendants when expand-all button is clicked', async () => {
@@ -136,36 +138,38 @@ describe('CommentItem', () => {
 
     render(<CommentItem comment={nestedComment} />)
 
-    const expandAllButton = screen.getByRole('button', {
+    // With Reddit-style defaults, depth 0-1 are expanded, so multiple expand-all buttons exist
+    let expandAllButtons = screen.getAllByRole('button', {
       name: /expand all descendants/i
     })
+    let button = expandAllButtons[0] // Get parent's button
 
-    // Initially collapsed
-    expect(expandAllButton).toHaveAttribute(
+    // Initially not fully expanded (grandchild at depth 2 is collapsed)
+    expect(button).toHaveAttribute(
       'aria-label',
       'Expand all descendants (O)'
     )
 
     // Expand all
-    await user.click(expandAllButton)
+    await user.click(button)
 
     // Should show all nested content
     expect(screen.getByText(/u\/replyuser/i)).toBeInTheDocument()
     expect(screen.getByText(/u\/nesteduser/i)).toBeInTheDocument()
     expect(screen.getByText('Nested reply')).toBeInTheDocument()
 
-    // Button should change to collapse
-    expect(
-      screen.getByRole('button', {name: /collapse all descendants/i})
-    ).toBeInTheDocument()
+    // Re-query for collapse button
+    button = screen.getByRole('button', {name: /collapse all descendants/i})
+    expect(button).toBeInTheDocument()
 
     // Collapse all
-    await user.click(expandAllButton)
+    await user.click(button)
 
-    // Button should change back
-    expect(
-      screen.getByRole('button', {name: /expand all descendants/i})
-    ).toBeInTheDocument()
+    // Re-query for expand button (there might be multiple again)
+    expandAllButtons = screen.getAllByRole('button', {
+      name: /expand all descendants/i
+    })
+    expect(expandAllButtons.length).toBeGreaterThan(0)
   })
 
   it('should apply nested comment styling for deeper levels', () => {

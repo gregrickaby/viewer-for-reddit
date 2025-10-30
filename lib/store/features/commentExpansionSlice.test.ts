@@ -1,19 +1,19 @@
+import type {RootState} from '@/lib/store'
 import {describe, expect, it} from 'vitest'
 import commentExpansionReducer, {
-  toggleComment,
-  toggleSubtree,
-  expandComment,
-  collapseComment,
-  expandAllComments,
-  expandSubtree,
-  collapseSubtree,
   collapseAllComments,
+  collapseComment,
+  collapseSubtree,
+  expandAllComments,
+  expandComment,
+  expandSubtree,
   resetExpansionState,
+  selectExpandedCommentCount,
   selectIsCommentExpanded,
   selectIsSubtreeExpanded,
-  selectExpandedCommentCount
+  toggleComment,
+  toggleSubtree
 } from './commentExpansionSlice'
-import type {RootState} from '@/lib/store'
 
 describe('commentExpansionSlice', () => {
   const initialState = {

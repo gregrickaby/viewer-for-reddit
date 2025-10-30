@@ -1,19 +1,21 @@
 'use client'
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
+import {COMMENT_CONFIG} from '@/lib/config'
 import {useCommentData} from '@/lib/hooks/useCommentData'
-import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
+import {useCommentNavigation} from '@/lib/hooks/useCommentNavigation'
 import {
   collapseAllComments,
   expandAllComments
 } from '@/lib/store/features/commentExpansionSlice'
-import {COMMENT_CONFIG} from '@/lib/config'
+import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {
   collectAllCommentIds,
   sortComments
 } from '@/lib/utils/formatting/commentHelpers'
+import {VisuallyHidden} from '@mantine/core'
 import {useHotkeys} from '@mantine/hooks'
 import {CommentsEmpty} from './CommentsEmpty/CommentsEmpty'
 import {CommentsList} from './CommentsList/CommentsList'
@@ -135,7 +137,13 @@ function CommentsWithKeyboard({
 }: Readonly<CommentsWithKeyboardProps>) {
   const dispatch = useAppDispatch()
 
-  // Keyboard shortcuts (RES-style)
+  // J/K/U navigation (RES-style)
+  const {announcementText, clearAnnouncement} = useCommentNavigation({
+    enabled: true,
+    announceNavigation: true
+  })
+
+  // O/Shift+O expand/collapse shortcuts
   useHotkeys([
     [
       'o',
@@ -163,6 +171,14 @@ function CommentsWithKeyboard({
   return (
     <>
       {showSortControls && <CommentSortControls />}
+      <VisuallyHidden
+        component="output"
+        aria-live="polite"
+        aria-atomic="true"
+        onTransitionEnd={clearAnnouncement}
+      >
+        {announcementText}
+      </VisuallyHidden>
       <CommentsList
         displayComments={sortedDisplayComments}
         nestedComments={sortedNestedComments}
