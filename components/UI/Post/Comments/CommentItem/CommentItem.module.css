@@ -26,8 +26,15 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--mantine-color-gray-3);
-  opacity: 0.6;
+  background: linear-gradient(
+    to bottom,
+    var(--mantine-color-blue-5),
+    var(--mantine-color-blue-3)
+  );
+  opacity: calc(1 - (var(--comment-depth, 0) * 0.1));
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
 }
 
 .threadLine::before {
@@ -37,15 +44,43 @@
   left: -6px;
   width: 12px;
   height: 2px;
-  background-color: var(--mantine-color-gray-3);
+  background-color: var(--mantine-color-blue-4);
+  transition: background-color 0.2s ease;
+}
+
+.commentItem:hover .threadLine,
+.commentItem:focus-within .threadLine {
+  opacity: 1;
+  background: var(--mantine-color-blue-6);
+}
+
+.commentItem:hover .threadLine::before,
+.commentItem:focus-within .threadLine::before {
+  background-color: var(--mantine-color-blue-6);
 }
 
 [data-mantine-color-scheme='dark'] .threadLine {
-  background-color: var(--mantine-color-dark-4);
+  background: linear-gradient(
+    to bottom,
+    var(--mantine-color-blue-7),
+    var(--mantine-color-blue-9)
+  );
 }
 
 [data-mantine-color-scheme='dark'] .threadLine::before {
-  background-color: var(--mantine-color-dark-4);
+  background-color: var(--mantine-color-blue-8);
+}
+
+[data-mantine-color-scheme='dark'] .commentItem:hover .threadLine,
+[data-mantine-color-scheme='dark'] .commentItem:focus-within .threadLine {
+  background: var(--mantine-color-blue-6);
+}
+
+[data-mantine-color-scheme='dark'] .commentItem:hover .threadLine::before,
+[data-mantine-color-scheme='dark']
+  .commentItem:focus-within
+  .threadLine::before {
+  background-color: var(--mantine-color-blue-6);
 }
 
 .nestedComment {
