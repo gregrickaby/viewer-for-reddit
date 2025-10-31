@@ -13,7 +13,7 @@ import {
   processInfiniteComments,
   processNestedComments
 } from '@/lib/utils/formatting/commentHelpers'
-import {useCallback, useEffect, useMemo} from 'react'
+import {useEffect, useMemo} from 'react'
 
 interface UseCommentDataParams {
   permalink: string
@@ -94,50 +94,47 @@ export function useCommentData({
   )
 
   // Optimized recursive function for mapping comments to nested structure
-  const mapToNested = useCallback(
-    (
-      comment: AutoCommentData & {replies?: any[]; depth?: number},
-      depth = 0
-    ): NestedCommentData => {
-      const hasReplies =
-        Array.isArray(comment.replies) && comment.replies.length > 0
+  const mapToNested = (
+    comment: AutoCommentData & {replies?: any[]; depth?: number},
+    depth = 0
+  ): NestedCommentData => {
+    const hasReplies =
+      Array.isArray(comment.replies) && comment.replies.length > 0
 
-      // Performance: Early return for comments without replies
-      if (!hasReplies) {
-        return {
-          ...comment,
-          depth: comment.depth ?? depth,
-          hasReplies: false,
-          replies: undefined
-        }
-      }
-
-      // Performance: Limit recursion depth to prevent stack overflow
-      // Tie to the component's maxCommentDepth prop for UI consistency
-      if (depth >= maxCommentDepth) {
-        console.warn(
-          `Comment nesting exceeded maximum depth of ${maxCommentDepth}`
-        )
-        return {
-          ...comment,
-          depth: comment.depth ?? depth,
-          hasReplies: false,
-          replies: undefined
-        }
-      }
-
+    // Performance: Early return for comments without replies
+    if (!hasReplies) {
       return {
         ...comment,
         depth: comment.depth ?? depth,
-        hasReplies,
-        replies: comment.replies?.map(
-          (reply: AutoCommentData & {replies?: any[]; depth?: number}) =>
-            mapToNested(reply, (comment.depth ?? depth) + 1)
-        )
+        hasReplies: false,
+        replies: undefined
       }
-    },
-    [maxCommentDepth]
-  )
+    }
+
+    // Performance: Limit recursion depth to prevent stack overflow
+    // Tie to the component's maxCommentDepth prop for UI consistency
+    if (depth >= maxCommentDepth) {
+      console.warn(
+        `Comment nesting exceeded maximum depth of ${maxCommentDepth}`
+      )
+      return {
+        ...comment,
+        depth: comment.depth ?? depth,
+        hasReplies: false,
+        replies: undefined
+      }
+    }
+
+    return {
+      ...comment,
+      depth: comment.depth ?? depth,
+      hasReplies,
+      replies: comment.replies?.map(
+        (reply: AutoCommentData & {replies?: any[]; depth?: number}) =>
+          mapToNested(reply, (comment.depth ?? depth) + 1)
+      )
+    }
+  }
 
   // Process nested comments when enabled
   const nestedComments = useMemo(

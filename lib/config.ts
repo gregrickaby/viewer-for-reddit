@@ -28,4 +28,11 @@ const config = {
   }
 }
 
+export const COMMENT_CONFIG = {
+  MAX_DEPTH: 4,
+  MAX_DEPTH_INFINITE: 10,
+  BATCH_SIZE: 25,
+  MAX_LIST_ITEMS: 15
+} as const
+
 export default config

@@ -2,6 +2,8 @@ import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {CommentSortingOption} from '@/lib/types'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {
+  collectAllCommentIds,
+  collectDescendantIds,
   getDisplayComments,
   getLoadingState,
   getNextPageControls,
@@ -492,6 +494,194 @@ describe('commentHelpers', () => {
         )
         expect(result).toEqual(mockAutoComments)
       })
+    })
+  })
+
+  describe('collectDescendantIds', () => {
+    it('should collect all descendant IDs from nested comment tree', () => {
+      const nestedComment: NestedCommentData = {
+        id: 'parent',
+        author: 'user1',
+        body: 'Parent',
+        created_utc: 100,
+        ups: 10,
+        depth: 0,
+        hasReplies: true,
+        replies: [
+          {
+            id: 'child1',
+            author: 'user2',
+            body: 'Child 1',
+            created_utc: 101,
+            ups: 5,
+            depth: 1,
+            hasReplies: true,
+            replies: [
+              {
+                id: 'grandchild1',
+                author: 'user3',
+                body: 'Grandchild 1',
+                created_utc: 102,
+                ups: 3,
+                depth: 2,
+                hasReplies: false
+              }
+            ]
+          },
+          {
+            id: 'child2',
+            author: 'user4',
+            body: 'Child 2',
+            created_utc: 103,
+            ups: 4,
+            depth: 1,
+            hasReplies: false
+          }
+        ]
+      }
+
+      const result = collectDescendantIds(nestedComment)
+      expect(result).toEqual(['child1', 'grandchild1', 'child2'])
+    })
+
+    it('should handle comment without replies', () => {
+      const comment: NestedCommentData = {
+        id: 'alone',
+        author: 'user',
+        body: 'No replies',
+        created_utc: 100,
+        ups: 1,
+        depth: 0,
+        hasReplies: false
+      }
+
+      const result = collectDescendantIds(comment)
+      expect(result).toEqual([])
+    })
+
+    it('should handle comment with empty replies array', () => {
+      const comment: NestedCommentData = {
+        id: 'empty',
+        author: 'user',
+        body: 'Empty replies',
+        created_utc: 100,
+        ups: 1,
+        depth: 0,
+        hasReplies: true,
+        replies: []
+      }
+
+      const result = collectDescendantIds(comment)
+      expect(result).toEqual([])
+    })
+  })
+
+  describe('collectAllCommentIds', () => {
+    it('should collect all IDs from flat comment array', () => {
+      const comments: NestedCommentData[] = [
+        {
+          id: 'comment1',
+          author: 'user1',
+          body: 'Comment 1',
+          created_utc: 100,
+          ups: 10,
+          depth: 0,
+          hasReplies: false
+        },
+        {
+          id: 'comment2',
+          author: 'user2',
+          body: 'Comment 2',
+          created_utc: 101,
+          ups: 5,
+          depth: 0,
+          hasReplies: false
+        }
+      ]
+
+      const result = collectAllCommentIds(comments)
+      expect(result).toEqual(['comment1', 'comment2'])
+    })
+
+    it('should collect all IDs from nested comment array', () => {
+      const comments: NestedCommentData[] = [
+        {
+          id: 'parent1',
+          author: 'user1',
+          body: 'Parent 1',
+          created_utc: 100,
+          ups: 10,
+          depth: 0,
+          hasReplies: true,
+          replies: [
+            {
+              id: 'child1',
+              author: 'user2',
+              body: 'Child 1',
+              created_utc: 101,
+              ups: 5,
+              depth: 1,
+              hasReplies: false
+            }
+          ]
+        },
+        {
+          id: 'parent2',
+          author: 'user3',
+          body: 'Parent 2',
+          created_utc: 102,
+          ups: 8,
+          depth: 0,
+          hasReplies: false
+        }
+      ]
+
+      const result = collectAllCommentIds(comments)
+      expect(result).toEqual(['parent1', 'child1', 'parent2'])
+    })
+
+    it('should handle empty array', () => {
+      const result = collectAllCommentIds([])
+      expect(result).toEqual([])
+    })
+
+    it('should handle deeply nested comments', () => {
+      const comments: NestedCommentData[] = [
+        {
+          id: 'level0',
+          author: 'user1',
+          body: 'Level 0',
+          created_utc: 100,
+          ups: 10,
+          depth: 0,
+          hasReplies: true,
+          replies: [
+            {
+              id: 'level1',
+              author: 'user2',
+              body: 'Level 1',
+              created_utc: 101,
+              ups: 5,
+              depth: 1,
+              hasReplies: true,
+              replies: [
+                {
+                  id: 'level2',
+                  author: 'user3',
+                  body: 'Level 2',
+                  created_utc: 102,
+                  ups: 3,
+                  depth: 2,
+                  hasReplies: false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+
+      const result = collectAllCommentIds(comments)
+      expect(result).toEqual(['level0', 'level1', 'level2'])
     })
   })
 })

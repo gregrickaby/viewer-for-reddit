@@ -2,36 +2,36 @@
   position: relative;
 }
 
+.commentItem:focus {
+  outline: 2px solid var(--mantine-color-red-6);
+  outline-offset: 2px;
+  border-radius: var(--mantine-radius-md);
+}
+
+.commentItem:focus:not(:focus-visible) {
+  outline: none;
+}
+
+[data-mantine-color-scheme='dark'] .commentItem:focus {
+  outline-color: var(--mantine-color-red-4);
+}
+
 .commentContent {
   position: relative;
 }
 
 .threadLine {
   position: absolute;
-  left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
+  left: 0;
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--mantine-color-gray-3);
-  opacity: 0.6;
-}
-
-.threadLine::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -6px;
-  width: 12px;
-  height: 2px;
-  background-color: var(--mantine-color-gray-3);
-}
-
-[data-mantine-color-scheme='dark'] .threadLine {
-  background-color: var(--mantine-color-dark-4);
-}
-
-[data-mantine-color-scheme='dark'] .threadLine::before {
-  background-color: var(--mantine-color-dark-4);
+  background-color: light-dark(
+    var(--mantine-color-gray-3),
+    var(--mantine-color-dark-4)
+  );
+  opacity: light-dark(0.6, 0.5);
+  pointer-events: none;
 }
 
 .nestedComment {
@@ -53,16 +53,6 @@
 
 .expandAllButton:hover {
   opacity: 1;
-}
-
-.expandAllButton[data-expanded='true'] {
-  color: var(--mantine-color-blue-6);
-  background-color: var(--mantine-color-blue-0);
-}
-
-[data-mantine-color-scheme='dark'] .expandAllButton[data-expanded='true'] {
-  color: var(--mantine-color-blue-4);
-  background-color: var(--mantine-color-blue-9);
 }
 
 .replyCount {
@@ -93,6 +83,28 @@
 
 .link {
   text-decoration: none;
+}
+
+.collapsedPreview {
+  background: var(--mantine-color-gray-0);
+  border-left: 2px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-sm);
+  margin-left: var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-xs);
+  transition: background-color 0.2s ease;
+}
+
+.collapsedPreview:hover {
+  background: var(--mantine-color-gray-1);
+}
+
+[data-mantine-color-scheme='dark'] .collapsedPreview {
+  background: var(--mantine-color-dark-7);
+  border-color: var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme='dark'] .collapsedPreview:hover {
+  background: var(--mantine-color-dark-6);
 }
 
 @media (max-width: 768px) {

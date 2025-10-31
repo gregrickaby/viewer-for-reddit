@@ -4,6 +4,7 @@ import type {
   SubredditItem,
   UserSettings
 } from '@/lib/types'
+import {COMMENT_CONFIG} from '@/lib/config'
 import {addToSearchHistory as addToSearchHistoryUtil} from '@/lib/utils/storage/searchHistory'
 import {
   clearSettings,
@@ -12,11 +13,6 @@ import {
   saveSettings
 } from '@/lib/utils/storage/storage'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-
-/**
- * Maximum number of items to keep in favorites and recent lists
- */
-const MAX_LIST_ITEMS = 15
 
 /**
  * Load initial settings from localStorage.
@@ -78,7 +74,7 @@ export const settingsSlice = createSlice({
         state.recent.splice(exists, 1)
       }
       state.recent.unshift(action.payload)
-      state.recent = state.recent.slice(0, MAX_LIST_ITEMS) // Keep only 15.
+      state.recent = state.recent.slice(0, COMMENT_CONFIG.MAX_LIST_ITEMS)
       saveSettings(state)
     },
 
@@ -105,7 +101,10 @@ export const settingsSlice = createSlice({
       )
       if (existingIndex === -1) {
         state.favorites.unshift(action.payload)
-        state.favorites = state.favorites.slice(0, MAX_LIST_ITEMS) // Keep only 15
+        state.favorites = state.favorites.slice(
+          0,
+          COMMENT_CONFIG.MAX_LIST_ITEMS
+        )
       } else {
         state.favorites.splice(existingIndex, 1)
       }

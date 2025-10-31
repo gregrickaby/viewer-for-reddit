@@ -1,17 +1,22 @@
 'use client'
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
+import {COMMENT_CONFIG} from '@/lib/config'
 import {useCommentData} from '@/lib/hooks/useCommentData'
-import {useAppSelector} from '@/lib/store/hooks'
+import {useCommentNavigation} from '@/lib/hooks/useCommentNavigation'
+import {
+  collapseAllComments,
+  expandAllComments
+} from '@/lib/store/features/commentExpansionSlice'
+import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {sortComments} from '@/lib/utils/formatting/commentHelpers'
-import {useHotkeys} from '@mantine/hooks'
-import {useMemo} from 'react'
 import {
-  CommentExpansionProvider,
-  useCommentExpansion
-} from './CommentExpansionContext/CommentExpansionContext'
+  collectAllCommentIds,
+  sortComments
+} from '@/lib/utils/formatting/commentHelpers'
+import {VisuallyHidden} from '@mantine/core'
+import {useHotkeys} from '@mantine/hooks'
 import {CommentsEmpty} from './CommentsEmpty/CommentsEmpty'
 import {CommentsList} from './CommentsList/CommentsList'
 import {CommentsLoading} from './CommentsLoading/CommentsLoading'
@@ -23,7 +28,6 @@ interface CommentsProps {
   open: boolean
   comments?: AutoCommentData[]
   enableInfiniteLoading?: boolean
-  enableNestedComments?: boolean
   maxCommentDepth?: number
   showSortControls?: boolean
 }
@@ -34,14 +38,12 @@ export function Comments({
   open,
   comments: providedComments,
   enableInfiniteLoading = false,
-  enableNestedComments = false,
-  maxCommentDepth = 4,
+  maxCommentDepth = COMMENT_CONFIG.MAX_DEPTH,
   showSortControls = false
 }: Readonly<CommentsProps>) {
   const commentSort = useAppSelector((state) => state.settings.commentSort)
 
   const {
-    displayComments,
     nestedComments,
     showLoading,
     hasCommentsToShow,
@@ -55,25 +57,12 @@ export function Comments({
     open,
     comments: providedComments,
     enableInfiniteLoading,
-    enableNestedComments
+    enableNestedComments: true
   })
 
-  const sortedDisplayComments = useMemo(() => {
-    if (Array.isArray(displayComments)) {
-      return sortComments<AutoCommentData | NestedCommentData>(
-        displayComments,
-        commentSort
-      )
-    }
-    return displayComments
-  }, [displayComments, commentSort])
-
-  const sortedNestedComments = useMemo(() => {
-    if (Array.isArray(nestedComments)) {
-      return sortComments(nestedComments, commentSort)
-    }
-    return nestedComments
-  }, [nestedComments, commentSort])
+  const sortedNestedComments = Array.isArray(nestedComments)
+    ? sortComments(nestedComments, commentSort)
+    : nestedComments
 
   if (showLoading) {
     return <CommentsLoading />
@@ -96,27 +85,21 @@ export function Comments({
   }
 
   return (
-    <CommentExpansionProvider>
-      <CommentsWithKeyboard
-        sortedDisplayComments={sortedDisplayComments}
-        sortedNestedComments={sortedNestedComments}
-        enableNestedComments={enableNestedComments}
-        enableInfiniteLoading={enableInfiniteLoading}
-        maxCommentDepth={maxCommentDepth}
-        currentHasNextPage={currentHasNextPage}
-        currentIsFetchingNextPage={currentIsFetchingNextPage}
-        currentFetchNextPage={currentFetchNextPage}
-        postLink={postLink}
-        showSortControls={showSortControls}
-      />
-    </CommentExpansionProvider>
+    <CommentsWithKeyboard
+      sortedNestedComments={sortedNestedComments}
+      enableInfiniteLoading={enableInfiniteLoading}
+      maxCommentDepth={maxCommentDepth}
+      currentHasNextPage={currentHasNextPage}
+      currentIsFetchingNextPage={currentIsFetchingNextPage}
+      currentFetchNextPage={currentFetchNextPage}
+      postLink={postLink}
+      showSortControls={showSortControls}
+    />
   )
 }
 
 interface CommentsWithKeyboardProps {
-  sortedDisplayComments: AutoCommentData[] | NestedCommentData[]
   sortedNestedComments: NestedCommentData[]
-  enableNestedComments: boolean
   enableInfiniteLoading: boolean
   maxCommentDepth: number
   currentHasNextPage: boolean
@@ -127,9 +110,7 @@ interface CommentsWithKeyboardProps {
 }
 
 function CommentsWithKeyboard({
-  sortedDisplayComments,
   sortedNestedComments,
-  enableNestedComments,
   enableInfiniteLoading,
   maxCommentDepth,
   currentHasNextPage,
@@ -138,20 +119,26 @@ function CommentsWithKeyboard({
   postLink,
   showSortControls
 }: Readonly<CommentsWithKeyboardProps>) {
-  const {expandAllComments, collapseAllComments} = useCommentExpansion()
+  const dispatch = useAppDispatch()
 
-  // Keyboard shortcuts (RES-style)
+  // J/K/U navigation (RES-style)
+  const {announcementText, clearAnnouncement} = useCommentNavigation({
+    enabled: true,
+    announceNavigation: true
+  })
+
+  // O/Shift+O expand/collapse shortcuts
   useHotkeys([
     [
       'o',
       () => {
-        // Only expand if we have nested comments with reply structure
+        // Expand all comments
         if (
-          enableNestedComments &&
           Array.isArray(sortedNestedComments) &&
           sortedNestedComments.length > 0
         ) {
-          expandAllComments(sortedNestedComments)
+          const commentIds = collectAllCommentIds(sortedNestedComments)
+          dispatch(expandAllComments(commentIds))
         }
       }
     ],
@@ -159,7 +146,7 @@ function CommentsWithKeyboard({
       'shift+o',
       () => {
         // Collapse all comments
-        collapseAllComments()
+        dispatch(collapseAllComments())
       }
     ]
   ])
@@ -167,10 +154,16 @@ function CommentsWithKeyboard({
   return (
     <>
       {showSortControls && <CommentSortControls />}
+      <VisuallyHidden
+        component="output"
+        aria-live="polite"
+        aria-atomic="true"
+        onTransitionEnd={clearAnnouncement}
+      >
+        {announcementText}
+      </VisuallyHidden>
       <CommentsList
-        displayComments={sortedDisplayComments}
-        nestedComments={sortedNestedComments}
-        enableNestedComments={enableNestedComments}
+        comments={sortedNestedComments}
         enableInfiniteLoading={enableInfiniteLoading}
         maxCommentDepth={maxCommentDepth}
         currentHasNextPage={currentHasNextPage}

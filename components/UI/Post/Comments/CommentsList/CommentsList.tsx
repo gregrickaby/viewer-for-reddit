@@ -1,16 +1,10 @@
-import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {hasRequiredCommentFields} from '@/lib/utils/formatting/commentHelpers'
-import {Anchor, Button, Center} from '@mantine/core'
-import {CommentCard} from '../CommentCard/CommentCard'
+import {Anchor, Button, Center, Stack} from '@mantine/core'
 import {CommentErrorBoundary} from '../CommentErrorBoundary/CommentErrorBoundary'
 import {CommentItem} from '../CommentItem/CommentItem'
-import classes from './CommentsList.module.css'
 
 interface CommentsListProps {
-  displayComments: AutoCommentData[] | NestedCommentData[]
-  nestedComments: NestedCommentData[]
-  enableNestedComments: boolean
+  comments: NestedCommentData[]
   enableInfiniteLoading: boolean
   maxCommentDepth: number
   currentHasNextPage: boolean
@@ -20,9 +14,7 @@ interface CommentsListProps {
 }
 
 export function CommentsList({
-  displayComments,
-  nestedComments,
-  enableNestedComments,
+  comments,
   enableInfiniteLoading,
   maxCommentDepth,
   currentHasNextPage,
@@ -30,34 +22,22 @@ export function CommentsList({
   currentFetchNextPage,
   postLink
 }: Readonly<CommentsListProps>) {
-  const commentsCount = enableNestedComments
-    ? nestedComments.length
-    : displayComments?.length || 0
+  const commentsCount = comments.length
 
   return (
-    <section
-      className={classes.comments}
+    <Stack
+      component="section"
+      gap="md"
+      mb="sm"
       aria-label={`Comments for post (${commentsCount} comments)`}
     >
-      {enableNestedComments
-        ? // Render nested comments with CommentItem
-          nestedComments
-            .filter((comment) => comment.id || comment.permalink)
-            .map((comment) => (
-              <CommentErrorBoundary key={comment.id || comment.permalink}>
-                <CommentItem comment={comment} maxDepth={maxCommentDepth} />
-              </CommentErrorBoundary>
-            ))
-        : // Render flat comments with CommentCard
-          (displayComments as AutoCommentData[])
-            .filter((comment): comment is AutoCommentData =>
-              hasRequiredCommentFields(comment)
-            )
-            .map((comment) => (
-              <CommentErrorBoundary key={comment.id || comment.permalink}>
-                <CommentCard comment={comment} />
-              </CommentErrorBoundary>
-            ))}
+      {comments
+        .filter((comment) => comment.id || comment.permalink)
+        .map((comment) => (
+          <CommentErrorBoundary key={comment.id || comment.permalink}>
+            <CommentItem comment={comment} maxDepth={maxCommentDepth} />
+          </CommentErrorBoundary>
+        ))}
 
       {/* Load More button for infinite loading */}
       {enableInfiniteLoading && currentHasNextPage && (
@@ -78,15 +58,24 @@ export function CommentsList({
       )}
 
       <Anchor
-        className={classes.readMoreLink}
         href={postLink}
         rel="noopener noreferrer"
         target="_blank"
         underline="always"
+        ta="center"
+        style={{
+          textDecoration: 'underline !important'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.textDecoration = 'none !important'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.textDecoration = 'underline !important'
+        }}
         aria-label="See all comments on Reddit (opens in new tab)"
       >
         See all comments on Reddit
       </Anchor>
-    </section>
+    </Stack>
   )
 }

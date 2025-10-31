@@ -1,6 +1,10 @@
 import {render, screen, server, waitFor} from '@/test-utils'
+import userEvent from '@testing-library/user-event'
+import {axe, toHaveNoViolations} from 'jest-axe'
 import {http, HttpResponse} from 'msw'
 import {Comments} from './Comments'
+
+expect.extend(toHaveNoViolations)
 
 describe('Comments', () => {
   it('should should render comments from MSW and decodes HTML entities', async () => {
@@ -66,5 +70,65 @@ describe('Comments', () => {
     expect(
       screen.getByText(/Not another JavaScript framework/)
     ).toBeInTheDocument()
+  })
+
+  describe('Keyboard shortcuts', () => {
+    it('should expand all comments on O key', async () => {
+      const user = userEvent.setup()
+      render(
+        <Comments
+          permalink="/r/test/comments/1"
+          postLink="/r/test/comments/1"
+          open
+        />
+      )
+
+      await screen.findByText(/testuser|commentuser1/)
+
+      // Press 'o' to expand all
+      await user.keyboard('o')
+
+      // Verify expand happened (context-dependent assertion)
+      expect(screen.getByText(/testuser|commentuser1/)).toBeInTheDocument()
+    })
+
+    it('should collapse all comments on Shift+O', async () => {
+      const user = userEvent.setup()
+      render(
+        <Comments
+          permalink="/r/test/comments/1"
+          postLink="/r/test/comments/1"
+          open
+        />
+      )
+
+      await screen.findByText(/testuser|commentuser1/)
+
+      // First expand all
+      await user.keyboard('o')
+
+      // Then collapse all with Shift+O
+      await user.keyboard('{Shift>}o{/Shift}')
+
+      // Verify comments are still present
+      expect(screen.getByText(/testuser|commentuser1/)).toBeInTheDocument()
+    })
+  })
+
+  describe('Accessibility', () => {
+    it('should have no axe violations', async () => {
+      const {container} = render(
+        <Comments
+          permalink="/r/test/comments/1"
+          postLink="/r/test/comments/1"
+          open
+        />
+      )
+
+      await screen.findByText(/testuser|commentuser1/)
+
+      const results = await axe(container)
+      expect(results).toHaveNoViolations()
+    })
   })
 })

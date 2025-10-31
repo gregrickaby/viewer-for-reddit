@@ -92,7 +92,6 @@ export function Card({
           open={commentsOpen}
           permalink={postPermalink}
           postLink={postLink}
-          enableNestedComments
         />
       </Collapse>
     </MantineCard>

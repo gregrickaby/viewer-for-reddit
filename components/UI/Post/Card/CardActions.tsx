@@ -3,7 +3,6 @@ import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {Button, Group, NumberFormatter, Text, Tooltip} from '@mantine/core'
 import {FaComment} from 'react-icons/fa'
 import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
-import classes from './CardActions.module.css'
 
 interface CardActionsProps {
   post: AutoPostChildData
@@ -28,7 +27,7 @@ export function CardActions({
   hideCommentToggle = false
 }: Readonly<CardActionsProps>) {
   return (
-    <Group gap="xs" mt="md">
+    <Group gap="xs" mt="md" mb="md">
       <VoteButtons
         id={post.name ?? ''}
         score={post.ups ?? 0}
@@ -40,7 +39,6 @@ export function CardActions({
         <Tooltip label="View Comments" withinPortal>
           <Button
             aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
-            className={classes.commentButton}
             color="gray"
             data-umami-event="comment button"
             leftSection={<FaComment size={14} />}

@@ -1,4 +1,5 @@
 import {authSlice} from '@/lib/store/features/authSlice'
+import {commentExpansionSlice} from '@/lib/store/features/commentExpansionSlice'
 import {settingsSlice} from '@/lib/store/features/settingsSlice'
 import {transientSlice} from '@/lib/store/features/transientSlice'
 import {authenticatedApi} from '@/lib/store/services/authenticatedApi'
@@ -27,6 +28,7 @@ const rootReducer = combineSlices(
   authenticatedApi,
   voteApi,
   authSlice,
+  commentExpansionSlice,
   settingsSlice,
   transientSlice
 )
