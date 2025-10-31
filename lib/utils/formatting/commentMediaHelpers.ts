@@ -138,28 +138,36 @@ export function getMediaType(url: string): 'image' | 'video' | 'unknown' {
  * Remove media links from comment HTML
  * Returns sanitized HTML with media links removed (they'll be rendered separately as inline media)
  */
-export function stripMediaLinks(html: string): string {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(html, 'text/html')
-  const links = Array.from(doc.querySelectorAll('a[href]'))
-
-  for (const link of links) {
-    const href = link.getAttribute('href')
-
-    if (href && isMediaUrl(href)) {
-      // Remove the entire paragraph containing the media link if it only contains the link
-      const parent = link.parentElement
-      if (
-        parent?.tagName === 'P' &&
-        parent.textContent?.trim() === link.textContent?.trim()
-      ) {
-        parent.remove()
-      } else {
-        // Just remove the link itself
-        link.remove()
-      }
-    }
+export function stripMediaLinks(bodyHtml: string): string {
+  if (globalThis.window === undefined) {
+    return bodyHtml
   }
 
-  return doc.body.innerHTML
+  try {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(bodyHtml, 'text/html')
+    const links = Array.from(doc.querySelectorAll('a[href]'))
+
+    for (const link of links) {
+      const href = link.getAttribute('href')
+
+      if (href && isMediaUrl(href)) {
+        // Remove the entire paragraph containing the media link if it only contains the link
+        const parent = link.parentElement
+        if (
+          parent?.tagName === 'P' &&
+          parent.textContent?.trim() === link.textContent?.trim()
+        ) {
+          parent.remove()
+        } else {
+          // Just remove the link itself
+          link.remove()
+        }
+      }
+    }
+
+    return doc.body.innerHTML
+  } catch {
+    return bodyHtml
+  }
 }

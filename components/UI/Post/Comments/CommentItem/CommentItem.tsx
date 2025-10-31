@@ -268,7 +268,6 @@ export function CommentItem({
                   decodeAndSanitizeHtml(comment.body_html ?? comment.body ?? '')
                 )
               }}
-              aria-label="Comment text"
             />
 
             <CommentMedia
@@ -311,11 +310,16 @@ export function CommentItem({
                   {comment.replies.length === 1 ? 'reply' : 'replies'} collapsed
                 </Text>
                 {comment.replies[0]?.body && (
-                  <Text size="xs" c="dimmed" lineClamp={1}>
-                    {comment.replies[0].author}:{' '}
-                    {comment.replies[0].body.slice(0, 100)}
-                    {comment.replies[0].body.length > 100 ? '...' : ''}
-                  </Text>
+                  <Text
+                    size="xs"
+                    c="dimmed"
+                    lineClamp={1}
+                    dangerouslySetInnerHTML={{
+                      __html: decodeAndSanitizeHtml(
+                        `${comment.replies[0].author}: ${comment.replies[0].body.slice(0, 100)}${comment.replies[0].body.length > 100 ? '...' : ''}`
+                      )
+                    }}
+                  />
                 )}
               </output>
             )}
