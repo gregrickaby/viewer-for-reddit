@@ -129,3 +129,48 @@ export interface VoteResponse {
   success: boolean
   error?: string
 }
+
+/**
+ * Comment submission request payload.
+ */
+export interface SubmitCommentRequest {
+  /** Thing fullname of parent (e.g., t1_abc123 for comment, t3_xyz789 for post) */
+  thing_id: string
+  /** Raw markdown body of the comment */
+  text: string
+}
+
+/**
+ * Comment submission response from Reddit API.
+ */
+export interface SubmitCommentResponse {
+  success: boolean
+  comment?: {
+    id: string
+    name: string
+    body: string
+    author: string
+    created_utc: number
+  }
+  error?: string
+  scope_required?: string
+  message?: string
+}
+
+/**
+ * Comment deletion request payload.
+ */
+export interface DeleteCommentRequest {
+  /** Comment fullname (e.g., t1_abc123) */
+  id: string
+}
+
+/**
+ * Comment deletion response from Reddit API.
+ */
+export interface DeleteCommentResponse {
+  success: boolean
+  error?: string
+  scope_required?: string
+  message?: string
+}

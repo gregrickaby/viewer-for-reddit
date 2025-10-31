@@ -53,10 +53,10 @@ export function CommentsList({
 
   return (
     <Stack
+      aria-label={`Comments for post (${commentsCount} comments)`}
       component="section"
       gap="md"
       mb="sm"
-      aria-label={`Comments for post (${commentsCount} comments)`}
     >
       {comments
         .filter((comment) => comment.id || comment.permalink)
@@ -70,14 +70,14 @@ export function CommentsList({
       {enableInfiniteLoading && currentHasNextPage && (
         <Center pt="md">
           <Button
-            variant="subtle"
-            loading={currentIsFetchingNextPage}
-            onClick={() => currentFetchNextPage()}
             aria-label={
               currentIsFetchingNextPage
                 ? 'Loading more comments...'
                 : 'Load more comments'
             }
+            loading={currentIsFetchingNextPage}
+            onClick={() => currentFetchNextPage()}
+            variant="subtle"
           >
             Load More Comments
           </Button>
@@ -85,11 +85,13 @@ export function CommentsList({
       )}
 
       <Anchor
+        aria-label="See all comments on Reddit (opens in new tab)"
+        data-umami-event="view all comments on reddit"
         href={postLink}
         rel="noopener noreferrer"
+        ta="center"
         target="_blank"
         underline="always"
-        ta="center"
         style={{
           textDecoration: 'underline !important'
         }}
@@ -99,7 +101,6 @@ export function CommentsList({
         onMouseLeave={(e) => {
           e.currentTarget.style.textDecoration = 'underline !important'
         }}
-        aria-label="See all comments on Reddit (opens in new tab)"
       >
         See all comments on Reddit
       </Anchor>

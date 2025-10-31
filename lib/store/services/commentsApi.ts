@@ -1,6 +1,12 @@
+import type {
+  DeleteCommentRequest,
+  DeleteCommentResponse,
+  SubmitCommentRequest,
+  SubmitCommentResponse
+} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
 import {COMMENTS_LIMIT, MAX_LIMIT} from '@/lib/utils/api/apiConstants'
-import {baseQuery} from '@/lib/utils/api/baseQuery/baseQuery'
+import {createRedditBaseQuery} from '@/lib/utils/api/baseQuery/createRedditBaseQuery'
 import {dynamicBaseQuery} from '@/lib/utils/api/baseQuery/dynamicBaseQuery'
 import {
   createCommentsInfiniteConfig,
@@ -8,6 +14,18 @@ import {
 } from '@/lib/utils/api/commentsPagination'
 import {extractAndFilterComments} from '@/lib/utils/formatting/commentFilters'
 import {createApi} from '@reduxjs/toolkit/query/react'
+
+/**
+ * Base query for comment submission API.
+ * Uses /api/reddit/comment endpoint for authenticated user comment submissions.
+ */
+const submitBaseQuery = createRedditBaseQuery('/api/reddit/comment')
+
+/**
+ * Base query for comment deletion API.
+ * Uses /api/reddit/comment/delete endpoint for authenticated user comment deletions.
+ */
+const deleteBaseQuery = createRedditBaseQuery('/api/reddit/comment/delete')
 
 /**
  * Type aliases for comment-related Reddit API responses.
@@ -47,19 +65,25 @@ export type AutoCommentWithText = Extract<
 >
 
 /**
- * RTK Query API for post comments.
+ * RTK Query API for post comments, comment actions, and user comments.
  *
  * Uses dynamicBaseQuery to switch between anonymous and authenticated endpoints
  * based on user login state. This allows displaying vote states when authenticated.
  *
- * For user comment history, see userCommentsApi at bottom of file.
+ * Handles:
+ * - Fetching post comments with infinite scroll
+ * - Fetching user comment history
+ * - Submitting new comments and replies
+ * - Deleting comments
+ *
+ * All mutations automatically invalidate relevant caches to ensure UI updates.
  *
  * @see {@link https://redux-toolkit.js.org/rtk-query/overview}
  */
 export const commentsApi = createApi({
   reducerPath: 'commentsApi',
   baseQuery: dynamicBaseQuery,
-  tagTypes: ['Comments'],
+  tagTypes: ['Comments', 'UserComments'],
   endpoints: (builder) => ({
     /**
      * Fetch post comments with infinite scroll pagination.
@@ -85,7 +109,8 @@ export const commentsApi = createApi({
         })
         return `${permalink}.json?${params.toString()}`
       },
-      transformResponse: (response: AutoPostCommentsResponse) => response
+      transformResponse: (response: AutoPostCommentsResponse) => response,
+      providesTags: ['Comments']
     }),
 
     /**
@@ -114,7 +139,8 @@ export const commentsApi = createApi({
         })
         return `${permalink}.json?${params.toString()}`
       },
-      transformResponse: (response: AutoPostCommentsResponse) => response
+      transformResponse: (response: AutoPostCommentsResponse) => response,
+      providesTags: ['Comments']
     }),
 
     /**
@@ -139,7 +165,8 @@ export const commentsApi = createApi({
         const listing = extractCommentsListing(response)
         const children = listing?.data?.children ?? []
         return extractAndFilterComments(children)
-      }
+      },
+      providesTags: ['Comments']
     }),
 
     /**
@@ -159,24 +186,14 @@ export const commentsApi = createApi({
         const params = new URLSearchParams({limit: String(COMMENTS_LIMIT)})
         return `${permalink}.json?${params.toString()}`
       },
-      transformResponse: (response: AutoPostCommentsResponse) => response
-    })
-  })
-})
+      transformResponse: (response: AutoPostCommentsResponse) => response,
+      providesTags: ['Comments']
+    }),
 
-/**
- * RTK Query API for user comment history.
- *
- * Uses anonymous baseQuery instead of dynamicBaseQuery to prevent 403 errors
- * when viewing public user profiles before auth state initializes.
- */
-export const userCommentsApi = createApi({
-  reducerPath: 'userCommentsApi',
-  baseQuery,
-  tagTypes: ['UserComments'],
-  endpoints: (builder) => ({
     /**
      * Fetch user's comment history with infinite scroll pagination.
+     *
+     * Uses anonymous baseQuery to prevent 403 errors when viewing public profiles.
      *
      * @param username - Reddit username without the u/ prefix
      * @param pageParam - Pagination cursor
@@ -202,13 +219,101 @@ export const userCommentsApi = createApi({
         response: AutoUserCommentsResponse
       ): AutoUserCommentsResponse => {
         return response
-      }
+      },
+      providesTags: ['UserComments']
+    }),
+
+    /**
+     * Submit a new comment or reply.
+     *
+     * Invalidates both Comments and UserComments caches to ensure
+     * newly submitted comments appear in all relevant feeds.
+     *
+     * @param {SubmitCommentRequest} payload - Comment submission data
+     * @param {string} payload.thing_id - Thing fullname (t1_xxx for comment, t3_xxx for post)
+     * @param {string} payload.text - Raw markdown body
+     *
+     * @returns {SubmitCommentResponse} Submission result with comment data
+     *
+     * @example
+     * // Reply to a comment
+     * const [submitComment, {isLoading}] = useSubmitCommentMutation()
+     * await submitComment({ thing_id: 't1_abc123', text: 'My reply' })
+     *
+     * @example
+     * // Top-level comment on a post
+     * await submitComment({ thing_id: 't3_xyz789', text: 'Great post!' })
+     */
+    submitComment: builder.mutation<
+      SubmitCommentResponse,
+      SubmitCommentRequest
+    >({
+      queryFn: async ({thing_id, text}, _api, _extraOptions, _baseQuery) => {
+        const result = await submitBaseQuery(
+          {
+            url: '',
+            method: 'POST',
+            body: {thing_id, text}
+          },
+          _api,
+          _extraOptions
+        )
+
+        if (result.error) {
+          return {error: result.error}
+        }
+
+        return {data: result.data as SubmitCommentResponse}
+      },
+      invalidatesTags: ['Comments', 'UserComments']
+    }),
+
+    /**
+     * Delete a comment.
+     *
+     * Invalidates both Comments and UserComments caches to ensure
+     * deleted comments are removed from all relevant feeds.
+     *
+     * @param {DeleteCommentRequest} payload - Comment deletion data
+     * @param {string} payload.id - Comment fullname (t1_xxx)
+     *
+     * @returns {DeleteCommentResponse} Deletion result
+     *
+     * @example
+     * // Delete a comment
+     * const [deleteComment, {isLoading}] = useDeleteCommentMutation()
+     * await deleteComment({ id: 't1_abc123' })
+     */
+    deleteComment: builder.mutation<
+      DeleteCommentResponse,
+      DeleteCommentRequest
+    >({
+      queryFn: async ({id}, _api, _extraOptions, _baseQuery) => {
+        const result = await deleteBaseQuery(
+          {
+            url: '',
+            method: 'POST',
+            body: {id}
+          },
+          _api,
+          _extraOptions
+        )
+
+        if (result.error) {
+          return {error: result.error}
+        }
+
+        return {data: result.data as DeleteCommentResponse}
+      },
+      invalidatesTags: ['Comments', 'UserComments']
     })
   })
 })
 
 /**
- * Auto-generated hooks for post comments API.
+ * Auto-generated hooks for comments API.
+ *
+ * Includes queries for fetching comments and mutations for submitting/deleting.
  *
  * @see {@link https://redux-toolkit.js.org/rtk-query/usage/queries}
  */
@@ -216,10 +321,8 @@ export const {
   useGetPostCommentsPagesInfiniteQuery,
   useGetPostCommentsPagesRawInfiniteQuery,
   useLazyGetPostCommentsQuery,
-  useLazyGetPostCommentsRawQuery
+  useLazyGetPostCommentsRawQuery,
+  useGetUserCommentsInfiniteQuery,
+  useSubmitCommentMutation,
+  useDeleteCommentMutation
 } = commentsApi
-
-/**
- * Auto-generated hook for user comments API.
- */
-export const {useGetUserCommentsInfiniteQuery} = userCommentsApi

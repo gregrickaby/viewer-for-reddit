@@ -71,7 +71,16 @@ describe('POST /api/auth/login', () => {
 
     expect(mockReddit.createAuthorizationURL).toHaveBeenCalledWith(
       expect.any(String),
-      ['identity', 'read', 'mysubreddits', 'vote', 'subscribe', 'history']
+      [
+        'identity',
+        'read',
+        'mysubreddits',
+        'vote',
+        'subscribe',
+        'history',
+        'submit',
+        'edit'
+      ]
     )
   })
 

@@ -29,8 +29,8 @@ tools:
 model: Claude Sonnet 4.5 (copilot)
 handoffs:
   - label: Start Implementation
-    agent: implementation
-    prompt: Now implement the plan outlined above.
+    agent: Implementation.agent.md
+    prompt: Do you have any clarifying questions before starting implementation?
     send: false
 ---
 

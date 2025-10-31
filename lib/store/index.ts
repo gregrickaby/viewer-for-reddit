@@ -3,7 +3,7 @@ import {commentExpansionSlice} from '@/lib/store/features/commentExpansionSlice'
 import {settingsSlice} from '@/lib/store/features/settingsSlice'
 import {transientSlice} from '@/lib/store/features/transientSlice'
 import {authenticatedApi} from '@/lib/store/services/authenticatedApi'
-import {commentsApi, userCommentsApi} from '@/lib/store/services/commentsApi'
+import {commentsApi} from '@/lib/store/services/commentsApi'
 import {postsApi} from '@/lib/store/services/postsApi'
 import {searchApi} from '@/lib/store/services/searchApi'
 import {subredditApi} from '@/lib/store/services/subredditApi'
@@ -22,7 +22,6 @@ const rootReducer = combineSlices(
   postsApi,
   searchApi,
   commentsApi,
-  userCommentsApi,
   userApi,
   subredditApi,
   authenticatedApi,
@@ -52,7 +51,6 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
         .concat(postsApi.middleware)
         .concat(searchApi.middleware)
         .concat(commentsApi.middleware)
-        .concat(userCommentsApi.middleware)
         .concat(userApi.middleware)
         .concat(subredditApi.middleware)
         .concat(authenticatedApi.middleware)
