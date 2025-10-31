@@ -86,6 +86,11 @@ export function Comments({
     enableNestedComments: true
   })
 
+  // Reset hasScrolledRef when permalink changes
+  useEffect(() => {
+    hasScrolledRef.current = false
+  }, [permalink])
+
   const sortedNestedComments = Array.isArray(nestedComments)
     ? sortComments(nestedComments, commentSort)
     : nestedComments

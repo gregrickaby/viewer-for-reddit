@@ -99,7 +99,7 @@ export function CommentForm({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // Submit on Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isSubmitting) {
       e.preventDefault()
       handleSubmit()
     }

@@ -51,7 +51,7 @@ function validateCommentParams(
   }
 
   const thingIdPattern = /^t[13]_[a-z0-9]+$/i
-  if (!thingIdPattern.exec(thing_id)) {
+  if (!thingIdPattern.test(thing_id)) {
     logError('Invalid comment request: malformed thing_id', {
       component: 'commentApiRoute',
       action: 'validateRequest',
@@ -258,6 +258,7 @@ export async function POST(request: NextRequest) {
     const data = await response.json()
 
     // Reddit returns {json: {errors: [], data: {things: [...]}}}
+    // Error format: [[errorType, errorMessage, errorField], ...]
     if (data.json?.errors?.length > 0) {
       const errorMessage = data.json.errors[0][1] || 'Unknown error'
       logError('Reddit API returned errors', {
