@@ -34,7 +34,7 @@ export interface CommentFormProps {
  */
 export function CommentForm({
   thingId,
-  placeholder = 'What are your thoughts?',
+  placeholder = 'What are your thoughts? (markdown supported)',
   defaultExpanded = false
 }: Readonly<CommentFormProps>) {
   const {isAuthenticated} = useAppSelector((state) => state.auth)
