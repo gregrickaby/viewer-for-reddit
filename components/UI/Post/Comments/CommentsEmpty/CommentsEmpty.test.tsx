@@ -11,4 +11,21 @@ describe('CommentsEmpty', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('should have accessible output element', () => {
+    render(<CommentsEmpty />)
+
+    const output = screen.getByRole('status')
+    expect(output).toHaveAttribute('aria-label', 'No comments available')
+    expect(output).toHaveAttribute('aria-describedby', 'empty-description')
+  })
+
+  it('should render dimmed text with correct id', () => {
+    render(<CommentsEmpty />)
+
+    const text = screen.getByText(
+      'No comments to display. Be the first to comment on Reddit!'
+    )
+    expect(text).toHaveAttribute('id', 'empty-description')
+  })
 })
