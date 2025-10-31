@@ -30,7 +30,8 @@
     "typegen": "npm run typegen:fetch && npm run typegen:validate",
     "typegen:fetch": "tsx scripts/dynamic-scraper.ts",
     "typegen:types": "openapi-typescript scripts/reddit-openapi-complete.json --output lib/types/reddit-api.ts --export-type --enum --alphabetize --exclude-deprecated --default-non-nullable --empty-objects-unknown",
-    "typegen:validate": "redocly lint scripts/reddit-openapi-complete.json"
+    "typegen:validate": "redocly lint scripts/reddit-openapi-complete.json",
+    "validate": "npm run format && npm run lint && npm run typecheck && npm run test"
   },
   "dependencies": {
     "@mantine/carousel": "^8.3.6",
