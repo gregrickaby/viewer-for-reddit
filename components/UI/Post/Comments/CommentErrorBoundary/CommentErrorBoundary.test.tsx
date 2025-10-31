@@ -2,6 +2,11 @@ import {render, screen} from '@/test-utils'
 import {Text} from '@mantine/core'
 import {CommentErrorBoundary} from './CommentErrorBoundary'
 
+// Mock logClientError
+vi.mock('@/lib/utils/logging/clientLogger', () => ({
+  logClientError: vi.fn()
+}))
+
 // Test component that throws an error when shouldThrow is true
 function ThrowError({shouldThrow}: Readonly<{shouldThrow: boolean}>) {
   if (shouldThrow) {
@@ -10,18 +15,9 @@ function ThrowError({shouldThrow}: Readonly<{shouldThrow: boolean}>) {
   return <div>Normal content</div>
 }
 
-// Mock console.error to test error logging
-const originalConsoleError = console.error
-
 describe('CommentErrorBoundary', () => {
   beforeEach(() => {
-    // Mock console.error to prevent noise in test output
-    console.error = vi.fn()
-  })
-
-  afterEach(() => {
-    // Restore original console.error
-    console.error = originalConsoleError
+    vi.clearAllMocks()
   })
 
   it('should render children when no error occurs', () => {
@@ -76,18 +72,22 @@ describe('CommentErrorBoundary', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should log error to console when error occurs', () => {
+  it('should log error to client logger when error occurs', async () => {
+    const {logClientError} = await import('@/lib/utils/logging/clientLogger')
+
     render(
       <CommentErrorBoundary>
         <ThrowError shouldThrow />
       </CommentErrorBoundary>
     )
 
-    // Should have called console.error with error details
-    expect(console.error).toHaveBeenCalledWith(
-      'Comment rendering error:',
-      expect.any(Error),
-      expect.any(Object)
+    // Should have called logClientError with error details
+    expect(logClientError).toHaveBeenCalledWith(
+      'Comment rendering error',
+      expect.objectContaining({
+        component: 'CommentErrorBoundary',
+        action: 'componentDidCatch'
+      })
     )
   })
 
@@ -143,7 +143,9 @@ describe('CommentErrorBoundary', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
 
-  it('should handle errors in development vs production environment', () => {
+  it('should handle errors in development vs production environment', async () => {
+    const {logClientError} = await import('@/lib/utils/logging/clientLogger')
+
     // Test development environment (default)
     render(
       <CommentErrorBoundary>
@@ -151,6 +153,6 @@ describe('CommentErrorBoundary', () => {
       </CommentErrorBoundary>
     )
 
-    expect(console.error).toHaveBeenCalled()
+    expect(logClientError).toHaveBeenCalled()
   })
 })

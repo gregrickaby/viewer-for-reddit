@@ -1,17 +1,24 @@
-import {setCommentSortingOption} from '@/lib/store/features/settingsSlice'
-import {render, screen} from '@/test-utils'
-import {userEvent} from '@testing-library/user-event'
+import {render, screen, user} from '@/test-utils'
 import {CommentSortControls} from './CommentSortControls'
+
+const mockDispatch = vi.fn()
 
 vi.mock('@/lib/store/hooks', async () => {
   const actual = await vi.importActual('@/lib/store/hooks')
   return {
     ...actual,
-    useAppDispatch: vi.fn(() => vi.fn())
+    useAppDispatch: () => mockDispatch,
+    useAppSelector: vi.fn((selector) =>
+      selector({settings: {commentSort: 'best'}})
+    )
   }
 })
 
 describe('CommentSortControls', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+  })
+
   it('should render with default "best" sorting', () => {
     render(<CommentSortControls />)
 
@@ -31,18 +38,18 @@ describe('CommentSortControls', () => {
   })
 
   it('should dispatch setCommentSortingOption when sorting changes', async () => {
-    const user = userEvent.setup()
-    const mockDispatch = vi.fn()
-
-    const {useAppDispatch} = await import('@/lib/store/hooks')
-    vi.mocked(useAppDispatch).mockReturnValue(mockDispatch)
-
     render(<CommentSortControls />)
 
-    const topButton = screen.getByText('Top')
-    await user.click(topButton)
+    // Click on "Top" option
+    await user.click(screen.getByText('Top'))
 
-    expect(mockDispatch).toHaveBeenCalledWith(setCommentSortingOption('top'))
+    // Verify dispatch was called
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'settings/setCommentSortingOption',
+        payload: 'top'
+      })
+    )
   })
 
   it('should have Umami analytics tracking attributes', () => {

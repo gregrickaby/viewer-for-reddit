@@ -1,5 +1,6 @@
 'use client'
 
+import {logClientError} from '@/lib/utils/logging/clientLogger'
 import {Alert, Text} from '@mantine/core'
 import {Component, type ErrorInfo, type ReactNode} from 'react'
 import {BiError} from 'react-icons/bi'
@@ -33,13 +34,13 @@ export class CommentErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error for monitoring
-    console.error('Comment rendering error:', error, errorInfo)
-
-    // In production, you might want to send this to an error reporting service
-    if (process.env.NODE_ENV === 'production') {
-      // Example: logErrorToService(error, errorInfo)
-    }
+    logClientError('Comment rendering error', {
+      component: 'CommentErrorBoundary',
+      action: 'componentDidCatch',
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack
+    })
   }
 
   render() {

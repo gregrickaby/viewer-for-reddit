@@ -1,6 +1,5 @@
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {render, screen} from '@/test-utils'
-import userEvent from '@testing-library/user-event'
+import {render, screen, user} from '@/test-utils'
 import {axe} from 'jest-axe'
 import {CommentItem} from './CommentItem'
 
@@ -85,7 +84,6 @@ describe('CommentItem', () => {
   })
 
   it('should expand and collapse replies when button is clicked', async () => {
-    const user = userEvent.setup()
     render(<CommentItem comment={mockCommentWithReplies} />)
 
     // With Reddit-style defaults, depth 0 starts expanded
@@ -112,7 +110,6 @@ describe('CommentItem', () => {
   })
 
   it('should expand and collapse all descendants when expand-all button is clicked', async () => {
-    const user = userEvent.setup()
     const nestedComment = {
       ...mockCommentWithReplies,
       replies: [
@@ -202,7 +199,6 @@ describe('CommentItem', () => {
   })
 
   it('should show collapsed preview when comment is collapsed', async () => {
-    const user = userEvent.setup()
     render(<CommentItem comment={mockCommentWithReplies} />)
 
     // With Reddit-style defaults, depth 0 starts expanded
