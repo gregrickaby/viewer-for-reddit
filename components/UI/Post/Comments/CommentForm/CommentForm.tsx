@@ -1,10 +1,11 @@
 'use client'
 
 import {useAppSelector} from '@/lib/store/hooks'
-import {useSubmitCommentMutation} from '@/lib/store/services/commentSubmitApi'
+import {useSubmitCommentMutation} from '@/lib/store/services/commentsApi'
 import {Box, Button, Group, Stack, Text, Textarea} from '@mantine/core'
+import {notifications} from '@mantine/notifications'
 import {useEffect, useRef, useState} from 'react'
-import {BiComment} from 'react-icons/bi'
+import {BiCheckCircle, BiComment} from 'react-icons/bi'
 
 export interface CommentFormProps {
   /** The Reddit thing ID to reply to (e.g., t3_abc123 for post) */
@@ -68,9 +69,17 @@ export function CommentForm({
         text: commentText
       }).unwrap()
 
-      // Success: close form and clear text
-      setShowForm(false)
+      // Show success message
+      notifications.show({
+        message:
+          'Comment posted successfully! It may take a few moments before Reddit shows your comment.',
+        color: 'green',
+        icon: <BiCheckCircle size={20} />
+      })
+
+      // Reset form state
       setCommentText('')
+      setShowForm(false)
     } catch (err) {
       // Extract error message from RTK Query error
       if (err && typeof err === 'object' && 'data' in err && err.data) {
@@ -129,6 +138,7 @@ export function CommentForm({
 
           <Group gap="xs">
             <Button
+              data-umami-event="submit comment"
               disabled={!commentText.trim()}
               loading={isSubmitting}
               onClick={handleSubmit}
@@ -137,6 +147,7 @@ export function CommentForm({
               Comment
             </Button>
             <Button
+              data-umami-event="cancel comment"
               disabled={isSubmitting}
               onClick={handleCancel}
               size="sm"
@@ -154,12 +165,13 @@ export function CommentForm({
         </Stack>
       ) : (
         <Button
-          ref={toggleButtonRef}
-          variant="light"
-          size="sm"
-          onClick={toggleForm}
-          leftSection={<BiComment size={16} />}
+          data-umami-event="show comment form"
           fullWidth
+          leftSection={<BiComment size={16} />}
+          onClick={toggleForm}
+          ref={toggleButtonRef}
+          size="sm"
+          variant="light"
         >
           Add a comment
         </Button>

@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
   // - subscribe: Subscribe to subreddits
   // - history: Access user's saved posts and comments
   // - submit: Submit links and comments
+  // - edit: Edit and delete own comments and posts
   const scopes = [
     'identity',
     'read',
@@ -62,7 +63,8 @@ export async function GET(request: NextRequest) {
     'vote',
     'subscribe',
     'history',
-    'submit'
+    'submit',
+    'edit'
   ]
 
   // Create Reddit OAuth authorization URL with permanent duration

@@ -117,6 +117,9 @@ export function createErrorResponse(
  * @returns Cache max-age in seconds
  */
 export function getAnonymousCacheMaxAge(path: string): number {
+  if (path.includes('/comments/')) {
+    return 0 // No cache - comments need real-time updates after posting/deleting
+  }
   if (path.includes('/hot.json') || path.includes('/popular')) {
     return 600 // 10 minutes - hot posts change slowly
   }
@@ -141,6 +144,10 @@ export function getAnonymousCacheMaxAge(path: string): number {
  * @returns Cache max-age in seconds
  */
 export function getAuthenticatedCacheMaxAge(path: string): number {
+  // Comments need real-time updates after posting/deleting
+  if (path.includes('/comments/')) {
+    return 0
+  }
   // Vote/subscribe actions should not be cached
   if (path.includes('/api/vote') || path.includes('/api/subscribe')) {
     return 0

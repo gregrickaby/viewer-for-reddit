@@ -22,6 +22,40 @@ export const commentHandlers = [
     })
   }),
 
+  // POST /api/reddit/comment/delete - Next.js API proxy (success case)
+  // Matches both /api/reddit/comment/delete and /api/reddit/comment/delete?path=...
+  http.post(
+    'http://localhost:3000/api/reddit/comment/delete',
+    async ({request}) => {
+      const body = await request.json()
+      const {id} = body as {id: string}
+
+      const commentIdPattern = /^t1_[a-z0-9]+$/i
+      // Validate comment ID format
+      if (!id || !commentIdPattern.test(id)) {
+        return HttpResponse.json({error: 'Invalid comment ID'}, {status: 400})
+      }
+
+      return HttpResponse.json({success: true})
+    }
+  ),
+
+  // POST /api/del - Reddit OAuth endpoint (success case)
+  http.post('https://oauth.reddit.com/api/del', async ({request}) => {
+    const body = await request.text()
+    const params = new URLSearchParams(body)
+    const id = params.get('id')
+
+    const commentIdPattern = /^t1_[a-z0-9]+$/i
+    // Validate comment ID format
+    if (!id || !commentIdPattern.test(id)) {
+      return new HttpResponse(null, {status: 400})
+    }
+
+    // Reddit returns empty body on successful deletion
+    return new HttpResponse(null, {status: 200})
+  }),
+
   // POST /api/comment - Reddit OAuth endpoint (success case)
   http.post('https://oauth.reddit.com/api/comment', async ({request}) => {
     const body = await request.text()

@@ -78,7 +78,8 @@ describe('POST /api/auth/login', () => {
         'vote',
         'subscribe',
         'history',
-        'submit'
+        'submit',
+        'edit'
       ]
     )
   })

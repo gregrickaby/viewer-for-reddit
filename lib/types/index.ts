@@ -156,3 +156,21 @@ export interface SubmitCommentResponse {
   scope_required?: string
   message?: string
 }
+
+/**
+ * Comment deletion request payload.
+ */
+export interface DeleteCommentRequest {
+  /** Comment fullname (e.g., t1_abc123) */
+  id: string
+}
+
+/**
+ * Comment deletion response from Reddit API.
+ */
+export interface DeleteCommentResponse {
+  success: boolean
+  error?: string
+  scope_required?: string
+  message?: string
+}

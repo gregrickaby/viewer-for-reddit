@@ -152,7 +152,7 @@ export function Comments({
   }
 
   if (!hasCommentsToShow) {
-    return <CommentsEmpty />
+    return <CommentsEmpty postId={postId} />
   }
 
   return (

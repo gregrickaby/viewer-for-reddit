@@ -2,14 +2,60 @@ import {render, screen} from '@/test-utils'
 import {CommentsEmpty} from './CommentsEmpty'
 
 describe('CommentsEmpty', () => {
-  it('should render no comments message', () => {
-    render(<CommentsEmpty />)
+  describe('when user is not authenticated', () => {
+    it('should render no comments message for unauthenticated users', () => {
+      render(<CommentsEmpty />)
 
-    expect(
-      screen.getByText(
-        'No comments to display. Be the first to comment on Reddit!'
-      )
-    ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'No comments to display. Be the first to comment on Reddit!'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should not render comment form', () => {
+      render(<CommentsEmpty postId="t3_abc123" />)
+
+      expect(
+        screen.queryByRole('button', {name: /add a comment/i})
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user is authenticated', () => {
+    const authenticatedState = {
+      auth: {
+        isAuthenticated: true,
+        username: 'testuser',
+        expiresAt: Date.now() + 3600000
+      }
+    }
+
+    it('should render no comments message for authenticated users', () => {
+      render(<CommentsEmpty />, {preloadedState: authenticatedState})
+
+      expect(
+        screen.getByText('No comments to display. Be the first to comment!')
+      ).toBeInTheDocument()
+    })
+
+    it('should render comment form when postId is provided', () => {
+      render(<CommentsEmpty postId="t3_abc123" />, {
+        preloadedState: authenticatedState
+      })
+
+      expect(
+        screen.getByRole('button', {name: /add a comment/i})
+      ).toBeInTheDocument()
+    })
+
+    it('should not render comment form when postId is not provided', () => {
+      render(<CommentsEmpty />, {preloadedState: authenticatedState})
+
+      expect(
+        screen.queryByRole('button', {name: /add a comment/i})
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('should have accessible output element', () => {

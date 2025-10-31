@@ -13,7 +13,10 @@ import {
   selectIsSubtreeExpanded
 } from '@/lib/store/features/commentExpansionSlice'
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
-import {useSubmitCommentMutation} from '@/lib/store/services/commentSubmitApi'
+import {
+  useDeleteCommentMutation,
+  useSubmitCommentMutation
+} from '@/lib/store/services/commentsApi'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {collectDescendantIds} from '@/lib/utils/formatting/commentHelpers'
 import {stripMediaLinks} from '@/lib/utils/formatting/commentMediaHelpers'
@@ -25,12 +28,16 @@ import {
   Card,
   Collapse,
   Group,
+  Modal,
   Stack,
   Text,
   Textarea
 } from '@mantine/core'
+import {useDisclosure} from '@mantine/hooks'
+import {notifications} from '@mantine/notifications'
 import {useEffect, useRef, useState} from 'react'
-import {BiComment} from 'react-icons/bi'
+import {BiCheckCircle, BiComment} from 'react-icons/bi'
+import {MdDelete} from 'react-icons/md'
 import classes from './CommentItem.module.css'
 
 /**
@@ -67,6 +74,7 @@ export function CommentItem({
   const dispatch = useAppDispatch()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const replyButtonRef = useRef<HTMLButtonElement>(null)
+  const deleteButtonRef = useRef<HTMLButtonElement>(null)
 
   const commentId = comment.id || comment.permalink || ''
   const isExpanded = useAppSelector((state) =>
@@ -76,12 +84,20 @@ export function CommentItem({
     selectIsSubtreeExpanded(state, commentId)
   )
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
+  const currentUsername = useAppSelector((state) => state.auth.username)
 
   // Reply form state
   const [showReplyForm, setShowReplyForm] = useState(false)
   const [replyText, setReplyText] = useState('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [submitComment, {isLoading: isSubmitting}] = useSubmitCommentMutation()
+
+  // Delete state
+  const [deleteComment, {isLoading: isDeleting}] = useDeleteCommentMutation()
+  const [deleteError, setDeleteError] = useState<string>('')
+  const [isDeleted, setIsDeleted] = useState(false)
+  const [deleteModalOpened, {open: openDeleteModal, close: closeDeleteModal}] =
+    useDisclosure(false)
 
   // Auto-focus textarea when reply form opens
   useEffect(() => {
@@ -124,6 +140,14 @@ export function CommentItem({
         text: replyText
       }).unwrap()
 
+      // Show success message
+      notifications.show({
+        message:
+          'Comment posted successfully! It may take a few moments before Reddit shows your comment.',
+        color: 'green',
+        icon: <BiCheckCircle size={20} />
+      })
+
       // Success: close form and clear text
       setShowReplyForm(false)
       setReplyText('')
@@ -161,11 +185,57 @@ export function CommentItem({
     }
   }
 
+  const handleDeleteClick = () => {
+    openDeleteModal()
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!comment.name) return
+
+    try {
+      setDeleteError('')
+      await deleteComment({id: comment.name}).unwrap()
+
+      // Mark as deleted locally
+      setIsDeleted(true)
+
+      // Close modal after successful deletion
+      closeDeleteModal()
+    } catch (err) {
+      // Extract error message from RTK Query error
+      if (err && typeof err === 'object' && 'data' in err) {
+        const errorData = err.data as {message?: string; error?: string}
+        setDeleteError(
+          errorData.message ||
+            errorData.error ||
+            'Failed to delete comment. Please try again.'
+        )
+      } else {
+        setDeleteError('Failed to delete comment. Please try again.')
+      }
+
+      // Close modal even if deletion fails
+      closeDeleteModal()
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    closeDeleteModal()
+    // Return focus to delete button after cancel
+    setTimeout(() => {
+      deleteButtonRef.current?.focus()
+    }, 0)
+  }
+
   const hasReplies = comment.hasReplies && comment.replies?.length
   const showReplies = hasReplies && comment.depth < maxDepth
 
-  // Can reply if authenticated and not at max depth
-  const canReply = isAuthenticated && comment.depth < maxDepth
+  // Can reply if authenticated and not at max depth and comment not deleted
+  const canReply = isAuthenticated && comment.depth < maxDepth && !isDeleted
+
+  // Can delete if authenticated, owns the comment, and not already deleted
+  const isOwnComment =
+    isAuthenticated && currentUsername === comment.author && !isDeleted
 
   return (
     <Box
@@ -197,50 +267,95 @@ export function CommentItem({
               <Text c="dimmed" size="xs">
                 {formatTimeAgo(comment.created_utc ?? 0)}
               </Text>
+              {isDeleted && (
+                <>
+                  <Text c="dimmed" size="sm">
+                    &middot;
+                  </Text>
+                  <Text c="red" size="xs" fw={500}>
+                    deleted
+                  </Text>
+                </>
+              )}
             </Group>
 
-            <section
-              className={classes.commentBody}
-              dangerouslySetInnerHTML={{
-                __html: stripMediaLinks(
-                  decodeAndSanitizeHtml(comment.body_html ?? comment.body ?? '')
-                )
-              }}
-            />
+            {isDeleted ? (
+              <Text c="dimmed" fs="italic" size="sm">
+                [deleted]
+              </Text>
+            ) : (
+              <>
+                <section
+                  className={classes.commentBody}
+                  dangerouslySetInnerHTML={{
+                    __html: stripMediaLinks(
+                      decodeAndSanitizeHtml(
+                        comment.body_html ?? comment.body ?? ''
+                      )
+                    )
+                  }}
+                />
 
-            <CommentMedia
-              bodyHtml={decodeAndSanitizeHtml(comment.body_html ?? '')}
-            />
+                <CommentMedia
+                  bodyHtml={decodeAndSanitizeHtml(comment.body_html ?? '')}
+                />
+              </>
+            )}
 
             <CommentMetadata
               comment={comment}
-              showReplies={!!showReplies}
               hasReplies={hasReplies}
               isExpanded={isExpanded}
               isSubtreeFullyExpanded={isSubtreeFullyExpanded}
+              showReplies={!!showReplies}
               toggleExpansion={toggleExpansion}
               toggleSubtreeExpansion={toggleSubtreeExpansion}
             />
 
             {canReply && (
               <Box mt="xs">
-                <Button
-                  ref={replyButtonRef}
-                  aria-label="Reply to this comment"
-                  leftSection={<BiComment size={14} />}
-                  onClick={toggleReplyForm}
-                  size="xs"
-                  variant="subtle"
-                >
-                  Reply
-                </Button>
+                <Group gap="xs">
+                  <Button
+                    aria-label="Reply to this comment"
+                    data-umami-event="reply comment button"
+                    leftSection={<BiComment size={14} />}
+                    onClick={toggleReplyForm}
+                    ref={replyButtonRef}
+                    size="xs"
+                    variant="subtle"
+                  >
+                    Reply
+                  </Button>
+
+                  {isOwnComment && (
+                    <Button
+                      aria-label="Delete this comment"
+                      color="red"
+                      data-umami-event="delete own comment button"
+                      disabled={isDeleting}
+                      leftSection={<MdDelete size={14} />}
+                      loading={isDeleting}
+                      onClick={handleDeleteClick}
+                      ref={deleteButtonRef}
+                      size="xs"
+                      variant="subtle"
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </Group>
+
+                {deleteError && (
+                  <Text c="red" size="sm" role="alert" mt="xs">
+                    {deleteError}
+                  </Text>
+                )}
 
                 <Collapse in={showReplyForm}>
                   <Stack gap="xs" mt="xs">
                     <Textarea
-                      ref={textareaRef}
-                      aria-label="Reply text. Press Ctrl+Enter or Cmd+Enter to submit."
                       aria-busy={isSubmitting}
+                      aria-label="Reply text. Press Ctrl+Enter or Cmd+Enter to submit."
                       autosize
                       disabled={isSubmitting}
                       maxLength={10000}
@@ -248,11 +363,13 @@ export function CommentItem({
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Write your reply (markdown supported)..."
+                      ref={textareaRef}
                       value={replyText}
                     />
 
                     <Group gap="xs">
                       <Button
+                        data-umami-event="submit reply comment"
                         disabled={!replyText.trim()}
                         loading={isSubmitting}
                         onClick={handleSubmit}
@@ -261,6 +378,7 @@ export function CommentItem({
                         Submit
                       </Button>
                       <Button
+                        data-umami-event="cancel reply comment"
                         disabled={isSubmitting}
                         onClick={handleCancel}
                         size="xs"
@@ -332,6 +450,35 @@ export function CommentItem({
           </Box>
         )}
       </div>
+
+      <Modal
+        centered
+        closeOnClickOutside={false}
+        onClose={handleDeleteCancel}
+        opened={deleteModalOpened}
+        title="Delete Comment"
+      >
+        <Text mb="lg">
+          Are you sure you want to delete this comment? This action cannot be
+          undone.
+        </Text>
+        <Group gap="sm" justify="flex-end">
+          <Button
+            data-umami-event="cancel delete comment"
+            onClick={handleDeleteCancel}
+            variant="subtle"
+          >
+            Cancel
+          </Button>
+          <Button
+            color="red"
+            data-umami-event="confirm delete comment"
+            onClick={handleDeleteConfirm}
+          >
+            Delete
+          </Button>
+        </Group>
+      </Modal>
     </Box>
   )
 }
