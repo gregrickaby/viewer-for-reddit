@@ -36,11 +36,11 @@ export function CardActions({
       {!hideCommentToggle && (
         <Tooltip label="View Comments" withinPortal>
           <Button
-            component={Link}
-            href={`${postLink}#comments`}
             aria-label={`View ${post.num_comments} comments`}
             color="gray"
-            data-umami-event="comment button"
+            component={Link}
+            data-umami-event="view comment button"
+            href={`${postLink}#comments`}
             leftSection={<FaComment size={14} />}
             radius="sm"
             variant="subtle"

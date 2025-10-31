@@ -87,7 +87,6 @@ export function CommentItem({
     toggleReplyForm,
     handleSubmit,
     handleCancel,
-    handleKeyDown,
     handleDeleteConfirm,
     handleDeleteCancel,
     isSubmitting,
@@ -206,7 +205,6 @@ export function CommentItem({
                   errorMessage={errorMessage}
                   isSubmitting={isSubmitting}
                   onCancel={handleCancel}
-                  onKeyDown={handleKeyDown}
                   onReplyTextChange={setReplyText}
                   onSubmit={handleSubmit}
                   replyText={replyText}

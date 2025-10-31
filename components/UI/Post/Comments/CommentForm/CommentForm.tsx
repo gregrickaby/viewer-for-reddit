@@ -1,8 +1,9 @@
 'use client'
 
+import {BaseCommentForm} from '@/components/UI/Post/Comments/BaseCommentForm/BaseCommentForm'
 import {useAppSelector} from '@/lib/store/hooks'
 import {useSubmitCommentMutation} from '@/lib/store/services/commentsApi'
-import {Box, Button, Group, Stack, Text, Textarea} from '@mantine/core'
+import {Box, Button} from '@mantine/core'
 import {notifications} from '@mantine/notifications'
 import {useEffect, useRef, useState} from 'react'
 import {BiCheckCircle, BiComment} from 'react-icons/bi'
@@ -23,7 +24,9 @@ export interface CommentFormProps {
  * Only visible when user is authenticated.
  *
  * Features:
+ * - Toggleable form with expand/collapse
  * - Auto-focus textarea on open
+ * - Markdown preview support
  * - Keyboard shortcut: Cmd/Ctrl+Enter to submit
  * - Loading states during submission
  * - Error handling with user-friendly messages
@@ -106,14 +109,6 @@ export function CommentForm({
     }, 0)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isSubmitting) {
-      e.preventDefault()
-      handleSubmit()
-    }
-  }
-
   if (!isAuthenticated) {
     return null
   }
@@ -121,48 +116,19 @@ export function CommentForm({
   return (
     <Box mb="md">
       {showForm ? (
-        <Stack gap="xs">
-          <Textarea
-            ref={textareaRef}
-            aria-label="Comment text. Press Ctrl+Enter or Cmd+Enter to submit."
-            aria-busy={isSubmitting}
-            autosize
-            disabled={isSubmitting}
-            maxLength={10000}
-            minRows={4}
-            onChange={(e) => setCommentText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            value={commentText}
-          />
-
-          <Group gap="xs">
-            <Button
-              data-umami-event="submit comment"
-              disabled={!commentText.trim()}
-              loading={isSubmitting}
-              onClick={handleSubmit}
-              size="sm"
-            >
-              Comment
-            </Button>
-            <Button
-              data-umami-event="cancel comment"
-              disabled={isSubmitting}
-              onClick={handleCancel}
-              size="sm"
-              variant="subtle"
-            >
-              Cancel
-            </Button>
-          </Group>
-
-          {errorMessage && (
-            <Text c="red" size="sm" role="alert">
-              {errorMessage}
-            </Text>
-          )}
-        </Stack>
+        <BaseCommentForm
+          cancelEventName="cancel comment"
+          error={errorMessage}
+          isSubmitting={isSubmitting}
+          onChange={setCommentText}
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+          placeholder={placeholder}
+          submitEventName="submit comment"
+          submitLabel="Comment"
+          textareaRef={textareaRef}
+          value={commentText}
+        />
       ) : (
         <Button
           data-umami-event="show comment form"

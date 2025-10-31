@@ -114,14 +114,6 @@ export function useCommentActions({
     }, 0)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isSubmitting) {
-      e.preventDefault()
-      handleSubmit()
-    }
-  }
-
   const handleDeleteConfirm = async () => {
     if (!commentName) return
 
@@ -165,7 +157,6 @@ export function useCommentActions({
     toggleReplyForm,
     handleSubmit,
     handleCancel,
-    handleKeyDown,
     handleDeleteConfirm,
     handleDeleteCancel,
     // States

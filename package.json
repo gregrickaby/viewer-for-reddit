@@ -55,6 +55,7 @@
     "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
+    "remark-gfm": "^4.0.1",
     "sanitize-html": "^2.17.0",
     "uuid": "^13.0.0"
   },

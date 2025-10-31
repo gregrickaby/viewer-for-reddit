@@ -1,4 +1,5 @@
-import {Button, Collapse, Group, Stack, Text, Textarea} from '@mantine/core'
+import {BaseCommentForm} from '@/components/UI/Post/Comments/BaseCommentForm/BaseCommentForm'
+import {Collapse} from '@mantine/core'
 
 /**
  * Props for CommentReplyForm component.
@@ -14,8 +15,6 @@ interface CommentReplyFormProps {
   onSubmit: () => Promise<void>
   /** Handler for cancel */
   onCancel: () => void
-  /** Handler for keyboard events */
-  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
   /** Whether submission is in progress */
   isSubmitting: boolean
   /** Error message to display */
@@ -30,6 +29,7 @@ interface CommentReplyFormProps {
  * Features:
  * - Collapsible form with animation
  * - Auto-focus textarea
+ * - Markdown preview support
  * - Keyboard shortcuts (Cmd/Ctrl+Enter to submit)
  * - Submit/cancel buttons
  * - Error message display
@@ -44,55 +44,27 @@ export function CommentReplyForm({
   onReplyTextChange,
   onSubmit,
   onCancel,
-  onKeyDown,
   isSubmitting,
   errorMessage,
   textareaRef
 }: Readonly<CommentReplyFormProps>) {
   return (
     <Collapse in={showReplyForm}>
-      <Stack gap="xs" mt="xs">
-        <Textarea
-          aria-busy={isSubmitting}
-          aria-label="Reply text. Press Ctrl+Enter or Cmd+Enter to submit."
-          autosize
-          disabled={isSubmitting}
-          maxLength={10000}
-          minRows={3}
-          onChange={(e) => onReplyTextChange(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder="Write your reply (markdown supported)..."
-          ref={textareaRef}
-          value={replyText}
-        />
-
-        <Group gap="xs">
-          <Button
-            data-umami-event="submit reply comment"
-            disabled={!replyText.trim()}
-            loading={isSubmitting}
-            onClick={onSubmit}
-            size="xs"
-          >
-            Submit
-          </Button>
-          <Button
-            data-umami-event="cancel reply comment"
-            disabled={isSubmitting}
-            onClick={onCancel}
-            size="xs"
-            variant="subtle"
-          >
-            Cancel
-          </Button>
-        </Group>
-
-        {errorMessage && (
-          <Text c="red" size="sm" role="alert">
-            {errorMessage}
-          </Text>
-        )}
-      </Stack>
+      <BaseCommentForm
+        buttonSize="xs"
+        cancelEventName="cancel reply comment"
+        error={errorMessage}
+        isSubmitting={isSubmitting}
+        minRows={3}
+        onChange={onReplyTextChange}
+        onCancel={onCancel}
+        onSubmit={onSubmit}
+        placeholder="Write your reply (markdown supported)..."
+        submitEventName="submit reply comment"
+        submitLabel="Submit"
+        textareaRef={textareaRef}
+        value={replyText}
+      />
     </Collapse>
   )
 }
