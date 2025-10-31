@@ -335,10 +335,8 @@ const data: unknown = fetchData()
 
 Before approving, verify:
 
-- [ ] `npm run format` passes
-- [ ] `npm run lint` passes
-- [ ] `npm run typecheck` passes
-- [ ] `npm run test` passes (or specific test files)
+- [ ] `npm run validate` passes (format, lint, typecheck, test)
+- [ ] `npm run sonar` passes (SonarQube quality gate)
 - [ ] SonarQube shows no critical/blocker issues
 - [ ] Code duplication < 1.5%
 

@@ -783,13 +783,12 @@ Last updated: [Date]
 
 ### 20. **Validation After Changes**
 
-After accessibility improvements, run validation protocol in sequence (stop if any fail):
+After accessibility improvements, run validation:
 
 ```bash
-npm run format           # Auto-fix formatting
-npm run lint             # Check for errors
-npm run typecheck        # Verify TypeScript
 npx vitest <path> --run  # Run component tests
+npm run validate         # Complete validation: format, lint, typecheck, test
+npm run sonar          # SonarQube analysis - must pass quality gate
 ```
 
 Then test with:

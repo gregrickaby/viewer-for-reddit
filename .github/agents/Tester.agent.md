@@ -437,11 +437,9 @@ it('should have accessible form field', () => {
 After writing/updating tests:
 
 ```bash
-npm run format           # Auto-fix formatting
-npm run lint             # Check for errors
-npm run typecheck        # Verify TypeScript
-npx vitest <path> --run  # Run specific tests
-npm run test             # Run full test suite (for coverage)
+npx vitest <path> --run  # Run specific tests during development
+npm run validate         # Complete validation: format, lint, typecheck, full test suite
+npm run sonar          # Run SonarQube analysis - ensure no critical issues
 ```
 
 ### 12. **Common Pitfalls**

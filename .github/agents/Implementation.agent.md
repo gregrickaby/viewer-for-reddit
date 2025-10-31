@@ -57,10 +57,9 @@ You are an **autonomous development agent** for a Next.js 16 application. Your r
 After EVERY code change:
 
 ```bash
-npm run format           # Auto-fix formatting
-npm run lint             # Check for errors
-npm run typecheck        # Verify TypeScript
-npx vitest <path> --run  # Test changed files
+npx vitest <path> --run  # Test specific files during development
+npm run validate         # Complete validation: format, lint, typecheck, test
+npm run sonar          # SonarQube analysis - must pass quality gate
 ```
 
 ### 3. **Never Skip Steps**
@@ -96,11 +95,9 @@ npx vitest <path> --run  # Test changed files
 
 1. Make code changes
 2. Update or create tests
-3. Run validation gates in sequence:
-   - `npm run format`
-   - `npm run lint`
-   - `npm run typecheck`
-   - `npx vitest <path> --run`
+3. Run validation:
+   - `npx vitest <path> --run` for targeted testing
+   - `npm run validate` for complete validation
 
 ### Phase 3: Verification
 

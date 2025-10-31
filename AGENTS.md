@@ -42,10 +42,7 @@ npm run dev              # Start dev server (check port 3000 first)
 npm run build            # Production build
 
 # Quality Gates (run in sequence)
-npm run format           # Prettier - auto-fixes formatting
-npm run lint             # ESLint - must pass
-npm run typecheck        # TypeScript strict - must pass
-npm run test             # All unit tests and produce coverage report - must pass
+npm run validate         # Runs format, lint, typecheck, and test in sequence
 sonar-scanner            # SonarQube analysis - must pass quality gate
 
 # Testing
@@ -67,17 +64,16 @@ npm run typegen:types    # Generate types from OpenAPI spec
 **For all code changes:**
 
 1. If API spec/types changed: `npm run typegen:types`
-2. Always run in sequence (stop if any fail):
-
+2. For targeted validation:
    ```bash
-   npm run format
-   npm run lint
-   npm run typecheck
-   npx vitest <path> --run
+   npx vitest <path> --run  # Test specific files during development
    ```
-
-3. For feature completion: `npm run test` + SonarQube analysis
-4. Optional: Playwright MCP validation for UI changes
+3. For complete validation (run in sequence, stop if any fail):
+   ```bash
+   npm run validate  # Runs format, lint, typecheck, and full test suite
+   ```
+4. For feature completion: `npm run validate` + SonarQube analysis
+5. Optional: Playwright MCP validation for UI changes
 
 **SonarQube Integration:**
 
@@ -227,18 +223,13 @@ components/ComponentName/
 
 ### Validation Gate Protocol
 
-**Critical**: Run commands in sequence. Stop if any step fails.
+**Critical**: Run validation command. Stop if any step fails.
 
 ```bash
-# 1. Format first (avoid pre-commit hook amendments)
-npm run format
+# 1. Run complete validation (format, lint, typecheck, test)
+npm run validate
 
-# 2. Run quality gates
-npm run lint
-npm run typecheck
-npm run test
-
-# 3. Validate with Playwright MCP if UI changes
+# 2. Validate with Playwright MCP if UI changes
 npm run dev  # Check port 3000 first, then use Playwright MCP
 ```
 
@@ -533,13 +524,8 @@ Mock logging utilities in tests using standard Vitest mocking patterns. See test
 3. **Validation Process**
 
    ```bash
-   # Always format before committing to avoid pre-commit hook amendments
-   npm run format
-
-   # Run validation gate
-   npm run lint
-   npm run typecheck
-   npm run test
+   # Run complete validation (format, lint, typecheck, test)
+   npm run validate
 
    # Run SonarQube analysis (for features, not minor fixes)
    sonar-scanner
