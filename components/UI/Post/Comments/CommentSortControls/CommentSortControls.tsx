@@ -16,7 +16,7 @@ export function CommentSortControls() {
 
   return (
     <Group gap="sm" align="center" wrap="wrap" mb="md">
-      <Text size="sm" fw={500} c="dimmed">
+      <Text size="sm" fw={500} c="dimmed" id="sort-label">
         Sort by:
       </Text>
       <SegmentedControl
@@ -31,6 +31,7 @@ export function CommentSortControls() {
         size="xs"
         data-umami-event="sort comments"
         data-umami-event-sort={currentSort}
+        aria-labelledby="sort-label"
       />
     </Group>
   )

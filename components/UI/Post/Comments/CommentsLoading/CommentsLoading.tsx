@@ -3,7 +3,11 @@ import styles from './CommentsLoading.module.css'
 
 export function CommentsLoading() {
   return (
-    <output aria-live="polite" aria-busy="true">
+    <output
+      aria-live="polite"
+      aria-busy="true"
+      aria-describedby="loading-description"
+    >
       <Stack gap="md">
         {Array.from({length: 5}, (_, i) => `skeleton-${i}`).map((id) => (
           <Card key={id} padding="md" withBorder>
@@ -17,7 +21,7 @@ export function CommentsLoading() {
         ))}
       </Stack>
       <div id="loading-description" className={styles.srOnly}>
-        Comments are being loaded. Please wait.
+        Loading comments. Please wait.
       </div>
     </output>
   )

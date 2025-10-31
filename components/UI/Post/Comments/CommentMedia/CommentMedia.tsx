@@ -54,6 +54,7 @@ export function CommentMedia({bodyHtml}: Readonly<CommentMediaProps>) {
                 loop
                 muted
                 autoPlay
+                aria-label={link.text || 'Comment video'}
                 style={{
                   width: '100%',
                   height: 'auto',

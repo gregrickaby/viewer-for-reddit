@@ -12,7 +12,7 @@ describe('CommentsLoading', () => {
     render(<CommentsLoading />)
 
     expect(
-      screen.getByText('Comments are being loaded. Please wait.')
+      screen.getByText('Loading comments. Please wait.')
     ).toBeInTheDocument()
   })
 

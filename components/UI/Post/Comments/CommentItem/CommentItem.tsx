@@ -108,8 +108,12 @@ function CommentMetadata({
 
         {hasReplies && (
           <Group gap={4} align="center">
-            <BiComment size={16} style={{opacity: 0.6}} />
-            <Text size="sm" c="dimmed">
+            <BiComment size={16} style={{opacity: 0.6}} aria-hidden="true" />
+            <Text
+              size="sm"
+              c="dimmed"
+              aria-label={`${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}`}
+            >
               {replyCount}
             </Text>
           </Group>
@@ -173,9 +177,9 @@ function CommentMetadata({
       </Group>
 
       <Group gap="md">
-        <Tooltip label="View on Reddit" position="top">
+        <Tooltip label="View on Reddit (opens in new tab)" position="top">
           <ActionIcon
-            aria-label="View on Reddit"
+            aria-label="View on Reddit (opens in new tab)"
             component="a"
             href={`https://reddit.com${comment.permalink}`}
             rel="noopener noreferrer"
@@ -183,7 +187,7 @@ function CommentMetadata({
             target="_blank"
             variant="subtle"
           >
-            <BiLinkExternal size={16} />
+            <BiLinkExternal size={16} aria-hidden="true" />
           </ActionIcon>
         </Tooltip>
       </Group>
@@ -257,13 +261,14 @@ export function CommentItem({
               </Text>
             </Group>
 
-            <div
+            <section
               className={classes.commentBody}
               dangerouslySetInnerHTML={{
                 __html: stripMediaLinks(
                   decodeAndSanitizeHtml(comment.body_html ?? comment.body ?? '')
                 )
               }}
+              aria-label="Comment text"
             />
 
             <CommentMedia
@@ -297,7 +302,10 @@ export function CommentItem({
             </Collapse>
 
             {!isExpanded && comment.replies && comment.replies.length > 0 && (
-              <Box className={classes.collapsedPreview} mt="xs">
+              <output
+                className={classes.collapsedPreview}
+                aria-label="Collapsed replies preview"
+              >
                 <Text size="xs" c="dimmed" mb={4}>
                   {comment.replies.length}{' '}
                   {comment.replies.length === 1 ? 'reply' : 'replies'} collapsed
@@ -309,7 +317,7 @@ export function CommentItem({
                     {comment.replies[0].body.length > 100 ? '...' : ''}
                   </Text>
                 )}
-              </Box>
+              </output>
             )}
           </>
         )}
