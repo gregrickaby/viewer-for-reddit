@@ -9,7 +9,6 @@ tools:
     'new',
     'runCommands',
     'runTasks',
-    'next-devtools/*',
     'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
@@ -27,8 +26,7 @@ tools:
     'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
     'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
     'extensions',
-    'todos',
-    'runTests'
+    'todos'
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:

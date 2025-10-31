@@ -1,5 +1,6 @@
 'use client'
 
+import {CommentMedia} from '@/components/UI/Post/Comments/CommentMedia/CommentMedia'
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
 import {COMMENT_CONFIG} from '@/lib/config'
 import {
@@ -13,6 +14,7 @@ import {
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {collectDescendantIds} from '@/lib/utils/formatting/commentHelpers'
+import {stripMediaLinks} from '@/lib/utils/formatting/commentMediaHelpers'
 import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
 import {
@@ -258,10 +260,14 @@ export function CommentItem({
             <div
               className={classes.commentBody}
               dangerouslySetInnerHTML={{
-                __html: decodeAndSanitizeHtml(
-                  comment.body_html ?? comment.body ?? ''
+                __html: stripMediaLinks(
+                  decodeAndSanitizeHtml(comment.body_html ?? comment.body ?? '')
                 )
               }}
+            />
+
+            <CommentMedia
+              bodyHtml={decodeAndSanitizeHtml(comment.body_html ?? '')}
             />
 
             <CommentMetadata
