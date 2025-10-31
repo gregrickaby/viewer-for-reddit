@@ -252,7 +252,21 @@ npm run dev  # Check port 3000 first, then use Playwright MCP
 - Only add comments for complex business logic or non-obvious patterns
 - Let code be self-documenting through clear naming
 
-**Development Rules:**
+**JSDoc Requirements:**
+
+- ALL components and functions must have a simple docblock
+- Describe what it does in 1-2 sentences
+- Add @param and @returns for non-obvious parameters/returns
+- Complex components should include a feature list
+
+**Code Organization:**
+
+- Props in JSX will be sorted alphabetically by ESLint auto-fix
+- No orphaned files, dead code, or commented-out code
+- One component per file (extract sub-components to separate files)
+- Clean up unused imports and variables
+
+**Development Rules:\*\***
 
 - ALWAYS do what has been asked; nothing more, nothing less (unless debugging)
 - ALWAYS prefer editing existing files over creating new ones
@@ -330,6 +344,52 @@ This is a **test-driven codebase**. Tests must be written/updated alongside code
   - NEVER create superfluous tests that don't add value
 - **Integration Tests**: RTK Query + MSW mocking
 - **Code Quality**: SonarQube analysis for duplication, complexity, and security issues
+
+### Test Utilities (@/test-utils)
+
+**Critical**: ALWAYS import test utilities from `@/test-utils`, never directly from libraries.
+
+**Pre-configured Exports:**
+
+```typescript
+// ✅ CORRECT
+import {render, screen, user, waitFor, server} from '@/test-utils'
+
+// ❌ WRONG
+import {render, screen} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+```
+
+**Key Exports:**
+
+- `user` - **Pre-configured userEvent.setup()** - Use this for all interactions
+- `userEvent` - Raw default export (rarely needed)
+- `render` - Custom render with Redux StoreProvider
+- `renderHook` - Hook testing with Redux provider
+- `server` - MSW server instance
+- `http`, `HttpResponse` - MSW utilities
+- All @testing-library/react exports
+
+**Test Pattern:**
+
+```typescript
+import {render, screen, user} from '@/test-utils'
+
+it('should handle interaction', async () => {
+  render(<MyComponent />)
+  await user.click(screen.getByRole('button'))
+  // No userEvent.setup() needed - already configured!
+})
+```
+
+**Why Use Pre-configured `user`?**
+
+- ✅ Consistent setup across all tests
+- ✅ Eliminates duplicate `userEvent.setup()` calls
+- ✅ Single source of truth for test configuration
+- ✅ Easier to update user-event options globally
+
+**Critical**: NEVER call `userEvent.setup()` directly - always use the pre-configured `user` export.
 
 ### MSW v2 HTTP Mocking (CRITICAL)
 
@@ -525,7 +585,7 @@ Mock logging utilities in tests using standard Vitest mocking patterns. See test
 **Test Failures:**
 
 - **Network-related**: Check `test-utils/msw/handlers/` first
-- **Flaky tests**: Ensure `userEvent.setup()` per test and reset mocks
+- **Flaky tests**: Use pre-configured `user` from @/test-utils and reset mocks properly
 - **TypeScript errors**: Run `npm run typecheck` and inspect top-level failures
 
 **Build Issues:**

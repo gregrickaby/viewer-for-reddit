@@ -71,6 +71,10 @@ npx vitest <path> --run  # Test changed files
 - **NEVER** mock `global.fetch` (use MSW v2 handlers)
 - **NEVER** use `any` type
 - **NEVER** add manual `useMemo`, `useCallback`, or `React.memo` (React Compiler enabled)
+- **NEVER** leave orphaned files, dead code, or commented-out code
+- **ALWAYS** add a simple docblock to every component and function (1-2 sentence description)
+- **ALWAYS** import test utilities from `@/test-utils` (never direct from `@testing-library/*`)
+- **ALWAYS** use pre-configured `user` from `@/test-utils` (no `userEvent.setup()`)
 
 ### 4. **Test-Driven Development**
 
@@ -185,13 +189,85 @@ import {IoSettings} from 'react-icons/io5'
 import {FaGithub, IoSettings} from 'react-icons'
 ```
 
+### Test Utilities
+
+```ts
+// ✅ CORRECT - Use @/test-utils
+import {render, screen, user, waitFor} from '@/test-utils'
+
+it('should handle click', async () => {
+  render(<Component />)
+  await user.click(screen.getByRole('button'))
+})
+
+// ❌ WRONG - Direct imports and duplicate setup
+import {render, screen} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
+it('should handle click', async () => {
+  const user = userEvent.setup() // Duplicate!
+  render(<Component />)
+  await user.click(screen.getByRole('button'))
+})
+```
+
+### JSDoc Requirements
+
+```tsx
+// ✅ CORRECT - Simple docblock for component
+/**
+ * Displays user profile with avatar and bio.
+ */
+export function UserProfile({username, avatar, bio}: UserProfileProps) {
+  return <div>...</div>
+}
+
+// ✅ CORRECT - Simple docblock for function
+/**
+ * Formats username with @ prefix.
+ */
+function formatUsername(name: string): string {
+  return `@${name}`
+}
+
+// ✅ CORRECT - Complex component with features list
+/**
+ * User authentication modal.
+ *
+ * Features:
+ * - Email/password login
+ * - Social auth (Google, GitHub)
+ * - Password reset flow
+ * - Remember me option
+ */
+export function AuthModal({isOpen, onClose}: AuthModalProps) {
+  return <Dialog>...</Dialog>
+}
+
+// ❌ WRONG - No docblock
+function formatUsername(name: string): string {
+  return `@${name}`
+}
+```
+
+### Props Sorting
+
+````tsx
+### JSDoc Requirements
+
+```tsx
+````
+
 ## Quality Standards
 
 - **Code Duplication**: < 1.5% (use SonarQube MCP to verify)
 - **Test Coverage**: 90%+
 - **TypeScript**: Zero errors in strict mode
-- **ESLint**: Zero violations
+- **ESLint**: Zero violations (props auto-sorted by ESLint)
 - **SonarQube**: Zero critical/blocker issues
+- **JSDoc**: Simple docblock on all components and functions
+- **Code Cleanliness**: No orphaned files, dead code, or commented-out code
+- **Test Utilities**: Always import from `@/test-utils`, use pre-configured `user`
 
 ## Failure Protocol
 
@@ -205,10 +281,12 @@ import {FaGithub, IoSettings} from 'react-icons'
 ## Success Criteria
 
 ✅ All validation gates pass
-✅ Tests updated/created
+✅ Tests updated/created with proper `@/test-utils` imports
 ✅ No console.log/console.error in app code
 ✅ No global.fetch mocking
 ✅ TypeScript strict mode clean
+✅ Simple docblock on all components and functions
+✅ No orphaned files or commented-out code
 ✅ Todo list updated
 
 ## Remember

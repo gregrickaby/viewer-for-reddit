@@ -159,7 +159,7 @@ When asked to improve coverage:
 #### React Components (with Testing Library)
 
 ```typescript
-import {render, screen} from '@/test-utils'
+import {render, screen, user} from '@/test-utils'
 import {ComponentName} from './ComponentName'
 
 describe('ComponentName', () => {
@@ -175,7 +175,6 @@ describe('ComponentName', () => {
 
   it('should call onClick handler when clicked', async () => {
     const handleClick = vi.fn()
-    const user = userEvent.setup()
     render(<ComponentName onClick={handleClick} />)
 
     await user.click(screen.getByRole('button'))
@@ -323,7 +322,8 @@ When tests fail:
 - Keep tests simple and focused
 - Use `it.each()` for similar test cases
 - Mock external dependencies (MSW for HTTP, vi.mock for modules)
-- Use `userEvent` over `fireEvent` for user interactions
+- Use pre-configured `user` from `@/test-utils` for interactions (never `userEvent.setup()`)
+- Add simple docblocks (1-2 sentences) to all test utilities and helpers
 
 #### ❌ Don't:
 
@@ -332,6 +332,7 @@ When tests fail:
 - Create tests that duplicate existing coverage
 - Use `any` type in test code
 - Mock `global.fetch` (use MSW v2)
+- Call `userEvent.setup()` directly (use pre-configured `user` from `@/test-utils`)
 - Over-mock (only mock what's necessary)
 - Test implementation details (e.g., function names, internal variables)
 

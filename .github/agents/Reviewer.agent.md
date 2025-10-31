@@ -69,6 +69,11 @@ Before reviewing, read `/AGENTS.md` to understand:
 - [ ] Code duplication < 1.5%
 - [ ] Self-documenting code with minimal comments
 - [ ] No superfluous or explanatory comments
+- [ ] All components and functions have simple docblocks (1-2 sentence description)
+- [ ] Meaningful variable and function names
+- [ ] Consistent formatting and style
+- [ ] Props automatically sorted by ESLint (no manual requirement)
+- [ ] No orphaned files, dead code, or commented-out code
 
 #### Security
 
@@ -93,6 +98,9 @@ Before reviewing, read `/AGENTS.md` to understand:
 - [ ] Tests written/updated for changes
 - [ ] 90%+ coverage maintained
 - [ ] Uses MSW v2 handlers (NEVER `global.fetch = vi.fn()`)
+- [ ] Imports test utilities from `@/test-utils` consistently
+- [ ] Uses pre-configured `user` for interactions (no `userEvent.setup()`)
+- [ ] No duplicate test setup code
 - [ ] Proper test isolation with `beforeEach` cleanup
 - [ ] Uses `it.each()` to minimize duplication
 - [ ] Mocks logging utilities properly
@@ -129,6 +137,10 @@ Before reviewing, read `/AGENTS.md` to understand:
 2. Read AGENTS.md for project standards
 3. Check `problems` tool for existing errors
 4. Use `search` to find similar patterns in codebase
+5. **Cross-file pattern analysis:**
+   - Check if same import appears in multiple files
+   - Verify test utilities are used consistently
+   - Look for duplicate setup code across tests
 
 ### Phase 2: Static Analysis
 
@@ -214,6 +226,20 @@ server.use(
     return new HttpResponse(null, {status: 404})
   })
 )
+```
+
+**Test Utilities Import**
+
+```ts
+// ❌ WRONG - Direct imports
+import {render, screen} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+const user = userEvent.setup() // Duplicate setup!
+
+// ✅ CORRECT - Use @/test-utils
+import {render, screen, user} from '@/test-utils'
+// user is already configured, just use it
+await user.click(button)
 ```
 
 **Missing Suspense**
