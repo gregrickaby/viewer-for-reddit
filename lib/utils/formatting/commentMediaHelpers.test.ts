@@ -25,6 +25,19 @@ describe('commentMediaHelpers', () => {
     ])('should detect if %s is media URL: %s', (url, expected) => {
       expect(isMediaUrl(url)).toBe(expected)
     })
+
+    it.each([
+      ['https://evil-i.redd.it.com/noextension', false],
+      ['https://fake-i.imgur.com.attacker.com/noext', false],
+      ['https://i.redd.it.evil.com/noextension', false],
+      ['https://subdomain.gfycat.com.attacker.net/video', false],
+      ['https://redgifs.com.fake-site.org/malware', false]
+    ])(
+      'should reject subdomain injection without media extension: %s',
+      (maliciousUrl, expected) => {
+        expect(isMediaUrl(maliciousUrl)).toBe(expected)
+      }
+    )
   })
 
   describe('getMediaType', () => {
@@ -44,6 +57,18 @@ describe('commentMediaHelpers', () => {
     ])('should detect media type for %s as %s', (url, expected) => {
       expect(getMediaType(url)).toBe(expected)
     })
+
+    it.each([
+      ['https://evil-i.redd.it.com/fake.jpg', 'image'],
+      ['https://malicious-i.imgur.com.attacker.org/bad', 'unknown'],
+      ['https://fake-gfycat.com.phishing.net/video', 'unknown'],
+      ['https://redgifs.com.evil.org/malware', 'unknown']
+    ])(
+      'should not trust subdomain injection for %s',
+      (maliciousUrl, expected) => {
+        expect(getMediaType(maliciousUrl)).toBe(expected)
+      }
+    )
   })
 
   describe('normalizeMediaUrl', () => {
@@ -62,6 +87,23 @@ describe('commentMediaHelpers', () => {
       const url = 'https://imgur.com/a/abc123'
       expect(normalizeMediaUrl(url)).toBe(url)
     })
+
+    it.each([
+      ['https://evil-imgur.com/fake.gifv', 'https://evil-imgur.com/fake.gifv'],
+      [
+        'https://imgur.com.attacker.org/bad.gifv',
+        'https://imgur.com.attacker.org/bad.gifv'
+      ],
+      [
+        'https://fake-imgur.com.evil.net/malware.gifv',
+        'https://fake-imgur.com.evil.net/malware.gifv'
+      ]
+    ])(
+      'should not convert subdomain injection attack: %s',
+      (maliciousUrl, expected) => {
+        expect(normalizeMediaUrl(maliciousUrl)).toBe(expected)
+      }
+    )
   })
 
   describe('extractMediaLinks', () => {

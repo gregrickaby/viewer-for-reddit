@@ -1,4 +1,14 @@
 /**
+ * Check if a hostname matches a domain exactly or as a subdomain.
+ * Prevents subdomain injection attacks (e.g., evil-i.redd.it.com)
+ */
+function hostnameMatches(hostname: string, domain: string): boolean {
+  const lower = hostname.toLowerCase()
+  const lowerDomain = domain.toLowerCase()
+  return lower === lowerDomain || lower.endsWith(`.${lowerDomain}`)
+}
+
+/**
  * Detect if a URL is a supported media type (image, GIF, video)
  */
 export function isMediaUrl(url: string): boolean {
@@ -23,7 +33,7 @@ export function isMediaUrl(url: string): boolean {
 
   try {
     const urlObj = new URL(url)
-    return mediaHosts.some((host) => urlObj.hostname.includes(host))
+    return mediaHosts.some((host) => hostnameMatches(urlObj.hostname, host))
   } catch {
     return false
   }
@@ -59,14 +69,31 @@ export function extractMediaLinks(
  */
 export function normalizeMediaUrl(url: string): string {
   // Convert imgur gifv to mp4
-  if (url.includes('imgur.com') && url.endsWith('.gifv')) {
-    return url.replace('.gifv', '.mp4')
+  try {
+    const urlObj = new URL(url)
+    const imgurHosts = ['imgur.com', 'i.imgur.com']
+    if (
+      imgurHosts.some((host) => hostnameMatches(urlObj.hostname, host)) &&
+      urlObj.pathname.endsWith('.gifv')
+    ) {
+      return url.replace('.gifv', '.mp4')
+    }
+  } catch {
+    // Invalid URL, fall through
   }
 
   // Convert imgur gallery links to direct image
-  if (url.includes('imgur.com/a/')) {
-    // This would need API call or scraping, for now just return as-is
-    return url
+  try {
+    const urlObj = new URL(url)
+    if (
+      hostnameMatches(urlObj.hostname, 'imgur.com') &&
+      urlObj.pathname.startsWith('/a/')
+    ) {
+      // This would need API call or scraping, for now just return as-is
+      return url
+    }
+  } catch {
+    // Invalid URL, fall through
   }
 
   return url
@@ -91,17 +118,13 @@ export function getMediaType(url: string): 'image' | 'video' | 'unknown' {
   // Check domain-based detection
   try {
     const urlObj = new URL(url)
-    if (
-      urlObj.hostname.includes('i.redd.it') ||
-      urlObj.hostname.includes('i.imgur.com')
-    ) {
+    const imageHosts = ['i.redd.it', 'i.imgur.com']
+    if (imageHosts.some((host) => hostnameMatches(urlObj.hostname, host))) {
       // Assume image if no extension
       return 'image'
     }
-    if (
-      urlObj.hostname.includes('gfycat.com') ||
-      urlObj.hostname.includes('redgifs.com')
-    ) {
+    const videoHosts = ['gfycat.com', 'redgifs.com']
+    if (videoHosts.some((host) => hostnameMatches(urlObj.hostname, host))) {
       return 'video'
     }
   } catch {
