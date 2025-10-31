@@ -5,15 +5,15 @@ tools:
     'edit/createFile',
     'edit/createDirectory',
     'edit/editFiles',
-    'runNotebooks',
     'search',
     'new',
+    'runCommands',
     'runTasks',
-    'next-devtools/*',
     'devvit/*',
     'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
+    'github/github-mcp-server/*',
     'runSubagent',
     'usages',
     'vscodeAPI',
@@ -24,8 +24,7 @@ tools:
     'fetch',
     'githubRepo',
     'extensions',
-    'todos',
-    'runTests'
+    'todos'
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:

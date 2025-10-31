@@ -12,6 +12,7 @@ tools:
     'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
+    'github/github-mcp-server/*',
     'runSubagent',
     'usages',
     'vscodeAPI',
