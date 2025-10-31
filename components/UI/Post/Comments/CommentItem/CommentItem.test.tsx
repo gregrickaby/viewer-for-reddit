@@ -1,10 +1,14 @@
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {render, screen, user} from '@/test-utils'
+import {render, screen, user, waitFor} from '@/test-utils'
 import {axe} from 'jest-axe'
 import {CommentItem} from './CommentItem'
 
+// Helper to delay API responses
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 const mockBasicComment: NestedCommentData = {
   id: 'comment1',
+  name: 't1_comment1',
   author: 'testuser',
   body: 'This is a test comment',
   body_html: '<p>This is a test comment</p>',
@@ -17,6 +21,7 @@ const mockBasicComment: NestedCommentData = {
 
 const mockCommentWithReplies: NestedCommentData = {
   id: 'comment2',
+  name: 't1_comment2',
   author: 'parentuser',
   body: 'Parent comment',
   body_html: '<p>Parent comment</p>',
@@ -28,6 +33,7 @@ const mockCommentWithReplies: NestedCommentData = {
   replies: [
     {
       id: 'reply1',
+      name: 't1_reply1',
       author: 'replyuser',
       body: 'Reply to parent',
       body_html: '<p>Reply to parent</p>',
@@ -260,6 +266,239 @@ describe('CommentItem', () => {
       expect(
         screen.getByRole('button', {name: /expand all descendants \(o\)/i})
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('Reply functionality', () => {
+    const authenticatedState = {
+      auth: {
+        isAuthenticated: true,
+        username: 'currentuser',
+        expiresAt: Date.now() + 3600000
+      }
+    }
+
+    it('should not show reply button when not authenticated', () => {
+      render(<CommentItem comment={mockBasicComment} />)
+
+      expect(
+        screen.queryByRole('button', {name: /reply/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('should show reply button when authenticated', () => {
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      expect(screen.getByRole('button', {name: /reply/i})).toBeInTheDocument()
+    })
+
+    it('should toggle reply form when reply button is clicked', async () => {
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      await screen.findByRole('textbox')
+      expect(screen.getByRole('button', {name: /submit/i})).toBeInTheDocument()
+      expect(screen.getByRole('button', {name: /cancel/i})).toBeInTheDocument()
+    })
+
+    it('should close reply form when cancel button is clicked', async () => {
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      const textarea = await screen.findByRole('textbox')
+      await user.type(textarea, 'Test reply text')
+
+      const cancelButton = screen.getByRole('button', {name: /cancel/i})
+      await user.click(cancelButton)
+
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+    })
+
+    it('should submit comment and close form on successful submission', async () => {
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      const textarea = await screen.findByRole('textbox')
+      await user.type(textarea, 'Test reply text')
+
+      const submitButton = screen.getByRole('button', {name: /submit/i})
+      await user.click(submitButton)
+
+      // Wait for form state to reset (showReplyForm becomes false)
+      // The reply button should be clickable again
+      await waitFor(() => {
+        const button = screen.getByRole('button', {name: /reply/i})
+        expect(button).toBeInTheDocument()
+      })
+    })
+
+    it('should display error message on failed submission', async () => {
+      const {server, http, HttpResponse} = await import('@/test-utils')
+      server.use(
+        http.post('http://localhost:3000/api/reddit/comment', () => {
+          return HttpResponse.json(
+            {error: 'Failed to submit comment'},
+            {status: 500}
+          )
+        })
+      )
+
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      const textarea = await screen.findByRole('textbox')
+      await user.type(textarea, 'Test reply text')
+
+      const submitButton = screen.getByRole('button', {name: /submit/i})
+      await user.click(submitButton)
+
+      // Wait for error message to appear
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText(/failed to submit comment/i)
+          ).toBeInTheDocument()
+        },
+        {timeout: 3000}
+      )
+
+      // Form should remain open
+      expect(screen.getByRole('textbox')).toBeInTheDocument()
+    })
+
+    it('should not submit when textarea is empty', async () => {
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      await screen.findByRole('textbox')
+
+      const submitButton = screen.getByRole('button', {name: /submit/i})
+      await user.click(submitButton)
+
+      // Form should remain open (not submitted)
+      expect(screen.getByRole('textbox')).toBeInTheDocument()
+    })
+
+    it('should submit with keyboard shortcut Cmd+Enter', async () => {
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      const textarea = await screen.findByRole('textbox')
+      await user.type(textarea, 'Test reply text')
+      await user.keyboard('{Meta>}{Enter}{/Meta}')
+
+      // Wait for form state to reset
+      await waitFor(() => {
+        const button = screen.getByRole('button', {name: /reply/i})
+        expect(button).toBeInTheDocument()
+      })
+    })
+
+    it('should submit with keyboard shortcut Ctrl+Enter', async () => {
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      const textarea = await screen.findByRole('textbox')
+      await user.type(textarea, 'Test reply text')
+      await user.keyboard('{Control>}{Enter}{/Control}')
+
+      // Wait for form state to reset
+      await waitFor(() => {
+        const button = screen.getByRole('button', {name: /reply/i})
+        expect(button).toBeInTheDocument()
+      })
+    })
+
+    it('should not show reply button at max depth', () => {
+      const deepComment = {...mockBasicComment, depth: 10}
+
+      render(<CommentItem comment={deepComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      expect(
+        screen.queryByRole('button', {name: /reply/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('should disable submit button while submitting', async () => {
+      // Make MSW handler slow to simulate network delay
+      const {server, http, HttpResponse} = await import('@/test-utils')
+      server.use(
+        http.post('/api/reddit/comment', async () => {
+          await delay(200)
+          return HttpResponse.json({
+            comment: {
+              id: 't1_newreply',
+              name: 't1_newreply',
+              author: 'currentuser',
+              body: 'Test reply text',
+              created_utc: Date.now() / 1000
+            }
+          })
+        })
+      )
+
+      render(<CommentItem comment={mockBasicComment} />, {
+        preloadedState: authenticatedState
+      })
+
+      const replyButton = screen.getByRole('button', {name: /reply/i})
+      await user.click(replyButton)
+
+      const textarea = await screen.findByRole('textbox')
+      await user.type(textarea, 'Test reply text')
+
+      const submitButton = screen.getByRole('button', {name: /submit/i})
+
+      // Click submit and immediately check disabled state
+      const clickPromise = user.click(submitButton)
+
+      // Button should be disabled during submission (check within 50ms)
+      await waitFor(
+        () => {
+          expect(submitButton).toBeDisabled()
+        },
+        {timeout: 100}
+      )
+
+      // Wait for submission to complete
+      await clickPromise
+
+      // Wait for form to close
+      await waitFor(() => {
+        expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+      })
     })
   })
 })

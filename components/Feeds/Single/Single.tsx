@@ -138,6 +138,7 @@ export function Single({
             <Comments
               permalink={post.permalink || ''}
               postLink={parsePostLink(post.permalink, useInternalRouting)}
+              postId={`t3_${postId}`}
               open
               enableInfiniteLoading
               showSortControls

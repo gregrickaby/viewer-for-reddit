@@ -1,13 +1,12 @@
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {Button, Group, NumberFormatter, Text, Tooltip} from '@mantine/core'
+import Link from 'next/link'
 import {FaComment} from 'react-icons/fa'
-import {IoChevronDown, IoChevronUp} from 'react-icons/io5'
 
 interface CardActionsProps {
   post: AutoPostChildData
-  commentsOpen: boolean
-  onCommentsToggle: () => void
+  postLink: string
   hideCommentToggle?: boolean
 }
 
@@ -16,14 +15,13 @@ interface CardActionsProps {
  *
  * Features:
  * - Voting buttons with score
- * - Comments toggle button with count
+ * - Comments link button with count (navigates to post page)
  * - Share button
  * - Horizontal layout matching Reddit's design
  */
 export function CardActions({
   post,
-  commentsOpen,
-  onCommentsToggle,
+  postLink,
   hideCommentToggle = false
 }: Readonly<CardActionsProps>) {
   return (
@@ -38,20 +36,14 @@ export function CardActions({
       {!hideCommentToggle && (
         <Tooltip label="View Comments" withinPortal>
           <Button
-            aria-label={`${commentsOpen ? 'Hide' : 'Show'} ${post.num_comments} comments`}
+            component={Link}
+            href={`${postLink}#comments`}
+            aria-label={`View ${post.num_comments} comments`}
             color="gray"
             data-umami-event="comment button"
             leftSection={<FaComment size={14} />}
-            onClick={onCommentsToggle}
             radius="sm"
             variant="subtle"
-            rightSection={
-              commentsOpen ? (
-                <IoChevronUp size={12} />
-              ) : (
-                <IoChevronDown size={12} />
-              )
-            }
           >
             <Text size="sm" fw={700}>
               <NumberFormatter value={post.num_comments} thousandSeparator />

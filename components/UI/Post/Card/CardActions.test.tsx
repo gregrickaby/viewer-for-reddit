@@ -1,5 +1,5 @@
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {render, screen, user} from '@/test-utils'
+import {render, screen} from '@/test-utils'
 import {CardActions} from './CardActions'
 
 const mockPost: AutoPostChildData = {
@@ -9,23 +9,10 @@ const mockPost: AutoPostChildData = {
   num_comments: 15
 }
 
-const mockOnCommentsToggle = vi.fn()
-
 describe('CardActions', () => {
-  beforeEach(() => {
-    mockOnCommentsToggle.mockClear()
-  })
-
   it('should render vote buttons with correct props', () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
+    render(<CardActions post={mockPost} postLink="/r/test/comments/test123" />)
 
-    // VoteButtons component should be rendered (check for vote elements)
     const upvoteButton = screen.getByLabelText(/upvote/i)
     const downvoteButton = screen.getByLabelText(/downvote/i)
 
@@ -33,87 +20,34 @@ describe('CardActions', () => {
     expect(downvoteButton).toBeInTheDocument()
   })
 
-  it('should render comments button when not hidden', () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
+  it('should render comments link when not hidden', () => {
+    render(<CardActions post={mockPost} postLink="/r/test/comments/test123" />)
 
-    const commentsButton = screen.getByRole('button', {
-      name: /show 15 comments/i
+    const commentsLink = screen.getByRole('link', {
+      name: /15 comments/i
     })
 
-    expect(commentsButton).toBeInTheDocument()
+    expect(commentsLink).toBeInTheDocument()
+    expect(commentsLink).toHaveAttribute(
+      'href',
+      '/r/test/comments/test123#comments'
+    )
   })
 
-  it('should hide comments button when hideCommentToggle is true', () => {
+  it('should hide comments link when hideCommentToggle is true', () => {
     render(
       <CardActions
-        post={mockPost}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
         hideCommentToggle
+        post={mockPost}
+        postLink="/r/test/comments/test123"
       />
     )
 
-    const commentsButton = screen.queryByRole('button', {
+    const commentsLink = screen.queryByRole('link', {
       name: /comments/i
     })
 
-    expect(commentsButton).not.toBeInTheDocument()
-  })
-
-  it('should call onCommentsToggle when comments button clicked', async () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
-
-    const commentsButton = screen.getByRole('button', {
-      name: /show 15 comments/i
-    })
-
-    await user.click(commentsButton)
-
-    expect(mockOnCommentsToggle).toHaveBeenCalledTimes(1)
-  })
-
-  it('should show "Hide comments" label when comments are open', () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
-
-    const commentsButton = screen.getByRole('button', {
-      name: /hide 15 comments/i
-    })
-
-    expect(commentsButton).toBeInTheDocument()
-  })
-
-  it('should show "Show comments" label when comments are closed', () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
-
-    const commentsButton = screen.getByRole('button', {
-      name: /show 15 comments/i
-    })
-
-    expect(commentsButton).toBeInTheDocument()
+    expect(commentsLink).not.toBeInTheDocument()
   })
 
   it('should format large comment counts with thousand separator', () => {
@@ -122,47 +56,11 @@ describe('CardActions', () => {
     render(
       <CardActions
         post={postWithManyComments}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
+        postLink="/r/test/comments/test123"
       />
     )
 
-    // NumberFormatter should format 1234 with comma
     expect(screen.getByText('1,234')).toBeInTheDocument()
-  })
-
-  it('should render chevron down when comments closed', () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
-
-    const commentsButton = screen.getByRole('button', {
-      name: /show 15 comments/i
-    })
-
-    // Button should contain chevron down icon (IoChevronDown)
-    expect(commentsButton).toBeInTheDocument()
-  })
-
-  it('should render chevron up when comments open', () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
-
-    const commentsButton = screen.getByRole('button', {
-      name: /hide 15 comments/i
-    })
-
-    // Button should contain chevron up icon (IoChevronUp)
-    expect(commentsButton).toBeInTheDocument()
   })
 
   it('should handle post with zero comments', () => {
@@ -171,31 +69,24 @@ describe('CardActions', () => {
     render(
       <CardActions
         post={postWithNoComments}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
+        postLink="/r/test/comments/test123"
       />
     )
 
-    const commentsButton = screen.getByRole('button', {
-      name: /show 0 comments/i
+    const commentsLink = screen.getByRole('link', {
+      name: /0 comments/i
     })
 
-    expect(commentsButton).toBeInTheDocument()
+    expect(commentsLink).toBeInTheDocument()
   })
 
   it('should pass Umami event tracking attribute', () => {
-    render(
-      <CardActions
-        post={mockPost}
-        commentsOpen={false}
-        onCommentsToggle={mockOnCommentsToggle}
-      />
-    )
+    render(<CardActions post={mockPost} postLink="/r/test/comments/test123" />)
 
-    const commentsButton = screen.getByRole('button', {
-      name: /show 15 comments/i
+    const commentsLink = screen.getByRole('link', {
+      name: /15 comments/i
     })
 
-    expect(commentsButton).toHaveAttribute('data-umami-event', 'comment button')
+    expect(commentsLink).toHaveAttribute('data-umami-event', 'comment button')
   })
 })

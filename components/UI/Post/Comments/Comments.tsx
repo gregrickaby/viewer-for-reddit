@@ -14,8 +14,11 @@ import {
   collectAllCommentIds,
   sortComments
 } from '@/lib/utils/formatting/commentHelpers'
+import {scrollToComments} from '@/lib/utils/routing/scrollToComments'
 import {VisuallyHidden} from '@mantine/core'
 import {useHotkeys} from '@mantine/hooks'
+import {useEffect, useRef} from 'react'
+import {CommentForm} from './CommentForm/CommentForm'
 import {CommentsEmpty} from './CommentsEmpty/CommentsEmpty'
 import {CommentsList} from './CommentsList/CommentsList'
 import {CommentsLoading} from './CommentsLoading/CommentsLoading'
@@ -31,6 +34,8 @@ interface CommentsProps {
   postLink: string
   /** Whether comments section is open/visible */
   open: boolean
+  /** Post ID for top-level commenting (e.g., t3_abc123) */
+  postId?: string
   /** Pre-loaded comments data (optional) */
   comments?: AutoCommentData[]
   /** Enable infinite scroll to load more comments */
@@ -54,6 +59,7 @@ export function Comments({
   permalink,
   postLink,
   open,
+  postId,
   comments: providedComments,
   enableInfiniteLoading = false,
   maxCommentDepth = COMMENT_CONFIG.MAX_DEPTH,
@@ -61,6 +67,7 @@ export function Comments({
 }: Readonly<CommentsProps>) {
   const dispatch = useAppDispatch()
   const commentSort = useAppSelector((state) => state.settings.commentSort)
+  const hasScrolledRef = useRef(false)
 
   const {
     nestedComments,
@@ -113,6 +120,16 @@ export function Comments({
     ]
   ])
 
+  // Scroll to comments section if hash is present
+  useEffect(() => {
+    if (open && !showLoading && !hasScrolledRef.current) {
+      const didScroll = scrollToComments()
+      if (didScroll) {
+        hasScrolledRef.current = true
+      }
+    }
+  }, [open, showLoading])
+
   if (showLoading) {
     return <CommentsLoading />
   }
@@ -134,8 +151,9 @@ export function Comments({
   }
 
   return (
-    <>
+    <div id="comments">
       {showSortControls && <CommentSortControls />}
+      {postId && <CommentForm thingId={postId} />}
       <VisuallyHidden
         aria-atomic="true"
         aria-live="polite"
@@ -153,6 +171,6 @@ export function Comments({
         maxCommentDepth={maxCommentDepth}
         postLink={postLink}
       />
-    </>
+    </div>
   )
 }
