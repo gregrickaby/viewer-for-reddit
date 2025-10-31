@@ -7,15 +7,30 @@ import {
 } from '@/lib/utils/formatting/commentMediaHelpers'
 import {Box, Image} from '@mantine/core'
 
+/**
+ * Props for the CommentMedia component.
+ */
 export interface CommentMediaProps {
-  /**
-   * HTML content from comment body_html
-   */
-  readonly bodyHtml: string
+  /** The comment body HTML to extract media links from */
+  bodyHtml: string
 }
 
 /**
- * Renders inline media (images/GIFs/videos) from comment links
+ * Renders inline media (images/GIFs/videos) extracted from comment links.
+ *
+ * Parses comment HTML to find media links (imgur, gfycat, etc.) and
+ * renders them as images or video players. Handles lazy loading and
+ * provides accessible alt text and aria-labels.
+ *
+ * Features:
+ * - Extracts media links from comment HTML
+ * - Renders images with lazy loading
+ * - Renders video players with controls
+ * - Max width 400px for responsive display
+ * - Returns null if no media found
+ *
+ * @param {CommentMediaProps} props - Component props
+ * @returns JSX.Element media elements or null if no media found
  */
 export function CommentMedia({bodyHtml}: Readonly<CommentMediaProps>) {
   const mediaLinks = extractMediaLinks(bodyHtml)

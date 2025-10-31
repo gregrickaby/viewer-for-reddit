@@ -38,30 +38,6 @@
   margin-left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
 }
 
-.expandButton {
-  transition: transform 0.2s ease;
-}
-
-.expandButton[data-expanded='true'] {
-  transform: rotate(90deg);
-}
-
-.expandAllButton {
-  transition: all 0.2s ease;
-  opacity: 0.7;
-}
-
-.expandAllButton:hover {
-  opacity: 1;
-}
-
-.replyCount {
-  font-size: var(--mantine-font-size-xs);
-  min-width: auto;
-  height: auto;
-  padding: 2px 6px;
-}
-
 .commentBody {
   margin-top: var(--mantine-spacing-xs);
   margin-bottom: var(--mantine-spacing-sm);
@@ -74,15 +50,6 @@
 
 .commentBody p:last-child {
   margin-bottom: 0;
-}
-
-.commentMeta {
-  margin-top: var(--mantine-spacing-sm);
-  gap: var(--mantine-spacing-md);
-}
-
-.link {
-  text-decoration: none;
 }
 
 .collapsedPreview {

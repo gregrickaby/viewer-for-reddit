@@ -1,5 +1,5 @@
 import {LoginButton} from '@/components/UI/Auth/LoginButton'
-import {render, screen, userEvent} from '@/test-utils'
+import {render, screen, user} from '@/test-utils'
 
 describe('LoginButton', () => {
   beforeEach(() => {
@@ -22,7 +22,6 @@ describe('LoginButton', () => {
   })
 
   it('should redirect to login endpoint when clicked', async () => {
-    const user = userEvent.setup()
     render(<LoginButton />)
     const button = screen.getByRole('button')
 

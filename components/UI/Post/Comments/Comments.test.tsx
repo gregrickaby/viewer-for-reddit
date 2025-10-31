@@ -1,10 +1,7 @@
-import {render, screen, server, waitFor} from '@/test-utils'
-import userEvent from '@testing-library/user-event'
-import {axe, toHaveNoViolations} from 'jest-axe'
+import {render, screen, server, user, waitFor} from '@/test-utils'
+import {axe} from 'jest-axe'
 import {http, HttpResponse} from 'msw'
 import {Comments} from './Comments'
-
-expect.extend(toHaveNoViolations)
 
 describe('Comments', () => {
   it('should should render comments from MSW and decodes HTML entities', async () => {
@@ -74,7 +71,6 @@ describe('Comments', () => {
 
   describe('Keyboard shortcuts', () => {
     it('should expand all comments on O key', async () => {
-      const user = userEvent.setup()
       render(
         <Comments
           permalink="/r/test/comments/1"
@@ -93,7 +89,6 @@ describe('Comments', () => {
     })
 
     it('should collapse all comments on Shift+O', async () => {
-      const user = userEvent.setup()
       render(
         <Comments
           permalink="/r/test/comments/1"

@@ -10,7 +10,6 @@ import {
 } from '@/lib/store/features/commentExpansionSlice'
 import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {
   collectAllCommentIds,
   sortComments
@@ -22,16 +21,35 @@ import {CommentsList} from './CommentsList/CommentsList'
 import {CommentsLoading} from './CommentsLoading/CommentsLoading'
 import {CommentSortControls} from './CommentSortControls/CommentSortControls'
 
+/**
+ * Props for the Comments component
+ */
 interface CommentsProps {
+  /** URL path for fetching comments */
   permalink: string
+  /** Link back to the post */
   postLink: string
+  /** Whether comments section is open/visible */
   open: boolean
+  /** Pre-loaded comments data (optional) */
   comments?: AutoCommentData[]
+  /** Enable infinite scroll to load more comments */
   enableInfiniteLoading?: boolean
+  /** Maximum depth for nested comment threads */
   maxCommentDepth?: number
+  /** Show comment sort controls */
   showSortControls?: boolean
 }
 
+/**
+ * Comments component
+ *
+ * Main container for rendering nested comment threads. Handles data fetching,
+ * sorting, loading states, and keyboard navigation (J/K/U for navigation,
+ * O/Shift+O for expand/collapse all). Displays errors and empty states gracefully.
+ *
+ * @param {CommentsProps} props - Component props
+ */
 export function Comments({
   permalink,
   postLink,
@@ -41,6 +59,7 @@ export function Comments({
   maxCommentDepth = COMMENT_CONFIG.MAX_DEPTH,
   showSortControls = false
 }: Readonly<CommentsProps>) {
+  const dispatch = useAppDispatch()
   const commentSort = useAppSelector((state) => state.settings.commentSort)
 
   const {
@@ -63,63 +82,6 @@ export function Comments({
   const sortedNestedComments = Array.isArray(nestedComments)
     ? sortComments(nestedComments, commentSort)
     : nestedComments
-
-  if (showLoading) {
-    return <CommentsLoading />
-  }
-
-  if (isError) {
-    return (
-      <ErrorMessage
-        error={error}
-        type="post"
-        resourceName="comments"
-        fallbackUrl={postLink}
-        compact
-      />
-    )
-  }
-
-  if (!hasCommentsToShow) {
-    return <CommentsEmpty />
-  }
-
-  return (
-    <CommentsWithKeyboard
-      sortedNestedComments={sortedNestedComments}
-      enableInfiniteLoading={enableInfiniteLoading}
-      maxCommentDepth={maxCommentDepth}
-      currentHasNextPage={currentHasNextPage}
-      currentIsFetchingNextPage={currentIsFetchingNextPage}
-      currentFetchNextPage={currentFetchNextPage}
-      postLink={postLink}
-      showSortControls={showSortControls}
-    />
-  )
-}
-
-interface CommentsWithKeyboardProps {
-  sortedNestedComments: NestedCommentData[]
-  enableInfiniteLoading: boolean
-  maxCommentDepth: number
-  currentHasNextPage: boolean
-  currentIsFetchingNextPage: boolean
-  currentFetchNextPage: () => void
-  postLink: string
-  showSortControls: boolean
-}
-
-function CommentsWithKeyboard({
-  sortedNestedComments,
-  enableInfiniteLoading,
-  maxCommentDepth,
-  currentHasNextPage,
-  currentIsFetchingNextPage,
-  currentFetchNextPage,
-  postLink,
-  showSortControls
-}: Readonly<CommentsWithKeyboardProps>) {
-  const dispatch = useAppDispatch()
 
   // J/K/U navigation (RES-style)
   const {announcementText, clearAnnouncement} = useCommentNavigation({
@@ -151,24 +113,44 @@ function CommentsWithKeyboard({
     ]
   ])
 
+  if (showLoading) {
+    return <CommentsLoading />
+  }
+
+  if (isError) {
+    return (
+      <ErrorMessage
+        error={error}
+        type="post"
+        resourceName="comments"
+        fallbackUrl={postLink}
+        compact
+      />
+    )
+  }
+
+  if (!hasCommentsToShow) {
+    return <CommentsEmpty />
+  }
+
   return (
     <>
       {showSortControls && <CommentSortControls />}
       <VisuallyHidden
-        component="output"
-        aria-live="polite"
         aria-atomic="true"
+        aria-live="polite"
+        component="output"
         onTransitionEnd={clearAnnouncement}
       >
         {announcementText}
       </VisuallyHidden>
       <CommentsList
         comments={sortedNestedComments}
-        enableInfiniteLoading={enableInfiniteLoading}
-        maxCommentDepth={maxCommentDepth}
+        currentFetchNextPage={currentFetchNextPage}
         currentHasNextPage={currentHasNextPage}
         currentIsFetchingNextPage={currentIsFetchingNextPage}
-        currentFetchNextPage={currentFetchNextPage}
+        enableInfiniteLoading={enableInfiniteLoading}
+        maxCommentDepth={maxCommentDepth}
         postLink={postLink}
       />
     </>

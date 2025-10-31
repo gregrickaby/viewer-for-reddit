@@ -1,7 +1,6 @@
 import {setCommentSortingOption} from '@/lib/store/features/settingsSlice'
 import {render, screen} from '@/test-utils'
 import {userEvent} from '@testing-library/user-event'
-import {describe, expect, it, vi} from 'vitest'
 import {CommentSortControls} from './CommentSortControls'
 
 vi.mock('@/lib/store/hooks', async () => {
@@ -13,7 +12,7 @@ vi.mock('@/lib/store/hooks', async () => {
 })
 
 describe('CommentSortControls', () => {
-  it('renders with default "best" sorting', () => {
+  it('should render with default "best" sorting', () => {
     render(<CommentSortControls />)
 
     expect(screen.getByText('Sort by:')).toBeInTheDocument()
@@ -31,7 +30,7 @@ describe('CommentSortControls', () => {
     expect(screen.getByText(label)).toBeInTheDocument()
   })
 
-  it('dispatches setCommentSortingOption when sorting changes', async () => {
+  it('should dispatch setCommentSortingOption when sorting changes', async () => {
     const user = userEvent.setup()
     const mockDispatch = vi.fn()
 
@@ -46,7 +45,7 @@ describe('CommentSortControls', () => {
     expect(mockDispatch).toHaveBeenCalledWith(setCommentSortingOption('top'))
   })
 
-  it('has Umami analytics tracking attributes', () => {
+  it('should have Umami analytics tracking attributes', () => {
     render(<CommentSortControls />)
 
     const segmentedControl = screen.getByRole('radiogroup')

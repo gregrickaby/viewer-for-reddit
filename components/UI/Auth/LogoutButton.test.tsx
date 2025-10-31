@@ -1,5 +1,5 @@
 import {LogoutButton} from '@/components/UI/Auth/LogoutButton'
-import {render, screen, userEvent, waitFor} from '@/test-utils'
+import {render, screen, user, waitFor} from '@/test-utils'
 import {useRouter} from 'next/navigation'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -32,8 +32,6 @@ describe('LogoutButton', () => {
   })
 
   it('should call logout endpoint and redirect when clicked', async () => {
-    const user = userEvent.setup()
-
     render(<LogoutButton />)
     const button = screen.getByRole('button')
 

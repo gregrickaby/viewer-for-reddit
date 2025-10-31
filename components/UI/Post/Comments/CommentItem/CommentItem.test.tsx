@@ -1,10 +1,8 @@
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
-import {axe, toHaveNoViolations} from 'jest-axe'
+import {axe} from 'jest-axe'
 import {CommentItem} from './CommentItem'
-
-expect.extend(toHaveNoViolations)
 
 const mockBasicComment: NestedCommentData = {
   id: 'comment1',

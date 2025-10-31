@@ -1,5 +1,5 @@
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
-import {render, screen, userEvent} from '@/test-utils'
+import {render, screen, user} from '@/test-utils'
 
 // Mock the vote mutation
 const mockVote = vi.fn()
@@ -54,7 +54,6 @@ describe('VoteButtons', () => {
   })
 
   it('should call vote mutation when upvote button is clicked', async () => {
-    const user = userEvent.setup()
     render(<VoteButtons id="t3_abc123" score={42} />)
 
     const upvoteButton = screen.getByLabelText('Upvote')
@@ -64,7 +63,6 @@ describe('VoteButtons', () => {
   })
 
   it('should call vote mutation when downvote button is clicked', async () => {
-    const user = userEvent.setup()
     render(<VoteButtons id="t3_abc123" score={42} />)
 
     const downvoteButton = screen.getByLabelText('Downvote')
@@ -74,7 +72,6 @@ describe('VoteButtons', () => {
   })
 
   it('should unvote when clicking upvote button while already upvoted', async () => {
-    const user = userEvent.setup()
     // eslint-disable-next-line react/jsx-boolean-value
     render(<VoteButtons id="t3_abc123" score={42} userVote={true} />)
 
@@ -85,7 +82,6 @@ describe('VoteButtons', () => {
   })
 
   it('should unvote when clicking downvote button while already downvoted', async () => {
-    const user = userEvent.setup()
     render(<VoteButtons id="t3_abc123" score={42} userVote={false} />)
 
     const downvoteButton = screen.getByLabelText('Downvote')
@@ -95,7 +91,6 @@ describe('VoteButtons', () => {
   })
 
   it('should optimistically update score when upvoting', async () => {
-    const user = userEvent.setup()
     render(<VoteButtons id="t3_abc123" score={42} />)
 
     const upvoteButton = screen.getByLabelText('Upvote')
@@ -106,7 +101,6 @@ describe('VoteButtons', () => {
   })
 
   it('should optimistically update score when downvoting', async () => {
-    const user = userEvent.setup()
     render(<VoteButtons id="t3_abc123" score={42} />)
 
     const downvoteButton = screen.getByLabelText('Downvote')

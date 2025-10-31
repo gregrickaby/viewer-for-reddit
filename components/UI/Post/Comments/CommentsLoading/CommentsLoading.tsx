@@ -1,6 +1,13 @@
-import {Card, Skeleton, Stack} from '@mantine/core'
-import styles from './CommentsLoading.module.css'
+import {Card, Skeleton, Stack, VisuallyHidden} from '@mantine/core'
 
+/**
+ * CommentsLoading component
+ *
+ * Displays a skeleton loading state for comments while data is being fetched.
+ * Renders 5 placeholder cards with animated skeletons and provides accessible
+ * loading announcement via aria-live region for screen readers.
+ *
+ */
 export function CommentsLoading() {
   return (
     <output
@@ -20,9 +27,9 @@ export function CommentsLoading() {
           </Card>
         ))}
       </Stack>
-      <div id="loading-description" className={styles.srOnly}>
+      <VisuallyHidden id="loading-description">
         Loading comments. Please wait.
-      </div>
+      </VisuallyHidden>
     </output>
   )
 }
