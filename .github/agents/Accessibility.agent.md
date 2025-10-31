@@ -29,6 +29,11 @@ tools:
     'todos'
   ]
 model: Claude Sonnet 4.5 (copilot)
+handoffs:
+  - label: Start Implementation
+    agent: Implementation.agent.md
+    prompt: Now that the accessibility review is complete, implement the fixes mentioned above
+    send: false
 ---
 
 # Accessibility Expert Mode

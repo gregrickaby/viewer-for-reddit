@@ -31,10 +31,14 @@ tools:
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:
-  - label: Start Testing
-    agent: tester
-    prompt: Now that the implementation is complete, proceed to the testing phase.
-    send: true
+  - label: Start Accessibility Review
+    agent: Accessibility.agent.md
+    prompt: Now that the initial implementation is complete, please review the changes for accessibility compliance
+    send: false
+  - label: Start Code Review
+    agent: Reviewer.agent.md
+    prompt: Now that the accessibility review is complete, perform a comprehensive code review of the implementation
+    send: false
 ---
 
 # Agentic Coding Mode
