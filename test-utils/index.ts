@@ -1,11 +1,10 @@
-import userEvent from '@testing-library/user-event'
-
 // Testing libraries.
 export * from '@testing-library/react'
-export {HttpResponse, http} from 'msw'
-export {userEvent}
+export {default as userEvent} from '@testing-library/user-event'
+export {http, HttpResponse} from 'msw'
 
 // Pre-configured userEvent instance.
+import userEvent from '@testing-library/user-event'
 export const user = userEvent.setup()
 
 // Custom render utilities.

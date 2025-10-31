@@ -2,10 +2,13 @@ import {installDomShims, removeDomShims} from '@/test-utils/domShims'
 import {setupBrowserMocks} from '@/test-utils/mocks/browserMocks'
 import {server} from '@/test-utils/msw/server'
 import '@testing-library/jest-dom'
+import {toHaveNoViolations} from 'jest-axe'
 import type {StaticImageData} from 'next/image'
+import {URLSearchParams as NodeURLSearchParams} from 'node:url'
 import React, {type ImgHTMLAttributes} from 'react'
-import {URLSearchParams as NodeURLSearchParams} from 'url'
 import {afterAll, afterEach, beforeAll, vi} from 'vitest'
+
+expect.extend(toHaveNoViolations)
 
 interface MockNextImageProps
   extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
@@ -25,13 +28,13 @@ vi.mock('next/image', () => ({
 
 // Polyfill: Vitest does not provide URLSearchParams in Node by default
 // https://github.com/vitest-dev/vitest/issues/7906
-global.URLSearchParams = NodeURLSearchParams as any
+globalThis.URLSearchParams = NodeURLSearchParams as any
 
 // Set up base URL for test environment
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window, 'location', {
+if (globalThis.window !== undefined) {
+  Object.defineProperty(globalThis.window, 'location', {
     value: {
-      ...window.location,
+      ...globalThis.window.location,
       origin: 'http://localhost:3000',
       host: 'localhost:3000',
       hostname: 'localhost',
@@ -44,7 +47,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Set up DOM-related browser APIs
-if (typeof window !== 'undefined') {
+if (globalThis.window !== undefined) {
   setupBrowserMocks()
 }
 
@@ -52,7 +55,7 @@ if (typeof window !== 'undefined') {
 beforeAll(() => {
   server.listen({onUnhandledRequest: 'warn'})
 
-  if (typeof window !== 'undefined') {
+  if (globalThis.window !== undefined) {
     installDomShims()
   }
 
@@ -74,7 +77,7 @@ afterEach(() => {
 afterAll(() => {
   server.close()
 
-  if (typeof window !== 'undefined') {
+  if (globalThis.window !== undefined) {
     removeDomShims()
   }
 
