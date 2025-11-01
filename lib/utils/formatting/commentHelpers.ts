@@ -1,13 +1,15 @@
+import {
+  extractNestedComments,
+  type NestedCommentData
+} from '@/lib/domain/comments'
 import type {
   AutoCommentData,
   AutoCommentWithText
 } from '@/lib/store/services/commentsApi'
-import type {CommentSortingOption} from '@/lib/types'
-import {
-  extractAndFilterComments,
-  extractNestedComments,
-  type NestedCommentData
-} from '@/lib/utils/formatting/commentFilters'
+import {extractAndFilterComments} from '@/lib/utils/formatting/commentFilters'
+
+// Re-export domain functions for backward compatibility
+export {sortComments, type NestedCommentData} from '@/lib/domain/comments'
 
 /**
  * Type guard to validate comment has required display properties
@@ -202,51 +204,4 @@ export function collectAllCommentIds(comments: NestedCommentData[]): string[] {
   }
 
   return ids
-}
-
-/**
- * Sort comments based on the selected sorting option.
- *
- * Sorting Logic:
- * - best: Reddit's default algorithm (preserves original order from API)
- * - top: Highest score (ups) first
- * - new: Most recent (created_utc) first
- * - controversial: Lowest score first (most downvoted content)
- *
- * @param comments - Array of comments to sort
- * @param sortOption - The selected sorting method
- * @returns Sorted array of comments
- */
-export function sortComments<T extends AutoCommentData | NestedCommentData>(
-  comments: T[],
-  sortOption: CommentSortingOption
-): T[] {
-  if (sortOption === 'best') {
-    return comments
-  }
-
-  const sorted = [...comments]
-
-  switch (sortOption) {
-    case 'top':
-      return sorted.sort((a, b) => {
-        const aUps = 'ups' in a ? (a.ups ?? 0) : 0
-        const bUps = 'ups' in b ? (b.ups ?? 0) : 0
-        return bUps - aUps
-      })
-    case 'new':
-      return sorted.sort((a, b) => {
-        const aTime = 'created_utc' in a ? (a.created_utc ?? 0) : 0
-        const bTime = 'created_utc' in b ? (b.created_utc ?? 0) : 0
-        return bTime - aTime
-      })
-    case 'controversial':
-      return sorted.sort((a, b) => {
-        const aUps = 'ups' in a ? (a.ups ?? 0) : 0
-        const bUps = 'ups' in b ? (b.ups ?? 0) : 0
-        return aUps - bUps
-      })
-    default:
-      return comments
-  }
 }

@@ -1,6 +1,6 @@
+import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {render, screen} from '@/test-utils'
 import {CommentContent} from './CommentContent'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 
 /**
  * Mock comment data for testing.
@@ -14,7 +14,6 @@ const mockComment: NestedCommentData = {
   created_utc: 1609459200,
   score: 10,
   depth: 0,
-  hasReplies: false,
   permalink: '/r/test/comments/test/test/abc123'
 }
 

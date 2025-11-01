@@ -66,13 +66,19 @@ export function CommentContent({
             className={classes.commentBody}
             dangerouslySetInnerHTML={{
               __html: stripMediaLinks(
-                decodeAndSanitizeHtml(comment.body_html ?? comment.body ?? '')
+                decodeAndSanitizeHtml(
+                  ('body_html' in comment ? comment.body_html : undefined) ??
+                    ('body' in comment ? comment.body : undefined) ??
+                    ''
+                )
               )
             }}
           />
 
           <CommentMedia
-            bodyHtml={decodeAndSanitizeHtml(comment.body_html ?? '')}
+            bodyHtml={decodeAndSanitizeHtml(
+              ('body_html' in comment ? comment.body_html : undefined) ?? ''
+            )}
           />
         </>
       )}

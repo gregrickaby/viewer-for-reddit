@@ -1,6 +1,6 @@
+import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {render, screen} from '@/test-utils'
 import {CommentReplies} from './CommentReplies'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 
 /**
  * Mock parent comment with replies.
@@ -14,7 +14,6 @@ const mockCommentWithReplies: NestedCommentData = {
   created_utc: 1609459200,
   score: 10,
   depth: 0,
-  hasReplies: true,
   permalink: '/r/test/comments/test/test/parent123',
   replies: [
     {
@@ -26,7 +25,6 @@ const mockCommentWithReplies: NestedCommentData = {
       created_utc: 1609459300,
       score: 5,
       depth: 1,
-      hasReplies: false,
       permalink: '/r/test/comments/test/test/child123'
     }
   ]
@@ -41,7 +39,6 @@ const mockCommentWithoutReplies: NestedCommentData = {
   created_utc: 1609459200,
   score: 10,
   depth: 0,
-  hasReplies: false,
   permalink: '/r/test/comments/test/test/noreplies123'
 }
 

@@ -1,9 +1,5 @@
-import {
-  useDeleteCommentMutation,
-  useSubmitCommentMutation
-} from '@/lib/store/services/commentsApi'
-import {notifications} from '@mantine/notifications'
-import {BiCheckCircle} from 'react-icons/bi'
+import {useCommentDelete} from '../useCommentDelete/useCommentDelete'
+import {useCommentReply} from '../useCommentReply/useCommentReply'
 
 /**
  * Props for useCommentActions hook.
@@ -32,16 +28,14 @@ interface UseCommentActionsProps {
 }
 
 /**
- * Hook for managing comment actions (reply, delete).
+ * Orchestrates comment reply and deletion functionality.
  *
- * Encapsulates business logic for:
- * - Submitting replies with success notifications
- * - Deleting comments with confirmation
- * - Error handling and user feedback
- * - Focus management after actions
+ * Composes useCommentReply and useCommentDelete hooks to provide a unified
+ * interface for comment actions. Maintains backward compatibility with
+ * existing components.
  *
- * @param props - Hook props
- * @returns Action handlers and mutation states
+ * @param props - Comment action props
+ * @returns Combined reply and delete actions
  */
 export function useCommentActions({
   commentName,
@@ -55,112 +49,34 @@ export function useCommentActions({
   replyButtonRef,
   deleteButtonRef
 }: UseCommentActionsProps) {
-  const [submitComment, {isLoading: isSubmitting}] = useSubmitCommentMutation()
-  const [deleteComment, {isLoading: isDeleting}] = useDeleteCommentMutation()
+  // Compose reply functionality
+  const reply = useCommentReply({
+    commentName,
+    replyText,
+    setReplyText,
+    setErrorMessage,
+    setShowReplyForm,
+    replyButtonRef
+  })
 
-  const toggleReplyForm = () => {
-    setShowReplyForm((prev: boolean) => {
-      if (prev) {
-        setReplyText('')
-      }
-      return !prev
-    })
-  }
-
-  const handleSubmit = async () => {
-    if (!replyText.trim() || !commentName) return
-
-    try {
-      setErrorMessage('')
-      await submitComment({
-        thing_id: commentName,
-        text: replyText
-      }).unwrap()
-
-      // Show success message
-      notifications.show({
-        message:
-          'Comment posted successfully! It may take a few moments before Reddit shows your comment.',
-        color: 'green',
-        icon: <BiCheckCircle size={20} />
-      })
-
-      // Success: close form and clear text
-      setShowReplyForm(false)
-      setReplyText('')
-    } catch (err) {
-      // Extract error message from RTK Query error
-      if (err && typeof err === 'object' && 'data' in err) {
-        const errorData = err.data as {message?: string; error?: string}
-        setErrorMessage(
-          errorData.message ||
-            errorData.error ||
-            'Failed to submit comment. Please try again.'
-        )
-      } else {
-        setErrorMessage('Failed to submit comment. Please try again.')
-      }
-    }
-  }
-
-  const handleCancel = () => {
-    setShowReplyForm(false)
-    setReplyText('')
-    setErrorMessage('')
-
-    // Return focus to reply button after cancel
-    setTimeout(() => {
-      replyButtonRef.current?.focus()
-    }, 0)
-  }
-
-  const handleDeleteConfirm = async () => {
-    if (!commentName) return
-
-    try {
-      setDeleteError('')
-      await deleteComment({id: commentName}).unwrap()
-
-      // Mark as deleted locally
-      setIsDeleted(true)
-
-      // Close modal after successful deletion
-      closeDeleteModal()
-    } catch (err) {
-      // Extract error message from RTK Query error
-      if (err && typeof err === 'object' && 'data' in err) {
-        const errorData = err.data as {message?: string; error?: string}
-        setDeleteError(
-          errorData.message ||
-            errorData.error ||
-            'Failed to delete comment. Please try again.'
-        )
-      } else {
-        setDeleteError('Failed to delete comment. Please try again.')
-      }
-
-      // Close modal even if deletion fails
-      closeDeleteModal()
-    }
-  }
-
-  const handleDeleteCancel = () => {
-    closeDeleteModal()
-    // Return focus to delete button after cancel
-    setTimeout(() => {
-      deleteButtonRef.current?.focus()
-    }, 0)
-  }
+  // Compose delete functionality
+  const deletion = useCommentDelete({
+    commentName,
+    setDeleteError,
+    setIsDeleted,
+    closeDeleteModal,
+    deleteButtonRef
+  })
 
   return {
     // Actions
-    toggleReplyForm,
-    handleSubmit,
-    handleCancel,
-    handleDeleteConfirm,
-    handleDeleteCancel,
+    toggleReplyForm: reply.toggleReplyForm,
+    handleSubmit: reply.handleSubmit,
+    handleCancel: reply.handleCancel,
+    handleDeleteConfirm: deletion.handleDeleteConfirm,
+    handleDeleteCancel: deletion.handleDeleteCancel,
     // States
-    isSubmitting,
-    isDeleting
+    isSubmitting: reply.isSubmitting,
+    isDeleting: deletion.isDeleting
   }
 }

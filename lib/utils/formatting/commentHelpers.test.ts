@@ -148,9 +148,7 @@ describe('commentHelpers', () => {
   })
 
   describe('getDisplayComments', () => {
-    const mockNestedComments: NestedCommentData[] = [
-      {id: 'nested1', depth: 0, hasReplies: false} as NestedCommentData
-    ]
+    const mockNestedComments: NestedCommentData[] = []
     const mockInfiniteComments: AutoCommentData[] = [
       {id: 'infinite1', author: 'user1'} as AutoCommentData
     ]
@@ -256,7 +254,6 @@ describe('commentHelpers', () => {
     const mockMapToNested = (comment: any, depth = 0): NestedCommentData => ({
       ...comment,
       depth,
-      hasReplies: false,
       replies: undefined
     })
 
@@ -362,10 +359,10 @@ describe('commentHelpers', () => {
     ]
 
     const mockNestedComments: NestedCommentData[] = [
-      {ups: 100, created_utc: 1000, depth: 0, hasReplies: false},
-      {ups: 50, created_utc: 3000, depth: 1, hasReplies: false},
-      {ups: 200, created_utc: 2000, depth: 0, hasReplies: false},
-      {ups: 10, created_utc: 4000, depth: 1, hasReplies: false}
+      {ups: 100, created_utc: 1000, depth: 0} as NestedCommentData,
+      {ups: 50, created_utc: 3000, depth: 1} as NestedCommentData,
+      {ups: 200, created_utc: 2000, depth: 0} as NestedCommentData,
+      {ups: 10, created_utc: 4000, depth: 1} as NestedCommentData
     ]
 
     describe('best sorting', () => {
@@ -506,7 +503,6 @@ describe('commentHelpers', () => {
         created_utc: 100,
         ups: 10,
         depth: 0,
-        hasReplies: true,
         replies: [
           {
             id: 'child1',
@@ -515,7 +511,6 @@ describe('commentHelpers', () => {
             created_utc: 101,
             ups: 5,
             depth: 1,
-            hasReplies: true,
             replies: [
               {
                 id: 'grandchild1',
@@ -523,8 +518,7 @@ describe('commentHelpers', () => {
                 body: 'Grandchild 1',
                 created_utc: 102,
                 ups: 3,
-                depth: 2,
-                hasReplies: false
+                depth: 2
               }
             ]
           },
@@ -534,8 +528,7 @@ describe('commentHelpers', () => {
             body: 'Child 2',
             created_utc: 103,
             ups: 4,
-            depth: 1,
-            hasReplies: false
+            depth: 1
           }
         ]
       }
@@ -551,8 +544,7 @@ describe('commentHelpers', () => {
         body: 'No replies',
         created_utc: 100,
         ups: 1,
-        depth: 0,
-        hasReplies: false
+        depth: 0
       }
 
       const result = collectDescendantIds(comment)
@@ -567,7 +559,6 @@ describe('commentHelpers', () => {
         created_utc: 100,
         ups: 1,
         depth: 0,
-        hasReplies: true,
         replies: []
       }
 
@@ -585,8 +576,7 @@ describe('commentHelpers', () => {
           body: 'Comment 1',
           created_utc: 100,
           ups: 10,
-          depth: 0,
-          hasReplies: false
+          depth: 0
         },
         {
           id: 'comment2',
@@ -594,8 +584,7 @@ describe('commentHelpers', () => {
           body: 'Comment 2',
           created_utc: 101,
           ups: 5,
-          depth: 0,
-          hasReplies: false
+          depth: 0
         }
       ]
 
@@ -612,7 +601,6 @@ describe('commentHelpers', () => {
           created_utc: 100,
           ups: 10,
           depth: 0,
-          hasReplies: true,
           replies: [
             {
               id: 'child1',
@@ -620,8 +608,7 @@ describe('commentHelpers', () => {
               body: 'Child 1',
               created_utc: 101,
               ups: 5,
-              depth: 1,
-              hasReplies: false
+              depth: 1
             }
           ]
         },
@@ -631,8 +618,7 @@ describe('commentHelpers', () => {
           body: 'Parent 2',
           created_utc: 102,
           ups: 8,
-          depth: 0,
-          hasReplies: false
+          depth: 0
         }
       ]
 
@@ -654,7 +640,6 @@ describe('commentHelpers', () => {
           created_utc: 100,
           ups: 10,
           depth: 0,
-          hasReplies: true,
           replies: [
             {
               id: 'level1',
@@ -663,7 +648,6 @@ describe('commentHelpers', () => {
               created_utc: 101,
               ups: 5,
               depth: 1,
-              hasReplies: true,
               replies: [
                 {
                   id: 'level2',
@@ -671,8 +655,7 @@ describe('commentHelpers', () => {
                   body: 'Level 2',
                   created_utc: 102,
                   ups: 3,
-                  depth: 2,
-                  hasReplies: false
+                  depth: 2
                 }
               ]
             }

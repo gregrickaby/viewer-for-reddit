@@ -15,8 +15,7 @@ const mockBasicComment: NestedCommentData = {
   created_utc: Date.now() / 1000,
   ups: 42,
   permalink: '/r/test/comments/abc123/test/comment1',
-  depth: 0,
-  hasReplies: false
+  depth: 0
 }
 
 const mockCommentWithReplies: NestedCommentData = {
@@ -29,7 +28,6 @@ const mockCommentWithReplies: NestedCommentData = {
   ups: 15,
   permalink: '/r/test/comments/abc123/test/comment2',
   depth: 0,
-  hasReplies: true,
   replies: [
     {
       id: 'reply1',
@@ -40,8 +38,7 @@ const mockCommentWithReplies: NestedCommentData = {
       created_utc: Date.now() / 1000,
       ups: 8,
       permalink: '/r/test/comments/abc123/test/reply1',
-      depth: 1,
-      hasReplies: false
+      depth: 1
     }
   ]
 }
@@ -121,7 +118,6 @@ describe('CommentItem', () => {
       replies: [
         {
           ...mockCommentWithReplies.replies![0],
-          hasReplies: true,
           replies: [
             {
               id: 'nested-reply',
@@ -131,8 +127,7 @@ describe('CommentItem', () => {
               created_utc: Date.now() / 1000,
               ups: 3,
               permalink: '/r/test/comments/abc123/test/nested-reply',
-              depth: 2,
-              hasReplies: false
+              depth: 2
             }
           ]
         }

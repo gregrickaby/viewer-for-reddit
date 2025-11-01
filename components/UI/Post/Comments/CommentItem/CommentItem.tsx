@@ -76,7 +76,7 @@ export function CommentItem({
     setIsDeleted,
     openDeleteModal,
     closeDeleteModal
-  } = useCommentState({commentId, commentDepth: comment.depth})
+  } = useCommentState({commentId, commentDepth: comment.depth ?? 0})
 
   // Focus management
   const {textareaRef, replyButtonRef, deleteButtonRef} =
@@ -122,31 +122,32 @@ export function CommentItem({
     }
   }
 
-  const hasReplies = comment.hasReplies && comment.replies?.length
-  const showReplies = hasReplies && comment.depth < maxDepth
-  const canReply = isAuthenticated && comment.depth < maxDepth && !isDeleted
+  const hasReplies = comment.replies && comment.replies.length > 0
+  const showReplies = hasReplies && (comment.depth ?? 0) < maxDepth
+  const canReply =
+    isAuthenticated && (comment.depth ?? 0) < maxDepth && !isDeleted
   const isOwnComment =
     isAuthenticated && currentUsername === comment.author && !isDeleted
 
   return (
     <Box
       className={classes.commentItem}
-      data-comment-depth={comment.depth}
+      data-comment-depth={comment.depth ?? 0}
       data-comment-id={commentId}
-      data-testid={`comment-item-depth-${comment.depth}`}
+      data-testid={`comment-item-depth-${comment.depth ?? 0}`}
       style={
         {
-          '--comment-depth': comment.depth
+          '--comment-depth': comment.depth ?? 0
         } as React.CSSProperties
       }
       tabIndex={-1}
     >
-      {comment.depth > 0 && (
+      {(comment.depth ?? 0) > 0 && (
         <div className={classes.threadLine} data-testid="thread-line" />
       )}
 
       <div
-        className={`${classes.commentContent} ${comment.depth > 0 ? classes.nestedComment : ''}`}
+        className={`${classes.commentContent} ${(comment.depth ?? 0) > 0 ? classes.nestedComment : ''}`}
       >
         <Card component="article" padding="md" radius="md" shadow="none">
           <Stack gap="xs">

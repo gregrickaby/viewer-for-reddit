@@ -12,7 +12,6 @@ const mockComment: NestedCommentData = {
   ups: 42,
   permalink: '/r/test/comments/abc123/test/comment1',
   depth: 0,
-  hasReplies: true,
   replies: [
     {
       id: 'reply1',
@@ -22,8 +21,7 @@ const mockComment: NestedCommentData = {
       created_utc: Date.now() / 1000,
       ups: 8,
       permalink: '/r/test/comments/abc123/test/reply1',
-      depth: 1,
-      hasReplies: false
+      depth: 1
     }
   ]
 }
@@ -124,8 +122,15 @@ describe('CommentMetadata', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not render reply count when hasReplies is false', () => {
-    render(<CommentMetadata {...defaultProps} hasReplies={false} />)
+  it('should not render reply count when comment has no replies', () => {
+    const commentWithoutReplies = {...mockComment, replies: undefined}
+    render(
+      <CommentMetadata
+        {...defaultProps}
+        comment={commentWithoutReplies}
+        hasReplies={false}
+      />
+    )
 
     // Score should still be visible, but not reply count
     expect(screen.getByText('42')).toBeInTheDocument()
