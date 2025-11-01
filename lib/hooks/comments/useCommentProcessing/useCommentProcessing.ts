@@ -4,7 +4,6 @@ import {
   processInfiniteComments,
   processNestedComments
 } from '@/lib/utils/formatting/commentHelpers'
-import {useMemo} from 'react'
 
 /**
  * Parameters for useCommentProcessing hook.
@@ -70,75 +69,58 @@ export function useCommentProcessing({
   maxCommentDepth
 }: UseCommentProcessingParams): UseCommentProcessingReturn {
   // Combine all pages of infinite comments into a single array (flat)
-  const infiniteComments = useMemo(
-    () => processInfiniteComments(infiniteData),
-    [infiniteData]
-  )
+  const infiniteComments = processInfiniteComments(infiniteData)
 
   // Optimized recursive function for mapping comments to nested structure
-  const mapToNested = useMemo(
-    () =>
-      (
-        comment: AutoCommentData & {replies?: any[]; depth?: number},
-        depth = 0
-      ): NestedCommentData => {
-        const hasReplies =
-          Array.isArray(comment.replies) && comment.replies.length > 0
+  const mapToNested = (
+    comment: AutoCommentData & {replies?: any[]; depth?: number},
+    depth = 0
+  ): NestedCommentData => {
+    const hasReplies =
+      Array.isArray(comment.replies) && comment.replies.length > 0
 
-        // Performance: Early return for comments without replies
-        if (!hasReplies) {
-          return {
-            ...comment,
-            depth: comment.depth ?? depth,
-            replies: undefined
-          }
-        }
+    // Performance: Early return for comments without replies
+    if (!hasReplies) {
+      return {
+        ...comment,
+        depth: comment.depth ?? depth,
+        replies: undefined
+      }
+    }
 
-        // Performance: Limit recursion depth to prevent stack overflow
-        if (depth >= maxCommentDepth) {
-          console.warn(
-            `Comment nesting exceeded maximum depth of ${maxCommentDepth}`
-          )
-          return {
-            ...comment,
-            depth: comment.depth ?? depth,
-            replies: undefined
-          }
-        }
+    // Performance: Limit recursion depth to prevent stack overflow
+    if (depth >= maxCommentDepth) {
+      console.warn(
+        `Comment nesting exceeded maximum depth of ${maxCommentDepth}`
+      )
+      return {
+        ...comment,
+        depth: comment.depth ?? depth,
+        replies: undefined
+      }
+    }
 
-        return {
-          ...comment,
-          depth: comment.depth ?? depth,
-          replies: comment.replies?.map(
-            (reply: AutoCommentData & {replies?: any[]; depth?: number}) =>
-              mapToNested(reply, (comment.depth ?? depth) + 1)
-          )
-        }
-      },
-    [maxCommentDepth]
-  )
+    return {
+      ...comment,
+      depth: comment.depth ?? depth,
+      replies: comment.replies?.map(
+        (reply: AutoCommentData & {replies?: any[]; depth?: number}) =>
+          mapToNested(reply, (comment.depth ?? depth) + 1)
+      )
+    }
+  }
 
   // Process nested comments when enabled
-  const nestedComments = useMemo(
-    (): NestedCommentData[] =>
-      processNestedComments(
-        enableNestedComments,
-        providedComments,
-        infiniteDataRaw,
-        fetchedCommentsRaw,
-        mapToNested
-      ),
-    [
-      providedComments,
-      infiniteDataRaw,
-      fetchedCommentsRaw,
-      enableNestedComments,
-      mapToNested
-    ]
+  const nestedComments = processNestedComments(
+    enableNestedComments,
+    providedComments,
+    infiniteDataRaw,
+    fetchedCommentsRaw,
+    mapToNested
   )
 
   // Determine which comments to display
-  const displayComments = useMemo(() => {
+  const displayComments = (() => {
     if (enableNestedComments) {
       return nestedComments
     }
@@ -152,13 +134,7 @@ export function useCommentProcessing({
     }
 
     return providedComments ?? []
-  }, [
-    enableNestedComments,
-    nestedComments,
-    infiniteComments,
-    fetchedComments,
-    providedComments
-  ])
+  })()
 
   // Determine if there are comments to show
   const hasCommentsToShow = enableNestedComments
