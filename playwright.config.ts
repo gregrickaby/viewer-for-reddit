@@ -15,6 +15,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
+  timeout: 30000,
 
   reporter: [
     ['html', {outputFolder: 'e2e/test-results/html', open: 'never'}],
@@ -31,10 +32,6 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'setup',
-      testMatch: /global-setup\.ts/
-    },
-    {
       name: 'chromium-anon',
       testMatch: /.*\/anonymous\/.*\.spec\.ts/,
       use: {...devices['Desktop Chrome']}
@@ -43,10 +40,32 @@ export default defineConfig({
       name: 'firefox-anon',
       testMatch: /.*\/anonymous\/.*\.spec\.ts/,
       use: {...devices['Desktop Firefox']}
+    },
+    {
+      name: 'auth-setup',
+      testDir: './e2e',
+      testMatch: /auth\.setup\.ts$/,
+      use: {
+        ...devices['Desktop Chrome'],
+        // Launch args to allow CORS and mimic real Chrome
+        launchOptions: {
+          args: [
+            '--disable-web-security',
+            '--disable-features=IsolateOrigins,site-per-process',
+            '--disable-blink-features=AutomationControlled'
+          ]
+        }
+      }
+    },
+    {
+      name: 'chromium-auth',
+      testMatch: /.*\/authenticated\/.*\.spec\.ts/,
+      dependencies: ['auth-setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'e2e/.auth/user.json'
+      }
     }
-    // Disabled projects (re-enable when ready to implement auth):
-    // - chromium-auth: Requires authentication setup
-    // - webkit-anon: Blocked by app hydration bug (34% of users)
   ],
 
   webServer: process.env.CI
