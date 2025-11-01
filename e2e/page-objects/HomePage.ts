@@ -54,4 +54,13 @@ export class HomePage extends BasePage {
   async getPostCount(): Promise<number> {
     return await this.getPosts().count()
   }
+
+  /**
+   * Get subscribe/unsubscribe button.
+   */
+  getSubscribeButton(): Locator {
+    return this.page.locator(
+      'button:has-text("Subscribe"), button:has-text("Unsubscribe")'
+    )
+  }
 }

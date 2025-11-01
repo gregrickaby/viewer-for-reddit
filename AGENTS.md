@@ -3,7 +3,7 @@
 **Audience**: All AI agents (GitHub Copilot, Claude Code, Cursor, etc.)
 **Purpose**: Quick reference and operational guide for AI agents
 **Status**: 🏢 **Enterprise-Grade Application** - Following Layered Architecture + Test-Driven Development
-**Foundation**: Comments refactor (`lib/domain/comments/`) - Use as the seed pattern for all new features
+**Foundation**: Comments refactor (`lib/domain/comments/`) - Use as the reference pattern for all new features
 **Deep Dives**: See [CONTRIBUTING.md](./CONTRIBUTING.md) and [LAYERED_ARCHITECTURE_ANALYSIS.md](./docs/LAYERED_ARCHITECTURE_ANALYSIS.md)
 
 ---
@@ -213,7 +213,7 @@ Tests are organized by authentication requirement:
 e2e/tests/
 ├── anonymous/          # Read-only mode (no login)
 │   ├── comments/       # navigation.spec.ts, expansion.spec.ts
-│   └── homepage/       # seed.spec.ts
+│   └── homepage/       # homepage.spec.ts
 └── authenticated/      # Authenticated mode (requires login)
     └── comments/       # voting.spec.ts
 ```
@@ -237,6 +237,45 @@ Projects use `testMatch` patterns to target directories:
 - Encapsulates page interactions and selectors
 - Makes tests maintainable and readable
 - Example: `PostPage`, `HomePage`, `BasePage`
+
+**Page Object Best Practices:**
+
+1. **Return Locators, Not Elements**
+
+   ```typescript
+   // ✅ CORRECT - Return Locator for chaining and auto-waiting
+   getUpvoteButton(commentId: string): Locator {
+     return this.page.locator(`[data-comment-id="${commentId}"] button[aria-label="Upvote"]`)
+   }
+
+   // Usage enables web-first assertions
+   await expect(postPage.getUpvoteButton(id)).toBeVisible()
+   ```
+
+2. **Extract Common Patterns into Helpers**
+
+   ```typescript
+   // Shared in BasePage for all page objects
+   async waitForApiResponse(): Promise<void>
+   getUserMenu(): Locator
+   async isAuthenticated(): Promise<boolean>
+   ```
+
+3. **DRY Principle - No Duplication**
+   - Extract repetitive locator patterns into helper methods
+   - Create reusable getters for common elements
+   - Share utilities across page objects via inheritance
+
+4. **Enable Parallel Execution**
+
+   ```typescript
+   test.describe('Test Suite', () => {
+     test.describe.configure({mode: 'parallel'})  // Tests run in parallel
+   ```
+
+   - Safe when tests are isolated (use `beforeEach` for setup)
+   - Significantly faster test execution (~3x speedup)
+   - All tests are independent and can run in any order
 
 **Focus: Feature Detection**
 

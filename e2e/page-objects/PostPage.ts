@@ -98,9 +98,19 @@ export class PostPage extends BasePage {
    */
   async upvoteComment(commentId: string) {
     const upvoteBtn = this.page.locator(
-      `[data-comment-id="${commentId}"] [data-action="upvote"]`
+      `[data-comment-id="${commentId}"] button[aria-label="Upvote"]`
     )
-    await upvoteBtn.click()
+    await upvoteBtn.first().click()
+  }
+
+  /**
+   * Downvote a comment (requires authentication).
+   */
+  async downvoteComment(commentId: string) {
+    const downvoteBtn = this.page.locator(
+      `[data-comment-id="${commentId}"] button[aria-label="Downvote"]`
+    )
+    await downvoteBtn.first().click()
   }
 
   /**
@@ -141,5 +151,73 @@ export class PostPage extends BasePage {
     await this.commentSortDropdown.click()
     await this.page.click(`text="${method}"`)
     await this.waitForHydration()
+  }
+
+  /**
+   * Get the parent comment element from a child element.
+   */
+  getCommentElement(childLocator: Locator): Locator {
+    return childLocator.locator('..')
+  }
+
+  /**
+   * Wait for API response (voting, subscription, etc).
+   */
+  async waitForApiResponse(): Promise<void> {
+    await this.page
+      .waitForResponse((response) => response.url().includes('/api/'))
+      .catch(() => null)
+  }
+
+  /**
+   * Get comment ID from a comment locator.
+   */
+  async getCommentId(commentLocator: Locator): Promise<string> {
+    const id = await commentLocator.getAttribute('data-comment-id')
+    if (!id) throw new Error('Comment ID not found')
+    return id
+  }
+
+  /**
+   * Get the first comment ID on the page.
+   */
+  async getFirstCommentId(): Promise<string> {
+    return await this.getCommentId(this.getAllComments().first())
+  }
+
+  /**
+   * Get upvote button for a comment.
+   */
+  getUpvoteButton(commentId: string): Locator {
+    return this.page.locator(
+      `[data-comment-id="${commentId}"] button[aria-label="Upvote"]`
+    )
+  }
+
+  /**
+   * Get downvote button for a comment.
+   */
+  getDownvoteButton(commentId: string): Locator {
+    return this.page.locator(
+      `[data-comment-id="${commentId}"] button[aria-label="Downvote"]`
+    )
+  }
+
+  /**
+   * Get expand button for a comment.
+   */
+  getExpandButton(commentId: string): Locator {
+    return this.page.locator(
+      `[data-comment-id="${commentId}"] button[aria-label="Expand replies"]`
+    )
+  }
+
+  /**
+   * Get collapse button for a comment.
+   */
+  getCollapseButton(commentId: string): Locator {
+    return this.page.locator(
+      `[data-comment-id="${commentId}"] button[aria-label="Collapse replies"]`
+    )
   }
 }

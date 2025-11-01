@@ -36,3 +36,16 @@ export async function getAllCommentIds(page: Page): Promise<string[]> {
 export async function scrollToElement(page: Page, selector: string) {
   await page.locator(selector).scrollIntoViewIfNeeded()
 }
+
+/**
+ * Get comment ID from a button element.
+ * Useful for getting the parent comment ID from expand/collapse buttons.
+ */
+export async function getCommentIdFromButton(
+  buttonLocator: import('@playwright/test').Locator
+): Promise<string> {
+  const commentElement = buttonLocator.locator('..')
+  const id = await commentElement.getAttribute('data-comment-id')
+  if (!id) throw new Error('Comment ID not found')
+  return id
+}

@@ -592,6 +592,83 @@ await page.goto('/r/test/comments/1olhfw8/surprise_test')
 await page.keyboard.press('j')
 ```
 
+**Page Object Best Practices (2025):**
+
+1. **Return Locators, Not Elements**
+
+   ```typescript
+   // ✅ CORRECT - Return Locator for chaining and auto-waiting
+   getUpvoteButton(commentId: string): Locator {
+     return this.page.locator(`[data-comment-id="${commentId}"] button[aria-label="Upvote"]`)
+   }
+
+   // Usage enables web-first assertions and auto-waiting
+   const upvoteBtn = postPage.getUpvoteButton(id)
+   await expect(upvoteBtn).toBeVisible()
+   await upvoteBtn.click()
+   ```
+
+2. **Extract Common Patterns into Helpers**
+
+   ```typescript
+   // Eliminate duplication - create helper methods
+   async getFirstCommentId(): Promise<string>  // Used 6x in voting tests
+   async waitForApiResponse(): Promise<void>   // Used 9x across tests
+   getCommentElement(childLocator: Locator): Locator  // Replaces .locator('..')
+   ```
+
+3. **DRY Principle - No Duplication**
+   - Extract repetitive locator patterns into helper methods
+   - Create reusable getters for common elements (buttons, inputs)
+   - Share utilities across page objects via `BasePage` inheritance
+   - Example: `BasePage` provides `waitForApiResponse()` to all page objects
+
+4. **Use Inheritance for Shared Behavior**
+
+   ```typescript
+   export abstract class BasePage {
+     async waitForHydration(): Promise<void>
+     async isAuthenticated(): Promise<boolean>
+     async waitForApiResponse(): Promise<void>
+     getUserMenu(): Locator
+   }
+
+   // All page objects inherit common methods
+   export class PostPage extends BasePage {
+     /* ... */
+   }
+   export class HomePage extends BasePage {
+     /* ... */
+   }
+   ```
+
+5. **Enable Parallel Execution Within Files**
+
+   ```typescript
+   test.describe('Test Suite', () => {
+     test.describe.configure({mode: 'parallel'})  // Tests run in parallel
+
+     test.beforeEach(async ({page}) => {
+       postPage = new PostPage(page)  // Fresh state per test
+     })
+   ```
+
+   - Safe when tests are isolated (each uses `beforeEach` for setup)
+   - ~3x faster test execution locally
+   - Already configured: `fullyParallel: true` for cross-file parallelism
+
+6. **Single Responsibility Methods**
+   - Each helper does one thing well
+   - `getFirstCommentId()` - Get ID only
+   - `getUpvoteButton()` - Return button locator only
+   - `waitForApiResponse()` - Wait for API only
+
+**Code Reduction Results:**
+
+- voting.spec.ts: 161 lines → 108 lines (-33%)
+- expansion.spec.ts: 118 lines → 94 lines (-20%)
+- subscribing.spec.ts: 75 lines → 53 lines (-29%)
+
 #### E2E Test Debugging
 
 **Systematic Debugging Workflow:**

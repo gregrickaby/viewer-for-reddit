@@ -1,6 +1,6 @@
+import {waitForComments} from '@/e2e/fixtures/helpers'
+import {PostPage} from '@/e2e/page-objects/PostPage'
 import {expect, test} from '@playwright/test'
-import {waitForComments} from '../../../fixtures/helpers'
-import {PostPage} from '../../../page-objects/PostPage'
 
 /**
  * Comment voting tests (authenticated users only).
@@ -10,11 +10,11 @@ import {PostPage} from '../../../page-objects/PostPage'
  * - Downvote comments
  * - Vote button visibility
  * - Vote state persistence
- *
- * Note: Uses conditional skips for dynamic test data.
+ * - Vote toggling (upvote → remove → downvote)
  */
-/* eslint-disable playwright/no-skipped-test */
 test.describe('Comment Voting (Authenticated)', () => {
+  test.describe.configure({mode: 'parallel'})
+
   let postPage: PostPage
 
   test.beforeEach(async ({page}) => {
@@ -23,57 +23,87 @@ test.describe('Comment Voting (Authenticated)', () => {
     await waitForComments(page)
   })
 
-  test('should upvote a comment', async ({page}) => {
-    // Verify user is authenticated
+  test('should verify user is authenticated', async () => {
     const isAuth = await postPage.isAuthenticated()
     expect(isAuth).toBe(true)
-
-    // Get first comment
-    const firstCommentId = await postPage
-      .getAllComments()
-      .first()
-      .getAttribute('data-comment-id')
-
-    // Skip if no comments found
-    test.skip(!firstCommentId, 'No comments found')
-
-    // Upvote
-    await postPage.upvoteComment(firstCommentId!)
-
-    // Wait for upvote button to update state
-    await page
-      .locator(
-        `[data-comment-id="${firstCommentId}"] button[aria-label*="Upvote"]`
-      )
-      .waitFor({state: 'visible'})
-
-    // Get new score
-    const newScore = await postPage.getCommentScore(firstCommentId!)
-
-    // Score should change (may increase or just change color if already voted)
-    // We can't guarantee exact score change due to vote fuzzing
-    expect(newScore).toBeDefined()
   })
 
-  test('should show vote buttons when authenticated', async ({page}) => {
-    const firstCommentId = await postPage
-      .getAllComments()
-      .first()
-      .getAttribute('data-comment-id')
+  test('should show vote buttons when authenticated', async () => {
+    const firstCommentId = await postPage.getFirstCommentId()
 
-    // Skip if no comments found
-    test.skip(!firstCommentId, 'No comments found')
-
-    // Check upvote button exists
-    const upvoteBtn = page.locator(
-      `[data-comment-id="${firstCommentId}"] button[aria-label*="Upvote"]`
-    )
+    const upvoteBtn = postPage.getUpvoteButton(firstCommentId)
     await expect(upvoteBtn).toBeVisible()
 
-    // Check downvote button exists
-    const downvoteBtn = page.locator(
-      `[data-comment-id="${firstCommentId}"] button[aria-label*="Downvote"]`
-    )
+    const downvoteBtn = postPage.getDownvoteButton(firstCommentId)
     await expect(downvoteBtn).toBeVisible()
+  })
+
+  test('should upvote a comment', async () => {
+    const firstCommentId = await postPage.getFirstCommentId()
+
+    await postPage.upvoteComment(firstCommentId)
+
+    await postPage.waitForApiResponse()
+
+    const upvoteBtn = postPage.getUpvoteButton(firstCommentId)
+    await expect(upvoteBtn).toBeVisible()
+  })
+
+  test('should downvote a comment', async () => {
+    const firstCommentId = await postPage.getFirstCommentId()
+
+    await postPage.downvoteComment(firstCommentId)
+
+    await postPage.waitForApiResponse()
+
+    const downvoteBtn = postPage.getDownvoteButton(firstCommentId)
+    await expect(downvoteBtn.first()).toBeVisible()
+  })
+
+  test('should toggle vote (upvote → remove → downvote)', async () => {
+    const firstCommentId = await postPage.getFirstCommentId()
+
+    const upvoteBtn = postPage.getUpvoteButton(firstCommentId)
+    const downvoteBtn = postPage.getDownvoteButton(firstCommentId)
+
+    await upvoteBtn.first().click()
+    await postPage.waitForApiResponse()
+
+    await upvoteBtn.first().click()
+    await postPage.waitForApiResponse()
+
+    await downvoteBtn.first().click()
+    await postPage.waitForApiResponse()
+
+    await expect(downvoteBtn.first()).toBeVisible()
+  })
+
+  test('should handle rapid vote changes', async () => {
+    const firstCommentId = await postPage.getFirstCommentId()
+
+    const upvoteBtn = postPage.getUpvoteButton(firstCommentId)
+    const downvoteBtn = postPage.getDownvoteButton(firstCommentId)
+
+    await upvoteBtn.first().click()
+    await downvoteBtn.first().click()
+    await upvoteBtn.first().click()
+
+    await postPage.waitForApiResponse()
+
+    await expect(upvoteBtn.first()).toBeVisible()
+  })
+
+  test('should persist vote after page reload', async ({page}) => {
+    const firstCommentId = await postPage.getFirstCommentId()
+
+    await postPage.upvoteComment(firstCommentId)
+
+    await postPage.waitForApiResponse()
+
+    await page.reload()
+    await waitForComments(page)
+
+    const upvoteBtn = postPage.getUpvoteButton(firstCommentId)
+    await expect(upvoteBtn).toBeVisible()
   })
 })

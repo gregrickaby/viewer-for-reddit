@@ -19,31 +19,42 @@ export abstract class BasePage {
 
   /**
    * Wait for React hydration to complete.
-   * Waits for DOM content and main element to be visible.
    */
   async waitForHydration() {
-    // Wait for DOM content to be loaded
     await this.page.waitForLoadState('domcontentloaded')
 
-    // Wait for main content to be present (React hydration complete)
     await this.page.locator('main').waitFor({state: 'visible', timeout: 10000})
 
-    // Wait for at least one article to be visible (data fetched)
     await this.page
       .locator('article')
       .first()
       .waitFor({state: 'visible', timeout: 5000})
-      .catch(() => {
-        // Homepage might not have articles, that's okay
-      })
+      .catch(() => {})
   }
 
   /**
-   * Check if user is authenticated.
+   * Check if user is authenticated by looking for user menu avatar.
    */
   async isAuthenticated(): Promise<boolean> {
-    const authIndicator = this.page.locator('[data-authenticated="true"]')
-    return await authIndicator.isVisible().catch(() => false)
+    return await this.getUserMenu()
+      .isVisible()
+      .catch(() => false)
+  }
+
+  /**
+   * Get user menu avatar locator.
+   */
+  getUserMenu(): Locator {
+    return this.page.locator('[aria-label^="User menu for"]')
+  }
+
+  /**
+   * Wait for API response (voting, subscription, etc).
+   */
+  async waitForApiResponse(): Promise<void> {
+    await this.page
+      .waitForResponse((response) => response.url().includes('/api/'))
+      .catch(() => null)
   }
 
   /**

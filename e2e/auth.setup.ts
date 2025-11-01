@@ -33,7 +33,6 @@ setup('authenticate', async ({browser, baseURL}) => {
   if (existsSync(authFile)) {
     console.info('🔍 Found existing auth file, checking if still valid...')
 
-    // Create a context with existing auth to test validity
     const context = await browser.newContext({
       storageState: authFile
     })
@@ -42,11 +41,8 @@ setup('authenticate', async ({browser, baseURL}) => {
     try {
       await page.goto(baseURL as string)
 
-      // Wait for main content to ensure React has hydrated
       await page.locator('main').waitFor({state: 'visible', timeout: 5000})
 
-      // Check if user menu is visible (indicates valid auth)
-      // The user menu avatar appears when authenticated
       const isAuthenticated = await page
         .locator('[aria-label^="User menu for"]')
         .isVisible({timeout: 3000})
