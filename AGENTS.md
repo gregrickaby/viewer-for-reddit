@@ -110,6 +110,8 @@ sonar-scanner            # SonarQube analysis - must pass quality gate
 
 # Testing
 npx vitest <path> --run  # Run specific test file
+npm run test:e2e         # Run Playwright E2E tests
+npm run test:e2e:ui      # Run Playwright in interactive UI mode
 
 # Type Generation
 npm run typegen          # Full workflow (fetch + validate)
@@ -141,7 +143,11 @@ npm run typegen:types    # Generate types from OpenAPI spec
    ```bash
    sonar-scanner  # Must pass quality gate
    ```
-5. **Optional**: Microsoft Playwright MCP validation for all UI changes
+5. **For UI changes**: Run Playwright E2E tests
+   ```bash
+   npm run test:e2e  # Run all E2E tests (requires dev server running)
+   ```
+6. **Optional**: Microsoft Playwright MCP for visual debugging
 
 ### Quality Standards (Enterprise-Grade Requirements)
 
@@ -159,7 +165,66 @@ npm run typegen:types    # Generate types from OpenAPI spec
 - **Self-hosted Platform**: <http://localhost:9000> - Full analysis and quality gate enforcement
 - **SonarQube MCP**: `mcp_sonarqube_*` tools for programmatic analysis and issue management
 
-**Skip validation** for documentation-only changes (\\\*.md, comments).
+**Skip validation** for documentation-only changes (\*.md, comments).
+
+### E2E Testing with Playwright
+
+**Local Development Workflow:**
+
+```bash
+# Run all E2E tests (requires dev server running)
+npm run test:e2e
+
+# Run with UI (interactive mode)
+npm run test:e2e:ui
+
+# Run in headed mode (see browser)
+npm run test:e2e:headed
+
+# Debug specific test
+npm run test:e2e:debug
+
+# Generate test code (record interactions)
+npm run test:e2e:codegen
+```
+
+**Authentication Setup:**
+
+E2E tests require credentials in `.env.local`:
+
+```bash
+REDDIT_USER="your_test_account_username"
+REDDIT_PASSWORD="your_test_account_password"
+APP_URL="http://localhost:3000"  # Optional, defaults to localhost:3000
+```
+
+**How It Works:**
+
+1. Global setup (`e2e/global-setup.ts`) logs in once via Reddit OAuth
+2. Authentication cookies saved to `e2e/.auth/user.json`
+3. All authenticated tests reuse this cookie state (no repeated logins)
+4. Anonymous tests run without authentication
+
+**Page Object Model:**
+
+- All tests use Page Object Model pattern (see `e2e/page-objects/`)
+- Encapsulates page interactions and selectors
+- Makes tests maintainable and readable
+- Example: `PostPage`, `HomePage`, `BasePage`
+
+**Focus: Feature Detection**
+
+- Tests verify features work (navigation, voting, expansion)
+- Screenshots only on failure (debugging aid)
+- Functional assertions preferred over visual regression
+
+**CI/CD:**
+
+- GitHub Actions workflow: `.github/workflows/playwright.yml`
+- Runs daily against production (`https://reddit-viewer.com`)
+- Manual trigger available via GitHub UI
+- Uses secrets `REDDIT_USER` and `REDDIT_PASSWORD`
+- Uploads test results and HTML reports as artifacts
 
 ## Architecture Overview
 

@@ -9,10 +9,10 @@ tools:
     'new',
     'runCommands',
     'runTasks',
-    'next-devtools/*',
     'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
+    'playwright-test/*',
     'runSubagent',
     'usages',
     'vscodeAPI',
@@ -22,11 +22,6 @@ tools:
     'openSimpleBrowser',
     'fetch',
     'githubRepo',
-    'sonarsource.sonarlint-vscode/sonarqube_getPotentialSecurityIssues',
-    'sonarsource.sonarlint-vscode/sonarqube_excludeFiles',
-    'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
-    'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
-    'extensions',
     'todos',
     'runTests'
   ]
@@ -506,10 +501,180 @@ After writing/updating tests:
 ```bash
 npx vitest <path> --run  # Run specific tests during development
 npm run validate         # Complete validation: format, lint, typecheck, full test suite
-npm run sonar          # Run SonarQube analysis - ensure no critical issues
+npm run sonar            # Run SonarQube analysis - ensure no critical issues
 ```
 
-### 13. **Common Pitfalls**
+**For UI changes**, also run E2E tests:
+
+```bash
+npm run test:e2e         # Run all Playwright E2E tests (requires dev server)
+npm run test:e2e:ui      # Interactive mode for debugging
+```
+
+### 13. **E2E Testing with Playwright**
+
+While unit tests focus on isolated components and functions, E2E tests validate complete user workflows.
+
+**When to Write E2E Tests:**
+
+- New user-facing features (navigation, forms, interactions)
+- Critical user flows (login, commenting, voting)
+- Complex UI interactions (keyboard shortcuts, drag-and-drop)
+- Cross-page workflows
+- Visual regression testing
+- Error handling and validation flows
+
+#### E2E Test Planning Workflow
+
+When creating comprehensive E2E test coverage:
+
+1. **Navigate and Explore**
+   - Use Playwright MCP browser tools to explore the interface
+   - Identify all interactive elements, forms, navigation paths
+   - Map out primary user journeys and critical paths
+   - Consider different user types (anonymous, authenticated)
+
+2. **Design Test Scenarios**
+   - Happy path scenarios (normal user behavior)
+   - Edge cases and boundary conditions
+   - Error handling and validation
+   - Ensure scenarios are independent and can run in any order
+
+3. **Structure Test Plans**
+   - Clear, descriptive titles
+   - Detailed step-by-step instructions
+   - Expected outcomes for verification
+   - Assumptions about starting state (blank/fresh)
+   - Success criteria and failure conditions
+
+#### E2E Test Generation
+
+**E2E Test Structure:**
+
+```typescript
+import {test, expect} from '@playwright/test'
+import {HomePage} from '../page-objects/HomePage'
+
+test.describe('Homepage Features', () => {
+  test('should load posts for anonymous users', async ({page}) => {
+    const homePage = new HomePage(page)
+
+    await homePage.gotoHomepage()
+
+    const postCount = await homePage.getPostCount()
+    expect(postCount).toBeGreaterThan(0)
+  })
+})
+```
+
+**When Generating E2E Tests:**
+
+- Read existing page objects in `e2e/page-objects/` first
+- Create new page objects before writing tests if needed
+- Use Playwright MCP tools to interact with the browser in real-time
+- Generate tests based on actual browser interactions
+- Include comments with step descriptions before each action
+- Use best practices from Playwright documentation
+
+**Page Object Model Pattern:**
+
+All E2E tests must use Page Object Model:
+
+```typescript
+// ✅ CORRECT - Page Object Model
+const postPage = new PostPage(page)
+await postPage.gotoTestPost()
+await postPage.pressNextCommentKey()
+
+// ❌ WRONG - Direct page interactions
+await page.goto('/r/test/comments/1olhfw8/surprise_test')
+await page.keyboard.press('j')
+```
+
+#### E2E Test Debugging
+
+**Systematic Debugging Workflow:**
+
+When E2E tests fail, use this methodical approach:
+
+1. **Initial Execution**
+   - Run failing tests: `npm run test:e2e -- --grep "test name"`
+   - Identify specific failure points
+
+2. **Error Investigation**
+   - Use Playwright MCP tools to examine:
+     - Browser console messages (`browser_console_messages`)
+     - Network requests (`browser_network_requests`)
+     - Page snapshot (`browser_snapshot`)
+     - Element visibility and state
+   - Analyze error details: selectors, timing, assertions
+
+3. **Root Cause Analysis**
+   - Element selectors changed (update page object)
+   - Timing/synchronization issues (add proper waits)
+   - Data dependencies (check test data/fixtures)
+   - Application changes (verify UI still exists)
+
+4. **Code Remediation**
+   - Update page objects (NOT test files) for selector changes
+   - Fix assertions and expected values
+   - Use resilient locators (role, label, test-id over CSS)
+   - For dynamic data, use regular expressions for flexibility
+   - Improve test reliability and maintainability
+
+5. **Verification**
+   - Re-run test after each fix
+   - Verify fix doesn't break other tests
+   - Add regression test if bug was found
+
+6. **Iteration**
+   - Fix one issue at a time
+   - Document findings and reasoning
+   - If error persists after thorough debugging, mark as `test.fixme()` with explanation
+
+**Debugging Best Practices:**
+
+- Be systematic and thorough
+- Prefer robust solutions over quick hacks
+- Never use `waitForLoadState('networkidle')` (discouraged API)
+- Update page objects, not inline test code
+- Document what was broken and how you fixed it
+- Run full test suite to ensure no regressions
+
+**E2E Test Commands:**
+
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Interactive UI mode
+npm run test:e2e:ui
+
+# Run with visible browser
+npm run test:e2e:headed
+
+# Debug specific test
+npm run test:e2e:debug
+
+# Generate test code by recording
+npm run test:e2e:codegen
+
+# Run specific test file
+npm run test:e2e -- path/to/test.spec.ts
+
+# Run tests matching pattern
+npm run test:e2e -- --grep "pattern"
+```
+
+**E2E vs Unit Testing:**
+
+- **Unit**: Isolated components/functions with mocked dependencies
+- **E2E**: Full application stack with real browser and network
+- **Coverage**: Unit tests provide 90%+, E2E tests validate critical paths
+- **Speed**: Unit tests run in milliseconds, E2E tests in seconds
+- **Debugging**: Unit tests use console/debugger, E2E uses browser snapshots/screenshots
+
+### 14. **Common Pitfalls**
 
 #### Testing Library Pitfalls
 
