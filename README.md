@@ -1,53 +1,49 @@
 # About Viewer for Reddit
 
-New here? Welcome! **Start browsing at the homepage:** [reddit-viewer.com](https://reddit-viewer.com)
+**Viewer for Reddit** is a clean, distraction-free way to browse Reddit. No ads, no algorithmic feeds, no tracking—just Reddit content, the way it should be.
 
-## Why Viewer for Reddit?
+New here? **[Start browsing now →](https://reddit-viewer.com)**
 
-Lurk on Reddit without distractions. No targeted ads or algorithmic feeds, just the content you want to see!
+## What You Get
 
-**Perfect for:**
+- **Browse instantly** - No sign-up required. Start exploring right away.
+- **Your communities** - Add favorite subreddits to your homepage for quick access.
+- **Vote & comment** - Sign in with your Reddit account to participate.
+- **Distraction-free** - No ads, no clickbait, no endless scrolling tricks.
+- **Privacy first** - Your password never touches our servers. Optional analytics only.
+- **Works everywhere** - Fast, clean interface on desktop, tablet, or phone.
+- **Boss button** - Discreetly close Reddit by pressing `esc` or with one click (no judgment!).
 
-- Quickly browsing posts, comments, images, GIFs, and videos without clutter
-- Reading communities at work (boss button included!)
-- Enjoying Reddit privately without being tracked
-- Accessing Reddit content in a clean, fast interface
+## How It Works
 
-## Getting Started
+**No account? No problem.** Jump in and start browsing right now. The homepage shows popular posts, and you can search for any community. Heart communities you like, and they'll appear on your homepage next time.
 
-### Browse Without Signing In
+**Want more?** Sign in with your Reddit account to access your personalized feed, custom feeds, and saved posts. You can also vote and comment on posts.
 
-1. **Explore popular content** - The homepage shows trending posts from across Reddit
-2. **Find communities** - Use the search bar to discover subreddits
-3. **Save favorites** - Click the heart icon next to any community to add it to your favorites list. Favorites automatically appear on the homepage for easy access.
+**Your privacy is protected.** We use Reddit's official login system—your password never touches our servers. We store temporary access tokens that get deleted when you sign out. That's it.
 
-### Sign In for More Features
+We track some usage stats (what features you use, button clicks) with Umami's [Track Events](https://umami.is/docs/track-events) system to make the app better, but it's all anonymous and not connected to your Reddit account.
 
-Authenticate with your Reddit account to unlock:
+## The Story Behind It
 
-- **Home feed** - Your personalized Reddit feed
-- **Custom feeds** - Curated content collections
-- **Vote & comment** - Participate in discussions
-- **Subscribe** - Manage your community subscriptions
+This side project started in 2020 as a fun way for me to learn TypeScript. It's grown into something with thousands of users, and I'm really proud of it. I use it every day and I'm always looking for ways to make it better.
 
-**Your privacy is protected:** We use [Reddit's OAuth 2.0](https://www.reddit.com/r/redditdev/wiki/oauth2/) for secure authentication. Your password never touches our servers—only encrypted access tokens are stored, and they're automatically deleted when you log out.
+## Who Built This?
 
-**We do not collect, store, or sell any personal information. Ever.**
+I'm [Greg Rickaby](https://gregrickaby.com), a web developer who's been around the internet for over 20 years. I built Viewer for Reddit because I wanted a cleaner, simpler way to browse Reddit and I thought others might too.
 
-## What's Under the Hood?
+## Support & Feedback
 
-Built with [Next.js](https://nextjs.org/) and [Mantine](https://mantine.dev/), powered by [Redux Toolkit](https://redux-toolkit.js.org/) and [RTK Query](https://redux-toolkit.js.org/rtk-query/overview). All data comes securely from Reddit's public [REST API](https://www.reddit.com/dev/api) via OAuth 2.0. [Cloudflare](https://www.cloudflare.com/) handles caching and CDN services.
+- **Found a bug?** [Let me know](https://github.com/gregrickaby/viewer-for-reddit/issues)
+- **Have an idea?** [Share it](https://github.com/gregrickaby/viewer-for-reddit/issues)
+- **Like the project?** [Buy me a coffee](https://www.buymeacoffee.com/gregrickaby) ☕ (helps pay for hosting!)
+- **Interested in helping?** Check out the [contributing guide](./CONTRIBUTING.md)
 
-## Who Maintains This?
+## Tech & Open Source
 
-Hello there, I'm [Greg Rickaby](https://gregrickaby.com). I've maintained Viewer for Reddit since 2020 as a passion project—a place to experiment with web technologies while building something useful. I've been a Reddit user and web developer for over 20 years.
+This is an open-source project built with modern web technologies (Next.js, React, TypeScript). The code is carefully organized, well-tested, and designed to be maintainable and scalable.
 
-## Support & Contributing
-
-- If you enjoy Viewer for Reddit, consider [buying me a coffee](https://www.buymeacoffee.com/gregrickaby). Your support helps cover hosting and maintenance.
-- To request features or report bugs, file an [issue](https://github.com/gregrickaby/viewer-for-reddit/issues/new/choose).
-- See what's new on the [changelog](https://github.com/gregrickaby/viewer-for-reddit/releases).
-- Want to contribute? Read the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) for how to get started.
+If you're a developer interested in contributing, the [CONTRIBUTING.md](./CONTRIBUTING.md) guide has everything you need to get started. We follow enterprise-grade development practices with comprehensive testing and code quality standards.
 
 ---
 
