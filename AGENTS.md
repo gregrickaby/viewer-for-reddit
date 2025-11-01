@@ -2,7 +2,9 @@
 
 **Audience**: All AI agents (GitHub Copilot, Claude Code, Cursor, etc.)
 **Purpose**: Quick reference and operational guide for AI agents
-**Deep Dives**: See [CONTRIBUTING.md](./CONTRIBUTING.md) for comprehensive documentation
+**Status**: 🏢 **Enterprise-Grade Application** - Following Layered Architecture + Test-Driven Development
+**Foundation**: Comments refactor (`lib/domain/comments/`) - Use as the seed pattern for all new features
+**Deep Dives**: See [CONTRIBUTING.md](./CONTRIBUTING.md) and [LAYERED_ARCHITECTURE_ANALYSIS.md](./docs/LAYERED_ARCHITECTURE_ANALYSIS.md)
 
 ---
 
@@ -22,13 +24,74 @@
 
 ## About reddit-viewer.com
 
-A Reddit viewing web app enabling users to browse Reddit content without ads or distractions.
+**reddit-viewer.com** is an enterprise-grade Reddit viewing web app enabling users to browse Reddit content without ads or distractions. Built with **layered architecture**, **test-driven development**, and **clean code principles** to maximize maintainability, testability, and scalability.
 
-It has two modes:
+### Two Modes
 
-- **Read-only Mode**: Browse public communities, posts, users, and comments without logging in. This mode uses a developer API key to authenticate calls to <https://oauth.reddit.com> with limited rate and scope via Reddit's personal use script.
+- **Read-only Mode**: Browse public communities, posts, users, and comments without logging in. Uses app-level tokens to authenticate calls to <https://oauth.reddit.com> via Reddit's personal use script.
 
-- **Authenticated Mode**: User logs in with via OAuth2 with their Reddit account to access personalized features like viewing home feed, custom feeds, voting, commenting, and subscribing. This mode uses OAuth 2.0 to obtain user-specific access tokens with broader scopes.
+- **Authenticated Mode**: User logs in via OAuth2 with their Reddit account to access personalized features (home feed, custom feeds, voting, commenting, subscribing). Uses user-specific OAuth 2.0 access tokens with broader scopes.
+
+### Architecture Pattern
+
+This application implements **Layered Architecture** (also called Clean Architecture or N-Tier Architecture) with strict separation of concerns:
+
+1. **Presentation Layer** - React components (Mantine UI)
+2. **Application Layer** - Custom hooks (state, side effects, composition)
+3. **Domain Layer** - Pure business logic (100% testable, framework-agnostic)
+4. **Data Access Layer** - RTK Query (API communication, caching)
+
+**Reference Implementation**: See `lib/domain/comments/`, `lib/hooks/comments/`, and `components/UI/Post/Comments/`
+
+Read [LAYERED_ARCHITECTURE_ANALYSIS.md](./docs/LAYERED_ARCHITECTURE_ANALYSIS.md) for complete architecture documentation and patterns.
+
+---
+
+## 🎓 Architecture Principles
+
+When implementing ANY new feature, follow these principles (demonstrated in the comments refactor):
+
+### 1. **Extract Pure Domain Logic First**
+
+- Create `lib/domain/feature-name/` with pure functions
+- No React, no hooks, no API calls
+- 100% test coverage with comprehensive edge cases
+- Fully immutable operations
+- Reusable outside React (Node.js, CLI, etc.)
+
+**Example**: `lib/domain/comments/CommentSorter.ts` (65 lines, 17 tests)
+
+### 2. **Create Focused Hooks with Single Responsibility**
+
+- Break complex hooks into focused, single-purpose hooks (< 100 lines each)
+- Use orchestrator hooks to compose smaller hooks
+- Call domain layer for business logic
+- Use RTK Query for data fetching (never direct API calls)
+
+**Example**: `lib/hooks/comments/useComments.ts` (orchestrator) composes:
+
+- `useCommentFetching.ts` (RTK Query)
+- `useCommentProcessing.ts` (domain logic)
+- `useCommentPagination.ts` (pagination)
+
+### 3. **Keep Components Simple & Presentational**
+
+- Components only handle UI rendering and user interaction
+- Call hooks for all data and state management
+- No direct API calls (via hooks only)
+- One component per file
+- Comprehensive test coverage
+
+**Example**: `components/UI/Post/Comments/CommentItem.tsx` (rendering only)
+
+### 4. **Write Tests Alongside Code**
+
+- **Domain layer**: 100% coverage (pure functions are easy to test)
+- **Hooks**: 90%+ coverage (test state, side effects, edge cases)
+- **Components**: 90%+ coverage (test user interactions, rendering)
+- Use `it.each()` to minimize duplication
+- Use MSW v2 for API mocking (never `global.fetch`)
+- Import test utilities from `@/test-utils`
 
 ---
 
@@ -59,46 +122,44 @@ npm run typegen:types    # Generate types from OpenAPI spec
 - **npm**: v10+
 - **Reddit API credentials**: Required (see `.env.example`)
 
-### Validation Protocol
+### Validation Protocol (CRITICAL - Test-Driven Development)
 
-**For all code changes:**
+**All code changes MUST be test-driven. Tests are not optional.**
 
-1. If API spec/types changed: `npm run typegen:types`
-2. For targeted validation:
+**For all code changes** (run in sequence, stop if any fail):
+
+1. **Write/update tests alongside code changes**
    ```bash
    npx vitest <path> --run  # Test specific files during development
    ```
-3. For complete validation (run in sequence, stop if any fail):
+2. If API spec/types changed: `npm run typegen:types`
+3. **Run complete validation**:
    ```bash
-   npm run validate  # Runs format, lint, typecheck, and full test suite
+   npm run validate  # Runs: format → lint → typecheck → test suite
    ```
-4. For feature completion: `npm run validate` + SonarQube analysis
-5. Optional: Playwright MCP validation for UI changes
+4. **Run SonarQube analysis** (required for merge):
+   ```bash
+   sonar-scanner  # Must pass quality gate
+   ```
+5. **Optional**: Microsoft Playwright MCP validation for all UI changes
 
-**SonarQube Integration:**
+### Quality Standards (Enterprise-Grade Requirements)
+
+- **Test Coverage**: 90%+ (domain layer: 100%)
+- **Code Duplication**: < 1.5% (tracked by SonarQube)
+- **Critical/Blocker Issues**: Zero tolerance
+- **TypeScript**: Strict mode enabled, no `any` types
+- **Linting**: Zero ESLint violations
+- **SonarQube Quality Gate**: Must pass before merge
+- **JSDoc**: Simple docblock on all components and functions
+
+### SonarQube Integration
 
 - **VS Code Extension**: Real-time code quality feedback during development
 - **Self-hosted Platform**: <http://localhost:9000> - Full analysis and quality gate enforcement
 - **SonarQube MCP**: `mcp_sonarqube_*` tools for programmatic analysis and issue management
-- **Quality Standards**: Maintain <1.5% duplication, zero critical/blocker issues
 
-**Skip validation** for documentation-only changes (\*.md, comments).
-
----
-
-## Available Sub-agents
-
-- **Accessibility Tester**: [accessibility-tester](./.claude/agents/accessibility-tester.md)
-- **Architect Reviewer**: [architect-reviewer](./.claude/agents/architect-reviewer.md)
-- **Code Reviewer**: [code-reviewer](./.claude/agents/code-reviewer.md)
-- **Full-stack Developer**: [fullstack-developer](./.claude/agents/fullstack-developer.md)
-- **Next.js Developer**: [nextjs-developer](./.claude/agents/nextjs-developer.md)
-- **Performance Engineer**: [performance-engineer](./.claude/agents/performance-engineer.md)
-- **QA Expert**: [qa-expert](./.claude/agents/qa-expert.md)
-- **Security Engineer**: [security-engineer](./.claude/agents/security-engineer.md)
-- **TypeScript Professional**: [typescript-professional](./.claude/agents/typescript-pro.md)
-
----
+**Skip validation** for documentation-only changes (\\\*.md, comments).
 
 ## Architecture Overview
 
@@ -193,7 +254,16 @@ components/
 lib/
 ├── actions/                # Server Actions (redditToken.ts)
 ├── auth/                   # Auth utilities
-├── hooks/                  # Custom React hooks
+├── domain/                 # Pure business logic (100% testable, framework-agnostic)
+│   └── comments/           # Comment domain logic (reference implementation)
+│       ├── CommentModels.ts
+│       ├── CommentSorter.ts
+│       ├── CommentNester.ts
+│       ├── CommentValidator.ts
+│       └── index.ts
+├── hooks/                  # Custom React hooks (state, side effects, RTK Query)
+│   ├── comments/           # Comment hooks (reference implementation)
+│   └── navigation/         # Navigation hooks
 ├── store/                  # Redux + RTK Query
 ├── types/                  # Auto-generated TypeScript types
 └── utils/
@@ -228,10 +298,9 @@ components/ComponentName/
 ```bash
 # 1. Run complete validation (format, lint, typecheck, test)
 npm run validate
-
-# 2. Validate with Playwright MCP if UI changes
-npm run dev  # Check port 3000 first, then use Playwright MCP
 ```
+
+If UI changes were made, you must validate with Microsoft Playwright MCP! Assume the dev server is running and start at http://localhost:3000
 
 ### Code Quality Standards
 
@@ -254,7 +323,7 @@ npm run dev  # Check port 3000 first, then use Playwright MCP
 
 - Props in JSX will be sorted alphabetically by ESLint auto-fix
 - No orphaned files, dead code, or commented-out code
-- One component per file (extract sub-components to separate files)
+- One component per file (extract sub-components to separate folders and files)
 - Clean up unused imports and variables
 
 **Development Rules:\*\***
@@ -530,8 +599,8 @@ Mock logging utilities in tests using standard Vitest mocking patterns. See test
    # Run SonarQube analysis (for features, not minor fixes)
    sonar-scanner
 
-   # Validate with Playwright if UI changes
-   npm run dev  # Use Playwright MCP to test feature
+   # Validate with Microsoft Playwright if UI changes
+   npm run dev  # Use Microsoft Playwright MCP to test feature
    ```
 
 4. **Commit and Push**
@@ -547,20 +616,18 @@ Mock logging utilities in tests using standard Vitest mocking patterns. See test
    ```
 
 5. **Create Pull Request**
-
-   ```bash
-   gh pr create --title "feat: description" --body "Summary and test plan"
-   ```
+   - Use Github MCP to create Pull Request
 
 6. **Review Process**
    - GitHub Copilot automatically reviews PR
-   - Wait for feedback, address comments
-   - Request re-review after addressing comments
-   - Use Coolify preview deployment to validate: `https://[pr-id].reddit-viewer.com`
+   - Wait 1-2 minutes
+   - Use Github MCP to check CodeQL status (security) and peer review comments
+   - Determine which of the feedbacks are critical
+   - Implement corrections on critical feedbacks
+   - Request re-review from CoPilot after addressing comments
 
 7. **Merge PR**
-   - Ensure all checks pass
-   - Use "Squash and merge" strategy
+   - User will do a final review and merge manually
 
 ---
 

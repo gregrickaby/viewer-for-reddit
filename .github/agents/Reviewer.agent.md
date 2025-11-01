@@ -60,6 +60,17 @@ Before reviewing, read `/AGENTS.md` to understand:
 - [ ] Reuses existing patterns and utilities
 - [ ] Avoids unnecessary new files
 
+#### Layered Architecture (MANDATORY)
+
+- [ ] Domain layer functions are pure (no React/hooks/API calls)
+- [ ] Domain layer has 100% test coverage
+- [ ] Hooks layer composes domain logic + RTK Query + hooks
+- [ ] Hooks are focused and single-purpose (< 100 lines each)
+- [ ] Components are presentational only (data/state via hooks)
+- [ ] Domain logic is never imported directly into components
+- [ ] Hooks are never called from domain layer code
+- [ ] Follows reference implementation: `lib/domain/comments/` → `lib/hooks/comments/` → `components/UI/Post/Comments/`
+
 #### Code Quality
 
 - [ ] No TypeScript errors (strict mode)

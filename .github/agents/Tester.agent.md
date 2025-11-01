@@ -49,7 +49,34 @@ Before testing work, read `/AGENTS.md` to understand:
 - Test file structure and conventions
 - Validation protocol
 
-### 2. **Testing Principles**
+### 2. **Layered Architecture Testing**
+
+When testing changes, understand which layer you're testing and apply appropriate coverage:
+
+**Domain Layer** (lib/domain/): 100% coverage target
+
+- Pure functions only - NO mocking needed
+- Test all branches and edge cases
+- No dependencies on React/hooks/API calls
+- Easiest to test, prioritize domain layer tests
+
+**Hooks Layer** (lib/hooks/): 90%+ coverage target
+
+- Test state management and side effects
+- Mock domain layer if needed (rarely)
+- Use MSW for API calls via RTK Query
+- Test hook composition and orchestration
+
+**Components Layer** (components/): 90%+ coverage target
+
+- Test UI rendering and user interactions
+- Mock hooks to test isolated component behavior
+- Use semantic queries (getByRole, getByLabelText)
+- Test accessibility features and keyboard navigation
+
+**Reference Implementation**: `lib/domain/comments/` (100 tests, 100% coverage) → `lib/hooks/comments/` (RTK + composition) → `components/UI/Post/Comments/` (presentational)
+
+### 3. **Testing Principles**
 
 #### Test-Driven Development
 
@@ -116,6 +143,46 @@ it('should fetch data', async () => {
 - Place specific patterns before catch-all patterns
 - Example: `commentHandlers` uses `/:permalink*` which catches all post comment URLs
 
+#### Domain Layer Testing (Pure Functions)
+
+Domain layer functions are framework-agnostic pure functions - easiest to test!
+
+```typescript
+// ✅ CORRECT - Pure function testing with it.each()
+import {sortComments} from '@/lib/domain/comments/CommentSorter'
+
+describe('CommentSorter', () => {
+  it.each([
+    [
+      [
+        {id: '1', score: 10},
+        {id: '2', score: 5}
+      ],
+      'best',
+      [
+        {id: '1', score: 10},
+        {id: '2', score: 5}
+      ]
+    ],
+    [
+      [
+        {id: '1', score: 10},
+        {id: '2', score: 5}
+      ],
+      'new',
+      [
+        {id: '1', score: 10},
+        {id: '2', score: 5}
+      ]
+    ],
+    [[], 'best', []],
+    [null, 'best', []]
+  ])('should sort %s by %s', (input, sortBy, expected) => {
+    expect(sortComments(input, sortBy)).toEqual(expected)
+  })
+})
+```
+
 #### Test Structure
 
 - **One component per folder** with matching test file
@@ -123,7 +190,7 @@ it('should fetch data', async () => {
 - **Test descriptions**: Always start with `it('should ...`
 - **Arrange-Act-Assert pattern** for clarity
 
-### 3. **Coverage Improvement Workflow**
+### 4. **Coverage Improvement Workflow**
 
 When asked to improve coverage:
 
@@ -154,7 +221,7 @@ When asked to improve coverage:
    npm run test  # Verify overall coverage increased
    ```
 
-### 4. **Common Testing Scenarios**
+### 5. **Common Testing Scenarios**
 
 #### React Components (with Testing Library)
 
@@ -276,7 +343,7 @@ describe('serverAction', () => {
 })
 ```
 
-### 5. **Debugging Test Failures**
+### 6. **Debugging Test Failures**
 
 When tests fail:
 
@@ -311,7 +378,7 @@ When tests fail:
    - Verify MSW handlers are reset
    - Check for state leakage between tests
 
-### 6. **Testing Best Practices**
+### 7. **Testing Best Practices**
 
 #### ✅ Do:
 
@@ -336,7 +403,7 @@ When tests fail:
 - Over-mock (only mock what's necessary)
 - Test implementation details (e.g., function names, internal variables)
 
-### 7. **Coverage Analysis**
+### 8. **Coverage Analysis**
 
 #### Understanding Coverage Metrics
 
@@ -357,7 +424,7 @@ When tests fail:
 2. **Medium**: UI components, utilities, hooks
 3. **Low**: Configuration files, types, constants
 
-### 8. **Mocking Strategies**
+### 9. **Mocking Strategies**
 
 #### Hoisted Mocks (Module-Level)
 
@@ -399,7 +466,7 @@ vi.mock('next/link', () => ({
 }))
 ```
 
-### 9. **Accessibility Testing in Tests**
+### 10. **Accessibility Testing in Tests**
 
 While there's a dedicated Accessibility Expert mode, incorporate basic a11y checks:
 
@@ -417,7 +484,7 @@ it('should have accessible form field', () => {
 })
 ```
 
-### 10. **Test Maintenance**
+### 11. **Test Maintenance**
 
 #### When to Update Tests
 
@@ -432,7 +499,7 @@ it('should have accessible form field', () => {
 2. **Green**: Write minimal code to pass
 3. **Refactor**: Improve code while keeping tests green
 
-### 11. **Validation Protocol**
+### 12. **Validation Protocol**
 
 After writing/updating tests:
 
@@ -442,7 +509,7 @@ npm run validate         # Complete validation: format, lint, typecheck, full te
 npm run sonar          # Run SonarQube analysis - ensure no critical issues
 ```
 
-### 12. **Common Pitfalls**
+### 13. **Common Pitfalls**
 
 #### Testing Library Pitfalls
 
@@ -462,7 +529,7 @@ npm run sonar          # Run SonarQube analysis - ensure no critical issues
 - **Don't** define handlers inside tests (except overrides)
 - **Don't** mock endpoints that aren't called
 
-### 13. **Performance Testing**
+### 14. **Performance Testing**
 
 While not unit tests, consider:
 
@@ -470,7 +537,7 @@ While not unit tests, consider:
 - Test hook performance with large datasets
 - Test memo effectiveness (when manually added)
 
-### 14. **Output Format**
+### 15. **Output Format**
 
 When improving coverage, report:
 
@@ -503,7 +570,7 @@ When improving coverage, report:
    ...
 ```
 
-### 15. **When to Ask for Help**
+### 16. **When to Ask for Help**
 
 - Unclear test requirements
 - Flaky tests that pass/fail randomly

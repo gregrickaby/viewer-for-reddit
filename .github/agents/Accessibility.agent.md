@@ -51,7 +51,25 @@ Before accessibility work, read `/AGENTS.md` to understand:
 - Testing requirements
 - Validation protocol
 
-### 2. **Code Quality Standards**
+### 2. **Layered Architecture & Accessibility**
+
+Accessibility work is **presentation layer only**:
+
+- **Domain Layer** (`lib/domain/`): No a11y concerns - pure business logic
+- **Hooks Layer** (`lib/hooks/`): No a11y concerns - state management only
+- **Components Layer** (`components/`): **All a11y work happens here**
+  - Semantic HTML and ARIA labels
+  - Keyboard navigation and focus management
+  - Color contrast and visual indicators
+  - Form labels and error handling
+  - Skip links and landmark navigation
+  - Live regions for dynamic content
+
+**Reference Implementation**: `components/UI/Post/Comments/` for complete a11y patterns
+
+When reviewing a11y changes, verify responsibilities are in the **Presentation Layer only**. Do not add a11y concerns to domain or hooks layers.
+
+### 3. **Code Quality Standards**
 
 **JSDoc Requirements:**
 
@@ -65,7 +83,7 @@ Before accessibility work, read `/AGENTS.md` to understand:
 - NEVER call `userEvent.setup()` directly
 - Include accessibility-focused tests (keyboard nav, screen reader)
 
-### 3. **WCAG 2.1 Level AA Requirements**
+### 4. **WCAG 2.1 Level AA Requirements**
 
 #### Perceivable
 
@@ -102,7 +120,7 @@ Before accessibility work, read `/AGENTS.md` to understand:
   - Name, role, value for all UI components
   - Status messages programmatically determined
 
-### 4. **Semantic HTML**
+### 5. **Semantic HTML**
 
 #### Use Proper Elements
 
@@ -148,7 +166,7 @@ Before accessibility work, read `/AGENTS.md` to understand:
   <h3>Section</h3>  {/* Skipped h2 */}
 ```
 
-### 5. **ARIA - Accessible Rich Internet Applications**
+### 6. **ARIA - Accessible Rich Internet Applications**
 
 #### ARIA Rules (in order of importance)
 
@@ -193,7 +211,7 @@ Before accessibility work, read `/AGENTS.md` to understand:
 <div aria-hidden="true">Decorative icon</div>
 ```
 
-### 6. **Keyboard Navigation**
+### 7. **Keyboard Navigation**
 
 #### Requirements
 
@@ -247,7 +265,7 @@ const handleModalClose = () => {
 </a>
 ```
 
-### 7. **Focus Management**
+### 8. **Focus Management**
 
 #### Visible Focus Indicators
 
@@ -325,7 +343,7 @@ function Modal({isOpen, onClose, children}) {
 }
 ```
 
-### 8. **Color and Contrast**
+### 9. **Color and Contrast**
 
 #### Contrast Requirements
 
@@ -358,7 +376,7 @@ function Modal({isOpen, onClose, children}) {
 )}
 ```
 
-### 9. **Form Accessibility**
+### 10. **Form Accessibility**
 
 #### Labels
 
@@ -418,7 +436,7 @@ function Modal({isOpen, onClose, children}) {
 </div>
 ```
 
-### 10. **Images and Media**
+### 11. **Images and Media**
 
 #### Alternative Text
 
@@ -471,7 +489,7 @@ function Modal({isOpen, onClose, children}) {
 </audio>
 ```
 
-### 11. **Navigation and Links**
+### 12. **Navigation and Links**
 
 #### Link Purpose
 
@@ -536,7 +554,7 @@ function Modal({isOpen, onClose, children}) {
 }
 ```
 
-### 12. **Dynamic Content**
+### 13. **Dynamic Content**
 
 #### Live Regions
 
@@ -579,7 +597,7 @@ return (
 )
 ```
 
-### 13. **Tables**
+### 14. **Tables**
 
 #### Data Tables
 
@@ -604,7 +622,7 @@ return (
 </table>
 ```
 
-### 14. **Responsive and Mobile Accessibility**
+### 15. **Responsive and Mobile Accessibility**
 
 #### Touch Targets
 
@@ -627,7 +645,7 @@ return (
 - Use relative units (rem, em) not fixed pixels
 - Avoid horizontal scrolling at standard zoom
 
-### 15. **Testing Accessibility**
+### 16. **Testing Accessibility**
 
 #### Automated Testing
 
@@ -685,7 +703,7 @@ test('homepage should be accessible', async ({page}) => {
 - **Color contrast checker**: WebAIM contrast checker
 - **Playwright MCP**: For automated accessibility testing
 
-### 16. **Common Mantine UI Accessibility Patterns**
+### 17. **Common Mantine UI Accessibility Patterns**
 
 Since the project uses Mantine:
 
@@ -718,7 +736,7 @@ import {Button, TextInput, Modal} from '@mantine/core'
 // But always verify and enhance when needed
 ```
 
-### 17. **Accessibility Checklist for Components**
+### 18. **Accessibility Checklist for Components**
 
 When creating/reviewing components:
 
@@ -735,7 +753,7 @@ When creating/reviewing components:
 - [ ] Tab order is logical
 - [ ] Works with screen readers
 
-### 18. **Accessibility Statement Template**
+### 19. **Accessibility Statement Template**
 
 ```markdown
 # Accessibility Statement
@@ -758,7 +776,7 @@ We welcome your feedback on the accessibility of this site. Please contact us if
 Last updated: [Date]
 ```
 
-### 19. **Common Anti-patterns to Avoid**
+### 20. **Common Anti-patterns to Avoid**
 
 ❌ **Don't:**
 
@@ -786,7 +804,7 @@ Last updated: [Date]
 - Support text resize up to 200%
 - Respect user preferences (prefers-reduced-motion)
 
-### 20. **Validation After Changes**
+### 21. **Validation After Changes**
 
 After accessibility improvements, run validation:
 
@@ -804,7 +822,7 @@ Then test with:
 - DevTools accessibility audit (Lighthouse)
 - Playwright MCP for visual verification
 
-### 21. **Reporting Format**
+### 22. **Reporting Format**
 
 When completing accessibility work:
 

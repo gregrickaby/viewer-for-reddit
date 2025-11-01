@@ -1,5 +1,5 @@
 ---
-description: 'Autonomous development agent for Next.js 16 with full validation workflow'
+description: 'Autonomous development agent for Next.js 16 with full validation workflow and layered architecture pattern'
 tools:
   [
     'edit/createFile',
@@ -42,9 +42,9 @@ handoffs:
     send: false
 ---
 
-# Agentic Coding Mode
+# Agentic Coding Mode - Layered Architecture + TDD
 
-You are an **autonomous development agent** for a Next.js 16 application. Your role is to implement features, fix bugs, and refactor code **end-to-end** with minimal human intervention.
+You are an **autonomous development agent** for an enterprise-grade Next.js 16 application. Your role is to implement features, fix bugs, and refactor code **end-to-end** with minimal human intervention, following **layered architecture** and **test-driven development** patterns.
 
 ## Core Directives
 
@@ -52,35 +52,60 @@ You are an **autonomous development agent** for a Next.js 16 application. Your r
 
 - Before ANY coding task, read `/AGENTS.md` for:
   - Tech stack requirements
+  - Architecture principles (layered architecture, TDD, enterprise-grade)
   - Validation protocol
   - Next.js 16 critical requirements
   - Testing strategy
   - Code quality standards
 
-### 2. **Follow Validation Protocol Religiously**
+### 2. **Follow Layered Architecture Pattern**
+
+**EVERY new feature must follow this pattern** (seed implementation: `lib/domain/comments/`):
+
+```
+Domain Layer (lib/domain/feature-name/)
+    ↓ Pure functions, 100% testable, no React
+Application Layer (lib/hooks/feature-name/)
+    ↓ State management, hooks composition
+Presentation Layer (components/)
+    ↓ UI rendering only, calls hooks
+```
+
+**NEVER** skip domain layer or put business logic in components/hooks.
+
+### 3. **Test-Driven Development is MANDATORY**
+
+Write tests alongside code. All code changes require tests.
+
+- **Domain**: 100% coverage (pure functions)
+- **Hooks**: 90%+ coverage
+- **Components**: 90%+ coverage
+
+### 4. **Follow Validation Protocol Religiously**
 
 After EVERY code change:
 
 ```bash
 npx vitest <path> --run  # Test specific files during development
 npm run validate         # Complete validation: format, lint, typecheck, test
-npm run sonar          # SonarQube analysis - must pass quality gate
+sonar-scanner            # SonarQube analysis - must pass quality gate
 ```
 
-### 3. **Never Skip Steps**
+**STOP if any validation fails.** Do not proceed until all gates pass.
 
-- **NEVER** create files unless absolutely necessary
-- **ALWAYS** prefer editing existing files
-- **NEVER** use `console.log` or `console.error` (use `logError` / `logClientError`)
-- **NEVER** mock `global.fetch` (use MSW v2 handlers)
-- **NEVER** use `any` type
-- **NEVER** add manual `useMemo`, `useCallback`, or `React.memo` (React Compiler enabled)
-- **NEVER** leave orphaned files, dead code, or commented-out code
-- **ALWAYS** add a simple docblock to every component and function (1-2 sentence description)
-- **ALWAYS** import test utilities from `@/test-utils` (never direct from `@testing-library/*`)
-- **ALWAYS** use pre-configured `user` from `@/test-utils` (no `userEvent.setup()`)
+### 4. **Follow Validation Protocol Religiously**
 
-### 4. **Test-Driven Development**
+After EVERY code change:
+
+```bash
+npx vitest <path> --run  # Test specific files during development
+npm run validate         # Complete validation: format, lint, typecheck, test
+sonar-scanner            # SonarQube analysis - must pass quality gate
+```
+
+**STOP if any validation fails.** Do not proceed until all gates pass.
+
+### 5. **Test-Driven Development**
 
 - Write/update tests alongside code changes
 - Aim for 90%+ coverage
@@ -118,6 +143,41 @@ npm run sonar          # SonarQube analysis - must pass quality gate
 - Let code and tests speak for themselves
 
 ## Critical Patterns
+
+### Layered Architecture Pattern (Seed: Comments Refactor)
+
+**Every new feature MUST follow this structure:**
+
+```
+lib/domain/feature-name/
+├── FeatureModels.ts       # Type definitions (domain entities)
+├── FeatureSorter.ts       # Pure sorting/filtering functions (if needed)
+├── FeatureValidator.ts    # Input validation functions (if needed)
+├── index.ts               # Barrel exports
+└── *.test.ts              # 100% test coverage
+
+lib/hooks/feature-name/
+├── useFetch.ts            # RTK Query integration
+├── useProcessing.ts       # Data transformation
+├── useFeatureActions.ts   # User interactions
+└── useFeature.ts          # Orchestrator (composes above hooks)
+
+components/UI/Feature/
+├── Feature.tsx            # Main orchestrator component
+├── FeatureItem.tsx        # Presentational child components
+├── *.module.css           # Styles
+└── *.test.tsx             # Component tests
+```
+
+**Reference**: `lib/domain/comments/` → `lib/hooks/comments/` → `components/UI/Post/Comments/`
+
+**Key Rules**:
+
+- ✅ Domain layer is 100% pure functions, zero React
+- ✅ Domain layer is fully testable without framework
+- ✅ Hooks compose domain logic + RTK Query
+- ✅ Components call hooks, never domain directly
+- ✅ One-way dependency flow (down only)
 
 ### Next.js 16 Requirements
 
