@@ -172,7 +172,7 @@ npm run typegen:types    # Generate types from OpenAPI spec
 **Local Development Workflow:**
 
 ```bash
-# Run all E2E tests (requires dev server running)
+# Run all E2E tests (auto-starts dev server if not running)
 npm run test:e2e
 
 # Run with UI (interactive mode)
@@ -190,20 +190,21 @@ npm run test:e2e:codegen
 
 **Authentication Setup:**
 
-E2E tests require credentials in `.env.local`:
+E2E tests require credentials in `.env.local` (for authenticated tests only):
 
 ```bash
 REDDIT_USER="your_test_account_username"
 REDDIT_PASSWORD="your_test_account_password"
-APP_URL="http://localhost:3000"  # Optional, defaults to localhost:3000
 ```
+
+**Note**: `APP_URL` is optional and defaults to `http://localhost:3000`. Only set it when testing against a different environment (e.g., production).
 
 **How It Works:**
 
-1. Global setup (`e2e/global-setup.ts`) logs in once via Reddit OAuth
-2. Authentication cookies saved to `e2e/.auth/user.json`
-3. All authenticated tests reuse this cookie state (no repeated logins)
-4. Anonymous tests run without authentication
+1. **Dev Server**: Auto-starts via `webServer` config if not already running (local development only)
+2. **Auth Setup**: `e2e/auth.setup.ts` logs in once via Reddit OAuth for authenticated tests
+3. **Session Persistence**: Authentication cookies saved to `e2e/.auth/user.json`
+4. **Test Execution**: Authenticated tests reuse cookie state (no repeated logins); anonymous tests run without authentication
 
 **Test Organization:**
 
@@ -211,11 +212,13 @@ Tests are organized by authentication requirement:
 
 ```
 e2e/tests/
-├── anonymous/          # Read-only mode (no login)
+├── anonymous/          # Read-only mode (no login required)
 │   ├── comments/       # navigation.spec.ts, expansion.spec.ts
 │   └── homepage/       # homepage.spec.ts
 └── authenticated/      # Authenticated mode (requires login)
-    └── comments/       # voting.spec.ts
+    ├── comments/       # voting.spec.ts
+    ├── homepage/       # feed.spec.ts
+    └── subreddit/      # subscribing.spec.ts
 ```
 
 Projects use `testMatch` patterns to target directories:
@@ -226,6 +229,7 @@ Projects use `testMatch` patterns to target directories:
 
 **Benefits:**
 
+- Auto-starts dev server for local development
 - Zero `testIgnore` needed - tests self-organize
 - Clear separation of anonymous vs authenticated features
 - Scales infinitely - add tests without config changes
@@ -286,10 +290,13 @@ Projects use `testMatch` patterns to target directories:
 **CI/CD:**
 
 - GitHub Actions workflow: `.github/workflows/playwright.yml`
-- Runs daily against production (`https://reddit-viewer.com`)
-- Manual trigger available via GitHub UI
-- Uses secrets `REDDIT_USER` and `REDDIT_PASSWORD`
-- Uploads test results and HTML reports as artifacts
+- Runs daily at midnight UTC (scheduled)
+- Manual trigger available via GitHub UI (workflow_dispatch)
+- Tests against production using `APP_URL` secret
+- Uses secrets: `REDDIT_USER`, `REDDIT_PASSWORD`, `APP_URL`
+- Uploads test results and HTML reports as artifacts (30-day retention)
+- Runs on Chromium and Firefox browsers
+- Auto-retries failures (2 retries in CI)
 
 ## Architecture Overview
 
