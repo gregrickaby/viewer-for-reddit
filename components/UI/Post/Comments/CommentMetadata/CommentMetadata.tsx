@@ -54,7 +54,7 @@ export function CommentMetadata({
   toggleExpansion,
   toggleSubtreeExpansion
 }: Readonly<CommentMetadataProps>) {
-  const depth = comment.depth
+  const depth = comment.depth ?? 0
   let depthLevel = 'level-3+'
   if (depth === 1) {
     depthLevel = 'level-1'
@@ -62,7 +62,7 @@ export function CommentMetadata({
     depthLevel = 'level-2'
   }
 
-  const replyCount = showReplies ? comment.replies!.length : 0
+  const replyCount = showReplies ? (comment.replies?.length ?? 0) : 0
 
   return (
     <Group mt="xs" justify="space-between">

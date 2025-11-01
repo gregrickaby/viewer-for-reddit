@@ -186,10 +186,9 @@ describe('commentFilters', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].depth).toBe(0)
-      expect(result[0].hasReplies).toBe(true)
       expect(result[0].replies).toHaveLength(1)
       expect(result[0].replies![0].depth).toBe(1)
-      expect(result[0].replies![0].hasReplies).toBe(true)
+      expect(result[0].replies![0].replies).toHaveLength(1)
       expect(result[0].replies![0].replies![0].depth).toBe(2)
     })
 
@@ -199,7 +198,6 @@ describe('commentFilters', () => {
 
       expect(result).toHaveLength(1)
       expect(result[0].depth).toBe(0)
-      expect(result[0].hasReplies).toBe(false)
       expect(result[0].replies).toBeUndefined()
     })
 
@@ -230,7 +228,6 @@ describe('commentFilters', () => {
         body: 'Parent comment',
         body_html: '<p>Parent comment</p>',
         depth: 0,
-        hasReplies: true,
         replies: [
           {
             id: 'reply1',
@@ -238,15 +235,13 @@ describe('commentFilters', () => {
             body: 'First reply',
             body_html: '<p>First reply</p>',
             depth: 1,
-            hasReplies: true,
             replies: [
               {
                 id: 'nestedReply1',
                 author: 'user789',
                 body: 'Nested reply',
                 body_html: '<p>Nested reply</p>',
-                depth: 2,
-                hasReplies: false
+                depth: 2
               } as NestedCommentData
             ]
           } as NestedCommentData

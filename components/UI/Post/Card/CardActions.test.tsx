@@ -87,6 +87,9 @@ describe('CardActions', () => {
       name: /15 comments/i
     })
 
-    expect(commentsLink).toHaveAttribute('data-umami-event', 'comment button')
+    expect(commentsLink).toHaveAttribute(
+      'data-umami-event',
+      'view comment button'
+    )
   })
 })

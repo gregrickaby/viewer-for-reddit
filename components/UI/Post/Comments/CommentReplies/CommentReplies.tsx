@@ -42,7 +42,7 @@ export function CommentReplies({
   const replies = comment.replies
 
   // Depth limit reached - show message
-  if (comment.depth >= maxDepth) {
+  if ((comment.depth ?? 0) >= maxDepth) {
     return (
       <Box ml="md" mt="sm">
         <Text c="dimmed" fs="italic" size="sm">
@@ -77,7 +77,7 @@ export function CommentReplies({
             {replies.length} {replies.length === 1 ? 'reply' : 'replies'}{' '}
             collapsed
           </Text>
-          {replies[0]?.body && (
+          {replies[0] && 'body' in replies[0] && replies[0].body && (
             <Text
               c="dimmed"
               dangerouslySetInnerHTML={{
