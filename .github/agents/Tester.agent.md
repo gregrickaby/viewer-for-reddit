@@ -575,6 +575,7 @@ test.describe('Homepage Features', () => {
 - Generate tests based on actual browser interactions
 - Include comments with step descriptions before each action
 - Use best practices from Playwright documentation
+- Use `npm run lint` to ensure code quality
 
 **Page Object Model Pattern:**
 
@@ -644,6 +645,9 @@ When E2E tests fail, use this methodical approach:
 **E2E Test Commands:**
 
 ```bash
+# Lint E2E tests with eslint-plugin-playwright
+npm run lint
+
 # Run all E2E tests
 npm run test:e2e
 

@@ -205,6 +205,32 @@ APP_URL="http://localhost:3000"  # Optional, defaults to localhost:3000
 3. All authenticated tests reuse this cookie state (no repeated logins)
 4. Anonymous tests run without authentication
 
+**Test Organization:**
+
+Tests are organized by authentication requirement:
+
+```
+e2e/tests/
+├── anonymous/          # Read-only mode (no login)
+│   ├── comments/       # navigation.spec.ts, expansion.spec.ts
+│   └── homepage/       # seed.spec.ts
+└── authenticated/      # Authenticated mode (requires login)
+    └── comments/       # voting.spec.ts
+```
+
+Projects use `testMatch` patterns to target directories:
+
+- `chromium-anon` → `anonymous/**/*.spec.ts`
+- `firefox-anon` → `anonymous/**/*.spec.ts`
+- `chromium-auth` → `authenticated/**/*.spec.ts`
+
+**Benefits:**
+
+- Zero `testIgnore` needed - tests self-organize
+- Clear separation of anonymous vs authenticated features
+- Scales infinitely - add tests without config changes
+- Mirrors dual-mode app architecture
+
 **Page Object Model:**
 
 - All tests use Page Object Model pattern (see `e2e/page-objects/`)
