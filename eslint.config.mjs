@@ -5,6 +5,7 @@ import testingLibrary from 'eslint-plugin-testing-library'
 import jestDom from 'eslint-plugin-jest-dom'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import {defineConfig} from 'eslint/config'
+import playwright from 'eslint-plugin-playwright'
 
 export default defineConfig(
   // Ignore patterns
@@ -56,10 +57,13 @@ export default defineConfig(
     }
   },
 
-  // Testing-specific rules
-  // https://github.com/testing-library/eslint-plugin-testing-library
+  /**
+   * Apply testing-library and jest-dom rules to test files only
+   *
+   * https://github.com/testing-library/eslint-plugin-testing-library
+   */
   {
-    files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+    files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(test).[jt]s?(x)'],
     plugins: {
       'testing-library': testingLibrary,
       'jest-dom': jestDom
@@ -67,6 +71,19 @@ export default defineConfig(
     rules: {
       ...testingLibrary.configs['flat/react'].rules,
       ...jestDom.configs['flat/recommended'].rules
+    }
+  },
+
+  /**
+   * Apply Playwright rules to e2e test files only
+   *
+   * https://www.npmjs.com/package/eslint-plugin-playwright
+   */
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['e2e/**'],
+    rules: {
+      ...playwright.configs['flat/recommended'].rules
     }
   },
 
