@@ -108,17 +108,32 @@ setup('authenticate', async ({browser, baseURL}) => {
     await loginButton.click()
     console.info('🖱️  Clicked Log In button')
 
-    // 7. Wait for OAuth permission screen
-    await page.waitForURL('**/authorize**', {timeout: 15000})
-    console.info('📍 Reached OAuth permission screen')
+    // 7. Handle OAuth flow (first-time auth or already authorized)
+    try {
+      await Promise.any([
+        page.waitForURL('**/authorize**', {timeout: 30000}),
+        page.waitForURL(`${baseURL}/`, {timeout: 30000})
+      ])
+    } catch (error) {
+      console.error('❌ Failed to reach authorize screen or homepage:', error)
+      console.error('Current URL:', page.url())
+      throw error
+    }
 
-    // 8. Click Allow button
-    const allowButton = page.locator(
-      'input[type="submit"][name="authorize"][value="Allow"]'
-    )
-    await allowButton.waitFor({state: 'visible', timeout: 5000})
-    await allowButton.click()
-    console.info('🖱️  Clicked Allow button')
+    const currentUrl = page.url()
+    if (currentUrl.includes('/authorize')) {
+      console.info('📍 Reached OAuth permission screen')
+
+      // 8. Click Allow button
+      const allowButton = page.locator(
+        'input[type="submit"][name="authorize"][value="Allow"]'
+      )
+      await allowButton.waitFor({state: 'visible', timeout: 5000})
+      await allowButton.click()
+      console.info('🖱️  Clicked Allow button')
+    } else {
+      console.info('✅ Already authorized - redirected to homepage')
+    }
 
     // 9. Wait for redirect back to homepage
     await page.waitForURL(`${baseURL}/`, {timeout: 30000})

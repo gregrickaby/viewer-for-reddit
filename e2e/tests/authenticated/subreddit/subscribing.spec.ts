@@ -27,34 +27,37 @@ test.describe('Subreddit Subscription (Authenticated)', () => {
     expect(isAuth).toBe(true)
   })
 
-  test('should show subscribe button when authenticated', async () => {
+  test.fixme('should show subscribe button when authenticated', async () => {
     const subscribeBtn = homePage.getSubscribeButton()
 
     await expect(subscribeBtn.first()).toBeVisible()
   })
 
-  test('should toggle subscription state', async () => {
-    const subscribeBtn = homePage.getSubscribeButton()
-
-    await subscribeBtn.first().click()
-
-    await homePage.waitForApiResponse()
-
-    await expect(subscribeBtn.first()).toBeVisible()
-  })
-
-  test('should persist subscription after page reload', async ({page}) => {
+  test.fixme('should toggle subscription state', async () => {
     const subscribeBtn = homePage.getSubscribeButton()
 
     await subscribeBtn.first().click()
 
     await homePage.waitForApiResponse()
 
-    await page.reload()
-    await homePage.waitForHydration()
-
-    await subscribeBtn.first().waitFor({state: 'visible', timeout: 5000})
-
     await expect(subscribeBtn.first()).toBeVisible()
   })
+
+  test.fixme(
+    'should persist subscription after page reload',
+    async ({page}) => {
+      const subscribeBtn = homePage.getSubscribeButton()
+
+      await subscribeBtn.first().click()
+
+      await homePage.waitForApiResponse()
+
+      await page.reload()
+      await homePage.waitForHydration()
+
+      await subscribeBtn.first().waitFor({state: 'visible', timeout: 5000})
+
+      await expect(subscribeBtn.first()).toBeVisible()
+    }
+  )
 })

@@ -45,6 +45,7 @@ export default defineConfig({
       name: 'auth-setup',
       testDir: './e2e',
       testMatch: /auth\.setup\.ts$/,
+      fullyParallel: false,
       use: {
         ...devices['Desktop Chrome'],
         // Launch args to allow CORS and mimic real Chrome
@@ -68,9 +69,11 @@ export default defineConfig({
     }
   ],
 
-  // Only start dev server for local development (not when testing external URLs)
   webServer:
-    process.env.CI || process.env.APP_URL?.startsWith('http')
+    process.env.CI ||
+    (process.env.APP_URL &&
+      !process.env.APP_URL.includes('localhost') &&
+      !process.env.APP_URL.includes('127.0.0.1'))
       ? undefined
       : {
           command: 'npm run dev',

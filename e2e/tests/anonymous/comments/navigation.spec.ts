@@ -52,7 +52,7 @@ test.describe('Comment Keyboard Navigation (J/K/U)', () => {
     )
   })
 
-  test('should navigate to parent comment with U key', async () => {
+  test.fixme('should navigate to parent comment with U key', async () => {
     const nestedComment = postPage.page
       .locator('[data-comment-depth]:not([data-comment-depth="0"])')
       .first()

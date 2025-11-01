@@ -97,20 +97,24 @@ export class PostPage extends BasePage {
    * Upvote a comment (requires authentication).
    */
   async upvoteComment(commentId: string) {
-    const upvoteBtn = this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Upvote"]`
-    )
-    await upvoteBtn.first().click()
+    const upvoteBtn = this.page
+      .locator(`[data-comment-id="${commentId}"]`)
+      .first()
+      .locator('button[aria-label="Upvote"]')
+      .first()
+    await upvoteBtn.click()
   }
 
   /**
    * Downvote a comment (requires authentication).
    */
   async downvoteComment(commentId: string) {
-    const downvoteBtn = this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Downvote"]`
-    )
-    await downvoteBtn.first().click()
+    const downvoteBtn = this.page
+      .locator(`[data-comment-id="${commentId}"]`)
+      .first()
+      .locator('button[aria-label="Downvote"]')
+      .first()
+    await downvoteBtn.click()
   }
 
   /**
@@ -189,18 +193,22 @@ export class PostPage extends BasePage {
    * Get upvote button for a comment.
    */
   getUpvoteButton(commentId: string): Locator {
-    return this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Upvote"]`
-    )
+    return this.page
+      .locator(`[data-comment-id="${commentId}"]`)
+      .first()
+      .locator('button[aria-label="Upvote"]')
+      .first()
   }
 
   /**
    * Get downvote button for a comment.
    */
   getDownvoteButton(commentId: string): Locator {
-    return this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Downvote"]`
-    )
+    return this.page
+      .locator(`[data-comment-id="${commentId}"]`)
+      .first()
+      .locator('button[aria-label="Downvote"]')
+      .first()
   }
 
   /**

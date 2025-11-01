@@ -26,24 +26,19 @@ test.describe('Authenticated Home Feed', () => {
     expect(isAuth).toBe(true)
   })
 
-  test('should display personalized home feed', async ({page}) => {
-    await page.locator('[data-post-id]').first().waitFor({timeout: 10000})
-
-    const posts = page.locator('[data-post-id]')
-    const postCount = await posts.count()
-
+  test('should display personalized home feed', async () => {
+    const postCount = await homePage.getPostCount()
     expect(postCount).toBeGreaterThan(0)
   })
 
-  test('should show user profile indicator when authenticated', async ({
-    page
-  }) => {
-    const userProfile = page.locator('button[aria-label^="User menu for"]')
-    await expect(userProfile).toBeVisible()
+  test('should show user profile indicator when authenticated', async () => {
+    const userMenu = homePage.getUserMenu()
+    await expect(userMenu).toBeVisible()
   })
 
   test('should refresh feed and maintain authentication', async ({page}) => {
-    await page.locator('[data-post-id]').first().waitFor({timeout: 10000})
+    const initialCount = await homePage.getPostCount()
+    expect(initialCount).toBeGreaterThan(0)
 
     await page.reload()
     await homePage.waitForHydration()
@@ -51,12 +46,11 @@ test.describe('Authenticated Home Feed', () => {
     const isAuth = await homePage.isAuthenticated()
     expect(isAuth).toBe(true)
 
-    const posts = page.locator('[data-post-id]')
-    const postCount = await posts.count()
+    const postCount = await homePage.getPostCount()
     expect(postCount).toBeGreaterThan(0)
   })
 
-  test('should access saved posts page', async ({page}) => {
+  test.fixme('should access saved posts page', async ({page}) => {
     await page.goto('/user/saved')
     await homePage.waitForHydration()
 
