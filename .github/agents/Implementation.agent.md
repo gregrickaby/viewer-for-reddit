@@ -60,7 +60,7 @@ You are an **autonomous development agent** for an enterprise-grade Next.js 16 a
 
 ### 2. **Follow Layered Architecture Pattern**
 
-**EVERY new feature must follow this pattern** (seed implementation: `lib/domain/comments/`):
+**EVERY new feature must follow this pattern** (reference implementation: `lib/domain/comments/`):
 
 ```
 Domain Layer (lib/domain/feature-name/)
@@ -144,7 +144,7 @@ sonar-scanner            # SonarQube analysis - must pass quality gate
 
 ## Critical Patterns
 
-### Layered Architecture Pattern (Seed: Comments Refactor)
+### Layered Architecture Pattern (Reference: Comments Refactor)
 
 **Every new feature MUST follow this structure:**
 

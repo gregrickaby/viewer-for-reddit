@@ -3,7 +3,7 @@
 **Audience**: All AI agents (GitHub Copilot, Claude Code, Cursor, etc.)
 **Purpose**: Quick reference and operational guide for AI agents
 **Status**: 🏢 **Enterprise-Grade Application** - Following Layered Architecture + Test-Driven Development
-**Foundation**: Comments refactor (`lib/domain/comments/`) - Use as the seed pattern for all new features
+**Foundation**: Comments refactor (`lib/domain/comments/`) - Use as the reference pattern for all new features
 **Deep Dives**: See [CONTRIBUTING.md](./CONTRIBUTING.md) and [LAYERED_ARCHITECTURE_ANALYSIS.md](./docs/LAYERED_ARCHITECTURE_ANALYSIS.md)
 
 ---
@@ -110,6 +110,8 @@ sonar-scanner            # SonarQube analysis - must pass quality gate
 
 # Testing
 npx vitest <path> --run  # Run specific test file
+npm run test:e2e         # Run Playwright E2E tests
+npm run test:e2e:ui      # Run Playwright in interactive UI mode
 
 # Type Generation
 npm run typegen          # Full workflow (fetch + validate)
@@ -141,7 +143,11 @@ npm run typegen:types    # Generate types from OpenAPI spec
    ```bash
    sonar-scanner  # Must pass quality gate
    ```
-5. **Optional**: Microsoft Playwright MCP validation for all UI changes
+5. **For UI changes**: Run Playwright E2E tests
+   ```bash
+   npm run test:e2e  # Run all E2E tests (requires dev server running)
+   ```
+6. **Optional**: Microsoft Playwright MCP for visual debugging
 
 ### Quality Standards (Enterprise-Grade Requirements)
 
@@ -159,7 +165,138 @@ npm run typegen:types    # Generate types from OpenAPI spec
 - **Self-hosted Platform**: <http://localhost:9000> - Full analysis and quality gate enforcement
 - **SonarQube MCP**: `mcp_sonarqube_*` tools for programmatic analysis and issue management
 
-**Skip validation** for documentation-only changes (\\\*.md, comments).
+**Skip validation** for documentation-only changes (\*.md, comments).
+
+### E2E Testing with Playwright
+
+**Local Development Workflow:**
+
+```bash
+# Run all E2E tests (auto-starts dev server if not running)
+npm run test:e2e
+
+# Run with UI (interactive mode)
+npm run test:e2e:ui
+
+# Run in headed mode (see browser)
+npm run test:e2e:headed
+
+# Debug specific test
+npm run test:e2e:debug
+
+# Generate test code (record interactions)
+npm run test:e2e:codegen
+```
+
+**Authentication Setup:**
+
+E2E tests require credentials in `.env.local` (for authenticated tests only):
+
+```bash
+REDDIT_USER="your_test_account_username"
+REDDIT_PASSWORD="your_test_account_password"
+```
+
+**Note**: `APP_URL` is optional and defaults to `http://localhost:3000`. Only set it when testing against a different environment (e.g., production).
+
+**How It Works:**
+
+1. **Dev Server**: Auto-starts via `webServer` config if not already running (local development only)
+2. **Auth Setup**: `e2e/auth.setup.ts` logs in once via Reddit OAuth for authenticated tests
+3. **Session Persistence**: Authentication cookies saved to `e2e/.auth/user.json`
+4. **Test Execution**: Authenticated tests reuse cookie state (no repeated logins); anonymous tests run without authentication
+
+**Test Organization:**
+
+Tests are organized by authentication requirement:
+
+```
+e2e/tests/
+├── anonymous/          # Read-only mode (no login required)
+│   ├── comments/       # navigation.spec.ts, expansion.spec.ts
+│   └── homepage/       # homepage.spec.ts
+└── authenticated/      # Authenticated mode (requires login)
+    ├── comments/       # voting.spec.ts
+    ├── homepage/       # feed.spec.ts
+    └── subreddit/      # subscribing.spec.ts
+```
+
+Projects use `testMatch` patterns to target directories:
+
+- `chromium-anon` → `anonymous/**/*.spec.ts`
+- `firefox-anon` → `anonymous/**/*.spec.ts`
+- `chromium-auth` → `authenticated/**/*.spec.ts`
+
+**Benefits:**
+
+- Auto-starts dev server for local development
+- Zero `testIgnore` needed - tests self-organize
+- Clear separation of anonymous vs authenticated features
+- Scales infinitely - add tests without config changes
+- Mirrors dual-mode app architecture
+
+**Page Object Model:**
+
+- All tests use Page Object Model pattern (see `e2e/page-objects/`)
+- Encapsulates page interactions and selectors
+- Makes tests maintainable and readable
+- Example: `PostPage`, `HomePage`, `BasePage`
+
+**Page Object Best Practices:**
+
+1. **Return Locators, Not Elements**
+
+   ```typescript
+   // ✅ CORRECT - Return Locator for chaining and auto-waiting
+   getUpvoteButton(commentId: string): Locator {
+     return this.page.locator(`[data-comment-id="${commentId}"] button[aria-label="Upvote"]`)
+   }
+
+   // Usage enables web-first assertions
+   await expect(postPage.getUpvoteButton(id)).toBeVisible()
+   ```
+
+2. **Extract Common Patterns into Helpers**
+
+   ```typescript
+   // Shared in BasePage for all page objects
+   async waitForApiResponse(): Promise<void>
+   getUserMenu(): Locator
+   async isAuthenticated(): Promise<boolean>
+   ```
+
+3. **DRY Principle - No Duplication**
+   - Extract repetitive locator patterns into helper methods
+   - Create reusable getters for common elements
+   - Share utilities across page objects via inheritance
+
+4. **Enable Parallel Execution**
+
+   ```typescript
+   test.describe('Test Suite', () => {
+     test.describe.configure({mode: 'parallel'})  // Tests run in parallel
+   ```
+
+   - Safe when tests are isolated (use `beforeEach` for setup)
+   - Significantly faster test execution (~3x speedup)
+   - All tests are independent and can run in any order
+
+**Focus: Feature Detection**
+
+- Tests verify features work (navigation, voting, expansion)
+- Screenshots only on failure (debugging aid)
+- Functional assertions preferred over visual regression
+
+**CI/CD:**
+
+- GitHub Actions workflow: `.github/workflows/playwright.yml`
+- Runs daily at midnight UTC (scheduled)
+- Manual trigger available via GitHub UI (workflow_dispatch)
+- Tests against production using `APP_URL` secret
+- Uses secrets: `REDDIT_USER`, `REDDIT_PASSWORD`, `APP_URL`
+- Uploads test results and HTML reports as artifacts (30-day retention)
+- Runs on Chromium and Firefox browsers
+- Auto-retries failures (2 retries in CI)
 
 ## Architecture Overview
 

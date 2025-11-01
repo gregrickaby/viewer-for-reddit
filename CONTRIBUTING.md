@@ -344,17 +344,23 @@ This is a **test-driven codebase**. Tests must be written/updated alongside code
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all unit tests
 npm run test
 
 # Run specific test file
 npx vitest path/to/file.test.ts --run
 
 # Run tests with coverage
-npm run coverage
+npm run test:coverage
 
 # Watch mode (for development)
 npx vitest
+
+# E2E tests with Playwright
+npm run test:e2e         # Run all E2E tests
+npm run test:e2e:ui      # Interactive UI mode
+npm run test:e2e:headed  # Run with visible browser
+npm run test:e2e:debug   # Debug mode
 ```
 
 ### MSW v2 HTTP Mocking
@@ -415,6 +421,60 @@ it('should fetch data', async () => {
 - Rate limiting scenarios
 
 **Handler Order**: Handlers are matched in order, first match wins. Place specific patterns before catch-all patterns.
+
+### E2E Testing
+
+E2E tests use Playwright with Page Object Model pattern. Tests focus on detecting broken features rather than visual regressions.
+
+**Running E2E Tests:**
+
+```bash
+# Run all tests
+npm run test:e2e
+
+# Interactive UI mode
+npm run test:e2e:ui
+
+# Generate tests by recording
+npm run test:e2e:codegen
+```
+
+**Authentication:**
+
+Add credentials to `.env.local`:
+
+```bash
+REDDIT_USER="test_username"
+REDDIT_PASSWORD="test_password"
+APP_URL="http://localhost:3000"  # Optional for local dev
+```
+
+Tests log in once globally and reuse cookies for all authenticated tests.
+
+**Writing Tests:**
+
+1. Use Page Object Model (see `e2e/page-objects/`)
+2. Keep tests focused on single feature
+3. Prefer functional assertions over screenshots
+4. Use fixed test URLs (`/r/test/comments/1olhfw8/surprise_test`)
+5. Run locally before committing
+
+**Example:**
+
+```typescript
+import {test, expect} from '@playwright/test'
+import {PostPage} from '../page-objects/PostPage'
+
+test('should navigate with J key', async ({page}) => {
+  const postPage = new PostPage(page)
+  await postPage.gotoTestPost()
+
+  await postPage.pressNextCommentKey()
+
+  const focused = await postPage.getFocusedComment()
+  await expect(focused).toBeFocused()
+})
+```
 
 ---
 
