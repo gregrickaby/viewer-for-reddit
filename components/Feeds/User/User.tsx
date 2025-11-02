@@ -12,7 +12,6 @@ import {
 import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
 import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
 import {
-  Anchor,
   Avatar,
   Badge,
   Card,
@@ -291,23 +290,6 @@ export function User({username}: Readonly<UserProps>) {
                   </Badge>
                 )}
               </Group>
-
-              {profile?.subreddit?.display_name && (
-                <>
-                  <Divider my="md" />
-                  <Group>
-                    <Text size="sm" c="dimmed">
-                      Profile Subreddit:
-                    </Text>
-                    <Anchor
-                      href={`/u/${profile.subreddit.display_name}`}
-                      size="sm"
-                    >
-                      u/{profile.subreddit.display_name}
-                    </Anchor>
-                  </Group>
-                </>
-              )}
             </Card>
           </Stack>
         </Tabs.Panel>
