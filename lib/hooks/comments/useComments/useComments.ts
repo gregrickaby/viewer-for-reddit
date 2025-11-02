@@ -118,7 +118,8 @@ export function useComments({
     enableInfiniteLoading,
     enableNestedComments,
     providedComments,
-    fetching
+    fetching.fetchComments,
+    fetching.fetchCommentsRaw
   ])
 
   // Aggregate loading states

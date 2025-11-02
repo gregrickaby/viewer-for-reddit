@@ -32,9 +32,9 @@ interface UseCommentFetchingReturn {
   /** Infinite query data (raw, nested) */
   infiniteDataRaw: any
   /** Lazy fetch function for flat comments */
-  fetchComments: (permalink: string) => void
+  fetchComments: (permalink: string) => Promise<void>
   /** Lazy fetch function for raw comments */
-  fetchCommentsRaw: (permalink: string) => void
+  fetchCommentsRaw: (permalink: string) => Promise<void>
   /** Loading states */
   loading: {
     isLoading: boolean
@@ -55,8 +55,8 @@ interface UseCommentFetchingReturn {
   }
   /** Pagination controls */
   pagination: {
-    fetchNextPage: () => void
-    fetchNextPageRaw: () => void
+    fetchNextPage: () => Promise<void>
+    fetchNextPageRaw: () => Promise<void>
     hasNextPage: boolean
     hasNextPageRaw: boolean
     isFetchingNextPage: boolean
@@ -138,8 +138,12 @@ export function useCommentFetching({
     fetchedCommentsRaw,
     infiniteData,
     infiniteDataRaw,
-    fetchComments,
-    fetchCommentsRaw,
+    fetchComments: async (permalink: string) => {
+      await fetchComments(permalink)
+    },
+    fetchCommentsRaw: async (permalink: string) => {
+      await fetchCommentsRaw(permalink)
+    },
     loading: {
       isLoading,
       isLoadingRaw,
@@ -157,8 +161,12 @@ export function useCommentFetching({
       isInfiniteErrorRaw
     },
     pagination: {
-      fetchNextPage,
-      fetchNextPageRaw,
+      fetchNextPage: async () => {
+        await fetchNextPage()
+      },
+      fetchNextPageRaw: async () => {
+        await fetchNextPageRaw()
+      },
       hasNextPage: hasNextPage ?? false,
       hasNextPageRaw: hasNextPageRaw ?? false,
       isFetchingNextPage,

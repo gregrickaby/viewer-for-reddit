@@ -7,13 +7,13 @@ interface UseCommentPaginationParams {
   /** Enable nested comment structure */
   enableNestedComments: boolean
   /** Flat infinite query - fetch next page function */
-  fetchNextPage?: () => void
+  fetchNextPage?: () => Promise<void>
   /** Flat infinite query - has more pages */
   hasNextPage?: boolean
   /** Flat infinite query - is fetching next page */
   isFetchingNextPage?: boolean
   /** Raw infinite query - fetch next page function */
-  fetchNextPageRaw?: () => void
+  fetchNextPageRaw?: () => Promise<void>
   /** Raw infinite query - has more pages */
   hasNextPageRaw?: boolean
   /** Raw infinite query - is fetching next page */
@@ -25,7 +25,7 @@ interface UseCommentPaginationParams {
  */
 interface UseCommentPaginationReturn {
   /** Current fetch next page function based on mode */
-  currentFetchNextPage?: () => void
+  currentFetchNextPage?: () => Promise<void>
   /** Current has next page based on mode */
   currentHasNextPage?: boolean
   /** Current is fetching next page based on mode */
