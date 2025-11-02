@@ -9,10 +9,10 @@ tools:
     'new',
     'runCommands',
     'runTasks',
+    'playwright-test/*',
     'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
-    'playwright-test/*',
     'runSubagent',
     'usages',
     'vscodeAPI',
@@ -22,6 +22,10 @@ tools:
     'openSimpleBrowser',
     'fetch',
     'githubRepo',
+    'sonarsource.sonarlint-vscode/sonarqube_getPotentialSecurityIssues',
+    'sonarsource.sonarlint-vscode/sonarqube_excludeFiles',
+    'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
+    'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
     'todos',
     'runTests'
   ]
