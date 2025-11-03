@@ -9,8 +9,8 @@ import {
   useGetUserPostsInfiniteQuery,
   useGetUserProfileQuery
 } from '@/lib/store/services/userApi'
-import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
-import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
+import {formatTimeAgo} from '@/lib/utils/formatting/posts/formatTimeAgo'
+import {decodeAndSanitizeHtml} from '@/lib/utils/validation/text/sanitizeText'
 import {
   Avatar,
   Badge,

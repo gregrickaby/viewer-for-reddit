@@ -1,7 +1,7 @@
 import {
   executeRedditRequest,
   validateRedditRequest
-} from '@/lib/utils/api/redditProxyHelpers'
+} from '@/lib/utils/api/baseQuery/redditProxyHelpers'
 import {NextRequest} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 

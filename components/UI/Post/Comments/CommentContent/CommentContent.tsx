@@ -1,9 +1,9 @@
 import {CommentAuthor} from '@/components/UI/Post/Comments/CommentAuthor/CommentAuthor'
 import {CommentMedia} from '@/components/UI/Post/Comments/CommentMedia/CommentMedia'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {stripMediaLinks} from '@/lib/utils/formatting/commentMediaHelpers'
-import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
-import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
+import {stripMediaLinks} from '@/lib/utils/formatting/comments/commentMediaHelpers'
+import {formatTimeAgo} from '@/lib/utils/formatting/posts/formatTimeAgo'
+import {decodeAndSanitizeHtml} from '@/lib/utils/validation/text/sanitizeText'
 import {Group, Stack, Text} from '@mantine/core'
 import classes from '../CommentItem/CommentItem.module.css'
 

@@ -1,7 +1,7 @@
 import type {SortingOption} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
-import {MAX_LIMIT} from '@/lib/utils/api/apiConstants'
 import {dynamicBaseQuery} from '@/lib/utils/api/baseQuery/dynamicBaseQuery'
+import {MAX_LIMIT} from '@/lib/utils/api/config/apiConstants'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 /**

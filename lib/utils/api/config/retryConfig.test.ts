@@ -101,7 +101,7 @@ describe('retryConfig', () => {
     it('should return false for edge case numbers', () => {
       expect(isRetryableError(0)).toBe(false)
       expect(isRetryableError(-1)).toBe(false)
-      expect(isRetryableError(NaN)).toBe(false)
+      expect(isRetryableError(Number.NaN)).toBe(false)
       expect(isRetryableError(Infinity)).toBe(true) // Infinity >= 500 is true
       expect(isRetryableError(-Infinity)).toBe(false)
     })
@@ -165,7 +165,7 @@ describe('retryConfig', () => {
     it('should handle edge case numbers', () => {
       expect(calculateBackoffDelay(Infinity)).toBe(10000) // Should be capped
       expect(calculateBackoffDelay(-Infinity)).toBe(0) // Math.pow(2, -Infinity) = 0
-      expect(calculateBackoffDelay(NaN)).toBeNaN() // Math.pow(2, NaN) = NaN
+      expect(calculateBackoffDelay(Number.NaN)).toBeNaN() // Math.pow(2, NaN) = NaN
     })
   })
 

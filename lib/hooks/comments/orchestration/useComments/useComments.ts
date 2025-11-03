@@ -2,7 +2,7 @@ import {useCommentFetching} from '@/lib/hooks/comments/fetching/useCommentFetchi
 import {useCommentPagination} from '@/lib/hooks/comments/fetching/useCommentPagination/useCommentPagination'
 import {useCommentProcessing} from '@/lib/hooks/comments/processing/useCommentProcessing/useCommentProcessing'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {useEffect} from 'react'
 
 /**

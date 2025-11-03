@@ -2,7 +2,7 @@ import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import config from '@/lib/config'
 import {logError} from '@/lib/utils/logging/logError'
-import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
+import {validateOrigin} from '@/lib/utils/validation/errors/validateOrigin'
 import {type NextRequest, NextResponse} from 'next/server'
 
 /**

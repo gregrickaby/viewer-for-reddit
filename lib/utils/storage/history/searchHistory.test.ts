@@ -3,7 +3,7 @@ import {
   addToSearchHistory,
   clearSearchHistory,
   removeFromSearchHistory
-} from '@/lib/utils/storage/searchHistory'
+} from '@/lib/utils/storage/history/searchHistory'
 
 const mockSubreddit1: SubredditItem = {
   display_name: 'pics',

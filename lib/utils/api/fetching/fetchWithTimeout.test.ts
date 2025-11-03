@@ -110,7 +110,7 @@ describe('fetchWithTimeout', () => {
   })
 
   it('should clear timeout on successful completion', async () => {
-    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout')
     const mockResponse = new Response('OK', {status: 200})
     globalThis.fetch = vi.fn().mockResolvedValue(mockResponse)
 
@@ -120,7 +120,7 @@ describe('fetchWithTimeout', () => {
   })
 
   it('should clear timeout on error', async () => {
-    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout')
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout')
     globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
 
     try {

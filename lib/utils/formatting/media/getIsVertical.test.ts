@@ -14,14 +14,14 @@ describe('getIsVertical', () => {
   })
 
   it('returns false if width is undefined', () => {
-    expect(getIsVertical(undefined, 100)).toBe(false)
+    expect(getIsVertical()).toBe(false)
   })
 
   it('returns false if height is undefined', () => {
-    expect(getIsVertical(100, undefined)).toBe(false)
+    expect(getIsVertical(100)).toBe(false)
   })
 
   it('returns false if both are undefined', () => {
-    expect(getIsVertical(undefined, undefined)).toBe(false)
+    expect(getIsVertical()).toBe(false)
   })
 })

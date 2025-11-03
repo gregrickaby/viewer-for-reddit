@@ -5,11 +5,11 @@ vi.mock('@/components/Media/Media', () => ({
   Media: () => <div data-testid="media" />
 }))
 
-vi.mock('@/lib/utils/formatting/formatTimeAgo', () => ({
+vi.mock('@/lib/utils/formatting/posts/formatTimeAgo', () => ({
   formatTimeAgo: () => 'just now'
 }))
 
-vi.mock('@/lib/utils/formatting/getMediumImage', () => ({
+vi.mock('@/lib/utils/formatting/media/getMediumImage', () => ({
   getMediumImage: () => ({url: 'image.jpg'})
 }))
 

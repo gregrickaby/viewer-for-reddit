@@ -1,6 +1,6 @@
 'use client'
 
-import {getCachedUrl} from '@/lib/utils/storage/mediaCache'
+import {getCachedUrl} from '@/lib/utils/storage/cache/mediaCache'
 import {Anchor} from '@mantine/core'
 import {useInViewport} from '@mantine/hooks'
 import {useCallback, useRef, useState} from 'react'

@@ -2,17 +2,17 @@ import {getRedditClient} from '@/lib/auth/arctic'
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {setSession} from '@/lib/auth/session'
 import appConfig from '@/lib/config'
-import {fetchWithTimeout} from '@/lib/utils/api/fetchWithTimeout'
+import {fetchWithTimeout} from '@/lib/utils/api/fetching/fetchWithTimeout'
 import {
   cleanupOAuthCookies,
   extractRefreshToken
-} from '@/lib/utils/api/oauthHelpers'
+} from '@/lib/utils/api/oauth/oauthHelpers'
+import {createUncachedRedirect} from '@/lib/utils/routing/redirectHelpers'
 import {
   extractAvatarUrl,
   validateRedditUser,
   type RedditUserResponse
-} from '@/lib/utils/validation/redditUserValidator'
-import {createUncachedRedirect} from '@/lib/utils/routing/redirectHelpers'
+} from '@/lib/utils/validation/reddit/redditUserValidator'
 import {OAuth2RequestError} from 'arctic'
 import {cookies} from 'next/headers'
 import {NextRequest} from 'next/server'

@@ -9,12 +9,12 @@ import {useMediaAssets} from '@/lib/hooks/media/useMediaAssets'
 import {useMediaType} from '@/lib/hooks/media/useMediaType'
 import {useAppSelector} from '@/lib/store/hooks'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {getIsVertical} from '@/lib/utils/formatting/getIsVertical'
+import {getIsVertical} from '@/lib/utils/formatting/media/getIsVertical'
 import {logError} from '@/lib/utils/logging/logError'
 import {
   decodeAndSanitizeHtml,
   decodeHtmlEntities
-} from '@/lib/utils/validation/sanitizeText'
+} from '@/lib/utils/validation/text/sanitizeText'
 import clsx from 'clsx'
 import {Suspense} from 'react'
 import styles from './Media.module.css'

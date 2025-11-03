@@ -1,5 +1,5 @@
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {formatTimeAgo} from '@/lib/utils/formatting/formatTimeAgo'
+import {formatTimeAgo} from '@/lib/utils/formatting/posts/formatTimeAgo'
 import {Anchor, Avatar, Group, Stack, Text} from '@mantine/core'
 import dayjs from 'dayjs'
 import Link from 'next/link'

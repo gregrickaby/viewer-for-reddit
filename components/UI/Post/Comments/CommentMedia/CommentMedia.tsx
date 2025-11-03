@@ -4,7 +4,7 @@ import {
   extractMediaLinks,
   getMediaType,
   normalizeMediaUrl
-} from '@/lib/utils/formatting/commentMediaHelpers'
+} from '@/lib/utils/formatting/comments/commentMediaHelpers'
 import {Box, Image} from '@mantine/core'
 
 /**

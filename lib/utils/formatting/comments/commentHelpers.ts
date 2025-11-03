@@ -2,7 +2,7 @@ import type {
   AutoCommentData,
   AutoCommentWithText
 } from '@/lib/store/services/commentsApi'
-import {extractAndFilterComments} from '@/lib/utils/formatting/commentFilters'
+import {extractAndFilterComments} from '@/lib/utils/formatting/comments/commentFilters'
 import {extractNestedComments, type NestedCommentData} from './commentNester'
 
 // Re-export for backward compatibility

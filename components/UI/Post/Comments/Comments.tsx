@@ -13,7 +13,7 @@ import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import {
   collectAllCommentIds,
   sortComments
-} from '@/lib/utils/formatting/commentHelpers'
+} from '@/lib/utils/formatting/comments/commentHelpers'
 import {scrollToComments} from '@/lib/utils/routing/scrollToComments'
 import {VisuallyHidden} from '@mantine/core'
 import {useHotkeys} from '@mantine/hooks'

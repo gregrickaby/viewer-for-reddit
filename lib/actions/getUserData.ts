@@ -1,6 +1,6 @@
 'use server'
 
-import {authenticatedFetch} from '@/lib/utils/api/authenticatedFetch'
+import {authenticatedFetch} from '@/lib/utils/api/fetching/authenticatedFetch'
 
 /**
  * Server Action: Get current authenticated user's data.

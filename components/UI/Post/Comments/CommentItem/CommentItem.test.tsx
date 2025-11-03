@@ -1,4 +1,4 @@
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {render, screen, user, waitFor} from '@/test-utils'
 import {axe} from 'jest-axe'
 import {CommentItem} from './CommentItem'

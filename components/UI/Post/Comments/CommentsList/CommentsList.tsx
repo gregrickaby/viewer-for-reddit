@@ -1,4 +1,4 @@
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {Anchor, Button, Center, Stack} from '@mantine/core'
 import {CommentErrorBoundary} from '../CommentErrorBoundary/CommentErrorBoundary'
 import {CommentItem} from '../CommentItem/CommentItem'

@@ -1,9 +1,9 @@
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {
   processInfiniteComments,
   processNestedComments
-} from '@/lib/utils/formatting/commentHelpers'
+} from '@/lib/utils/formatting/comments/commentHelpers'
 
 /**
  * Parameters for useCommentProcessing hook.

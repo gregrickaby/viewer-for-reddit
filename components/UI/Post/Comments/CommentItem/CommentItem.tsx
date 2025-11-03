@@ -16,8 +16,8 @@ import {
   expandSubtree
 } from '@/lib/store/features/commentExpansionSlice'
 import {useAppDispatch} from '@/lib/store/hooks'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {collectDescendantIds} from '@/lib/utils/formatting/commentHelpers'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
+import {collectDescendantIds} from '@/lib/utils/formatting/comments/commentHelpers'
 import {Box, Button, Card, Group, Stack, Text} from '@mantine/core'
 import {BiComment} from 'react-icons/bi'
 import {MdDelete} from 'react-icons/md'

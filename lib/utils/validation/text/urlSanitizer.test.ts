@@ -1,7 +1,7 @@
 import {
   sanitizeLocationData,
   sanitizeUrl
-} from '@/lib/utils/validation/urlSanitizer'
+} from '@/lib/utils/validation/text/urlSanitizer'
 
 describe('urlSanitizer', () => {
   describe('sanitizeUrl', () => {

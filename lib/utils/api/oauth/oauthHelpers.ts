@@ -1,4 +1,4 @@
-import {logError} from '../logging/logError'
+import {logError} from '@/lib/utils/logging/logError'
 
 /**
  * OAuth-specific helper utilities.

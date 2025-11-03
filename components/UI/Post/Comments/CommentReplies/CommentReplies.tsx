@@ -1,6 +1,6 @@
 import {CommentItem} from '@/components/UI/Post/Comments/CommentItem/CommentItem'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
-import {decodeAndSanitizeHtml} from '@/lib/utils/validation/sanitizeText'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
+import {decodeAndSanitizeHtml} from '@/lib/utils/validation/text/sanitizeText'
 import {Box, Collapse, Stack, Text} from '@mantine/core'
 import classes from '../CommentItem/CommentItem.module.css'
 

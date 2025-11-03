@@ -1,17 +1,17 @@
+import {COMMENT_CONFIG} from '@/lib/config'
 import type {
   CommentSortingOption,
   SortingOption,
   SubredditItem,
   UserSettings
 } from '@/lib/types'
-import {COMMENT_CONFIG} from '@/lib/config'
-import {addToSearchHistory as addToSearchHistoryUtil} from '@/lib/utils/storage/searchHistory'
+import {addToSearchHistory as addToSearchHistoryUtil} from '@/lib/utils/storage/history/searchHistory'
 import {
   clearSettings,
   getInitialSettings,
   loadSettings,
   saveSettings
-} from '@/lib/utils/storage/storage'
+} from '@/lib/utils/storage/settings/storage'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 /**

@@ -8,7 +8,7 @@ import {
   incrementRequestCount,
   setTokenState,
   shouldFetchNewToken
-} from '@/lib/utils/storage/token'
+} from '@/lib/utils/storage/token/token'
 
 /**
  * Fetches a new application-only Reddit OAuth token.

@@ -1,6 +1,6 @@
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {CommentSortingOption} from '@/lib/types'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {
   collectAllCommentIds,
   collectDescendantIds,

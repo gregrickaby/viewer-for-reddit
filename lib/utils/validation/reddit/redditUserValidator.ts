@@ -1,4 +1,4 @@
-import {decodeHtmlEntities} from './sanitizeText'
+import {decodeHtmlEntities} from '@/lib/utils/validation/text/sanitizeText'
 
 /**
  * Reddit user profile response interface.

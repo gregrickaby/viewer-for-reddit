@@ -1,20 +1,21 @@
 import {NextRequest} from 'next/server'
-import {logError} from '../logging/logError'
 import {validateOrigin} from './validateOrigin'
 
 // Mock the logError function
-vi.mock('../logging/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
 }))
 
-const mockLogError = vi.mocked(logError)
+const mockLogError = vi.mocked(
+  (await import('@/lib/utils/logging/logError')).logError
+)
 
 // Helper to create NextRequest with headers
 function createRequest(headers: Record<string, string>) {
   const request = new NextRequest('http://example.com/api/test')
-  Object.entries(headers).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(headers)) {
     request.headers.set(key, value)
-  })
+  }
   return request
 }
 
@@ -233,13 +234,13 @@ describe('validateOrigin', () => {
         'https://totally-evil-localhost.com'
       ]
 
-      maliciousOrigins.forEach((origin) => {
+      for (const origin of maliciousOrigins) {
         const request = createRequest({origin})
 
         // Should allow everything in development
         expect(validateOrigin(request)).toBe(true)
         expect(mockLogError).not.toHaveBeenCalled()
-      })
+      }
     })
 
     it('should block localhost bypass attempts with malicious domains', () => {
@@ -250,7 +251,7 @@ describe('validateOrigin', () => {
         'https://fake-localhost.co'
       ]
 
-      bypassAttempts.forEach((maliciousOrigin) => {
+      for (const maliciousOrigin of bypassAttempts) {
         const request = createRequest({
           origin: maliciousOrigin
         })
@@ -263,7 +264,7 @@ describe('validateOrigin', () => {
             reason: 'No COOLIFY_FQDN configured and not localhost'
           })
         )
-      })
+      }
     })
 
     it('should handle extremely long headers safely', () => {
@@ -287,7 +288,7 @@ describe('validateOrigin', () => {
         'https://[invalid'
       ]
 
-      malformedUrls.forEach((malformedUrl) => {
+      for (const malformedUrl of malformedUrls) {
         const request = createRequest({
           origin: malformedUrl
         })
@@ -296,7 +297,7 @@ describe('validateOrigin', () => {
         expect(() => validateOrigin(request)).not.toThrow()
         // Malformed URLs should be blocked (invalid origin header present)
         expect(validateOrigin(request)).toBe(false)
-      })
+      }
     })
 
     it('should not log sensitive environment variables', () => {

@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {cleanupOAuthCookies, extractRefreshToken} from './oauthHelpers'
 
 // Mock logError
-vi.mock('../logging/logError', () => ({
+vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
 }))
 
@@ -22,7 +22,7 @@ describe('extractRefreshToken', () => {
   })
 
   it('should return empty string and log when refresh token is null', async () => {
-    const {logError} = await import('../logging/logError')
+    const {logError} = await import('@/lib/utils/logging/logError')
     const mockTokens = {
       refreshToken: () => null
     }
@@ -42,7 +42,7 @@ describe('extractRefreshToken', () => {
   })
 
   it('should return empty string and log when refreshToken throws error', async () => {
-    const {logError} = await import('../logging/logError')
+    const {logError} = await import('@/lib/utils/logging/logError')
     const mockTokens = {
       refreshToken: () => {
         throw new Error('Refresh token not provided')
@@ -65,7 +65,7 @@ describe('extractRefreshToken', () => {
   })
 
   it('should handle non-Error exceptions', async () => {
-    const {logError} = await import('../logging/logError')
+    const {logError} = await import('@/lib/utils/logging/logError')
     const mockTokens = {
       refreshToken: () => {
         throw 'String error' // eslint-disable-line no-throw-literal
@@ -88,7 +88,7 @@ describe('extractRefreshToken', () => {
   })
 
   it('should include username in error log', async () => {
-    const {logError} = await import('../logging/logError')
+    const {logError} = await import('@/lib/utils/logging/logError')
     const mockTokens = {
       refreshToken: () => {
         throw new Error('Token error')

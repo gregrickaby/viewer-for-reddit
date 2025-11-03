@@ -1,7 +1,7 @@
 import {checkRateLimit} from '@/lib/auth/rateLimit'
 import {getSession} from '@/lib/auth/session'
 import {logError} from '@/lib/utils/logging/logError'
-import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
+import {validateOrigin} from '@/lib/utils/validation/errors/validateOrigin'
 import {NextRequest} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {POST} from './route'
@@ -9,7 +9,7 @@ import {POST} from './route'
 vi.mock('@/lib/auth/session')
 vi.mock('@/lib/auth/rateLimit')
 vi.mock('@/lib/utils/logging/logError')
-vi.mock('@/lib/utils/validation/validateOrigin')
+vi.mock('@/lib/utils/validation/errors/validateOrigin')
 
 const mockGetSession = vi.mocked(getSession)
 const mockCheckRateLimit = vi.mocked(checkRateLimit)
@@ -19,7 +19,7 @@ const mockValidateOrigin = vi.mocked(validateOrigin)
 describe('/api/reddit/subscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    global.fetch = vi.fn()
+    globalThis.fetch = vi.fn()
     mockValidateOrigin.mockReturnValue(true)
     mockCheckRateLimit.mockResolvedValue(null)
   })
@@ -204,7 +204,7 @@ describe('/api/reddit/subscribe', () => {
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true
       })
-      global.fetch = mockFetch
+      globalThis.fetch = mockFetch
 
       const request = new NextRequest(
         'http://localhost:3000/api/reddit/subscribe',
@@ -251,7 +251,7 @@ describe('/api/reddit/subscribe', () => {
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true
       })
-      global.fetch = mockFetch
+      globalThis.fetch = mockFetch
 
       const request = new NextRequest(
         'http://localhost:3000/api/reddit/subscribe',
@@ -290,7 +290,7 @@ describe('/api/reddit/subscribe', () => {
         statusText: 'Internal Server Error',
         text: async () => 'Reddit API error'
       })
-      global.fetch = mockFetch
+      globalThis.fetch = mockFetch
 
       const request = new NextRequest(
         'http://localhost:3000/api/reddit/subscribe',

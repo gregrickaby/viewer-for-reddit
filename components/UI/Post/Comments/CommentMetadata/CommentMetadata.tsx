@@ -1,5 +1,5 @@
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {ActionIcon, Group, Text, Tooltip} from '@mantine/core'
 import {
   BiChevronRight,

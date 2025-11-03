@@ -1,7 +1,7 @@
 'use client'
 
 import {logClientError} from '@/lib/utils/logging/clientLogger'
-import {sanitizeLocationData} from '@/lib/utils/validation/urlSanitizer'
+import {sanitizeLocationData} from '@/lib/utils/validation/text/urlSanitizer'
 import Image from 'next/image'
 import Link from 'next/link'
 import {useEffect} from 'react'

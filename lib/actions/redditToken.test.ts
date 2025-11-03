@@ -10,7 +10,7 @@ import {
   resetTokenState,
   setTokenState,
   shouldFetchNewToken
-} from '@/lib/utils/storage/token'
+} from '@/lib/utils/storage/token/token'
 
 vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()

@@ -1,7 +1,7 @@
 import type {SortingOption, SubredditItem} from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
-import {MAX_LIMIT} from '@/lib/utils/api/apiConstants'
 import {authenticatedBaseQuery} from '@/lib/utils/api/baseQuery/authenticatedBaseQuery'
+import {MAX_LIMIT} from '@/lib/utils/api/config/apiConstants'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 // Auto-generated types for custom feed posts

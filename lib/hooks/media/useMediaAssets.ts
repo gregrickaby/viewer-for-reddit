@@ -1,7 +1,7 @@
 'use client'
 
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {getMediumImage} from '@/lib/utils/formatting/getMediumImage'
+import {getMediumImage} from '@/lib/utils/formatting/media/getMediumImage'
 import {useMemo} from 'react'
 
 export function useMediaAssets(post: Readonly<AutoPostChildData>) {

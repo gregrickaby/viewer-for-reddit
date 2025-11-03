@@ -5,14 +5,14 @@ import type {
   SubmitCommentResponse
 } from '@/lib/types'
 import type {components} from '@/lib/types/reddit-api'
-import {COMMENTS_LIMIT, MAX_LIMIT} from '@/lib/utils/api/apiConstants'
 import {createRedditBaseQuery} from '@/lib/utils/api/baseQuery/createRedditBaseQuery'
 import {dynamicBaseQuery} from '@/lib/utils/api/baseQuery/dynamicBaseQuery'
+import {COMMENTS_LIMIT, MAX_LIMIT} from '@/lib/utils/api/config/apiConstants'
 import {
   createCommentsInfiniteConfig,
   extractCommentsListing
-} from '@/lib/utils/api/commentsPagination'
-import {extractAndFilterComments} from '@/lib/utils/formatting/commentFilters'
+} from '@/lib/utils/api/pagination/commentsPagination'
+import {extractAndFilterComments} from '@/lib/utils/formatting/comments/commentFilters'
 import {createApi} from '@reduxjs/toolkit/query/react'
 
 /**

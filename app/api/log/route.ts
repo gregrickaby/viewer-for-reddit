@@ -1,5 +1,5 @@
 import {logError} from '@/lib/utils/logging/logError'
-import {validateOrigin} from '@/lib/utils/validation/validateOrigin'
+import {validateOrigin} from '@/lib/utils/validation/errors/validateOrigin'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**

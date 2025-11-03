@@ -1,4 +1,4 @@
-import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
+import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {render, screen} from '@/test-utils'
 import {CommentReplies} from './CommentReplies'
 

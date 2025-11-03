@@ -2,9 +2,9 @@ import {MediaCache, getCachedUrl, prefetchMedia} from './mediaCache'
 
 describe('MediaCache', () => {
   beforeEach(() => {
-    document.head
-      .querySelectorAll('link[rel="preload"]')
-      .forEach((n) => n.remove())
+    for (const n of document.head.querySelectorAll('link[rel="preload"]')) {
+      n.remove()
+    }
     vi.restoreAllMocks()
   })
 
