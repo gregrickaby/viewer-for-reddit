@@ -1,9 +1,9 @@
+import {useCommentFetching} from '@/lib/hooks/comments/fetching/useCommentFetching/useCommentFetching'
+import {useCommentPagination} from '@/lib/hooks/comments/fetching/useCommentPagination/useCommentPagination'
+import {useCommentProcessing} from '@/lib/hooks/comments/processing/useCommentProcessing/useCommentProcessing'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import type {NestedCommentData} from '@/lib/utils/formatting/commentFilters'
 import {useEffect} from 'react'
-import {useCommentFetching} from '../useCommentFetching/useCommentFetching'
-import {useCommentPagination} from '../useCommentPagination/useCommentPagination'
-import {useCommentProcessing} from '../useCommentProcessing/useCommentProcessing'
 
 /**
  * Parameters for useComments hook.

@@ -1,4 +1,4 @@
-import {useRemoveFromFavorites} from '@/lib/hooks/useRemoveFromFavorites'
+import {useRemoveFromFavorites} from '@/lib/hooks/subreddit/useRemoveFromFavorites'
 import {clearSingleFavorite} from '@/lib/store/features/settingsSlice'
 import {renderHook} from '@/test-utils'
 import {showNotification} from '@mantine/notifications'

@@ -6,9 +6,9 @@ import {CommentMetadata} from '@/components/UI/Post/Comments/CommentMetadata/Com
 import {CommentReplies} from '@/components/UI/Post/Comments/CommentReplies/CommentReplies'
 import {CommentReplyForm} from '@/components/UI/Post/Comments/CommentReplyForm/CommentReplyForm'
 import {COMMENT_CONFIG} from '@/lib/config'
-import {useCommentActions} from '@/lib/hooks/comments/useCommentActions/useCommentActions'
-import {useCommentFocusManagement} from '@/lib/hooks/comments/useCommentFocusManagement/useCommentFocusManagement'
-import {useCommentState} from '@/lib/hooks/comments/useCommentState/useCommentState'
+import {useCommentActions} from '@/lib/hooks/comments/interaction/useCommentActions/useCommentActions'
+import {useCommentFocusManagement} from '@/lib/hooks/comments/navigation/useCommentFocusManagement/useCommentFocusManagement'
+import {useCommentState} from '@/lib/hooks/comments/state/useCommentState/useCommentState'
 import {
   collapseComment,
   collapseSubtree,

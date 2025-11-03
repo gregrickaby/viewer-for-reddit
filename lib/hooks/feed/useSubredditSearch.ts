@@ -1,6 +1,6 @@
 'use client'
 
-import {useHeaderState} from '@/lib/hooks/useHeaderState'
+import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
 import {
   addToSearchHistory,
   clearSingleSearchHistory

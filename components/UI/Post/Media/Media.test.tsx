@@ -16,15 +16,15 @@ const {
   mockUseGalleryData: vi.fn()
 }))
 
-vi.mock('@/lib/hooks/useMediaType', () => ({
+vi.mock('@/lib/hooks/media/useMediaType', () => ({
   useMediaType: mockUseMediaType
 }))
 
-vi.mock('@/lib/hooks/useMediaAssets', () => ({
+vi.mock('@/lib/hooks/media/useMediaAssets', () => ({
   useMediaAssets: mockUseMediaAssets
 }))
 
-vi.mock('@/lib/hooks/useGalleryData', () => ({
+vi.mock('@/lib/hooks/media/useGalleryData', () => ({
   useGalleryData: mockUseGalleryData
 }))
 
@@ -71,7 +71,7 @@ vi.mock('@/components/UI/Post/Media/Gallery/Gallery', () => ({
 
 const createMediaTypeMock = (
   overrides: Partial<
-    ReturnType<typeof import('@/lib/hooks/useMediaType').useMediaType>
+    ReturnType<typeof import('@/lib/hooks/media/useMediaType').useMediaType>
   > = {}
 ) => ({
   isImage: false,

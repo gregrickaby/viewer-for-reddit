@@ -5,7 +5,7 @@ const {mockUseInfinitePosts} = vi.hoisted(() => ({
   mockUseInfinitePosts: vi.fn()
 }))
 
-vi.mock('@/lib/hooks/useInfinitePosts', () => ({
+vi.mock('@/lib/hooks/feed/useInfinitePosts', () => ({
   useInfinitePosts: mockUseInfinitePosts
 }))
 

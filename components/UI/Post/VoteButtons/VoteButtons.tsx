@@ -1,6 +1,6 @@
 'use client'
 
-import {useVote} from '@/lib/hooks/useVote'
+import {useVote} from '@/lib/hooks/util/useVote'
 import {ActionIcon, Group, NumberFormatter, Text, Tooltip} from '@mantine/core'
 import {BiSolidDownvote, BiSolidUpvote} from 'react-icons/bi'
 import classes from './VoteButtons.module.css'

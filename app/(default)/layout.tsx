@@ -2,7 +2,7 @@
 
 import {Header} from '@/components/Layout/Header/Header'
 import {Sidebar} from '@/components/Layout/Sidebar/Sidebar'
-import {useHeaderState} from '@/lib/hooks/useHeaderState'
+import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
 import {AppShell, Container} from '@mantine/core'
 import {useMediaQuery} from '@mantine/hooks'
 import {Suspense} from 'react'

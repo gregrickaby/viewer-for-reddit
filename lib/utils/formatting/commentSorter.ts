@@ -1,5 +1,16 @@
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
-import type {CommentSortingOption, NestedCommentData} from './CommentModels'
+import type {NestedCommentData} from './commentFilters'
+
+/**
+ * Comment sorting options supported by Reddit.
+ */
+export type CommentSortingOption =
+  | 'best'
+  | 'top'
+  | 'new'
+  | 'controversial'
+  | 'old'
+  | 'qa'
 
 /**
  * Sorts comments based on the specified sorting option.

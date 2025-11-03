@@ -8,7 +8,7 @@ vi.mock('media-chrome', () => ({
 }))
 
 const videoRef = {current: null}
-vi.mock('@/lib/hooks/useHlsVideo', () => ({
+vi.mock('@/lib/hooks/media/useHlsVideo', () => ({
   useHlsVideo: () => ({videoRef, isLoading: false, isMuted: false})
 }))
 

@@ -2,8 +2,8 @@
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {COMMENT_CONFIG} from '@/lib/config'
-import {useCommentData} from '@/lib/hooks/useCommentData'
-import {useCommentNavigation} from '@/lib/hooks/useCommentNavigation'
+import {useCommentNavigation} from '@/lib/hooks/comments/orchestration/useCommentNavigation'
+import {useComments} from '@/lib/hooks/comments/orchestration/useComments/useComments'
 import {
   collapseAllComments,
   expandAllComments
@@ -78,7 +78,7 @@ export function Comments({
     currentIsFetchingNextPage,
     isError,
     error
-  } = useCommentData({
+  } = useComments({
     permalink,
     open,
     comments: providedComments,

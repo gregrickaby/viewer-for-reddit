@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 const {mockUseHeaderState} = vi.hoisted(() => ({
   mockUseHeaderState: vi.fn()
 }))
-vi.mock('@/lib/hooks/useHeaderState', () => ({
+vi.mock('@/lib/hooks/ui/useHeaderState', () => ({
   useHeaderState: () => mockUseHeaderState()
 }))
 

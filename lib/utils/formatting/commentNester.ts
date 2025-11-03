@@ -1,5 +1,12 @@
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
-import type {NestedCommentData} from './CommentModels'
+
+/**
+ * Nested comment data with reply structure.
+ */
+export type NestedCommentData = AutoCommentData & {
+  replies?: NestedCommentData[]
+  depth?: number
+}
 
 /**
  * Maximum nesting depth for comment threads.

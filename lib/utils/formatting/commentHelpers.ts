@@ -1,15 +1,13 @@
-import {
-  extractNestedComments,
-  type NestedCommentData
-} from '@/lib/domain/comments'
 import type {
   AutoCommentData,
   AutoCommentWithText
 } from '@/lib/store/services/commentsApi'
 import {extractAndFilterComments} from '@/lib/utils/formatting/commentFilters'
+import {extractNestedComments, type NestedCommentData} from './commentNester'
 
-// Re-export domain functions for backward compatibility
-export {sortComments, type NestedCommentData} from '@/lib/domain/comments'
+// Re-export for backward compatibility
+export type {NestedCommentData} from './commentNester'
+export {sortComments} from './commentSorter'
 
 /**
  * Type guard to validate comment has required display properties
@@ -29,71 +27,6 @@ export function hasRequiredCommentFields(
       'author' in comment &&
       ('body' in comment || 'body_html' in comment)
   )
-}
-
-/**
- * Helper function to determine loading state
- */
-export function getLoadingState(
-  enableNestedComments: boolean,
-  enableInfiniteLoading: boolean,
-  isInfiniteLoadingRaw: boolean,
-  isLoadingRaw: boolean,
-  isInfiniteLoading: boolean,
-  isLoading: boolean
-): boolean {
-  if (enableNestedComments) {
-    return enableInfiniteLoading ? isInfiniteLoadingRaw : isLoadingRaw
-  }
-  return enableInfiniteLoading ? isInfiniteLoading : isLoading
-}
-
-/**
- * Helper function to get next page controls
- */
-export function getNextPageControls(
-  enableNestedComments: boolean,
-  fetchNextPageRaw: () => void,
-  fetchNextPage: () => void,
-  hasNextPageRaw: boolean,
-  hasNextPage: boolean,
-  isFetchingNextPageRaw: boolean,
-  isFetchingNextPage: boolean
-) {
-  return {
-    currentFetchNextPage: enableNestedComments
-      ? fetchNextPageRaw
-      : fetchNextPage,
-    currentHasNextPage: enableNestedComments ? hasNextPageRaw : hasNextPage,
-    currentIsFetchingNextPage: enableNestedComments
-      ? isFetchingNextPageRaw
-      : isFetchingNextPage
-  }
-}
-
-/**
- * Helper function to determine which comments to display based on configuration
- */
-export function getDisplayComments(
-  enableNestedComments: boolean,
-  nestedComments: NestedCommentData[],
-  infiniteComments: AutoCommentData[],
-  flatComments: AutoCommentData[],
-  providedComments?: AutoCommentData[]
-): AutoCommentData[] | NestedCommentData[] {
-  if (enableNestedComments) {
-    return nestedComments
-  }
-
-  if (infiniteComments.length > 0) {
-    return infiniteComments
-  }
-
-  if (flatComments.length > 0) {
-    return flatComments
-  }
-
-  return providedComments ?? []
 }
 
 /**

@@ -1,6 +1,6 @@
 'use client'
 
-import {useBossButton} from '@/lib/hooks/useBossButton'
+import {useBossButton} from '@/lib/hooks/ui/useBossButton'
 import {Button, Tooltip, VisuallyHidden} from '@mantine/core'
 import {MdExitToApp} from 'react-icons/md'
 import classes from './BossButton.module.css'

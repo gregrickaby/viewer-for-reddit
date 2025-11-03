@@ -1,6 +1,6 @@
 'use client'
 
-import type {GalleryItem} from '@/lib/hooks/useGalleryData'
+import type {GalleryItem} from '@/lib/hooks/media/useGalleryData'
 import {Carousel} from '@mantine/carousel'
 import '@mantine/carousel/styles.css'
 import {Image, Text} from '@mantine/core'

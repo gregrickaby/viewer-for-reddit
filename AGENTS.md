@@ -1,30 +1,44 @@
-# AI Agent Instructions
+# AGENTS.md
 
-**Audience**: All AI agents (GitHub Copilot, Claude Code, Cursor, etc.)
-**Purpose**: Quick reference and operational guide for AI agents
-**Status**: 🏢 **Enterprise-Grade Application** - Following Layered Architecture + Test-Driven Development
-**Foundation**: Comments refactor (`lib/domain/comments/`) - Use as the reference pattern for all new features
-**Deep Dives**: See [CONTRIBUTING.md](./CONTRIBUTING.md) and [LAYERED_ARCHITECTURE_ANALYSIS.md](./docs/LAYERED_ARCHITECTURE_ANALYSIS.md)
+This file provides guidance to agents when working with code in this repository.
 
----
+## Expert React Frontend Engineer
 
-## Table of Contents
+You are in expert frontend engineer. Your task is to provide senior React and TypeScript frontend engineering guidance using both Separation of Concerns (SoC) and Test-Driven Design patterns and best practices as if you were a leader in the field.
 
-- [About reddit-viewer.com](#about-reddit-viewercom)
-- [Quick Reference](#quick-reference)
-- [Available Sub-agents](#available-sub-agents)
-- [Architecture Overview](#architecture-overview)
-- [Core Development Workflow](#core-development-workflow)
-- [Key Patterns & Rules](#key-patterns--rules)
-- [Testing Strategy](#testing-strategy)
-- [Git Workflow](#git-workflow)
-- [Detailed References](#detailed-references)
+## Key Philosophy
 
----
+**Keep components "dumb" and focused on presentation.** Move all logic to testable, reusable hooks and helpers. This makes the codebase maintainable, testable, and follows React best practices for 2025 and beyond.
 
-## About reddit-viewer.com
+## Quick Reference
 
-**reddit-viewer.com** is an enterprise-grade Reddit viewing web app enabling users to browse Reddit content without ads or distractions. Built with **layered architecture**, **test-driven development**, and **clean code principles** to maximize maintainability, testability, and scalability.
+### File Organization
+
+- `components/` - Presentational components only (render UI + handle user interactions)
+- `lib/hooks/` - Business logic, state management, data transformations (prefix with `use`)
+- `lib/utils/` - Pure functions organized by purpose (formatting, validation, api, logging, routing, storage)
+- Tests co-located with implementation files (e.g., `useMediaType.ts` + `useMediaType.test.ts`)
+
+### Decision Tree: Where Does This Code Go?
+
+**Is it a pure calculation/formatting function with no state?**
+
+- ✅ Extract to `lib/utils/` (e.g., `getIsVertical()`, `sortComments()`)
+- File: `calculations.ts`, `formatting.ts`, `conditions.ts`
+
+**Does it need React hooks, state, or effects?**
+
+- ✅ Extract to `lib/hooks/` (e.g., `useMediaType()`, `useCommentFetching()`)
+- Return processed data ready for components to render
+
+**Is it just rendering data or handling UI events?**
+
+- ✅ Keep in component
+- Call hooks to get data, render with Mantine components
+
+## Project Overview
+
+A Reddit viewer application built with Next.js 16 (App Router, React 19 Compiler), Mantine 8, Redux Toolkit 2, and integrates with Reddit's public REST API. The app is deployed to Coolify (using Nixpacks) at <https://reddit-viewer.com>.
 
 ### Two Modes
 
@@ -32,47 +46,38 @@
 
 - **Authenticated Mode**: User logs in via OAuth2 with their Reddit account to access personalized features (home feed, custom feeds, voting, commenting, subscribing). Uses user-specific OAuth 2.0 access tokens with broader scopes.
 
-### Architecture Pattern
-
-This application implements **Layered Architecture** (also called Clean Architecture or N-Tier Architecture) with strict separation of concerns:
-
-1. **Presentation Layer** - React components (Mantine UI)
-2. **Application Layer** - Custom hooks (state, side effects, composition)
-3. **Domain Layer** - Pure business logic (100% testable, framework-agnostic)
-4. **Data Access Layer** - RTK Query (API communication, caching)
-
-**Reference Implementation**: See `lib/domain/comments/`, `lib/hooks/comments/`, and `components/UI/Post/Comments/`
-
-Read [LAYERED_ARCHITECTURE_ANALYSIS.md](./docs/LAYERED_ARCHITECTURE_ANALYSIS.md) for complete architecture documentation and patterns.
-
 ---
 
-## 🎓 Architecture Principles
+## 🎓 Separation of Concerns (SoC) Principles
 
-When implementing ANY new feature, follow these principles (demonstrated in the comments refactor):
+When implementing ANY new feature, follow these principles to maintain clean separation of concerns:
 
-### 1. **Extract Pure Domain Logic First**
+### 1. **Extract Pure Functions to Utils**
 
-- Create `lib/domain/feature-name/` with pure functions
+- Create pure functions in `lib/utils/` organized by purpose (formatting, validation, etc.)
 - No React, no hooks, no API calls
-- 100% test coverage with comprehensive edge cases
+- Comprehensive test coverage with edge cases
 - Fully immutable operations
 - Reusable outside React (Node.js, CLI, etc.)
 
-**Example**: `lib/domain/comments/CommentSorter.ts` (65 lines, 17 tests)
+**Examples**:
+
+- `lib/utils/formatting/getIsVertical.ts` - Pure calculation function
+- `lib/utils/validation/` - Input validation helpers
+- `lib/utils/formatting/commentHelpers.ts` - Comment utility functions
 
 ### 2. **Create Focused Hooks with Single Responsibility**
 
 - Break complex hooks into focused, single-purpose hooks (< 100 lines each)
 - Use orchestrator hooks to compose smaller hooks
-- Call domain layer for business logic
+- Call utility functions from `lib/utils/` for business logic
 - Use RTK Query for data fetching (never direct API calls)
 
-**Example**: `lib/hooks/comments/useComments.ts` (orchestrator) composes:
+**Example**: `lib/hooks/comments/orchestration/useComments/useComments.ts` (orchestrator) composes:
 
-- `useCommentFetching.ts` (RTK Query)
-- `useCommentProcessing.ts` (domain logic)
-- `useCommentPagination.ts` (pagination)
+- `lib/hooks/comments/fetching/useCommentFetching/useCommentFetching.ts` (RTK Query)
+- `lib/hooks/comments/processing/useCommentProcessing/useCommentProcessing.ts` (data transformation using utils)
+- `lib/hooks/comments/fetching/useCommentPagination/useCommentPagination.ts` (pagination)
 
 ### 3. **Keep Components Simple & Presentational**
 
@@ -82,11 +87,11 @@ When implementing ANY new feature, follow these principles (demonstrated in the 
 - One component per file
 - Comprehensive test coverage
 
-**Example**: `components/UI/Post/Comments/CommentItem.tsx` (rendering only)
+**Example**: `components/UI/Post/Comments/CommentItem/CommentItem.tsx` (rendering only)
 
 ### 4. **Write Tests Alongside Code**
 
-- **Domain layer**: 100% coverage (pure functions are easy to test)
+- **Pure functions** (`lib/utils/`): Comprehensive test coverage (pure functions are easy to test)
 - **Hooks**: 90%+ coverage (test state, side effects, edge cases)
 - **Components**: 90%+ coverage (test user interactions, rendering)
 - Use `it.each()` to minimize duplication
@@ -151,7 +156,7 @@ npm run typegen:types    # Generate types from OpenAPI spec
 
 ### Quality Standards (Enterprise-Grade Requirements)
 
-- **Test Coverage**: 90%+ (domain layer: 100%)
+- **Test Coverage**: 90%+
 - **Code Duplication**: < 1.5% (tracked by SonarQube)
 - **Critical/Blocker Issues**: Zero tolerance
 - **TypeScript**: Strict mode enabled, no `any` types
@@ -391,21 +396,24 @@ components/
 lib/
 ├── actions/                # Server Actions (redditToken.ts)
 ├── auth/                   # Auth utilities
-├── domain/                 # Pure business logic (100% testable, framework-agnostic)
-│   └── comments/           # Comment domain logic (reference implementation)
-│       ├── CommentModels.ts
-│       ├── CommentSorter.ts
-│       ├── CommentNester.ts
-│       ├── CommentValidator.ts
-│       └── index.ts
 ├── hooks/                  # Custom React hooks (state, side effects, RTK Query)
-│   ├── comments/           # Comment hooks (reference implementation)
-│   └── navigation/         # Navigation hooks
+│   ├── comments/           # Comment-specific hooks
+│   │   ├── orchestration/  # Orchestrator hooks (useComments, useCommentNavigation)
+│   │   ├── fetching/       # Data fetching (useCommentFetching, useCommentPagination)
+│   │   ├── processing/     # Data transformation (useCommentProcessing)
+│   │   ├── state/          # State management (useCommentState)
+│   │   ├── interaction/    # User interactions (useCommentActions, useCommentReply, useCommentDelete)
+│   │   └── navigation/     # Navigation & focus (useCommentNavigation, useCommentFocus, useKeyboardNav)
+│   ├── feed/               # Feed hooks (useInfinitePosts, useInfiniteFeed, useFeedRenderer, useSubredditSearch)
+│   ├── media/              # Media hooks (useMediaType, useMediaAssets, useGalleryData, useHlsVideo)
+│   ├── subreddit/          # Subreddit hooks (useAddFavorite, useRemoveFromFavorites, useTrackRecentSubreddit)
+│   ├── ui/                 # UI state hooks (useHeaderState, useSidebarSection, useBossButton)
+│   └── util/               # Utility hooks (useUpdateMeta, useRemoveItemFromHistory, useVote)
 ├── store/                  # Redux + RTK Query
 ├── types/                  # Auto-generated TypeScript types
-└── utils/
+└── utils/                  # Pure functions organized by purpose
     ├── api/                # API utilities, base queries
-    ├── formatting/         # Data formatting helpers
+    ├── formatting/         # Data formatting helpers (e.g., getIsVertical, commentHelpers)
     ├── logging/            # Error logging (clientLogger, logError)
     ├── routing/            # Navigation helpers
     ├── storage/            # Client storage (cache, history, tokens)

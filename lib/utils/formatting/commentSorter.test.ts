@@ -1,17 +1,16 @@
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import {describe, expect, it} from 'vitest'
-import type {CommentSortingOption} from './CommentModels'
-import {sortComments} from './CommentSorter'
+import {sortComments, type CommentSortingOption} from './commentSorter'
 
 /**
- * Tests for CommentSorter domain logic.
+ * Tests for commentSorter utility.
  *
  * Covers:
  * - All sorting algorithms (best, top, new, controversial, old, qa)
  * - Edge cases (empty arrays, single comment, equal scores/times)
  * - Immutability (original array not modified)
  */
-describe('CommentSorter', () => {
+describe('commentSorter', () => {
   describe('sortComments', () => {
     /**
      * Helper to create mock comment with minimal required fields.

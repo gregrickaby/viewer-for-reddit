@@ -1,7 +1,7 @@
 'use client'
 
 import {SubredditName} from '@/components/UI/SubredditName/SubredditName'
-import {useSubredditSearch} from '@/lib/hooks/useSubredditSearch'
+import {useSubredditSearch} from '@/lib/hooks/feed/useSubredditSearch'
 import type {SubredditItem} from '@/lib/types'
 import {
   ActionIcon,

@@ -1,5 +1,5 @@
 import {Card} from '@/components/UI/Post/Card/Card'
-import {useInfinitePosts} from '@/lib/hooks/useInfinitePosts'
+import {useInfinitePosts} from '@/lib/hooks/feed/useInfinitePosts'
 import type {AutoPostChild} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
 import {

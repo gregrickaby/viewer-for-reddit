@@ -5,7 +5,7 @@ const {useBossButtonMock} = vi.hoisted(() => ({
   useBossButtonMock: vi.fn()
 }))
 
-vi.mock('@/lib/hooks/useBossButton', () => ({
+vi.mock('@/lib/hooks/ui/useBossButton', () => ({
   useBossButton: useBossButtonMock
 }))
 

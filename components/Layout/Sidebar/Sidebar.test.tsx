@@ -9,11 +9,11 @@ vi.mock('@mantine/hooks', async () => {
   }
 })
 
-vi.mock('@/lib/hooks/useRemoveItemFromHistory', () => ({
+vi.mock('@/lib/hooks/util/useRemoveItemFromHistory', () => ({
   useRemoveItemFromHistory: () => ({remove: vi.fn()})
 }))
 
-vi.mock('@/lib/hooks/useRemoveFromFavorites', () => ({
+vi.mock('@/lib/hooks/subreddit/useRemoveFromFavorites', () => ({
   useRemoveFromFavorites: () => ({remove: vi.fn()})
 }))
 
@@ -76,7 +76,7 @@ vi.mock('@/lib/store/services/authenticatedApi', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/hooks/useHeaderState', () => ({
+vi.mock('@/lib/hooks/ui/useHeaderState', () => ({
   useHeaderState: () => ({
     showNavbar: false,
     toggleNavbarHandler: vi.fn(),

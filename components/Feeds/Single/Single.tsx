@@ -3,7 +3,7 @@
 import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
 import {Card as PostCard} from '@/components/UI/Post/Card/Card'
 import {Comments} from '@/components/UI/Post/Comments/Comments'
-import {useUpdateMeta} from '@/lib/hooks/useUpdateMeta'
+import {useUpdateMeta} from '@/lib/hooks/util/useUpdateMeta'
 import {useGetSinglePostQuery} from '@/lib/store/services/postsApi'
 import {parsePostLink} from '@/lib/utils/formatting/parsePostLink'
 import {Alert, Card, Container, Loader, Stack, Text, Title} from '@mantine/core'

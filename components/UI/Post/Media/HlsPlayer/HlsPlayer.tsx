@@ -1,6 +1,6 @@
 'use client'
 
-import {useHlsVideo} from '@/lib/hooks/useHlsVideo'
+import {useHlsVideo} from '@/lib/hooks/media/useHlsVideo'
 import type {HlsPlayerProps} from '@/lib/types'
 import {Loader} from '@mantine/core'
 import React, {useEffect, useState} from 'react'

@@ -1,4 +1,12 @@
-import type {CommentValidationResult} from './CommentModels'
+/**
+ * Result of comment validation.
+ */
+export interface CommentValidationResult {
+  /** Whether validation passed */
+  isValid: boolean
+  /** Error message if validation failed */
+  error?: string
+}
 
 /**
  * Maximum allowed comment length per Reddit's API requirements.

@@ -2,14 +2,14 @@ import {Subreddit} from '@/components/Feeds/Subreddit/Subreddit'
 import {render, screen} from '@/test-utils'
 import userEvent from '@testing-library/user-event'
 
-vi.mock('@/lib/hooks/useTrackRecentSubreddit', () => ({
+vi.mock('@/lib/hooks/subreddit/useTrackRecentSubreddit', () => ({
   useTrackRecentSubreddit: () => {}
 }))
 
 const {mockUseInfinitePosts} = vi.hoisted(() => ({
   mockUseInfinitePosts: vi.fn()
 }))
-vi.mock('@/lib/hooks/useInfinitePosts', () => ({
+vi.mock('@/lib/hooks/feed/useInfinitePosts', () => ({
   useInfinitePosts: mockUseInfinitePosts
 }))
 

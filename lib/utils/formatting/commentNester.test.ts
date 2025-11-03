@@ -1,14 +1,14 @@
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
 import {describe, expect, it} from 'vitest'
-import type {NestedCommentData} from './CommentModels'
+import type {NestedCommentData} from './commentFilters'
 import {
   extractNestedComments,
   flattenComments,
   MAX_COMMENT_DEPTH
-} from './CommentNester'
+} from './commentNester'
 
 /**
- * Tests for CommentNester domain logic.
+ * Tests for commentNester utility.
  *
  * Covers:
  * - Nesting algorithm with depth tracking
@@ -16,7 +16,7 @@ import {
  * - Invalid/malformed data handling
  * - Flattening nested structures
  */
-describe('CommentNester', () => {
+describe('commentNester', () => {
   /**
    * Helper to create mock comment data.
    */

@@ -2,7 +2,7 @@
 
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {Card} from '@/components/UI/Post/Card/Card'
-import {useInfiniteFeed} from '@/lib/hooks/useInfiniteFeed'
+import {useInfiniteFeed} from '@/lib/hooks/feed/useInfiniteFeed'
 import {
   type UserSavedPostsArgs,
   useGetUserSavedPostsInfiniteQuery

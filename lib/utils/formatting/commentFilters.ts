@@ -3,12 +3,13 @@ import type {
   AutoCommentWithText
 } from '@/lib/store/services/commentsApi'
 
-// Re-export domain types and functions for backward compatibility
+// Re-export for backward compatibility
 export {
   extractNestedComments,
   flattenComments,
+  MAX_COMMENT_DEPTH,
   type NestedCommentData
-} from '@/lib/domain/comments'
+} from './commentNester'
 
 /**
  * Reddit API comment child structure

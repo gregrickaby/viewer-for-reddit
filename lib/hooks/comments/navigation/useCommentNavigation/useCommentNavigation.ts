@@ -1,7 +1,7 @@
+import {useCommentDOMTracking} from '@/lib/hooks/comments/navigation/useCommentDOMTracking/useCommentDOMTracking'
+import {useCommentFocus} from '@/lib/hooks/comments/navigation/useCommentFocus/useCommentFocus'
+import {useKeyboardNav} from '@/lib/hooks/comments/navigation/useKeyboardNav/useKeyboardNav'
 import {useCallback} from 'react'
-import {useCommentDOMTracking} from '../useCommentDOMTracking/useCommentDOMTracking'
-import {useCommentFocus} from '../useCommentFocus/useCommentFocus'
-import {useKeyboardNav} from '../useKeyboardNav/useKeyboardNav'
 
 /**
  * Options for comment navigation hook.

@@ -1,9 +1,9 @@
 'use client'
 
 import {SidebarSection} from '@/components/Layout/Sidebar/SidebarSection'
-import {useHeaderState} from '@/lib/hooks/useHeaderState'
-import {useRemoveFromFavorites} from '@/lib/hooks/useRemoveFromFavorites'
-import {useRemoveItemFromHistory} from '@/lib/hooks/useRemoveItemFromHistory'
+import {useRemoveFromFavorites} from '@/lib/hooks/subreddit/useRemoveFromFavorites'
+import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
+import {useRemoveItemFromHistory} from '@/lib/hooks/util/useRemoveItemFromHistory'
 import {useAppSelector} from '@/lib/store/hooks'
 import {
   useGetUserCustomFeedsQuery,

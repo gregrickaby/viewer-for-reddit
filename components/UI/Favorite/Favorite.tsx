@@ -1,6 +1,6 @@
 'use client'
 
-import {useAddFavorite} from '@/lib/hooks/useAddFavorite'
+import {useAddFavorite} from '@/lib/hooks/subreddit/useAddFavorite'
 import {useAppSelector} from '@/lib/store/hooks'
 import {ActionIcon, Tooltip} from '@mantine/core'
 import {FaHeart, FaRegHeart} from 'react-icons/fa'

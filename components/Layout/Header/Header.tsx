@@ -2,8 +2,8 @@
 
 import {Search} from '@/components/UI/Search/Search'
 import config from '@/lib/config'
-import {useHeaderState} from '@/lib/hooks/useHeaderState'
-import {useSubredditSearch} from '@/lib/hooks/useSubredditSearch'
+import {useSubredditSearch} from '@/lib/hooks/feed/useSubredditSearch'
+import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
 import {Box, Burger, Group, Title, VisuallyHidden} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'

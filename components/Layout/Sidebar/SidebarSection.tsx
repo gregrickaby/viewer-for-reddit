@@ -1,7 +1,7 @@
 'use client'
 
 import {SidebarNavLink} from '@/components/Layout/Sidebar/SidebarNavLink'
-import {useSidebarSection} from '@/lib/hooks/useSidebarSection'
+import {useSidebarSection} from '@/lib/hooks/ui/useSidebarSection'
 import type {SubredditItem} from '@/lib/types'
 import {NavLink} from '@mantine/core'
 

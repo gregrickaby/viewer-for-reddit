@@ -16,7 +16,7 @@ const {handleDelete, navLinkMock} = vi.hoisted(() => ({
   ))
 }))
 
-vi.mock('@/lib/hooks/useSidebarSection', () => ({
+vi.mock('@/lib/hooks/ui/useSidebarSection', () => ({
   useSidebarSection: () => ({
     handleDelete,
     isFavorite: vi.fn(),

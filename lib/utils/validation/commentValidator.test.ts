@@ -5,9 +5,9 @@ import {
   MIN_COMMENT_LENGTH,
   sanitizeCommentInput,
   validateCommentText
-} from './CommentValidator'
+} from './commentValidator'
 
-describe('CommentValidator', () => {
+describe('commentValidator', () => {
   describe('validateCommentText', () => {
     it('should validate a normal comment', () => {
       const result = validateCommentText('This is a valid comment')

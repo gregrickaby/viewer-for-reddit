@@ -4,7 +4,7 @@ import {
   SubredditName,
   SubredditNameProps
 } from '@/components/UI/SubredditName/SubredditName'
-import {useHeaderState} from '@/lib/hooks/useHeaderState'
+import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
 import {NavLink} from '@mantine/core'
 import Link from 'next/link'
 
