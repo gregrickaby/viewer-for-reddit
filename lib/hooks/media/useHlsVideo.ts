@@ -70,12 +70,31 @@ export function useHlsVideo({
         hasInitialized.current = true
       }
     } else {
+      // Stop playback and remove source when not visible
       video.pause()
+      video.removeAttribute('src')
+      video.load() // Reset video element
       hlsRef.current?.destroy()
       hlsRef.current = null
       hasInitialized.current = false
     }
   }, [entry, src, fallbackUrl, autoPlay, isMuted])
+
+  // Cleanup on unmount - critical for navigation
+  useEffect(() => {
+    return () => {
+      const video = videoRef.current
+      if (video) {
+        video.pause()
+        video.removeAttribute('src')
+        video.load() // Reset video element
+      }
+      if (hlsRef.current) {
+        hlsRef.current.destroy()
+        hlsRef.current = null
+      }
+    }
+  }, [])
 
   // Track canplay for loading state
   useEffect(() => {
