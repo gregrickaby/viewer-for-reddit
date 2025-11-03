@@ -1,5 +1,5 @@
 import {Custom} from '@/components/Feeds/Custom/Custom'
-import {render, screen, waitFor} from '@/test-utils'
+import {render, screen, user, waitFor} from '@/test-utils'
 import {server} from '@/test-utils/msw/server'
 import {http, HttpResponse} from 'msw'
 
@@ -258,6 +258,90 @@ describe('CustomFeedPosts', () => {
 
     await waitFor(() => {
       expect(screen.getByText("You've reached the end")).toBeInTheDocument()
+    })
+  })
+
+  it('should render sort control with Hot, New, and Top options', async () => {
+    server.use(
+      http.get('http://localhost:3000/api/reddit/me', () => {
+        return HttpResponse.json(
+          createMockResponse([createMockPost('1', 'Test Post')])
+        )
+      })
+    )
+
+    render(<Custom {...defaultProps} />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Post')).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('radio', {name: 'Hot'})).toBeInTheDocument()
+    expect(screen.getByRole('radio', {name: 'New'})).toBeInTheDocument()
+    expect(screen.getByRole('radio', {name: 'Top'})).toBeInTheDocument()
+  })
+
+  it('should have the correct sort option selected based on prop', async () => {
+    server.use(
+      http.get('http://localhost:3000/api/reddit/me', () => {
+        return HttpResponse.json(
+          createMockResponse([createMockPost('1', 'Test Post')])
+        )
+      })
+    )
+
+    render(<Custom {...defaultProps} sort="new" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Post')).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('radio', {name: 'New'})).toBeChecked()
+    expect(screen.getByRole('radio', {name: 'Hot'})).not.toBeChecked()
+    expect(screen.getByRole('radio', {name: 'Top'})).not.toBeChecked()
+  })
+
+  it('should update selected sort when clicking different option', async () => {
+    let requestedSort = 'hot'
+
+    server.use(
+      http.get('http://localhost:3000/api/reddit/me', ({request}) => {
+        const url = new URL(request.url)
+        const path = url.searchParams.get('path')
+
+        // Capture which sort was requested
+        if (path?.includes('/new.json')) {
+          requestedSort = 'new'
+        } else if (path?.includes('/top.json')) {
+          requestedSort = 'top'
+        }
+
+        return HttpResponse.json(
+          createMockResponse([createMockPost('1', 'Test Post')])
+        )
+      })
+    )
+
+    render(<Custom {...defaultProps} />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Post')).toBeInTheDocument()
+    })
+
+    // Click New option
+    await user.click(screen.getByRole('radio', {name: 'New'}))
+
+    await waitFor(() => {
+      expect(screen.getByRole('radio', {name: 'New'})).toBeChecked()
+      expect(requestedSort).toBe('new')
+    })
+
+    // Click Top option
+    await user.click(screen.getByRole('radio', {name: 'Top'}))
+
+    await waitFor(() => {
+      expect(screen.getByRole('radio', {name: 'Top'})).toBeChecked()
+      expect(requestedSort).toBe('top')
     })
   })
 })

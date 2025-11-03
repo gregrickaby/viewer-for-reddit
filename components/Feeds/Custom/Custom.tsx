@@ -9,7 +9,8 @@ import {
 } from '@/lib/store/services/authenticatedApi'
 import type {AutoPostChild} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
-import {Box, Loader, Stack, Text} from '@mantine/core'
+import {Box, Loader, SegmentedControl, Stack, Text} from '@mantine/core'
+import {useState} from 'react'
 
 interface CustomFeedPostsProps {
   username: string
@@ -25,6 +26,7 @@ interface CustomFeedPostsProps {
  *
  * Features:
  * - Infinite scroll pagination
+ * - Sortable by Hot, New, Top
  * - Automatic loading states
  * - Error handling with retry
  * - Authentication-aware
@@ -37,10 +39,12 @@ export function Custom({
   customFeedName,
   sort = 'hot'
 }: Readonly<CustomFeedPostsProps>) {
+  const [selectedSort, setSelectedSort] = useState<SortingOption>(sort)
+
   const queryArgs: CustomFeedPostsArgs = {
     username,
     customFeedName,
-    sort
+    sort: selectedSort
   }
 
   const query = useGetCustomFeedPostsInfiniteQuery(queryArgs)
@@ -87,6 +91,19 @@ export function Custom({
 
   return (
     <Stack>
+      <Box style={{display: 'flex', justifyContent: 'flex-end'}}>
+        <SegmentedControl
+          data-umami-event="change custom feed sort button"
+          onChange={(value) => setSelectedSort(value as SortingOption)}
+          value={selectedSort}
+          data={[
+            {label: 'Hot', value: 'hot'},
+            {label: 'New', value: 'new'},
+            {label: 'Top', value: 'top'}
+          ]}
+        />
+      </Box>
+
       {allPosts.map((post: AutoPostChild, index: number) => {
         const isLastPost = index === allPosts.length - 1
         const postData = post.data
