@@ -2,9 +2,10 @@
 providers = ["node"]
 
 [phases.setup]
-# Pin to specific versions of node and npm. Use nodejs_22 from nixpkgs https://search.nixos.org/packages?channel=25.05&show=nodejs_22&query=nodejs_22
+# Pin to specific versions of node and npm.
+# Use nodejs_22 from nixpkgs https://search.nixos.org/packages?channel=25.05&show=nodejs_22&query=nodejs_22
 nixPkgs = ["nodejs_22"]
-nixpkgsArchive = "25e53aa156d47bad5082ff7618f5feb1f5e02d01"
+nixpkgsArchive = "25f2aaa926f81aaf03398a2364b61fac2df38dd4"
 
 [phases.install]
 # Use npm i to resolve linux binaries in dependencies.
