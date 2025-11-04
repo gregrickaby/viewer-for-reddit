@@ -1,0 +1,23 @@
+# nixpacks.toml
+providers = ["node"]
+
+[phases.setup]
+# Pin to specific versions of node and npm. Use nodejs_22 from nixpkgs https://search.nixos.org/packages?channel=25.05&show=nodejs_22&query=nodejs_22
+nixPkgs = ["nodejs_22"]
+nixpkgsArchive = "25e53aa156d47bad5082ff7618f5feb1f5e02d01"
+
+[phases.install]
+# Use npm i to resolve linux binaries in dependencies.
+# Ensures native modules are compiled for the target platform.
+cmds = ["npm i"]
+cacheDirectories = ["/root/.npm"]
+
+[phases.build]
+# Build the Next.js application with production optimizations.
+cmds = ["npm run build"]
+# Cache both Next.js and module caches for faster rebuilds
+cacheDirectories = [".next/cache", "node_modules/.cache"]
+
+[start]
+# Use production Next.js server.
+cmd = "npm run start"
