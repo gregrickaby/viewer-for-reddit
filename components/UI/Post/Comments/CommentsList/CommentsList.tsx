@@ -75,6 +75,7 @@ export function CommentsList({
                 ? 'Loading more comments...'
                 : 'Load more comments'
             }
+            data-umami-event="load more comments button"
             loading={currentIsFetchingNextPage}
             onClick={() => currentFetchNextPage()}
             variant="subtle"
