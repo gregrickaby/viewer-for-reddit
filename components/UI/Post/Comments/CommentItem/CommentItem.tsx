@@ -9,15 +9,7 @@ import {COMMENT_CONFIG} from '@/lib/config'
 import {useCommentActions} from '@/lib/hooks/comments/interaction/useCommentActions/useCommentActions'
 import {useCommentFocusManagement} from '@/lib/hooks/comments/navigation/useCommentFocusManagement/useCommentFocusManagement'
 import {useCommentState} from '@/lib/hooks/comments/state/useCommentState/useCommentState'
-import {
-  collapseComment,
-  collapseSubtree,
-  expandComment,
-  expandSubtree
-} from '@/lib/store/features/commentExpansionSlice'
-import {useAppDispatch} from '@/lib/store/hooks'
 import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
-import {collectDescendantIds} from '@/lib/utils/formatting/comments/commentHelpers'
 import {Box, Button, Card, Group, Stack, Text} from '@mantine/core'
 import {BiComment} from 'react-icons/bi'
 import {MdDelete} from 'react-icons/md'
@@ -34,15 +26,13 @@ interface CommentItemProps {
 }
 
 /**
- * Renders a single comment item with nested replies, voting, and expansion controls.
+ * Renders a single comment item with nested replies and voting.
  *
  * Features:
- * - Nested comment threading with visual indentation
- * - Expand/collapse individual replies or entire subtrees
+ * - Nested comment threading with visual indentation (always expanded)
  * - Vote buttons integrated via CommentMetadata
  * - Sanitized HTML rendering for comment body
  * - Inline media support (images/videos)
- * - Collapsed preview showing reply count and snippet
  * - Depth limit handling with informative message
  * - Thread lines for visual hierarchy
  * - Keyboard navigation support (via parent Comments component)
@@ -54,13 +44,10 @@ export function CommentItem({
   comment,
   maxDepth = COMMENT_CONFIG.MAX_DEPTH
 }: Readonly<CommentItemProps>) {
-  const dispatch = useAppDispatch()
   const commentId = comment.id || comment.permalink || ''
 
   // State management
   const {
-    isExpanded,
-    isSubtreeFullyExpanded,
     isAuthenticated,
     currentUsername,
     showReplyForm,
@@ -76,7 +63,7 @@ export function CommentItem({
     setIsDeleted,
     openDeleteModal,
     closeDeleteModal
-  } = useCommentState({commentId, commentDepth: comment.depth ?? 0})
+  } = useCommentState()
 
   // Focus management
   const {textareaRef, replyButtonRef, deleteButtonRef} =
@@ -103,24 +90,6 @@ export function CommentItem({
     replyButtonRef,
     deleteButtonRef
   })
-
-  // Expansion handlers
-  const toggleExpansion = () => {
-    if (isExpanded) {
-      dispatch(collapseComment(commentId))
-    } else {
-      dispatch(expandComment(commentId))
-    }
-  }
-
-  const toggleSubtreeExpansion = () => {
-    const descendantIds = collectDescendantIds(comment)
-    if (isSubtreeFullyExpanded) {
-      dispatch(collapseSubtree({id: commentId, descendantIds}))
-    } else {
-      dispatch(expandSubtree({id: commentId, descendantIds}))
-    }
-  }
 
   const hasReplies = comment.replies && comment.replies.length > 0
   const showReplies = hasReplies && (comment.depth ?? 0) < maxDepth
@@ -156,11 +125,7 @@ export function CommentItem({
             <CommentMetadata
               comment={comment}
               hasReplies={hasReplies}
-              isExpanded={isExpanded}
-              isSubtreeFullyExpanded={isSubtreeFullyExpanded}
               showReplies={!!showReplies}
-              toggleExpansion={toggleExpansion}
-              toggleSubtreeExpansion={toggleSubtreeExpansion}
             />
 
             {canReply && (
@@ -217,11 +182,7 @@ export function CommentItem({
           </Stack>
         </Card>
 
-        <CommentReplies
-          comment={comment}
-          isExpanded={isExpanded}
-          maxDepth={maxDepth}
-        />
+        <CommentReplies comment={comment} maxDepth={maxDepth} />
       </div>
 
       <CommentDeleteModal

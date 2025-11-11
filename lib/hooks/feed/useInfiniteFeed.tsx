@@ -35,7 +35,11 @@ interface UseInfiniteFeedOptions {
  */
 export function useInfiniteFeed({query}: UseInfiniteFeedOptions) {
   const enableNsfw = useAppSelector((state) => state.settings.enableNsfw)
-  const {ref, entry} = useIntersection({threshold: 1})
+  const {ref, entry} = useIntersection({
+    threshold: 1,
+    // Trigger next page fetch 500px before reaching bottom (smoother infinite scroll)
+    rootMargin: '500px'
+  })
 
   // Filter posts based on NSFW settings
   const filteredData = useMemo(() => {

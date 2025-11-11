@@ -44,85 +44,38 @@ const mockCommentWithoutReplies: NestedCommentData = {
 
 describe('CommentReplies', () => {
   it('should render nothing when no replies', () => {
-    render(
-      <CommentReplies
-        comment={mockCommentWithoutReplies}
-        isExpanded={false}
-        maxDepth={10}
-      />
-    )
+    render(<CommentReplies comment={mockCommentWithoutReplies} maxDepth={10} />)
     expect(screen.queryByText(/reply/i)).not.toBeInTheDocument()
-  })
-
-  it('should show collapsed preview when not expanded', () => {
-    render(
-      <CommentReplies
-        comment={mockCommentWithReplies}
-        isExpanded={false}
-        maxDepth={10}
-      />
-    )
-    expect(screen.getByText('1 reply collapsed')).toBeInTheDocument()
-  })
-
-  it('should show plural text for multiple replies', () => {
-    const multipleReplies = {
-      ...mockCommentWithReplies,
-      replies: [
-        mockCommentWithReplies.replies![0],
-        {...mockCommentWithReplies.replies![0], id: 'child456'}
-      ]
-    }
-    render(
-      <CommentReplies
-        comment={multipleReplies}
-        isExpanded={false}
-        maxDepth={10}
-      />
-    )
-    expect(screen.getByText('2 replies collapsed')).toBeInTheDocument()
   })
 
   it('should show depth limit message when max depth reached', () => {
     const deepComment = {...mockCommentWithReplies, depth: 10}
-    render(
-      <CommentReplies comment={deepComment} isExpanded={false} maxDepth={10} />
-    )
+    render(<CommentReplies comment={deepComment} maxDepth={10} />)
     expect(
       screen.getByText('1 more reply (depth limit reached)')
     ).toBeInTheDocument()
   })
 
-  it('should show preview of first reply when collapsed', () => {
-    render(
-      <CommentReplies
-        comment={mockCommentWithReplies}
-        isExpanded={false}
-        maxDepth={10}
-      />
-    )
-    expect(screen.getByText(/childuser:/)).toBeInTheDocument()
-  })
-
-  it('should render nested CommentItems when expanded', () => {
-    render(
-      <CommentReplies
-        comment={mockCommentWithReplies}
-        isExpanded
-        maxDepth={10}
-      />
-    )
+  it('should render nested CommentItems (always expanded)', () => {
+    render(<CommentReplies comment={mockCommentWithReplies} maxDepth={10} />)
     expect(screen.getByText('Child comment')).toBeInTheDocument()
   })
 
-  it('should not show preview when expanded', () => {
-    render(
-      <CommentReplies
-        comment={mockCommentWithReplies}
-        isExpanded
-        maxDepth={10}
-      />
-    )
-    expect(screen.queryByText('1 reply collapsed')).not.toBeInTheDocument()
+  it('should render multiple replies', () => {
+    const multipleReplies = {
+      ...mockCommentWithReplies,
+      replies: [
+        mockCommentWithReplies.replies![0],
+        {
+          ...mockCommentWithReplies.replies![0],
+          id: 'child456',
+          body: 'Second child',
+          body_html: '<p>Second child</p>'
+        }
+      ]
+    }
+    render(<CommentReplies comment={multipleReplies} maxDepth={10} />)
+    expect(screen.getByText('Child comment')).toBeInTheDocument()
+    expect(screen.getByText('Second child')).toBeInTheDocument()
   })
 })

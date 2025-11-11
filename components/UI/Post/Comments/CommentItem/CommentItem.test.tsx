@@ -59,17 +59,12 @@ describe('CommentItem', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show expand button and reply count for comments with replies', () => {
+  it('should show reply count for comments with replies', () => {
     render(<CommentItem comment={mockCommentWithReplies} />)
 
-    // With Reddit-style defaults, depth 0 comments are expanded by default
-    expect(
-      screen.getByRole('button', {name: /collapse replies/i})
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', {name: /expand all descendants/i})
-    ).toBeInTheDocument()
+    // Comments are always expanded, replies should be visible
     expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText(/u\/replyuser/i)).toBeInTheDocument()
   })
 
   it('should show plural reply count for multiple replies', () => {
@@ -84,87 +79,6 @@ describe('CommentItem', () => {
     render(<CommentItem comment={commentWithMultipleReplies} />)
 
     expect(screen.getByText('2')).toBeInTheDocument()
-  })
-
-  it('should expand and collapse replies when button is clicked', async () => {
-    render(<CommentItem comment={mockCommentWithReplies} />)
-
-    // With Reddit-style defaults, depth 0 starts expanded
-    let button = screen.getByRole('button', {name: /collapse replies/i})
-
-    // Check initial state - button should say "Collapse"
-    expect(button).toHaveAttribute('aria-label', 'Collapse replies')
-    // Content should be visible initially
-    expect(screen.getByText(/u\/replyuser/i)).toBeInTheDocument()
-
-    // Collapse
-    await user.click(button)
-
-    // Re-query for the button after state change
-    button = screen.getByRole('button', {name: /expand replies/i})
-    expect(button).toBeInTheDocument()
-
-    // Expand again
-    await user.click(button)
-
-    // Re-query for collapse button
-    button = screen.getByRole('button', {name: /collapse replies/i})
-    expect(button).toBeInTheDocument()
-  })
-
-  it('should expand and collapse all descendants when expand-all button is clicked', async () => {
-    const nestedComment = {
-      ...mockCommentWithReplies,
-      replies: [
-        {
-          ...mockCommentWithReplies.replies![0],
-          replies: [
-            {
-              id: 'nested-reply',
-              author: 'nesteduser',
-              body: 'Nested reply',
-              body_html: '<p>Nested reply</p>',
-              created_utc: Date.now() / 1000,
-              ups: 3,
-              permalink: '/r/test/comments/abc123/test/nested-reply',
-              depth: 2
-            }
-          ]
-        }
-      ]
-    }
-
-    render(<CommentItem comment={nestedComment} />)
-
-    // With Reddit-style defaults, depth 0-1 are expanded, so multiple expand-all buttons exist
-    let expandAllButtons = screen.getAllByRole('button', {
-      name: /expand all descendants/i
-    })
-    let button = expandAllButtons[0] // Get parent's button
-
-    // Initially not fully expanded (grandchild at depth 2 is collapsed)
-    expect(button).toHaveAttribute('aria-label', 'Expand all descendants (O)')
-
-    // Expand all
-    await user.click(button)
-
-    // Should show all nested content
-    expect(screen.getByText(/u\/replyuser/i)).toBeInTheDocument()
-    expect(screen.getByText(/u\/nesteduser/i)).toBeInTheDocument()
-    expect(screen.getByText('Nested reply')).toBeInTheDocument()
-
-    // Re-query for collapse button
-    button = screen.getByRole('button', {name: /collapse all descendants/i})
-    expect(button).toBeInTheDocument()
-
-    // Collapse all
-    await user.click(button)
-
-    // Re-query for expand button (there might be multiple again)
-    expandAllButtons = screen.getAllByRole('button', {
-      name: /expand all descendants/i
-    })
-    expect(expandAllButtons.length).toBeGreaterThan(0)
   })
 
   it('should apply nested comment styling for deeper levels', () => {
@@ -185,40 +99,6 @@ describe('CommentItem', () => {
     expect(
       screen.getByText(/1 more reply.*depth limit reached/)
     ).toBeInTheDocument()
-  })
-
-  it('should not show expand buttons for comments without replies', () => {
-    render(<CommentItem comment={mockBasicComment} />)
-
-    expect(
-      screen.queryByRole('button', {name: /expand replies/i})
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', {name: /expand all descendants/i})
-    ).not.toBeInTheDocument()
-    expect(screen.queryByText(/reply/)).not.toBeInTheDocument()
-  })
-
-  it('should show collapsed preview when comment is collapsed', async () => {
-    render(<CommentItem comment={mockCommentWithReplies} />)
-
-    // With Reddit-style defaults, depth 0 starts expanded
-    const button = screen.getByRole('button', {name: /collapse replies/i})
-
-    // Collapse the comment
-    await user.click(button)
-
-    // Should show preview with count and first reply snippet
-    expect(screen.getByText(/1 reply collapsed/i)).toBeInTheDocument()
-    expect(screen.getByText(/replyuser: Reply to parent/i)).toBeInTheDocument()
-  })
-
-  it('should hide collapsed preview when comment is expanded', () => {
-    render(<CommentItem comment={mockCommentWithReplies} />)
-
-    // With Reddit-style defaults, depth 0 starts expanded
-    // Preview should not be visible
-    expect(screen.queryByText(/1 reply collapsed/i)).not.toBeInTheDocument()
   })
 
   it('should render thread line for nested comments', () => {
@@ -253,14 +133,6 @@ describe('CommentItem', () => {
       const {container} = render(<CommentItem comment={mockBasicComment} />)
       const results = await axe(container)
       expect(results).toHaveNoViolations()
-    })
-
-    it('should have proper ARIA labels on expand buttons', () => {
-      render(<CommentItem comment={mockCommentWithReplies} />)
-
-      expect(
-        screen.getByRole('button', {name: /expand all descendants \(o\)/i})
-      ).toBeInTheDocument()
     })
   })
 

@@ -71,7 +71,7 @@ export function useComments({
   comments: providedComments,
   enableInfiniteLoading = false,
   enableNestedComments = false,
-  maxCommentDepth = 4
+  maxCommentDepth = 10
 }: UseCommentsParams): UseCommentsReturn {
   // 1. Fetch comment data (4 RTK Query hooks)
   const fetching = useCommentFetching({

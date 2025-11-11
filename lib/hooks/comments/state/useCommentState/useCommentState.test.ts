@@ -2,13 +2,8 @@ import {renderHook} from '@/test-utils'
 import {useCommentState} from './useCommentState'
 
 describe('useCommentState', () => {
-  const defaultProps = {
-    commentId: 'abc123',
-    commentDepth: 0
-  }
-
   it('should initialize with default state', () => {
-    const {result} = renderHook(() => useCommentState(defaultProps))
+    const {result} = renderHook(() => useCommentState())
 
     expect(result.current.showReplyForm).toBe(false)
     expect(result.current.replyText).toBe('')
@@ -19,7 +14,7 @@ describe('useCommentState', () => {
   })
 
   it('should provide setters for reply form state', () => {
-    const {result} = renderHook(() => useCommentState(defaultProps))
+    const {result} = renderHook(() => useCommentState())
 
     expect(typeof result.current.setShowReplyForm).toBe('function')
     expect(typeof result.current.setReplyText).toBe('function')
@@ -27,7 +22,7 @@ describe('useCommentState', () => {
   })
 
   it('should provide setters for delete state', () => {
-    const {result} = renderHook(() => useCommentState(defaultProps))
+    const {result} = renderHook(() => useCommentState())
 
     expect(typeof result.current.setDeleteError).toBe('function')
     expect(typeof result.current.setIsDeleted).toBe('function')
@@ -35,15 +30,8 @@ describe('useCommentState', () => {
     expect(typeof result.current.closeDeleteModal).toBe('function')
   })
 
-  it('should provide expansion state from Redux', () => {
-    const {result} = renderHook(() => useCommentState(defaultProps))
-
-    expect(typeof result.current.isExpanded).toBe('boolean')
-    expect(typeof result.current.isSubtreeFullyExpanded).toBe('boolean')
-  })
-
   it('should provide authentication state from Redux', () => {
-    const {result} = renderHook(() => useCommentState(defaultProps))
+    const {result} = renderHook(() => useCommentState())
 
     expect(typeof result.current.isAuthenticated).toBe('boolean')
     // currentUsername can be null when not authenticated

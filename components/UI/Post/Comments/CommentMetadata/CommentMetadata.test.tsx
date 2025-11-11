@@ -1,5 +1,5 @@
 import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
-import {render, screen, user} from '@/test-utils'
+import {render, screen} from '@/test-utils'
 import {CommentMetadata} from './CommentMetadata'
 
 const mockComment: NestedCommentData = {
@@ -30,11 +30,7 @@ describe('CommentMetadata', () => {
   const defaultProps = {
     comment: mockComment,
     showReplies: true,
-    hasReplies: true,
-    isExpanded: false,
-    isSubtreeFullyExpanded: false,
-    toggleExpansion: vi.fn(),
-    toggleSubtreeExpansion: vi.fn()
+    hasReplies: true
   }
 
   it('should render vote buttons with score', () => {
@@ -49,57 +45,6 @@ describe('CommentMetadata', () => {
     expect(screen.getByText('1')).toBeInTheDocument()
   })
 
-  it('should render expand button when showReplies is true', () => {
-    render(<CommentMetadata {...defaultProps} />)
-
-    expect(
-      screen.getByRole('button', {name: /expand replies/i})
-    ).toBeInTheDocument()
-  })
-
-  it('should render collapse button when isExpanded is true', () => {
-    render(<CommentMetadata {...defaultProps} isExpanded />)
-
-    expect(
-      screen.getByRole('button', {name: /collapse replies/i})
-    ).toBeInTheDocument()
-  })
-
-  it('should call toggleExpansion when expand button is clicked', async () => {
-    const toggleExpansion = vi.fn()
-    render(
-      <CommentMetadata {...defaultProps} toggleExpansion={toggleExpansion} />
-    )
-
-    await user.click(screen.getByRole('button', {name: /expand replies/i}))
-
-    expect(toggleExpansion).toHaveBeenCalledTimes(1)
-  })
-
-  it('should render expand all descendants button when comment has replies', () => {
-    render(<CommentMetadata {...defaultProps} />)
-
-    expect(
-      screen.getByRole('button', {name: /expand all descendants/i})
-    ).toBeInTheDocument()
-  })
-
-  it('should call toggleSubtreeExpansion when expand all button is clicked', async () => {
-    const toggleSubtreeExpansion = vi.fn()
-    render(
-      <CommentMetadata
-        {...defaultProps}
-        toggleSubtreeExpansion={toggleSubtreeExpansion}
-      />
-    )
-
-    await user.click(
-      screen.getByRole('button', {name: /expand all descendants/i})
-    )
-
-    expect(toggleSubtreeExpansion).toHaveBeenCalledTimes(1)
-  })
-
   it('should render external Reddit link', () => {
     render(<CommentMetadata {...defaultProps} />)
 
@@ -109,17 +54,6 @@ describe('CommentMetadata', () => {
       'href',
       'https://reddit.com/r/test/comments/abc123/test/comment1'
     )
-  })
-
-  it('should not render expand buttons when showReplies is false', () => {
-    render(<CommentMetadata {...defaultProps} showReplies={false} />)
-
-    expect(
-      screen.queryByRole('button', {name: /expand replies/i})
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', {name: /expand all descendants/i})
-    ).not.toBeInTheDocument()
   })
 
   it('should not render reply count when comment has no replies', () => {

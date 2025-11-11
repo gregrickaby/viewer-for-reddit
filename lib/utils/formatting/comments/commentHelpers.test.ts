@@ -3,7 +3,6 @@ import type {CommentSortingOption} from '@/lib/types'
 import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
 import {
   collectAllCommentIds,
-  collectDescendantIds,
   hasRequiredCommentFields,
   processInfiniteComments,
   processNestedComments,
@@ -334,79 +333,6 @@ describe('commentHelpers', () => {
         )
         expect(result).toEqual(mockAutoComments)
       })
-    })
-  })
-
-  describe('collectDescendantIds', () => {
-    it('should collect all descendant IDs from nested comment tree', () => {
-      const nestedComment: NestedCommentData = {
-        id: 'parent',
-        author: 'user1',
-        body: 'Parent',
-        created_utc: 100,
-        ups: 10,
-        depth: 0,
-        replies: [
-          {
-            id: 'child1',
-            author: 'user2',
-            body: 'Child 1',
-            created_utc: 101,
-            ups: 5,
-            depth: 1,
-            replies: [
-              {
-                id: 'grandchild1',
-                author: 'user3',
-                body: 'Grandchild 1',
-                created_utc: 102,
-                ups: 3,
-                depth: 2
-              }
-            ]
-          },
-          {
-            id: 'child2',
-            author: 'user4',
-            body: 'Child 2',
-            created_utc: 103,
-            ups: 4,
-            depth: 1
-          }
-        ]
-      }
-
-      const result = collectDescendantIds(nestedComment)
-      expect(result).toEqual(['child1', 'grandchild1', 'child2'])
-    })
-
-    it('should handle comment without replies', () => {
-      const comment: NestedCommentData = {
-        id: 'alone',
-        author: 'user',
-        body: 'No replies',
-        created_utc: 100,
-        ups: 1,
-        depth: 0
-      }
-
-      const result = collectDescendantIds(comment)
-      expect(result).toEqual([])
-    })
-
-    it('should handle comment with empty replies array', () => {
-      const comment: NestedCommentData = {
-        id: 'empty',
-        author: 'user',
-        body: 'Empty replies',
-        created_utc: 100,
-        ups: 1,
-        depth: 0,
-        replies: []
-      }
-
-      const result = collectDescendantIds(comment)
-      expect(result).toEqual([])
     })
   })
 

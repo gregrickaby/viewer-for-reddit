@@ -1,8 +1,6 @@
 import {CommentItem} from '@/components/UI/Post/Comments/CommentItem/CommentItem'
 import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
-import {decodeAndSanitizeHtml} from '@/lib/utils/validation/text/sanitizeText'
-import {Box, Collapse, Stack, Text} from '@mantine/core'
-import classes from '../CommentItem/CommentItem.module.css'
+import {Box, Stack, Text} from '@mantine/core'
 
 /**
  * Props for CommentReplies component.
@@ -10,27 +8,22 @@ import classes from '../CommentItem/CommentItem.module.css'
 interface CommentRepliesProps {
   /** Parent comment data containing replies */
   comment: NestedCommentData
-  /** Whether replies section is expanded */
-  isExpanded: boolean
   /** Maximum depth for nested threads */
   maxDepth: number
 }
 
 /**
- * Renders nested comment replies with collapse/expand functionality.
+ * Renders nested comment replies (always expanded).
  *
  * Features:
  * - Recursive rendering of nested comments
- * - Collapsed preview showing reply count and first reply snippet
  * - Depth limit message when max depth reached
- * - Smooth expand/collapse animation
  *
  * @param props - Component props
  * @returns JSX.Element rendered replies or null if no replies
  */
 export function CommentReplies({
   comment,
-  isExpanded,
   maxDepth
 }: Readonly<CommentRepliesProps>) {
   const hasReplies = comment.replies && comment.replies.length > 0
@@ -53,44 +46,16 @@ export function CommentReplies({
     )
   }
 
-  // Render nested replies
+  // Render nested replies (always expanded)
   return (
-    <>
-      <Collapse in={isExpanded}>
-        <Stack gap="sm" mt="sm">
-          {replies.map((reply) => (
-            <CommentItem
-              comment={reply}
-              key={reply.id || reply.permalink}
-              maxDepth={maxDepth}
-            />
-          ))}
-        </Stack>
-      </Collapse>
-
-      {!isExpanded && (
-        <output
-          aria-label="Collapsed replies preview"
-          className={classes.collapsedPreview}
-        >
-          <Text c="dimmed" mb={4} size="xs">
-            {replies.length} {replies.length === 1 ? 'reply' : 'replies'}{' '}
-            collapsed
-          </Text>
-          {replies[0] && 'body' in replies[0] && replies[0].body && (
-            <Text
-              c="dimmed"
-              dangerouslySetInnerHTML={{
-                __html: decodeAndSanitizeHtml(
-                  `${replies[0].author}: ${replies[0].body.slice(0, 100)}${replies[0].body.length > 100 ? '...' : ''}`
-                )
-              }}
-              lineClamp={1}
-              size="xs"
-            />
-          )}
-        </output>
-      )}
-    </>
+    <Stack gap="sm" mt="sm">
+      {replies.map((reply) => (
+        <CommentItem
+          comment={reply}
+          key={reply.id || reply.permalink}
+          maxDepth={maxDepth}
+        />
+      ))}
+    </Stack>
   )
 }

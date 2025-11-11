@@ -46,10 +46,6 @@ const createMockState = (
     commentSort: 'best',
     ...overrides
   },
-  commentExpansion: {
-    expandedComments: {},
-    expandedSubtrees: {}
-  },
   transient: {
     toggleNavbar: false,
     mobileSearchState: 'closed',

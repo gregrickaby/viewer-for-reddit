@@ -4,19 +4,11 @@ import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {COMMENT_CONFIG} from '@/lib/config'
 import {useCommentNavigation} from '@/lib/hooks/comments/orchestration/useCommentNavigation'
 import {useComments} from '@/lib/hooks/comments/orchestration/useComments/useComments'
-import {
-  collapseAllComments,
-  expandAllComments
-} from '@/lib/store/features/commentExpansionSlice'
-import {useAppDispatch, useAppSelector} from '@/lib/store/hooks'
+import {useAppSelector} from '@/lib/store/hooks'
 import type {AutoCommentData} from '@/lib/store/services/commentsApi'
-import {
-  collectAllCommentIds,
-  sortComments
-} from '@/lib/utils/formatting/comments/commentHelpers'
+import {sortComments} from '@/lib/utils/formatting/comments/commentHelpers'
 import {scrollToComments} from '@/lib/utils/routing/scrollToComments'
 import {VisuallyHidden} from '@mantine/core'
-import {useHotkeys} from '@mantine/hooks'
 import {useEffect, useRef} from 'react'
 import {CommentForm} from './CommentForm/CommentForm'
 import {CommentsEmpty} from './CommentsEmpty/CommentsEmpty'
@@ -40,7 +32,7 @@ interface CommentsProps {
   comments?: AutoCommentData[]
   /** Enable infinite scroll to load more comments */
   enableInfiniteLoading?: boolean
-  /** Maximum depth for nested comment threads */
+  /** Maximum depth for nested comment threads (safety limit for nesting) */
   maxCommentDepth?: number
   /** Show comment sort controls */
   showSortControls?: boolean
@@ -62,10 +54,9 @@ export function Comments({
   postId,
   comments: providedComments,
   enableInfiniteLoading = false,
-  maxCommentDepth = COMMENT_CONFIG.MAX_DEPTH,
+  maxCommentDepth = COMMENT_CONFIG.MAX_DEPTH_INFINITE,
   showSortControls = false
 }: Readonly<CommentsProps>) {
-  const dispatch = useAppDispatch()
   const commentSort = useAppSelector((state) => state.settings.commentSort)
   const hasScrolledRef = useRef(false)
 
@@ -100,30 +91,6 @@ export function Comments({
     enabled: true,
     announceNavigation: true
   })
-
-  // O/Shift+O expand/collapse shortcuts
-  useHotkeys([
-    [
-      'o',
-      () => {
-        // Expand all comments
-        if (
-          Array.isArray(sortedNestedComments) &&
-          sortedNestedComments.length > 0
-        ) {
-          const commentIds = collectAllCommentIds(sortedNestedComments)
-          dispatch(expandAllComments(commentIds))
-        }
-      }
-    ],
-    [
-      'shift+o',
-      () => {
-        // Collapse all comments
-        dispatch(collapseAllComments())
-      }
-    ]
-  ])
 
   // Scroll to comments section if hash is present
   useEffect(() => {

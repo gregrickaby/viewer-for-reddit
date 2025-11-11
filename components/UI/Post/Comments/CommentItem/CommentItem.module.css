@@ -38,10 +38,47 @@
   margin-left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
 }
 
+.comment {
+  --depth: 0;
+  --indent-size: 1rem;
+  container: comment / inline-size;
+  padding-inline-start: calc(var(--depth) * var(--indent-size));
+  position: relative;
+}
+
+.depthIndicator {
+  inset-inline-start: calc(var(--depth) * var(--indent-size) - 0.25rem);
+  position: absolute;
+  top: 0;
+  width: 0.1875rem;
+  z-index: 1;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-xs);
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+}
+
 .commentBody {
-  margin-top: var(--mantine-spacing-xs);
-  margin-bottom: var(--mantine-spacing-sm);
-  line-height: 1.6;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.commentLink {
+  color: var(--mantine-primary-color-filled);
+  text-decoration: underline;
+}
+
+.replies {
+  display: flex;
+  flex-direction: column;
+}
+
+.visibleLabel {
+  margin-inline-end: 0.25rem;
 }
 
 .commentBody p {
@@ -50,28 +87,6 @@
 
 .commentBody p:last-child {
   margin-bottom: 0;
-}
-
-.collapsedPreview {
-  background: var(--mantine-color-gray-0);
-  border-left: 2px solid var(--mantine-color-gray-3);
-  border-radius: var(--mantine-radius-sm);
-  margin-left: var(--mantine-spacing-md);
-  padding: var(--mantine-spacing-xs);
-  transition: background-color 0.2s ease;
-}
-
-.collapsedPreview:hover {
-  background: var(--mantine-color-gray-1);
-}
-
-[data-mantine-color-scheme='dark'] .collapsedPreview {
-  background: var(--mantine-color-dark-7);
-  border-color: var(--mantine-color-dark-4);
-}
-
-[data-mantine-color-scheme='dark'] .collapsedPreview:hover {
-  background: var(--mantine-color-dark-6);
 }
 
 @media (max-width: 768px) {

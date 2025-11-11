@@ -53,44 +53,10 @@ export class PostPage extends BasePage {
   }
 
   /**
-   * Press O to expand all comments.
-   */
-  async expandAllComments() {
-    await this.page.keyboard.press('o')
-  }
-
-  /**
-   * Press Shift+O to collapse all comments.
-   */
-  async collapseAllComments() {
-    await this.page.keyboard.press('Shift+O')
-  }
-
-  /**
    * Get currently focused comment.
    */
   getFocusedComment(): Locator {
     return this.page.locator('[data-comment-id]:focus')
-  }
-
-  /**
-   * Click expand button on a comment
-   */
-  async expandComment(commentId: string) {
-    const expandBtn = this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Expand replies"]`
-    )
-    await expandBtn.click()
-  }
-
-  /**
-   * Click collapse button on a comment
-   */
-  async collapseComment(commentId: string) {
-    const collapseBtn = this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Collapse replies"]`
-    )
-    await collapseBtn.click()
   }
 
   /**
@@ -125,16 +91,6 @@ export class PostPage extends BasePage {
       `[data-comment-id="${commentId}"] [data-score]`
     )
     return (await scoreElement.textContent()) || '0'
-  }
-
-  /**
-   * Check if comment is expanded
-   */
-  async isCommentExpanded(commentId: string): Promise<boolean> {
-    const collapseBtn = this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Collapse replies"]`
-    )
-    return await collapseBtn.isVisible()
   }
 
   /**
@@ -209,23 +165,5 @@ export class PostPage extends BasePage {
       .first()
       .locator('button[aria-label="Downvote"]')
       .first()
-  }
-
-  /**
-   * Get expand button for a comment.
-   */
-  getExpandButton(commentId: string): Locator {
-    return this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Expand replies"]`
-    )
-  }
-
-  /**
-   * Get collapse button for a comment.
-   */
-  getCollapseButton(commentId: string): Locator {
-    return this.page.locator(
-      `[data-comment-id="${commentId}"] button[aria-label="Collapse replies"]`
-    )
   }
 }
