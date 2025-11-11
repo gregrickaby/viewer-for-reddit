@@ -131,6 +131,26 @@ export interface VoteResponse {
 }
 
 /**
+ * Save request payload for Reddit API.
+ */
+export interface SaveRequest {
+  /** Post fullname (e.g., t3_abc123) */
+  id: string
+  /** Save (true) or unsave (false) */
+  save: boolean
+}
+
+/**
+ * Save response from Reddit API.
+ */
+export interface SaveResponse {
+  success: boolean
+  id: string
+  saved: boolean
+  error?: string
+}
+
+/**
  * Comment submission request payload.
  */
 export interface SubmitCommentRequest {

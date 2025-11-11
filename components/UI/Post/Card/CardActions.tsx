@@ -1,8 +1,10 @@
 import {VoteButtons} from '@/components/UI/Post/VoteButtons/VoteButtons'
+import {useSave} from '@/lib/hooks/util/useSave'
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {Button, Group, NumberFormatter, Text, Tooltip} from '@mantine/core'
 import Link from 'next/link'
 import {FaComment} from 'react-icons/fa'
+import {IoBookmark, IoBookmarkOutline} from 'react-icons/io5'
 
 interface CardActionsProps {
   post: AutoPostChildData
@@ -16,7 +18,7 @@ interface CardActionsProps {
  * Features:
  * - Voting buttons with score
  * - Comments link button with count (navigates to post page)
- * - Share button
+ * - Save button with optimistic updates
  * - Horizontal layout matching Reddit's design
  */
 export function CardActions({
@@ -24,13 +26,18 @@ export function CardActions({
   postLink,
   hideCommentToggle = false
 }: Readonly<CardActionsProps>) {
+  const {handleSave, isSaved, isSaving} = useSave({
+    id: post.name ?? '',
+    initialSaved: post.saved ?? false
+  })
+
   return (
-    <Group gap="xs" mt="md" mb="md">
+    <Group gap="xs" mb="md" mt="md">
       <VoteButtons
         id={post.name ?? ''}
         score={post.ups ?? 0}
-        userVote={post.likes}
         size="md"
+        userVote={post.likes}
       />
 
       {!hideCommentToggle && (
@@ -45,12 +52,31 @@ export function CardActions({
             radius="sm"
             variant="subtle"
           >
-            <Text size="sm" fw={700}>
-              <NumberFormatter value={post.num_comments} thousandSeparator />
+            <Text fw={700} size="sm">
+              <NumberFormatter thousandSeparator value={post.num_comments} />
             </Text>
           </Button>
         </Tooltip>
       )}
+
+      <Tooltip label={isSaved ? 'Unsave post' : 'Save post'} withinPortal>
+        <Button
+          aria-label={isSaved ? 'Unsave post' : 'Save post'}
+          color="gray"
+          data-umami-event="save post button"
+          leftSection={
+            isSaved ? <IoBookmark size={14} /> : <IoBookmarkOutline size={14} />
+          }
+          loading={isSaving}
+          onClick={handleSave}
+          radius="sm"
+          variant="subtle"
+        >
+          <Text fw={isSaved ? 700 : 400} size="sm">
+            {isSaved ? 'Saved' : 'Save'}
+          </Text>
+        </Button>
+      </Tooltip>
     </Group>
   )
 }

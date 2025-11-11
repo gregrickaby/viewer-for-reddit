@@ -69,18 +69,24 @@ describe('POST /api/auth/login', () => {
 
     await GET(request)
 
+    const scopes = [
+      'identity',
+      'read',
+      'mysubreddits',
+      'vote',
+      'subscribe',
+      'history',
+      'save',
+      'submit',
+      'edit'
+    ]
+
+    // Explicitly verify 'save' scope is included for save/unsave functionality
+    expect(scopes).toContain('save')
+
     expect(mockReddit.createAuthorizationURL).toHaveBeenCalledWith(
       expect.any(String),
-      [
-        'identity',
-        'read',
-        'mysubreddits',
-        'vote',
-        'subscribe',
-        'history',
-        'submit',
-        'edit'
-      ]
+      scopes
     )
   })
 

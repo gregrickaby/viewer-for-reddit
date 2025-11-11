@@ -5,6 +5,7 @@ import {transientSlice} from '@/lib/store/features/transientSlice'
 import {authenticatedApi} from '@/lib/store/services/authenticatedApi'
 import {commentsApi} from '@/lib/store/services/commentsApi'
 import {postsApi} from '@/lib/store/services/postsApi'
+import {saveApi} from '@/lib/store/services/saveApi'
 import {searchApi} from '@/lib/store/services/searchApi'
 import {subredditApi} from '@/lib/store/services/subredditApi'
 import {userApi} from '@/lib/store/services/userApi'
@@ -13,9 +14,30 @@ import {
   combineSlices,
   configureStore,
   type Action,
+  type Middleware,
   type ThunkAction
 } from '@reduxjs/toolkit'
 import {setupListeners} from '@reduxjs/toolkit/query'
+
+/**
+ * Middleware to handle cross-API tag invalidation.
+ *
+ * When a save/unsave mutation completes in saveApi, this middleware
+ * invalidates the UserSavedPosts tag in authenticatedApi, causing
+ * the saved posts feed to refetch and update in real-time.
+ */
+const crossApiInvalidationMiddleware: Middleware<{}, RootState> =
+  (store) => (next) => (action) => {
+    const result = next(action)
+
+    // Listen for successful save/unsave mutations
+    if (saveApi.endpoints.save.matchFulfilled(action)) {
+      // Invalidate UserSavedPosts tag in authenticatedApi
+      store.dispatch(authenticatedApi.util.invalidateTags(['UserSavedPosts']))
+    }
+
+    return result
+  }
 
 // Combine all slices into a single reducer function.
 const rootReducer = combineSlices(
@@ -26,6 +48,7 @@ const rootReducer = combineSlices(
   subredditApi,
   authenticatedApi,
   voteApi,
+  saveApi,
   authSlice,
   commentExpansionSlice,
   settingsSlice,
@@ -54,7 +77,9 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
         .concat(userApi.middleware)
         .concat(subredditApi.middleware)
         .concat(authenticatedApi.middleware)
-        .concat(voteApi.middleware),
+        .concat(voteApi.middleware)
+        .concat(saveApi.middleware)
+        .concat(crossApiInvalidationMiddleware),
     preloadedState
   })
   setupListeners(store.dispatch)

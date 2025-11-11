@@ -48,23 +48,16 @@ export async function GET(request: NextRequest) {
   const state = generateState()
 
   // Request minimal scopes following principle of least privilege
-  // - identity: User identification (required)
-  // - read: Read posts and comments
-  // - mysubreddits: Access user's subscribed subreddits
-  // - vote: Upvote/downvote content
-  // - subscribe: Subscribe to subreddits
-  // - history: Access user's saved posts and comments
-  // - submit: Submit links and comments
-  // - edit: Edit and delete own comments and posts
   const scopes = [
-    'identity',
-    'read',
-    'mysubreddits',
-    'vote',
-    'subscribe',
-    'history',
-    'submit',
-    'edit'
+    'identity', // User identification (required)
+    'read', // Read posts and comments
+    'mysubreddits', // Access user's subscribed subreddits
+    'vote', // Upvote/downvote content
+    'subscribe', // Subscribe to subreddits
+    'history', // Access user's voting and hidden history
+    'save', // Save/unsave posts and comments
+    'submit', // Submit links and comments
+    'edit' // Edit and delete own comments and posts
   ]
 
   // Create Reddit OAuth authorization URL with permanent duration
