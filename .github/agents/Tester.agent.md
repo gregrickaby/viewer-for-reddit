@@ -10,10 +10,8 @@ tools:
     'runCommands',
     'runTasks',
     'playwright-test/*',
-    'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
-    'runSubagent',
     'usages',
     'vscodeAPI',
     'problems',
@@ -27,6 +25,7 @@ tools:
     'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
     'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
     'todos',
+    'runSubagent',
     'runTests'
   ]
 model: Claude Sonnet 4.5 (copilot)

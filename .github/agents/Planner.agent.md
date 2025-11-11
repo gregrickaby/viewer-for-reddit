@@ -9,12 +9,13 @@ tools:
     'new',
     'runCommands',
     'runTasks',
+    'next-devtools/enable_cache_components',
+    'next-devtools/nextjs_docs',
+    'next-devtools/nextjs_runtime',
     'devvit/*',
-    'microsoft/playwright-mcp/*',
-    'sonarqube/*',
-    'upstash/context7/*',
     'github/github-mcp-server/*',
-    'runSubagent',
+    'microsoft/playwright-mcp/*',
+    'upstash/context7/*',
     'usages',
     'vscodeAPI',
     'problems',
@@ -24,12 +25,14 @@ tools:
     'fetch',
     'githubRepo',
     'extensions',
-    'todos'
+    'todos',
+    'runSubagent',
+    'runTests'
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:
   - label: Start Implementation
-    agent: Implementation.agent.md
+    agent: Implementation
     prompt: Do you have any clarifying questions before starting implementation?
     send: false
 ---

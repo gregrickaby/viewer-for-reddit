@@ -9,10 +9,9 @@ tools:
     'new',
     'runCommands',
     'runTasks',
-    'microsoft/playwright-mcp/*',
+    'playwright-test/*',
     'sonarqube/*',
     'upstash/context7/*',
-    'runSubagent',
     'usages',
     'vscodeAPI',
     'problems',
@@ -26,12 +25,13 @@ tools:
     'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
     'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
     'extensions',
-    'todos'
+    'todos',
+    'runSubagent'
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:
   - label: Start Implementation
-    agent: Implementation.agent.md
+    agent: Implementation
     prompt: Now that the accessibility review is complete, implement the fixes mentioned above
     send: false
 ---

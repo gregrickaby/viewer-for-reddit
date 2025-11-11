@@ -9,12 +9,13 @@ tools:
     'new',
     'runCommands',
     'runTasks',
+    'next-devtools/enable_cache_components',
+    'next-devtools/nextjs_docs',
+    'next-devtools/nextjs_runtime',
     'devvit/*',
-    'github/github-mcp-server/*',
-    'microsoft/playwright-mcp/*',
+    'playwright-test/*',
     'sonarqube/*',
     'upstash/context7/*',
-    'runSubagent',
     'usages',
     'vscodeAPI',
     'problems',
@@ -28,17 +29,22 @@ tools:
     'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
     'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
     'extensions',
-    'todos'
+    'todos',
+    'runSubagent'
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:
   - label: Start Accessibility Review
-    agent: Accessibility.agent.md
+    agent: Accessibility
     prompt: Now that the initial implementation is complete, please review the changes for accessibility compliance
     send: false
   - label: Start Code Review
-    agent: Reviewer.agent.md
+    agent: Reviewer
     prompt: Now that the accessibility review is complete, perform a comprehensive code review of the implementation
+    send: false
+  - label: Start Testing
+    agent: Tester
+    prompt: Now that the code review is complete, please create and run tests to validate the implementation
     send: false
 ---
 
