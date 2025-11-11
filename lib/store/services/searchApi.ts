@@ -80,8 +80,8 @@ export const searchApi = createApi({
           query,
           limit: String(MIN_LIMIT),
           include_over_18: String(enableNsfw),
-          include_profiles: 'false', // Exclude user profiles from results
-          typeahead_active: 'true' // Enable typeahead optimizations
+          include_profiles: 'true',
+          typeahead_active: 'true'
         })
         return `/api/subreddit_autocomplete_v2?${params.toString()}`
       },
