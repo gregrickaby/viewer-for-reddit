@@ -34,15 +34,15 @@ tools:
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:
-  - label: Start Accessibility Review
+  - label: Accessibility Review
     agent: Accessibility
     prompt: Now that the initial implementation is complete, please review the changes for accessibility compliance
     send: false
-  - label: Start Code Review
+  - label: Code Review
     agent: Reviewer
     prompt: Now that the accessibility review is complete, perform a comprehensive code review of the implementation
     send: false
-  - label: Start Testing
+  - label: Testing Review
     agent: Tester
     prompt: Now that the code review is complete, please create and run tests to validate the implementation
     send: false

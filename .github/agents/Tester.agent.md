@@ -29,6 +29,19 @@ tools:
     'runTests'
   ]
 model: Claude Sonnet 4.5 (copilot)
+handoffs:
+  - label: Start Implementation
+    agent: Implementation
+    prompt: Now that the testing review is complete, implement the fixes mentioned above
+    send: false
+  - label: Code Review
+    agent: Reviewer
+    prompt: now that testing review is complete, perform a code review to ensure all testing-related changes are appropriate and high-quality
+    send: false
+  - label: Accessibility Review
+    agent: Accessibility
+    prompt: Now that testing is complete, perform a final accessibility review to ensure all issues have been addressed
+    send: false
 ---
 
 # Testing Specialist Mode

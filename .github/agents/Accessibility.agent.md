@@ -34,6 +34,14 @@ handoffs:
     agent: Implementation
     prompt: Now that the accessibility review is complete, implement the fixes mentioned above
     send: false
+  - label: Testing Review
+    agent: Tester
+    prompt: Now that the accessibility improvements have been implemented, begin testing to verify compliance
+    send: false
+  - label: Code Review
+    agent: Reviewer
+    prompt: Now that the accessibility improvements have been implemented and tested, begin code review to ensure quality and compliance
+    send: false
 ---
 
 # Accessibility Expert Mode
