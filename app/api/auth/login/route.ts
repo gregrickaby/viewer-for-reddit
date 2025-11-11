@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     'mysubreddits', // Access user's subscribed subreddits
     'vote', // Upvote/downvote content
     'subscribe', // Subscribe to subreddits
-    'history', // Access user's history
+    'history', // Access user's voting and hidden history
     'save', // Save/unsave posts and comments
     'submit', // Submit links and comments
     'edit' // Edit and delete own comments and posts

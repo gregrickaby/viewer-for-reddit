@@ -81,9 +81,7 @@ export function useSave({
 
   // Local state for optimistic updates
   // Provides immediate feedback while the API request is in flight
-  const [optimisticSaved, setOptimisticSaved] = useState<boolean>(
-    initialSaved ?? false
-  )
+  const [optimisticSaved, setOptimisticSaved] = useState<boolean>(initialSaved)
 
   /**
    * Handle save/unsave button click.

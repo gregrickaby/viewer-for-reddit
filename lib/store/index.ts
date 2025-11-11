@@ -14,6 +14,7 @@ import {
   combineSlices,
   configureStore,
   type Action,
+  type Middleware,
   type ThunkAction
 } from '@reduxjs/toolkit'
 import {setupListeners} from '@reduxjs/toolkit/query'
@@ -25,8 +26,8 @@ import {setupListeners} from '@reduxjs/toolkit/query'
  * invalidates the UserSavedPosts tag in authenticatedApi, causing
  * the saved posts feed to refetch and update in real-time.
  */
-const crossApiInvalidationMiddleware =
-  (store: any) => (next: any) => (action: any) => {
+const crossApiInvalidationMiddleware: Middleware<{}, RootState> =
+  (store) => (next) => (action) => {
     const result = next(action)
 
     // Listen for successful save/unsave mutations
