@@ -121,13 +121,14 @@ export function Subreddit({subreddit, sort = 'hot'}: Readonly<SubredditProps>) {
             {subreddit === 'all' ? 'Home' : `Posts from r/${subreddit}`}
           </Title>
           <Favorite subreddit={subreddit} />
-          {subreddit !== 'all' && (
+          {subreddit !== 'all' && subreddit !== 'popular' && (
             <Tooltip label="About this subreddit">
               <ActionIcon
-                variant="subtle"
-                size="lg"
-                onClick={open}
                 aria-label="About this subreddit"
+                data-umami-event="open subreddit about"
+                onClick={open}
+                size="lg"
+                variant="subtle"
               >
                 <IoInformationCircleOutline size={20} />
               </ActionIcon>
