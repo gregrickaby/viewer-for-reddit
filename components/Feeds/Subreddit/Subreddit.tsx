@@ -3,6 +3,7 @@
 import {ErrorMessage} from '@/components/UI/ErrorMessage/ErrorMessage'
 import {Favorite} from '@/components/UI/Favorite/Favorite'
 import {Card} from '@/components/UI/Post/Card/Card'
+import {SubredditAbout} from '@/components/UI/SubredditAbout/SubredditAbout'
 import config from '@/lib/config'
 import {useInfinitePosts} from '@/lib/hooks/feed/useInfinitePosts'
 import {useTrackRecentSubreddit} from '@/lib/hooks/subreddit/useTrackRecentSubreddit'
@@ -10,15 +11,19 @@ import {useUpdateMeta} from '@/lib/hooks/util/useUpdateMeta'
 import type {AutoPostChild} from '@/lib/store/services/postsApi'
 import type {SortingOption} from '@/lib/types'
 import {
+  ActionIcon,
   Button,
   Group,
   Loader,
   SegmentedControl,
   Stack,
-  Title
+  Title,
+  Tooltip
 } from '@mantine/core'
+import {useDisclosure} from '@mantine/hooks'
 import {usePathname} from 'next/navigation'
 import {useState} from 'react'
+import {IoInformationCircleOutline} from 'react-icons/io5'
 
 interface SubredditProps {
   subreddit: string
@@ -42,6 +47,7 @@ interface SubredditProps {
 export function Subreddit({subreddit, sort = 'hot'}: Readonly<SubredditProps>) {
   useTrackRecentSubreddit(subreddit)
   const [selectedSort, setSelectedSort] = useState<SortingOption>(sort)
+  const [opened, {open, close}] = useDisclosure(false)
   const pathname = usePathname()
 
   const {
@@ -115,6 +121,18 @@ export function Subreddit({subreddit, sort = 'hot'}: Readonly<SubredditProps>) {
             {subreddit === 'all' ? 'Home' : `Posts from r/${subreddit}`}
           </Title>
           <Favorite subreddit={subreddit} />
+          {subreddit !== 'all' && (
+            <Tooltip label="About this subreddit">
+              <ActionIcon
+                variant="subtle"
+                size="lg"
+                onClick={open}
+                aria-label="About this subreddit"
+              >
+                <IoInformationCircleOutline size={20} />
+              </ActionIcon>
+            </Tooltip>
+          )}
         </Group>
         <SegmentedControl
           data-umami-event="change sort button"
@@ -127,6 +145,8 @@ export function Subreddit({subreddit, sort = 'hot'}: Readonly<SubredditProps>) {
           ]}
         />
       </Group>
+
+      <SubredditAbout subreddit={subreddit} opened={opened} onClose={close} />
 
       {content}
 

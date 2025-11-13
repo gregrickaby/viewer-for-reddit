@@ -29,6 +29,11 @@ type AutoPopularChildData = NonNullable<
   >[number]['data']
 >
 
+/** Full subreddit about data type (includes all fields from API) */
+export type SubredditAboutData = NonNullable<
+  components['schemas']['GetSubredditAboutResponse']['data']
+>
+
 /**
  * Subreddit API service using RTK Query.
  *
@@ -62,6 +67,30 @@ export const subredditApi = createApi({
       transformResponse: (response: AutoSubredditAboutResponse) =>
         fromAbout(response.data!), // Transform to normalized format
       // Cache per subreddit
+      providesTags: (_result, _err, subreddit) => [
+        {type: 'SubredditAbout', id: subreddit}
+      ]
+    }),
+
+    /**
+     * Fetches full detailed information about a specific subreddit.
+     *
+     * Returns complete API response including all fields (created_utc, active_user_count, etc.)
+     * without normalization. Use this endpoint when you need access to all subreddit metadata.
+     *
+     * @param {string} subreddit - The subreddit name (e.g., "programming", "gifs")
+     *
+     * @returns {SubredditAboutData} Full subreddit information from API
+     *
+     * @example
+     * // Get full information about the programming subreddit
+     * const {data} = useGetSubredditAboutFullQuery('programming')
+     */
+    getSubredditAboutFull: builder.query<SubredditAboutData, string>({
+      query: (subreddit) => `/r/${encodeURIComponent(subreddit)}/about.json`,
+      transformResponse: (response: AutoSubredditAboutResponse) =>
+        response.data!,
+      // Cache per subreddit (shared with getSubredditAbout)
       providesTags: (_result, _err, subreddit) => [
         {type: 'SubredditAbout', id: subreddit}
       ]
@@ -121,6 +150,7 @@ export const subredditApi = createApi({
  */
 export const {
   useGetSubredditAboutQuery,
+  useGetSubredditAboutFullQuery,
   useGetPopularSubredditsQuery,
   useLazyGetSubredditAboutQuery
 } = subredditApi
