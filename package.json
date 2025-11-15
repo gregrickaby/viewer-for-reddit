@@ -50,7 +50,7 @@
     "dayjs": "^1.11.19",
     "embla-carousel": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "gray-matter": "^4.0.3",
+    "gray-matter": "^2.0.1",
     "hls.js": "^1.6.14",
     "iron-session": "^8.0.4",
     "media-chrome": "^4.15.1",
