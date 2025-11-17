@@ -1,7 +1,7 @@
 import {Breadcrumb} from '@/components/UI/Breadcrumb/Breadcrumb'
 import config from '@/lib/config'
+import {parseFrontmatter} from '@/lib/utils/formatting/markdown/parseFrontmatter'
 import {Typography} from '@mantine/core'
-import matter from 'gray-matter'
 import type {Metadata} from 'next'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function About() {
   const filePath = path.join(process.cwd(), 'README.md')
   const fileContent = fs.readFileSync(filePath, 'utf8')
-  const {content} = matter(fileContent)
+  const {content} = parseFrontmatter(fileContent)
 
   return (
     <>

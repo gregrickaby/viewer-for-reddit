@@ -30,20 +30,19 @@ This side project started in 2020 as a fun way for me to learn TypeScript. It's 
 
 ## Who Built This?
 
-I'm [Greg Rickaby](https://gregrickaby.com), a web developer who's been around the internet for over 20 years. I built Viewer for Reddit because I wanted a cleaner, simpler way to browse Reddit and I thought others might too.
+I'm [Greg Rickaby](https://gregrickaby.com), a software engineer who's been around the internet for over 20 years. I built Viewer for Reddit because I wanted a cleaner, simpler way to browse Reddit and I thought others might too.
 
 ## Support & Feedback
 
 - **Found a bug?** [Let me know](https://github.com/gregrickaby/viewer-for-reddit/issues)
 - **Have an idea?** [Share it](https://github.com/gregrickaby/viewer-for-reddit/issues)
 - **Like the project?** [Buy me a coffee](https://www.buymeacoffee.com/gregrickaby) ☕ (helps pay for hosting!)
-- **Interested in helping?** Check out the [contributing guide](./CONTRIBUTING.md)
 
 ## Tech & Open Source
 
 This is an open-source project built with modern web technologies (Next.js, React, TypeScript). The code is carefully organized, well-tested, and designed to be maintainable and scalable.
 
-If you're a developer interested in contributing, the [CONTRIBUTING.md](./CONTRIBUTING.md) guide has everything you need to get started. We follow enterprise-grade development practices with comprehensive testing and code quality standards.
+If you're a developer interested in contributing, the [CONTRIBUTING.md](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) guide has everything you need to get started. We follow enterprise-grade development practices with comprehensive testing and code quality standards.
 
 ---
 
