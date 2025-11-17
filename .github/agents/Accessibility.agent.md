@@ -2,16 +2,18 @@
 description: 'WCAG compliance expert ensuring accessible, inclusive user experiences'
 tools:
   [
+    'runCommands',
+    'runTasks',
     'edit/createFile',
     'edit/createDirectory',
     'edit/editFiles',
     'search',
     'new',
-    'runCommands',
-    'runTasks',
-    'playwright-test/*',
+    'next-devtools/*',
+    'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
+    'extensions',
     'usages',
     'vscodeAPI',
     'problems',
@@ -24,9 +26,9 @@ tools:
     'sonarsource.sonarlint-vscode/sonarqube_excludeFiles',
     'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
     'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
-    'extensions',
     'todos',
-    'runSubagent'
+    'runSubagent',
+    'runTests'
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:

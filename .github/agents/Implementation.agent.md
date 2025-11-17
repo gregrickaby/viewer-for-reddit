@@ -2,20 +2,19 @@
 description: 'Autonomous development agent for Next.js 16 with full validation workflow and layered architecture pattern'
 tools:
   [
+    'runCommands',
+    'runTasks',
     'edit/createFile',
     'edit/createDirectory',
     'edit/editFiles',
     'search',
     'new',
-    'runCommands',
-    'runTasks',
-    'next-devtools/enable_cache_components',
-    'next-devtools/nextjs_docs',
-    'next-devtools/nextjs_runtime',
+    'next-devtools/*',
     'devvit/*',
-    'playwright-test/*',
+    'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
+    'extensions',
     'usages',
     'vscodeAPI',
     'problems',
@@ -28,9 +27,9 @@ tools:
     'sonarsource.sonarlint-vscode/sonarqube_excludeFiles',
     'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
     'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
-    'extensions',
     'todos',
-    'runSubagent'
+    'runSubagent',
+    'runTests'
   ]
 model: Claude Sonnet 4.5 (copilot)
 handoffs:

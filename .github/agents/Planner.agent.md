@@ -2,13 +2,13 @@
 description: 'Strategic planning and architecture design for enterprise-grade Next.js 16 with layered architecture'
 tools:
   [
+    'runCommands',
+    'runTasks',
     'edit/createFile',
     'edit/createDirectory',
     'edit/editFiles',
     'search',
     'new',
-    'runCommands',
-    'runTasks',
     'next-devtools/enable_cache_components',
     'next-devtools/nextjs_docs',
     'next-devtools/nextjs_runtime',
@@ -16,6 +16,7 @@ tools:
     'github/github-mcp-server/*',
     'microsoft/playwright-mcp/*',
     'upstash/context7/*',
+    'extensions',
     'usages',
     'vscodeAPI',
     'problems',
@@ -24,7 +25,6 @@ tools:
     'openSimpleBrowser',
     'fetch',
     'githubRepo',
-    'extensions',
     'todos',
     'runSubagent',
     'runTests'

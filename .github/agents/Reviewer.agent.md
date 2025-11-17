@@ -2,18 +2,19 @@
 description: 'Comprehensive code reviewer enforcing quality, security, and best practices'
 tools:
   [
+    'runCommands',
+    'runTasks',
     'edit/createFile',
     'edit/createDirectory',
     'edit/editFiles',
     'search',
     'new',
-    'runCommands',
-    'runTasks',
-    'next-devtools/*',
     'devvit/*',
-    'playwright-test/*',
+    'github/github-mcp-server/*',
+    'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
+    'extensions',
     'usages',
     'vscodeAPI',
     'problems',
@@ -26,7 +27,6 @@ tools:
     'sonarsource.sonarlint-vscode/sonarqube_excludeFiles',
     'sonarsource.sonarlint-vscode/sonarqube_setUpConnectedMode',
     'sonarsource.sonarlint-vscode/sonarqube_analyzeFile',
-    'extensions',
     'todos',
     'runSubagent',
     'runTests'

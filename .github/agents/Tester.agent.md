@@ -2,14 +2,15 @@
 description: 'Expert in test-driven development, coverage improvement, and test debugging'
 tools:
   [
+    'runCommands',
+    'runTasks',
     'edit/createFile',
     'edit/createDirectory',
     'edit/editFiles',
     'search',
     'new',
-    'runCommands',
-    'runTasks',
-    'playwright-test/*',
+    'next-devtools/*',
+    'microsoft/playwright-mcp/*',
     'sonarqube/*',
     'upstash/context7/*',
     'usages',
