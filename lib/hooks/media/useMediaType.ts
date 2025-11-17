@@ -1,7 +1,6 @@
 'use client'
 
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
-import {useMemo} from 'react'
 
 /**
  * useMediaType
@@ -28,39 +27,32 @@ export function useMediaType(post: Readonly<AutoPostChildData>) {
 
   const isYouTube = (post.media_embed as any)?.provider_name === 'YouTube'
 
-  const isLinkWithVideo = useMemo(() => {
-    if (!isLink) return false
+  const isLinkWithVideo = isLink
+    ? Boolean(
+        (post as any).video_preview?.hls_url ||
+          (post as any).video_preview?.fallback_url ||
+          post.url?.endsWith('.gifv') ||
+          post.url?.endsWith('.mp4') ||
+          post.url?.endsWith('.webm')
+      )
+    : false
 
-    return Boolean(
-      (post as any).video_preview?.hls_url ||
-        (post as any).video_preview?.fallback_url ||
-        post.url?.endsWith('.gifv') ||
-        post.url?.endsWith('.mp4') ||
-        post.url?.endsWith('.webm')
-    )
-  }, [isLink, post.url])
+  const isGifv = Boolean(
+    post.url?.endsWith('.gifv') || post.domain === 'i.imgur.com'
+  )
 
-  const isGifv = useMemo(() => {
-    return Boolean(post.url?.endsWith('.gifv') || post.domain === 'i.imgur.com')
-  }, [post.url, post.domain])
+  const isVideoFile = Boolean(
+    post.url?.endsWith('.mp4') ||
+      post.url?.endsWith('.webm') ||
+      post.url?.endsWith('.mov') ||
+      post.url?.endsWith('.avi')
+  )
 
-  const isVideoFile = useMemo(() => {
-    return Boolean(
-      post.url?.endsWith('.mp4') ||
-        post.url?.endsWith('.webm') ||
-        post.url?.endsWith('.mov') ||
-        post.url?.endsWith('.avi')
-    )
-  }, [post.url])
-
-  const youtubeVideoId = useMemo(() => {
-    if (!isYouTube) return null
-    return (
-      /embed\/([a-zA-Z0-9_-]+)/.exec(
+  const youtubeVideoId = isYouTube
+    ? (/embed\/([a-zA-Z0-9_-]+)/.exec(
         (post.media_embed as any)?.html ?? ''
-      )?.[1] ?? null
-    )
-  }, [isYouTube, post.media_embed])
+      )?.[1] ?? null)
+    : null
 
   return {
     isGallery,

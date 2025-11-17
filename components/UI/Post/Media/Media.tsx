@@ -4,7 +4,10 @@ import {Gallery} from '@/components/UI/Post/Media/Gallery/Gallery'
 import {HlsPlayer} from '@/components/UI/Post/Media/HlsPlayer/HlsPlayer'
 import {ResponsiveImage} from '@/components/UI/Post/Media/ResponsiveImage/ResponsiveImage'
 import {YouTubePlayer} from '@/components/UI/Post/Media/YouTubePlayer/YouTubePlayer'
-import {useGalleryData} from '@/lib/hooks/media/useGalleryData'
+import {
+  useGalleryData,
+  type GalleryItem
+} from '@/lib/hooks/media/useGalleryData'
 import {useMediaAssets} from '@/lib/hooks/media/useMediaAssets'
 import {useMediaType} from '@/lib/hooks/media/useMediaType'
 import {useAppSelector} from '@/lib/store/hooks'
@@ -66,7 +69,7 @@ function getLinkVideoData(post: AutoPostChildData) {
 /**
  * Render gallery media type.
  */
-function renderGallery(galleryItems: any[] | null, title: string) {
+function renderGallery(galleryItems: GalleryItem[] | null, title: string) {
   if (!galleryItems?.length) return null
 
   return (

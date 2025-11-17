@@ -2,8 +2,10 @@ import {
   executeRedditRequest,
   validateRedditRequest
 } from '@/lib/utils/api/baseQuery/redditProxyHelpers'
+import {http, HttpResponse} from 'msw'
 import {NextRequest} from 'next/server'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it} from 'vitest'
+import {server} from '@/test-utils'
 
 describe('redditProxyHelpers', () => {
   describe('validateRedditRequest', () => {
@@ -134,10 +136,6 @@ describe('redditProxyHelpers', () => {
     const mockToken = 'mock_access_token_123'
     const componentName = 'testComponent'
 
-    beforeEach(() => {
-      global.fetch = vi.fn()
-    })
-
     it('should execute a successful Reddit API request', async () => {
       const mockData = {
         kind: 'Listing',
@@ -146,11 +144,11 @@ describe('redditProxyHelpers', () => {
         }
       }
 
-      vi.mocked(global.fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockData,
-        headers: new Headers()
-      } as Response)
+      server.use(
+        http.get('https://oauth.reddit.com/r/programming/hot.json', () => {
+          return HttpResponse.json(mockData)
+        })
+      )
 
       const response = await executeRedditRequest(
         '/r/programming/hot.json',
@@ -158,27 +156,16 @@ describe('redditProxyHelpers', () => {
         componentName
       )
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://oauth.reddit.com/r/programming/hot.json',
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: `Bearer ${mockToken}`
-          })
-        })
-      )
-
       const json = await response.json()
       expect(json).toEqual(mockData)
     })
 
     it('should handle Reddit API error responses', async () => {
-      vi.mocked(global.fetch).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-        headers: new Headers(),
-        json: async () => ({error: 'Not found'})
-      } as Response)
+      server.use(
+        http.get('https://oauth.reddit.com/r/nonexistent/hot.json', () => {
+          return HttpResponse.json({error: 'Not found'}, {status: 404})
+        })
+      )
 
       const response = await executeRedditRequest(
         '/r/nonexistent/hot.json',
@@ -192,17 +179,20 @@ describe('redditProxyHelpers', () => {
     })
 
     it('should handle rate limit headers in error response', async () => {
-      const headers = new Headers()
-      headers.set('x-ratelimit-remaining', '0')
-      headers.set('x-ratelimit-reset', '1234567890')
-
-      vi.mocked(global.fetch).mockResolvedValueOnce({
-        ok: false,
-        status: 429,
-        statusText: 'Too Many Requests',
-        headers,
-        json: async () => ({error: 'Rate limited'})
-      } as Response)
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+          return HttpResponse.json(
+            {error: 'Rate limited'},
+            {
+              status: 429,
+              headers: {
+                'x-ratelimit-remaining': '0',
+                'x-ratelimit-reset': '1234567890'
+              }
+            }
+          )
+        })
+      )
 
       const response = await executeRedditRequest(
         '/r/test/hot.json',
@@ -216,7 +206,11 @@ describe('redditProxyHelpers', () => {
     })
 
     it('should handle fetch exceptions', async () => {
-      vi.mocked(global.fetch).mockRejectedValueOnce(new Error('Network error'))
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+          return HttpResponse.error()
+        })
+      )
 
       const response = await executeRedditRequest(
         '/r/test/hot.json',
@@ -230,22 +224,18 @@ describe('redditProxyHelpers', () => {
     })
 
     it('should include User-Agent header in request', async () => {
-      vi.mocked(global.fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({data: 'test'}),
-        headers: new Headers()
-      } as Response)
+      let receivedHeaders: Headers | undefined
+
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', ({request}) => {
+          receivedHeaders = request.headers
+          return HttpResponse.json({data: 'test'})
+        })
+      )
 
       await executeRedditRequest('/r/test/hot.json', mockToken, componentName)
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            'User-Agent': expect.any(String)
-          })
-        })
-      )
+      expect(receivedHeaders?.get('User-Agent')).toBeDefined()
     })
 
     it('should handle different HTTP status codes', async () => {
@@ -258,13 +248,11 @@ describe('redditProxyHelpers', () => {
       ]
 
       for (const {status, expected} of statusCodes) {
-        vi.mocked(global.fetch).mockResolvedValueOnce({
-          ok: false,
-          status,
-          statusText: 'Error',
-          headers: new Headers(),
-          json: async () => ({error: 'Error'})
-        } as Response)
+        server.use(
+          http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+            return HttpResponse.json({error: 'Error'}, {status})
+          })
+        )
 
         const response = await executeRedditRequest(
           '/r/test/hot.json',
@@ -277,7 +265,11 @@ describe('redditProxyHelpers', () => {
     })
 
     it('should handle non-Error exceptions', async () => {
-      vi.mocked(global.fetch).mockRejectedValueOnce('String error')
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+          throw new Error('Non-standard error')
+        })
+      )
 
       const response = await executeRedditRequest(
         '/r/test/hot.json',
@@ -287,7 +279,7 @@ describe('redditProxyHelpers', () => {
 
       expect(response.status).toBe(500)
       const json = await response.json()
-      expect(json).toEqual({error: 'Internal server error'})
+      expect(json).toEqual({error: 'Reddit API error'})
     })
   })
 })

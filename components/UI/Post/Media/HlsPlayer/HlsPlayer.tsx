@@ -2,6 +2,7 @@
 
 import {useHlsVideo} from '@/lib/hooks/media/useHlsVideo'
 import type {HlsPlayerProps} from '@/lib/types'
+import {logClientError} from '@/lib/utils/logging/clientLogger'
 import {Loader} from '@mantine/core'
 import React, {useEffect, useState} from 'react'
 import classes from './HlsPlayer.module.css'
@@ -55,8 +56,12 @@ export function HlsPlayer({
         try {
           await import('media-chrome')
           setIsMediaChromeLoaded(true)
-        } catch (error) {
-          console.warn('Failed to load media-chrome:', error)
+        } catch (err) {
+          logClientError('Failed to load media-chrome, using native controls', {
+            component: 'HlsPlayer',
+            action: 'loadMediaChrome',
+            error: err
+          })
           setIsMediaChromeLoaded(false)
         }
       }

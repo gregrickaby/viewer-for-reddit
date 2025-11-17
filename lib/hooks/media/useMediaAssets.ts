@@ -2,18 +2,15 @@
 
 import type {AutoPostChildData} from '@/lib/store/services/postsApi'
 import {getMediumImage} from '@/lib/utils/formatting/media/getMediumImage'
-import {useMemo} from 'react'
 
 export function useMediaAssets(post: Readonly<AutoPostChildData>) {
-  const mediumImage = useMemo(() => {
-    const preview = (post as any).preview
-    return getMediumImage(preview?.images?.[0]?.resolutions ?? []) || null
-  }, [(post as any).preview?.images])
+  const preview = (post as any).preview
+  const mediumImage =
+    getMediumImage(preview?.images?.[0]?.resolutions ?? []) || null
 
-  const fallbackUrl = useMemo(() => {
-    if (post.url?.includes('gifv')) return post.url.replace('.gifv', '.mp4')
-    return (post as any).video_preview?.fallback_url
-  }, [post.url, (post as any).video_preview])
+  const fallbackUrl = post.url?.includes('gifv')
+    ? post.url.replace('.gifv', '.mp4')
+    : (post as any).video_preview?.fallback_url
 
   return {
     mediumImage,
