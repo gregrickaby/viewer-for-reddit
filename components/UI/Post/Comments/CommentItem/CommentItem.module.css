@@ -35,12 +35,19 @@
 }
 
 .nestedComment {
-  margin-left: calc(var(--comment-depth) * var(--mantine-spacing-lg));
+  margin-left: clamp(
+    0px,
+    calc(
+      var(--mantine-spacing-md) + (var(--comment-depth) - 1) *
+        var(--mantine-spacing-xs)
+    ),
+    calc(var(--mantine-spacing-md) * 3)
+  );
 }
 
 .comment {
   --depth: 0;
-  --indent-size: 1rem;
+  --indent-size: 0.5rem;
   container: comment / inline-size;
   padding-inline-start: calc(var(--depth) * var(--indent-size));
   position: relative;
@@ -91,7 +98,11 @@
 
 @media (max-width: 768px) {
   .nestedComment {
-    margin-left: calc(var(--comment-depth) * var(--mantine-spacing-md));
+    margin-left: clamp(
+      0px,
+      calc(var(--mantine-spacing-sm) + (var(--comment-depth) - 1) * 0.25rem),
+      calc(var(--mantine-spacing-md) * 2)
+    );
   }
 
   .threadLine {

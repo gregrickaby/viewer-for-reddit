@@ -8,11 +8,12 @@ import {CommentReplyForm} from '@/components/UI/Post/Comments/CommentReplyForm/C
 import {COMMENT_CONFIG} from '@/lib/config'
 import {useCommentActions} from '@/lib/hooks/comments/interaction/useCommentActions/useCommentActions'
 import {useCommentFocusManagement} from '@/lib/hooks/comments/navigation/useCommentFocusManagement/useCommentFocusManagement'
+import {useCommentCollapse} from '@/lib/hooks/comments/state/useCommentCollapse/useCommentCollapse'
 import {useCommentState} from '@/lib/hooks/comments/state/useCommentState/useCommentState'
 import type {NestedCommentData} from '@/lib/utils/formatting/comments/commentFilters'
-import {Box, Button, Card, Group, Stack, Text} from '@mantine/core'
+import {ActionIcon, Box, Button, Card, Group, Stack, Text} from '@mantine/core'
 import {BiComment} from 'react-icons/bi'
-import {MdDelete} from 'react-icons/md'
+import {MdDelete, MdExpandLess, MdExpandMore} from 'react-icons/md'
 import classes from './CommentItem.module.css'
 
 /**
@@ -29,7 +30,8 @@ interface CommentItemProps {
  * Renders a single comment item with nested replies and voting.
  *
  * Features:
- * - Nested comment threading with visual indentation (always expanded)
+ * - Nested comment threading with visual indentation
+ * - Collapsible comment threads for improved readability
  * - Vote buttons integrated via CommentMetadata
  * - Sanitized HTML rendering for comment body
  * - Inline media support (images/videos)
@@ -45,6 +47,9 @@ export function CommentItem({
   maxDepth = COMMENT_CONFIG.MAX_DEPTH
 }: Readonly<CommentItemProps>) {
   const commentId = comment.id || comment.permalink || ''
+
+  // Collapse state management
+  const {isCollapsed, toggleCollapse} = useCommentCollapse()
 
   // State management
   const {
@@ -92,11 +97,13 @@ export function CommentItem({
   })
 
   const hasReplies = comment.replies && comment.replies.length > 0
-  const showReplies = hasReplies && (comment.depth ?? 0) < maxDepth
   const canReply =
     isAuthenticated && (comment.depth ?? 0) < maxDepth && !isDeleted
   const isOwnComment =
     isAuthenticated && currentUsername === comment.author && !isDeleted
+
+  // For metadata display: show reply count indicator
+  const showReplyCount = Boolean(hasReplies && (comment.depth ?? 0) < maxDepth)
 
   return (
     <Box
@@ -122,11 +129,34 @@ export function CommentItem({
           <Stack gap="xs">
             <CommentContent comment={comment} isDeleted={isDeleted} />
 
-            <CommentMetadata
-              comment={comment}
-              hasReplies={hasReplies}
-              showReplies={!!showReplies}
-            />
+            <Group gap="xs" justify="space-between">
+              <CommentMetadata
+                comment={comment}
+                hasReplies={hasReplies}
+                showReplies={showReplyCount}
+              />
+
+              {hasReplies && (
+                <ActionIcon
+                  aria-label={
+                    isCollapsed
+                      ? 'Expand comment thread'
+                      : 'Collapse comment thread'
+                  }
+                  color="gray"
+                  data-umami-event="collapse comment thread"
+                  onClick={toggleCollapse}
+                  size="sm"
+                  variant="subtle"
+                >
+                  {isCollapsed ? (
+                    <MdExpandMore size={16} />
+                  ) : (
+                    <MdExpandLess size={16} />
+                  )}
+                </ActionIcon>
+              )}
+            </Group>
 
             {canReply && (
               <Box mt="xs">
@@ -182,7 +212,9 @@ export function CommentItem({
           </Stack>
         </Card>
 
-        <CommentReplies comment={comment} maxDepth={maxDepth} />
+        {hasReplies && !isCollapsed && (
+          <CommentReplies comment={comment} maxDepth={maxDepth} />
+        )}
       </div>
 
       <CommentDeleteModal

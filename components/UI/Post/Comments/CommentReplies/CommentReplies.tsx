@@ -13,11 +13,12 @@ interface CommentRepliesProps {
 }
 
 /**
- * Renders nested comment replies (always expanded).
+ * Renders nested comment replies.
  *
  * Features:
  * - Recursive rendering of nested comments
  * - Depth limit message when max depth reached
+ * - Respects collapse state from parent CommentItem
  *
  * @param props - Component props
  * @returns JSX.Element rendered replies or null if no replies
@@ -46,7 +47,7 @@ export function CommentReplies({
     )
   }
 
-  // Render nested replies (always expanded)
+  // Render nested replies
   return (
     <Stack gap="sm" mt="sm">
       {replies.map((reply) => (

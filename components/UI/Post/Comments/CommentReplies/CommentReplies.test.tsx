@@ -56,7 +56,7 @@ describe('CommentReplies', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render nested CommentItems (always expanded)', () => {
+  it('should render nested CommentItems', () => {
     render(<CommentReplies comment={mockCommentWithReplies} maxDepth={10} />)
     expect(screen.getByText('Child comment')).toBeInTheDocument()
   })

@@ -586,4 +586,86 @@ describe('CommentItem', () => {
       })
     })
   })
+
+  describe('Collapse functionality', () => {
+    it('should show collapse button for comments with replies', () => {
+      render(<CommentItem comment={mockCommentWithReplies} />)
+
+      expect(
+        screen.getByRole('button', {name: /collapse comment thread/i})
+      ).toBeInTheDocument()
+    })
+
+    it('should not show collapse button for comments without replies', () => {
+      render(<CommentItem comment={mockBasicComment} />)
+
+      expect(
+        screen.queryByRole('button', {name: /collapse comment thread/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('should collapse replies when collapse button is clicked', async () => {
+      render(<CommentItem comment={mockCommentWithReplies} />)
+
+      // Initially, replies should be visible
+      expect(screen.getByText('Reply to parent')).toBeInTheDocument()
+
+      // Click collapse button
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment thread/i
+      })
+      await user.click(collapseButton)
+
+      // Replies should be hidden
+      expect(screen.queryByText('Reply to parent')).not.toBeInTheDocument()
+    })
+
+    it('should expand replies when expand button is clicked', async () => {
+      render(<CommentItem comment={mockCommentWithReplies} />)
+
+      // Collapse first
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment thread/i
+      })
+      await user.click(collapseButton)
+
+      // Verify replies are hidden
+      expect(screen.queryByText('Reply to parent')).not.toBeInTheDocument()
+
+      // Expand
+      const expandButton = screen.getByRole('button', {
+        name: /expand comment thread/i
+      })
+      await user.click(expandButton)
+
+      // Replies should be visible again
+      expect(screen.getByText('Reply to parent')).toBeInTheDocument()
+    })
+
+    it('should toggle between collapse and expand states multiple times', async () => {
+      render(<CommentItem comment={mockCommentWithReplies} />)
+
+      const toggleButton = screen.getByRole('button', {
+        name: /collapse comment thread/i
+      })
+
+      // First collapse
+      await user.click(toggleButton)
+      expect(screen.queryByText('Reply to parent')).not.toBeInTheDocument()
+
+      // Expand
+      const expandButton = screen.getByRole('button', {
+        name: /expand comment thread/i
+      })
+      await user.click(expandButton)
+      expect(screen.getByText('Reply to parent')).toBeInTheDocument()
+
+      // Collapse again
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment thread/i
+      })
+      await user.click(collapseButton)
+      expect(screen.queryByText('Reply to parent')).not.toBeInTheDocument()
+    })
+  })
 })
