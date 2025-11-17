@@ -147,7 +147,9 @@ export function Subreddit({subreddit, sort = 'hot'}: Readonly<SubredditProps>) {
         />
       </Group>
 
-      <SubredditAbout subreddit={subreddit} opened={opened} onClose={close} />
+      {opened && (
+        <SubredditAbout subreddit={subreddit} opened={opened} onClose={close} />
+      )}
 
       {content}
 
