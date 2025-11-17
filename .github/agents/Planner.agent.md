@@ -10,6 +10,7 @@ tools:
     'search',
     'new',
     'next-devtools/enable_cache_components',
+    'next-devtools/init',
     'next-devtools/nextjs_docs',
     'next-devtools/nextjs_runtime',
     'devvit/*',
