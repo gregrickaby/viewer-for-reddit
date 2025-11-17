@@ -45,22 +45,6 @@
   );
 }
 
-.comment {
-  --depth: 0;
-  --indent-size: 0.5rem;
-  container: comment / inline-size;
-  padding-inline-start: calc(var(--depth) * var(--indent-size));
-  position: relative;
-}
-
-.depthIndicator {
-  inset-inline-start: calc(var(--depth) * var(--indent-size) - 0.25rem);
-  position: absolute;
-  top: 0;
-  width: 0.1875rem;
-  z-index: 1;
-}
-
 .content {
   display: flex;
   flex-direction: column;
