@@ -75,7 +75,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest-axe": "^3.5.9",
     "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
+    "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
     "@types/sanitize-html": "^2.16.0",
     "@vitejs/plugin-react-swc": "^4.2.2",
@@ -103,7 +103,7 @@
     "rollup": "^4.53.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.4",
+    "typescript-eslint": "^8.47.0",
     "yaml": "^2.8.1"
   }
 }
