@@ -2,6 +2,18 @@
 
 This file provides guidance to agents when working with code in this repository.
 
+**Quick Navigation:**
+
+- [Quick Start Commands](#quick-start-commands) - Run this first
+- [Common Mistakes](#common-mistakes-to-avoid) - Avoid these
+- [Never Do](#never-do-critical-violations) - Critical violations
+- [Stop Immediately If](#stop-immediately-if) - Blocking conditions
+- [Definition of Done](#definition-of-done) - Success criteria
+- [Testing Strategy](#testing-strategy) - MSW v2, @/test-utils, coverage targets
+- [Architecture Overview](#architecture-overview) - SoC principles, tech stack
+- [Validation Protocol](#validation-gate-protocol) - Before merging
+- [Git Workflow](#git-workflow) - Feature development process
+
 ## Expert React Frontend Engineer
 
 You are in expert frontend engineer. Your task is to provide senior React and TypeScript frontend engineering guidance using both Separation of Concerns (SoC) and Test-Driven Design patterns and best practices as if you were a leader in the field.
@@ -10,7 +22,167 @@ You are in expert frontend engineer. Your task is to provide senior React and Ty
 
 **Keep components "dumb" and focused on presentation.** Move all logic to testable, reusable hooks and helpers. This makes the codebase maintainable, testable, and follows React best practices for 2025 and beyond.
 
+## Quick Start Commands
+
+**Most Common Workflow:**
+
+```bash
+# 1. During development
+npx vitest <path> --run        # Test your changes
+
+# 2. Before considering done (MANDATORY)
+npm run validate               # Format → lint → typecheck → test
+sonar-scanner                  # Quality gate (< 1.5% duplication, zero critical)
+
+# 3. For UI changes
+npm run test:e2e              # Validate with Playwright
+```
+
+**When Things Break:**
+
+```bash
+npm run typecheck             # Find TypeScript errors
+npx vitest <path> --run       # Debug specific test
+npm run test:e2e:ui           # Debug E2E interactively
+open coverage/index.html      # View coverage report (macOS)
+```
+
+**Type Generation:**
+
+```bash
+npm run typegen               # Full workflow (fetch + validate)
+npm run typegen:types         # Generate types only (if API spec changed)
+```
+
+## ⚠️ Common Mistakes to Avoid
+
+**Testing:**
+
+- ❌ `global.fetch = vi.fn()` → ✅ Use MSW v2 handlers
+- ❌ `import {render} from '@testing-library/react'` → ✅ `import {render} from '@/test-utils'`
+- ❌ `const user = userEvent.setup()` → ✅ Use pre-configured `user` from `@/test-utils`
+- ❌ Skip writing tests → ✅ Write tests alongside code (TDD)
+
+**Logging:**
+
+- ❌ `console.log()` / `console.error()` → ✅ `logError()` / `logClientError()`
+
+**Architecture:**
+
+- ❌ Business logic in components → ✅ Extract to `lib/hooks/` or `lib/utils/`
+- ❌ Direct API calls in components → ✅ Use RTK Query hooks
+- ❌ React imports in `lib/utils/` → ✅ Utils must be pure (no React/hooks)
+
+**Next.js 16:**
+
+- ❌ `await params` without Suspense → ✅ Wrap in `<Suspense>` boundary
+- ❌ Manual `useMemo`/`useCallback`/`React.memo` → ✅ Let React Compiler optimize
+- ❌ `import {Icon} from 'react-icons'` → ✅ `import {Icon} from 'react-icons/fa'`
+
+**TypeScript:**
+
+- ❌ Using `any` type → ✅ Use proper types or `unknown`
+- ❌ Ignoring TypeScript errors → ✅ Fix all errors (strict mode enabled)
+
+## 🚫 Never Do (Critical Violations)
+
+**Code Quality:**
+
+- Create files without necessity (prefer editing existing)
+- Use `any` type in TypeScript
+- Skip test coverage (< 90% is blocking)
+- Leave orphaned files or commented-out code
+- Add superfluous comments or emojis
+- Create summary markdown files unless requested
+
+**Testing:**
+
+- Mock `global.fetch` directly (use MSW v2)
+- Import test utilities from `@testing-library/*` (use `@/test-utils`)
+- Call `userEvent.setup()` directly (use pre-configured `user`)
+- Skip writing tests (test-driven is mandatory)
+- Create tests without value (focus on meaningful coverage)
+
+**Logging:**
+
+- Use `console.log`, `console.error`, or `console.warn`
+
+**Git:**
+
+- Commit or push code without asking user first
+
+**Architecture:**
+
+- Put business logic in components (extract to hooks/utils)
+- Import React/hooks in `lib/utils/` (must be pure functions)
+- Skip domain layer for features (layered architecture is mandatory)
+
+## 🛑 Stop Immediately If...
+
+These are **blocking** conditions - do not proceed:
+
+1. **`npm run validate` fails** - Fix format/lint/typecheck/test errors first
+2. **`sonar-scanner` shows critical/blocker issues** - Address quality gate failures
+3. **Test coverage drops below 90%** - Write missing tests
+4. **TypeScript errors exist** - Fix all type errors (strict mode)
+5. **You're about to commit/push** - Ask user first (always)
+6. **Code duplication ≥ 1.5%** - Refactor duplicated code
+7. **Missing tests for code changes** - Write tests (TDD required)
+
+**Exception:** Skip validation for documentation-only changes (\*.md files, JSDoc comments)
+
+## ✅ Definition of Done
+
+A task is complete when ALL of these pass:
+
+**Code Quality:**
+
+- [ ] Tests written/updated (90%+ coverage maintained)
+- [ ] `npm run validate` passes (format → lint → typecheck → test)
+- [ ] `sonar-scanner` passes quality gate (< 1.5% duplication, zero critical issues)
+- [ ] No TypeScript errors in strict mode
+- [ ] All components/functions have simple docblocks (1-2 sentences)
+- [ ] No orphaned files or dead code
+- [ ] No `console.log`/`console.error` (use `logError`/`logClientError`)
+
+**For UI Changes:**
+
+- [ ] `npm run test:e2e` passes (or manual Playwright MCP validation)
+- [ ] Accessibility verified (keyboard nav, ARIA, screen reader)
+- [ ] Responsive design tested
+
+**Architecture:**
+
+- [ ] Follows SoC: `lib/utils/` (pure) → `lib/hooks/` (state) → `components/` (UI)
+- [ ] No business logic in components
+- [ ] RTK Query used for API calls (not direct fetch)
+- [ ] Proper error handling with centralized logging
+
+**User Approval:**
+
+- [ ] User explicitly approves before commit/push
+
 ## Quick Reference
+
+### Code Placement Decision Tree
+
+**Is it a pure calculation/formatting function with NO React/state?**
+
+- ✅ Extract to `lib/utils/` (e.g., `getIsVertical()`, `sortComments()`)
+- File: `calculations.ts`, `formatting.ts`, `conditions.ts`
+- 100% testable, no dependencies on React/hooks
+
+**Does it need React hooks, state, or effects?**
+
+- ✅ Extract to `lib/hooks/` (e.g., `useMediaType()`, `useCommentFetching()`)
+- Return processed data ready for components to render
+- Compose utils + RTK Query + state management
+
+**Is it just rendering data or handling UI events?**
+
+- ✅ Keep in component
+- Call hooks to get data, render with Mantine components
+- One component per file
 
 ### File Organization
 
@@ -18,23 +190,6 @@ You are in expert frontend engineer. Your task is to provide senior React and Ty
 - `lib/hooks/` - Business logic, state management, data transformations (prefix with `use`)
 - `lib/utils/` - Pure functions organized by purpose (formatting, validation, api, logging, routing, storage)
 - Tests co-located with implementation files (e.g., `useMediaType.ts` + `useMediaType.test.ts`)
-
-### Decision Tree: Where Does This Code Go?
-
-**Is it a pure calculation/formatting function with no state?**
-
-- ✅ Extract to `lib/utils/` (e.g., `getIsVertical()`, `sortComments()`)
-- File: `calculations.ts`, `formatting.ts`, `conditions.ts`
-
-**Does it need React hooks, state, or effects?**
-
-- ✅ Extract to `lib/hooks/` (e.g., `useMediaType()`, `useCommentFetching()`)
-- Return processed data ready for components to render
-
-**Is it just rendering data or handling UI events?**
-
-- ✅ Keep in component
-- Call hooks to get data, render with Mantine components
 
 ## Project Overview
 
@@ -316,14 +471,15 @@ Projects use `testMatch` patterns to target directories:
 - **Code Quality**: SonarQube Community Edition (self-hosted) + VS Code extension. SonarQube MCP for analysis
 - **CSS**: CSS Modules with Mantine CSS variables
 - **Coolify**: Self-hosted deployment using Nixpacks. Preview deployments: <https://[pull-request-id].reddit-viewer.com>
-- **Data Fetching**: RTK Query
-- **Error Logging**: Custom logging solution
+- **Data Fetching**: RTK Query (Redux Toolkit v2)
+- **Error Logging**: Custom logging solution (`logError`, `logClientError`)
 - **Formatting**: Prettier
 - **Github MCP**: Interacting with Github issues and pull requests
 - **Linting**: ESLint with Mantine config
+- **Node.js**: v22.19+ (see `.nvmrc` and `package.json` engines)
 - **Playwright MCP**: Visual debugging and manual QA
-- **State Management**: Redux Toolkit
-- **Testing**: Vitest 4 + React Testing Library + MSW 2
+- **State Management**: Redux Toolkit v2
+- **Testing**: Vitest 4 + React Testing Library + MSW v2 (Mock Service Worker)
 - **TypeScript**: Strict mode enabled. Never use `any` type
 
 ### Next.js 16 Critical Requirements
