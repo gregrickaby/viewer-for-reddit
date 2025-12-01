@@ -64,7 +64,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.1",
     "@evilmartians/lefthook": "^2.0.4",
     "@playwright/test": "^1.57.0",
