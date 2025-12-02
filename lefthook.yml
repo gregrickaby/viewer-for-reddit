@@ -1,4 +1,4 @@
-# Refer for explanation to following link: https://lefthook.dev/
+$schema: 'https://json.schemastore.org/lefthook.json'
 
 pre-commit:
   parallel: true
