@@ -30,10 +30,10 @@ export function useMediaType(post: Readonly<AutoPostChildData>) {
   const isLinkWithVideo = isLink
     ? Boolean(
         (post as any).video_preview?.hls_url ||
-          (post as any).video_preview?.fallback_url ||
-          post.url?.endsWith('.gifv') ||
-          post.url?.endsWith('.mp4') ||
-          post.url?.endsWith('.webm')
+        (post as any).video_preview?.fallback_url ||
+        post.url?.endsWith('.gifv') ||
+        post.url?.endsWith('.mp4') ||
+        post.url?.endsWith('.webm')
       )
     : false
 
@@ -43,9 +43,9 @@ export function useMediaType(post: Readonly<AutoPostChildData>) {
 
   const isVideoFile = Boolean(
     post.url?.endsWith('.mp4') ||
-      post.url?.endsWith('.webm') ||
-      post.url?.endsWith('.mov') ||
-      post.url?.endsWith('.avi')
+    post.url?.endsWith('.webm') ||
+    post.url?.endsWith('.mov') ||
+    post.url?.endsWith('.avi')
   )
 
   const youtubeVideoId = isYouTube

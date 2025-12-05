@@ -80,9 +80,9 @@ export function isValidComment(comment: AutoCommentData): boolean {
   // Check if author exists and is valid
   const hasValidAuthor = Boolean(
     'author' in comment &&
-      comment.author &&
-      comment.author !== COMMENT_CONTENT_MARKERS.DELETED &&
-      comment.author !== COMMENT_CONTENT_MARKERS.REMOVED
+    comment.author &&
+    comment.author !== COMMENT_CONTENT_MARKERS.DELETED &&
+    comment.author !== COMMENT_CONTENT_MARKERS.REMOVED
   )
 
   // Check if comment has text properties - must have author AND content properties
@@ -96,7 +96,7 @@ export function isValidComment(comment: AutoCommentData): boolean {
   // Check if content is not marked as deleted/removed
   const isNotDeleted = Boolean(
     comment.body !== COMMENT_CONTENT_MARKERS.DELETED &&
-      comment.body !== COMMENT_CONTENT_MARKERS.REMOVED
+    comment.body !== COMMENT_CONTENT_MARKERS.REMOVED
   )
 
   return hasContent && isNotDeleted

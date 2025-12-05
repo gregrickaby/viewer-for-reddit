@@ -1,6 +1,11 @@
 import {NextRequest} from 'next/server'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-import {checkRateLimit, cleanupRateLimitStore, detectBotType} from './rateLimit'
+import {
+  checkRateLimit,
+  cleanupRateLimitStore,
+  detectBotType,
+  isHomepagePath
+} from './rateLimit'
 
 vi.mock('@/lib/utils/logging/logError', () => ({
   logError: vi.fn()
@@ -715,9 +720,9 @@ describe('detectBotType', () => {
       'facebot'
     ]
 
-    searchBots.forEach((ua) => {
+    for (const ua of searchBots) {
       expect(detectBotType(ua)).toBe('search')
-    })
+    }
   })
 
   it('should detect aggressive/unknown bots', () => {
@@ -730,9 +735,9 @@ describe('detectBotType', () => {
       'Wget/1.20.3'
     ]
 
-    aggressiveBots.forEach((ua) => {
+    for (const ua of aggressiveBots) {
       expect(detectBotType(ua)).toBe('aggressive')
-    })
+    }
   })
 
   it('should recognize human browsers', () => {
@@ -742,13 +747,192 @@ describe('detectBotType', () => {
       'Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0'
     ]
 
-    humanBrowsers.forEach((ua) => {
+    for (const ua of humanBrowsers) {
       expect(detectBotType(ua)).toBe('human')
-    })
+    }
   })
 
   it('should handle case insensitivity', () => {
     expect(detectBotType('GOOGLEBOT/2.1')).toBe('search')
     expect(detectBotType('GoogleBot/2.1')).toBe('search')
+  })
+})
+
+describe('isHomepagePath', () => {
+  it('should return true for popular endpoint', () => {
+    expect(
+      isHomepagePath('http://localhost:3000/api/reddit?path=/popular.json')
+    ).toBe(true)
+  })
+
+  it('should return true for hot.json endpoint', () => {
+    expect(
+      isHomepagePath('http://localhost:3000/api/reddit?path=/hot.json')
+    ).toBe(true)
+  })
+
+  it('should return true for best.json endpoint', () => {
+    expect(
+      isHomepagePath('http://localhost:3000/api/reddit?path=/best.json')
+    ).toBe(true)
+  })
+
+  it('should return true for r/all homepage endpoints', () => {
+    expect(
+      isHomepagePath('http://localhost:3000/api/reddit?path=/r/all/hot.json')
+    ).toBe(true)
+    expect(
+      isHomepagePath('http://localhost:3000/api/reddit?path=/r/all/new.json')
+    ).toBe(true)
+    expect(
+      isHomepagePath('http://localhost:3000/api/reddit?path=/r/all/top.json')
+    ).toBe(true)
+    expect(
+      isHomepagePath('http://localhost:3000/api/reddit?path=/r/all/best.json')
+    ).toBe(true)
+  })
+
+  it('should return false for other subreddit endpoints', () => {
+    expect(
+      isHomepagePath(
+        'http://localhost:3000/api/reddit?path=/r/programming/hot.json'
+      )
+    ).toBe(false)
+  })
+
+  it('should return false for comment endpoints', () => {
+    expect(
+      isHomepagePath(
+        'http://localhost:3000/api/reddit?path=/r/programming/comments/abc123'
+      )
+    ).toBe(false)
+  })
+
+  it('should return false for user endpoints', () => {
+    expect(
+      isHomepagePath(
+        'http://localhost:3000/api/reddit?path=/user/testuser/about'
+      )
+    ).toBe(false)
+  })
+
+  it('should return false for URLs without path parameter', () => {
+    expect(isHomepagePath('http://localhost:3000/api/reddit')).toBe(false)
+  })
+
+  it('should handle invalid URLs gracefully', () => {
+    expect(isHomepagePath('not-a-valid-url')).toBe(false)
+  })
+})
+
+describe('homepage exemption for search bots', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.clearAllMocks()
+  })
+
+  it('should allow unlimited homepage requests from Googlebot on r/all', async () => {
+    const request = createMockNextRequest(
+      'http://localhost:3000/api/reddit?path=/r/all/hot.json',
+      {
+        'x-forwarded-for': '66.249.66.100',
+        'user-agent':
+          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+      }
+    )
+
+    // Make more requests than the search bot limit (30)
+    for (let i = 0; i < 50; i++) {
+      const result = await checkRateLimit(request)
+      expect(result).toBeNull()
+    }
+  })
+
+  it('should allow unlimited homepage requests from Bingbot', async () => {
+    const request = createMockNextRequest(
+      'http://localhost:3000/api/reddit?path=/r/all/hot.json',
+      {
+        'x-forwarded-for': '40.77.167.100',
+        'user-agent':
+          'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+      }
+    )
+
+    // Make more requests than the search bot limit (30)
+    for (let i = 0; i < 50; i++) {
+      const result = await checkRateLimit(request)
+      expect(result).toBeNull()
+    }
+  })
+
+  it('should still rate limit search bots on non-homepage paths', async () => {
+    const request = createMockNextRequest(
+      'http://localhost:3000/api/reddit?path=/r/programming/hot.json',
+      {
+        'x-forwarded-for': '66.249.66.101',
+        'user-agent':
+          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+      }
+    )
+
+    // In production, search bots limited to 30 requests/minute
+    const limit = process.env.NODE_ENV === 'development' ? 1000 : 30
+
+    for (let i = 0; i < limit; i++) {
+      const result = await checkRateLimit(request)
+      expect(result).toBeNull()
+    }
+
+    // Next request should be blocked in production
+    const result = await checkRateLimit(request)
+    if (process.env.NODE_ENV !== 'development') {
+      expect(result?.status).toBe(429)
+    }
+  })
+
+  it('should still rate limit humans on homepage paths', async () => {
+    const request = createMockNextRequest(
+      'http://localhost:3000/api/reddit?path=/popular.json',
+      {
+        'x-forwarded-for': '192.168.1.200',
+        'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124'
+      }
+    )
+
+    // Humans limited to 200 requests/minute
+    const limit = process.env.NODE_ENV === 'development' ? 1000 : 200
+
+    for (let i = 0; i < limit; i++) {
+      const result = await checkRateLimit(request)
+      expect(result).toBeNull()
+    }
+
+    // Next request should be blocked in production
+    const result = await checkRateLimit(request)
+    if (process.env.NODE_ENV !== 'development') {
+      expect(result?.status).toBe(429)
+    }
+  })
+
+  it('should allow search bots on best.json homepage endpoint', async () => {
+    const request = createMockNextRequest(
+      'http://localhost:3000/api/reddit?path=/best.json?limit=25',
+      {
+        'x-forwarded-for': '66.249.66.102',
+        'user-agent':
+          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+      }
+    )
+
+    // Should allow unlimited access
+    for (let i = 0; i < 50; i++) {
+      const result = await checkRateLimit(request)
+      expect(result).toBeNull()
+    }
   })
 })

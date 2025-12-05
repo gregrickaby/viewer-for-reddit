@@ -23,9 +23,9 @@ export function hasRequiredCommentFields(
 } {
   return Boolean(
     comment &&
-      ('id' in comment || 'permalink' in comment) &&
-      'author' in comment &&
-      ('body' in comment || 'body_html' in comment)
+    ('id' in comment || 'permalink' in comment) &&
+    'author' in comment &&
+    ('body' in comment || 'body_html' in comment)
   )
 }
 

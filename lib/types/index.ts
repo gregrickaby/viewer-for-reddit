@@ -79,8 +79,10 @@ export interface UserSettings {
 /**
  * HLS player component props.
  */
-export interface HlsPlayerProps
-  extends Omit<React.VideoHTMLAttributes<HTMLVideoElement>, 'data-hint'> {
+export interface HlsPlayerProps extends Omit<
+  React.VideoHTMLAttributes<HTMLVideoElement>,
+  'data-hint'
+> {
   dataHint?: string
   src?: string
   fallbackUrl?: string

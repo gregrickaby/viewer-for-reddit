@@ -25,6 +25,10 @@ export async function generateMetadata(props: {
     alternates: {
       canonical: `/u/${username}`
     },
+    robots: {
+      index: false,
+      follow: true
+    },
     openGraph: {
       title,
       description,

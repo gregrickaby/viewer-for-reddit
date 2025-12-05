@@ -10,8 +10,10 @@ import {afterAll, afterEach, beforeAll, vi} from 'vitest'
 
 expect.extend(toHaveNoViolations)
 
-interface MockNextImageProps
-  extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
+interface MockNextImageProps extends Omit<
+  ImgHTMLAttributes<HTMLImageElement>,
+  'src'
+> {
   src: string | StaticImageData
   alt: string
   priority?: boolean

@@ -43,21 +43,20 @@ test.describe('Subreddit Subscription (Authenticated)', () => {
     await expect(subscribeBtn.first()).toBeVisible()
   })
 
-  test.fixme(
-    'should persist subscription after page reload',
-    async ({page}) => {
-      const subscribeBtn = homePage.getSubscribeButton()
+  test.fixme('should persist subscription after page reload', async ({
+    page
+  }) => {
+    const subscribeBtn = homePage.getSubscribeButton()
 
-      await subscribeBtn.first().click()
+    await subscribeBtn.first().click()
 
-      await homePage.waitForApiResponse()
+    await homePage.waitForApiResponse()
 
-      await page.reload()
-      await homePage.waitForHydration()
+    await page.reload()
+    await homePage.waitForHydration()
 
-      await subscribeBtn.first().waitFor({state: 'visible', timeout: 5000})
+    await subscribeBtn.first().waitFor({state: 'visible', timeout: 5000})
 
-      await expect(subscribeBtn.first()).toBeVisible()
-    }
-  )
+    await expect(subscribeBtn.first()).toBeVisible()
+  })
 })

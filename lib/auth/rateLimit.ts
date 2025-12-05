@@ -30,6 +30,32 @@ const RATE_LIMIT = {
 }
 
 /**
+ * Homepage-related API paths that search bots are allowed unlimited access to.
+ * These paths serve the main landing page content and should never cause soft 404s.
+ * Patterns must match paths that the homepage fetches for its content.
+ */
+const HOMEPAGE_PATH_PATTERNS = [
+  /^\/r\/all\/(hot|new|top|best)\.json/, // Homepage default: r/all
+  /^\/popular/, // Popular endpoint
+  /^\/hot\.json/, // Root hot endpoint
+  /^\/best\.json/ // Root best endpoint
+]
+
+/**
+ * Check if the request path is for homepage content.
+ * Homepage paths should be exempt from rate limiting for search bots.
+ */
+export function isHomepagePath(url: string): boolean {
+  try {
+    const urlObj = new URL(url)
+    const path = urlObj.searchParams.get('path') || ''
+    return HOMEPAGE_PATH_PATTERNS.some((pattern) => pattern.test(path))
+  } catch {
+    return false
+  }
+}
+
+/**
  * Detect if request is from a search engine bot.
  * Returns 'search' for known search engines, 'aggressive' for unknown bots, 'human' otherwise.
  */
@@ -106,6 +132,12 @@ export async function checkRateLimit(
   // Detect bot type from User-Agent
   const userAgent = request.headers.get('user-agent') || ''
   const botType = detectBotType(userAgent)
+
+  // Allow search engine bots unlimited access to homepage content
+  // This prevents Google soft 404 errors on the main landing page
+  if (botType === 'search' && isHomepagePath(request.url)) {
+    return null
+  }
 
   // Select rate limit based on client type
   let maxRequests = RATE_LIMIT.HUMAN
