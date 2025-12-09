@@ -43,7 +43,7 @@
     "@mantine/core": "^8.3.9",
     "@mantine/hooks": "^8.3.9",
     "@mantine/notifications": "^8.3.9",
-    "@reduxjs/toolkit": "^2.11.0",
+    "@reduxjs/toolkit": "^2.11.1",
     "arctic": "^3.7.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "chroma-js": "^3.2.0",
