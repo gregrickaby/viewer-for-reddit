@@ -92,7 +92,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-testing-library": "^7.15.3",
     "jest-axe": "^10.0.0",
-    "jsdom": "^27.3.0",
+    "jsdom": "^27.4.0",
     "msw": "^2.12.4",
     "openapi-typescript": "^7.10.1",
     "postcss": "^8.5.6",
