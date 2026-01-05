@@ -103,7 +103,7 @@
     "rollup": "^4.54.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.51.0",
+    "typescript-eslint": "^8.52.0",
     "yaml": "^2.8.2"
   }
 }
