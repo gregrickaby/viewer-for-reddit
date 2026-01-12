@@ -1,6 +1,8 @@
 'use client'
 
 import {SidebarSection} from '@/components/Layout/Sidebar/SidebarSection'
+import {UserMenu} from '@/components/UI/Auth/UserMenu'
+import {Settings} from '@/components/UI/Settings/Settings'
 import {useRemoveFromFavorites} from '@/lib/hooks/subreddit/useRemoveFromFavorites'
 import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
 import {useRemoveItemFromHistory} from '@/lib/hooks/util/useRemoveItemFromHistory'
@@ -10,7 +12,7 @@ import {
   useGetUserSubscriptionsQuery
 } from '@/lib/store/services/authenticatedApi'
 import {useGetPopularSubredditsQuery} from '@/lib/store/services/subredditApi'
-import {NavLink, ScrollArea, Stack} from '@mantine/core'
+import {Box, Divider, Group, NavLink, ScrollArea, Stack} from '@mantine/core'
 import {useMounted} from '@mantine/hooks'
 import Link from 'next/link'
 import {
@@ -62,6 +64,14 @@ export function Sidebar() {
   return (
     <ScrollArea type="never" h="100%">
       <Stack gap="xs">
+        <Box hiddenFrom="sm">
+          <Group gap="sm" mb="md" justify="center">
+            <Settings />
+            <UserMenu />
+          </Group>
+          <Divider mb="md" />
+        </Box>
+
         <NavLink
           component={Link}
           data-umami-event="sidebar home"

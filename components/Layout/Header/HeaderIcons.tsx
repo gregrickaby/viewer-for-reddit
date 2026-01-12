@@ -1,14 +1,16 @@
 import {UserMenu} from '@/components/UI/Auth/UserMenu'
 import {Settings} from '@/components/UI/Settings/Settings'
 import config from '@/lib/config'
-import {ActionIcon, Group, Tooltip} from '@mantine/core'
+import {ActionIcon, Box, Group, Tooltip} from '@mantine/core'
 import {FaGithub} from 'react-icons/fa'
 import {SiBuymeacoffee} from 'react-icons/si'
 
 export function HeaderIcons() {
   return (
     <Group gap="xs">
-      <Settings />
+      <Box visibleFrom="sm">
+        <Settings />
+      </Box>
       <Tooltip label="View source code" position="bottom" withArrow>
         <ActionIcon
           aria-label="View source code"
@@ -41,7 +43,9 @@ export function HeaderIcons() {
           <SiBuymeacoffee size={18} />
         </ActionIcon>
       </Tooltip>
-      <UserMenu />
+      <Box visibleFrom="sm">
+        <UserMenu />
+      </Box>
     </Group>
   )
 }

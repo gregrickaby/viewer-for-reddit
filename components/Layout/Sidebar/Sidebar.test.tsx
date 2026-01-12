@@ -1,6 +1,13 @@
 import {Sidebar} from '@/components/Layout/Sidebar/Sidebar'
 import {render, screen} from '@/test-utils'
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn()
+  })
+}))
+
 vi.mock('@mantine/hooks', async () => {
   const actual = await vi.importActual<any>('@mantine/hooks')
   return {
