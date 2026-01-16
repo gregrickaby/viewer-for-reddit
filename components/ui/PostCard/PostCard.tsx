@@ -2,10 +2,9 @@
 
 import {useSavePost, useVote} from '@/lib/hooks'
 import {RedditPost} from '@/lib/types/reddit'
-import {decodeHtmlEntities} from '@/lib/utils/formatters'
+import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {extractSlug} from '@/lib/utils/reddit-helpers'
 import {Anchor, Card, Stack, Text} from '@mantine/core'
-import DOMPurify from 'isomorphic-dompurify'
 import Link from 'next/link'
 import {memo} from 'react'
 import {PostActions} from '../PostActions/PostActions'
@@ -99,7 +98,7 @@ export const PostCard = memo(
               {showFullText && post.selftext_html ? (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(
+                    __html: sanitizeText(
                       decodeHtmlEntities(post.selftext_html)
                     )
                   }}

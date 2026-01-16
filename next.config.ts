@@ -2,7 +2,6 @@ import type {NextConfig} from 'next'
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  serverExternalPackages: ['jsdom'],
   experimental: {
     inlineCss: true,
     globalNotFound: true,

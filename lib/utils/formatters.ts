@@ -1,3 +1,5 @@
+import sanitizeHtml from 'sanitize-html'
+
 /**
  * Formats a number into a human-readable string with K/M suffixes
  * @param num - The number to format
@@ -46,4 +48,50 @@ export function decodeHtmlEntities(html: string): string {
     .replaceAll('&#x27;', "'")
     .replaceAll('&#x2F;', '/')
     .replaceAll('&#47;', '/')
+}
+
+/**
+ * Sanitize HTML with sanitize-html and allow safe tags
+ * @param html - HTML string to sanitize
+ * @returns Sanitized HTML string
+ */
+export function sanitizeText(html: string): string {
+  return sanitizeHtml(html || '', {
+    allowedTags: [
+      'b',
+      'i',
+      'strong',
+      'em',
+      'a',
+      'p',
+      'br',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'code',
+      'pre',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'hr',
+      'del',
+      'sup',
+      'sub',
+      'table',
+      'thead',
+      'tbody',
+      'tr',
+      'th',
+      'td'
+    ],
+    allowedAttributes: {
+      a: ['href', 'title', 'target', 'rel'],
+      '*': ['class']
+    },
+    allowedSchemes: ['http', 'https', 'mailto']
+  })
 }

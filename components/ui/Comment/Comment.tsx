@@ -2,11 +2,14 @@
 
 import {useVote} from '@/lib/hooks'
 import {RedditComment as RedditCommentType} from '@/lib/types/reddit'
-import {decodeHtmlEntities, formatTimeAgo} from '@/lib/utils/formatters'
+import {
+  decodeHtmlEntities,
+  formatTimeAgo,
+  sanitizeText
+} from '@/lib/utils/formatters'
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {ActionIcon, Badge, Card, Group, Stack, Text} from '@mantine/core'
 import {IconArrowDown, IconArrowUp} from '@tabler/icons-react'
-import DOMPurify from 'isomorphic-dompurify'
 import styles from './Comment.module.css'
 
 /**
@@ -78,7 +81,7 @@ export function Comment({
 
           <div
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(
+              __html: sanitizeText(
                 comment.body_html
                   ? decodeHtmlEntities(comment.body_html)
                   : comment.body
