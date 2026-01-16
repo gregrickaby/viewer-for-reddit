@@ -877,6 +877,9 @@ export async function searchSubreddits(query: string): Promise<{
   }
 
   try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
+
     const params = new URLSearchParams({
       query,
       limit: '10',
@@ -888,7 +891,7 @@ export async function searchSubreddits(query: string): Promise<{
     const response = await fetch(
       `${REDDIT_API_URL}/api/subreddit_autocomplete_v2.json?${params}`,
       {
-        headers: {'User-Agent': getEnvVar('USER_AGENT')},
+        headers: await getHeaders(isAuthenticated),
         next: {revalidate: 60}
       }
     )
