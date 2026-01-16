@@ -82,11 +82,11 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value:
               "default-src 'self'; " +
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://umami.wiregrasswebsites.com; " +
               "style-src 'self' 'unsafe-inline'; " +
               "img-src 'self' data: https://*.redd.it https://*.redditstatic.com https://*.redditmedia.com https://external-preview.redd.it; " +
               "media-src 'self' https://*.redd.it https://v.redd.it https://*.reddit.com; " +
-              "connect-src 'self' https://oauth.reddit.com https://www.reddit.com; " +
+              "connect-src 'self' https://oauth.reddit.com https://www.reddit.com https://umami.wiregrasswebsites.com; " +
               "font-src 'self' data:; " +
               "frame-src 'none'; " +
               "object-src 'none'; " +
