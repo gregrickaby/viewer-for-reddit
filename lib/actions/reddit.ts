@@ -84,8 +84,7 @@ export const fetchPosts = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      // Always use oauth.reddit.com (works with and without auth)
-      const baseUrl = REDDIT_API_URL
+      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
 
       // Handle different feed types
       let urlPath
@@ -114,6 +113,20 @@ export const fetchPosts = cache(
       })
 
       if (!response.ok) {
+        // Log the full error for debugging
+        const errorBody = await response.text()
+        logger.error(
+          'Reddit API request failed',
+          {
+            status: response.status,
+            statusText: response.statusText,
+            url: url.toString(),
+            isAuthenticated,
+            errorBody: errorBody.substring(0, 500)
+          },
+          {context: 'fetchPosts'}
+        )
+
         if (response.status === 401) {
           throw new Error('Authentication expired')
         }
