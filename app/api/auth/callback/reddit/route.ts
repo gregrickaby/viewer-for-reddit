@@ -165,7 +165,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const configuredRedirectUri = getEnvVar('REDDIT_REDIRECT_URI')
   const callbackUrl = new URL(request.url)
   callbackUrl.search = ''
-  callbackUrl.hash = '' // Remove hash fragment (Reddit sometimes adds #_)
 
   if (callbackUrl.toString() !== configuredRedirectUri) {
     logger.error(
@@ -187,7 +186,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     session.userId = sessionData.userId
     await session.save()
 
-    const response = NextResponse.redirect(new URL('/', request.url))
+    // Build clean redirect URL without hash fragment
+    const redirectUrl = new URL('/', request.url)
+    redirectUrl.hash = '' // Remove hash fragment (Reddit adds #_)
+
+    const response = NextResponse.redirect(redirectUrl)
     response.cookies.delete('reddit_oauth_state')
 
     return response
