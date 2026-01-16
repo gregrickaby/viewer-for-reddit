@@ -165,6 +165,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const configuredRedirectUri = getEnvVar('REDDIT_REDIRECT_URI')
   const callbackUrl = new URL(request.url)
   callbackUrl.search = ''
+  callbackUrl.hash = '' // Remove hash fragment (Reddit sometimes adds #_)
 
   if (callbackUrl.toString() !== configuredRedirectUri) {
     logger.error(
