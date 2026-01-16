@@ -17,7 +17,6 @@ import {
   FIVE_MINUTES,
   ONE_HOUR,
   REDDIT_API_URL,
-  REDDIT_PUBLIC_API_URL,
   TEN_MINUTES
 } from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
@@ -240,7 +239,8 @@ export const fetchPost = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+      // Always use OAuth endpoint (works with both user and app tokens)
+      const baseUrl = REDDIT_API_URL
       const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
 
       const response = await fetch(url, {
@@ -307,7 +307,8 @@ export const fetchSubredditInfo = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+      // Always use OAuth endpoint (works with both user and app tokens)
+      const baseUrl = REDDIT_API_URL
       const url = `${baseUrl}/r/${subreddit}/about.json`
 
       const response = await fetch(url, {
@@ -636,7 +637,8 @@ export const fetchUserInfo = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+      // Always use OAuth endpoint (works with both user and app tokens)
+      const baseUrl = REDDIT_API_URL
       const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
 
       const response = await fetch(url, {
@@ -731,7 +733,8 @@ export const fetchUserPosts = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+      // Always use OAuth endpoint (works with both user and app tokens)
+      const baseUrl = REDDIT_API_URL
       const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
 
       url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
@@ -802,7 +805,8 @@ export const searchReddit = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+      // Always use OAuth endpoint (works with both user and app tokens)
+      const baseUrl = REDDIT_API_URL
       const url = new URL(`${baseUrl}/search.json`)
 
       url.searchParams.set('q', query)
@@ -882,7 +886,7 @@ export async function searchSubreddits(query: string): Promise<{
     })
 
     const response = await fetch(
-      `${REDDIT_PUBLIC_API_URL}/api/subreddit_autocomplete_v2.json?${params}`,
+      `${REDDIT_API_URL}/api/subreddit_autocomplete_v2.json?${params}`,
       {
         headers: {'User-Agent': getEnvVar('USER_AGENT')},
         next: {revalidate: 60}
