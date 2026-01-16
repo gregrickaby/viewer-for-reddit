@@ -84,7 +84,8 @@ export const fetchPosts = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+      // Always use oauth.reddit.com (works with and without auth)
+      const baseUrl = REDDIT_API_URL
 
       // Handle different feed types
       let urlPath
