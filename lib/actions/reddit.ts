@@ -26,10 +26,51 @@ import {retryWithBackoff} from '@/lib/utils/retry'
 import {cache} from 'react'
 
 /**
+ * Get application-only access token for anonymous Reddit API access.
+ * Uses client credentials grant type. Token is cached for 1 hour.
+ */
+let appToken: {token: string; expiresAt: number} | null = null
+
+async function getAppAccessToken(): Promise<string> {
+  // Return cached token if still valid
+  if (appToken && appToken.expiresAt > Date.now()) {
+    return appToken.token
+  }
+
+  // Get new token using client credentials
+  const credentials = Buffer.from(
+    `${getEnvVar('REDDIT_CLIENT_ID')}:${getEnvVar('REDDIT_CLIENT_SECRET')}`
+  ).toString('base64')
+
+  const response = await fetch('https://www.reddit.com/api/v1/access_token', {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': getEnvVar('USER_AGENT')
+    },
+    body: 'grant_type=client_credentials'
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to get app token: ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  appToken = {
+    token: data.access_token,
+    expiresAt: Date.now() + data.expires_in * 1000 - 60000 // Refresh 1 min early
+  }
+
+  return appToken.token
+}
+
+/**
  * Create HTTP headers for Reddit API requests.
- * Includes User-Agent and optional OAuth Bearer token for authenticated requests.
+ * For authenticated users: uses user's OAuth token
+ * For anonymous users: uses application-only token
  *
- * @param useAuth - Whether to include OAuth Bearer token in headers
+ * @param useAuth - Whether user is authenticated
  * @returns Promise resolving to headers object
  */
 async function getHeaders(useAuth: boolean = false) {
@@ -42,6 +83,10 @@ async function getHeaders(useAuth: boolean = false) {
     if (session.accessToken) {
       headers.Authorization = `Bearer ${session.accessToken}`
     }
+  } else {
+    // Use application-only token for anonymous access
+    const token = await getAppAccessToken()
+    headers.Authorization = `Bearer ${token}`
   }
 
   return headers
@@ -84,7 +129,8 @@ export const fetchPosts = cache(
       const session = await getSession()
       const isAuthenticated = !!session.accessToken
 
-      const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+      // Always use OAuth endpoint (works with both user and app tokens)
+      const baseUrl = REDDIT_API_URL
 
       // Handle different feed types
       let urlPath
