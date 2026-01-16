@@ -38,8 +38,6 @@ const nextConfig: NextConfig = {
     ],
     dangerouslyAllowSVG: false,
     contentDispositionType: 'attachment',
-    contentSecurityPolicy:
-      "default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; sandbox;",
     formats: ['image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
