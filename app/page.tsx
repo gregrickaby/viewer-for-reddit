@@ -69,13 +69,15 @@ async function PostsContent({
   isAuthenticated: boolean
   sort?: SortOption
 }>) {
-  const {posts} = await fetchPosts(feedType, sort)
+  const {posts, after} = await fetchPosts(feedType, sort)
 
   return (
     <PostListWithTabs
       posts={posts}
+      after={after}
       activeSort={sort}
       isAuthenticated={isAuthenticated}
+      subreddit={feedType}
     />
   )
 }
