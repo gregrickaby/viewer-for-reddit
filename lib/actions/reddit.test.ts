@@ -50,6 +50,42 @@ describe('reddit server actions', () => {
 
   describe('fetchPosts', () => {
     it('fetches posts from a subreddit', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'test1',
+                    title: 'Test Post 1',
+                    author: 'author1',
+                    score: 100
+                  }
+                },
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'test2',
+                    title: 'Test Post 2',
+                    author: 'author2',
+                    score: 200
+                  }
+                }
+              ],
+              after: 't3_next'
+            }
+          })
+        })
+      )
+
       const {posts, after} = await fetchPosts('popular', 'hot')
 
       expect(posts.length).toBeGreaterThan(0)
@@ -86,7 +122,7 @@ describe('reddit server actions', () => {
 
     it('handles 404 errors', async () => {
       server.use(
-        http.get('https://www.reddit.com/r/:subreddit/:sort.json', () => {
+        http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
           return new HttpResponse(null, {status: 404})
         })
       )
@@ -98,7 +134,7 @@ describe('reddit server actions', () => {
 
     it('handles 429 rate limit', async () => {
       server.use(
-        http.get('https://www.reddit.com/r/:subreddit/:sort.json', () => {
+        http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
           return new HttpResponse(null, {status: 429})
         })
       )
@@ -113,7 +149,7 @@ describe('reddit server actions', () => {
     it('fetches a post with comments', async () => {
       server.use(
         http.get(
-          'https://www.reddit.com/r/:subreddit/comments/:postId.json',
+          'https://oauth.reddit.com/r/:subreddit/comments/:postId.json',
           () => {
             return HttpResponse.json([
               {
@@ -155,7 +191,7 @@ describe('reddit server actions', () => {
     it('handles 404 errors', async () => {
       server.use(
         http.get(
-          'https://www.reddit.com/r/:subreddit/comments/:postId.json',
+          'https://oauth.reddit.com/r/:subreddit/comments/:postId.json',
           () => {
             return new HttpResponse(null, {status: 404})
           }
@@ -171,7 +207,7 @@ describe('reddit server actions', () => {
   describe('fetchSubredditInfo', () => {
     it('fetches subreddit information', async () => {
       server.use(
-        http.get('https://www.reddit.com/r/:subreddit/about.json', () => {
+        http.get('https://oauth.reddit.com/r/:subreddit/about.json', () => {
           return HttpResponse.json({
             data: {
               display_name: 'aww',
@@ -189,7 +225,7 @@ describe('reddit server actions', () => {
 
     it('handles 404 errors', async () => {
       server.use(
-        http.get('https://www.reddit.com/r/:subreddit/about.json', () => {
+        http.get('https://oauth.reddit.com/r/:subreddit/about.json', () => {
           return new HttpResponse(null, {status: 404})
         })
       )
@@ -351,6 +387,25 @@ describe('reddit server actions', () => {
 
   describe('fetchUserInfo', () => {
     it('fetches user profile', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/about.json', () => {
+          return HttpResponse.json({
+            data: {
+              name: 'testuser',
+              total_karma: 1234,
+              created_utc: 1234567890,
+              icon_img: 'https://example.com/avatar.png'
+            }
+          })
+        })
+      )
+
       const user = await fetchUserInfo('testuser')
 
       expect(user.name).toBe('testuser')
@@ -359,7 +414,7 @@ describe('reddit server actions', () => {
 
     it('handles 404 errors', async () => {
       server.use(
-        http.get('https://www.reddit.com/user/:username/about.json', () => {
+        http.get('https://oauth.reddit.com/user/:username/about.json', () => {
           return new HttpResponse(null, {status: 404})
         })
       )
@@ -373,23 +428,26 @@ describe('reddit server actions', () => {
   describe('fetchUserPosts', () => {
     it('fetches user submitted posts', async () => {
       server.use(
-        http.get('https://www.reddit.com/user/:username/submitted.json', () => {
-          return HttpResponse.json({
-            data: {
-              children: [
-                {
-                  kind: 't3',
-                  data: {
-                    id: 'post1',
-                    title: 'Test Post',
-                    author: 'testuser'
+        http.get(
+          'https://oauth.reddit.com/user/:username/submitted.json',
+          () => {
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    kind: 't3',
+                    data: {
+                      id: 'post1',
+                      title: 'Test Post',
+                      author: 'testuser'
+                    }
                   }
-                }
-              ],
-              after: 't3_after'
-            }
-          })
-        })
+                ],
+                after: 't3_after'
+              }
+            })
+          }
+        )
       )
 
       const {posts, after} = await fetchUserPosts('testuser')
@@ -401,9 +459,12 @@ describe('reddit server actions', () => {
 
     it('handles 404 errors', async () => {
       server.use(
-        http.get('https://www.reddit.com/user/:username/submitted.json', () => {
-          return new HttpResponse(null, {status: 404})
-        })
+        http.get(
+          'https://oauth.reddit.com/user/:username/submitted.json',
+          () => {
+            return new HttpResponse(null, {status: 404})
+          }
+        )
       )
 
       await expect(fetchUserPosts('nonexistent')).rejects.toThrow(
@@ -414,6 +475,42 @@ describe('reddit server actions', () => {
 
   describe('searchReddit', () => {
     it('searches reddit for posts', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/search.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'search1',
+                    title: 'NextJS Post',
+                    author: 'user1',
+                    score: 50
+                  }
+                },
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'search2',
+                    title: 'Another NextJS Post',
+                    author: 'user2',
+                    score: 75
+                  }
+                }
+              ],
+              after: 't3_after'
+            }
+          })
+        })
+      )
+
       const {posts, after} = await searchReddit('nextjs')
 
       expect(posts.length).toBeGreaterThan(0)
@@ -422,7 +519,7 @@ describe('reddit server actions', () => {
 
     it('handles errors', async () => {
       server.use(
-        http.get('https://www.reddit.com/search.json', () => {
+        http.get('https://oauth.reddit.com/search.json', () => {
           return new HttpResponse(null, {status: 500})
         })
       )
@@ -440,6 +537,44 @@ describe('reddit server actions', () => {
     })
 
     it('searches for subreddits', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => {
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    data: {
+                      display_name: 'technology',
+                      display_name_prefixed: 'r/technology',
+                      subscribers: 1000000,
+                      icon_img: 'https://example.com/tech.png',
+                      over18: false
+                    }
+                  },
+                  {
+                    data: {
+                      display_name: 'tech',
+                      display_name_prefixed: 'r/tech',
+                      subscribers: 500000,
+                      icon_img: 'https://example.com/tech2.png',
+                      over18: false
+                    }
+                  }
+                ]
+              }
+            })
+          }
+        )
+      )
+
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(true)
@@ -450,7 +585,7 @@ describe('reddit server actions', () => {
     it('handles errors gracefully', async () => {
       server.use(
         http.get(
-          'https://www.reddit.com/api/subreddit_autocomplete_v2.json',
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
           () => {
             return new HttpResponse(null, {status: 500})
           }

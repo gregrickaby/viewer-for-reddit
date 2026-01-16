@@ -2,7 +2,7 @@ import {http, HttpResponse} from 'msw'
 import {searchMock} from '../../mocks/search'
 
 export const searchHandlers = [
-  // Search Reddit
+  // Search Reddit (OAuth endpoint - used for both authenticated and anonymous)
   http.get('https://oauth.reddit.com/search.json', ({request}) => {
     const url = new URL(request.url)
     const q = url.searchParams.get('q')
@@ -25,30 +25,7 @@ export const searchHandlers = [
     })
   }),
 
-  // Search Reddit (unauthenticated)
-  http.get('https://www.reddit.com/search.json', ({request}) => {
-    const url = new URL(request.url)
-    const q = url.searchParams.get('q')
-    const after = url.searchParams.get('after')
-
-    return HttpResponse.json({
-      data: {
-        children: [
-          {
-            data: {
-              id: 'search1',
-              title: `Search result for "${q}"`,
-              author: 'testuser',
-              score: 50
-            }
-          }
-        ],
-        after: after ? null : 't3_search_next'
-      }
-    })
-  }),
-
-  // Subreddit autocomplete
+  // Subreddit autocomplete (OAuth endpoint - used for both authenticated and anonymous)
   http.get(
     'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
     ({request}) => {
@@ -82,30 +59,36 @@ export const searchHandlers = [
                 kind: 't5',
                 data: {
                   display_name: 'validsubreddit',
+                  display_name_prefixed: 'r/validsubreddit',
                   public_description: 'Valid subreddit',
                   community_icon: '',
                   icon_img: '',
-                  subscribers: 1000
+                  subscribers: 1000,
+                  over18: false
                 }
               },
               {
                 kind: 't5',
                 data: {
                   display_name: null, // Missing name - should be filtered
+                  display_name_prefixed: null,
                   public_description: 'Invalid subreddit',
                   community_icon: '',
                   icon_img: '',
-                  subscribers: 500
+                  subscribers: 500,
+                  over18: false
                 }
               },
               {
                 kind: 't5',
                 data: {
                   display_name: '', // Empty name - should be filtered
+                  display_name_prefixed: '',
                   public_description: 'Another invalid',
                   community_icon: '',
                   icon_img: '',
-                  subscribers: 300
+                  subscribers: 300,
+                  over18: false
                 }
               }
             ]
@@ -127,6 +110,7 @@ export const searchHandlers = [
                 kind: 't5',
                 data: {
                   display_name: 'sfw1',
+                  display_name_prefixed: 'r/sfw1',
                   public_description: 'SFW subreddit 1',
                   community_icon: '',
                   icon_img: '',
@@ -138,6 +122,7 @@ export const searchHandlers = [
                 kind: 't5',
                 data: {
                   display_name: 'nsfw1',
+                  display_name_prefixed: 'r/nsfw1',
                   public_description: 'NSFW subreddit 1',
                   community_icon: '',
                   icon_img: '',
@@ -149,6 +134,7 @@ export const searchHandlers = [
                 kind: 't5',
                 data: {
                   display_name: 'nsfw2',
+                  display_name_prefixed: 'r/nsfw2',
                   public_description: 'NSFW subreddit 2',
                   community_icon: '',
                   icon_img: '',
@@ -157,30 +143,6 @@ export const searchHandlers = [
                 }
               }
             ]
-          }
-        })
-      }
-
-      return HttpResponse.json(searchMock)
-    }
-  ),
-
-  // Unauthenticated subreddit autocomplete
-  http.get(
-    'https://www.reddit.com/api/subreddit_autocomplete_v2.json',
-    ({request}) => {
-      const url = new URL(request.url)
-      const query = url.searchParams.get('query')
-
-      if (!query || query.length < 3) {
-        return HttpResponse.json({
-          kind: 'Listing',
-          data: {
-            after: null,
-            dist: 0,
-            modhash: '',
-            geo_filter: '',
-            children: []
           }
         })
       }
