@@ -2,12 +2,46 @@
   "servers": {
     "devvit": {
       "command": "npx",
-      "args": ["-y", "@devvit/mcp"]
+      "args": ["-y", "@devvit/mcp"],
+      "type": "stdio"
     },
     "next-devtools": {
       "command": "npx",
-      "args": ["-y", "next-devtools-mcp@latest"]
+      "args": ["-y", "next-devtools-mcp@latest"],
+      "type": "stdio"
+    },
+    "sonarqube": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--network=host",
+        "-e",
+        "SONARQUBE_TOKEN",
+        "-e",
+        "SONARQUBE_URL",
+        "mcp/sonarqube"
+      ],
+      "env": {
+        "SONARQUBE_TOKEN": "${input:SONARQUBE_TOKEN}",
+        "SONARQUBE_URL": "${input:SONARQUBE_URL}"
+      },
+      "type": "stdio"
     }
   },
-  "inputs": []
+  "inputs": [
+    {
+      "id": "SONARQUBE_TOKEN",
+      "type": "promptString",
+      "description": "SonarQube Server User Token",
+      "password": true
+    },
+    {
+      "id": "SONARQUBE_URL",
+      "type": "promptString",
+      "description": "SonarQube Server URL",
+      "password": false
+    }
+  ]
 }

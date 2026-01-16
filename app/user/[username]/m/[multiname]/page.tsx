@@ -1,0 +1,169 @@
+import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
+import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
+import BackToTop from '@/components/ui/BackToTop/BackToTop'
+import BossButton from '@/components/ui/BossButton/BossButton'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
+import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {
+  fetchMultireddits,
+  fetchPosts,
+  fetchUserSubscriptions,
+  getCurrentUserAvatar
+} from '@/lib/actions/reddit'
+import {getSession} from '@/lib/auth/session'
+import {appConfig} from '@/lib/config/app.config'
+import {logger} from '@/lib/utils/logger'
+import {Container, Title} from '@mantine/core'
+import type {Metadata} from 'next'
+import {notFound} from 'next/navigation'
+import {Suspense} from 'react'
+
+import {SortOption} from '@/lib/types/reddit'
+
+interface PageProps {
+  params: Promise<{
+    username: string
+    multiname: string
+  }>
+  searchParams: Promise<{sort?: string}>
+}
+
+/**
+ * Generate metadata for multireddit page.
+ */
+export async function generateMetadata({params}: PageProps): Promise<Metadata> {
+  const {username, multiname} = await params
+
+  return {
+    title: `${multiname} - ${appConfig.site.name}`,
+    description: `Viewing posts from multireddit "${multiname}"`,
+    alternates: {
+      canonical: `/user/${username}/m/${multiname}`
+    },
+    robots: {
+      index: false,
+      follow: false
+    },
+    openGraph: {
+      title: `${multiname} - ${appConfig.site.name}`,
+      description: `Viewing posts from multireddit "${multiname}"`,
+      url: `/user/${username}/m/${multiname}`
+    }
+  }
+}
+
+/**
+ * Multireddit posts component.
+ * Fetches and displays posts from a custom multireddit.
+ *
+ * @param username - Reddit username who owns the multireddit
+ * @param multiname - Multireddit name
+ * @param isAuthenticated - Whether user is logged in
+ * @param sort - Sort option (hot, new, top, rising, controversial)
+ */
+async function MultiredditPosts({
+  username,
+  multiname,
+  isAuthenticated,
+  sort = 'hot'
+}: Readonly<{
+  username: string
+  multiname: string
+  isAuthenticated: boolean
+  sort?: SortOption
+}>) {
+  const multiredditPath = `user/${username}/m/${multiname}`
+
+  const postsResult = await fetchPosts(multiredditPath, sort).catch((error) => {
+    logger.error('Failed to fetch multireddit posts', error, {
+      context: 'MultiredditPage',
+      multiredditPath
+    })
+    notFound()
+  })
+
+  const {posts, after} = postsResult
+
+  return (
+    <PostListWithTabs
+      posts={posts}
+      after={after}
+      activeSort={sort}
+      isAuthenticated={isAuthenticated}
+      subreddit={multiredditPath}
+    />
+  )
+}
+
+/**
+ * Multireddit page - displays posts from a user's custom multireddit.
+ *
+ * Multireddits are custom feeds combining multiple subreddits.
+ * Users can create, edit, and manage multireddits on Reddit.
+ *
+ * Features:
+ * - Posts from all subreddits in the multireddit
+ * - Sort tabs (hot, new, top, rising)
+ * - Infinite scroll
+ * - Boss button and back-to-top button
+ *
+ * @param params - URL params (username, multireddit name)
+ * @param searchParams - URL search params (sort option)
+ */
+export default async function MultiredditPage({
+  params,
+  searchParams
+}: Readonly<PageProps>) {
+  const {username, multiname} = await params
+  const {sort} = await searchParams
+  const postSort = (sort as SortOption) || 'hot'
+
+  const session = await getSession()
+  const isAuthenticated = !!session.accessToken
+
+  const [subscriptions, multireddits, avatarUrl] = await Promise.all([
+    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
+    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
+    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
+  ])
+
+  return (
+    <>
+      <AppLayout
+        isAuthenticated={isAuthenticated}
+        username={session.username}
+        avatarUrl={avatarUrl ?? undefined}
+        subscriptions={subscriptions}
+        multireddits={multireddits}
+      >
+        <Container size="lg">
+          <Title order={2} mb="lg">
+            {multiname}
+          </Title>
+
+          <ErrorBoundary
+            fallback={
+              <ErrorDisplay
+                title="Failed to load multireddit"
+                message="Unable to fetch posts for this multireddit. Please try again."
+                showHome={false}
+              />
+            }
+          >
+            <Suspense fallback={<TabsSkeleton />}>
+              <MultiredditPosts
+                username={username}
+                multiname={multiname}
+                isAuthenticated={isAuthenticated}
+                sort={postSort}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        </Container>
+      </AppLayout>
+      <BossButton />
+      <BackToTop />
+    </>
+  )
+}

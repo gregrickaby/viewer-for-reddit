@@ -1,10 +1,10 @@
-import config from '@/lib/config'
+import {appConfig} from '@/lib/config/app.config'
 import {MetadataRoute} from 'next'
 
 /**
  * The robots.txt route.
  *
- * Allows crawling of the homepage and subreddit listing pages.
+ * Allows crawling of the homepage and about page.
  * Disallows crawling of user profiles and individual post pages to:
  * - Prevent excessive API usage from crawlers
  * - Avoid indexing duplicate Reddit content
@@ -18,10 +18,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/u/', '/r/*/comments/', '/user/', '/api/'],
+        disallow: ['/u/', '/r/*/comments/', '/user/', '/api/', '/search/'],
         crawlDelay: 2
       }
     ],
-    sitemap: `${config.baseUrl}/sitemap.xml`
+    sitemap: `${appConfig.site.baseUrl}/sitemap.xml`
   }
 }

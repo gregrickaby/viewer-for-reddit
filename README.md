@@ -16,13 +16,13 @@ New here? **[Start browsing now →](https://reddit-viewer.com)**
 
 ## How It Works
 
-**No account? No problem.** Jump in and start browsing right now. The homepage shows popular posts, and you can search for any community. Heart communities you like, and they'll appear on your homepage next time.
+**No account? No problem.** Jump in and start browsing right now. The homepage shows popular posts, and you can search for any community.
 
-**Want more?** Sign in with your Reddit account to access your personalized feed, custom feeds, and saved posts. You can also vote and comment on posts.
+**Want more?** Sign in with your Reddit account to access your personalized feed, custom feeds, and saved posts. You can also vote on and save posts, plus join or leave communities.
 
-**Your privacy is protected.** We use Reddit's official login system—your password never touches our servers. We store temporary access tokens that get deleted when you sign out. That's it.
+**Your privacy is protected.** We use Reddit's official login system (oAuth2) so your password never touches our servers. We store temporary access tokens that get deleted when you sign out. That's it.
 
-We track some usage stats (what features you use, button clicks) with Umami's [Track Events](https://umami.is/docs/track-events) system to make the app better, but it's all anonymous and not connected to your Reddit account.
+The app does anonymously tracks button clicks with Umami's [Track Events](https://umami.is/docs/track-events) system. The data is used to make the app better by guiding which features to build next.
 
 ## The Story Behind It
 
@@ -36,7 +36,10 @@ I'm [Greg Rickaby](https://gregrickaby.com), a software engineer who's been arou
 
 - **Found a bug?** [Let me know](https://github.com/gregrickaby/viewer-for-reddit/issues)
 - **Have an idea?** [Share it](https://github.com/gregrickaby/viewer-for-reddit/issues)
-- **Like the project?** [Buy me a coffee](https://www.buymeacoffee.com/gregrickaby) ☕ (helps pay for hosting!)
+- **Like the project?** Support development:
+  - ☕ [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby)
+  - 💸 [Venmo](https://venmo.com/u/GregRickaby)
+  - 💳 [PayPal](https://www.paypal.com/paypalme/GregRickaby)
 
 ## Tech & Open Source
 
@@ -46,4 +49,4 @@ If you're a developer interested in contributing, the [CONTRIBUTING.md](https://
 
 ---
 
-_Viewer for Reddit is an independent side project and is not affiliated with, endorsed by, or sponsored by Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc., used in accordance with their [brand guidelines](https://redditinc.com/brand). The app developer and contributors endeavor to comply with Reddit's [API terms](https://redditinc.com/policies/data-api-terms) and [Developer Platform](https://support.reddithelp.com/hc/en-us/articles/14945211791892-Developer-Platform-Accessing-Reddit-Data) policies._
+Viewer for Reddit is an independent side project and is not affiliated with, endorsed by, or sponsored by Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc., used in accordance with their [brand guidelines](https://redditinc.com/brand). The app developer and contributors endeavor to comply with Reddit's [API terms](https://redditinc.com/policies/data-api-terms), [Developer Platform policies](https://support.reddithelp.com/hc/en-us/articles/14945211791892-Developer-Platform-Accessing-Reddit-Data) and [API documentation](https://www.reddit.com/dev/api/).

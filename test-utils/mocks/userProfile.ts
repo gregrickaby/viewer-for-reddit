@@ -6,8 +6,8 @@ export const userProfileMock = {
   data: {
     id: '2cf0dc',
     name: 'testuser',
-    created: 1234567890.0,
-    created_utc: 1234567890.0,
+    created: 1234567890,
+    created_utc: 1234567890,
     link_karma: 12345,
     comment_karma: 67890,
     total_karma: 80235,

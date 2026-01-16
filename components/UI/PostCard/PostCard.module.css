@@ -1,0 +1,26 @@
+.postBody {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.postBody a {
+  color: var(--mantine-color-blue-6);
+  text-decoration: underline;
+}
+
+.postBody a:hover {
+  color: var(--mantine-color-blue-7);
+}
+
+.postBody p {
+  margin: 0.5rem 0;
+}
+
+.postBody p:first-child {
+  margin-top: 0;
+}
+
+.postBody p:last-child {
+  margin-bottom: 0;
+}

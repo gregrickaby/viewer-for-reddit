@@ -5,7 +5,6 @@ import testingLibrary from 'eslint-plugin-testing-library'
 import jestDom from 'eslint-plugin-jest-dom'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import {defineConfig} from 'eslint/config'
-import playwright from 'eslint-plugin-playwright'
 
 export default defineConfig(
   // Ignore patterns
@@ -71,19 +70,6 @@ export default defineConfig(
     rules: {
       ...testingLibrary.configs['flat/react'].rules,
       ...jestDom.configs['flat/recommended'].rules
-    }
-  },
-
-  /**
-   * Apply Playwright rules to e2e test files only
-   *
-   * https://www.npmjs.com/package/eslint-plugin-playwright
-   */
-  {
-    ...playwright.configs['flat/recommended'],
-    files: ['e2e/**'],
-    rules: {
-      ...playwright.configs['flat/recommended'].rules
     }
   },
 

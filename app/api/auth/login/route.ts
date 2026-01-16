@@ -1,82 +1,64 @@
-import {getRedditClient} from '@/lib/auth/arctic'
-import {getClientInfo, logAuditEvent} from '@/lib/auth/auditLog'
-import {checkRateLimit} from '@/lib/auth/rateLimit'
-import {createUncachedRedirect} from '@/lib/utils/routing/redirectHelpers'
-import {generateState} from 'arctic'
-import {cookies} from 'next/headers'
-import {NextRequest} from 'next/server'
+import {getEnvVar, isProduction} from '@/lib/utils/env'
+import {Reddit} from 'arctic'
+import {NextResponse} from 'next/server'
 
 /**
- * OAuth 2.0 login initiation handler.
- *
- * Initiates the Reddit OAuth authorization flow by:
- * 1. Generating cryptographic state parameter for CSRF protection
- * 2. Creating Reddit authorization URL with minimal required scopes
- * 3. Storing state in httpOnly cookie
- * 4. Redirecting user to Reddit's authorization page
- *
- * @security
- * - Rate limiting applied before processing
- * - CSRF protection via cryptographic state parameter
- * - State stored in httpOnly, sameSite cookie
- * - Secure cookie flag in production
- * - Cache prevention headers on redirect
- *
- * @flow
- * 1. User clicks "Sign in" button
- * 2. This route generates state and redirects to Reddit
- * 3. User approves on Reddit
- * 4. Reddit redirects back to /api/auth/callback/reddit
- *
- * @param request - Next.js request object
- * @returns Redirect response to Reddit authorization page
+ * Reddit OAuth client instance.
+ * Configured with Reddit app credentials.
  */
-export async function GET(request: NextRequest) {
-  // Apply rate limiting to prevent abuse
-  const rateLimitResponse = await checkRateLimit(request)
-  if (rateLimitResponse) {
-    return rateLimitResponse
-  }
+const reddit = new Reddit(
+  getEnvVar('REDDIT_CLIENT_ID'),
+  getEnvVar('REDDIT_CLIENT_SECRET'),
+  getEnvVar('REDDIT_REDIRECT_URI')
+)
 
-  // Audit log for security monitoring
-  logAuditEvent({
-    type: 'login_initiated',
-    ...getClientInfo(request)
-  })
-
-  // Generate cryptographic random state for CSRF protection
-  const state = generateState()
-
-  // Request minimal scopes following principle of least privilege
+/**
+ * GET handler for Reddit OAuth login.
+ * Initiates OAuth flow by redirecting to Reddit's authorization page.
+ *
+ * Features:
+ * - Generates random state for CSRF protection
+ * - Requests permanent refresh tokens (duration=permanent)
+ * - Sets secure HTTP-only cookie for state validation
+ * - Requests comprehensive OAuth scopes
+ *
+ * @returns Redirect to Reddit authorization URL
+ *
+ * @example
+ * ```typescript
+ * // User clicks login button
+ * // Browser redirects to /api/auth/login
+ * // Server redirects to Reddit OAuth page
+ * ```
+ */
+export async function GET(): Promise<NextResponse> {
+  const state = crypto.randomUUID()
   const scopes = [
-    'identity', // User identification (required)
-    'read', // Read posts and comments
-    'mysubreddits', // Access user's subscribed subreddits
-    'vote', // Upvote/downvote content
-    'subscribe', // Subscribe to subreddits
-    'history', // Access user's voting and hidden history
-    'save', // Save/unsave posts and comments
-    'submit', // Submit links and comments
-    'edit' // Edit and delete own comments and posts
+    'identity',
+    'read',
+    'vote',
+    'subscribe',
+    'mysubreddits',
+    'save',
+    'submit',
+    'edit',
+    'history'
   ]
 
-  // Create Reddit OAuth authorization URL with permanent duration
-  // Reddit only provides refresh tokens for permanent duration requests
-  const reddit = getRedditClient()
+  // Create authorization URL with duration=permanent for refresh tokens
   const url = reddit.createAuthorizationURL(state, scopes)
-  url.searchParams.set('duration', 'permanent')
 
-  // Store state in httpOnly cookie for CSRF validation in callback
-  const cookieStore = await cookies()
+  // Add duration parameter manually (Arctic doesn't support this directly)
+  const authUrl = new URL(url)
+  authUrl.searchParams.set('duration', 'permanent')
 
-  cookieStore.set('reddit_oauth_state', state, {
-    httpOnly: true, // Prevents JavaScript access
-    sameSite: 'lax', // CSRF protection
-    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-    maxAge: 60 * 10, // 10 minutes - sufficient for OAuth flow
-    path: '/'
+  const response = NextResponse.redirect(authUrl.toString())
+  response.cookies.set('reddit_oauth_state', state, {
+    httpOnly: true,
+    secure: isProduction(),
+    sameSite: 'lax',
+    maxAge: 600 // 10 minutes
   })
 
-  // Redirect to Reddit with cache prevention headers
-  return createUncachedRedirect(url)
+  return response
 }

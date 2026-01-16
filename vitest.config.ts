@@ -33,12 +33,13 @@ export default defineConfig({
       include: ['**/*.{ts,tsx}'],
       exclude: [
         '**/*.config.*',
+        '**/*.d.ts',
         '**/*.{spec,test}.{ts,tsx}',
         '**/app/**/{page,layout,manifest,robots,sitemap,global-not-found}.{ts,tsx}',
         '**/scripts/**',
+        '**/skeletons/**',
         '**/test-utils/**',
-        '**/types/**',
-        '**/*.d.ts'
+        '**/types/**'
       ],
       reporter: ['text', 'json', 'html', 'lcov']
     }

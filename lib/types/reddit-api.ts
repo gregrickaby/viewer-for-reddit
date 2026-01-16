@@ -3,7 +3,7 @@
  * Do not make direct changes to the file.
  */
 
-export type paths = {
+export interface paths {
   '/r/{subreddit}/{sort}.json': {
     parameters: {
       query?: never
@@ -38,15 +38,15 @@ export type paths = {
     patch?: never
     trace?: never
   }
-  '/r/{subreddit}/comments/{postId}.json': {
+  '/subreddits/search.json': {
     parameters: {
       query?: never
       header?: never
       path?: never
       cookie?: never
     }
-    /** Get comments for a specific post */
-    get: operations['getPostComments']
+    /** Search for subreddits */
+    get: operations['searchSubreddits']
     put?: never
     post?: never
     delete?: never
@@ -72,15 +72,15 @@ export type paths = {
     patch?: never
     trace?: never
   }
-  '/subreddits/search.json': {
+  '/r/{subreddit}/comments/{postId}.json': {
     parameters: {
       query?: never
       header?: never
       path?: never
       cookie?: never
     }
-    /** Search for subreddits */
-    get: operations['searchSubreddits']
+    /** Get comments for a post */
+    get: operations['getPostComments']
     put?: never
     post?: never
     delete?: never
@@ -108,1900 +108,1286 @@ export type paths = {
   }
 }
 export type webhooks = Record<string, never>
-export type components = {
+export interface components {
   schemas: {
-    GetPopularSubredditsResponse: {
-      data?: {
-        after?: string
-        before?: null
-        children?: (
-          | {
-              data?: {
-                accept_followers?: boolean
-                advertiser_category?: string
-                all_original_content?: boolean
-                allow_discovery?: boolean
-                allow_galleries?: boolean
-                allow_images?: boolean
-                allow_polls?: boolean
-                allow_prediction_contributors?: boolean
-                allow_predictions?: boolean
-                allow_predictions_tournament?: boolean
-                allow_talks?: boolean
-                allow_videogifs?: boolean
-                allow_videos?: boolean
-                allowed_media_in_comments?: Record<string, unknown>[]
-                banner_background_color?: string
-                banner_background_image?: string
-                banner_img?: string
-                banner_size?: null
-                can_assign_link_flair?: boolean
-                can_assign_user_flair?: boolean
-                collapse_deleted_comments?: boolean
-                comment_contribution_settings?: {
-                  allowed_media_types?: null
-                }
-                comment_score_hide_mins?: number
-                community_icon?: string
-                community_reviewed?: boolean
-                created?: number
-                created_utc?: number
-                description?: string
-                description_html?: string
-                disable_contributor_requests?: boolean
-                display_name?: string
-                display_name_prefixed?: string
-                emojis_custom_size?: null
-                emojis_enabled?: boolean
-                free_form_reports?: boolean
-                has_menu_widget?: boolean
-                header_img?: null
-                header_size?: null
-                header_title?: string
-                hide_ads?: boolean
-                icon_img?: string
-                icon_size?: null
-                id?: string
-                is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: null
-                key_color?: string
-                lang?: string
-                link_flair_enabled?: boolean
-                link_flair_position?: string
-                mobile_banner_image?: string
-                name?: string
-                notification_level?: null
-                original_content_tag_enabled?: boolean
-                over18?: boolean
-                prediction_leaderboard_entry_type?: number
-                primary_color?: string
-                public_description?: string
-                public_description_html?: null
-                public_traffic?: boolean
-                quarantine?: boolean
-                restrict_commenting?: boolean
-                restrict_posting?: boolean
-                should_archive_posts?: boolean
-                should_show_media_in_comments_setting?: boolean
-                show_media?: boolean
-                show_media_preview?: boolean
-                spoilers_enabled?: boolean
-                submission_type?: string
-                submit_link_label?: string
-                submit_text?: string
-                submit_text_html?: null
-                submit_text_label?: string
-                subreddit_type?: string
-                subscribers?: number
-                suggested_comment_sort?: null
-                title?: string
-                url?: string
-                user_can_flair_in_sr?: null
-                user_flair_background_color?: null
-                user_flair_css_class?: null
-                user_flair_enabled_in_sr?: boolean
-                user_flair_position?: string
-                user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: null
-                user_flair_text?: null
-                user_flair_text_color?: null
-                user_flair_type?: string
-                user_has_favorited?: null
-                user_is_banned?: null
-                user_is_contributor?: null
-                user_is_moderator?: null
-                user_is_muted?: null
-                user_is_subscriber?: null
-                user_sr_flair_enabled?: null
-                user_sr_theme_enabled?: boolean
-                videostream_links_count?: number
-                wiki_enabled?: boolean
-                wls?: number
-              }
-              kind?: string
-            }
-          | {
-              data?: {
-                accept_followers?: boolean
-                advertiser_category?: string
-                all_original_content?: boolean
-                allow_discovery?: boolean
-                allow_galleries?: boolean
-                allow_images?: boolean
-                allow_polls?: boolean
-                allow_prediction_contributors?: boolean
-                allow_predictions?: boolean
-                allow_predictions_tournament?: boolean
-                allow_talks?: boolean
-                allow_videogifs?: boolean
-                allow_videos?: boolean
-                allowed_media_in_comments?: Record<string, unknown>[]
-                banner_background_color?: string
-                banner_background_image?: string
-                banner_img?: string
-                banner_size?: number[]
-                can_assign_link_flair?: boolean
-                can_assign_user_flair?: boolean
-                collapse_deleted_comments?: boolean
-                comment_contribution_settings?: {
-                  allowed_media_types?: null
-                }
-                comment_score_hide_mins?: number
-                community_icon?: string
-                community_reviewed?: boolean
-                created?: number
-                created_utc?: number
-                description?: string
-                description_html?: string
-                disable_contributor_requests?: boolean
-                display_name?: string
-                display_name_prefixed?: string
-                emojis_custom_size?: null
-                emojis_enabled?: boolean
-                free_form_reports?: boolean
-                has_menu_widget?: boolean
-                header_img?: string
-                header_size?: number[]
-                header_title?: string
-                hide_ads?: boolean
-                icon_img?: string
-                icon_size?: number[]
-                id?: string
-                is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: null
-                key_color?: string
-                lang?: string
-                link_flair_enabled?: boolean
-                link_flair_position?: string
-                mobile_banner_image?: string
-                name?: string
-                notification_level?: null
-                original_content_tag_enabled?: boolean
-                over18?: boolean
-                prediction_leaderboard_entry_type?: number
-                primary_color?: string
-                public_description?: string
-                public_description_html?: string
-                public_traffic?: boolean
-                quarantine?: boolean
-                restrict_commenting?: boolean
-                restrict_posting?: boolean
-                should_archive_posts?: boolean
-                should_show_media_in_comments_setting?: boolean
-                show_media?: boolean
-                show_media_preview?: boolean
-                spoilers_enabled?: boolean
-                submission_type?: string
-                submit_link_label?: string
-                submit_text?: string
-                submit_text_html?: string
-                submit_text_label?: string
-                subreddit_type?: string
-                subscribers?: number
-                suggested_comment_sort?: null
-                title?: string
-                url?: string
-                user_can_flair_in_sr?: null
-                user_flair_background_color?: null
-                user_flair_css_class?: null
-                user_flair_enabled_in_sr?: boolean
-                user_flair_position?: string
-                user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: null
-                user_flair_text?: null
-                user_flair_text_color?: null
-                user_flair_type?: string
-                user_has_favorited?: null
-                user_is_banned?: null
-                user_is_contributor?: null
-                user_is_moderator?: null
-                user_is_muted?: null
-                user_is_subscriber?: null
-                user_sr_flair_enabled?: null
-                user_sr_theme_enabled?: boolean
-                wiki_enabled?: boolean
-                wls?: number
-              }
-              kind?: string
-            }
-          | {
-              data?: {
-                accept_followers?: boolean
-                advertiser_category?: string
-                all_original_content?: boolean
-                allow_discovery?: boolean
-                allow_galleries?: boolean
-                allow_images?: boolean
-                allow_polls?: boolean
-                allow_prediction_contributors?: boolean
-                allow_predictions?: boolean
-                allow_predictions_tournament?: boolean
-                allow_talks?: boolean
-                allow_videogifs?: boolean
-                allow_videos?: boolean
-                allowed_media_in_comments?: Record<string, unknown>[]
-                banner_background_color?: string
-                banner_background_image?: string
-                banner_img?: string
-                banner_size?: number[]
-                can_assign_link_flair?: boolean
-                can_assign_user_flair?: boolean
-                collapse_deleted_comments?: boolean
-                comment_contribution_settings?: {
-                  allowed_media_types?: null
-                }
-                comment_score_hide_mins?: number
-                community_icon?: string
-                community_reviewed?: boolean
-                created?: number
-                created_utc?: number
-                description?: string
-                description_html?: string
-                disable_contributor_requests?: boolean
-                display_name?: string
-                display_name_prefixed?: string
-                emojis_custom_size?: null
-                emojis_enabled?: boolean
-                free_form_reports?: boolean
-                has_menu_widget?: boolean
-                header_img?: string
-                header_size?: number[]
-                header_title?: string
-                hide_ads?: boolean
-                icon_img?: string
-                icon_size?: number[]
-                id?: string
-                is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: null
-                key_color?: string
-                lang?: string
-                link_flair_enabled?: boolean
-                link_flair_position?: string
-                mobile_banner_image?: string
-                name?: string
-                notification_level?: null
-                original_content_tag_enabled?: boolean
-                over18?: boolean
-                prediction_leaderboard_entry_type?: number
-                primary_color?: string
-                public_description?: string
-                public_description_html?: string
-                public_traffic?: boolean
-                quarantine?: boolean
-                restrict_commenting?: boolean
-                restrict_posting?: boolean
-                should_archive_posts?: boolean
-                should_show_media_in_comments_setting?: boolean
-                show_media?: boolean
-                show_media_preview?: boolean
-                spoilers_enabled?: boolean
-                submission_type?: string
-                submit_link_label?: string
-                submit_text?: string
-                submit_text_html?: string
-                submit_text_label?: string
-                subreddit_type?: string
-                subscribers?: number
-                suggested_comment_sort?: null
-                title?: string
-                url?: string
-                user_can_flair_in_sr?: null
-                user_flair_background_color?: null
-                user_flair_css_class?: null
-                user_flair_enabled_in_sr?: boolean
-                user_flair_position?: string
-                user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: null
-                user_flair_text?: null
-                user_flair_text_color?: null
-                user_flair_type?: string
-                user_has_favorited?: null
-                user_is_banned?: null
-                user_is_contributor?: null
-                user_is_moderator?: null
-                user_is_muted?: null
-                user_is_subscriber?: null
-                user_sr_flair_enabled?: null
-                user_sr_theme_enabled?: boolean
-                wiki_enabled?: boolean
-                wls?: number
-              }
-              kind?: string
-            }
-        )[]
-        dist?: number
-        geo_filter?: string
-        modhash?: string
-      }
-      kind?: string
-    }
-    GetPostCommentsResponse: (
-      | {
-          data?: {
-            after?: null
-            before?: null
-            children?: {
-              data?: {
-                all_awardings?: Record<string, unknown>[]
-                allow_live_comments?: boolean
-                approved_at_utc?: null
-                approved_by?: null
-                archived?: boolean
-                author?: string
-                author_flair_background_color?: null
-                author_flair_css_class?: null
-                author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: null
-                author_flair_text?: null
-                author_flair_text_color?: null
-                author_flair_type?: string
-                author_fullname?: string
-                author_is_blocked?: boolean
-                author_patreon_flair?: boolean
-                author_premium?: boolean
-                awarders?: Record<string, unknown>[]
-                banned_at_utc?: null
-                banned_by?: null
-                can_gild?: boolean
-                can_mod_post?: boolean
-                category?: null
-                clicked?: boolean
-                content_categories?: string[]
-                contest_mode?: boolean
-                created?: number
-                created_utc?: number
-                discussion_type?: null
-                distinguished?: null
-                domain?: string
-                downs?: number
-                edited?: boolean
-                gilded?: number
-                gildings?: Record<string, unknown>
-                hidden?: boolean
-                hide_score?: boolean
-                id?: string
-                is_created_from_ads_ui?: boolean
-                is_crosspostable?: boolean
-                is_meta?: boolean
-                is_original_content?: boolean
-                is_reddit_media_domain?: boolean
-                is_robot_indexable?: boolean
-                is_self?: boolean
-                is_video?: boolean
-                likes?: null
-                link_flair_background_color?: string
-                link_flair_css_class?: null
-                link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: null
-                link_flair_text_color?: string
-                link_flair_type?: string
-                locked?: boolean
-                media?: null
-                media_embed?: Record<string, unknown>
-                media_only?: boolean
-                mod_note?: null
-                mod_reason_by?: null
-                mod_reason_title?: null
-                mod_reports?: Record<string, unknown>[]
-                name?: string
-                no_follow?: boolean
-                num_comments?: number
-                num_crossposts?: number
-                num_duplicates?: number
-                num_reports?: null
-                over_18?: boolean
-                permalink?: string
-                pinned?: boolean
-                post_hint?: string
-                preview?: {
-                  enabled?: boolean
-                  images?: {
-                    id?: string
-                    resolutions?: (
-                      | {
-                          height?: Record<string, unknown>
-                          url?: Record<string, unknown>
-                          width?: Record<string, unknown>
-                        }
-                      | {
-                          height?: Record<string, unknown>
-                          url?: Record<string, unknown>
-                          width?: Record<string, unknown>
-                        }
-                      | {
-                          height?: Record<string, unknown>
-                          url?: Record<string, unknown>
-                          width?: Record<string, unknown>
-                        }
-                    )[]
-                    source?: {
-                      height?: number
-                      url?: string
-                      width?: number
-                    }
-                    variants?: Record<string, unknown>
-                  }[]
-                }
-                pwls?: number
-                quarantine?: boolean
-                removal_reason?: null
-                removed_by?: null
-                removed_by_category?: null
-                report_reasons?: null
-                saved?: boolean
-                score?: number
-                secure_media?: null
-                secure_media_embed?: Record<string, unknown>
-                selftext?: string
-                selftext_html?: null
-                send_replies?: boolean
-                spoiler?: boolean
-                stickied?: boolean
-                subreddit?: string
-                subreddit_id?: string
-                subreddit_name_prefixed?: string
-                subreddit_subscribers?: number
-                subreddit_type?: string
-                suggested_sort?: null
-                thumbnail?: string
-                thumbnail_height?: number
-                thumbnail_width?: number
-                title?: string
-                top_awarded_type?: null
-                total_awards_received?: number
-                treatment_tags?: Record<string, unknown>[]
-                ups?: number
-                upvote_ratio?: number
-                url?: string
-                url_overridden_by_dest?: string
-                user_reports?: Record<string, unknown>[]
-                view_count?: null
-                visited?: boolean
-                wls?: number
-              }
-              kind?: string
-            }[]
-            dist?: number
-            geo_filter?: string
-            modhash?: string
-          }
-          kind?: string
-        }
-      | {
-          data?: {
-            after?: null
-            before?: null
-            children?: (
-              | {
-                  data?: {
-                    all_awardings?: Record<string, unknown>[]
-                    approved_at_utc?: null
-                    approved_by?: null
-                    archived?: boolean
-                    associated_award?: null
-                    author?: string
-                    author_flair_background_color?: null
-                    author_flair_css_class?: null
-                    author_flair_richtext?: Record<string, unknown>[]
-                    author_flair_template_id?: null
-                    author_flair_text?: null
-                    author_flair_text_color?: null
-                    author_flair_type?: string
-                    author_fullname?: string
-                    author_is_blocked?: boolean
-                    author_patreon_flair?: boolean
-                    author_premium?: boolean
-                    awarders?: Record<string, unknown>[]
-                    banned_at_utc?: null
-                    banned_by?: null
-                    body?: string
-                    body_html?: string
-                    can_gild?: boolean
-                    can_mod_post?: boolean
-                    collapsed?: boolean
-                    collapsed_because_crowd_control?: null
-                    collapsed_reason?: null
-                    collapsed_reason_code?: null
-                    comment_type?: null
-                    controversiality?: number
-                    created?: number
-                    created_utc?: number
-                    depth?: number
-                    distinguished?: null
-                    downs?: number
-                    edited?: boolean
-                    gilded?: number
-                    gildings?: Record<string, unknown>
-                    id?: string
-                    is_submitter?: boolean
-                    likes?: null
-                    link_id?: string
-                    locked?: boolean
-                    mod_note?: null
-                    mod_reason_by?: null
-                    mod_reason_title?: null
-                    mod_reports?: Record<string, unknown>[]
-                    name?: string
-                    no_follow?: boolean
-                    num_reports?: null
-                    parent_id?: string
-                    permalink?: string
-                    removal_reason?: null
-                    replies?: {
-                      data?: {
-                        after?: null
-                        before?: null
-                        children?: (
-                          | {
-                              data?: {
-                                all_awardings?: Record<string, unknown>
-                                approved_at_utc?: Record<string, unknown>
-                                approved_by?: Record<string, unknown>
-                                archived?: Record<string, unknown>
-                                associated_award?: Record<string, unknown>
-                                author?: Record<string, unknown>
-                                author_flair_background_color?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_css_class?: Record<string, unknown>
-                                author_flair_richtext?: Record<string, unknown>
-                                author_flair_template_id?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_text?: Record<string, unknown>
-                                author_flair_text_color?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_type?: Record<string, unknown>
-                                author_fullname?: Record<string, unknown>
-                                author_is_blocked?: Record<string, unknown>
-                                author_patreon_flair?: Record<string, unknown>
-                                author_premium?: Record<string, unknown>
-                                awarders?: Record<string, unknown>
-                                banned_at_utc?: Record<string, unknown>
-                                banned_by?: Record<string, unknown>
-                                body?: Record<string, unknown>
-                                body_html?: Record<string, unknown>
-                                can_gild?: Record<string, unknown>
-                                can_mod_post?: Record<string, unknown>
-                                collapsed?: Record<string, unknown>
-                                collapsed_because_crowd_control?: Record<
-                                  string,
-                                  unknown
-                                >
-                                collapsed_reason?: Record<string, unknown>
-                                collapsed_reason_code?: Record<string, unknown>
-                                comment_type?: Record<string, unknown>
-                                controversiality?: Record<string, unknown>
-                                created?: Record<string, unknown>
-                                created_utc?: Record<string, unknown>
-                                depth?: Record<string, unknown>
-                                distinguished?: Record<string, unknown>
-                                downs?: Record<string, unknown>
-                                edited?: Record<string, unknown>
-                                gilded?: Record<string, unknown>
-                                gildings?: Record<string, unknown>
-                                id?: Record<string, unknown>
-                                is_submitter?: Record<string, unknown>
-                                likes?: Record<string, unknown>
-                                link_id?: Record<string, unknown>
-                                locked?: Record<string, unknown>
-                                mod_note?: Record<string, unknown>
-                                mod_reason_by?: Record<string, unknown>
-                                mod_reason_title?: Record<string, unknown>
-                                mod_reports?: Record<string, unknown>
-                                name?: Record<string, unknown>
-                                no_follow?: Record<string, unknown>
-                                num_reports?: Record<string, unknown>
-                                parent_id?: Record<string, unknown>
-                                permalink?: Record<string, unknown>
-                                removal_reason?: Record<string, unknown>
-                                replies?: Record<string, unknown>
-                                report_reasons?: Record<string, unknown>
-                                saved?: Record<string, unknown>
-                                score?: Record<string, unknown>
-                                score_hidden?: Record<string, unknown>
-                                send_replies?: Record<string, unknown>
-                                stickied?: Record<string, unknown>
-                                subreddit?: Record<string, unknown>
-                                subreddit_id?: Record<string, unknown>
-                                subreddit_name_prefixed?: Record<
-                                  string,
-                                  unknown
-                                >
-                                subreddit_type?: Record<string, unknown>
-                                top_awarded_type?: Record<string, unknown>
-                                total_awards_received?: Record<string, unknown>
-                                treatment_tags?: Record<string, unknown>
-                                unrepliable_reason?: Record<string, unknown>
-                                ups?: Record<string, unknown>
-                                user_reports?: Record<string, unknown>
-                              }
-                              kind?: string
-                            }
-                          | {
-                              data?: {
-                                children?: Record<string, unknown>
-                                count?: Record<string, unknown>
-                                depth?: Record<string, unknown>
-                                id?: Record<string, unknown>
-                                name?: Record<string, unknown>
-                                parent_id?: Record<string, unknown>
-                              }
-                              kind?: string
-                            }
-                        )[]
-                        dist?: null
-                        geo_filter?: string
-                        modhash?: string
-                      }
-                      kind?: string
-                    }
-                    report_reasons?: null
-                    saved?: boolean
-                    score?: number
-                    score_hidden?: boolean
-                    send_replies?: boolean
-                    stickied?: boolean
-                    subreddit?: string
-                    subreddit_id?: string
-                    subreddit_name_prefixed?: string
-                    subreddit_type?: string
-                    top_awarded_type?: null
-                    total_awards_received?: number
-                    treatment_tags?: Record<string, unknown>[]
-                    unrepliable_reason?: null
-                    ups?: number
-                    user_reports?: Record<string, unknown>[]
-                  }
-                  kind?: string
-                }
-              | {
-                  data?: {
-                    all_awardings?: Record<string, unknown>[]
-                    approved_at_utc?: null
-                    approved_by?: null
-                    archived?: boolean
-                    associated_award?: null
-                    author?: string
-                    author_flair_background_color?: null
-                    author_flair_css_class?: null
-                    author_flair_richtext?: Record<string, unknown>[]
-                    author_flair_template_id?: null
-                    author_flair_text?: null
-                    author_flair_text_color?: null
-                    author_flair_type?: string
-                    author_fullname?: string
-                    author_is_blocked?: boolean
-                    author_patreon_flair?: boolean
-                    author_premium?: boolean
-                    awarders?: Record<string, unknown>[]
-                    banned_at_utc?: null
-                    banned_by?: null
-                    body?: string
-                    body_html?: string
-                    can_gild?: boolean
-                    can_mod_post?: boolean
-                    collapsed?: boolean
-                    collapsed_because_crowd_control?: null
-                    collapsed_reason?: null
-                    collapsed_reason_code?: null
-                    comment_type?: null
-                    controversiality?: number
-                    created?: number
-                    created_utc?: number
-                    depth?: number
-                    distinguished?: null
-                    downs?: number
-                    edited?: boolean
-                    gilded?: number
-                    gildings?: Record<string, unknown>
-                    id?: string
-                    is_submitter?: boolean
-                    likes?: null
-                    link_id?: string
-                    locked?: boolean
-                    mod_note?: null
-                    mod_reason_by?: null
-                    mod_reason_title?: null
-                    mod_reports?: Record<string, unknown>[]
-                    name?: string
-                    no_follow?: boolean
-                    num_reports?: null
-                    parent_id?: string
-                    permalink?: string
-                    removal_reason?: null
-                    replies?: {
-                      data?: {
-                        after?: null
-                        before?: null
-                        children?: {
-                          data?: {
-                            children?: Record<string, unknown>
-                            count?: Record<string, unknown>
-                            depth?: Record<string, unknown>
-                            id?: Record<string, unknown>
-                            name?: Record<string, unknown>
-                            parent_id?: Record<string, unknown>
-                          }
-                          kind?: string
-                        }[]
-                        dist?: null
-                        geo_filter?: string
-                        modhash?: string
-                      }
-                      kind?: string
-                    }
-                    report_reasons?: null
-                    saved?: boolean
-                    score?: number
-                    score_hidden?: boolean
-                    send_replies?: boolean
-                    stickied?: boolean
-                    subreddit?: string
-                    subreddit_id?: string
-                    subreddit_name_prefixed?: string
-                    subreddit_type?: string
-                    top_awarded_type?: null
-                    total_awards_received?: number
-                    treatment_tags?: Record<string, unknown>[]
-                    unrepliable_reason?: null
-                    ups?: number
-                    user_reports?: Record<string, unknown>[]
-                  }
-                  kind?: string
-                }
-              | {
-                  data?: {
-                    all_awardings?: Record<string, unknown>[]
-                    approved_at_utc?: null
-                    approved_by?: null
-                    archived?: boolean
-                    associated_award?: null
-                    author?: string
-                    author_flair_background_color?: null
-                    author_flair_css_class?: null
-                    author_flair_richtext?: Record<string, unknown>[]
-                    author_flair_template_id?: null
-                    author_flair_text?: null
-                    author_flair_text_color?: null
-                    author_flair_type?: string
-                    author_fullname?: string
-                    author_is_blocked?: boolean
-                    author_patreon_flair?: boolean
-                    author_premium?: boolean
-                    awarders?: Record<string, unknown>[]
-                    banned_at_utc?: null
-                    banned_by?: null
-                    body?: string
-                    body_html?: string
-                    can_gild?: boolean
-                    can_mod_post?: boolean
-                    collapsed?: boolean
-                    collapsed_because_crowd_control?: null
-                    collapsed_reason?: null
-                    collapsed_reason_code?: null
-                    comment_type?: null
-                    controversiality?: number
-                    created?: number
-                    created_utc?: number
-                    depth?: number
-                    distinguished?: null
-                    downs?: number
-                    edited?: boolean
-                    gilded?: number
-                    gildings?: Record<string, unknown>
-                    id?: string
-                    is_submitter?: boolean
-                    likes?: null
-                    link_id?: string
-                    locked?: boolean
-                    mod_note?: null
-                    mod_reason_by?: null
-                    mod_reason_title?: null
-                    mod_reports?: Record<string, unknown>[]
-                    name?: string
-                    no_follow?: boolean
-                    num_reports?: null
-                    parent_id?: string
-                    permalink?: string
-                    removal_reason?: null
-                    replies?: {
-                      data?: {
-                        after?: null
-                        before?: null
-                        children?: (
-                          | {
-                              data?: {
-                                all_awardings?: Record<string, unknown>
-                                approved_at_utc?: Record<string, unknown>
-                                approved_by?: Record<string, unknown>
-                                archived?: Record<string, unknown>
-                                associated_award?: Record<string, unknown>
-                                author?: Record<string, unknown>
-                                author_flair_background_color?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_css_class?: Record<string, unknown>
-                                author_flair_richtext?: Record<string, unknown>
-                                author_flair_template_id?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_text?: Record<string, unknown>
-                                author_flair_text_color?: Record<
-                                  string,
-                                  unknown
-                                >
-                                author_flair_type?: Record<string, unknown>
-                                author_fullname?: Record<string, unknown>
-                                author_is_blocked?: Record<string, unknown>
-                                author_patreon_flair?: Record<string, unknown>
-                                author_premium?: Record<string, unknown>
-                                awarders?: Record<string, unknown>
-                                banned_at_utc?: Record<string, unknown>
-                                banned_by?: Record<string, unknown>
-                                body?: Record<string, unknown>
-                                body_html?: Record<string, unknown>
-                                can_gild?: Record<string, unknown>
-                                can_mod_post?: Record<string, unknown>
-                                collapsed?: Record<string, unknown>
-                                collapsed_because_crowd_control?: Record<
-                                  string,
-                                  unknown
-                                >
-                                collapsed_reason?: Record<string, unknown>
-                                collapsed_reason_code?: Record<string, unknown>
-                                comment_type?: Record<string, unknown>
-                                controversiality?: Record<string, unknown>
-                                created?: Record<string, unknown>
-                                created_utc?: Record<string, unknown>
-                                depth?: Record<string, unknown>
-                                distinguished?: Record<string, unknown>
-                                downs?: Record<string, unknown>
-                                edited?: Record<string, unknown>
-                                gilded?: Record<string, unknown>
-                                gildings?: Record<string, unknown>
-                                id?: Record<string, unknown>
-                                is_submitter?: Record<string, unknown>
-                                likes?: Record<string, unknown>
-                                link_id?: Record<string, unknown>
-                                locked?: Record<string, unknown>
-                                mod_note?: Record<string, unknown>
-                                mod_reason_by?: Record<string, unknown>
-                                mod_reason_title?: Record<string, unknown>
-                                mod_reports?: Record<string, unknown>
-                                name?: Record<string, unknown>
-                                no_follow?: Record<string, unknown>
-                                num_reports?: Record<string, unknown>
-                                parent_id?: Record<string, unknown>
-                                permalink?: Record<string, unknown>
-                                removal_reason?: Record<string, unknown>
-                                replies?: Record<string, unknown>
-                                report_reasons?: Record<string, unknown>
-                                saved?: Record<string, unknown>
-                                score?: Record<string, unknown>
-                                score_hidden?: Record<string, unknown>
-                                send_replies?: Record<string, unknown>
-                                stickied?: Record<string, unknown>
-                                subreddit?: Record<string, unknown>
-                                subreddit_id?: Record<string, unknown>
-                                subreddit_name_prefixed?: Record<
-                                  string,
-                                  unknown
-                                >
-                                subreddit_type?: Record<string, unknown>
-                                top_awarded_type?: Record<string, unknown>
-                                total_awards_received?: Record<string, unknown>
-                                treatment_tags?: Record<string, unknown>
-                                unrepliable_reason?: Record<string, unknown>
-                                ups?: Record<string, unknown>
-                                user_reports?: Record<string, unknown>
-                              }
-                              kind?: string
-                            }
-                          | {
-                              data?: {
-                                children?: Record<string, unknown>
-                                count?: Record<string, unknown>
-                                depth?: Record<string, unknown>
-                                id?: Record<string, unknown>
-                                name?: Record<string, unknown>
-                                parent_id?: Record<string, unknown>
-                              }
-                              kind?: string
-                            }
-                        )[]
-                        dist?: null
-                        geo_filter?: string
-                        modhash?: string
-                      }
-                      kind?: string
-                    }
-                    report_reasons?: null
-                    saved?: boolean
-                    score?: number
-                    score_hidden?: boolean
-                    send_replies?: boolean
-                    stickied?: boolean
-                    subreddit?: string
-                    subreddit_id?: string
-                    subreddit_name_prefixed?: string
-                    subreddit_type?: string
-                    top_awarded_type?: null
-                    total_awards_received?: number
-                    treatment_tags?: Record<string, unknown>[]
-                    unrepliable_reason?: null
-                    ups?: number
-                    user_reports?: Record<string, unknown>[]
-                  }
-                  kind?: string
-                }
-            )[]
-            dist?: null
-            geo_filter?: string
-            modhash?: string
-          }
-          kind?: string
-        }
-    )[]
-    GetSubredditAboutResponse: {
-      data?: {
-        accept_followers?: boolean
-        advertiser_category?: string
-        all_original_content?: boolean
-        allow_discovery?: boolean
-        allow_galleries?: boolean
-        allow_images?: boolean
-        allow_polls?: boolean
-        allow_prediction_contributors?: boolean
-        allow_predictions?: boolean
-        allow_predictions_tournament?: boolean
-        allow_talks?: boolean
-        allow_videogifs?: boolean
-        allow_videos?: boolean
-        allowed_media_in_comments?: string[]
-        banner_background_color?: string
-        banner_background_image?: string
-        banner_img?: string
-        banner_size?: null
-        can_assign_link_flair?: boolean
-        can_assign_user_flair?: boolean
-        collapse_deleted_comments?: boolean
-        comment_contribution_settings?: {
-          allowed_media_types?: string[]
-        }
-        comment_score_hide_mins?: number
-        community_icon?: string
-        community_reviewed?: boolean
-        content_category?: string
-        created?: number
-        created_utc?: number
-        description?: string
-        description_html?: string
-        disable_contributor_requests?: boolean
-        display_name?: string
-        display_name_prefixed?: string
-        emojis_custom_size?: null
-        emojis_enabled?: boolean
-        free_form_reports?: boolean
-        has_menu_widget?: boolean
-        header_img?: string
-        header_size?: number[]
-        header_title?: string
-        hide_ads?: boolean
-        icon_img?: string
-        icon_size?: number[]
-        id?: string
-        is_crosspostable_subreddit?: boolean
-        is_enrolled_in_new_modmail?: null
-        key_color?: string
-        lang?: string
-        link_flair_enabled?: boolean
-        link_flair_position?: string
-        mobile_banner_image?: string
-        name?: string
-        notification_level?: null
-        original_content_tag_enabled?: boolean
-        over18?: boolean
-        prediction_leaderboard_entry_type?: number
-        primary_color?: string
-        public_description?: string
-        public_description_html?: string
-        public_traffic?: boolean
-        quarantine?: boolean
-        restrict_commenting?: boolean
-        restrict_posting?: boolean
-        should_archive_posts?: boolean
-        should_show_media_in_comments_setting?: boolean
-        show_media?: boolean
-        show_media_preview?: boolean
-        spoilers_enabled?: boolean
-        submission_type?: string
-        submit_link_label?: string
-        submit_text?: string
-        submit_text_html?: string
-        submit_text_label?: string
-        subreddit_type?: string
-        subscribers?: number
-        suggested_comment_sort?: null
-        title?: string
-        url?: string
-        user_can_flair_in_sr?: null
-        user_flair_background_color?: null
-        user_flair_css_class?: null
-        user_flair_enabled_in_sr?: boolean
-        user_flair_position?: string
-        user_flair_richtext?: Record<string, unknown>[]
-        user_flair_template_id?: null
-        user_flair_text?: null
-        user_flair_text_color?: null
-        user_flair_type?: string
-        user_has_favorited?: null
-        user_is_banned?: null
-        user_is_contributor?: null
-        user_is_moderator?: null
-        user_is_muted?: null
-        user_is_subscriber?: null
-        user_sr_flair_enabled?: null
-        user_sr_theme_enabled?: boolean
-        wiki_enabled?: boolean
-        wls?: number
-      }
-      kind?: string
-    }
     GetSubredditPostsResponse: {
+      kind?: string
       data?: {
         after?: string
-        before?: null
-        children?: (
-          | {
-              data?: {
-                all_awardings?: Record<string, unknown>[]
-                allow_live_comments?: boolean
-                approved_at_utc?: null
-                approved_by?: null
-                archived?: boolean
-                author?: string
-                author_flair_background_color?: null
-                author_flair_css_class?: null
-                author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: null
-                author_flair_text?: null
-                author_flair_text_color?: null
-                author_flair_type?: string
-                author_fullname?: string
-                author_is_blocked?: boolean
-                author_patreon_flair?: boolean
-                author_premium?: boolean
-                awarders?: Record<string, unknown>[]
-                banned_at_utc?: null
-                banned_by?: null
-                can_gild?: boolean
-                can_mod_post?: boolean
-                category?: null
-                clicked?: boolean
-                content_categories?: string[]
-                contest_mode?: boolean
-                created?: number
-                created_utc?: number
-                discussion_type?: null
-                distinguished?: null
-                domain?: string
-                downs?: number
-                edited?: boolean
-                gilded?: number
-                gildings?: Record<string, unknown>
-                hidden?: boolean
-                hide_score?: boolean
-                id?: string
-                is_created_from_ads_ui?: boolean
-                is_crosspostable?: boolean
-                is_meta?: boolean
-                is_original_content?: boolean
-                is_reddit_media_domain?: boolean
-                is_robot_indexable?: boolean
-                is_self?: boolean
-                is_video?: boolean
-                likes?: null
-                link_flair_background_color?: null
-                link_flair_css_class?: string
-                link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: string
-                link_flair_text_color?: null
-                link_flair_type?: string
-                locked?: boolean
-                media?: null
-                media_embed?: Record<string, unknown>
-                media_only?: boolean
-                mod_note?: null
-                mod_reason_by?: null
-                mod_reason_title?: null
-                mod_reports?: Record<string, unknown>[]
-                name?: string
-                no_follow?: boolean
-                num_comments?: number
-                num_crossposts?: number
-                num_reports?: null
-                over_18?: boolean
-                permalink?: string
-                pinned?: boolean
-                post_hint?: string
-                preview?: {
-                  enabled?: boolean
-                  images?: {
-                    id?: string
-                    resolutions?: (
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                    )[]
-                    source?: {
-                      height?: number
-                      url?: string
-                      width?: number
-                    }
-                    variants?: Record<string, unknown>
-                  }[]
-                }
-                pwls?: number
-                quarantine?: boolean
-                removal_reason?: null
-                removed_by?: null
-                removed_by_category?: null
-                report_reasons?: null
-                saved?: boolean
-                score?: number
-                secure_media?: null
-                secure_media_embed?: Record<string, unknown>
-                selftext?: string
-                selftext_html?: null
-                send_replies?: boolean
-                spoiler?: boolean
-                stickied?: boolean
-                subreddit?: string
-                subreddit_id?: string
-                subreddit_name_prefixed?: string
-                subreddit_subscribers?: number
-                subreddit_type?: string
-                suggested_sort?: null
-                thumbnail?: string
-                thumbnail_height?: number
-                thumbnail_width?: number
-                title?: string
-                top_awarded_type?: null
-                total_awards_received?: number
-                treatment_tags?: Record<string, unknown>[]
-                ups?: number
-                upvote_ratio?: number
-                url?: string
-                url_overridden_by_dest?: string
-                user_reports?: Record<string, unknown>[]
-                view_count?: null
-                visited?: boolean
-                wls?: number
-              }
-              kind?: string
-            }
-          | {
-              data?: {
-                all_awardings?: Record<string, unknown>[]
-                allow_live_comments?: boolean
-                approved_at_utc?: null
-                approved_by?: null
-                archived?: boolean
-                author?: string
-                author_flair_background_color?: null
-                author_flair_css_class?: null
-                author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: null
-                author_flair_text?: null
-                author_flair_text_color?: null
-                author_flair_type?: string
-                author_fullname?: string
-                author_is_blocked?: boolean
-                author_patreon_flair?: boolean
-                author_premium?: boolean
-                awarders?: Record<string, unknown>[]
-                banned_at_utc?: null
-                banned_by?: null
-                can_gild?: boolean
-                can_mod_post?: boolean
-                category?: null
-                clicked?: boolean
-                content_categories?: string[]
-                contest_mode?: boolean
-                created?: number
-                created_utc?: number
-                discussion_type?: null
-                distinguished?: null
-                domain?: string
-                downs?: number
-                edited?: boolean
-                gilded?: number
-                gildings?: Record<string, unknown>
-                hidden?: boolean
-                hide_score?: boolean
-                id?: string
-                is_created_from_ads_ui?: boolean
-                is_crosspostable?: boolean
-                is_meta?: boolean
-                is_original_content?: boolean
-                is_reddit_media_domain?: boolean
-                is_robot_indexable?: boolean
-                is_self?: boolean
-                is_video?: boolean
-                likes?: null
-                link_flair_background_color?: string
-                link_flair_css_class?: null
-                link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: null
-                link_flair_text_color?: string
-                link_flair_type?: string
-                locked?: boolean
-                media?: null
-                media_embed?: Record<string, unknown>
-                media_only?: boolean
-                mod_note?: null
-                mod_reason_by?: null
-                mod_reason_title?: null
-                mod_reports?: Record<string, unknown>[]
-                name?: string
-                no_follow?: boolean
-                num_comments?: number
-                num_crossposts?: number
-                num_reports?: null
-                over_18?: boolean
-                permalink?: string
-                pinned?: boolean
-                post_hint?: string
-                preview?: {
-                  enabled?: boolean
-                  images?: {
-                    id?: string
-                    resolutions?: (
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                    )[]
-                    source?: {
-                      height?: number
-                      url?: string
-                      width?: number
-                    }
-                    variants?: Record<string, unknown>
-                  }[]
-                }
-                pwls?: number
-                quarantine?: boolean
-                removal_reason?: null
-                removed_by?: null
-                removed_by_category?: null
-                report_reasons?: null
-                saved?: boolean
-                score?: number
-                secure_media?: null
-                secure_media_embed?: Record<string, unknown>
-                selftext?: string
-                selftext_html?: null
-                send_replies?: boolean
-                spoiler?: boolean
-                stickied?: boolean
-                subreddit?: string
-                subreddit_id?: string
-                subreddit_name_prefixed?: string
-                subreddit_subscribers?: number
-                subreddit_type?: string
-                suggested_sort?: null
-                thumbnail?: string
-                thumbnail_height?: number
-                thumbnail_width?: number
-                title?: string
-                top_awarded_type?: null
-                total_awards_received?: number
-                treatment_tags?: Record<string, unknown>[]
-                ups?: number
-                upvote_ratio?: number
-                url?: string
-                url_overridden_by_dest?: string
-                user_reports?: Record<string, unknown>[]
-                view_count?: null
-                visited?: boolean
-                wls?: number
-              }
-              kind?: string
-            }
-          | {
-              data?: {
-                all_awardings?: Record<string, unknown>[]
-                allow_live_comments?: boolean
-                approved_at_utc?: null
-                approved_by?: null
-                archived?: boolean
-                author?: string
-                author_flair_background_color?: null
-                author_flair_css_class?: null
-                author_flair_richtext?: Record<string, unknown>[]
-                author_flair_template_id?: null
-                author_flair_text?: null
-                author_flair_text_color?: null
-                author_flair_type?: string
-                author_fullname?: string
-                author_is_blocked?: boolean
-                author_patreon_flair?: boolean
-                author_premium?: boolean
-                awarders?: Record<string, unknown>[]
-                banned_at_utc?: null
-                banned_by?: null
-                can_gild?: boolean
-                can_mod_post?: boolean
-                category?: null
-                clicked?: boolean
-                content_categories?: string[]
-                contest_mode?: boolean
-                created?: number
-                created_utc?: number
-                discussion_type?: null
-                distinguished?: null
-                domain?: string
-                downs?: number
-                edited?: boolean
-                gilded?: number
-                gildings?: Record<string, unknown>
-                hidden?: boolean
-                hide_score?: boolean
-                id?: string
-                is_created_from_ads_ui?: boolean
-                is_crosspostable?: boolean
-                is_meta?: boolean
-                is_original_content?: boolean
-                is_reddit_media_domain?: boolean
-                is_robot_indexable?: boolean
-                is_self?: boolean
-                is_video?: boolean
-                likes?: null
-                link_flair_background_color?: null
-                link_flair_css_class?: string
-                link_flair_richtext?: Record<string, unknown>[]
-                link_flair_text?: string
-                link_flair_text_color?: null
-                link_flair_type?: string
-                locked?: boolean
-                media?: null
-                media_embed?: Record<string, unknown>
-                media_only?: boolean
-                mod_note?: null
-                mod_reason_by?: null
-                mod_reason_title?: null
-                mod_reports?: Record<string, unknown>[]
-                name?: string
-                no_follow?: boolean
-                num_comments?: number
-                num_crossposts?: number
-                num_reports?: null
-                over_18?: boolean
-                permalink?: string
-                pinned?: boolean
-                post_hint?: string
-                preview?: {
-                  enabled?: boolean
-                  images?: {
-                    id?: string
-                    resolutions?: (
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                      | {
-                          height?: number
-                          url?: string
-                          width?: number
-                        }
-                    )[]
-                    source?: {
-                      height?: number
-                      url?: string
-                      width?: number
-                    }
-                    variants?: Record<string, unknown>
-                  }[]
-                }
-                pwls?: number
-                quarantine?: boolean
-                removal_reason?: null
-                removed_by?: null
-                removed_by_category?: null
-                report_reasons?: null
-                saved?: boolean
-                score?: number
-                secure_media?: null
-                secure_media_embed?: Record<string, unknown>
-                selftext?: string
-                selftext_html?: null
-                send_replies?: boolean
-                spoiler?: boolean
-                stickied?: boolean
-                subreddit?: string
-                subreddit_id?: string
-                subreddit_name_prefixed?: string
-                subreddit_subscribers?: number
-                subreddit_type?: string
-                suggested_sort?: null
-                thumbnail?: string
-                thumbnail_height?: number
-                thumbnail_width?: number
-                title?: string
-                top_awarded_type?: null
-                total_awards_received?: number
-                treatment_tags?: Record<string, unknown>[]
-                ups?: number
-                upvote_ratio?: number
-                url?: string
-                url_overridden_by_dest?: string
-                user_reports?: Record<string, unknown>[]
-                view_count?: null
-                visited?: boolean
-                wls?: number
-              }
-              kind?: string
-            }
-        )[]
         dist?: number
-        geo_filter?: null
         modhash?: string
+        geo_filter?: string
+        children?: {
+          kind?: string
+          data?: {
+            approved_at_utc?: string | null
+            subreddit?: string
+            selftext?: string
+            author_fullname?: string
+            saved?: boolean
+            mod_reason_title?: string | null
+            gilded?: number
+            clicked?: boolean
+            title?: string
+            link_flair_richtext?: unknown[]
+            subreddit_name_prefixed?: string
+            hidden?: boolean
+            pwls?: number
+            link_flair_css_class?: string
+            downs?: number
+            thumbnail_height?: number
+            top_awarded_type?: string | null
+            hide_score?: boolean
+            name?: string
+            quarantine?: boolean
+            link_flair_text_color?: string
+            upvote_ratio?: number
+            author_flair_background_color?: string | null
+            ups?: number
+            total_awards_received?: number
+            media_embed?: Record<string, never>
+            thumbnail_width?: number
+            author_flair_template_id?: string | null
+            is_original_content?: boolean
+            user_reports?: unknown[]
+            secure_media?: string | null
+            is_reddit_media_domain?: boolean
+            is_meta?: boolean
+            category?: string | null
+            secure_media_embed?: Record<string, never>
+            link_flair_text?: string
+            can_mod_post?: boolean
+            score?: number
+            approved_by?: string | null
+            is_created_from_ads_ui?: boolean
+            author_premium?: boolean
+            thumbnail?: string
+            edited?: boolean
+            author_flair_css_class?: string | null
+            author_flair_richtext?: unknown[]
+            gildings?: Record<string, never>
+            post_hint?: string
+            content_categories?: string | null
+            is_self?: boolean
+            subreddit_type?: string
+            created?: number
+            link_flair_type?: string
+            wls?: number
+            removed_by_category?: string | null
+            banned_by?: string | null
+            author_flair_type?: string
+            domain?: string
+            allow_live_comments?: boolean
+            selftext_html?: string | null
+            likes?: string | null
+            suggested_sort?: string | null
+            banned_at_utc?: string | null
+            url_overridden_by_dest?: string
+            view_count?: string | null
+            archived?: boolean
+            no_follow?: boolean
+            is_crosspostable?: boolean
+            pinned?: boolean
+            over_18?: boolean
+            preview?: {
+              images?: {
+                source?: {
+                  url?: string
+                  width?: number
+                  height?: number
+                }
+                resolutions?: {
+                  url?: string
+                  width?: number
+                  height?: number
+                }[]
+                variants?: Record<string, never>
+                id?: string
+              }[]
+              enabled?: boolean
+            }
+            all_awardings?: unknown[]
+            awarders?: unknown[]
+            media_only?: boolean
+            link_flair_template_id?: string
+            can_gild?: boolean
+            spoiler?: boolean
+            locked?: boolean
+            author_flair_text?: string | null
+            treatment_tags?: unknown[]
+            visited?: boolean
+            removed_by?: string | null
+            mod_note?: string | null
+            distinguished?: string | null
+            subreddit_id?: string
+            author_is_blocked?: boolean
+            mod_reason_by?: string | null
+            num_reports?: string | null
+            removal_reason?: string | null
+            link_flair_background_color?: string
+            id?: string
+            is_robot_indexable?: boolean
+            report_reasons?: string | null
+            author?: string
+            discussion_type?: string | null
+            num_comments?: number
+            send_replies?: boolean
+            contest_mode?: boolean
+            mod_reports?: unknown[]
+            author_patreon_flair?: boolean
+            author_flair_text_color?: string | null
+            permalink?: string
+            stickied?: boolean
+            url?: string
+            subreddit_subscribers?: number
+            created_utc?: number
+            num_crossposts?: number
+            media?: string | null
+            is_video?: boolean
+          }
+        }[]
+        before?: string | null
       }
-      kind?: string
     }
-    GetUserProfileResponse: {
-      data?: {
-        accept_followers?: boolean
-        awardee_karma?: number
-        awarder_karma?: number
-        comment_karma?: number
-        created?: number
-        created_utc?: number
-        has_subscribed?: boolean
-        has_verified_email?: boolean
-        hide_from_robots?: boolean
-        icon_img?: string
-        id?: string
-        is_blocked?: boolean
-        is_employee?: boolean
-        is_friend?: boolean
-        is_gold?: boolean
-        is_mod?: boolean
-        link_karma?: number
-        name?: string
-        pref_show_snoovatar?: boolean
-        snoovatar_img?: string
-        snoovatar_size?: number[]
-        subreddit?: {
-          accept_followers?: boolean
-          allowed_media_in_comments?: Record<string, unknown>[]
-          banner_img?: string
-          banner_size?: null
-          community_icon?: null
-          default_set?: boolean
-          description?: string
-          disable_contributor_requests?: boolean
-          display_name?: string
-          display_name_prefixed?: string
-          free_form_reports?: boolean
-          header_img?: null
-          header_size?: null
-          icon_color?: string
-          icon_img?: string
-          icon_size?: number[]
-          is_default_banner?: boolean
-          is_default_icon?: boolean
-          key_color?: string
-          link_flair_enabled?: boolean
-          link_flair_position?: string
-          name?: string
-          over_18?: boolean
-          previous_names?: Record<string, unknown>[]
-          primary_color?: string
-          public_description?: string
-          quarantine?: boolean
-          restrict_commenting?: boolean
-          restrict_posting?: boolean
-          show_media?: boolean
-          submit_link_label?: string
-          submit_text_label?: string
-          subreddit_type?: string
-          subscribers?: number
-          title?: string
-          url?: string
-          user_is_banned?: null
-          user_is_contributor?: null
-          user_is_moderator?: null
-          user_is_muted?: null
-          user_is_subscriber?: null
-        }
-        total_karma?: number
-        verified?: boolean
-      }
+    GetSubredditAboutResponse: {
       kind?: string
+      data?: {
+        user_flair_background_color?: string | null
+        submit_text_html?: string | null
+        restrict_posting?: boolean
+        user_is_banned?: string | null
+        free_form_reports?: boolean
+        wiki_enabled?: boolean
+        user_is_muted?: string | null
+        user_can_flair_in_sr?: string | null
+        display_name?: string
+        header_img?: string
+        title?: string
+        original_content_tag_enabled?: boolean
+        allow_galleries?: boolean
+        icon_size?: string | null
+        primary_color?: string
+        icon_img?: string
+        display_name_prefixed?: string
+        public_traffic?: boolean
+        subscribers?: number
+        user_flair_richtext?: unknown[]
+        name?: string
+        quarantine?: boolean
+        hide_ads?: boolean
+        prediction_leaderboard_entry_type?: number
+        emojis_enabled?: boolean
+        advertiser_category?: string
+        public_description?: string
+        comment_score_hide_mins?: number
+        allow_predictions?: boolean
+        user_has_favorited?: string | null
+        user_flair_template_id?: string | null
+        community_icon?: string
+        banner_background_image?: string
+        header_title?: string
+        community_reviewed?: boolean
+        submit_text?: string
+        description_html?: string
+        spoilers_enabled?: boolean
+        comment_contribution_settings?: {
+          allowed_media_types?: string | null
+        }
+        allow_talks?: boolean
+        header_size?: number[]
+        user_flair_position?: string
+        all_original_content?: boolean
+        has_menu_widget?: boolean
+        is_enrolled_in_new_modmail?: string | null
+        key_color?: string
+        can_assign_user_flair?: boolean
+        created?: number
+        wls?: number
+        show_media_preview?: boolean
+        submission_type?: string
+        user_is_subscriber?: string | null
+        allowed_media_in_comments?: unknown[]
+        allow_videogifs?: boolean
+        should_archive_posts?: boolean
+        user_flair_type?: string
+        allow_polls?: boolean
+        collapse_deleted_comments?: boolean
+        emojis_custom_size?: string | null
+        public_description_html?: string
+        allow_videos?: boolean
+        is_crosspostable_subreddit?: boolean
+        notification_level?: string | null
+        should_show_media_in_comments_setting?: boolean
+        can_assign_link_flair?: boolean
+        allow_prediction_contributors?: boolean
+        submit_text_label?: string
+        link_flair_position?: string
+        user_sr_flair_enabled?: string | null
+        user_flair_enabled_in_sr?: boolean
+        allow_discovery?: boolean
+        accept_followers?: boolean
+        user_sr_theme_enabled?: boolean
+        link_flair_enabled?: boolean
+        disable_contributor_requests?: boolean
+        subreddit_type?: string
+        suggested_comment_sort?: string | null
+        banner_img?: string
+        user_flair_text?: string | null
+        banner_background_color?: string
+        show_media?: boolean
+        id?: string
+        user_is_moderator?: string | null
+        over18?: boolean
+        description?: string
+        submit_link_label?: string
+        user_flair_text_color?: string | null
+        restrict_commenting?: boolean
+        user_flair_css_class?: string | null
+        allow_images?: boolean
+        lang?: string
+        url?: string
+        created_utc?: number
+        banner_size?: string | null
+        mobile_banner_image?: string
+        user_is_contributor?: string | null
+        allow_predictions_tournament?: boolean
+      }
     }
     SearchSubredditsResponse: {
+      kind?: string
       data?: {
         after?: string
-        before?: null
+        dist?: number
+        modhash?: string
+        geo_filter?: string
         children?: (
           | {
-              data?: {
-                accept_followers?: boolean
-                advertiser_category?: string
-                all_original_content?: boolean
-                allow_discovery?: boolean
-                allow_galleries?: boolean
-                allow_images?: boolean
-                allow_polls?: boolean
-                allow_prediction_contributors?: boolean
-                allow_predictions?: boolean
-                allow_predictions_tournament?: boolean
-                allow_talks?: boolean
-                allow_videogifs?: boolean
-                allow_videos?: boolean
-                allowed_media_in_comments?: Record<string, unknown>[]
-                banner_background_color?: string
-                banner_background_image?: string
-                banner_img?: string
-                banner_size?: number[]
-                can_assign_link_flair?: boolean
-                can_assign_user_flair?: boolean
-                collapse_deleted_comments?: boolean
-                comment_contribution_settings?: {
-                  allowed_media_types?: null
-                }
-                comment_score_hide_mins?: number
-                community_icon?: string
-                community_reviewed?: boolean
-                created?: number
-                created_utc?: number
-                description?: string
-                description_html?: string
-                disable_contributor_requests?: boolean
-                display_name?: string
-                display_name_prefixed?: string
-                emojis_custom_size?: null
-                emojis_enabled?: boolean
-                free_form_reports?: boolean
-                has_menu_widget?: boolean
-                header_img?: string
-                header_size?: number[]
-                header_title?: string
-                hide_ads?: boolean
-                icon_img?: string
-                icon_size?: number[]
-                id?: string
-                is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: null
-                key_color?: string
-                lang?: string
-                link_flair_enabled?: boolean
-                link_flair_position?: string
-                mobile_banner_image?: string
-                name?: string
-                notification_level?: null
-                original_content_tag_enabled?: boolean
-                over18?: boolean
-                prediction_leaderboard_entry_type?: number
-                primary_color?: string
-                public_description?: string
-                public_description_html?: string
-                public_traffic?: boolean
-                quarantine?: boolean
-                restrict_commenting?: boolean
-                restrict_posting?: boolean
-                should_archive_posts?: boolean
-                should_show_media_in_comments_setting?: boolean
-                show_media?: boolean
-                show_media_preview?: boolean
-                spoilers_enabled?: boolean
-                submission_type?: string
-                submit_link_label?: string
-                submit_text?: string
-                submit_text_html?: null
-                submit_text_label?: string
-                subreddit_type?: string
-                subscribers?: number
-                suggested_comment_sort?: string
-                title?: string
-                url?: string
-                user_can_flair_in_sr?: null
-                user_flair_background_color?: null
-                user_flair_css_class?: null
-                user_flair_enabled_in_sr?: boolean
-                user_flair_position?: string
-                user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: null
-                user_flair_text?: null
-                user_flair_text_color?: null
-                user_flair_type?: string
-                user_has_favorited?: null
-                user_is_banned?: null
-                user_is_contributor?: null
-                user_is_moderator?: null
-                user_is_muted?: null
-                user_is_subscriber?: null
-                user_sr_flair_enabled?: null
-                user_sr_theme_enabled?: boolean
-                wiki_enabled?: boolean
-                wls?: number
-              }
               kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string | null
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: number[]
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string | null
+                }
+                allow_talks?: boolean
+                header_size?: number[]
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: unknown[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: number[]
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
             }
           | {
-              data?: {
-                accept_followers?: boolean
-                advertiser_category?: string
-                all_original_content?: boolean
-                allow_discovery?: boolean
-                allow_galleries?: boolean
-                allow_images?: boolean
-                allow_polls?: boolean
-                allow_prediction_contributors?: boolean
-                allow_predictions?: boolean
-                allow_predictions_tournament?: boolean
-                allow_talks?: boolean
-                allow_videogifs?: boolean
-                allow_videos?: boolean
-                allowed_media_in_comments?: Record<string, unknown>[]
-                banner_background_color?: string
-                banner_background_image?: string
-                banner_img?: string
-                banner_size?: number[]
-                can_assign_link_flair?: boolean
-                can_assign_user_flair?: boolean
-                collapse_deleted_comments?: boolean
-                comment_contribution_settings?: {
-                  allowed_media_types?: null
-                }
-                comment_score_hide_mins?: number
-                community_icon?: string
-                community_reviewed?: boolean
-                created?: number
-                created_utc?: number
-                description?: string
-                description_html?: string
-                disable_contributor_requests?: boolean
-                display_name?: string
-                display_name_prefixed?: string
-                emojis_custom_size?: null
-                emojis_enabled?: boolean
-                free_form_reports?: boolean
-                has_menu_widget?: boolean
-                header_img?: string
-                header_size?: number[]
-                header_title?: string
-                hide_ads?: boolean
-                icon_img?: string
-                icon_size?: number[]
-                id?: string
-                is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: null
-                key_color?: string
-                lang?: string
-                link_flair_enabled?: boolean
-                link_flair_position?: string
-                mobile_banner_image?: string
-                name?: string
-                notification_level?: null
-                original_content_tag_enabled?: boolean
-                over18?: boolean
-                prediction_leaderboard_entry_type?: number
-                primary_color?: string
-                public_description?: string
-                public_description_html?: string
-                public_traffic?: boolean
-                quarantine?: boolean
-                restrict_commenting?: boolean
-                restrict_posting?: boolean
-                should_archive_posts?: boolean
-                should_show_media_in_comments_setting?: boolean
-                show_media?: boolean
-                show_media_preview?: boolean
-                spoilers_enabled?: boolean
-                submission_type?: string
-                submit_link_label?: string
-                submit_text?: string
-                submit_text_html?: null
-                submit_text_label?: string
-                subreddit_type?: string
-                subscribers?: number
-                suggested_comment_sort?: null
-                title?: string
-                url?: string
-                user_can_flair_in_sr?: null
-                user_flair_background_color?: null
-                user_flair_css_class?: null
-                user_flair_enabled_in_sr?: boolean
-                user_flair_position?: string
-                user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: null
-                user_flair_text?: null
-                user_flair_text_color?: null
-                user_flair_type?: string
-                user_has_favorited?: null
-                user_is_banned?: null
-                user_is_contributor?: null
-                user_is_moderator?: null
-                user_is_muted?: null
-                user_is_subscriber?: null
-                user_sr_flair_enabled?: null
-                user_sr_theme_enabled?: boolean
-                videostream_links_count?: number
-                wiki_enabled?: boolean
-                wls?: number
-              }
               kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string | null
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: number[]
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                videostream_links_count?: number
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string | null
+                }
+                allow_talks?: boolean
+                header_size?: number[]
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: unknown[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string | null
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: number[]
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
             }
           | {
-              data?: {
-                accept_followers?: boolean
-                advertiser_category?: string
-                all_original_content?: boolean
-                allow_discovery?: boolean
-                allow_galleries?: boolean
-                allow_images?: boolean
-                allow_polls?: boolean
-                allow_prediction_contributors?: boolean
-                allow_predictions?: boolean
-                allow_predictions_tournament?: boolean
-                allow_talks?: boolean
-                allow_videogifs?: boolean
-                allow_videos?: boolean
-                allowed_media_in_comments?: Record<string, unknown>[]
-                banner_background_color?: string
-                banner_background_image?: string
-                banner_img?: string
-                banner_size?: null
-                can_assign_link_flair?: boolean
-                can_assign_user_flair?: boolean
-                collapse_deleted_comments?: boolean
-                comment_contribution_settings?: {
-                  allowed_media_types?: null
-                }
-                comment_score_hide_mins?: number
-                community_icon?: string
-                community_reviewed?: boolean
-                created?: number
-                created_utc?: number
-                description?: string
-                description_html?: string
-                disable_contributor_requests?: boolean
-                display_name?: string
-                display_name_prefixed?: string
-                emojis_custom_size?: null
-                emojis_enabled?: boolean
-                free_form_reports?: boolean
-                has_menu_widget?: boolean
-                header_img?: string
-                header_size?: number[]
-                header_title?: string
-                hide_ads?: boolean
-                icon_img?: string
-                icon_size?: number[]
-                id?: string
-                is_crosspostable_subreddit?: boolean
-                is_enrolled_in_new_modmail?: null
-                key_color?: string
-                lang?: string
-                link_flair_enabled?: boolean
-                link_flair_position?: string
-                mobile_banner_image?: string
-                name?: string
-                notification_level?: null
-                original_content_tag_enabled?: boolean
-                over18?: boolean
-                prediction_leaderboard_entry_type?: number
-                primary_color?: string
-                public_description?: string
-                public_description_html?: string
-                public_traffic?: boolean
-                quarantine?: boolean
-                restrict_commenting?: boolean
-                restrict_posting?: boolean
-                should_archive_posts?: boolean
-                should_show_media_in_comments_setting?: boolean
-                show_media?: boolean
-                show_media_preview?: boolean
-                spoilers_enabled?: boolean
-                submission_type?: string
-                submit_link_label?: string
-                submit_text?: string
-                submit_text_html?: null
-                submit_text_label?: string
-                subreddit_type?: string
-                subscribers?: number
-                suggested_comment_sort?: string
-                title?: string
-                url?: string
-                user_can_flair_in_sr?: null
-                user_flair_background_color?: null
-                user_flair_css_class?: null
-                user_flair_enabled_in_sr?: boolean
-                user_flair_position?: string
-                user_flair_richtext?: Record<string, unknown>[]
-                user_flair_template_id?: null
-                user_flair_text?: null
-                user_flair_text_color?: null
-                user_flair_type?: string
-                user_has_favorited?: null
-                user_is_banned?: null
-                user_is_contributor?: null
-                user_is_moderator?: null
-                user_is_muted?: null
-                user_is_subscriber?: null
-                user_sr_flair_enabled?: null
-                user_sr_theme_enabled?: boolean
-                videostream_links_count?: number
-                wiki_enabled?: boolean
-                wls?: number
-              }
               kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: number[]
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string[]
+                }
+                allow_talks?: boolean
+                header_size?: number[]
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: string[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: number[]
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
+            }
+          | {
+              kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string | null
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string | null
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: string | null
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string | null
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string | null
+                }
+                allow_talks?: boolean
+                header_size?: string | null
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: unknown[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: string | null
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
+            }
+          | {
+              kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: number[]
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string | null
+                }
+                allow_talks?: boolean
+                header_size?: number[]
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: unknown[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string | null
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: string | null
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
             }
         )[]
-        dist?: number
-        geo_filter?: string
-        modhash?: string
+        before?: string | null
       }
+    }
+    GetPopularSubredditsResponse: {
       kind?: string
+      data?: {
+        after?: string
+        dist?: number
+        modhash?: string
+        geo_filter?: string
+        children?: (
+          | {
+              kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string | null
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string | null
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: string | null
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                videostream_links_count?: number
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string | null
+                }
+                allow_talks?: boolean
+                header_size?: string | null
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: unknown[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string | null
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string | null
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: string | null
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
+            }
+          | {
+              kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: number[]
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string | null
+                }
+                allow_talks?: boolean
+                header_size?: number[]
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: unknown[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string | null
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: number[]
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
+            }
+          | {
+              kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string | null
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: string | null
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                videostream_links_count?: number
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string[]
+                }
+                allow_talks?: boolean
+                header_size?: string | null
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: string[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: string | null
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string | null
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: string | null
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
+            }
+          | {
+              kind?: string
+              data?: {
+                user_flair_background_color?: string | null
+                submit_text_html?: string
+                restrict_posting?: boolean
+                user_is_banned?: string | null
+                free_form_reports?: boolean
+                wiki_enabled?: boolean
+                user_is_muted?: string | null
+                user_can_flair_in_sr?: string | null
+                display_name?: string
+                header_img?: string
+                title?: string
+                original_content_tag_enabled?: boolean
+                allow_galleries?: boolean
+                icon_size?: number[]
+                primary_color?: string
+                icon_img?: string
+                display_name_prefixed?: string
+                public_traffic?: boolean
+                subscribers?: number
+                user_flair_richtext?: unknown[]
+                videostream_links_count?: number
+                name?: string
+                quarantine?: boolean
+                hide_ads?: boolean
+                prediction_leaderboard_entry_type?: number
+                emojis_enabled?: boolean
+                advertiser_category?: string
+                public_description?: string
+                comment_score_hide_mins?: number
+                allow_predictions?: boolean
+                user_has_favorited?: string | null
+                user_flair_template_id?: string | null
+                community_icon?: string
+                banner_background_image?: string
+                header_title?: string
+                community_reviewed?: boolean
+                submit_text?: string
+                description_html?: string
+                spoilers_enabled?: boolean
+                comment_contribution_settings?: {
+                  allowed_media_types?: string[]
+                }
+                allow_talks?: boolean
+                header_size?: number[]
+                user_flair_position?: string
+                all_original_content?: boolean
+                has_menu_widget?: boolean
+                is_enrolled_in_new_modmail?: string | null
+                key_color?: string
+                can_assign_user_flair?: boolean
+                created?: number
+                wls?: number
+                show_media_preview?: boolean
+                submission_type?: string
+                user_is_subscriber?: string | null
+                allowed_media_in_comments?: string[]
+                allow_videogifs?: boolean
+                should_archive_posts?: boolean
+                user_flair_type?: string
+                allow_polls?: boolean
+                collapse_deleted_comments?: boolean
+                emojis_custom_size?: number[]
+                public_description_html?: string
+                allow_videos?: boolean
+                is_crosspostable_subreddit?: boolean
+                suggested_comment_sort?: string | null
+                should_show_media_in_comments_setting?: boolean
+                can_assign_link_flair?: boolean
+                allow_prediction_contributors?: boolean
+                submit_text_label?: string
+                link_flair_position?: string
+                user_sr_flair_enabled?: string | null
+                user_flair_enabled_in_sr?: boolean
+                allow_discovery?: boolean
+                accept_followers?: boolean
+                user_sr_theme_enabled?: boolean
+                link_flair_enabled?: boolean
+                disable_contributor_requests?: boolean
+                subreddit_type?: string
+                notification_level?: string | null
+                banner_img?: string
+                user_flair_text?: string | null
+                banner_background_color?: string
+                show_media?: boolean
+                id?: string
+                user_is_contributor?: string | null
+                over18?: boolean
+                description?: string
+                submit_link_label?: string
+                user_flair_text_color?: string | null
+                restrict_commenting?: boolean
+                user_flair_css_class?: string | null
+                allow_images?: boolean
+                lang?: string
+                url?: string
+                created_utc?: number
+                banner_size?: number[]
+                mobile_banner_image?: string
+                user_is_moderator?: string | null
+                allow_predictions_tournament?: boolean
+              }
+            }
+        )[]
+        before?: string | null
+      }
+    }
+    GetPostCommentsResponse: Record<string, never>
+    GetUserProfileResponse: {
+      kind?: string
+      data?: {
+        is_employee?: boolean
+        is_friend?: boolean
+        subreddit?: {
+          default_set?: boolean
+          user_is_contributor?: string | null
+          banner_img?: string
+          allowed_media_in_comments?: unknown[]
+          user_is_banned?: string | null
+          free_form_reports?: boolean
+          community_icon?: string | null
+          show_media?: boolean
+          icon_color?: string
+          user_is_muted?: string | null
+          display_name?: string
+          header_img?: string | null
+          title?: string
+          previous_names?: unknown[]
+          over_18?: boolean
+          icon_size?: number[]
+          primary_color?: string
+          icon_img?: string
+          description?: string
+          submit_link_label?: string
+          header_size?: string | null
+          restrict_posting?: boolean
+          restrict_commenting?: boolean
+          subscribers?: number
+          submit_text_label?: string
+          is_default_icon?: boolean
+          link_flair_position?: string
+          display_name_prefixed?: string
+          key_color?: string
+          name?: string
+          is_default_banner?: boolean
+          url?: string
+          quarantine?: boolean
+          banner_size?: string | null
+          user_is_moderator?: string | null
+          accept_followers?: boolean
+          public_description?: string
+          link_flair_enabled?: boolean
+          disable_contributor_requests?: boolean
+          subreddit_type?: string
+          user_is_subscriber?: string | null
+        }
+        snoovatar_size?: string | null
+        awardee_karma?: number
+        id?: string
+        verified?: boolean
+        is_gold?: boolean
+        is_mod?: boolean
+        awarder_karma?: number
+        has_verified_email?: boolean
+        icon_img?: string
+        hide_from_robots?: boolean
+        link_karma?: number
+        is_blocked?: boolean
+        total_karma?: number
+        pref_show_snoovatar?: boolean
+        name?: string
+        created?: number
+        created_utc?: number
+        snoovatar_img?: string
+        comment_karma?: number
+        accept_followers?: boolean
+        has_subscribed?: boolean
+      }
     }
   }
   responses: never
@@ -2015,14 +1401,14 @@ export interface operations {
   getSubredditPosts: {
     parameters: {
       query?: {
-        after?: string
         limit?: number
-        t?: PathsRSubredditSortJsonGetParametersQueryT
+        after?: string
+        t?: 'hour' | 'day' | 'week' | 'month' | 'year' | 'all'
       }
       header?: never
       path: {
-        sort: PathsRSubredditSortJsonGetParametersPathSort
         subreddit: string
+        sort: 'hot' | 'new' | 'top' | 'rising'
       }
       cookie?: never
     }
@@ -2089,21 +1475,15 @@ export interface operations {
       }
     }
   }
-  getPostComments: {
+  searchSubreddits: {
     parameters: {
-      query?: {
-        /** @description Maximum number of comments to return */
+      query: {
+        q: string
         limit?: number
-        /** @description Comment sort order */
-        sort?: PathsRSubredditCommentsPostIdJsonGetParametersQuerySort
+        sort?: 'relevance' | 'activity'
       }
       header?: never
-      path: {
-        /** @description The postId parameter */
-        postId: string
-        /** @description The subreddit parameter */
-        subreddit: string
-      }
+      path?: never
       cookie?: never
     }
     requestBody?: never
@@ -2114,7 +1494,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['GetPostCommentsResponse']
+          'application/json': components['schemas']['SearchSubredditsResponse']
         }
       }
       /** @description Not found */
@@ -2169,15 +1549,24 @@ export interface operations {
       }
     }
   }
-  searchSubreddits: {
+  getPostComments: {
     parameters: {
-      query: {
+      query?: {
+        sort?:
+          | 'confidence'
+          | 'top'
+          | 'new'
+          | 'controversial'
+          | 'old'
+          | 'random'
+          | 'qa'
         limit?: number
-        q: string
-        sort?: PathsSubredditsSearchJsonGetParametersQuerySort
       }
       header?: never
-      path?: never
+      path: {
+        subreddit: string
+        postId: string
+      }
       cookie?: never
     }
     requestBody?: never
@@ -2188,7 +1577,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['SearchSubredditsResponse']
+          'application/json': components['schemas']['GetPostCommentsResponse']
         }
       }
       /** @description Not found */
@@ -2212,7 +1601,6 @@ export interface operations {
       query?: never
       header?: never
       path: {
-        /** @description The username parameter */
         username: string
       }
       cookie?: never
@@ -2244,31 +1632,4 @@ export interface operations {
       }
     }
   }
-}
-export enum PathsRSubredditSortJsonGetParametersQueryT {
-  hour = 'hour',
-  day = 'day',
-  week = 'week',
-  month = 'month',
-  year = 'year',
-  all = 'all'
-}
-export enum PathsRSubredditSortJsonGetParametersPathSort {
-  hot = 'hot',
-  new = 'new',
-  top = 'top',
-  rising = 'rising'
-}
-export enum PathsRSubredditCommentsPostIdJsonGetParametersQuerySort {
-  confidence = 'confidence',
-  top = 'top',
-  new = 'new',
-  controversial = 'controversial',
-  old = 'old',
-  random = 'random',
-  qa = 'qa'
-}
-export enum PathsSubredditsSearchJsonGetParametersQuerySort {
-  relevance = 'relevance',
-  activity = 'activity'
 }

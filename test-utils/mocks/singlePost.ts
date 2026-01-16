@@ -1,13 +1,9 @@
-import type {DeepPartial} from '@/lib/types'
-
 /**
  * Mock data for a single Reddit post with comments response.
  * Mirrors the structure returned by Reddit's /r/subreddit/comments/postId.json endpoint.
  * Returns an array with [postListing, commentsListing] as per Reddit API format.
  */
-export const singlePostMock: DeepPartial<
-  [Record<string, any>, Record<string, any>]
-> = [
+export const singlePostMock: any[] = [
   // Post listing (first element)
   {
     kind: 'Listing',
@@ -178,9 +174,7 @@ export const singlePostNotFoundMock = {
 /**
  * Mock data for a single post with no comments
  */
-export const singlePostNoCommentsMock: DeepPartial<
-  [Record<string, any>, Record<string, any>]
-> = [
+export const singlePostNoCommentsMock: any[] = [
   // Post listing with different ID
   {
     kind: 'Listing',

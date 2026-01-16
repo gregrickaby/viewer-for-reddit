@@ -1,186 +1,129 @@
-import {NextRequest, NextResponse} from 'next/server'
+import {NextResponse} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+// Mock dependencies before imports
+vi.mock('@/lib/utils/env', () => ({
+  getEnvVar: vi.fn((key: string) => {
+    if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
+    if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
+    if (key === 'REDDIT_REDIRECT_URI')
+      return 'https://example.com/api/auth/callback/reddit'
+    return ''
+  }),
+  isProduction: vi.fn(() => false)
+}))
+
+vi.mock('arctic', () => ({
+  Reddit: class Reddit {
+    createAuthorizationURL(state: string, scopes: string[]) {
+      return new URL(
+        `https://reddit.com/api/v1/authorize?state=${state}&scope=${scopes.join(' ')}`
+      )
+    }
+  }
+}))
+
+// Mock crypto.randomUUID
+const mockUUID = 'test-uuid-12345'
+Object.defineProperty(global.crypto, 'randomUUID', {
+  writable: true,
+  value: vi.fn(() => mockUUID)
+})
+
+// Import after mocks
+import {getEnvVar, isProduction} from '@/lib/utils/env'
 import {GET} from './route'
 
-// Mock Reddit client
-const mockReddit = {
-  createAuthorizationURL: vi.fn((state: string, scopes: string[]) => {
-    return new URL(
-      `https://www.reddit.com/api/v1/authorize?state=${state}&scope=${scopes.join(' ')}`
-    )
-  })
-}
+const mockGetEnvVar = vi.mocked(getEnvVar)
+const mockIsProduction = vi.mocked(isProduction)
 
-// Mock dependencies
-vi.mock('@/lib/auth/arctic', () => ({
-  getRedditClient: vi.fn(() => mockReddit)
-}))
-
-vi.mock('next/headers', () => ({
-  cookies: vi.fn()
-}))
-
-vi.mock('@/lib/auth/rateLimit', () => ({
-  checkRateLimit: vi.fn()
-}))
-
-vi.mock('@/lib/auth/auditLog', () => ({
-  logAuditEvent: vi.fn(),
-  getClientInfo: vi.fn(() => ({
-    ip: '127.0.0.1',
-    userAgent: 'test-agent'
-  }))
-}))
-
-describe('POST /api/auth/login', () => {
-  let mockCookieStore: {
-    set: ReturnType<typeof vi.fn>
-  }
-
-  beforeEach(async () => {
+describe('GET /api/auth/login', () => {
+  beforeEach(() => {
     vi.clearAllMocks()
-
-    mockCookieStore = {
-      set: vi.fn()
-    }
-
-    const {cookies} = await import('next/headers')
-    vi.mocked(cookies).mockResolvedValue(mockCookieStore as any)
-
-    const {checkRateLimit} = await import('@/lib/auth/rateLimit')
-    vi.mocked(checkRateLimit).mockResolvedValue(null)
-  })
-
-  it('should initiate OAuth flow and redirect to Reddit', async () => {
-    const request = new NextRequest('http://localhost:3000/api/auth/login')
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307) // Redirect status
-    expect(response.headers.get('location')).toContain(
-      'https://www.reddit.com/api/v1/authorize'
-    )
-    expect(response.headers.get('location')).toContain('state=')
-    expect(response.headers.get('location')).toContain('scope=')
-  })
-
-  it('should request correct OAuth scopes', async () => {
-    const request = new NextRequest('http://localhost:3000/api/auth/login')
-
-    await GET(request)
-
-    const scopes = [
-      'identity',
-      'read',
-      'mysubreddits',
-      'vote',
-      'subscribe',
-      'history',
-      'save',
-      'submit',
-      'edit'
-    ]
-
-    // Explicitly verify 'save' scope is included for save/unsave functionality
-    expect(scopes).toContain('save')
-
-    expect(mockReddit.createAuthorizationURL).toHaveBeenCalledWith(
-      expect.any(String),
-      scopes
-    )
-  })
-
-  it('should set state cookie for CSRF protection', async () => {
-    const request = new NextRequest('http://localhost:3000/api/auth/login')
-
-    await GET(request)
-
-    expect(mockCookieStore.set).toHaveBeenCalledWith(
-      'reddit_oauth_state',
-      expect.any(String),
-      {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: false, // Development mode
-        maxAge: 600, // 10 minutes
-        path: '/'
-      }
-    )
-  })
-
-  it('should set secure cookie in production', async () => {
-    vi.stubEnv('NODE_ENV', 'production')
-
-    const request = new NextRequest('http://localhost:3000/api/auth/login')
-
-    await GET(request)
-
-    expect(mockCookieStore.set).toHaveBeenCalledWith(
-      'reddit_oauth_state',
-      expect.any(String),
-      expect.objectContaining({
-        secure: true
-      })
-    )
-  })
-
-  it('should log audit event for login initiation', async () => {
-    const {logAuditEvent} = await import('@/lib/auth/auditLog')
-    const request = new NextRequest('http://localhost:3000/api/auth/login')
-
-    await GET(request)
-
-    expect(logAuditEvent).toHaveBeenCalledWith({
-      type: 'login_initiated',
-      ip: '127.0.0.1',
-      userAgent: 'test-agent'
+    mockGetEnvVar.mockImplementation((key: string) => {
+      if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
+      if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
+      if (key === 'REDDIT_REDIRECT_URI')
+        return 'https://example.com/api/auth/callback/reddit'
+      return ''
     })
+    mockIsProduction.mockReturnValue(false)
   })
 
-  it('should return rate limit response when rate limited', async () => {
-    const {checkRateLimit} = await import('@/lib/auth/rateLimit')
-    const rateLimitResponse = NextResponse.json(
-      {error: 'rate_limited'},
-      {status: 429}
-    )
-    vi.mocked(checkRateLimit).mockResolvedValue(rateLimitResponse)
+  it('creates authorization URL with correct state', async () => {
+    const response = await GET()
 
-    const request = new NextRequest('http://localhost:3000/api/auth/login')
+    expect(response).toBeInstanceOf(NextResponse)
 
-    const response = await GET(request)
-
-    expect(response.status).toBe(429)
+    // Check redirect URL contains state
+    const redirectUrl = response.headers.get('location')
+    expect(redirectUrl).toContain(`state=${mockUUID}`)
   })
 
-  it('should generate unique state for each request', async () => {
-    const request1 = new NextRequest('http://localhost:3000/api/auth/login')
-    const request2 = new NextRequest('http://localhost:3000/api/auth/login')
+  it('creates authorization URL with duration=permanent', async () => {
+    const response = await GET()
 
-    await GET(request1)
-    await GET(request2)
-
-    // Each request sets one cookie: reddit_oauth_state
-    const [call1Name] = mockCookieStore.set.mock.calls[0]
-    const [call2Name] = mockCookieStore.set.mock.calls[1]
-
-    expect(call1Name).toBe('reddit_oauth_state')
-    expect(call2Name).toBe('reddit_oauth_state')
-
-    // State values should be different
-    const state1 = mockCookieStore.set.mock.calls[0][1]
-    const state2 = mockCookieStore.set.mock.calls[1][1]
-    expect(state1).not.toBe(state2)
+    const redirectUrl = response.headers.get('location')
+    expect(redirectUrl).toContain('duration=permanent')
   })
 
-  it('should set cache control headers to prevent caching', async () => {
-    const request = new NextRequest('http://localhost:3000/api/auth/login')
+  it('creates authorization URL with correct scopes', async () => {
+    const response = await GET()
 
-    const response = await GET(request)
+    const redirectUrl = response.headers.get('location')
+    const url = new URL(redirectUrl!)
 
-    expect(response.headers.get('Cache-Control')).toBe(
-      'private, no-cache, no-store, must-revalidate'
-    )
-    expect(response.headers.get('Pragma')).toBe('no-cache')
-    expect(response.headers.get('Expires')).toBe('0')
+    // Check that scope parameter includes expected scopes
+    const scopeParam = url.searchParams.get('scope')
+    expect(scopeParam).toContain('identity')
+    expect(scopeParam).toContain('read')
+    expect(scopeParam).toContain('vote')
+    expect(scopeParam).toContain('subscribe')
+    expect(scopeParam).toContain('mysubreddits')
+    expect(scopeParam).toContain('save')
+    expect(scopeParam).toContain('submit')
+    expect(scopeParam).toContain('edit')
+    expect(scopeParam).toContain('history')
+  })
+
+  it('sets state cookie with correct options in development', async () => {
+    mockIsProduction.mockReturnValue(false)
+
+    const response = await GET()
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+
+    expect(stateCookie).toBeDefined()
+    expect(stateCookie?.value).toBe(mockUUID)
+  })
+
+  it('sets state cookie with correct options in production', async () => {
+    mockIsProduction.mockReturnValue(true)
+
+    const response = await GET()
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+
+    expect(stateCookie).toBeDefined()
+    expect(stateCookie?.value).toBe(mockUUID)
+  })
+
+  it('generates new UUID for each request', async () => {
+    const uuid1 = 'uuid-1'
+    const uuid2 = 'uuid-2'
+
+    ;(crypto.randomUUID as any).mockReturnValueOnce(uuid1)
+    const response1 = await GET()
+
+    ;(crypto.randomUUID as any).mockReturnValueOnce(uuid2)
+    const response2 = await GET()
+
+    const redirectUrl1 = response1.headers.get('location')
+    const redirectUrl2 = response2.headers.get('location')
+
+    expect(redirectUrl1).toContain(`state=${uuid1}`)
+    expect(redirectUrl2).toContain(`state=${uuid2}`)
   })
 })

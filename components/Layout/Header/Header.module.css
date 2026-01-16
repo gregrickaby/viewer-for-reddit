@@ -1,9 +1,0 @@
-.headerLink {
-  color: var(--mantine-color-text);
-  text-decoration: none;
-}
-
-.searchContainer {
-  flex: 1;
-  max-width: 600px;
-}

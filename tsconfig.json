@@ -13,24 +13,26 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    },
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    }
   },
   "include": [
     "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "global.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/dev/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
   ],
-  "exclude": ["node_modules", "scripts"]
+  "exclude": ["node_modules"]
 }

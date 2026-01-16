@@ -1,58 +1,109 @@
 'use client'
 
-import {Search} from '@/components/UI/Search/Search'
-import config from '@/lib/config'
-import {useSubredditSearch} from '@/lib/hooks/feed/useSubredditSearch'
-import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
-import {Box, Burger, Group, Title, VisuallyHidden} from '@mantine/core'
-import Image from 'next/image'
-import Link from 'next/link'
-import Snoo from '../../../app/icon.png'
-import classes from './Header.module.css'
-import {HeaderIcons} from './HeaderIcons'
+import {ActionIcon, Box, Burger, Group} from '@mantine/core'
+import {IconSearch} from '@tabler/icons-react'
+import {useState} from 'react'
+import {Logo} from '../Logo/Logo'
+import {SearchBar} from '../SearchBar/SearchBar'
+import {UserMenu} from '../UserMenu/UserMenu'
 
 /**
- * Header component using Mantine layout primitives.
+ * Props for the Header component.
  */
-export function Header() {
-  const {showNavbar, toggleNavbarHandler} = useHeaderState()
-  const {setQuery} = useSubredditSearch()
+interface HeaderProps {
+  /** Whether the current user is authenticated */
+  isAuthenticated?: boolean
+  /** Username of the authenticated user */
+  username?: string
+  /** Avatar URL for the authenticated user */
+  avatarUrl?: string
+  /** Callback to toggle mobile navigation drawer */
+  onToggleMobile?: () => void
+  /** Callback to toggle desktop navigation sidebar */
+  onToggleDesktop?: () => void
+}
 
-  /**
-   * When clicking the logo, clear the search query.
-   */
-  const onClickHandler = () => {
-    setQuery('')
-  }
+/**
+ * Application header with navigation and search.
+ * Displays logo, navigation toggles, search bar, and user menu.
+ *
+ * Features:
+ * - Responsive layout (different burger menus for mobile/desktop)
+ * - Mobile search overlay
+ * - Logo linking to home
+ * - User authentication state
+ *
+ * @example
+ * ```typescript
+ * <Header
+ *   isAuthenticated={true}
+ *   username="johndoe"
+ *   onToggleMobile={handleToggleMobile}
+ *   onToggleDesktop={handleToggleDesktop}
+ * />
+ * ```
+ */
+export function Header({
+  isAuthenticated,
+  username,
+  avatarUrl,
+  onToggleMobile,
+  onToggleDesktop
+}: Readonly<HeaderProps>) {
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
 
   return (
-    <Group px="md" gap="md" justify="space-between" wrap="nowrap">
-      <Group gap="sm" wrap="nowrap">
+    <Group
+      h="100%"
+      px={{base: 'sm', sm: 'md'}}
+      justify="space-between"
+      gap="xs"
+    >
+      <Group gap="xs">
         <Burger
-          aria-label="Toggle navigation menu"
-          onClick={toggleNavbarHandler}
-          opened={showNavbar}
+          opened={false}
+          onClick={onToggleMobile}
+          hiddenFrom="sm"
+          size="sm"
+          aria-label="Toggle mobile navigation"
+          data-umami-event="toggle-mobile-nav"
         />
-        <Link className={classes.headerLink} href="/" onClick={onClickHandler}>
-          <Group gap="xs" wrap="nowrap">
-            <Image alt="Logo" height={38} src={Snoo} width={38} priority />
-            <Title size="h4" visibleFrom="md">
-              {config.siteName}
-            </Title>
-          </Group>
-        </Link>
-        <VisuallyHidden>{config.metaDescription}</VisuallyHidden>
+        <Burger
+          opened={false}
+          onClick={onToggleDesktop}
+          visibleFrom="sm"
+          size="sm"
+          aria-label="Toggle desktop navigation"
+          data-umami-event="toggle-desktop-nav"
+        />
+        <Logo />
       </Group>
 
-      <Box visibleFrom="md" className={classes.searchContainer}>
-        <Search />
-      </Box>
+      <Group gap="xs">
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          size="lg"
+          hiddenFrom="sm"
+          onClick={() => setMobileSearchOpen(true)}
+          aria-label="Search"
+          data-umami-event="open-mobile-search"
+        >
+          <IconSearch size={20} />
+        </ActionIcon>
 
-      <Group gap="xs" wrap="nowrap">
-        <Box hiddenFrom="md">
-          <Search />
+        <Box visibleFrom="sm">
+          <SearchBar
+            mobileOpen={mobileSearchOpen}
+            onMobileClose={() => setMobileSearchOpen(false)}
+          />
         </Box>
-        <HeaderIcons />
+
+        <UserMenu
+          isAuthenticated={isAuthenticated}
+          username={username}
+          avatarUrl={avatarUrl}
+        />
       </Group>
     </Group>
   )

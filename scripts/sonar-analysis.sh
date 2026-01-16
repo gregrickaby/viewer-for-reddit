@@ -14,7 +14,21 @@ fi
 
 echo ""
 echo "🔍 Starting SonarQube analysis..."
-sonar-scanner
+
+# Read SonarQube token from file
+if [ ! -f ".sonar_token" ]; then
+  echo "❌ Error: .sonar_token file not found"
+  echo "Create a .sonar_token file with your SonarQube token"
+  exit 1
+fi
+
+SONAR_TOKEN=$(cat .sonar_token | tr -d '\n\r')
+
+sonar-scanner \
+  -Dsonar.projectKey=viewer-for-reddit \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.token="${SONAR_TOKEN}"
 
 if [ $? -eq 0 ]; then
   echo ""

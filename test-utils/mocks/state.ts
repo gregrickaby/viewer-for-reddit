@@ -1,27 +1,13 @@
-import type {UserSettings} from '@/lib/types'
-
 /**
  * Mock state for testing.
+ *
+ * This file previously contained Redux state mocks.
+ * Since this app no longer uses Redux, these are placeholder exports
+ * for backwards compatibility with any existing tests.
+ *
+ * You can safely delete this file if no tests import from it.
  */
-export const mockUserSettings: UserSettings = {
-  favorites: [],
-  currentSort: 'hot',
-  currentSubreddit: null,
-  enableNsfw: false,
-  isMuted: false,
-  recent: [],
-  searchHistory: [],
-  commentSort: 'best'
-}
 
-/**
- * Default preloaded state for tests.
- */
-export const mockPreloadedState = {
-  settings: mockUserSettings,
-  transient: {
-    toggleNavbar: false,
-    mobileSearchState: 'closed' as const,
-    searchQuery: ''
-  }
-}
+// Placeholder exports - can be removed if not used
+export const mockUserSettings = {}
+export const mockPreloadedState = {}

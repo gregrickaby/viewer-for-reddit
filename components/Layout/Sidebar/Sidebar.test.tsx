@@ -1,217 +1,550 @@
-import {Sidebar} from '@/components/Layout/Sidebar/Sidebar'
-import {render, screen} from '@/test-utils'
-
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    refresh: vi.fn()
-  })
-}))
-
-vi.mock('@mantine/hooks', async () => {
-  const actual = await vi.importActual<any>('@mantine/hooks')
-  return {
-    ...actual,
-    useMounted: () => true
-  }
-})
-
-vi.mock('@/lib/hooks/util/useRemoveItemFromHistory', () => ({
-  useRemoveItemFromHistory: () => ({remove: vi.fn()})
-}))
-
-vi.mock('@/lib/hooks/subreddit/useRemoveFromFavorites', () => ({
-  useRemoveFromFavorites: () => ({remove: vi.fn()})
-}))
-
-vi.mock('@/lib/store/services/subredditApi', async (importOriginal) => {
-  const actual: any = await importOriginal()
-  return {
-    ...actual,
-    useGetPopularSubredditsQuery: () => ({data: []})
-  }
-})
-
-vi.mock('@/lib/store/services/authenticatedApi', async (importOriginal) => {
-  const actual: any = await importOriginal()
-  return {
-    ...actual,
-    useGetUserSubscriptionsQuery: () => ({
-      data: [
-        {
-          display_name: 'r/zebra',
-          icon_img: '',
-          over18: false,
-          subscribers: 100,
-          value: 'zebra'
-        },
-        {
-          display_name: 'r/apple',
-          icon_img: '',
-          over18: false,
-          subscribers: 200,
-          value: 'apple'
-        },
-        {
-          display_name: 'r/beta',
-          icon_img: '',
-          over18: false,
-          subscribers: 300,
-          value: 'beta'
-        }
-      ]
-    }),
-    useGetUserCustomFeedsQuery: () => ({
-      data: [
-        {
-          display_name: 'Zebra Feed',
-          name: 'zebra_feed',
-          path: '/user/test/m/zebra_feed'
-        },
-        {
-          display_name: 'Apple Feed',
-          name: 'apple_feed',
-          path: '/user/test/m/apple_feed'
-        },
-        {
-          display_name: '',
-          name: 'beta_feed',
-          path: '/user/test/m/beta_feed'
-        }
-      ]
-    })
-  }
-})
-
-vi.mock('@/lib/hooks/ui/useHeaderState', () => ({
-  useHeaderState: () => ({
-    showNavbar: false,
-    toggleNavbarHandler: vi.fn(),
-    toggleNavbarOnMobileHandler: vi.fn()
-  })
-}))
+import {render, screen, waitFor} from '@/test-utils'
+import {userEvent} from '@testing-library/user-event'
+import {describe, expect, it} from 'vitest'
+import {Sidebar} from './Sidebar'
 
 describe('Sidebar', () => {
-  it('should render links', () => {
-    render(<Sidebar />)
-    expect(screen.getByRole('link', {name: 'Home'})).toBeInTheDocument()
-    expect(screen.getByRole('link', {name: 'Popular'})).toBeInTheDocument()
-    expect(screen.getByRole('link', {name: 'All'})).toBeInTheDocument()
-    expect(screen.getByRole('link', {name: 'About'})).toBeInTheDocument()
-  })
+  const mockSubscriptions = [
+    {name: 'programming', displayName: 'r/programming', icon: 'icon1.png'},
+    {name: 'javascript', displayName: 'r/javascript'},
+    {name: 'typescript', displayName: 'r/typescript'}
+  ]
 
-  it('should show Favorites section when not authenticated', () => {
-    render(<Sidebar />, {
-      preloadedState: {
-        auth: {isAuthenticated: false, username: null, expiresAt: null},
-        settings: {
-          currentSort: 'hot',
-          currentSubreddit: '',
-          enableNsfw: true,
-          isMuted: true,
-          recent: [],
-          searchHistory: [],
-          favorites: [
-            {
-              display_name: 'r/test',
-              icon_img: '',
-              over18: false,
-              subscribers: 1000,
-              value: 'test'
-            }
-          ],
-          commentSort: 'best'
-        }
-      }
-    })
-    expect(screen.getByText('Favorites')).toBeInTheDocument()
-  })
+  const mockMultireddits = [
+    {
+      name: 'tech',
+      displayName: 'Tech News',
+      path: '/user/testuser/m/tech'
+    },
+    {
+      name: 'gaming',
+      displayName: 'Gaming',
+      path: '/user/testuser/m/gaming'
+    }
+  ]
 
-  it('should hide Favorites section when authenticated', () => {
-    render(<Sidebar />, {
-      preloadedState: {
-        auth: {
-          isAuthenticated: true,
-          username: 'testuser',
-          expiresAt: Date.now() + 3600000
-        }
-      }
-    })
-    expect(screen.queryByText('Favorites')).not.toBeInTheDocument()
-  })
+  describe('default feeds', () => {
+    it('renders Popular link when not authenticated', () => {
+      render(<Sidebar />)
 
-  it('should sort My Communities alphabetically when authenticated', () => {
-    render(<Sidebar />, {
-      preloadedState: {
-        auth: {
-          isAuthenticated: true,
-          username: 'testuser',
-          expiresAt: Date.now() + 3600000
-        }
-      }
+      const link = screen.getByRole('link', {name: /popular/i})
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/')
+      expect(link).toHaveAttribute('data-umami-event', 'nav-popular')
     })
 
-    // Check that My Communities section appears
-    expect(screen.getByText('My Communities')).toBeInTheDocument()
+    it('renders Home link when authenticated', () => {
+      render(<Sidebar isAuthenticated />)
 
-    // Check that communities are in alphabetical order
-    const communities = screen.getAllByText(/^r\//)
-    expect(communities[0]).toHaveTextContent('r/apple')
-    expect(communities[1]).toHaveTextContent('r/beta')
-    expect(communities[2]).toHaveTextContent('r/zebra')
-  })
-
-  it('should sort My Custom Feeds alphabetically when authenticated', () => {
-    render(<Sidebar />, {
-      preloadedState: {
-        auth: {
-          isAuthenticated: true,
-          username: 'testuser',
-          expiresAt: Date.now() + 3600000
-        }
-      }
+      const link = screen.getByRole('link', {name: /home/i})
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/')
+      expect(link).toHaveAttribute('data-umami-event', 'nav-home')
     })
 
-    // Check that My Custom Feeds section appears
-    expect(screen.getByText('My Custom Feeds')).toBeInTheDocument()
+    it('renders All link', () => {
+      render(<Sidebar />)
 
-    // Check that custom feeds are in alphabetical order
-    expect(screen.getByText('Apple Feed')).toBeInTheDocument()
-    expect(screen.getByText('beta_feed')).toBeInTheDocument()
-    expect(screen.getByText('Zebra Feed')).toBeInTheDocument()
+      const link = screen.getByRole('link', {name: /^all$/i})
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/r/all')
+    })
 
-    // Verify the order by checking that Apple Feed appears before Zebra Feed
-    const appleElement = screen.getByText('Apple Feed')
-    const zebraElement = screen.getByText('Zebra Feed')
-    expect(
-      appleElement.compareDocumentPosition(zebraElement) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
+    it('renders About link', () => {
+      render(<Sidebar />)
+
+      const link = screen.getByRole('link', {name: /about/i})
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/about')
+    })
+
+    it('renders Donate link', () => {
+      render(<Sidebar />)
+
+      const link = screen.getByRole('link', {name: /donate/i})
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/donate')
+    })
+
+    it('renders GitHub link', () => {
+      render(<Sidebar />)
+
+      const link = screen.getByRole('link', {name: /github/i})
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://github.com/gregrickaby/viewer-for-reddit'
+      )
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    })
+
+    it('renders Navigation heading', () => {
+      render(<Sidebar />)
+
+      expect(screen.getByText('Navigation')).toBeInTheDocument()
+    })
   })
 
-  it('should not show Saved Posts link when not authenticated', () => {
-    render(<Sidebar />, {
-      preloadedState: {
-        auth: {isAuthenticated: false, username: null, expiresAt: null}
-      }
+  describe('saved posts link', () => {
+    it('does not show Saved Posts link when not authenticated', () => {
+      render(<Sidebar isAuthenticated={false} />)
+
+      expect(
+        screen.queryByRole('link', {name: /saved posts/i})
+      ).not.toBeInTheDocument()
     })
-    expect(
-      screen.queryByRole('link', {name: 'My Saved Posts'})
-    ).not.toBeInTheDocument()
+
+    it('does not show Saved Posts link when authenticated but no username', () => {
+      render(<Sidebar isAuthenticated />)
+
+      expect(
+        screen.queryByRole('link', {name: /saved posts/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('shows Saved Posts link when authenticated with username', () => {
+      render(<Sidebar isAuthenticated username="testuser" />)
+
+      const link = screen.getByRole('link', {name: /saved posts/i})
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/user/testuser/saved')
+    })
+
+    it('has analytics event on Saved Posts link', () => {
+      render(<Sidebar isAuthenticated username="testuser" />)
+
+      const link = screen.getByRole('link', {name: /saved posts/i})
+      expect(link).toHaveAttribute('data-umami-event', 'nav-saved')
+    })
+
+    it('renders Saved Posts link in correct position (after All)', () => {
+      render(<Sidebar isAuthenticated username="testuser" />)
+
+      const allLinks = screen.getAllByRole('link')
+      const navLinks = allLinks.slice(0, 6) // First 6 links are navigation
+
+      expect(navLinks[0]).toHaveTextContent('Home')
+      expect(navLinks[1]).toHaveTextContent('All')
+      expect(navLinks[2]).toHaveTextContent('Saved Posts')
+      expect(navLinks[3]).toHaveTextContent('About')
+    })
   })
 
-  it('should show Saved Posts link when authenticated with username', () => {
-    render(<Sidebar />, {
-      preloadedState: {
-        auth: {
-          isAuthenticated: true,
-          username: 'testuser',
-          expiresAt: Date.now() + 3600000
-        }
-      }
+  describe('subscriptions - unauthenticated', () => {
+    it('does not show subscriptions section when not authenticated', () => {
+      render(
+        <Sidebar isAuthenticated={false} subscriptions={mockSubscriptions} />
+      )
+
+      expect(screen.queryByText('My Subreddits')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {name: /r\/programming/i})
+      ).not.toBeInTheDocument()
     })
-    const savedLink = screen.getByRole('link', {name: 'My Saved Posts'})
-    expect(savedLink).toBeInTheDocument()
-    expect(savedLink).toHaveAttribute('href', '/user/testuser/saved')
+
+    it('does not show subscriptions when authenticated but list is empty', () => {
+      render(<Sidebar isAuthenticated subscriptions={[]} />)
+
+      expect(screen.queryByText('My Subreddits')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('subscriptions - authenticated', () => {
+    it('renders subscriptions section when authenticated', () => {
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      expect(screen.getByText('My Subreddits')).toBeInTheDocument()
+    })
+
+    it('renders all subscription links', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /r\/programming/i})
+        ).toBeInTheDocument()
+      })
+      expect(
+        screen.getByRole('link', {name: /r\/javascript/i})
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {name: /r\/typescript/i})
+      ).toBeInTheDocument()
+    })
+
+    it('sorts subscriptions alphabetically', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      await waitFor(() => {
+        const links = screen.getAllByRole('link')
+        const subscriptionLinks = links.filter((link) => {
+          const href = link.getAttribute('href')
+          return href?.startsWith('/r/') && href !== '/r/all'
+        })
+        expect(subscriptionLinks.length).toBeGreaterThan(0)
+      })
+
+      const links = screen.getAllByRole('link')
+      const subscriptionLinks = links.filter((link) => {
+        const href = link.getAttribute('href')
+        return href?.startsWith('/r/') && href !== '/r/all'
+      })
+
+      expect(subscriptionLinks[0]).toHaveTextContent('r/javascript')
+      expect(subscriptionLinks[1]).toHaveTextContent('r/programming')
+      expect(subscriptionLinks[2]).toHaveTextContent('r/typescript')
+    })
+
+    it('has correct href for subscription links', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      const programmingLink = await screen.findByRole('link', {
+        name: /r\/programming/i
+      })
+      expect(programmingLink).toHaveAttribute('href', '/r/programming')
+    })
+
+    it('toggles subscriptions collapse when button clicked', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      expect(
+        screen.getByRole('button', {name: /collapse my subreddits/i})
+      ).toBeInTheDocument()
+    })
+
+    it('shows subscriptions initially closed', () => {
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      expect(
+        screen.getByRole('button', {name: /expand my subreddits/i})
+      ).toBeInTheDocument()
+    })
+
+    it('can toggle collapse by clicking anywhere on the header', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Click the entire header (not just icon) to expand
+      const header = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(header)
+
+      // Should be expanded now
+      expect(
+        screen.getByRole('button', {name: /collapse my subreddits/i})
+      ).toBeInTheDocument()
+
+      // Click again to collapse
+      await user.click(header)
+
+      // Should be collapsed now
+      expect(
+        screen.getByRole('button', {name: /expand my subreddits/i})
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('multireddits - unauthenticated', () => {
+    it('does not show multireddits section when not authenticated', () => {
+      render(
+        <Sidebar isAuthenticated={false} multireddits={mockMultireddits} />
+      )
+
+      expect(screen.queryByText('Multireddits')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {name: /tech news/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('does not show multireddits when authenticated but list is empty', () => {
+      render(<Sidebar isAuthenticated multireddits={[]} />)
+
+      expect(screen.queryByText('Multireddits')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('multireddits - authenticated', () => {
+    it('renders multireddits section when authenticated', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      expect(screen.getByText('My Multireddits')).toBeInTheDocument()
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand multireddits/i
+      })
+      await user.click(expandButton)
+
+      // Wait for collapse animation and verify content is visible
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /tech news/i})
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('renders all multireddit links', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand multireddits/i
+      })
+      await user.click(expandButton)
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /tech news/i})
+        ).toBeInTheDocument()
+      })
+      expect(screen.getByRole('link', {name: /gaming/i})).toBeInTheDocument()
+    })
+
+    it('sorts multireddits alphabetically', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand multireddits/i
+      })
+      await user.click(expandButton)
+
+      await waitFor(() => {
+        const links = screen.getAllByRole('link')
+        const multiLinks = links.filter((link) =>
+          link.getAttribute('href')?.includes('/m/')
+        )
+        expect(multiLinks.length).toBeGreaterThan(0)
+      })
+
+      const links = screen.getAllByRole('link')
+      const multiLinks = links.filter((link) =>
+        link.getAttribute('href')?.includes('/m/')
+      )
+
+      expect(multiLinks[0]).toHaveTextContent('Gaming')
+      expect(multiLinks[1]).toHaveTextContent('Tech News')
+    })
+
+    it('has correct href for multireddit links', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand multireddits/i
+      })
+      await user.click(expandButton)
+
+      const techLink = await screen.findByRole('link', {name: /tech news/i})
+      expect(techLink).toHaveAttribute('href', '/user/testuser/m/tech')
+    })
+
+    it('toggles multireddits collapse when button clicked', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      const expandButton = screen.getByRole('button', {
+        name: /expand multireddits/i
+      })
+      await user.click(expandButton)
+
+      expect(
+        screen.getByRole('button', {name: /collapse multireddits/i})
+      ).toBeInTheDocument()
+    })
+
+    it('shows multireddits initially closed', () => {
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      expect(
+        screen.getByRole('button', {name: /expand multireddits/i})
+      ).toBeInTheDocument()
+    })
+
+    it('can toggle collapse by clicking anywhere on the header', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      // Click the entire header (not just icon) to expand
+      const header = screen.getByRole('button', {name: /expand multireddits/i})
+      await user.click(header)
+
+      // Should be expanded now
+      expect(
+        screen.getByRole('button', {name: /collapse multireddits/i})
+      ).toBeInTheDocument()
+
+      // Click again to collapse
+      await user.click(header)
+
+      // Should be collapsed now
+      expect(
+        screen.getByRole('button', {name: /expand multireddits/i})
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('authenticated with both subscriptions and multireddits', () => {
+    it('renders both sections', async () => {
+      const user = userEvent.setup()
+      render(
+        <Sidebar
+          isAuthenticated
+          subscriptions={mockSubscriptions}
+          multireddits={mockMultireddits}
+        />
+      )
+
+      expect(screen.getByText('My Subreddits')).toBeInTheDocument()
+      expect(screen.getByText('My Multireddits')).toBeInTheDocument()
+
+      // Expand both sections to verify they work
+      const expandButtons = screen.getAllByRole('button', {name: /expand/i})
+      for (const button of expandButtons) {
+        await user.click(button)
+      }
+
+      // Wait for content to be visible
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /r\/programming/i})
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('renders all links from both sections', async () => {
+      const user = userEvent.setup()
+      render(
+        <Sidebar
+          isAuthenticated
+          subscriptions={mockSubscriptions}
+          multireddits={mockMultireddits}
+        />
+      )
+
+      // Expand both sections
+      const expandButtons = screen.getAllByRole('button', {name: /expand/i})
+      for (const button of expandButtons) {
+        await user.click(button)
+      }
+
+      // Wait for collapse animations to complete
+      await waitFor(() => {
+        // Subscriptions
+        expect(
+          screen.getByRole('link', {name: /r\/programming/i})
+        ).toBeInTheDocument()
+      })
+
+      // Multireddits
+      expect(screen.getByRole('link', {name: /tech news/i})).toBeInTheDocument()
+
+      // Default feeds
+      expect(screen.getByRole('link', {name: /home/i})).toBeInTheDocument()
+    })
+
+    it('allows independent collapse state for each section', async () => {
+      const user = userEvent.setup()
+      render(
+        <Sidebar
+          isAuthenticated
+          subscriptions={mockSubscriptions}
+          multireddits={mockMultireddits}
+        />
+      )
+
+      // Both start collapsed - expand subreddits
+      const subredditsToggle = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(subredditsToggle)
+
+      // Subreddits now open
+      expect(
+        screen.getByRole('button', {name: /collapse my subreddits/i})
+      ).toBeInTheDocument()
+
+      // Multireddits still closed
+      expect(
+        screen.getByRole('button', {name: /expand multireddits/i})
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('analytics tracking', () => {
+    it('has analytics event on Popular link when not authenticated', () => {
+      render(<Sidebar />)
+
+      const link = screen.getByRole('link', {name: /popular/i})
+      expect(link).toHaveAttribute('data-umami-event', 'nav-popular')
+    })
+
+    it('has analytics event on Home link when authenticated', () => {
+      render(<Sidebar isAuthenticated />)
+
+      const link = screen.getByRole('link', {name: /home/i})
+      expect(link).toHaveAttribute('data-umami-event', 'nav-home')
+    })
+
+    it('has analytics event on subscription links', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      const link = await screen.findByRole('link', {name: /r\/programming/i})
+      expect(link).toHaveAttribute('data-umami-event', 'nav-subreddit')
+    })
+
+    it('has analytics event on multireddit links', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      // Expand to see links
+      const expandButton = screen.getByRole('button', {
+        name: /expand multireddits/i
+      })
+      await user.click(expandButton)
+
+      const link = await screen.findByRole('link', {name: /tech news/i})
+      expect(link).toHaveAttribute('data-umami-event', 'nav-multireddit')
+    })
   })
 })

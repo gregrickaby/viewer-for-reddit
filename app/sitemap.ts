@@ -1,4 +1,4 @@
-import config from '@/lib/config'
+import {appConfig} from '@/lib/config/app.config'
 import {MetadataRoute} from 'next'
 
 /**
@@ -10,7 +10,7 @@ import {MetadataRoute} from 'next'
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = config.baseUrl
+  const base = appConfig.site.baseUrl
 
   return [
     {

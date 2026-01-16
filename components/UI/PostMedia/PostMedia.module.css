@@ -1,0 +1,21 @@
+.imageContainer {
+  border-radius: 8px;
+  max-height: 512px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.imageLink {
+  display: block;
+}
+
+.image {
+  object-fit: contain;
+}
+
+.thumbnail {
+  border-radius: 8px;
+  height: auto;
+  max-width: 100%;
+}

@@ -162,16 +162,6 @@ export const authHandlers = [
     }
   ),
 
-  // Session endpoint
-  http.get('/api/auth/session', () => {
-    return HttpResponse.json(null)
-  }),
-
-  // Logout endpoint
-  http.post('/api/auth/logout', () => {
-    return HttpResponse.json({success: true})
-  }),
-
   // Authenticated Reddit API proxy (/api/reddit/me)
   http.get('http://localhost:3000/api/reddit/me', async ({request}) => {
     const url = new URL(request.url)

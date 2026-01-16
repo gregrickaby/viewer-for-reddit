@@ -1,178 +1,238 @@
 'use client'
 
-import {SidebarSection} from '@/components/Layout/Sidebar/SidebarSection'
-import {UserMenu} from '@/components/UI/Auth/UserMenu'
-import {Settings} from '@/components/UI/Settings/Settings'
-import {useRemoveFromFavorites} from '@/lib/hooks/subreddit/useRemoveFromFavorites'
-import {useHeaderState} from '@/lib/hooks/ui/useHeaderState'
-import {useRemoveItemFromHistory} from '@/lib/hooks/util/useRemoveItemFromHistory'
-import {useAppSelector} from '@/lib/store/hooks'
+import {Collapse, Group, NavLink, ScrollArea, Stack, Text} from '@mantine/core'
 import {
-  useGetUserCustomFeedsQuery,
-  useGetUserSubscriptionsQuery
-} from '@/lib/store/services/authenticatedApi'
-import {useGetPopularSubredditsQuery} from '@/lib/store/services/subredditApi'
-import {Box, Divider, Group, NavLink, ScrollArea, Stack} from '@mantine/core'
-import {useMounted} from '@mantine/hooks'
+  IconBookmark,
+  IconBrandGithub,
+  IconChevronDown,
+  IconChevronUp,
+  IconExternalLink,
+  IconFlame,
+  IconHeart,
+  IconInfoCircle,
+  IconTrendingUp
+} from '@tabler/icons-react'
 import Link from 'next/link'
-import {
-  FaBookmark,
-  FaHeart,
-  FaHistory,
-  FaHome,
-  FaInfoCircle,
-  FaRegArrowAltCircleUp,
-  FaUserCircle
-} from 'react-icons/fa'
-import {FaArrowTrendUp, FaLayerGroup} from 'react-icons/fa6'
-import {MdDynamicFeed} from 'react-icons/md'
+import {useMemo, useState} from 'react'
 
 /**
- * Sidebar component
+ * Props for the Sidebar component.
  */
-export function Sidebar() {
-  const mounted = useMounted()
-  const recent = useAppSelector((state) => state.settings.recent)
-  const favorites = useAppSelector((state) => state.settings.favorites)
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated)
-  const username = useAppSelector((state) => state.auth.username)
-  const {remove: removeFromHistory} = useRemoveItemFromHistory()
-  const {remove: removeFromFavorites} = useRemoveFromFavorites()
-  const {data: trending = []} = useGetPopularSubredditsQuery({limit: 10})
-  const {toggleNavbarOnMobileHandler} = useHeaderState()
+interface SidebarProps {
+  /** Whether the current user is authenticated */
+  isAuthenticated?: boolean
+  /** Username for authenticated user (for saved posts link) */
+  username?: string
+  /** User's subscribed subreddits */
+  subscriptions?: Array<{
+    name: string
+    displayName: string
+    icon?: string
+  }>
+  /** User's custom multireddits */
+  multireddits?: Array<{
+    name: string
+    displayName: string
+    path: string
+  }>
+}
 
-  // Fetch user subscriptions and custom feeds using RTK Query
-  const {data: subscriptions = []} = useGetUserSubscriptionsQuery(undefined, {
-    skip: !isAuthenticated
-  })
-  const {data: customFeeds = []} = useGetUserCustomFeedsQuery(undefined, {
-    skip: !isAuthenticated
-  })
+/**
+ * Navigation sidebar with feeds, subscriptions, and multireddits.
+ * Adapts content based on authentication state.
+ *
+ * Features:
+ * - Default feeds (Popular, All, About, Donate, GitHub)
+ * - Saved Posts (authenticated only)
+ * - User subscriptions (authenticated only)
+ * - User multireddits (authenticated only)
+ * - Collapsible sections
+ * - Alphabetically sorted lists
+ * - Scrollable long lists (max 400px height)
+ *
+ * @example
+ * ```typescript
+ * <Sidebar
+ *   isAuthenticated={true}
+ *   username="testuser"
+ *   subscriptions={userSubs}
+ *   multireddits={userMultis}
+ * />
+ * ```
+ */
+export function Sidebar({
+  isAuthenticated,
+  username,
+  subscriptions = [],
+  multireddits = []
+}: Readonly<SidebarProps>) {
+  const [subredditsOpen, setSubredditsOpen] = useState(false)
+  const [multiredditsOpen, setMultiredditsOpen] = useState(false)
 
-  // Sort subscriptions alphabetically by display_name
-  const sortedSubscriptions = [...subscriptions].sort((a, b) =>
-    a.display_name.localeCompare(b.display_name)
+  const sortedSubscriptions = useMemo(
+    () =>
+      [...subscriptions].sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ),
+    [subscriptions]
   )
 
-  // Sort custom feeds alphabetically by display_name or name
-  const sortedCustomFeeds = [...customFeeds].sort((a, b) =>
-    (a.display_name || a.name).localeCompare(b.display_name || b.name)
+  const sortedMultireddits = useMemo(
+    () =>
+      [...multireddits].sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ),
+    [multireddits]
   )
-
-  if (!mounted) return null
 
   return (
-    <ScrollArea type="never" h="100%">
-      <Stack gap="xs">
-        <Box hiddenFrom="sm">
-          <Group gap="sm" mb="md" justify="center">
-            <Settings />
-            <UserMenu />
-          </Group>
-          <Divider mb="md" />
-        </Box>
-
-        <NavLink
-          component={Link}
-          data-umami-event="sidebar home"
-          href="/"
-          label="Home"
-          leftSection={<FaHome />}
-          onClick={toggleNavbarOnMobileHandler}
-        />
-
-        {isAuthenticated && sortedSubscriptions.length > 0 && (
-          <SidebarSection
-            enableFavorite
-            label="My Communities"
-            leftSection={<FaUserCircle />}
-            subreddits={sortedSubscriptions}
-          />
-        )}
-
-        {isAuthenticated && sortedCustomFeeds.length > 0 && (
-          <NavLink
-            data-umami-event="sidebar custom feeds section"
-            label="My Custom Feeds"
-            leftSection={<FaLayerGroup />}
-          >
-            {sortedCustomFeeds.map((feed) => (
-              <NavLink
-                component={Link}
-                data-umami-event="sidebar custom feed click"
-                href={feed.path}
-                key={feed.path}
-                label={feed.display_name || feed.name}
-                onClick={toggleNavbarOnMobileHandler}
-              />
-            ))}
-          </NavLink>
-        )}
-
-        {isAuthenticated && username && (
+    <Stack gap="md">
+      <div>
+        <Text size="xs" fw={700} c="dimmed" tt="uppercase" mb="sm">
+          Navigation
+        </Text>
+        <Stack gap={4}>
           <NavLink
             component={Link}
-            data-umami-event="sidebar saved posts"
-            href={`/user/${username}/saved`}
-            label="My Saved Posts"
-            leftSection={<FaBookmark />}
-            onClick={toggleNavbarOnMobileHandler}
+            href="/"
+            label={isAuthenticated ? 'Home' : 'Popular'}
+            leftSection={<IconFlame size={16} />}
+            data-umami-event={isAuthenticated ? 'nav-home' : 'nav-popular'}
           />
-        )}
-
-        <SidebarSection
-          enableDelete
-          enableFavorite
-          label="Viewing History"
-          leftSection={<FaHistory />}
-          onDelete={(sub) => removeFromHistory(sub.display_name)}
-          subreddits={recent}
-        />
-
-        {!isAuthenticated && (
-          <SidebarSection
-            enableDelete
-            label="Favorites"
-            leftSection={<FaHeart />}
-            onDelete={(sub) => removeFromFavorites(sub.display_name)}
-            subreddits={favorites}
+          <NavLink
+            component={Link}
+            href="/r/all"
+            label="All"
+            leftSection={<IconTrendingUp size={16} />}
+            data-umami-event="nav-all"
           />
-        )}
+          {isAuthenticated && username && (
+            <NavLink
+              component={Link}
+              href={`/user/${username}/saved`}
+              label="Saved Posts"
+              leftSection={<IconBookmark size={16} />}
+              data-umami-event="nav-saved"
+            />
+          )}
+          <NavLink
+            component={Link}
+            href="/about"
+            label="About"
+            leftSection={<IconInfoCircle size={16} />}
+            data-umami-event="nav-about"
+          />
+          <NavLink
+            component={Link}
+            href="/donate"
+            label="Donate"
+            leftSection={<IconHeart size={16} />}
+            data-umami-event="nav-donate"
+          />
+          <NavLink
+            component="a"
+            href="https://github.com/gregrickaby/viewer-for-reddit"
+            label="GitHub"
+            leftSection={<IconBrandGithub size={16} />}
+            rightSection={<IconExternalLink size={14} />}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-umami-event="nav-github"
+          />
+        </Stack>
+      </div>
 
-        <SidebarSection
-          enableFavorite
-          label="Trending"
-          leftSection={<FaArrowTrendUp />}
-          subreddits={trending}
-        />
+      {isAuthenticated && subscriptions.length > 0 && (
+        <div>
+          <Group
+            justify="space-between"
+            mb="sm"
+            onClick={() => setSubredditsOpen(!subredditsOpen)}
+            style={{cursor: 'pointer'}}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setSubredditsOpen(!subredditsOpen)
+              }
+            }}
+            aria-expanded={subredditsOpen}
+            aria-label={
+              subredditsOpen ? 'Collapse My Subreddits' : 'Expand My Subreddits'
+            }
+          >
+            <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+              My Subreddits
+            </Text>
+            {subredditsOpen ? (
+              <IconChevronUp size={16} />
+            ) : (
+              <IconChevronDown size={16} />
+            )}
+          </Group>
+          <Collapse in={subredditsOpen}>
+            <ScrollArea.Autosize mah={400}>
+              <Stack gap={4}>
+                {sortedSubscriptions.map((sub) => (
+                  <NavLink
+                    key={sub.name}
+                    component={Link}
+                    href={`/r/${sub.name}`}
+                    label={sub.displayName}
+                    data-umami-event="nav-subreddit"
+                  />
+                ))}
+              </Stack>
+            </ScrollArea.Autosize>
+          </Collapse>
+        </div>
+      )}
 
-        <NavLink
-          component={Link}
-          data-umami-event="sidebar all"
-          href="/r/all"
-          label="All"
-          leftSection={<MdDynamicFeed />}
-          onClick={toggleNavbarOnMobileHandler}
-        />
-
-        <NavLink
-          component={Link}
-          data-umami-event="sidebar popular"
-          href="/r/popular"
-          label="Popular"
-          leftSection={<FaRegArrowAltCircleUp />}
-          onClick={toggleNavbarOnMobileHandler}
-        />
-
-        <NavLink
-          component={Link}
-          data-umami-event="sidebar about"
-          href="/about"
-          label="About"
-          leftSection={<FaInfoCircle />}
-          onClick={toggleNavbarOnMobileHandler}
-        />
-      </Stack>
-    </ScrollArea>
+      {isAuthenticated && multireddits.length > 0 && (
+        <div>
+          <Group
+            justify="space-between"
+            mb="sm"
+            onClick={() => setMultiredditsOpen(!multiredditsOpen)}
+            style={{cursor: 'pointer'}}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setMultiredditsOpen(!multiredditsOpen)
+              }
+            }}
+            aria-expanded={multiredditsOpen}
+            aria-label={
+              multiredditsOpen ? 'Collapse Multireddits' : 'Expand Multireddits'
+            }
+          >
+            <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+              My Multireddits
+            </Text>
+            {multiredditsOpen ? (
+              <IconChevronUp size={16} />
+            ) : (
+              <IconChevronDown size={16} />
+            )}
+          </Group>
+          <Collapse in={multiredditsOpen}>
+            <Stack gap={4}>
+              {sortedMultireddits.map((multi) => (
+                <NavLink
+                  key={multi.path}
+                  component={Link}
+                  href={multi.path}
+                  label={multi.displayName}
+                  data-umami-event="nav-multireddit"
+                />
+              ))}
+            </Stack>
+          </Collapse>
+        </div>
+      )}
+    </Stack>
   )
 }

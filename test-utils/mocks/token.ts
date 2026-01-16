@@ -1,4 +1,10 @@
-import type {TokenResponse} from '@/lib/types'
+interface TokenResponse {
+  access_token: string
+  expires_in: number
+  scope: string
+  token_type: string
+  error?: string
+}
 
 export const tokenMock: TokenResponse = {
   access_token: 'test_access_token',

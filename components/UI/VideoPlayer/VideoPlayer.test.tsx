@@ -1,0 +1,351 @@
+import {render, screen} from '@/test-utils'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {VideoPlayer} from './VideoPlayer'
+
+const mockObserver = {
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+  callback: null as any
+}
+
+global.IntersectionObserver = class IntersectionObserver {
+  constructor(callback: IntersectionObserverCallback) {
+    mockObserver.callback = callback
+  }
+  observe = mockObserver.observe
+  unobserve = mockObserver.unobserve
+  disconnect = mockObserver.disconnect
+} as any
+
+describe('VideoPlayer', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  describe('valid video rendering', () => {
+    it('renders video element with valid Reddit video URL', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      expect(video).toBeInTheDocument()
+    })
+
+    it('renders video with source element', () => {
+      const {container} = render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      // eslint-disable-next-line testing-library/no-container
+      const source = container.querySelector('source')
+      expect(source).toBeInTheDocument()
+      expect(source).toHaveAttribute('src', 'https://v.redd.it/test.mp4')
+    })
+
+    it('renders video with mp4 type by default', () => {
+      const {container} = render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      // eslint-disable-next-line testing-library/no-container
+      const source = container.querySelector('source')
+      expect(source).toHaveAttribute('type', 'video/mp4')
+    })
+
+    it('renders video with HLS type when specified', () => {
+      const {container} = render(
+        <VideoPlayer
+          src="https://v.redd.it/test.m3u8"
+          title="Test Video"
+          type="hls"
+        />
+      )
+
+      // eslint-disable-next-line testing-library/no-container
+      const source = container.querySelector('source')
+      expect(source).toHaveAttribute('type', 'application/x-mpegURL')
+    })
+
+    it('renders video with controls', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      expect(video).toHaveAttribute('controls')
+    })
+
+    it('renders video with preload metadata', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      expect(video).toHaveAttribute('preload', 'metadata')
+    })
+
+    it('renders video with no download control', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      expect(video).toHaveAttribute('controlslist', 'nodownload')
+    })
+  })
+
+  describe('URL validation', () => {
+    it('shows error for non-HTTPS URLs', () => {
+      render(<VideoPlayer src="http://v.redd.it/test.mp4" title="Test Video" />)
+
+      expect(screen.getByText('Video unavailable')).toBeInTheDocument()
+      expect(
+        screen.queryByLabelText('Video: Test Video')
+      ).not.toBeInTheDocument()
+    })
+
+    it('shows error for invalid URLs', () => {
+      render(<VideoPlayer src="not-a-valid-url" title="Test Video" />)
+
+      expect(screen.getByText('Video unavailable')).toBeInTheDocument()
+    })
+
+    it('shows error for non-Reddit domains', () => {
+      render(
+        <VideoPlayer src="https://youtube.com/video.mp4" title="Test Video" />
+      )
+
+      expect(screen.getByText('Video unavailable')).toBeInTheDocument()
+    })
+
+    it('accepts v.redd.it domain', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
+    })
+
+    it('accepts reddit.com domain', () => {
+      render(
+        <VideoPlayer
+          src="https://www.reddit.com/video.mp4"
+          title="Test Video"
+        />
+      )
+
+      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
+    })
+
+    it('accepts preview.redd.it domain', () => {
+      render(
+        <VideoPlayer
+          src="https://preview.redd.it/test.mp4"
+          title="Test Video"
+        />
+      )
+
+      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
+    })
+
+    it('accepts external-preview.redd.it domain', () => {
+      render(
+        <VideoPlayer
+          src="https://external-preview.redd.it/test.mp4"
+          title="Test Video"
+        />
+      )
+
+      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
+    })
+
+    it('accepts i.redd.it domain', () => {
+      render(
+        <VideoPlayer src="https://i.redd.it/test.mp4" title="Test Video" />
+      )
+
+      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
+    })
+
+    it('accepts subdomains of allowed domains', () => {
+      render(
+        <VideoPlayer
+          src="https://sub.preview.redd.it/test.mp4"
+          title="Test Video"
+        />
+      )
+
+      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('accessibility', () => {
+    it('has aria-label with video title', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="My Test Video" />
+      )
+
+      expect(screen.getByLabelText('Video: My Test Video')).toBeInTheDocument()
+    })
+
+    it('includes captions track', () => {
+      const {container} = render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      // eslint-disable-next-line testing-library/no-container
+      const track = container.querySelector('track')
+      expect(track).toBeInTheDocument()
+      expect(track).toHaveAttribute('kind', 'captions')
+      expect(track).toHaveAttribute('label', 'English')
+    })
+
+    it('shows fallback text for unsupported browsers', () => {
+      const {container} = render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      expect(container).toHaveTextContent(
+        /Your browser does not support the video tag\./
+      )
+    })
+  })
+
+  describe('IntersectionObserver', () => {
+    it('observes video element on mount', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      expect(mockObserver.observe).toHaveBeenCalled()
+    })
+
+    it('unobserves video element on unmount', () => {
+      const {unmount} = render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      unmount()
+
+      expect(mockObserver.unobserve).toHaveBeenCalled()
+    })
+  })
+
+  describe('video dimensions', () => {
+    it('renders without dimensions', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).toBeInTheDocument()
+    })
+
+    it('renders with width and height', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4"
+          title="Test Video"
+          width={1920}
+          height={1080}
+        />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).toBeInTheDocument()
+    })
+
+    it('renders with portrait orientation', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4"
+          title="Test Video"
+          width={1080}
+          height={1920}
+        />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).toBeInTheDocument()
+    })
+  })
+
+  describe('edge cases', () => {
+    it('handles empty title', () => {
+      render(<VideoPlayer src="https://v.redd.it/test.mp4" title="" />)
+
+      expect(screen.getByLabelText('Video:')).toBeInTheDocument()
+    })
+
+    it('handles very long title', () => {
+      const longTitle = 'Very Long Title '.repeat(50)
+      const {container} = render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title={longTitle} />
+      )
+
+      // Check video element is rendered
+      // eslint-disable-next-line testing-library/no-container
+      const video = container.querySelector('video')
+      expect(video).toBeInTheDocument()
+    })
+
+    it('handles special characters in title', () => {
+      const specialTitle = '<>&"\'🎉'
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title={specialTitle} />
+      )
+
+      expect(
+        screen.getByLabelText(`Video: ${specialTitle}`)
+      ).toBeInTheDocument()
+    })
+
+    it('handles URLs with query parameters', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4?param=value"
+          title="Test Video"
+        />
+      )
+
+      const {container} = render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4?param=value"
+          title="Test Video"
+        />
+      )
+
+      // eslint-disable-next-line testing-library/no-container
+      const source = container.querySelector('source')
+      expect(source).toHaveAttribute(
+        'src',
+        'https://v.redd.it/test.mp4?param=value'
+      )
+    })
+
+    it('handles zero width', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4"
+          title="Test Video"
+          width={0}
+          height={1080}
+        />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).toBeInTheDocument()
+    })
+
+    it('handles zero height', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4"
+          title="Test Video"
+          width={1920}
+          height={0}
+        />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).toBeInTheDocument()
+    })
+  })
+})

@@ -1,52 +1,74 @@
-import {NotFoundClient} from '@/components/Layout/NotFoundClient/NotFoundClient'
+import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
+import {
+  Button,
+  Card,
+  ColorSchemeScript,
+  Group,
+  Stack,
+  Text
+} from '@mantine/core'
+import '@mantine/core/styles.css'
+import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
-import {headers} from 'next/headers'
-import {Suspense} from 'react'
 
+/**
+ * Metadata for global 404 page.
+ */
 export const metadata: Metadata = {
   title: '404 - Page Not Found',
-  description: 'The page you are looking for does not exist.',
-  robots: {
-    index: false,
-    follow: false
-  }
-}
-
-async function GlobalNotFoundContent() {
-  const headersList = await headers()
-  const serverHeaders: Record<string, string | null> = {
-    referer: headersList.get('referer'),
-    userAgent: headersList.get('user-agent'),
-    host: headersList.get('host'),
-    xForwardedFor: headersList.get('x-forwarded-for'),
-    xRealIp: headersList.get('x-real-ip'),
-    acceptLanguage: headersList.get('accept-language'),
-    accept: headersList.get('accept'),
-    connection: headersList.get('connection'),
-    upgradeInsecureRequests: headersList.get('upgrade-insecure-requests'),
-    secFetchSite: headersList.get('sec-fetch-site'),
-    secFetchMode: headersList.get('sec-fetch-mode'),
-    secFetchDest: headersList.get('sec-fetch-dest'),
-    purpose: headersList.get('purpose'),
-    nextUrl: headersList.get('next-url'),
-    xMiddlewareNext: headersList.get('x-middleware-next'),
-    xInvokePath: headersList.get('x-invoke-path'),
-    xInvokeRoute: headersList.get('x-invoke-route'),
-    xMatchedPath: headersList.get('x-matched-path'),
-    xRoutePath: headersList.get('x-route-path'),
-    pathname: headersList.get('x-pathname') || headersList.get('pathname')
-  }
-
-  return <NotFoundClient serverHeaders={serverHeaders} />
+  description: 'The page you are looking for does not exist.'
 }
 
 /**
- * The Global 404 component.
+ * Global not found page - handles unmatched routes across entire app.
+ *
+ * This is used when a requested URL doesn't match any route at all.
+ * Next.js skips rendering layouts and directly returns this page.
+ *
+ * NOTE: Must return a full HTML document including <html> and <body> tags.
+ * Must import all required global styles and dependencies.
+ *
+ * @see https://nextjs.org/docs/app/api-reference/file-conventions/not-found
  */
 export default function GlobalNotFound() {
   return (
-    <Suspense fallback={null}>
-      <GlobalNotFoundContent />
-    </Suspense>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ColorSchemeScript defaultColorScheme="auto" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body>
+        <ThemeProvider>
+          <main
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '100vh',
+              padding: '1rem'
+            }}
+          >
+            <Card withBorder padding="xl" radius="md">
+              <Stack align="center" gap="md">
+                <IconAlertCircle size={48} color="var(--mantine-color-red-6)" />
+                <Text size="xl" fw={600}>
+                  404 - Page Not Found
+                </Text>
+                <Text size="sm" c="dimmed" ta="center">
+                  The page you are looking for does not exist or has been moved.
+                </Text>
+
+                <Group>
+                  <Button component="a" href="/" variant="filled">
+                    Go Home
+                  </Button>
+                </Group>
+              </Stack>
+            </Card>
+          </main>
+        </ThemeProvider>
+      </body>
+    </html>
   )
 }

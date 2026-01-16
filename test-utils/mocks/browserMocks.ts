@@ -2,8 +2,8 @@ import {vi} from 'vitest'
 
 export function setupBrowserMocks() {
   // Mock window.matchMedia
-  if (!window.matchMedia) {
-    Object.defineProperty(window, 'matchMedia', {
+  if (!globalThis.matchMedia) {
+    Object.defineProperty(globalThis, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation((query) => ({
         matches: false,
@@ -17,22 +17,22 @@ export function setupBrowserMocks() {
   }
 
   // Mock ResizeObserver
-  if (!window.ResizeObserver) {
+  if (!globalThis.ResizeObserver) {
     class ResizeObserver {
       observe = vi.fn()
       unobserve = vi.fn()
       disconnect = vi.fn()
     }
-    window.ResizeObserver = ResizeObserver as any
+    globalThis.ResizeObserver = ResizeObserver as any
   }
 
   // Mock scrollTo
-  if (!window.scrollTo) {
-    window.scrollTo = vi.fn()
+  if (!globalThis.scrollTo) {
+    globalThis.scrollTo = vi.fn()
   }
 
   // Mock IntersectionObserver
-  if (!window.IntersectionObserver) {
+  if (!globalThis.IntersectionObserver) {
     class IntersectionObserver {
       observe = vi.fn()
       unobserve = vi.fn()
@@ -42,6 +42,6 @@ export function setupBrowserMocks() {
       rootMargin = ''
       thresholds = []
     }
-    window.IntersectionObserver = IntersectionObserver as any
+    globalThis.IntersectionObserver = IntersectionObserver as any
   }
 }

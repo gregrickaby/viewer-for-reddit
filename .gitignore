@@ -12,11 +12,7 @@
 
 # testing
 /coverage
-/test-results
-/playwright-report
 /.playwright-mcp
-e2e/.auth/
-e2e/test-results/
 
 # next.js
 /.next/
@@ -35,16 +31,21 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files (can opt-in for committing if needed)
 .env*
+
+# sonarqube
+.sonar_token
+.sonar
+.sonarlint
+.scannerwork
+
+# vercel
+.vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-letsencrypt
-
-# SonarQube
-.scannerwork/
-
-# agents
-/docs/
+# Generated OpenAPI specs and types
+scripts/reddit-openapi.json
+lib/types/reddit-api.ts

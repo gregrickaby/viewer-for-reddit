@@ -1,7 +1,7 @@
 // Testing libraries.
 export * from '@testing-library/react'
 export {default as userEvent} from '@testing-library/user-event'
-export {http, HttpResponse} from 'msw'
+export {HttpResponse, http} from 'msw'
 
 // Pre-configured userEvent instance.
 import userEvent from '@testing-library/user-event'
@@ -13,6 +13,3 @@ export {renderHook} from './renderHook'
 
 // MSW server (for Vitest only).
 export {server} from './msw/server'
-
-// Test fixtures and mocks.
-export {mockPreloadedState, mockUserSettings} from './mocks/state'

@@ -1,688 +1,436 @@
-import {server} from '@/test-utils/msw/server'
-import {http, HttpResponse} from 'msw'
-import {NextRequest, NextResponse} from 'next/server'
+import {http, HttpResponse, server} from '@/test-utils'
+import {NextRequest} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {GET} from './route'
 
-// Mock Reddit client
-const mockReddit = {
-  validateAuthorizationCode: vi.fn()
-}
-
-// Mock dependencies
-vi.mock('@/lib/auth/arctic', () => ({
-  getRedditClient: vi.fn(() => mockReddit)
+// Mock dependencies before imports
+vi.mock('@/lib/utils/env', () => ({
+  getEnvVar: vi.fn((key: string) => {
+    if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
+    if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
+    if (key === 'REDDIT_REDIRECT_URI')
+      return 'https://example.com/api/auth/callback/reddit'
+    if (key === 'USER_AGENT') return 'test-user-agent'
+    if (key === 'SESSION_SECRET') return 'test-secret-key'
+    return ''
+  }),
+  isProduction: vi.fn(() => false)
 }))
 
-vi.mock('next/headers', () => ({
-  cookies: vi.fn()
-}))
-
-vi.mock('@/lib/auth/rateLimit', () => ({
-  checkRateLimit: vi.fn()
+vi.mock('@/lib/utils/logger', () => ({
+  logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    error: vi.fn()
+  }
 }))
 
 vi.mock('@/lib/auth/session', () => ({
-  setSession: vi.fn()
+  getSession: vi.fn(async () => ({
+    accessToken: undefined,
+    refreshToken: undefined,
+    expiresAt: undefined,
+    username: undefined,
+    userId: undefined,
+    save: vi.fn()
+  }))
 }))
 
+let mockValidateAuthorizationCode: any
+
+vi.mock('arctic', () => ({
+  Reddit: class Reddit {
+    validateAuthorizationCode = (...args: any[]) => {
+      if (!mockValidateAuthorizationCode) {
+        throw new Error('mockValidateAuthorizationCode not initialized')
+      }
+      return mockValidateAuthorizationCode(...args)
+    }
+  }
+}))
+
+// Import after mocks
+import {getSession} from '@/lib/auth/session'
+import {getEnvVar} from '@/lib/utils/env'
+import {logger} from '@/lib/utils/logger'
+import {GET} from './route'
+
+const mockGetEnvVar = vi.mocked(getEnvVar)
+const mockLogger = vi.mocked(logger)
+const mockGetSession = vi.mocked(getSession)
+
 describe('GET /api/auth/callback/reddit', () => {
-  let mockCookieStore: {
-    get: ReturnType<typeof vi.fn>
-    delete: ReturnType<typeof vi.fn>
-  }
+  const validState = 'test-state-123'
+  const validCode = 'test-code-456'
 
-  const mockTokens = {
-    accessToken: () => 'access_token_123',
-    refreshToken: () => 'refresh_token_123',
-    accessTokenExpiresAt: () => new Date(Date.now() + 3600000)
-  }
-
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks()
 
-    mockCookieStore = {
-      get: vi.fn(),
-      delete: vi.fn()
+    // Initialize mockValidateAuthorizationCode
+    const mockTokens = {
+      accessToken: vi.fn(() => 'test-access-token'),
+      refreshToken: vi.fn(() => 'test-refresh-token'),
+      accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
     }
+    mockValidateAuthorizationCode = vi.fn().mockResolvedValue(mockTokens)
 
-    const {cookies} = await import('next/headers')
-    vi.mocked(cookies).mockResolvedValue(mockCookieStore as any)
-
-    const {checkRateLimit} = await import('@/lib/auth/rateLimit')
-    vi.mocked(checkRateLimit).mockResolvedValue(null)
-
-    vi.mocked(mockReddit.validateAuthorizationCode).mockResolvedValue(
-      mockTokens as any
-    )
-
-    // Default mock for cookies: state and origin
-    mockCookieStore.get.mockImplementation((name: string) => {
-      if (name === 'reddit_oauth_state') {
-        return {value: 'test_state'}
-      }
-      if (name === 'reddit_oauth_origin') {
-        return {value: 'http://localhost:3000'}
-      }
-      return undefined
+    mockGetEnvVar.mockImplementation((key: string) => {
+      if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
+      if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
+      if (key === 'REDDIT_REDIRECT_URI')
+        return 'https://example.com/api/auth/callback/reddit'
+      if (key === 'USER_AGENT') return 'test-user-agent'
+      if (key === 'SESSION_SECRET') return 'test-secret-key'
+      return ''
     })
 
-    // Setup MSW handler for Reddit user info
+    // Set up MSW handler for successful user data fetch
     server.use(
       http.get('https://oauth.reddit.com/api/v1/me', () => {
         return HttpResponse.json({
           name: 'testuser',
-          id: 'test123',
-          icon_img: 'https://example.com/avatar.png',
-          created_utc: 1234567890
+          id: 't2_user123'
         })
       })
     )
   })
 
-  it('should complete OAuth flow and create session', async () => {
-    const {setSession} = await import('@/lib/auth/session')
+  it('successfully completes OAuth flow', async () => {
+    const mockSave = vi.fn()
+    mockGetSession.mockResolvedValue({
+      accessToken: undefined,
+      save: mockSave
+    } as any)
 
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        method: 'GET',
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
 
     const response = await GET(request)
 
     expect(response.status).toBe(307) // Redirect
-    expect(response.headers.get('location')).toBe('http://localhost:3000/')
-
-    expect(setSession).toHaveBeenCalledWith({
-      username: 'testuser',
-      accessToken: 'access_token_123',
-      refreshToken: 'refresh_token_123',
-      expiresAt: expect.any(Number),
-      avatarUrl: 'https://example.com/avatar.png'
-    })
-
-    expect(mockCookieStore.delete).toHaveBeenCalledWith('reddit_oauth_state')
+    const location = response.headers.get('location')
+    expect(location).toContain('/')
+    expect(mockSave).toHaveBeenCalledTimes(1)
   })
 
-  it('should handle user with snoovatar', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          snoovatar_img: 'https://example.com/snoovatar.png',
-          icon_img: 'https://example.com/icon.png'
-        })
-      })
-    )
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        avatarUrl: 'https://example.com/snoovatar.png'
-      })
-    )
-  })
-
-  it('should handle HTML entity in avatar URLs', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          icon_img: 'https://example.com/avatar.png?v=1&amp;s=2'
-        })
-      })
-    )
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        avatarUrl: 'https://example.com/avatar.png?v=1&s=2'
-      })
-    )
-  })
-
-  it('should handle missing refresh token', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
-    const tokensWithoutRefresh = {
-      accessToken: () => 'access_token_123',
-      refreshToken: () => {
-        throw new Error('No refresh token')
-      },
-      accessTokenExpiresAt: () => new Date(Date.now() + 3600000)
+  it('saves session data correctly', async () => {
+    const sessionData: any = {
+      accessToken: undefined,
+      refreshToken: undefined,
+      expiresAt: undefined,
+      username: undefined,
+      userId: undefined,
+      save: vi.fn()
     }
 
-    vi.mocked(mockReddit.validateAuthorizationCode).mockResolvedValue(
-      tokensWithoutRefresh as any
-    )
+    mockGetSession.mockResolvedValue(sessionData)
 
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        refreshToken: ''
-      })
-    )
-  })
-
-  it('should redirect with error when code is missing', async () => {
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
-  })
-
-  it('should redirect with error when state is missing', async () => {
-    const url = 'http://localhost:3000/api/auth/callback/reddit?code=auth_code'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
-  })
-
-  it('should redirect with error when stored state is missing', async () => {
-    mockCookieStore.get.mockReturnValue(undefined)
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
-  })
-
-  it('should redirect with error when state does not match', async () => {
-    mockCookieStore.get.mockImplementation((name: string) => {
-      if (name === 'reddit_oauth_state') {
-        return {value: 'different_state'}
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
       }
-      if (name === 'reddit_oauth_origin') {
-        return {value: 'http://localhost:3000'}
+    )
+
+    await GET(request)
+
+    expect(sessionData.accessToken).toBe('test-access-token')
+    expect(sessionData.refreshToken).toBe('test-refresh-token')
+    expect(sessionData.username).toBe('testuser')
+    expect(sessionData.userId).toBe('t2_user123')
+    expect(sessionData.save).toHaveBeenCalled()
+  })
+
+  it('deletes state cookie after successful auth', async () => {
+    mockGetSession.mockResolvedValue({
+      save: vi.fn()
+    } as any)
+
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
       }
-      return undefined
-    })
+    )
 
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
+    const response = await GET(request)
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+
+    // Check that the cookie is being deleted (value is empty)
+    expect(stateCookie?.value).toBe('')
+  })
+
+  it('rejects request with OAuth error from Reddit', async () => {
+    const request = new NextRequest(
+      'https://example.com/api/auth/callback/reddit?error=access_denied&error_description=User+denied+access',
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
 
     const response = await GET(request)
 
     expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
+    expect(response.headers.get('location')).toContain('error=access_denied')
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'OAuth error from Reddit',
+      expect.any(Object),
+      expect.any(Object)
+    )
   })
 
-  it('should redirect with error when user info fetch fails', async () => {
+  it('rejects request with missing code', async () => {
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(400)
+    expect(await response.text()).toBe('Invalid state parameter')
+  })
+
+  it('rejects request with missing state', async () => {
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(400)
+    expect(await response.text()).toBe('Invalid state parameter')
+  })
+
+  it('rejects request with missing stored state', async () => {
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {}
+      }
+    )
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(400)
+    expect(await response.text()).toBe('Invalid state parameter')
+  })
+
+  it('rejects request with mismatched state (CSRF protection)', async () => {
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=different-state`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(400)
+    expect(await response.text()).toBe('Invalid state parameter')
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'State validation failed - possible CSRF attack',
+      expect.any(Object),
+      expect.any(Object)
+    )
+  })
+
+  it('rejects request with mismatched redirect URI', async () => {
+    const request = new NextRequest(
+      `https://different.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(400)
+    expect(await response.text()).toBe('Invalid redirect URI')
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Redirect URI mismatch - possible attack',
+      expect.any(Object),
+      expect.any(Object)
+    )
+  })
+
+  it('handles user data fetch failure', async () => {
     server.use(
       http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({error: 'failed'}, {status: 500})
+        return new HttpResponse('Unauthorized', {status: 401})
       })
     )
 
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
 
     const response = await GET(request)
 
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=authentication_failed')
-    expect(location).toContain('Unable%20to%20complete%20sign%20in')
+    expect(response.status).toBe(401)
+    expect(await response.text()).toContain('Authentication expired')
   })
 
-  it('should redirect with OAuth error for OAuth2RequestError', async () => {
-    const {OAuth2RequestError} = await import('arctic')
-
-    const oauthError = new OAuth2RequestError(
-      'https://test.com',
-      'invalid_grant',
-      'Invalid authorization code',
-      null
-    )
-
-    vi.mocked(mockReddit.validateAuthorizationCode).mockRejectedValue(
-      oauthError
-    )
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=oauth_error')
-    expect(location).toContain('Authentication%20failed')
-  })
-
-  it('should handle HTML entity in avatar URLs', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
+  it('handles rate limit error (429)', async () => {
     server.use(
       http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          icon_img: 'https://example.com/avatar.png?v=1&amp;s=2'
-        })
+        return new HttpResponse('Rate limit exceeded', {status: 429})
       })
     )
 
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        avatarUrl: 'https://example.com/avatar.png?v=1&s=2'
-      })
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
     )
-  })
-
-  it('should handle missing refresh token', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
-    const tokensWithoutRefresh = {
-      accessToken: () => 'access_token_123',
-      refreshToken: () => {
-        throw new Error('No refresh token')
-      },
-      accessTokenExpiresAt: () => new Date(Date.now() + 3600000)
-    }
-
-    vi.mocked(mockReddit.validateAuthorizationCode).mockResolvedValue(
-      tokensWithoutRefresh as any
-    )
-
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        refreshToken: ''
-      })
-    )
-  })
-
-  it('should redirect with error when code is missing', async () => {
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
-    expect(location).toContain('Security%20validation%20failed')
-  })
-
-  it('should redirect with error when state is missing', async () => {
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url = 'http://localhost:3000/api/auth/callback/reddit?code=auth_code'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
-  })
-
-  it('should redirect with error when stored state is missing', async () => {
-    mockCookieStore.get.mockReturnValue(undefined)
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
-  })
-
-  it('should redirect with error when state does not match', async () => {
-    mockCookieStore.get.mockReturnValue({value: 'different_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=invalid_state')
-  })
-
-  it('should redirect with error when user info fetch fails', async () => {
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({error: 'Unauthorized'}, {status: 401})
-      })
-    )
-
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=authentication_failed')
-    expect(location).toContain('Unable%20to%20complete%20sign%20in')
-  })
-
-  it('should redirect with OAuth error for OAuth2RequestError', async () => {
-    const {OAuth2RequestError} = await import('arctic')
-
-    const oauthError = new OAuth2RequestError(
-      'https://test.com',
-      'invalid_grant',
-      'Invalid authorization code',
-      null
-    )
-
-    vi.mocked(mockReddit.validateAuthorizationCode).mockRejectedValue(
-      oauthError
-    )
-
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=oauth_error')
-    expect(location).toContain('Authentication%20failed')
-  })
-
-  it('should return rate limit response when rate limited', async () => {
-    const {checkRateLimit} = await import('@/lib/auth/rateLimit')
-    const rateLimitResponse = NextResponse.json(
-      {error: 'rate_limited'},
-      {status: 429}
-    )
-    vi.mocked(checkRateLimit).mockResolvedValue(rateLimitResponse)
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
 
     const response = await GET(request)
 
     expect(response.status).toBe(429)
+    expect(await response.text()).toBe('Rate limit exceeded')
   })
 
-  it('should handle user without avatar', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
+  it('handles Reddit API unavailable (503)', async () => {
     server.use(
       http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          id: 'test123'
-        })
+        return new HttpResponse('Service unavailable', {status: 503})
       })
     )
 
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        username: 'testuser',
-        avatarUrl: undefined
-      })
-    )
-  })
-
-  it('should reject non-HTTPS avatar URLs', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          id: 'test123',
-          icon_img: 'http://example.com/avatar.png' // HTTP, not HTTPS
-        })
-      })
-    )
-
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    // Should not include the HTTP avatar URL
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        username: 'testuser',
-        avatarUrl: undefined
-      })
-    )
-  })
-
-  it('should handle Reddit API timeout', async () => {
-    // Mock AbortController to simulate timeout
-    const originalAbortController = globalThis.AbortController
-    const originalFetch = globalThis.fetch
-
-    try {
-      class MockAbortController {
-        signal = {
-          aborted: false,
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-          onabort: null
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
         }
-        abort = vi.fn()
       }
-
-      globalThis.AbortController = MockAbortController as any
-
-      // Mock fetch to throw AbortError
-      globalThis.fetch = vi.fn(() => {
-        const error = new Error('The operation was aborted')
-        error.name = 'AbortError'
-        return Promise.reject(error)
-      }) as any
-
-      mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-      const url =
-        'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-      const request = new NextRequest(url)
-
-      const response = await GET(request)
-
-      expect(response.status).toBe(307)
-      const location = response.headers.get('location')
-      expect(location).toContain('error=authentication_failed')
-      expect(location).toContain('error_id=') // Should include error ID
-    } finally {
-      // Always restore original, even if test fails
-      globalThis.AbortController = originalAbortController
-      globalThis.fetch = originalFetch
-    }
-  })
-
-  it('should include error_id in failed login redirects', async () => {
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return new HttpResponse(null, {status: 500})
-      })
     )
-
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
 
     const response = await GET(request)
 
-    const location = response.headers.get('location')
-    expect(location).toMatch(/error_id=[a-f0-9-]{36}/) // UUID format
+    expect(response.status).toBe(503)
+    expect(await response.text()).toBe('Reddit API unavailable')
   })
 
-  it('should validate Reddit user data structure', async () => {
+  it('handles generic authentication error', async () => {
     server.use(
       http.get('https://oauth.reddit.com/api/v1/me', () => {
-        // Invalid response - missing name
-        return HttpResponse.json({
-          id: 'test123'
-          // name is missing
-        })
+        return HttpResponse.error()
       })
     )
 
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
 
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
+    const response = await GET(request)
+
+    expect(response.status).toBe(500)
+    expect(await response.text()).toContain('Authentication failed')
+  })
+
+  it('handles missing refresh token gracefully', async () => {
+    const mockTokens = {
+      accessToken: vi.fn(() => 'test-access-token'),
+      refreshToken: vi.fn(() => {
+        throw new Error('No refresh token')
+      }),
+      accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
+    }
+
+    mockValidateAuthorizationCode.mockResolvedValue(mockTokens)
+
+    const sessionData: any = {
+      save: vi.fn()
+    }
+    mockGetSession.mockResolvedValue(sessionData)
+
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
+    )
 
     const response = await GET(request)
 
     expect(response.status).toBe(307)
-    const location = response.headers.get('location')
-    expect(location).toContain('error=authentication_failed')
+    expect(sessionData.refreshToken).toBe('')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'No refresh token provided by Reddit',
+      undefined,
+      expect.any(Object)
+    )
   })
 
-  it('should sanitize invalid icon_img types', async () => {
-    const {setSession} = await import('@/lib/auth/session')
+  it('logs authentication flow', async () => {
+    mockGetSession.mockResolvedValue({
+      save: vi.fn()
+    } as any)
 
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          id: 'test123',
-          icon_img: 12345 // Invalid type - should be string
-        })
-      })
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+        }
+      }
     )
-
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
 
     await GET(request)
 
-    // Should handle gracefully and not include invalid avatar
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        username: 'testuser',
-        avatarUrl: undefined
-      })
-    )
-  })
-
-  it('should decode all common HTML entities in avatar URLs', async () => {
-    const {setSession} = await import('@/lib/auth/session')
-
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          id: 'test123',
-          icon_img:
-            'https://example.com/avatar.png?param=value&amp;other=test&lt;tag&gt;'
-        })
-      })
+    expect(mockLogger.debug).toHaveBeenCalledWith(
+      'OAuth Callback',
+      expect.any(Object),
+      expect.any(Object)
     )
 
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    await GET(request)
-
-    expect(setSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        avatarUrl: 'https://example.com/avatar.png?param=value&other=test<tag>'
-      })
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'User authenticated',
+      {username: 'testuser'},
+      expect.any(Object)
     )
-  })
-
-  it('should set cache control headers on redirect responses', async () => {
-    mockCookieStore.get.mockReturnValue({value: 'test_state'})
-
-    const url =
-      'http://localhost:3000/api/auth/callback/reddit?code=auth_code&state=test_state'
-    const request = new NextRequest(url)
-
-    const response = await GET(request)
-
-    expect(response.headers.get('Cache-Control')).toBe(
-      'private, no-cache, no-store, must-revalidate'
-    )
-    expect(response.headers.get('Pragma')).toBe('no-cache')
-    expect(response.headers.get('Expires')).toBe('0')
   })
 })

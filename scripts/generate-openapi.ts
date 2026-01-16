@@ -1,5 +1,6 @@
-import fs from 'fs'
-import path from 'path'
+import {execSync} from 'node:child_process'
+import fs from 'node:fs'
+import path from 'node:path'
 
 interface EndpointConfig {
   path: string
@@ -44,9 +45,8 @@ const redditEndpoints: EndpointConfig[] = [
     ],
     sampleUrls: [
       'https://www.reddit.com/r/askReddit/hot.json?limit=5',
-      'https://www.reddit.com/r/damnthatsinteresting/new.json?limit=5',
-      'https://www.reddit.com/r/news/top.json?limit=5&t=week',
-      'https://www.reddit.com/r/pics/hot.json?limit=5'
+      'https://www.reddit.com/r/programming/new.json?limit=5',
+      'https://www.reddit.com/r/technology/top.json?limit=5&t=week'
     ]
   },
   {
@@ -60,9 +60,7 @@ const redditEndpoints: EndpointConfig[] = [
     ],
     sampleUrls: [
       'https://www.reddit.com/r/askReddit/about.json',
-      'https://www.reddit.com/r/damnthatsinteresting/about.json',
-      'https://www.reddit.com/r/news/about.json',
-      'https://www.reddit.com/r/pics/about.json'
+      'https://www.reddit.com/r/programming/about.json'
     ]
   },
   {
@@ -81,7 +79,7 @@ const redditEndpoints: EndpointConfig[] = [
       }
     ],
     sampleUrls: [
-      'https://www.reddit.com/subreddits/search.json?q=interesting&limit=10',
+      'https://www.reddit.com/subreddits/search.json?q=javascript&limit=10',
       'https://www.reddit.com/subreddits/search.json?q=science&limit=5'
     ]
   },
@@ -121,8 +119,20 @@ const redditEndpoints: EndpointConfig[] = [
       },
       {name: 'limit', in: 'query', schema: {type: 'integer'}}
     ],
+    sampleUrls: []
+  },
+  {
+    path: '/user/{username}/about.json',
+    method: 'GET',
+    operationId: 'getUserProfile',
+    summary: 'Get user profile information',
+    tags: ['users'],
+    parameters: [
+      {name: 'username', in: 'path', required: true, schema: {type: 'string'}}
+    ],
     sampleUrls: [
-      // Will be populated dynamically by fetching real post IDs
+      'https://www.reddit.com/user/spez/about.json',
+      'https://www.reddit.com/user/AutoModerator/about.json'
     ]
   }
 ]
@@ -137,7 +147,7 @@ interface JSONSchema {
 
 class OpenAPIGenerator {
   private schemas: Record<string, JSONSchema> = {}
-  private responses: Record<string, any> = {}
+  private responses: Record<string, unknown> = {}
 
   async fetchSampleData(): Promise<void> {
     console.log('🔍 Fetching sample data from Reddit API...\n')
@@ -171,18 +181,25 @@ class OpenAPIGenerator {
           const data = await response.json()
 
           // Store response for schema generation
-          const key = `${endpoint.operationId}_${Math.random().toString(36).slice(2, 11)}`
-          this.responses[key] = data
+          if (!this.responses[endpoint.operationId]) {
+            this.responses[endpoint.operationId] = []
+          }
+          ;(this.responses[endpoint.operationId] as unknown[]).push(data)
 
-          console.log(`✅ Fetched sample from ${url}`)
+          console.log(`✓ Fetched sample from ${url}`)
 
-          // Rate limit
-          await new Promise((resolve) => setTimeout(resolve, 1000))
+          // Rate limit to respect Reddit API
+          // Math.random() is safe here - only used for delay jitter, not security
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000 + Math.random() * 500)
+          )
         } catch (error) {
           console.error(`❌ Error fetching ${url}:`, error)
         }
       }
     }
+
+    console.log('\n✅ Sample data collection complete\n')
   }
 
   private async fetchPostUrls(): Promise<string[]> {
@@ -205,7 +222,6 @@ class OpenAPIGenerator {
           const posts = data?.data?.children || []
 
           for (const post of posts.slice(0, 1)) {
-            // Take first post only
             const postId = post?.data?.id
             if (postId) {
               urls.push(
@@ -216,84 +232,96 @@ class OpenAPIGenerator {
         }
 
         // Rate limit
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        // Math.random() is safe here - only used for delay jitter, not security
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 + Math.random() * 500)
+        )
       } catch (error) {
-        console.warn(`Failed to fetch posts from r/${subreddit}:`, error)
+        console.error(`Error fetching posts from r/${subreddit}:`, error)
       }
     }
 
     return urls
   }
 
-  private inferSchemaFromValue(value: any, depth = 0): JSONSchema {
-    if (depth > 10) return {type: 'object'} // Prevent infinite recursion
+  private inferSchemaFromValue(value: unknown, depth = 0): JSONSchema {
+    // Prevent infinite recursion
+    if (depth > 10) {
+      return {type: 'object', additionalProperties: true}
+    }
 
-    if (value === null) return {type: 'null'}
+    if (value === null) {
+      return {type: ['string', 'null']}
+    }
 
     if (Array.isArray(value)) {
-      if (value.length === 0) return {type: 'array', items: {type: 'object'}}
+      if (value.length === 0) {
+        return {type: 'array', items: {}}
+      }
 
-      // Infer from first few items
-      const samples = value.slice(0, 3)
-      const itemSchemas = samples.map((item) =>
-        this.inferSchemaFromValue(item, depth + 1)
-      )
+      // Collect all unique schemas from array items
+      const itemSchemas: JSONSchema[] = []
+      const seenTypes = new Set<string>()
 
-      // If all items have same structure, use first one
+      for (const item of value.slice(0, 5)) {
+        // Sample first 5 items
+        const itemSchema = this.inferSchemaFromValue(item, depth + 1)
+        const typeKey = JSON.stringify(itemSchema)
+        if (!seenTypes.has(typeKey)) {
+          seenTypes.add(typeKey)
+          itemSchemas.push(itemSchema)
+        }
+      }
+
       if (itemSchemas.length === 1) {
         return {type: 'array', items: itemSchemas[0]}
-      }
-
-      return {
-        type: 'array',
-        items: {oneOf: itemSchemas}
+      } else {
+        return {type: 'array', items: {oneOf: itemSchemas}}
       }
     }
 
-    const type = typeof value
+    if (typeof value === 'object') {
+      const properties: Record<string, JSONSchema> = {}
 
-    switch (type) {
-      case 'string':
-        return {type: 'string'}
-      case 'number':
-        return {type: Number.isInteger(value) ? 'integer' : 'number'}
-      case 'boolean':
-        return {type: 'boolean'}
-      case 'object': {
-        const properties: Record<string, JSONSchema> = {}
-
-        for (const [key, val] of Object.entries(value)) {
-          properties[key] = this.inferSchemaFromValue(val, depth + 1)
-        }
-
-        return {
-          type: 'object',
-          properties
-        }
+      for (const [key, val] of Object.entries(value)) {
+        properties[key] = this.inferSchemaFromValue(val, depth + 1)
       }
-      default:
-        return {type: 'string'}
+
+      return {type: 'object', properties}
     }
+
+    return {type: typeof value}
   }
 
   private generateSchemaName(operationId: string, suffix = 'Response'): string {
-    return operationId.charAt(0).toUpperCase() + operationId.slice(1) + suffix
+    const name = operationId.charAt(0).toUpperCase() + operationId.slice(1)
+    return `${name}${suffix}`
   }
 
   generateSchemas(): void {
-    console.log('\n📋 Generating OpenAPI schemas...\n')
+    console.log('🔧 Generating schemas from responses...\n')
 
-    for (const [key, response] of Object.entries(this.responses)) {
-      const operationId = key.split('_')[0]
+    for (const [operationId, responses] of Object.entries(this.responses)) {
       const schemaName = this.generateSchemaName(operationId)
 
-      const schema = this.inferSchemaFromValue(response)
+      // Merge all response samples to get comprehensive schema
+      const mergedSchema: JSONSchema = {type: 'object', properties: {}}
 
-      // Store schema (could enhance this to merge multiple samples in the future)
-      this.schemas[schemaName] = schema
+      for (const response of responses as unknown[]) {
+        const schema = this.inferSchemaFromValue(response)
+        if (schema.properties) {
+          mergedSchema.properties = {
+            ...mergedSchema.properties,
+            ...schema.properties
+          }
+        }
+      }
 
-      console.log(`✅ Generated schema: ${schemaName}`)
+      this.schemas[schemaName] = mergedSchema
+      console.log(`✓ Generated schema: ${schemaName}`)
     }
+
+    console.log('\n✅ Schema generation complete\n')
   }
 
   generateOpenAPISpec(): object {
@@ -320,10 +348,18 @@ class OpenAPIGenerator {
         {name: 'comments', description: 'Operations related to comments'},
         {name: 'users', description: 'Operations related to users'}
       ],
-      paths: {} as Record<string, any>,
+      security: [{bearer: []}],
       components: {
+        securitySchemes: {
+          bearer: {
+            type: 'http',
+            scheme: 'bearer',
+            description: 'OAuth2 Bearer token for authenticated requests'
+          }
+        },
         schemas: this.schemas
-      }
+      },
+      paths: {} as Record<string, unknown>
     }
 
     // Generate paths
@@ -371,18 +407,18 @@ class OpenAPIGenerator {
     }
 
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2))
-    console.log(`\n📄 OpenAPI spec saved to: ${outputPath}`)
+    console.log(`📄 OpenAPI spec saved to: ${outputPath}`)
   }
 
   async generateTypes(specPath: string, outputPath: string): Promise<void> {
-    const {execSync} = require('child_process')
-
     try {
       console.log('\n🔧 Generating TypeScript types...')
 
       execSync(
         `npx openapi-typescript "${specPath}" --output "${outputPath}"`,
-        {stdio: 'inherit'}
+        {
+          stdio: 'inherit'
+        }
       )
 
       console.log(`✅ Types generated: ${outputPath}`)
@@ -393,7 +429,11 @@ class OpenAPIGenerator {
   }
 }
 
-async function main(): Promise<void> {
+// Export for use as module
+export {OpenAPIGenerator, redditEndpoints}
+
+// Run if called directly (top-level await)
+if (require.main === module) {
   const generator = new OpenAPIGenerator()
 
   try {
@@ -412,22 +452,11 @@ async function main(): Promise<void> {
     await generator.generateTypes(specPath, typesPath)
 
     console.log('\n🎉 OpenAPI generation complete!')
-    console.log(`\nNext steps:`)
-    console.log(`1. Review the generated spec: ${specPath}`)
-    console.log(`2. Use the generated types: ${typesPath}`)
-    console.log(
-      `3. Add to package.json: "codegen": "tsx scripts/generate-openapi.ts"`
-    )
+    console.log('\nGenerated files:')
+    console.log(`  - ${specPath}`)
+    console.log(`  - ${typesPath}`)
   } catch (error) {
     console.error('❌ Generation failed:', error)
     process.exit(1)
   }
-}
-
-// Export for use as module
-export {OpenAPIGenerator, redditEndpoints}
-
-// Run if called directly
-if (require.main === module) {
-  main()
 }

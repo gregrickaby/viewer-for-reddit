@@ -1,4 +1,10 @@
 import {http, HttpResponse} from 'msw'
+import {
+  savedPostsEmptyMock,
+  savedPostsMock,
+  savedPostsWithCommentsMock,
+  savedPostsWithStickiedMock
+} from '../../mocks/savedPosts'
 import {userCommentsEmptyMock, userCommentsMock} from '../../mocks/userComments'
 import {userPostsEmptyMock, userPostsMock} from '../../mocks/userPosts'
 import {
@@ -102,6 +108,45 @@ export const userHandlers = [
       }
 
       return HttpResponse.json(userCommentsMock)
+    }
+  ),
+
+  // User saved posts
+  http.get(
+    'https://oauth.reddit.com/user/:username/saved.json',
+    ({params, request}) => {
+      const {username} = params
+      const url = new URL(request.url)
+      const after = url.searchParams.get('after')
+
+      if (username === 'nonexistentuser') {
+        return HttpResponse.json(userNotFoundMock, {status: 404})
+      }
+
+      if (username === 'emptyuser' || after === 'no-more-saved') {
+        return HttpResponse.json(savedPostsEmptyMock)
+      }
+
+      if (username === 'limiteduser') {
+        // Return saved posts without 'after' to indicate no more pages
+        return HttpResponse.json({
+          ...savedPostsMock,
+          data: {
+            ...savedPostsMock.data,
+            after: null // No more pages available
+          }
+        })
+      }
+
+      if (username === 'userWithComments') {
+        return HttpResponse.json(savedPostsWithCommentsMock)
+      }
+
+      if (username === 'userWithStickied') {
+        return HttpResponse.json(savedPostsWithStickiedMock)
+      }
+
+      return HttpResponse.json(savedPostsMock)
     }
   )
 ]

@@ -1,18 +1,15 @@
-import {Analytics} from '@/components/UI/Analytics/Analytics'
-import config from '@/lib/config'
-import {StoreProvider} from '@/lib/store/StoreProvider'
-import {
-  ColorSchemeScript,
-  MantineProvider,
-  createTheme,
-  mantineHtmlProps,
-  type MantineColorsTuple
-} from '@mantine/core'
+import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
+import {Analytics} from '@/components/ui/Analytics/Analytics'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {appConfig} from '@/lib/config/app.config'
+import {getOptionalEnvVar, isProduction, validateEnv} from '@/lib/utils/env'
+import {ColorSchemeScript} from '@mantine/core'
 import '@mantine/core/styles.css'
-import {Notifications} from '@mantine/notifications'
-import '@mantine/notifications/styles.css'
 import type {Metadata, Viewport} from 'next'
-import {Reddit_Sans} from 'next/font/google'
+
+if (!isProduction()) {
+  validateEnv()
+}
 
 /**
  * Generate metadata.
@@ -20,31 +17,30 @@ import {Reddit_Sans} from 'next/font/google'
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-metadata
  */
 export const metadata: Metadata = {
-  metadataBase: new URL(config.baseUrl),
-  title: `${config.siteName} - ${config.siteDescription}`,
-  description: config.metaDescription,
+  metadataBase: new URL(appConfig.site.baseUrl),
+  title: `${appConfig.site.name} - ${appConfig.site.description}`,
+  description: appConfig.site.metaDescription,
   robots: 'follow, index',
   alternates: {
-    canonical: config.baseUrl
+    canonical: appConfig.site.baseUrl
   },
   openGraph: {
-    description: config.metaDescription,
+    description: appConfig.site.metaDescription,
     locale: 'en_US',
-    title: config.siteName,
+    title: appConfig.site.name,
     type: 'website',
-    url: config.baseUrl,
+    url: appConfig.site.baseUrl,
     images: [
       {
-        url: 'social-share.webp',
+        url: '/social-share.webp',
         width: 1200,
         height: 630,
-        alt: config.siteName
+        alt: appConfig.site.name
       }
     ]
   },
-  manifest: '/manifest.webmanifest',
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION ?? ''
+    google: getOptionalEnvVar('GOOGLE_SITE_VERIFICATION')
   }
 }
 
@@ -54,85 +50,39 @@ export const metadata: Metadata = {
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport#the-viewport-object
  */
 export const viewport: Viewport = {
-  colorScheme: 'dark',
+  colorScheme: 'light dark',
   themeColor: '#242424'
 }
 
 /**
- * Load fonts.
+ * Root layout component - wraps entire application.
  *
- * @see https://nextjs.org/docs/app/building-your-application/optimizing/fonts
- * @see https://redditbrand.lingoapp.com/s/Typography-d03Ney?v=40
+ * Features:
+ * - Mantine theme provider with color scheme support
+ * - Global error boundary
+ * - Analytics (production only)
+ * - Color scheme script for preventing flash
+ * - Environment validation (development only)
+ *
+ * @param children - Page content
  */
-const redditSans = Reddit_Sans({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap'
-})
-
-/**
- * Set the color scheme based on Reddit's branding.
- *
- * @see https://mantine.dev/theming/colors/#primarycolor
- * @see https://redditbrand.lingoapp.com/s/Color-R7y72J?v=40
- */
-const redditColorScheme: MantineColorsTuple = [
-  '#ffeee4',
-  '#ffdbcd',
-  '#ffb69b',
-  '#ff8e64',
-  '#fe6d37',
-  '#fe5719',
-  '#ff4500',
-  '#e43c00',
-  '#cb3400',
-  '#b22900'
-]
-
-/**
- * Create Mantine theme.
- *
- * @see https://mantine.dev/theming/theme-object/
- */
-const theme = createTheme({
-  colors: {redditColorScheme},
-  fontFamily: redditSans.style.fontFamily,
-  primaryColor: 'redditColorScheme',
-  components: {
-    Anchor: {
-      defaultProps: {
-        underline: 'never'
-      }
-    }
-  }
-})
-
-/**
- * The server-rendered root layout component.
- *
- * This component wraps all pages and components in the application.
- *
- * @see https://nextjs.org/docs/app/getting-started/layouts-and-pages#root-layout
- */
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <StoreProvider>
-      <html lang="en" {...mantineHtmlProps} className={redditSans.className}>
-        <head>
-          <ColorSchemeScript defaultColorScheme="auto" />
-          <Analytics />
-        </head>
-        <body>
-          <MantineProvider theme={theme} defaultColorScheme="auto">
-            {children}
-            <Notifications />
-          </MantineProvider>
-        </body>
-      </html>
-    </StoreProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ColorSchemeScript defaultColorScheme="auto" />
+        <meta name="color-scheme" content="light dark" />
+      </head>
+      <body>
+        <Analytics />
+        <ThemeProvider>
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </ThemeProvider>
+      </body>
+    </html>
   )
 }

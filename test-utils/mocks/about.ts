@@ -61,7 +61,7 @@ export const aboutMock: Record<string, any> = {
     is_enrolled_in_new_modmail: null,
     key_color: '#24a0ed',
     can_assign_user_flair: false,
-    created: 1201234022.0,
+    created: 1201234022,
     wls: 6,
     show_media_preview: true,
     submission_type: 'link',
@@ -112,7 +112,7 @@ export const aboutMock: Record<string, any> = {
     allow_images: true,
     lang: 'en',
     url: '/r/aww/',
-    created_utc: 1201234022.0,
+    created_utc: 1201234022,
     banner_size: [800, 240],
     mobile_banner_image:
       'https://styles.redditmedia.com/t5_2qh1o/styles/mobileBannerImage_i55whsnocqbc1.png',

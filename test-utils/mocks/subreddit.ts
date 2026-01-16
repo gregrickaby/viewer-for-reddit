@@ -1,10 +1,8 @@
-import type {DeepPartial} from '@/lib/types'
-
 /**
  * Mock subreddit data for testing.
  * For now, use a broader type to avoid null/undefined compatibility issues in test mock.
  */
-export const subredditMock: DeepPartial<Record<string, any>> = {
+export const subredditMock: any = {
   kind: 'Listing',
   data: {
     after: 't3_1kjyhw7',
@@ -68,7 +66,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           content_categories: null,
           is_self: false,
           mod_note: null,
-          created: 1730664745.0,
+          created: 1730664745,
           link_flair_type: 'text',
           wls: null,
           removed_by_category: null,
@@ -215,7 +213,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           stickied: true,
           url: 'https://i.redd.it/5apc9mfquqyd1.gif',
           subreddit_subscribers: 21556883,
-          created_utc: 1730664745.0,
+          created_utc: 1730664745,
           num_crossposts: 4,
           media: null,
           is_video: false
@@ -276,7 +274,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           content_categories: null,
           is_self: false,
           subreddit_type: 'public',
-          created: 1730034030.0,
+          created: 1730034030,
           link_flair_type: 'text',
           wls: null,
           removed_by_category: null,
@@ -455,7 +453,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           stickied: true,
           url: 'https://i.redd.it/1mcqc9i6raxd1.gif',
           subreddit_subscribers: 21556883,
-          created_utc: 1730034030.0,
+          created_utc: 1730034030,
           num_crossposts: 0,
           media: null,
           is_video: false
@@ -516,7 +514,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           content_categories: null,
           is_self: false,
           mod_note: null,
-          created: 1746929612.0,
+          created: 1746929612,
           link_flair_type: 'text',
           wls: null,
           removed_by_category: null,
@@ -647,7 +645,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           stickied: false,
           url: 'https://i.redd.it/s0bdd51na20f1.gif',
           subreddit_subscribers: 21556883,
-          created_utc: 1746929612.0,
+          created_utc: 1746929612,
           num_crossposts: 0,
           media: null,
           is_video: false
@@ -708,7 +706,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           content_categories: null,
           is_self: false,
           mod_note: null,
-          created: 1746961517.0,
+          created: 1746961517,
           link_flair_type: 'text',
           wls: null,
           removed_by_category: null,
@@ -839,7 +837,7 @@ export const subredditMock: DeepPartial<Record<string, any>> = {
           stickied: false,
           url: 'https://i.redd.it/h6euli9ix40f1.gif',
           subreddit_subscribers: 21556883,
-          created_utc: 1746961517.0,
+          created_utc: 1746961517,
           num_crossposts: 0,
           media: null,
           is_video: false
