@@ -2,6 +2,7 @@ import type {NextConfig} from 'next'
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  serverExternalPackages: ['jsdom'],
   experimental: {
     inlineCss: true,
     globalNotFound: true,
@@ -10,8 +11,7 @@ const nextConfig: NextConfig = {
       '@mantine/core',
       '@mantine/hooks',
       '@tabler/icons-react'
-    ],
-    serverComponentsExternalPackages: ['jsdom']
+    ]
   },
   logging: {
     fetches: {
