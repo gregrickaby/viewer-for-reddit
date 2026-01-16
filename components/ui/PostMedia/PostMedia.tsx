@@ -119,6 +119,7 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
           blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgZmlsbD0idHJhbnNwYXJlbnQiLz48L3N2Zz4="
           loading="lazy"
           priority={false}
+          unoptimized
           className={styles.image}
         />
       </div>
@@ -154,6 +155,7 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
         blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgZmlsbD0idHJhbnNwYXJlbnQiLz48L3N2Zz4="
         loading="lazy"
         priority={false}
+        unoptimized
         className={styles.thumbnail}
       />
     )
