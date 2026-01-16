@@ -8,7 +8,6 @@ import {
   isValidThumbnail
 } from '@/lib/utils/media-helpers'
 import {Anchor} from '@mantine/core'
-import Image from 'next/image'
 import Link from 'next/link'
 import {memo} from 'react'
 import {Gallery} from '../Gallery/Gallery'
@@ -110,16 +109,11 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
           aspectRatio: aspectRatio.toString()
         }}
       >
-        <Image
+        <img
           src={imageUrl}
           alt={post.title}
-          fill
-          sizes="(max-width: 768px) 100vw, 640px"
-          placeholder="blur"
-          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgZmlsbD0idHJhbnNwYXJlbnQiLz48L3N2Zz4="
           loading="lazy"
-          priority={false}
-          unoptimized
+          decoding="async"
           className={styles.image}
         />
       </div>
@@ -145,17 +139,13 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
   // Fallback to thumbnail if no preview available
   if (isValidThumbnail(post.thumbnail)) {
     return (
-      <Image
+      <img
         src={post.thumbnail}
         alt={post.title}
         width={140}
         height={140}
-        sizes="(max-width: 768px) 100vw, 140px"
-        placeholder="blur"
-        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgZmlsbD0idHJhbnNwYXJlbnQiLz48L3N2Zz4="
         loading="lazy"
-        priority={false}
-        unoptimized
+        decoding="async"
         className={styles.thumbnail}
       />
     )

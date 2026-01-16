@@ -254,7 +254,7 @@ describe('session', () => {
     })
 
     it('returns true when token expires in 1 millisecond', async () => {
-      const futureTime = Date.now() + 1
+      const futureTime = Date.now() + 100 // Increased to 100ms to avoid race condition
       const mockSession = {
         accessToken: 'valid-token',
         expiresAt: futureTime

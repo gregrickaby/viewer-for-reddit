@@ -4,7 +4,6 @@ import {GalleryItem} from '@/lib/types/reddit'
 import {Carousel} from '@mantine/carousel'
 import '@mantine/carousel/styles.css'
 import {Text} from '@mantine/core'
-import Image from 'next/image'
 import {memo} from 'react'
 import styles from './Gallery.module.css'
 
@@ -59,16 +58,11 @@ function GalleryComponent({items, title}: Readonly<GalleryProps>) {
       {items.map((item, index) => (
         <Carousel.Slide key={item.id} className={styles.slide}>
           <div className={styles.imageContainer}>
-            <Image
+            <img
               src={item.url}
-              alt={`${title} - Image ${index + 1} of ${items.length}`}
-              fill
-              sizes="(max-width: 768px) 100vw, 800px"
-              placeholder="blur"
-              blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgZmlsbD0idHJhbnNwYXJlbnQiLz48L3N2Zz4="
+              alt={`${title} - ${index + 1} of ${items.length}`}
               loading="lazy"
-              priority={false}
-              unoptimized
+              decoding="async"
               className={styles.image}
             />
             {item.caption && (

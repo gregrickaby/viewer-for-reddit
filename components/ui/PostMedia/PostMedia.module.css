@@ -2,7 +2,6 @@
   border-radius: 8px;
   max-height: 512px;
   overflow: hidden;
-  position: relative;
   width: 100%;
 }
 
@@ -11,7 +10,12 @@
 }
 
 .image {
+  display: block;
+  height: auto;
+  max-height: 512px;
+  max-width: 100%;
   object-fit: contain;
+  width: 100%;
 }
 
 .thumbnail {

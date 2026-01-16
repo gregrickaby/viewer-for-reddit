@@ -41,15 +41,9 @@ describe('Gallery', () => {
     it('renders image with correct alt text', () => {
       render(<Gallery items={mockItems} title={title} />)
 
-      expect(
-        screen.getByAltText('Test Gallery - Image 1 of 3')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByAltText('Test Gallery - Image 2 of 3')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByAltText('Test Gallery - Image 3 of 3')
-      ).toBeInTheDocument()
+      expect(screen.getByAltText('Test Gallery - 1 of 3')).toBeInTheDocument()
+      expect(screen.getByAltText('Test Gallery - 2 of 3')).toBeInTheDocument()
+      expect(screen.getByAltText('Test Gallery - 3 of 3')).toBeInTheDocument()
     })
 
     it('renders captions when provided', () => {
