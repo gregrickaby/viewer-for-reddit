@@ -98,9 +98,7 @@ export const PostCard = memo(
               {showFullText && post.selftext_html ? (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: sanitizeText(
-                      decodeHtmlEntities(post.selftext_html)
-                    )
+                    __html: sanitizeText(decodeHtmlEntities(post.selftext_html))
                   }}
                   className={styles.postBody}
                 />
