@@ -161,18 +161,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return new NextResponse('Invalid state parameter', {status: 400})
   }
 
-  // Validate redirect URI matches configuration
+  // Log redirect URI for monitoring (validation handled by Reddit OAuth + state parameter)
   const configuredRedirectUri = getEnvVar('REDDIT_REDIRECT_URI')
   const callbackUrl = new URL(request.url)
   callbackUrl.search = ''
 
   if (callbackUrl.toString() !== configuredRedirectUri) {
-    logger.error(
-      'Redirect URI mismatch - possible attack',
+    logger.warn(
+      'Redirect URI mismatch (expected in proxied environments)',
       {callback: callbackUrl.toString(), configured: configuredRedirectUri},
       {context: 'OAuth'}
     )
-    return new NextResponse('Invalid redirect URI', {status: 400})
   }
 
   try {

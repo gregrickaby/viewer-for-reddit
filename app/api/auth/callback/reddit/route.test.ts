@@ -20,6 +20,7 @@ vi.mock('@/lib/utils/logger', () => ({
   logger: {
     debug: vi.fn(),
     info: vi.fn(),
+    warn: vi.fn(),
     error: vi.fn()
   }
 }))
@@ -260,7 +261,11 @@ describe('GET /api/auth/callback/reddit', () => {
     )
   })
 
-  it('rejects request with mismatched redirect URI', async () => {
+  it('logs warning for mismatched redirect URI but continues', async () => {
+    mockGetSession.mockResolvedValue({
+      save: vi.fn()
+    } as any)
+
     const request = new NextRequest(
       `https://different.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
@@ -272,10 +277,10 @@ describe('GET /api/auth/callback/reddit', () => {
 
     const response = await GET(request)
 
-    expect(response.status).toBe(400)
-    expect(await response.text()).toBe('Invalid redirect URI')
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      'Redirect URI mismatch - possible attack',
+    // Should succeed despite mismatch (expected in proxied environments)
+    expect(response.status).toBe(307)
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Redirect URI mismatch (expected in proxied environments)',
       expect.any(Object),
       expect.any(Object)
     )
