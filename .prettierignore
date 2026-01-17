@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/.playwright-mcp
 
 # next.js
 /.next/
@@ -30,8 +31,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+
+# sonarqube
+.sonar_token
+.sonar
+.sonarlint
+.scannerwork
 
 # vercel
 .vercel
@@ -39,3 +46,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated OpenAPI specs and types
+scripts/reddit-openapi.json
+lib/types/reddit-api.ts
