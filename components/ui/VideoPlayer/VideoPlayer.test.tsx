@@ -94,6 +94,40 @@ describe('VideoPlayer', () => {
       const video = screen.getByLabelText('Video: Test Video')
       expect(video).toHaveAttribute('controlslist', 'nodownload')
     })
+
+    it('renders video with playsInline for iOS Safari', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      expect(video).toHaveAttribute('playsinline')
+    })
+
+    it('renders video with poster when provided', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4"
+          title="Test Video"
+          poster="https://preview.redd.it/poster.jpg"
+        />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      expect(video).toHaveAttribute(
+        'poster',
+        'https://preview.redd.it/poster.jpg'
+      )
+    })
+
+    it('renders video without poster when not provided', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      expect(video).not.toHaveAttribute('poster')
+    })
   })
 
   describe('URL validation', () => {

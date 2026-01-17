@@ -23,6 +23,8 @@ interface VideoPlayerProps {
   width?: number
   /** Video height (for aspect ratio calculation) */
   height?: number
+  /** Poster image URL (preview/thumbnail) */
+  poster?: string
 }
 
 /**
@@ -84,7 +86,8 @@ export function VideoPlayer({
   title,
   type = 'mp4',
   width,
-  height
+  height,
+  poster
 }: Readonly<VideoPlayerProps>) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -161,12 +164,14 @@ export function VideoPlayer({
   return (
     <div className={clsx(styles.container, isVertical && styles.vertical)}>
       <video
-        ref={videoRef}
+        aria-label={`Video: ${title}`}
         className={styles.video}
         controls
-        preload="metadata"
-        aria-label={`Video: ${title}`}
         controlsList="nodownload"
+        playsInline
+        poster={poster}
+        preload="metadata"
+        ref={videoRef}
       >
         <source
           src={src}

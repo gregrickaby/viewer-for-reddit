@@ -59,6 +59,11 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
 
   // Render Reddit-hosted video
   if (redditVideo?.hls_url || redditVideo?.fallback_url) {
+    // Use preview image or thumbnail as poster
+    const poster =
+      post.preview?.images?.[0]?.source?.url ??
+      (isValidThumbnail(post.thumbnail) ? post.thumbnail : undefined)
+
     return (
       <VideoPlayer
         src={redditVideo.hls_url || redditVideo.fallback_url}
@@ -66,6 +71,7 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
         type={redditVideo.hls_url ? 'hls' : 'mp4'}
         width={redditVideo.width}
         height={redditVideo.height}
+        poster={poster}
       />
     )
   }
@@ -73,6 +79,9 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
   // Check for animated GIF/video in variants.mp4 (common for i.redd.it gifs)
   const variantsMp4 = post.preview?.images?.[0]?.variants?.mp4
   if (variantsMp4?.source?.url) {
+    // Use the main preview image as poster for animated GIFs
+    const poster = post.preview?.images?.[0]?.source?.url
+
     return (
       <VideoPlayer
         src={variantsMp4.source.url}
@@ -80,13 +89,26 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
         type="mp4"
         width={variantsMp4.source.width}
         height={variantsMp4.source.height}
+        poster={poster}
       />
     )
   }
 
   // Render external video
   if (post.is_video && post.url) {
-    return <VideoPlayer src={post.url} title={post.title} type="mp4" />
+    // Use preview image or thumbnail as poster
+    const poster =
+      post.preview?.images?.[0]?.source?.url ??
+      (isValidThumbnail(post.thumbnail) ? post.thumbnail : undefined)
+
+    return (
+      <VideoPlayer
+        src={post.url}
+        title={post.title}
+        type="mp4"
+        poster={poster}
+      />
+    )
   }
 
   // Render medium-sized image (640px width preferred)
