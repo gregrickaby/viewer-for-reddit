@@ -1,6 +1,6 @@
 import {votePost} from '@/lib/actions/reddit'
 import {RedditComment} from '@/lib/types/reddit'
-import {render, screen, user} from '@/test-utils'
+import {render, screen, user, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {Comment} from './Comment'
 
@@ -291,6 +291,335 @@ describe('Comment', () => {
       // Only one user (plus the parent comment's user)
       const users = screen.getAllByText(/u\//i)
       expect(users).toHaveLength(2) // testuser + user1
+    })
+  })
+
+  describe('collapse functionality', () => {
+    it('shows collapse button only for top-level comments (depth 0)', () => {
+      const {rerender} = render(<Comment comment={mockComment} depth={0} />)
+
+      // Top-level comment should have collapse button
+      expect(
+        screen.getByRole('button', {name: /collapse comment/i})
+      ).toBeInTheDocument()
+
+      // Nested comment should not have collapse button
+      rerender(<Comment comment={mockComment} depth={1} />)
+
+      expect(
+        screen.queryByRole('button', {name: /collapse comment/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('starts with comment expanded by default', () => {
+      render(<Comment comment={mockComment} />)
+
+      // Comment body should be visible
+      expect(screen.getByText('This is a test comment')).toBeInTheDocument()
+
+      // Voting buttons should be visible
+      expect(
+        screen.getByRole('button', {name: /upvote comment/i})
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {name: /downvote comment/i})
+      ).toBeInTheDocument()
+
+      // Should show chevron up icon (collapse)
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+      expect(collapseButton).toHaveAttribute('aria-expanded', 'true')
+    })
+
+    it('collapses comment body when collapse button clicked', async () => {
+      render(<Comment comment={mockComment} />)
+
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+
+      // Click to collapse
+      await user.click(collapseButton)
+
+      // Wait for state change
+      await waitFor(() => {
+        expect(collapseButton).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // Button text should change to "Expand"
+      expect(
+        screen.getByRole('button', {name: /expand comment/i})
+      ).toBeInTheDocument()
+    })
+
+    it('expands comment body when expand button clicked', async () => {
+      render(<Comment comment={mockComment} />)
+
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+
+      // Collapse first
+      await user.click(collapseButton)
+
+      await waitFor(() => {
+        expect(collapseButton).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      const expandButton = screen.getByRole('button', {name: /expand comment/i})
+
+      // Expand again
+      await user.click(expandButton)
+
+      await waitFor(() => {
+        expect(expandButton).toHaveAttribute('aria-expanded', 'true')
+      })
+
+      // Content should be visible again
+      expect(screen.getByText('This is a test comment')).toBeInTheDocument()
+    })
+
+    it('hides child replies when collapsed', async () => {
+      const commentWithReplies = {
+        ...mockComment,
+        replies: {
+          kind: 'Listing' as const,
+          data: {
+            children: [
+              {
+                kind: 't1' as const,
+                data: {
+                  id: 'reply1',
+                  name: 't1_reply1',
+                  author: 'replyuser',
+                  body: 'This is a reply',
+                  body_html: '<div>This is a reply</div>',
+                  score: 10,
+                  created_utc: Date.now() / 1000 - 1800,
+                  likes: null,
+                  distinguished: undefined,
+                  depth: 1,
+                  parent_id: 't1_test123',
+                  permalink: '/r/test/comments/post123/_/reply1',
+                  stickied: false,
+                  score_hidden: false
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      render(<Comment comment={commentWithReplies} depth={0} />)
+
+      // Child reply should be visible initially
+      expect(screen.getByText('This is a reply')).toBeInTheDocument()
+
+      // Collapse the comment
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+      await user.click(collapseButton)
+
+      await waitFor(() => {
+        expect(collapseButton).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // Child replies should eventually be hidden (Mantine Collapse has animation)
+      await waitFor(
+        () => {
+          const reply = screen.queryByText('This is a reply')
+          expect(reply).not.toBeVisible()
+        },
+        {timeout: 2000}
+      )
+    })
+
+    it('shows reply count when collapsed and has replies', async () => {
+      const commentWithMultipleReplies = {
+        ...mockComment,
+        replies: {
+          kind: 'Listing' as const,
+          data: {
+            children: [
+              {
+                kind: 't1' as const,
+                data: {
+                  id: 'reply1',
+                  name: 't1_reply1',
+                  author: 'user1',
+                  body: 'First reply',
+                  body_html: '<div>First reply</div>',
+                  score: 5,
+                  created_utc: Date.now() / 1000,
+                  likes: null,
+                  distinguished: undefined,
+                  depth: 1,
+                  parent_id: 't1_test123',
+                  permalink: '/r/test/comments/post123/_/reply1',
+                  stickied: false,
+                  score_hidden: false
+                }
+              },
+              {
+                kind: 't1' as const,
+                data: {
+                  id: 'reply2',
+                  name: 't1_reply2',
+                  author: 'user2',
+                  body: 'Second reply',
+                  body_html: '<div>Second reply</div>',
+                  score: 3,
+                  created_utc: Date.now() / 1000,
+                  likes: null,
+                  distinguished: undefined,
+                  depth: 1,
+                  parent_id: 't1_test123',
+                  permalink: '/r/test/comments/post123/_/reply2',
+                  stickied: false,
+                  score_hidden: false
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      render(<Comment comment={commentWithMultipleReplies} depth={0} />)
+
+      // Reply count should not be visible when expanded
+      expect(screen.queryByText('(2 replies)')).not.toBeInTheDocument()
+
+      // Collapse the comment
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+      await user.click(collapseButton)
+
+      await waitFor(() => {
+        expect(collapseButton).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // Reply count should be visible when collapsed
+      expect(screen.getByText('(2 replies)')).toBeInTheDocument()
+    })
+
+    it('shows singular "reply" for one reply', async () => {
+      const commentWithOneReply = {
+        ...mockComment,
+        replies: {
+          kind: 'Listing' as const,
+          data: {
+            children: [
+              {
+                kind: 't1' as const,
+                data: {
+                  id: 'reply1',
+                  name: 't1_reply1',
+                  author: 'replyuser',
+                  body: 'Only reply',
+                  body_html: '<div>Only reply</div>',
+                  score: 10,
+                  created_utc: Date.now() / 1000,
+                  likes: null,
+                  distinguished: undefined,
+                  depth: 1,
+                  parent_id: 't1_test123',
+                  permalink: '/r/test/comments/post123/_/reply1',
+                  stickied: false,
+                  score_hidden: false
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      render(<Comment comment={commentWithOneReply} depth={0} />)
+
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+      await user.click(collapseButton)
+
+      await waitFor(() => {
+        expect(collapseButton).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // Should show "reply" not "replies"
+      expect(screen.getByText('(1 reply)')).toBeInTheDocument()
+    })
+
+    it('does not show reply count when collapsed with no replies', async () => {
+      render(<Comment comment={mockComment} depth={0} />)
+
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+      await user.click(collapseButton)
+
+      await waitFor(() => {
+        expect(collapseButton).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // Should not show reply count if there are no replies
+      expect(screen.queryByText(/replies?/)).not.toBeInTheDocument()
+    })
+
+    it('has proper accessibility attributes for collapse button', () => {
+      render(<Comment comment={mockComment} depth={0} />)
+
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse comment/i
+      })
+
+      expect(collapseButton).toHaveAttribute('aria-label', 'Collapse comment')
+      expect(collapseButton).toHaveAttribute('aria-expanded', 'true')
+    })
+
+    it('toggles aria-expanded attribute when collapsing/expanding', async () => {
+      render(<Comment comment={mockComment} depth={0} />)
+
+      const button = screen.getByRole('button', {name: /collapse comment/i})
+
+      // Initially expanded
+      expect(button).toHaveAttribute('aria-expanded', 'true')
+
+      // Collapse
+      await user.click(button)
+      await waitFor(() => {
+        expect(button).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // Expand
+      await user.click(button)
+      await waitFor(() => {
+        expect(button).toHaveAttribute('aria-expanded', 'true')
+      })
+    })
+
+    it('preserves collapse state independently for each comment', async () => {
+      // Render two separate top-level comments
+      render(
+        <>
+          <Comment comment={{...mockComment, id: 'comment1'}} depth={0} />
+          <Comment comment={{...mockComment, id: 'comment2'}} depth={0} />
+        </>
+      )
+
+      const buttons = screen.getAllByRole('button', {name: /collapse comment/i})
+      expect(buttons).toHaveLength(2)
+
+      // Collapse only first comment
+      await user.click(buttons[0])
+
+      await waitFor(() => {
+        expect(buttons[0]).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // Second comment should still be expanded
+      expect(buttons[1]).toHaveAttribute('aria-expanded', 'true')
     })
   })
 
