@@ -48,6 +48,7 @@ These specialized instructions apply automatically when editing relevant files v
 - Wrap Next.js `<Link>` with Mantine `<Anchor component={Link}>`
 - Props typed with `Readonly<>`, avoid `any`
 - Never use `NEXT_PUBLIC_` env prefix (all server-side only)
+- Never use ENV vars or functions in Client Components
 - Always run `npm run validate` before completion
 
 ## Project Structure

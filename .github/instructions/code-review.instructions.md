@@ -15,7 +15,7 @@ These issues pose security risks, break functionality, or violate critical patte
 
 - [ ] **HTML Sanitization**: All user-generated HTML uses `DOMPurify.sanitize()` before rendering
 - [ ] **No Committed Secrets**: No API keys, tokens, or credentials in code
-- [ ] **Server-Side Only Env Vars**: NO `NEXT_PUBLIC_` prefix (all env vars are server-side)
+- [ ] **Server-Side Only Env Vars**: NO `NEXT_PUBLIC_` prefix (all env vars are server-side) No env var access or functions in Client Components
 
 ```typescript
 // ❌ WRONG - XSS vulnerability

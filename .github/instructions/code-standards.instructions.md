@@ -670,13 +670,13 @@ await fetch(url, {next: {revalidate: FIVE_MINUTES}})
 - [ ] Server Components by default (no `'use client'` unless needed)
 - [ ] All Reddit API calls in `lib/actions/reddit.ts`
 - [ ] Server Actions wrapped with `cache()`
+- [ ] No ENV var access or functions in Client Components
 - [ ] Specific error messages by HTTP status
 - [ ] Check `if (isPending) return` in async handlers
 - [ ] Wrap async components: `<ErrorBoundary><Suspense>`
 - [ ] Use `Readonly<>` on props
 - [ ] Await params in Next.js 16 pages
 - [ ] Use constants from `lib/utils/constants.ts`
-- [ ] Sanitize HTML with `DOMPurify.sanitize()`
 - [ ] Wrap Next.js Link with Mantine Anchor
 - [ ] Use Arctic token methods: `tokens.accessToken()`
 
@@ -697,8 +697,3 @@ await fetch(url, {next: {revalidate: FIVE_MINUTES}})
 - [Reddit API Patterns](./reddit-api.instructions.md) - API interaction patterns
 - [Mantine UI](https://mantine.dev/llms-full.txt) - UI library documentation
 - [Code Review Checklist](./code-review.instructions.md) - Pre-merge validation
-
----
-
-**Last Updated:** January 2026
-**Architecture:** Next.js 16 + React 19 + Server-First
