@@ -140,7 +140,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchPosts('popular', 'hot')).rejects.toThrow(
-        'Rate limit exceeded'
+        'Rate limit exceeded. Log in to continue viewing the site.'
       )
     })
   })
@@ -640,7 +640,9 @@ describe('reddit server actions', () => {
       const result = await toggleSubscription('programming', 'sub')
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain('Rate limit exceeded')
+      expect(result.error).toContain(
+        'Rate limit exceeded. Log in to continue viewing the site.'
+      )
     })
   })
 

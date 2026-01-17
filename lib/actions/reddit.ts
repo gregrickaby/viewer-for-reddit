@@ -182,7 +182,10 @@ export const fetchPosts = cache(
           throw new Error('Subreddit not found')
         }
         if (response.status === 429) {
-          throw new Error('Rate limit exceeded')
+          const message = isAuthenticated
+            ? 'Rate limit exceeded'
+            : 'Rate limit exceeded. Log in to continue viewing the site.'
+          throw new Error(message)
         }
         throw new Error(`Reddit API error: ${response.statusText}`)
       }
@@ -459,7 +462,9 @@ export async function votePost(
           throw new Error('Session expired')
         }
         if (res.status === 429) {
-          throw new Error('Rate limit exceeded')
+          throw new Error(
+            'Rate limit exceeded. Log in to continue viewing the site.'
+          )
         }
         throw new Error(`Vote failed: ${res.statusText}`)
       }
@@ -526,7 +531,9 @@ export async function savePost(
           throw new Error('Session expired')
         }
         if (res.status === 429) {
-          throw new Error('Rate limit exceeded')
+          throw new Error(
+            'Rate limit exceeded. Log in to continue viewing the site.'
+          )
         }
         throw new Error(`Save failed: ${res.statusText}`)
       }
@@ -998,7 +1005,7 @@ export async function toggleSubscription(
       if (response.status === 429) {
         return {
           success: false,
-          error: 'Rate limit exceeded. Please try again later.'
+          error: 'Rate limit exceeded. Log in to continue viewing the site.'
         }
       }
       throw new Error(`Reddit API error: ${response.statusText}`)
@@ -1087,7 +1094,9 @@ export const fetchSavedPosts = cache(
           throw new Error('User not found')
         }
         if (response.status === 429) {
-          throw new Error('Rate limit exceeded')
+          throw new Error(
+            'Rate limit exceeded. Log in to continue viewing the site.'
+          )
         }
         throw new Error(`Reddit API error: ${response.statusText}`)
       }
