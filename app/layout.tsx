@@ -85,10 +85,10 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body>
-        <Analytics {...analytics} />
         <ThemeProvider>
           <ErrorBoundary>{children}</ErrorBoundary>
         </ThemeProvider>
+        <Analytics {...analytics} />
       </body>
     </html>
   )
