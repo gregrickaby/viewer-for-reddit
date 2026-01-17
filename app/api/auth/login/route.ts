@@ -1,4 +1,5 @@
 import {getEnvVar, isProduction} from '@/lib/utils/env'
+import {logger} from '@/lib/utils/logger'
 import {Reddit} from 'arctic'
 import {NextResponse} from 'next/server'
 
@@ -32,33 +33,48 @@ const reddit = new Reddit(
  * ```
  */
 export async function GET(): Promise<NextResponse> {
-  const state = crypto.randomUUID()
-  const scopes = [
-    'identity',
-    'read',
-    'vote',
-    'subscribe',
-    'mysubreddits',
-    'save',
-    'submit',
-    'edit',
-    'history'
-  ]
+  try {
+    logger.debug('OAuth login initiated', undefined, {context: 'OAuth'})
 
-  // Create authorization URL with duration=permanent for refresh tokens
-  const url = reddit.createAuthorizationURL(state, scopes)
+    const state = crypto.randomUUID()
+    const scopes = [
+      'identity',
+      'read',
+      'vote',
+      'subscribe',
+      'mysubreddits',
+      'save',
+      'submit',
+      'edit',
+      'history'
+    ]
 
-  // Add duration parameter manually (Arctic doesn't support this directly)
-  const authUrl = new URL(url)
-  authUrl.searchParams.set('duration', 'permanent')
+    // Create authorization URL with duration=permanent for refresh tokens
+    const url = reddit.createAuthorizationURL(state, scopes)
 
-  const response = NextResponse.redirect(authUrl.toString())
-  response.cookies.set('reddit_oauth_state', state, {
-    httpOnly: true,
-    secure: isProduction(),
-    sameSite: 'lax',
-    maxAge: 600 // 10 minutes
-  })
+    // Add duration parameter manually (Arctic doesn't support this directly)
+    const authUrl = new URL(url)
+    authUrl.searchParams.set('duration', 'permanent')
 
-  return response
+    const response = NextResponse.redirect(authUrl.toString())
+    response.cookies.set('reddit_oauth_state', state, {
+      httpOnly: true,
+      secure: isProduction(),
+      sameSite: 'lax',
+      maxAge: 600 // 10 minutes
+    })
+
+    logger.debug(
+      'Redirecting to Reddit authorization',
+      {scopes: scopes.length, hasState: !!state},
+      {context: 'OAuth'}
+    )
+
+    return response
+  } catch (error) {
+    logger.error('Failed to initiate OAuth login', error, {
+      context: 'OAuthLogin'
+    })
+    return new NextResponse('Failed to initiate login', {status: 500})
+  }
 }

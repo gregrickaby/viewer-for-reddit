@@ -13,9 +13,19 @@ vi.mock('@/lib/utils/env', () => ({
   isProduction: vi.fn(() => false)
 }))
 
+vi.mock('@/lib/utils/logger', () => ({
+  logger: {
+    debug: vi.fn(),
+    error: vi.fn()
+  }
+}))
+
 vi.mock('arctic', () => ({
   Reddit: class Reddit {
     createAuthorizationURL(state: string, scopes: string[]) {
+      if ((global as any).__testShouldThrow) {
+        throw new Error('Arctic initialization failed')
+      }
       return new URL(
         `https://reddit.com/api/v1/authorize?state=${state}&scope=${scopes.join(' ')}`
       )
@@ -32,10 +42,12 @@ Object.defineProperty(global.crypto, 'randomUUID', {
 
 // Import after mocks
 import {getEnvVar, isProduction} from '@/lib/utils/env'
+import {logger} from '@/lib/utils/logger'
 import {GET} from './route'
 
 const mockGetEnvVar = vi.mocked(getEnvVar)
 const mockIsProduction = vi.mocked(isProduction)
+const mockLogger = vi.mocked(logger)
 
 describe('GET /api/auth/login', () => {
   beforeEach(() => {
@@ -125,5 +137,41 @@ describe('GET /api/auth/login', () => {
 
     expect(redirectUrl1).toContain(`state=${uuid1}`)
     expect(redirectUrl2).toContain(`state=${uuid2}`)
+  })
+
+  it('logs OAuth flow initiation and redirect', async () => {
+    await GET()
+
+    expect(mockLogger.debug).toHaveBeenCalledWith(
+      'OAuth login initiated',
+      undefined,
+      {context: 'OAuth'}
+    )
+
+    expect(mockLogger.debug).toHaveBeenCalledWith(
+      'Redirecting to Reddit authorization',
+      expect.objectContaining({
+        scopes: 9,
+        hasState: true
+      }),
+      {context: 'OAuth'}
+    )
+  })
+
+  it('handles errors gracefully', async () => {
+    ;(global as any).__testShouldThrow = true
+
+    const response = await GET()
+
+    expect(response.status).toBe(500)
+    expect(await response.text()).toBe('Failed to initiate login')
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      'Failed to initiate OAuth login',
+      expect.any(Error),
+      {context: 'OAuthLogin'}
+    )
+
+    // Cleanup
+    delete (global as any).__testShouldThrow
   })
 })

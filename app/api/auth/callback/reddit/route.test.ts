@@ -107,7 +107,9 @@ describe('GET /api/auth/callback/reddit', () => {
       {
         method: 'GET',
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -116,7 +118,7 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307) // Redirect
     const location = response.headers.get('location')
-    expect(location).toContain('/')
+    expect(location).toBe('https://example.com/')
     expect(mockSave).toHaveBeenCalledTimes(1)
   })
 
@@ -136,7 +138,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -159,7 +163,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -178,7 +184,9 @@ describe('GET /api/auth/callback/reddit', () => {
       'https://example.com/api/auth/callback/reddit?error=access_denied&error_description=User+denied+access',
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -186,7 +194,9 @@ describe('GET /api/auth/callback/reddit', () => {
     const response = await GET(request)
 
     expect(response.status).toBe(307)
-    expect(response.headers.get('location')).toContain('error=access_denied')
+    expect(response.headers.get('location')).toBe(
+      'https://example.com/?error=access_denied'
+    )
     expect(mockLogger.error).toHaveBeenCalledWith(
       'OAuth error from Reddit',
       expect.any(Object),
@@ -270,7 +280,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://different.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'different.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -297,7 +309,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -319,7 +333,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -341,7 +357,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -363,7 +381,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -394,7 +414,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -419,7 +441,9 @@ describe('GET /api/auth/callback/reddit', () => {
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
         headers: {
-          cookie: `reddit_oauth_state=${validState}`
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
         }
       }
     )
@@ -435,6 +459,36 @@ describe('GET /api/auth/callback/reddit', () => {
     expect(mockLogger.info).toHaveBeenCalledWith(
       'User authenticated',
       {username: 'testuser'},
+      expect.any(Object)
+    )
+  })
+
+  it('handles missing host headers gracefully', async () => {
+    mockGetSession.mockResolvedValue({
+      save: vi.fn()
+    } as any)
+
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`
+          // No host or x-forwarded-host headers
+        }
+      }
+    )
+
+    const response = await GET(request)
+
+    // Should not crash, should use fallback host from request URL
+    expect(response.status).toBe(307)
+    const location = response.headers.get('location')
+    expect(location).toBe('https://example.com/')
+
+    // Should log warning about missing headers
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'No proxy headers found, using request URL host',
+      expect.any(Object),
       expect.any(Object)
     )
   })

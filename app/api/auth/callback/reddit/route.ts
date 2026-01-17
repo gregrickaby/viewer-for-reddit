@@ -100,13 +100,13 @@ async function handleTokens(code: string): Promise<SessionData> {
  *
  * Security measures:
  * - CSRF protection via state parameter validation
- * - Redirect URI validation
+ * - Redirect URI monitoring (logged for security review)
  * - Secure HTTP-only session cookies
  * - Error handling for various failure modes
  *
  * Flow:
  * 1. Validate state parameter (CSRF protection)
- * 2. Validate redirect URI matches configuration
+ * 2. Log redirect URI for monitoring (validation delegated to Reddit OAuth)
  * 3. Exchange authorization code for access/refresh tokens
  * 4. Fetch user data from Reddit API
  * 5. Store session data in encrypted cookie
@@ -142,8 +142,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       {error, description: url.searchParams.get('error_description')},
       {context: 'OAuth'}
     )
+    const forwardedHost = request.headers.get('x-forwarded-host')
+    const directHost = request.headers.get('host')
+    const host = forwardedHost || directHost || new URL(request.url).host
+    const protocol = request.headers.get('x-forwarded-proto') || 'https'
+
+    if (!forwardedHost && !directHost) {
+      logger.warn(
+        'No proxy headers found, using request URL host',
+        {host},
+        {context: 'OAuth'}
+      )
+    }
+
     return NextResponse.redirect(
-      new URL(`/?error=${encodeURIComponent(error)}`, request.url)
+      new URL(`/?error=${encodeURIComponent(error)}`, `${protocol}://${host}`)
     )
   }
 
@@ -185,9 +198,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     session.userId = sessionData.userId
     await session.save()
 
-    // Build clean redirect URL without hash fragment
-    const redirectUrl = new URL('/', request.url)
-    redirectUrl.hash = '' // Remove hash fragment (Reddit adds #_)
+    // Build redirect URL using proper host (handles reverse proxies)
+    const forwardedHost = request.headers.get('x-forwarded-host')
+    const directHost = request.headers.get('host')
+    const host = forwardedHost || directHost || new URL(request.url).host
+    const protocol = request.headers.get('x-forwarded-proto') || 'https'
+
+    if (!forwardedHost && !directHost) {
+      logger.warn(
+        'No proxy headers found, using request URL host',
+        {host},
+        {context: 'OAuth'}
+      )
+    }
+
+    const redirectUrl = new URL('/', `${protocol}://${host}`)
 
     const response = NextResponse.redirect(redirectUrl)
     response.cookies.delete('reddit_oauth_state')
