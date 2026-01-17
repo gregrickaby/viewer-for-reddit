@@ -17,10 +17,10 @@ import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 
-import {SortOption} from '@/lib/types/reddit'
+import {SortOption, TimeFilter} from '@/lib/types/reddit'
 
 interface PageProps {
-  searchParams: Promise<{sort?: string}>
+  searchParams: Promise<{sort?: string; time?: string}>
 }
 
 /**
@@ -59,23 +59,27 @@ export const metadata: Metadata = {
  * @param feedType - Type of feed ('home' for authenticated, 'popular' for guests)
  * @param isAuthenticated - Whether user is logged in
  * @param sort - Sort option (hot, new, top, rising, controversial)
+ * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
 async function PostsContent({
   feedType,
   isAuthenticated,
-  sort = 'hot'
+  sort = 'hot',
+  timeFilter
 }: Readonly<{
   feedType: string
   isAuthenticated: boolean
   sort?: SortOption
+  timeFilter?: TimeFilter
 }>) {
-  const {posts, after} = await fetchPosts(feedType, sort)
+  const {posts, after} = await fetchPosts(feedType, sort, undefined, timeFilter)
 
   return (
     <PostListWithTabs
       posts={posts}
       after={after}
       activeSort={sort}
+      activeTimeFilter={timeFilter}
       isAuthenticated={isAuthenticated}
       subreddit={feedType}
     />
@@ -95,8 +99,9 @@ async function PostsContent({
  * @param searchParams - URL search params (sort option)
  */
 export default async function Home({searchParams}: Readonly<PageProps>) {
-  const {sort} = await searchParams
+  const {sort, time} = await searchParams
   const postSort = (sort as SortOption) || 'hot'
+  const timeFilter = time as TimeFilter | undefined
 
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
@@ -129,6 +134,7 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
                   feedType={feedType}
                   isAuthenticated={isAuthenticated}
                   sort={postSort}
+                  timeFilter={timeFilter}
                 />
               </Suspense>
             </ErrorBoundary>

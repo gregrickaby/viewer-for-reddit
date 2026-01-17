@@ -1,7 +1,7 @@
 'use client'
 
 import {fetchPosts} from '@/lib/actions/reddit'
-import {RedditPost, SortOption} from '@/lib/types/reddit'
+import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {logger} from '@/lib/utils/logger'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
@@ -17,6 +17,8 @@ interface UseInfiniteScrollOptions {
   subreddit?: string
   /** Sort order for posts */
   sort?: SortOption
+  /** Time filter for top/controversial sorts */
+  timeFilter?: TimeFilter
 }
 
 /**
@@ -53,7 +55,8 @@ interface UseInfiniteScrollReturn {
  *   initialPosts: serverPosts,
  *   initialAfter: 't3_abc123',
  *   subreddit: 'popular',
- *   sort: 'hot'
+ *   sort: 'top',
+ *   timeFilter: 'week'
  * })
  *
  * return (
@@ -68,7 +71,8 @@ export function useInfiniteScroll({
   initialPosts,
   initialAfter,
   subreddit = 'popular',
-  sort = 'hot'
+  sort = 'hot',
+  timeFilter
 }: Readonly<UseInfiniteScrollOptions>): UseInfiniteScrollReturn {
   const [posts, setPosts] = useState<RedditPost[]>(initialPosts)
   const [after, setAfter] = useState<string | null>(initialAfter || null)
@@ -90,7 +94,7 @@ export function useInfiniteScroll({
 
     try {
       // Call Server Action for server-side data fetching
-      const result = await fetchPosts(subreddit, sort, after)
+      const result = await fetchPosts(subreddit, sort, after, timeFilter)
 
       if (result.posts && result.posts.length > 0) {
         setPosts((prev) => [...prev, ...result.posts])
@@ -103,13 +107,14 @@ export function useInfiniteScroll({
       logger.error('Failed to load more posts', error, {
         context: 'useInfiniteScroll',
         subreddit,
-        sort
+        sort,
+        timeFilter
       })
       setHasMore(false)
     } finally {
       setLoading(false)
     }
-  }, [loading, after, hasMore, subreddit, sort])
+  }, [loading, after, hasMore, subreddit, sort, timeFilter])
 
   const sentinelRef = useCallback(
     (node: HTMLDivElement | null) => {

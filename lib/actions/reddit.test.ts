@@ -143,6 +143,129 @@ describe('reddit server actions', () => {
         'Rate limit exceeded. Log in to continue viewing the site.'
       )
     })
+
+    it('includes time filter parameter for top sort', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/:sort.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {kind: 't3', data: {id: 'test1', title: 'Top Post'}}
+                ],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await fetchPosts('popular', 'top', undefined, 'week')
+
+      expect(requestUrl).toContain('t=week')
+    })
+
+    it('includes time filter parameter for controversial sort', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/:sort.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {kind: 't3', data: {id: 'test1', title: 'Controversial Post'}}
+                ],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await fetchPosts('popular', 'controversial', undefined, 'month')
+
+      expect(requestUrl).toContain('t=month')
+    })
+
+    it('does not include time filter for hot sort', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/:sort.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {kind: 't3', data: {id: 'test1', title: 'Hot Post'}}
+                ],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await fetchPosts('popular', 'hot', undefined, 'week')
+
+      expect(requestUrl).not.toContain('t=week')
+    })
+
+    it('does not include time filter when undefined for top sort', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/:sort.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {kind: 't3', data: {id: 'test1', title: 'Top Post'}}
+                ],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await fetchPosts('popular', 'top')
+
+      // Should not have t= param when timeFilter is undefined
+      expect(requestUrl).toContain('popular/top.json')
+      // Check that neither "t=" nor "&t=" appears in URL
+      expect(requestUrl).not.toMatch(/[?&]t=/)
+    })
   })
 
   describe('fetchPost', () => {

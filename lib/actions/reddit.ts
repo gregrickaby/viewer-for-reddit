@@ -10,7 +10,8 @@ import type {
   RedditPost,
   RedditSubreddit,
   RedditUser,
-  SortOption
+  SortOption,
+  TimeFilter
 } from '@/lib/types/reddit'
 import {
   DEFAULT_POST_LIMIT,
@@ -103,6 +104,7 @@ async function getHeaders(useAuth: boolean = false) {
  * @param subreddit - Subreddit name, 'home', or multireddit path
  * @param sort - Sort order (hot, new, rising, top, controversial)
  * @param after - Pagination cursor for next page
+ * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  * @returns Promise resolving to posts array and next page cursor
  *
  * @throws {Error} Various Reddit API errors:
@@ -116,13 +118,16 @@ async function getHeaders(useAuth: boolean = false) {
  * const {posts, after} = await fetchPosts('popular', 'hot')
  * // Fetch next page
  * const {posts: morePosts} = await fetchPosts('popular', 'hot', after)
+ * // Fetch top posts from this week
+ * const {posts: topWeek} = await fetchPosts('popular', 'top', undefined, 'week')
  * ```
  */
 export const fetchPosts = cache(
   async (
     subreddit: string = 'popular',
     sort: SortOption = 'hot',
-    after?: string
+    after?: string,
+    timeFilter?: TimeFilter
   ): Promise<{posts: RedditPost[]; after: string | null}> => {
     try {
       const session = await getSession()
@@ -148,6 +153,10 @@ export const fetchPosts = cache(
 
       if (after) {
         url.searchParams.set('after', after)
+      }
+      // Add time filter for top/controversial sorts
+      if (timeFilter && (sort === 'top' || sort === 'controversial')) {
+        url.searchParams.set('t', timeFilter)
       }
       url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
       url.searchParams.set('raw_json', '1')

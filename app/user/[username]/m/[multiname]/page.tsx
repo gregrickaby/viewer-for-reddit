@@ -19,14 +19,14 @@ import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
-import {SortOption} from '@/lib/types/reddit'
+import {SortOption, TimeFilter} from '@/lib/types/reddit'
 
 interface PageProps {
   params: Promise<{
     username: string
     multiname: string
   }>
-  searchParams: Promise<{sort?: string}>
+  searchParams: Promise<{sort?: string; time?: string}>
 }
 
 /**
@@ -61,21 +61,29 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
  * @param multiname - Multireddit name
  * @param isAuthenticated - Whether user is logged in
  * @param sort - Sort option (hot, new, top, rising, controversial)
+ * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
 async function MultiredditPosts({
   username,
   multiname,
   isAuthenticated,
-  sort = 'hot'
+  sort = 'hot',
+  timeFilter
 }: Readonly<{
   username: string
   multiname: string
   isAuthenticated: boolean
   sort?: SortOption
+  timeFilter?: TimeFilter
 }>) {
   const multiredditPath = `user/${username}/m/${multiname}`
 
-  const postsResult = await fetchPosts(multiredditPath, sort).catch((error) => {
+  const postsResult = await fetchPosts(
+    multiredditPath,
+    sort,
+    undefined,
+    timeFilter
+  ).catch((error) => {
     logger.error('Failed to fetch multireddit posts', error, {
       context: 'MultiredditPage',
       multiredditPath
@@ -90,6 +98,7 @@ async function MultiredditPosts({
       posts={posts}
       after={after}
       activeSort={sort}
+      activeTimeFilter={timeFilter}
       isAuthenticated={isAuthenticated}
       subreddit={multiredditPath}
     />
@@ -116,8 +125,9 @@ export default async function MultiredditPage({
   searchParams
 }: Readonly<PageProps>) {
   const {username, multiname} = await params
-  const {sort} = await searchParams
+  const {sort, time} = await searchParams
   const postSort = (sort as SortOption) || 'hot'
+  const timeFilter = time as TimeFilter | undefined
 
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
@@ -157,6 +167,7 @@ export default async function MultiredditPage({
                 multiname={multiname}
                 isAuthenticated={isAuthenticated}
                 sort={postSort}
+                timeFilter={timeFilter}
               />
             </Suspense>
           </ErrorBoundary>

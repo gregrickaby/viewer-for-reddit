@@ -128,4 +128,75 @@ describe('useInfiniteScroll', () => {
 
     expect(result.current.posts).toEqual(newPosts)
   })
+
+  it('passes timeFilter to fetchPosts when loading more', async () => {
+    mockFetchPosts.mockResolvedValue({
+      posts: [{...mockPosts[0], id: 'post2'} as RedditPost],
+      after: 't3_after2'
+    })
+
+    const {result} = renderHook(() =>
+      useInfiniteScroll({
+        initialPosts: mockPosts,
+        initialAfter: 't3_after1',
+        subreddit: 'test',
+        sort: 'top',
+        timeFilter: 'week'
+      })
+    )
+
+    const mockElement = document.createElement('div')
+
+    act(() => {
+      result.current.sentinelRef(mockElement)
+    })
+
+    // Simulate intersection
+    await act(async () => {
+      mockObserver.callback([{isIntersecting: true}])
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+
+    expect(mockFetchPosts).toHaveBeenCalledWith(
+      'test',
+      'top',
+      't3_after1',
+      'week'
+    )
+  })
+
+  it('passes undefined timeFilter when not provided', async () => {
+    mockFetchPosts.mockResolvedValue({
+      posts: [{...mockPosts[0], id: 'post2'} as RedditPost],
+      after: 't3_after2'
+    })
+
+    const {result} = renderHook(() =>
+      useInfiniteScroll({
+        initialPosts: mockPosts,
+        initialAfter: 't3_after1',
+        subreddit: 'test',
+        sort: 'hot'
+      })
+    )
+
+    const mockElement = document.createElement('div')
+
+    act(() => {
+      result.current.sentinelRef(mockElement)
+    })
+
+    // Simulate intersection
+    await act(async () => {
+      mockObserver.callback([{isIntersecting: true}])
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+
+    expect(mockFetchPosts).toHaveBeenCalledWith(
+      'test',
+      'hot',
+      't3_after1',
+      undefined
+    )
+  })
 })

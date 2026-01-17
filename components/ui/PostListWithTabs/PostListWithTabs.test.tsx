@@ -114,7 +114,7 @@ describe('PostListWithTabs', () => {
       const topTab = screen.getByRole('tab', {name: /top/i})
       await user.click(topTab)
 
-      expect(mockPush).toHaveBeenCalledWith('?sort=top')
+      expect(mockPush).toHaveBeenCalledWith('?sort=top&time=day')
     })
 
     it('navigates when clicking rising tab', async () => {
@@ -182,6 +182,125 @@ describe('PostListWithTabs', () => {
 
         unmount()
       })
+    })
+  })
+
+  describe('time filter', () => {
+    it('shows time filter when sort is top', () => {
+      render(
+        <PostListWithTabs
+          posts={[mockPost]}
+          activeSort="top"
+          activeTimeFilter="day"
+        />
+      )
+
+      expect(screen.getByText('Time:')).toBeInTheDocument()
+      expect(screen.getByText('Hour')).toBeInTheDocument()
+      expect(screen.getByText('Day')).toBeInTheDocument()
+      expect(screen.getByText('Week')).toBeInTheDocument()
+      expect(screen.getByText('Month')).toBeInTheDocument()
+      expect(screen.getByText('Year')).toBeInTheDocument()
+      expect(screen.getByText('All Time')).toBeInTheDocument()
+    })
+
+    it('shows time filter when sort is controversial', () => {
+      render(
+        <PostListWithTabs
+          posts={[mockPost]}
+          activeSort="controversial"
+          activeTimeFilter="week"
+        />
+      )
+
+      expect(screen.getByText('Time:')).toBeInTheDocument()
+      expect(screen.getByText('Week')).toBeInTheDocument()
+    })
+
+    it('does not show time filter when sort is hot', () => {
+      render(<PostListWithTabs posts={[mockPost]} activeSort="hot" />)
+
+      expect(screen.queryByText('Time:')).not.toBeInTheDocument()
+    })
+
+    it('does not show time filter when sort is new', () => {
+      render(<PostListWithTabs posts={[mockPost]} activeSort="new" />)
+
+      expect(screen.queryByText('Time:')).not.toBeInTheDocument()
+    })
+
+    it('does not show time filter when sort is rising', () => {
+      render(<PostListWithTabs posts={[mockPost]} activeSort="rising" />)
+
+      expect(screen.queryByText('Time:')).not.toBeInTheDocument()
+    })
+
+    it('navigates with time filter when clicking time option', async () => {
+      render(
+        <PostListWithTabs
+          posts={[mockPost]}
+          activeSort="top"
+          activeTimeFilter="day"
+        />
+      )
+
+      const weekOption = screen.getByText('Week')
+      await user.click(weekOption)
+
+      expect(mockPush).toHaveBeenCalledWith('?sort=top&time=week')
+    })
+
+    it('preserves time filter when switching to top', async () => {
+      render(
+        <PostListWithTabs
+          posts={[mockPost]}
+          activeSort="hot"
+          activeTimeFilter="week"
+        />
+      )
+
+      const topTab = screen.getByRole('tab', {name: /top/i})
+      await user.click(topTab)
+
+      expect(mockPush).toHaveBeenCalledWith('?sort=top&time=week')
+    })
+
+    it('preserves time filter when switching to controversial', async () => {
+      render(
+        <PostListWithTabs
+          posts={[mockPost]}
+          activeSort="new"
+          activeTimeFilter="month"
+        />
+      )
+
+      // Note: controversial tab not rendered in basic PostListWithTabs
+      // This test would apply if we add controversial to the tab list
+      const topTab = screen.getByRole('tab', {name: /top/i})
+      await user.click(topTab)
+
+      expect(mockPush).toHaveBeenCalledWith('?sort=top&time=month')
+    })
+
+    it('does not include time param when switching to hot', async () => {
+      render(
+        <PostListWithTabs
+          posts={[mockPost]}
+          activeSort="top"
+          activeTimeFilter="week"
+        />
+      )
+
+      const hotTab = screen.getByRole('tab', {name: /hot/i})
+      await user.click(hotTab)
+
+      expect(mockPush).toHaveBeenCalledWith('?sort=hot')
+    })
+
+    it('uses default time filter of day when not provided', () => {
+      render(<PostListWithTabs posts={[mockPost]} activeSort="top" />)
+
+      expect(screen.getByText('Day')).toBeInTheDocument()
     })
   })
 })

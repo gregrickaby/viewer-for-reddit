@@ -22,11 +22,11 @@ import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
-import {SortOption} from '@/lib/types/reddit'
+import {SortOption, TimeFilter} from '@/lib/types/reddit'
 
 interface PageProps {
   params: Promise<{subreddit: string}>
-  searchParams: Promise<{sort?: string}>
+  searchParams: Promise<{sort?: string; time?: string}>
 }
 
 /**
@@ -146,17 +146,25 @@ async function SubredditInfo({
  * @param subreddit - Subreddit name
  * @param isAuthenticated - Whether user is logged in
  * @param sort - Sort option (hot, new, top, rising, controversial)
+ * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
 async function SubredditPosts({
   subreddit,
   isAuthenticated,
-  sort = 'hot'
+  sort = 'hot',
+  timeFilter
 }: Readonly<{
   subreddit: string
   isAuthenticated: boolean
   sort?: SortOption
+  timeFilter?: TimeFilter
 }>) {
-  const postsResult = await fetchPosts(subreddit, sort).catch((error) => {
+  const postsResult = await fetchPosts(
+    subreddit,
+    sort,
+    undefined,
+    timeFilter
+  ).catch((error) => {
     logger.error('Failed to fetch posts for subreddit', error, {
       context: 'SubredditPage',
       subreddit
@@ -175,6 +183,7 @@ async function SubredditPosts({
       posts={posts}
       after={after}
       activeSort={sort}
+      activeTimeFilter={timeFilter}
       isAuthenticated={isAuthenticated}
       subreddit={subreddit}
     />
@@ -199,8 +208,9 @@ export default async function SubredditPage({
   searchParams
 }: Readonly<PageProps>) {
   const {subreddit} = await params
-  const {sort} = await searchParams
+  const {sort, time} = await searchParams
   const postSort = (sort as SortOption) || 'hot'
+  const timeFilter = time as TimeFilter | undefined
 
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
@@ -245,6 +255,7 @@ export default async function SubredditPage({
                   subreddit={subreddit}
                   isAuthenticated={isAuthenticated}
                   sort={postSort}
+                  timeFilter={timeFilter}
                 />
               </Suspense>
             </ErrorBoundary>
