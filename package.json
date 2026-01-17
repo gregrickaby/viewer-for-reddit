@@ -30,7 +30,7 @@
     "typegen:fetch": "tsx scripts/generate-openapi.ts",
     "typegen:types": "openapi-typescript scripts/reddit-openapi.json --output lib/types/reddit-api.ts",
     "typegen:validate": "redocly lint scripts/reddit-openapi.json",
-    "validate": "npm run format && npm run typecheck && npm run lint && npm run test",
+    "validate": "npm run format && npm run typecheck && npm run lint",
     "validate:ci": "npm run format:check && npm run typecheck && npm run lint && npm run test:coverage"
   },
   "dependencies": {
