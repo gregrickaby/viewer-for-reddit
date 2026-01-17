@@ -215,16 +215,17 @@ describe('env', () => {
       expect(config.websiteId).toBe('test-id')
     })
 
-    it('returns disabled config when not in production', () => {
+    it('returns enabled config in development when all variables set', () => {
       ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
+      delete process.env.ENABLE_ANALYTICS // Should default to enabled
       process.env.ANALYTICS_ID = 'test-id'
       process.env.ANALYTICS_SCRIPT_URL = 'https://example.com/script.js'
 
       const config = getAnalyticsConfig()
 
-      expect(config.enabled).toBe(false)
-      expect(config.scriptUrl).toBeUndefined()
-      expect(config.websiteId).toBeUndefined()
+      expect(config.enabled).toBe(true)
+      expect(config.scriptUrl).toBe('https://example.com/script.js')
+      expect(config.websiteId).toBe('test-id')
     })
 
     it('returns disabled config when ENABLE_ANALYTICS is false', () => {

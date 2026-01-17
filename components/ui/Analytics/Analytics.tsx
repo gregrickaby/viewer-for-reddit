@@ -1,38 +1,42 @@
 'use client'
 
-import {getAnalyticsConfig} from '@/lib/utils/env'
 import Script from 'next/script'
+
+interface AnalyticsProps {
+  enabled: boolean
+  scriptUrl?: string
+  websiteId?: string
+}
 
 /**
  * Analytics script component (Umami).
- * Only loads in production when analytics is properly configured.
+ * Receives configuration from server component as props.
  *
  * Features:
- * - Production-only (disabled in development)
- * - Conditional rendering based on environment variables
+ * - Production-only (controlled by server)
+ * - Props-based configuration (no direct env var access)
  * - afterInteractive loading strategy
- * - Configured via ANALYTICS_SCRIPT_URL and ANALYTICS_ID env vars
  *
  * @example
  * ```typescript
- * // In root layout
- * <body>
- *   <Analytics />
- *   {children}
- * </body>
+ * // In root layout (server component)
+ * const analytics = getAnalyticsConfig()
+ * <Analytics {...analytics} />
  * ```
  */
-export function Analytics() {
-  const analytics = getAnalyticsConfig()
-
-  if (!analytics.enabled) {
+export function Analytics({
+  enabled,
+  scriptUrl,
+  websiteId
+}: Readonly<AnalyticsProps>) {
+  if (!enabled || !scriptUrl || !websiteId) {
     return null
   }
 
   return (
     <Script
-      src={analytics.scriptUrl}
-      data-website-id={analytics.websiteId}
+      src={scriptUrl}
+      data-website-id={websiteId}
       strategy="afterInteractive"
     />
   )

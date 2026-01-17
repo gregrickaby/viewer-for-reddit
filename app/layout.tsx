@@ -2,7 +2,12 @@ import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
 import {Analytics} from '@/components/ui/Analytics/Analytics'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {appConfig} from '@/lib/config/app.config'
-import {getOptionalEnvVar, isProduction, validateEnv} from '@/lib/utils/env'
+import {
+  getAnalyticsConfig,
+  getOptionalEnvVar,
+  isProduction,
+  validateEnv
+} from '@/lib/utils/env'
 import {ColorSchemeScript} from '@mantine/core'
 import '@mantine/core/styles.css'
 import type {Metadata, Viewport} from 'next'
@@ -71,6 +76,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const analytics = getAnalyticsConfig()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -78,7 +85,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body>
-        <Analytics />
+        <Analytics {...analytics} />
         <ThemeProvider>
           <ErrorBoundary>{children}</ErrorBoundary>
         </ThemeProvider>
