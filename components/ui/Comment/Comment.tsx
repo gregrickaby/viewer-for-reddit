@@ -8,7 +8,15 @@ import {
   sanitizeText
 } from '@/lib/utils/formatters'
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
-import {ActionIcon, Badge, Card, Group, Stack, Text} from '@mantine/core'
+import {
+  ActionIcon,
+  Badge,
+  Card,
+  Group,
+  NumberFormatter,
+  Stack,
+  Text
+} from '@mantine/core'
 import {IconArrowDown, IconArrowUp} from '@tabler/icons-react'
 import styles from './Comment.module.css'
 
@@ -110,7 +118,7 @@ export function Comment({
                 <IconArrowUp size={14} />
               </ActionIcon>
               <Text size="xs" fw={600} c={getVoteColor(voteState)}>
-                {score}
+                <NumberFormatter value={score} thousandSeparator="," />
               </Text>
               <ActionIcon
                 variant="subtle"
