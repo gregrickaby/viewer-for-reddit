@@ -101,11 +101,9 @@ interface AnalyticsConfig {
 
 /**
  * Gets the analytics configuration
- * Analytics is only enabled in production when all required variables are set
  */
 export function getAnalyticsConfig(): AnalyticsConfig {
   const enabled =
-    isProduction() &&
     process.env.ENABLE_ANALYTICS !== 'false' &&
     !!process.env.ANALYTICS_ID &&
     !!process.env.ANALYTICS_SCRIPT_URL
