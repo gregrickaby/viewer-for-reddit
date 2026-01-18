@@ -118,7 +118,10 @@ export function PostListWithTabs({
   return (
     <>
       <Stack gap="md" mb="lg">
-        <Tabs value={activeSort}>
+        <Tabs
+          value={activeSort}
+          onChange={(value) => value && handleSortChange(value)}
+        >
           <Tabs.List
             grow={false}
             style={{flexWrap: 'nowrap', overflowX: 'auto'}}
@@ -126,7 +129,6 @@ export function PostListWithTabs({
             <Tabs.Tab
               value="hot"
               leftSection={<IconFlame aria-hidden="true" size={16} />}
-              onClick={() => handleSortChange('hot')}
               disabled={isPending}
               data-umami-event="sort-posts-hot"
             >
@@ -135,7 +137,6 @@ export function PostListWithTabs({
             <Tabs.Tab
               value="new"
               leftSection={<IconClock aria-hidden="true" size={16} />}
-              onClick={() => handleSortChange('new')}
               disabled={isPending}
               data-umami-event="sort-posts-new"
             >
@@ -144,7 +145,6 @@ export function PostListWithTabs({
             <Tabs.Tab
               value="top"
               leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
-              onClick={() => handleSortChange('top')}
               disabled={isPending}
               data-umami-event="sort-posts-top"
             >
@@ -153,7 +153,6 @@ export function PostListWithTabs({
             <Tabs.Tab
               value="rising"
               leftSection={<IconRocket aria-hidden="true" size={16} />}
-              onClick={() => handleSortChange('rising')}
               disabled={isPending}
               data-umami-event="sort-posts-rising"
             >
