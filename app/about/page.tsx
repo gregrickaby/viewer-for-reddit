@@ -1,4 +1,5 @@
 import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {
   fetchMultireddits,
   fetchUserSubscriptions,
@@ -6,10 +7,11 @@ import {
 } from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {Container, Typography} from '@mantine/core'
+import {Container, Skeleton, Typography} from '@mantine/core'
 import type {Metadata} from 'next'
 import fs from 'node:fs'
 import path from 'node:path'
+import {Suspense} from 'react'
 import ReactMarkdown from 'react-markdown'
 
 /**
@@ -39,11 +41,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * About page - displays README content.
- *
- * Reads and renders the README.md file as the about page content.
+ * About page content component - fetches data and renders README.
  */
-export default async function AboutPage() {
+async function AboutPageContent() {
   const filePath = path.join(process.cwd(), 'README.md')
   const fileContent = fs.readFileSync(filePath, 'utf8')
 
@@ -70,5 +70,39 @@ export default async function AboutPage() {
         </Typography>
       </Container>
     </AppLayout>
+  )
+}
+
+/**
+ * Loading skeleton for About page.
+ */
+function AboutPageSkeleton() {
+  return (
+    <AppLayout isAuthenticated={false} subscriptions={[]} multireddits={[]}>
+      <Container size="md" py="xl">
+        <Skeleton height={40} mb="xl" width="60%" />
+        <Skeleton height={20} mb="md" />
+        <Skeleton height={20} mb="md" />
+        <Skeleton height={20} mb="md" width="80%" />
+        <Skeleton height={20} mb="xl" />
+        <Skeleton height={20} mb="md" />
+        <Skeleton height={20} mb="md" width="90%" />
+      </Container>
+    </AppLayout>
+  )
+}
+
+/**
+ * About page - displays README content.
+ *
+ * Reads and renders the README.md file as the about page content.
+ */
+export default function AboutPage() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<AboutPageSkeleton />}>
+        <AboutPageContent />
+      </Suspense>
+    </ErrorBoundary>
   )
 }

@@ -1,4 +1,5 @@
 import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {
   fetchMultireddits,
   fetchUserSubscriptions,
@@ -6,10 +7,11 @@ import {
 } from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {Container, Typography} from '@mantine/core'
+import {Container, Skeleton, Typography} from '@mantine/core'
 import type {Metadata} from 'next'
 import fs from 'node:fs'
 import path from 'node:path'
+import {Suspense} from 'react'
 import ReactMarkdown from 'react-markdown'
 
 /**
@@ -39,9 +41,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Donate page - displays donation options and information.
+ * Donate page content component - fetches data and renders content.
  */
-export default async function DonatePage() {
+async function DonatePageContent() {
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
 
@@ -70,5 +72,37 @@ export default async function DonatePage() {
         </Typography>
       </Container>
     </AppLayout>
+  )
+}
+
+/**
+ * Loading skeleton for Donate page.
+ */
+function DonatePageSkeleton() {
+  return (
+    <AppLayout isAuthenticated={false} subscriptions={[]} multireddits={[]}>
+      <Container size="md" py="xl">
+        <Skeleton height={40} mb="xl" width="60%" />
+        <Skeleton height={20} mb="md" />
+        <Skeleton height={20} mb="md" />
+        <Skeleton height={20} mb="md" width="80%" />
+        <Skeleton height={20} mb="xl" />
+        <Skeleton height={20} mb="md" />
+        <Skeleton height={20} mb="md" width="90%" />
+      </Container>
+    </AppLayout>
+  )
+}
+
+/**
+ * Donate page - displays donation options and information.
+ */
+export default function DonatePage() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<DonatePageSkeleton />}>
+        <DonatePageContent />
+      </Suspense>
+    </ErrorBoundary>
   )
 }
