@@ -16,14 +16,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: base,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'daily',
       priority: 1
     },
     {
       url: `${base}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.8
+      priority: 0.5
+    },
+    {
+      url: `${base}/donate`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5
     }
   ]
 }
