@@ -22,6 +22,8 @@ interface PostCardProps {
   isAuthenticated?: boolean
   /** Whether to show the full post text (for single post view) */
   showFullText?: boolean
+  /** Whether this is a priority post (for LCP optimization) */
+  priority?: boolean
 }
 
 /**
@@ -47,7 +49,8 @@ export const PostCard = memo(
   ({
     post,
     isAuthenticated = false,
-    showFullText = false
+    showFullText = false,
+    priority = false
   }: Readonly<PostCardProps>) => {
     const slug = extractSlug(post.permalink, post.id)
     const postUrl = `/r/${post.subreddit}/comments/${post.id}/${slug}`
@@ -91,7 +94,7 @@ export const PostCard = memo(
             </Text>
           </Anchor>
 
-          <PostMedia post={post} />
+          <PostMedia post={post} priority={priority} />
 
           {post.selftext && (
             <>

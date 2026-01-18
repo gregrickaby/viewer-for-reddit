@@ -66,8 +66,13 @@ export function PostList({
 
   return (
     <Stack gap="md" className={styles.container}>
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} isAuthenticated={isAuthenticated} />
+      {posts.map((post, index) => (
+        <PostCard
+          key={post.id}
+          post={post}
+          isAuthenticated={isAuthenticated}
+          priority={index < 2}
+        />
       ))}
 
       {hasMore && (

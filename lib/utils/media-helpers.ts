@@ -41,9 +41,11 @@ export function isValidUrl(url: string): boolean {
  * Get the medium-sized image (640px) from Reddit preview resolutions
  * Falls back to the largest available resolution if 640px not found
  * @param post - Reddit post data
- * @returns URL of the medium image or null if not available
+ * @returns Object with URL and dimensions, or null if not available
  */
-export function getMediumImage(post: RedditPost): string | null {
+export function getMediumImage(
+  post: RedditPost
+): {url: string; width: number; height: number} | null {
   const resolutions = post.preview?.images?.[0]?.resolutions
 
   if (!Array.isArray(resolutions) || resolutions.length === 0) {
@@ -56,7 +58,15 @@ export function getMediumImage(post: RedditPost): string | null {
   // Return the medium size, or the last (largest) image if not found
   const image = mediumSize ?? resolutions.at(-1)
 
-  return image?.url ?? null
+  if (!image?.url) {
+    return null
+  }
+
+  return {
+    url: image.url,
+    width: image.width,
+    height: image.height
+  }
 }
 
 /**

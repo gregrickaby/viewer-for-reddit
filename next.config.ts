@@ -92,6 +92,17 @@ const nextConfig: NextConfig = {
               "form-action 'self';"
           }
         ]
+      },
+      {
+        // Cache public folder assets (images, fonts, etc.)
+        // Note: _next/static is automatically cached by Next.js with immutable headers
+        source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp|woff|woff2|ttf|otf)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
       }
     ]
   }

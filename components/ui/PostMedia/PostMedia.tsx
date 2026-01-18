@@ -7,11 +7,14 @@ import {
   getMediumImage,
   isValidThumbnail
 } from '@/lib/utils/media-helpers'
-import {Anchor} from '@mantine/core'
-import Link from 'next/link'
 import {memo} from 'react'
 import {Gallery} from '../Gallery/Gallery'
-import {VideoPlayer} from '../VideoPlayer/VideoPlayer'
+import {
+  renderAnimatedGif,
+  renderExternalVideo,
+  renderImage,
+  renderRedditVideo
+} from './PostMedia.helpers'
 import styles from './PostMedia.module.css'
 
 /**
@@ -20,6 +23,8 @@ import styles from './PostMedia.module.css'
 interface PostMediaProps {
   /** Reddit post data */
   post: RedditPost
+  /** Whether this is a priority post (for LCP optimization) */
+  priority?: boolean
 }
 
 /**
@@ -45,120 +50,39 @@ interface PostMediaProps {
  * <PostMedia post={redditPost} />
  * ```
  */
-function PostMediaComponent({post}: Readonly<PostMediaProps>) {
+function PostMediaComponent({
+  post,
+  priority = false
+}: Readonly<PostMediaProps>) {
+  // Render gallery if available
   const galleryItems = extractGalleryItems(post)
-
-  // Render gallery if this is a gallery post
   if (galleryItems && galleryItems.length > 0) {
     return <Gallery items={galleryItems} title={post.title} />
   }
 
-  // Check for Reddit-hosted video in multiple locations
-  const redditVideo =
-    post.preview?.reddit_video_preview ?? post.media?.reddit_video
-
-  // Render Reddit-hosted video
-  if (redditVideo?.hls_url || redditVideo?.fallback_url) {
-    // Use preview image or thumbnail as poster
-    const poster =
-      post.preview?.images?.[0]?.source?.url ??
-      (isValidThumbnail(post.thumbnail) ? post.thumbnail : undefined)
-
-    return (
-      <VideoPlayer
-        src={redditVideo.hls_url || redditVideo.fallback_url}
-        title={post.title}
-        type={redditVideo.hls_url ? 'hls' : 'mp4'}
-        width={redditVideo.width}
-        height={redditVideo.height}
-        poster={poster}
-      />
-    )
+  // Try to render video (Reddit, animated GIF, or external)
+  const videoElement =
+    renderRedditVideo(post) ||
+    renderAnimatedGif(post) ||
+    renderExternalVideo(post)
+  if (videoElement) {
+    return videoElement
   }
 
-  // Check for animated GIF/video in variants.mp4 (common for i.redd.it gifs)
-  const variantsMp4 = post.preview?.images?.[0]?.variants?.mp4
-  if (variantsMp4?.source?.url) {
-    // Use the main preview image as poster for animated GIFs
-    const poster = post.preview?.images?.[0]?.source?.url
-
-    return (
-      <VideoPlayer
-        src={variantsMp4.source.url}
-        title={post.title}
-        type="mp4"
-        width={variantsMp4.source.width}
-        height={variantsMp4.source.height}
-        poster={poster}
-      />
-    )
-  }
-
-  // Render external video
-  if (post.is_video && post.url) {
-    // Use preview image or thumbnail as poster
-    const poster =
-      post.preview?.images?.[0]?.source?.url ??
-      (isValidThumbnail(post.thumbnail) ? post.thumbnail : undefined)
-
-    return (
-      <VideoPlayer
-        src={post.url}
-        title={post.title}
-        type="mp4"
-        poster={poster}
-      />
-    )
-  }
-
-  // Render medium-sized image (640px width preferred)
+  // Render medium-sized image
   const mediumImage = getMediumImage(post)
   if (mediumImage) {
-    const imageUrl = decodeImageUrl(mediumImage)
-    const sourceImage = post.preview?.images?.[0]?.source
-    const shouldRenderLink = post.url?.startsWith('http')
-
-    // Calculate aspect ratio to prevent CLS
-    const aspectRatio =
-      sourceImage?.width && sourceImage?.height
-        ? sourceImage.width / sourceImage.height
-        : 16 / 9
-
-    const imageElement = (
-      <div
-        className={styles.imageContainer}
-        style={{
-          aspectRatio: aspectRatio.toString()
-        }}
-      >
-        <img
-          src={imageUrl}
-          alt={post.title}
-          loading="lazy"
-          decoding="async"
-          className={styles.image}
-        />
-      </div>
-    )
-
-    if (!shouldRenderLink) {
-      return imageElement
-    }
-
-    return (
-      <Anchor
-        component={Link}
-        href={post.url}
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-        className={styles.imageLink}
-      >
-        {imageElement}
-      </Anchor>
+    return renderImage(
+      decodeImageUrl(mediumImage.url),
+      post.title,
+      mediumImage.width,
+      mediumImage.height,
+      priority,
+      post.url?.startsWith('http') ? post.url : undefined
     )
   }
 
-  // Fallback to thumbnail if no preview available
+  // Fallback to thumbnail
   if (isValidThumbnail(post.thumbnail)) {
     return (
       <img
@@ -166,7 +90,7 @@ function PostMediaComponent({post}: Readonly<PostMediaProps>) {
         alt={post.title}
         width={140}
         height={140}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
         decoding="async"
         className={styles.thumbnail}
       />

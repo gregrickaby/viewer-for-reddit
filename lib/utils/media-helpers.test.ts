@@ -72,7 +72,11 @@ describe('media-helpers', () => {
         }
       } as unknown as RedditPost
 
-      expect(getMediumImage(post)).toBe('https://medium.jpg')
+      expect(getMediumImage(post)).toEqual({
+        url: 'https://medium.jpg',
+        width: 640,
+        height: 640
+      })
     })
 
     it('returns largest resolution when 640px not found', () => {
@@ -90,7 +94,11 @@ describe('media-helpers', () => {
         }
       } as unknown as RedditPost
 
-      expect(getMediumImage(post)).toBe('https://large.jpg')
+      expect(getMediumImage(post)).toEqual({
+        url: 'https://large.jpg',
+        width: 320,
+        height: 320
+      })
     })
 
     it('returns null when no preview exists', () => {

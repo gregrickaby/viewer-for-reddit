@@ -177,9 +177,11 @@ describe('PostMedia', () => {
 
   describe('image rendering', () => {
     it('renders medium image with link', () => {
-      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue(
-        'https://preview.redd.it/test.jpg'
-      )
+      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue({
+        url: 'https://preview.redd.it/test.jpg',
+        width: 640,
+        height: 480
+      })
 
       const postWithImage = {
         ...basePost,
@@ -207,9 +209,11 @@ describe('PostMedia', () => {
     })
 
     it('renders image without link when URL is invalid', () => {
-      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue(
-        'https://preview.redd.it/test.jpg'
-      )
+      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue({
+        url: 'https://preview.redd.it/test.jpg',
+        width: 640,
+        height: 480
+      })
 
       const postWithImage = {
         ...basePost,
@@ -242,9 +246,11 @@ describe('PostMedia', () => {
     })
 
     it('calculates aspect ratio from source dimensions', () => {
-      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue(
-        'https://preview.redd.it/test.jpg'
-      )
+      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue({
+        url: 'https://preview.redd.it/test.jpg',
+        width: 1600,
+        height: 900
+      })
 
       const postWithImage = {
         ...basePost,
@@ -273,9 +279,11 @@ describe('PostMedia', () => {
     })
 
     it('uses default aspect ratio when dimensions missing', () => {
-      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue(
-        'https://preview.redd.it/test.jpg'
-      )
+      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue({
+        url: 'https://preview.redd.it/test.jpg',
+        width: 640,
+        height: 360
+      })
 
       const postWithImage = {
         ...basePost,
@@ -395,9 +403,11 @@ describe('PostMedia', () => {
     })
 
     it('prioritizes video over image', () => {
-      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue(
-        'https://preview.redd.it/test.jpg'
-      )
+      vi.mocked(mediaHelpers.getMediumImage).mockReturnValue({
+        url: 'https://preview.redd.it/test.jpg',
+        width: 640,
+        height: 480
+      })
 
       const postWithBoth = {
         ...basePost,

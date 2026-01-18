@@ -35,6 +35,9 @@ export function SubscribeButton({
         isSubscribed ? <IconCheck size={16} /> : <IconPlus size={16} />
       }
       size="sm"
+      aria-label={
+        isSubscribed ? `Leave r/${subredditName}` : `Join r/${subredditName}`
+      }
     >
       {isSubscribed ? 'Leave' : 'Join'}
     </Button>
