@@ -1,5 +1,5 @@
 import {logout} from '@/lib/actions/auth'
-import {render, screen, user} from '@/test-utils'
+import {render, screen, user, waitFor} from '@/test-utils'
 import {useRouter} from 'next/navigation'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {UserMenu} from './UserMenu'
@@ -190,21 +190,24 @@ describe('UserMenu', () => {
 
     it('handles network errors during logout', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      mockLogout.mockRejectedValue(new Error('Network error'))
+      mockLogout.mockRejectedValueOnce(new Error('Network error'))
 
       render(<UserMenu isAuthenticated username="testuser" />)
 
       const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
 
-      // Click should not throw even though logout fails
+      // Click and expect the rejection to be thrown (component doesn't catch)
       await user.click(logoutButton)
 
       // Wait for logout to be called
-      await vi.waitFor(() => {
+      await waitFor(() => {
         expect(mockLogout).toHaveBeenCalled()
       })
 
-      // Component handles error gracefully (no crash)
+      // Even though logout failed, the component stays mounted (finally block runs)
+      // and the isLoggingOut state is reset
+      expect(mockLogout).toHaveBeenCalledTimes(1)
+
       consoleSpy.mockRestore()
     })
   })

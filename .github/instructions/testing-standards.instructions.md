@@ -13,13 +13,12 @@ You are an expert test writer specializing in the Reddit Viewer Next.js 16 appli
 
 **Stack**: Vitest v4 + Testing Library + MSW v2 + jest-axe
 
-**🚨 CRITICAL: Always use MSW v2 for HTTP mocking. NEVER mock `global.fetch` directly.**
+## 🚨 CRITICAL
 
-**🚨 CRITICAL: Never write superfluous tests or tests that assert CSS.**
-
-**Critical Import Rules**:
-
-Always import from the correct sources:
+- Always use MSW v2 for HTTP mocking. NEVER mock `global.fetch` or API responses directly.
+- Never use eslint-disable or ts-ignore comments in test files to bypass type or lint errors.
+- Never write superfluous tests or tests that assert CSS.
+- Always import from the correct sources:
 
 ```typescript
 // ✅ CORRECT - Import from @/test-utils

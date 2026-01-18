@@ -1,5 +1,6 @@
 'use client'
 import {logout} from '@/lib/actions/auth'
+import {logger} from '@/lib/utils/logger'
 import {Anchor, Avatar, Button, Group} from '@mantine/core'
 import {IconLogout} from '@tabler/icons-react'
 import Link from 'next/link'
@@ -60,6 +61,9 @@ export function UserMenu({
           router.push('/')
           router.refresh()
         }
+      } catch (error) {
+        // Log error but don't throw - component stays mounted
+        logger.error('Logout failed', error, {context: 'UserMenu'})
       } finally {
         setIsLoggingOut(false)
       }

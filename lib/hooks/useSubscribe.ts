@@ -1,7 +1,7 @@
 'use client'
 
 import {toggleSubscription} from '@/lib/actions/reddit'
-import {startTransition, useState, useTransition} from 'react'
+import {useState, useTransition} from 'react'
 
 interface UseSubscribeOptions {
   subredditName: string
@@ -34,7 +34,7 @@ export function useSubscribe({
   initialIsSubscribed
 }: Readonly<UseSubscribeOptions>) {
   const [isSubscribed, setIsSubscribed] = useState(initialIsSubscribed)
-  const [isPending] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
   const toggleSubscribe = () => {
     // Prevent race conditions - ignore clicks while pending

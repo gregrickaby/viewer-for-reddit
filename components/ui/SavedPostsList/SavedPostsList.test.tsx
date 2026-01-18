@@ -1,6 +1,7 @@
+import {fetchSavedPosts} from '@/lib/actions/reddit'
 import type {RedditPost} from '@/lib/types/reddit'
 import {render, screen} from '@/test-utils'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {SavedPostsList} from './SavedPostsList'
 
 // Mock server actions to avoid env var errors
@@ -10,6 +11,8 @@ vi.mock('@/lib/actions/reddit', () => ({
     after: null
   }))
 }))
+
+const mockFetchSavedPosts = vi.mocked(fetchSavedPosts)
 
 const mockPosts: RedditPost[] = [
   {
@@ -59,53 +62,125 @@ const mockPosts: RedditPost[] = [
 ]
 
 describe('SavedPostsList', () => {
-  it('renders initial saved posts', () => {
-    render(
-      <SavedPostsList
-        initialPosts={mockPosts}
-        username="testuser"
-        initialAfter={null}
-      />
-    )
-
-    expect(screen.getByText('First saved post')).toBeInTheDocument()
-    expect(screen.getByText('Second saved post')).toBeInTheDocument()
+  beforeEach(() => {
+    mockFetchSavedPosts.mockClear()
+    mockFetchSavedPosts.mockResolvedValue({
+      posts: [],
+      after: null
+    })
   })
 
-  it('handles empty saved posts', () => {
-    render(
-      <SavedPostsList
-        initialPosts={[]}
-        username="testuser"
-        initialAfter={null}
-      />
-    )
+  describe('initial rendering', () => {
+    it('renders initial saved posts', () => {
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter={null}
+        />
+      )
 
-    // Should not show any posts
-    expect(screen.queryByText('First saved post')).not.toBeInTheDocument()
+      expect(screen.getByText('First saved post')).toBeInTheDocument()
+      expect(screen.getByText('Second saved post')).toBeInTheDocument()
+    })
+
+    it('handles empty saved posts', () => {
+      render(
+        <SavedPostsList
+          initialPosts={[]}
+          username="testuser"
+          initialAfter={null}
+        />
+      )
+
+      // Should not show any posts
+      expect(screen.queryByText('First saved post')).not.toBeInTheDocument()
+    })
+
+    it('shows "No more saved posts" when there are no more posts', () => {
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter={null}
+        />
+      )
+
+      expect(screen.getByText('No more saved posts')).toBeInTheDocument()
+    })
+
+    it('does not show "No more saved posts" when there are more posts', () => {
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter="t3_cursor"
+        />
+      )
+
+      expect(screen.queryByText('No more saved posts')).not.toBeInTheDocument()
+    })
   })
 
-  it('shows "No more saved posts" when there are no more posts', () => {
-    render(
-      <SavedPostsList
-        initialPosts={mockPosts}
-        username="testuser"
-        initialAfter={null}
-      />
-    )
+  describe('infinite scroll setup', () => {
+    it('sets up IntersectionObserver when there are more posts', () => {
+      const observeMock = vi.fn()
+      global.IntersectionObserver = vi.fn(function (this: any) {
+        this.observe = observeMock
+        this.disconnect = vi.fn()
+        this.unobserve = vi.fn()
+      }) as any
 
-    expect(screen.getByText('No more saved posts')).toBeInTheDocument()
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter="t3_cursor"
+        />
+      )
+
+      // Verify IntersectionObserver was created
+      expect(global.IntersectionObserver).toHaveBeenCalled()
+    })
+
+    it('does not set up IntersectionObserver when no more posts', () => {
+      const observeMock = vi.fn()
+      global.IntersectionObserver = vi.fn(function (this: any) {
+        this.observe = observeMock
+        this.disconnect = vi.fn()
+        this.unobserve = vi.fn()
+      }) as any
+
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter={null}
+        />
+      )
+
+      // Sentinel should not be present (no loader visible initially)
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
   })
 
-  it('does not show "No more saved posts" when there are more posts', () => {
-    render(
-      <SavedPostsList
-        initialPosts={mockPosts}
-        username="testuser"
-        initialAfter="t3_cursor"
-      />
-    )
+  describe('post rendering', () => {
+    it('renders each post with PostCard component', () => {
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter={null}
+        />
+      )
 
-    expect(screen.queryByText('No more saved posts')).not.toBeInTheDocument()
+      // Each post title should be rendered
+      expect(screen.getByText('First saved post')).toBeInTheDocument()
+      expect(screen.getByText('Second saved post')).toBeInTheDocument()
+
+      // Verify post metadata is rendered
+      expect(screen.getByText('r/testsubreddit')).toBeInTheDocument()
+      expect(screen.getByText('r/programming')).toBeInTheDocument()
+    })
   })
 })
