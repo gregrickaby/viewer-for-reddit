@@ -3,6 +3,35 @@
   max-width: 100%;
 }
 
+.galleryWrapper {
+  position: relative;
+}
+
+.customControlPrev,
+.customControlNext {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.customControlPrev {
+  left: var(--mantine-spacing-md);
+}
+
+.customControlNext {
+  right: var(--mantine-spacing-md);
+}
+
+.customControlPrev:hover,
+.customControlNext:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
 .carouselRoot {
   position: relative;
 }

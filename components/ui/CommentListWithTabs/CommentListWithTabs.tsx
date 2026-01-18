@@ -67,7 +67,7 @@ export function CommentListWithTabs({
         <Tabs.List grow={false} style={{flexWrap: 'nowrap', overflowX: 'auto'}}>
           <Tabs.Tab
             value="best"
-            leftSection={<IconStar size={16} />}
+            leftSection={<IconStar aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('best')}
             disabled={isPending}
             data-umami-event="sort-comments-best"
@@ -76,7 +76,7 @@ export function CommentListWithTabs({
           </Tabs.Tab>
           <Tabs.Tab
             value="top"
-            leftSection={<IconTrendingUp size={16} />}
+            leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('top')}
             disabled={isPending}
             data-umami-event="sort-comments-top"
@@ -85,7 +85,7 @@ export function CommentListWithTabs({
           </Tabs.Tab>
           <Tabs.Tab
             value="new"
-            leftSection={<IconClock size={16} />}
+            leftSection={<IconClock aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('new')}
             disabled={isPending}
             data-umami-event="sort-comments-new"
@@ -94,7 +94,7 @@ export function CommentListWithTabs({
           </Tabs.Tab>
           <Tabs.Tab
             value="controversial"
-            leftSection={<IconFlame size={16} />}
+            leftSection={<IconFlame aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('controversial')}
             disabled={isPending}
             data-umami-event="sort-comments-controversial"
@@ -103,7 +103,7 @@ export function CommentListWithTabs({
           </Tabs.Tab>
           <Tabs.Tab
             value="old"
-            leftSection={<IconClock size={16} />}
+            leftSection={<IconClock aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('old')}
             disabled={isPending}
             data-umami-event="sort-comments-old"
@@ -112,7 +112,7 @@ export function CommentListWithTabs({
           </Tabs.Tab>
           <Tabs.Tab
             value="qa"
-            leftSection={<IconMessageQuestion size={16} />}
+            leftSection={<IconMessageQuestion aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('qa')}
             disabled={isPending}
             data-umami-event="sort-comments-qa"

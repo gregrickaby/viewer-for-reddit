@@ -125,7 +125,7 @@ export function PostListWithTabs({
           >
             <Tabs.Tab
               value="hot"
-              leftSection={<IconFlame size={16} />}
+              leftSection={<IconFlame aria-hidden="true" size={16} />}
               onClick={() => handleSortChange('hot')}
               disabled={isPending}
               data-umami-event="sort-posts-hot"
@@ -134,7 +134,7 @@ export function PostListWithTabs({
             </Tabs.Tab>
             <Tabs.Tab
               value="new"
-              leftSection={<IconClock size={16} />}
+              leftSection={<IconClock aria-hidden="true" size={16} />}
               onClick={() => handleSortChange('new')}
               disabled={isPending}
               data-umami-event="sort-posts-new"
@@ -143,7 +143,7 @@ export function PostListWithTabs({
             </Tabs.Tab>
             <Tabs.Tab
               value="top"
-              leftSection={<IconTrendingUp size={16} />}
+              leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
               onClick={() => handleSortChange('top')}
               disabled={isPending}
               data-umami-event="sort-posts-top"
@@ -152,7 +152,7 @@ export function PostListWithTabs({
             </Tabs.Tab>
             <Tabs.Tab
               value="rising"
-              leftSection={<IconRocket size={16} />}
+              leftSection={<IconRocket aria-hidden="true" size={16} />}
               onClick={() => handleSortChange('rising')}
               disabled={isPending}
               data-umami-event="sort-posts-rising"
