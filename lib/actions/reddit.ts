@@ -26,6 +26,75 @@ import {retryWithBackoff} from '@/lib/utils/retry'
 import {cache} from 'react'
 
 /**
+ * Builds the appropriate URL path based on feed type.
+ *
+ * @param baseUrl - Base Reddit API URL
+ * @param subreddit - Subreddit name or feed type
+ * @param sort - Sort option
+ * @returns URL path string
+ */
+function buildFeedUrlPath(
+  baseUrl: string,
+  subreddit: string,
+  sort: SortOption
+): string {
+  if (subreddit === '' || subreddit === 'home') {
+    // Authenticated user's home feed (subscribed subreddits)
+    return `${baseUrl}/${sort}.json`
+  }
+  if (subreddit.startsWith('user/')) {
+    // Multireddit: /user/username/m/multiname/sort.json
+    return `${baseUrl}/${subreddit}/${sort}.json`
+  }
+  // Regular subreddit: /r/subreddit/sort.json
+  return `${baseUrl}/r/${subreddit}/${sort}.json`
+}
+
+/**
+ * Handles Reddit API error responses with specific error messages.
+ *
+ * @param response - Fetch response
+ * @param url - Request URL
+ * @param isAuthenticated - Whether user is authenticated
+ * @throws Error with specific message based on status code
+ */
+async function handleFetchPostsError(
+  response: Response,
+  url: URL,
+  isAuthenticated: boolean
+): Promise<never> {
+  const errorBody = await response.text()
+  logger.error(
+    'Reddit API request failed',
+    {
+      status: response.status,
+      statusText: response.statusText,
+      url: url.toString(),
+      isAuthenticated,
+      errorBody: errorBody.substring(0, 500)
+    },
+    {context: 'fetchPosts'}
+  )
+
+  if (response.status === 401) {
+    throw new Error('Authentication expired')
+  }
+  if (response.status === 403) {
+    throw new Error('Access forbidden')
+  }
+  if (response.status === 404) {
+    throw new Error('Subreddit not found')
+  }
+  if (response.status === 429) {
+    const message = isAuthenticated
+      ? 'Rate limit exceeded'
+      : 'Rate limit exceeded. Log in to continue viewing the site.'
+    throw new Error(message)
+  }
+  throw new Error(`Reddit API error: ${response.statusText}`)
+}
+
+/**
  * Get application-only access token for anonymous Reddit API access.
  * Uses client credentials grant type. Token is cached for 1 hour.
  */
@@ -137,18 +206,7 @@ export const fetchPosts = cache(
       const baseUrl = REDDIT_API_URL
 
       // Handle different feed types
-      let urlPath
-      if (subreddit === '' || subreddit === 'home') {
-        // Authenticated user's home feed (subscribed subreddits)
-        urlPath = `${baseUrl}/${sort}.json`
-      } else if (subreddit.startsWith('user/')) {
-        // Multireddit: /user/username/m/multiname/sort.json
-        urlPath = `${baseUrl}/${subreddit}/${sort}.json`
-      } else {
-        // Regular subreddit: /r/subreddit/sort.json
-        urlPath = `${baseUrl}/r/${subreddit}/${sort}.json`
-      }
-
+      const urlPath = buildFeedUrlPath(baseUrl, subreddit, sort)
       const url = new URL(urlPath)
 
       if (after) {
@@ -167,36 +225,7 @@ export const fetchPosts = cache(
       })
 
       if (!response.ok) {
-        // Log the full error for debugging
-        const errorBody = await response.text()
-        logger.error(
-          'Reddit API request failed',
-          {
-            status: response.status,
-            statusText: response.statusText,
-            url: url.toString(),
-            isAuthenticated,
-            errorBody: errorBody.substring(0, 500)
-          },
-          {context: 'fetchPosts'}
-        )
-
-        if (response.status === 401) {
-          throw new Error('Authentication expired')
-        }
-        if (response.status === 403) {
-          throw new Error('Access forbidden')
-        }
-        if (response.status === 404) {
-          throw new Error('Subreddit not found')
-        }
-        if (response.status === 429) {
-          const message = isAuthenticated
-            ? 'Rate limit exceeded'
-            : 'Rate limit exceeded. Log in to continue viewing the site.'
-          throw new Error(message)
-        }
-        throw new Error(`Reddit API error: ${response.statusText}`)
+        await handleFetchPostsError(response, url, isAuthenticated)
       }
 
       // Use codegen type for API response, then transform to simplified type

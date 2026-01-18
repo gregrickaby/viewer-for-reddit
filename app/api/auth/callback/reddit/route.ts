@@ -24,6 +24,33 @@ const reddit = new Reddit(
 )
 
 /**
+ * Resolves the host and protocol from request headers.
+ * Handles reverse proxies by checking x-forwarded-* headers.
+ *
+ * @param request - Next.js request object
+ * @returns Object with protocol and host
+ */
+function resolveHostFromRequest(request: NextRequest): {
+  protocol: string
+  host: string
+} {
+  const forwardedHost = request.headers.get('x-forwarded-host')
+  const directHost = request.headers.get('host')
+  const host = forwardedHost || directHost || new URL(request.url).host
+  const protocol = request.headers.get('x-forwarded-proto') || 'https'
+
+  if (!forwardedHost && !directHost) {
+    logger.warn(
+      'No proxy headers found, using request URL host',
+      {host},
+      {context: 'OAuth'}
+    )
+  }
+
+  return {protocol, host}
+}
+
+/**
  * Fetches authenticated user data from Reddit API.
  *
  * @param accessToken - OAuth access token
@@ -142,18 +169,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       {error, description: url.searchParams.get('error_description')},
       {context: 'OAuth'}
     )
-    const forwardedHost = request.headers.get('x-forwarded-host')
-    const directHost = request.headers.get('host')
-    const host = forwardedHost || directHost || new URL(request.url).host
-    const protocol = request.headers.get('x-forwarded-proto') || 'https'
-
-    if (!forwardedHost && !directHost) {
-      logger.warn(
-        'No proxy headers found, using request URL host',
-        {host},
-        {context: 'OAuth'}
-      )
-    }
+    const {protocol, host} = resolveHostFromRequest(request)
 
     return NextResponse.redirect(
       new URL(`/?error=${encodeURIComponent(error)}`, `${protocol}://${host}`)
@@ -199,19 +215,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     await session.save()
 
     // Build redirect URL using proper host (handles reverse proxies)
-    const forwardedHost = request.headers.get('x-forwarded-host')
-    const directHost = request.headers.get('host')
-    const host = forwardedHost || directHost || new URL(request.url).host
-    const protocol = request.headers.get('x-forwarded-proto') || 'https'
-
-    if (!forwardedHost && !directHost) {
-      logger.warn(
-        'No proxy headers found, using request URL host',
-        {host},
-        {context: 'OAuth'}
-      )
-    }
-
+    const {protocol, host} = resolveHostFromRequest(request)
     const redirectUrl = new URL('/', `${protocol}://${host}`)
 
     const response = NextResponse.redirect(redirectUrl)

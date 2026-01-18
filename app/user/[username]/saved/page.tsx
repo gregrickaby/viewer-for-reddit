@@ -25,7 +25,9 @@ interface PageProps {
 /**
  * Generate metadata for saved posts page.
  */
-export async function generateMetadata({params}: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params
+}: Readonly<PageProps>): Promise<Metadata> {
   const {username} = await params
 
   return {
@@ -50,7 +52,7 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
  * @example
  * URL: /user/johndoe/saved
  */
-export default async function SavedPostsPage({params}: PageProps) {
+export default async function SavedPostsPage({params}: Readonly<PageProps>) {
   const {username} = await params
 
   // Check authentication and fetch data
