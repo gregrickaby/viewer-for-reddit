@@ -166,9 +166,9 @@ export function Sidebar({
               My Subreddits
             </Text>
             {subredditsOpen ? (
-              <IconChevronUp size={16} />
+              <IconChevronUp aria-hidden="true" size={16} />
             ) : (
-              <IconChevronDown size={16} />
+              <IconChevronDown aria-hidden="true" size={16} />
             )}
           </Group>
           <Collapse in={subredditsOpen}>
@@ -213,9 +213,9 @@ export function Sidebar({
               My Multireddits
             </Text>
             {multiredditsOpen ? (
-              <IconChevronUp size={16} />
+              <IconChevronUp aria-hidden="true" size={16} />
             ) : (
-              <IconChevronDown size={16} />
+              <IconChevronDown aria-hidden="true" size={16} />
             )}
           </Group>
           <Collapse in={multiredditsOpen}>

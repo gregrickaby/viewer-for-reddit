@@ -89,7 +89,7 @@ function PostActionsComponent({
           style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
           data-umami-event="upvote"
         >
-          <IconArrowUp size={18} />
+          <IconArrowUp aria-hidden="true" size={18} />
         </ActionIcon>
         <Text size="sm" fw={600} c={getVoteColor(voteState)}>
           {formatNumber(score)}
@@ -104,7 +104,7 @@ function PostActionsComponent({
           style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
           data-umami-event="downvote"
         >
-          <IconArrowDown size={18} />
+          <IconArrowDown aria-hidden="true" size={18} />
         </ActionIcon>
       </Group>
 
@@ -117,7 +117,7 @@ function PostActionsComponent({
       >
         <Group gap={2}>
           <ActionIcon variant="subtle" color="gray" aria-label="View comments">
-            <IconMessage size={18} />
+            <IconMessage aria-hidden="true" size={18} />
           </ActionIcon>
           <Text size="sm">{formatNumber(numComments)}</Text>
         </Group>
@@ -134,9 +134,9 @@ function PostActionsComponent({
         data-umami-event={isSaved ? 'unsave-post' : 'save-post'}
       >
         {isSaved ? (
-          <IconBookmarkFilled size={18} />
+          <IconBookmarkFilled aria-hidden="true" size={18} />
         ) : (
-          <IconBookmark size={18} />
+          <IconBookmark aria-hidden="true" size={18} />
         )}
       </ActionIcon>
     </Group>

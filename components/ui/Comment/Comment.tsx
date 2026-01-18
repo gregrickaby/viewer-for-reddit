@@ -100,9 +100,9 @@ export function Comment({
                 }
               >
                 {isCollapsed ? (
-                  <IconChevronDown size={16} />
+                  <IconChevronDown aria-hidden="true" size={16} />
                 ) : (
-                  <IconChevronUp size={16} />
+                  <IconChevronUp aria-hidden="true" size={16} />
                 )}
               </ActionIcon>
             )}
@@ -154,7 +154,7 @@ export function Comment({
                     aria-disabled={!isAuthenticated}
                     data-umami-event="comment-upvote"
                   >
-                    <IconArrowUp size={14} />
+                    <IconArrowUp aria-hidden="true" size={14} />
                   </ActionIcon>
                   <Text size="xs" fw={600} c={getVoteColor(voteState)}>
                     <NumberFormatter value={score} thousandSeparator="," />
@@ -174,7 +174,7 @@ export function Comment({
                     aria-disabled={!isAuthenticated}
                     data-umami-event="comment-downvote"
                   >
-                    <IconArrowDown size={14} />
+                    <IconArrowDown aria-hidden="true" size={14} />
                   </ActionIcon>
                 </Group>
               </Group>

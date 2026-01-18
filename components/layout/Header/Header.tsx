@@ -89,7 +89,7 @@ export function Header({
           aria-label="Search"
           data-umami-event="open-mobile-search"
         >
-          <IconSearch size={20} />
+          <IconSearch aria-hidden="true" size={20} />
         </ActionIcon>
 
         <Box visibleFrom="sm">
