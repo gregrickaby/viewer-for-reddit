@@ -7,6 +7,7 @@ import {
   getMediumImage,
   isValidThumbnail
 } from '@/lib/utils/media-helpers'
+import Image from 'next/image'
 import {memo} from 'react'
 import {Gallery} from '../Gallery/Gallery'
 import {
@@ -85,13 +86,13 @@ function PostMediaComponent({
   // Fallback to thumbnail
   if (isValidThumbnail(post.thumbnail)) {
     return (
-      <img
+      <Image
         src={post.thumbnail}
         alt={post.title}
         width={140}
         height={140}
-        loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
+        priority={priority}
+        quality={75}
         className={styles.thumbnail}
       />
     )

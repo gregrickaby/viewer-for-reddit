@@ -1,6 +1,7 @@
 import {RedditPost} from '@/lib/types/reddit'
 import {isValidThumbnail} from '@/lib/utils/media-helpers'
 import {Anchor} from '@mantine/core'
+import Image from 'next/image'
 import Link from 'next/link'
 import {VideoPlayer} from '../VideoPlayer/VideoPlayer'
 import styles from './PostMedia.module.css'
@@ -113,14 +114,13 @@ export function renderImage(
         aspectRatio: `${width} / ${height}`
       }}
     >
-      <img
+      <Image
         src={imageUrl}
         alt={title}
         width={width}
         height={height}
-        loading={priority ? 'eager' : 'lazy'}
-        fetchPriority={priority ? 'high' : undefined}
-        decoding="async"
+        priority={priority}
+        quality={85}
         className={className || styles.image}
       />
     </div>
