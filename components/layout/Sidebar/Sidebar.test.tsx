@@ -24,6 +24,15 @@ describe('Sidebar', () => {
   ]
 
   describe('default feeds', () => {
+    it('renders Navigation section expanded by default', () => {
+      render(<Sidebar />)
+
+      expect(screen.getByText('Navigation')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {name: /collapse navigation/i})
+      ).toBeInTheDocument()
+    })
+
     it('renders Popular link when not authenticated', () => {
       render(<Sidebar />)
 
@@ -83,6 +92,77 @@ describe('Sidebar', () => {
       render(<Sidebar />)
 
       expect(screen.getByText('Navigation')).toBeInTheDocument()
+    })
+
+    it('can toggle Navigation section collapse', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar />)
+
+      // Initially expanded
+      expect(
+        screen.getByRole('button', {name: /collapse navigation/i})
+      ).toBeInTheDocument()
+      expect(screen.getByRole('link', {name: /popular/i})).toBeInTheDocument()
+
+      // Click to collapse
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse navigation/i
+      })
+      await user.click(collapseButton)
+
+      // Wait for collapse animation
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /expand navigation/i})
+        ).toBeInTheDocument()
+      })
+
+      // Click to expand again
+      const expandButton = screen.getByRole('button', {
+        name: /expand navigation/i
+      })
+      await user.click(expandButton)
+
+      // Should be expanded
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /collapse navigation/i})
+        ).toBeInTheDocument()
+      })
+      expect(screen.getByRole('link', {name: /popular/i})).toBeInTheDocument()
+    })
+
+    it('toggles Navigation by keyboard', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar />)
+
+      // Initially expanded
+      let toggleButton = screen.getByRole('button', {
+        name: /collapse navigation/i
+      })
+
+      // Focus and press Enter to collapse
+      toggleButton.focus()
+      await user.keyboard('{Enter}')
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /expand navigation/i})
+        ).toBeInTheDocument()
+      })
+
+      // Get the expanded button and press Space to expand
+      toggleButton = screen.getByRole('button', {
+        name: /expand navigation/i
+      })
+      toggleButton.focus()
+      await user.keyboard(' ')
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /collapse navigation/i})
+        ).toBeInTheDocument()
+      })
     })
   })
 

@@ -66,6 +66,7 @@ export function Sidebar({
   subscriptions = [],
   multireddits = []
 }: Readonly<SidebarProps>) {
+  const [navigationOpen, setNavigationOpen] = useState(true)
   const [subredditsOpen, setSubredditsOpen] = useState(false)
   const [multiredditsOpen, setMultiredditsOpen] = useState(false)
 
@@ -86,153 +87,187 @@ export function Sidebar({
   )
 
   return (
-    <Stack gap="md">
-      <div>
-        <Text size="xs" fw={700} c="dimmed" tt="uppercase" mb="sm">
-          Navigation
-        </Text>
-        <Stack gap={4}>
-          <NavLink
-            component={Link}
-            href="/"
-            label={isAuthenticated ? 'Home' : 'Popular'}
-            leftSection={<IconFlame size={16} />}
-            data-umami-event={isAuthenticated ? 'nav-home' : 'nav-popular'}
-          />
-          <NavLink
-            component={Link}
-            href="/r/all"
-            label="All"
-            leftSection={<IconTrendingUp size={16} />}
-            data-umami-event="nav-all"
-          />
-          {isAuthenticated && username && (
-            <NavLink
-              component={Link}
-              href={`/user/${username}/saved`}
-              label="Saved Posts"
-              leftSection={<IconBookmark size={16} />}
-              data-umami-event="nav-saved"
-            />
-          )}
-          <NavLink
-            component={Link}
-            href="/about"
-            label="About"
-            leftSection={<IconInfoCircle size={16} />}
-            data-umami-event="nav-about"
-          />
-          <NavLink
-            component={Link}
-            href="/donate"
-            label="Donate"
-            leftSection={<IconHeart size={16} />}
-            data-umami-event="nav-donate"
-          />
-          <NavLink
-            component="a"
-            href="https://github.com/gregrickaby/viewer-for-reddit"
-            label="GitHub"
-            leftSection={<IconBrandGithub size={16} />}
-            rightSection={<IconExternalLink size={14} />}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-umami-event="nav-github"
-          />
-        </Stack>
-      </div>
-
-      {isAuthenticated && subscriptions.length > 0 && (
+    <ScrollArea h="100%" type="auto">
+      <Stack gap="md">
         <div>
           <Group
             justify="space-between"
             mb="sm"
-            onClick={() => setSubredditsOpen(!subredditsOpen)}
+            onClick={() => setNavigationOpen(!navigationOpen)}
             style={{cursor: 'pointer'}}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault()
-                setSubredditsOpen(!subredditsOpen)
+                setNavigationOpen(!navigationOpen)
               }
             }}
-            aria-expanded={subredditsOpen}
+            aria-expanded={navigationOpen}
             aria-label={
-              subredditsOpen ? 'Collapse My Subreddits' : 'Expand My Subreddits'
+              navigationOpen ? 'Collapse Navigation' : 'Expand Navigation'
             }
           >
             <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-              My Subreddits
+              Navigation
             </Text>
-            {subredditsOpen ? (
+            {navigationOpen ? (
               <IconChevronUp aria-hidden="true" size={16} />
             ) : (
               <IconChevronDown aria-hidden="true" size={16} />
             )}
           </Group>
-          <Collapse in={subredditsOpen}>
-            <ScrollArea.Autosize mah={400}>
-              <Stack gap={4}>
-                {sortedSubscriptions.map((sub) => (
-                  <NavLink
-                    key={sub.name}
-                    component={Link}
-                    href={`/r/${sub.name}`}
-                    label={sub.displayName}
-                    data-umami-event="nav-subreddit"
-                  />
-                ))}
-              </Stack>
-            </ScrollArea.Autosize>
-          </Collapse>
-        </div>
-      )}
-
-      {isAuthenticated && multireddits.length > 0 && (
-        <div>
-          <Group
-            justify="space-between"
-            mb="sm"
-            onClick={() => setMultiredditsOpen(!multiredditsOpen)}
-            style={{cursor: 'pointer'}}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                setMultiredditsOpen(!multiredditsOpen)
-              }
-            }}
-            aria-expanded={multiredditsOpen}
-            aria-label={
-              multiredditsOpen ? 'Collapse Multireddits' : 'Expand Multireddits'
-            }
-          >
-            <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-              My Multireddits
-            </Text>
-            {multiredditsOpen ? (
-              <IconChevronUp aria-hidden="true" size={16} />
-            ) : (
-              <IconChevronDown aria-hidden="true" size={16} />
-            )}
-          </Group>
-          <Collapse in={multiredditsOpen}>
+          <Collapse in={navigationOpen}>
             <Stack gap={4}>
-              {sortedMultireddits.map((multi) => (
+              <NavLink
+                component={Link}
+                href="/"
+                label={isAuthenticated ? 'Home' : 'Popular'}
+                leftSection={<IconFlame size={16} />}
+                data-umami-event={isAuthenticated ? 'nav-home' : 'nav-popular'}
+              />
+              <NavLink
+                component={Link}
+                href="/r/all"
+                label="All"
+                leftSection={<IconTrendingUp size={16} />}
+                data-umami-event="nav-all"
+              />
+              {isAuthenticated && username && (
                 <NavLink
-                  key={multi.path}
                   component={Link}
-                  href={multi.path}
-                  label={multi.displayName}
-                  data-umami-event="nav-multireddit"
+                  href={`/user/${username}/saved`}
+                  label="Saved Posts"
+                  leftSection={<IconBookmark size={16} />}
+                  data-umami-event="nav-saved"
                 />
-              ))}
+              )}
+              <NavLink
+                component={Link}
+                href="/about"
+                label="About"
+                leftSection={<IconInfoCircle size={16} />}
+                data-umami-event="nav-about"
+              />
+              <NavLink
+                component={Link}
+                href="/donate"
+                label="Donate"
+                leftSection={<IconHeart size={16} />}
+                data-umami-event="nav-donate"
+              />
+              <NavLink
+                component="a"
+                href="https://github.com/gregrickaby/viewer-for-reddit"
+                label="GitHub"
+                leftSection={<IconBrandGithub size={16} />}
+                rightSection={<IconExternalLink size={14} />}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-umami-event="nav-github"
+              />
             </Stack>
           </Collapse>
         </div>
-      )}
-    </Stack>
+
+        {isAuthenticated && subscriptions.length > 0 && (
+          <div>
+            <Group
+              justify="space-between"
+              mb="sm"
+              onClick={() => setSubredditsOpen(!subredditsOpen)}
+              style={{cursor: 'pointer'}}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setSubredditsOpen(!subredditsOpen)
+                }
+              }}
+              aria-expanded={subredditsOpen}
+              aria-label={
+                subredditsOpen
+                  ? 'Collapse My Subreddits'
+                  : 'Expand My Subreddits'
+              }
+            >
+              <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+                My Subreddits
+              </Text>
+              {subredditsOpen ? (
+                <IconChevronUp aria-hidden="true" size={16} />
+              ) : (
+                <IconChevronDown aria-hidden="true" size={16} />
+              )}
+            </Group>
+            <Collapse in={subredditsOpen}>
+              <ScrollArea.Autosize mah={400}>
+                <Stack gap={4}>
+                  {sortedSubscriptions.map((sub) => (
+                    <NavLink
+                      key={sub.name}
+                      component={Link}
+                      href={`/r/${sub.name}`}
+                      label={sub.displayName}
+                      data-umami-event="nav-subreddit"
+                    />
+                  ))}
+                </Stack>
+              </ScrollArea.Autosize>
+            </Collapse>
+          </div>
+        )}
+
+        {isAuthenticated && multireddits.length > 0 && (
+          <div>
+            <Group
+              justify="space-between"
+              mb="sm"
+              onClick={() => setMultiredditsOpen(!multiredditsOpen)}
+              style={{cursor: 'pointer'}}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setMultiredditsOpen(!multiredditsOpen)
+                }
+              }}
+              aria-expanded={multiredditsOpen}
+              aria-label={
+                multiredditsOpen
+                  ? 'Collapse Multireddits'
+                  : 'Expand Multireddits'
+              }
+            >
+              <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+                My Multireddits
+              </Text>
+              {multiredditsOpen ? (
+                <IconChevronUp aria-hidden="true" size={16} />
+              ) : (
+                <IconChevronDown aria-hidden="true" size={16} />
+              )}
+            </Group>
+            <Collapse in={multiredditsOpen}>
+              <ScrollArea.Autosize mah={400}>
+                <Stack gap={4}>
+                  {sortedMultireddits.map((multi) => (
+                    <NavLink
+                      key={multi.path}
+                      component={Link}
+                      href={multi.path}
+                      label={multi.displayName}
+                      data-umami-event="nav-multireddit"
+                    />
+                  ))}
+                </Stack>
+              </ScrollArea.Autosize>
+            </Collapse>
+          </div>
+        )}
+      </Stack>
+    </ScrollArea>
   )
 }
