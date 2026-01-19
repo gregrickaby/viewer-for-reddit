@@ -75,5 +75,14 @@ describe('formatters', () => {
         decodeHtmlEntities('&lt;a href=&quot;test&quot;&gt;link&lt;/a&gt;')
       ).toBe('<a href="test">link</a>')
     })
+
+    it('prevents double-unescaping of entities', () => {
+      // &amp;lt; should decode to &lt;, NOT to <
+      expect(decodeHtmlEntities('&amp;lt;')).toBe('&lt;')
+      expect(decodeHtmlEntities('&amp;gt;')).toBe('&gt;')
+      expect(decodeHtmlEntities('&amp;quot;')).toBe('&quot;')
+      // Verify legitimate &lt; still decodes correctly
+      expect(decodeHtmlEntities('&lt;div&gt;')).toBe('<div>')
+    })
   })
 })

@@ -38,16 +38,18 @@ export function decodeHtmlEntities(html: string): string {
   }
 
   // Server-side fallback with expanded entity support
+  // IMPORTANT: Decode &amp; LAST to prevent double-unescaping
+  // (e.g., &amp;lt; should become &lt;, not <)
   return html
     .replaceAll('&lt;', '<')
     .replaceAll('&gt;', '>')
-    .replaceAll('&amp;', '&')
     .replaceAll('&quot;', '"')
     .replaceAll('&apos;', "'")
     .replaceAll('&#39;', "'")
     .replaceAll('&#x27;', "'")
     .replaceAll('&#x2F;', '/')
     .replaceAll('&#47;', '/')
+    .replaceAll('&amp;', '&') // Decode ampersand LAST
 }
 
 /**
