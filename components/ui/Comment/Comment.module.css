@@ -3,3 +3,11 @@
   line-height: 1.5;
   word-break: break-word;
 }
+
+.commentBody img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  display: block;
+}

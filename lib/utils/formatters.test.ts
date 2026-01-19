@@ -1,5 +1,11 @@
 import {describe, expect, it} from 'vitest'
-import {decodeHtmlEntities, formatNumber, formatTimeAgo} from './formatters'
+import {
+  convertImageLinksToImages,
+  decodeHtmlEntities,
+  formatNumber,
+  formatTimeAgo,
+  sanitizeText
+} from './formatters'
 
 describe('formatters', () => {
   describe('formatNumber', () => {
@@ -83,6 +89,126 @@ describe('formatters', () => {
       expect(decodeHtmlEntities('&amp;quot;')).toBe('&quot;')
       // Verify legitimate &lt; still decodes correctly
       expect(decodeHtmlEntities('&lt;div&gt;')).toBe('<div>')
+    })
+  })
+
+  describe('sanitizeText', () => {
+    it('allows img tags with proper attributes', () => {
+      const html = '<img src="https://example.com/image.gif" alt="test" />'
+      const result = sanitizeText(html)
+      expect(result).toContain('<img')
+      expect(result).toContain('src="https://example.com/image.gif"')
+      expect(result).toContain('alt="test"')
+    })
+
+    it('strips disallowed img attributes', () => {
+      const html =
+        '<img src="https://example.com/image.gif" onclick="alert()" />'
+      const result = sanitizeText(html)
+      expect(result).toContain('<img')
+      expect(result).not.toContain('onclick')
+    })
+
+    it('only allows http/https schemes for images', () => {
+      const validImg = '<img src="https://example.com/image.gif" />'
+      const invalidImg = '<img src="javascript:alert()" />'
+
+      const validResult = sanitizeText(validImg)
+      const invalidResult = sanitizeText(invalidImg)
+
+      expect(validResult).toContain('<img')
+      expect(invalidResult).not.toContain('javascript')
+    })
+
+    it('allows standard HTML elements', () => {
+      const html = '<p>test <strong>bold</strong> <a href="#">link</a></p>'
+      const result = sanitizeText(html)
+      expect(result).toContain('<p>')
+      expect(result).toContain('<strong>')
+      expect(result).toContain('<a')
+    })
+
+    it('removes script tags', () => {
+      const html = '<p>test</p><script>alert("xss")</script>'
+      const result = sanitizeText(html)
+      expect(result).not.toContain('<script')
+      expect(result).not.toContain('alert')
+    })
+
+    it('converts image links to img tags', () => {
+      const html =
+        '<a href="https://preview.redd.it/image.jpg">https://preview.redd.it/image.jpg</a>'
+      const result = sanitizeText(html)
+      expect(result).toContain('<img')
+      expect(result).toContain('src="https://preview.redd.it/image.jpg"')
+      expect(result).not.toContain('<a')
+    })
+
+    it('converts gifv links to gif images', () => {
+      const html =
+        '<a href="https://i.imgur.com/image.gifv">https://i.imgur.com/image.gifv</a>'
+      const result = sanitizeText(html)
+      expect(result).toContain('<img')
+      expect(result).toContain('src="https://i.imgur.com/image.gif"')
+      expect(result).not.toContain('.gifv')
+    })
+
+    it('preserves links with meaningful text', () => {
+      const html = '<a href="https://example.com/image.jpg">Click here</a>'
+      const result = sanitizeText(html)
+      expect(result).toContain('<a')
+      expect(result).toContain('Click here')
+      expect(result).not.toContain('<img')
+    })
+  })
+
+  describe('convertImageLinksToImages', () => {
+    it('converts links with URL as text to images', () => {
+      const html =
+        '<a href="https://preview.redd.it/image.jpg">https://preview.redd.it/image.jpg</a>'
+      const result = convertImageLinksToImages(html)
+      expect(result).toContain('<img')
+      expect(result).toContain('src="https://preview.redd.it/image.jpg"')
+    })
+
+    it('converts links with empty text to images', () => {
+      const html = '<a href="https://i.redd.it/image.png"></a>'
+      const result = convertImageLinksToImages(html)
+      expect(result).toContain('<img')
+      expect(result).toContain('src="https://i.redd.it/image.png"')
+    })
+
+    it('converts gifv to gif', () => {
+      const html =
+        '<a href="https://i.imgur.com/test.gifv">https://i.imgur.com/test.gifv</a>'
+      const result = convertImageLinksToImages(html)
+      expect(result).toContain('src="https://i.imgur.com/test.gif"')
+      expect(result).not.toContain('.gifv')
+    })
+
+    it('keeps links with descriptive text', () => {
+      const html = '<a href="https://example.com/pic.jpg">Check this out</a>'
+      const result = convertImageLinksToImages(html)
+      expect(result).toContain('<a')
+      expect(result).toContain('Check this out')
+      expect(result).not.toContain('<img')
+    })
+
+    it('handles multiple image links', () => {
+      const html =
+        '<a href="https://i.redd.it/1.jpg">https://i.redd.it/1.jpg</a> and <a href="https://i.redd.it/2.png">https://i.redd.it/2.png</a>'
+      const result = convertImageLinksToImages(html)
+      expect(result).toContain('src="https://i.redd.it/1.jpg"')
+      expect(result).toContain('src="https://i.redd.it/2.png"')
+    })
+
+    it('supports common image formats', () => {
+      const formats = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'gifv']
+      formats.forEach((format) => {
+        const html = `<a href="https://example.com/image.${format}">https://example.com/image.${format}</a>`
+        const result = convertImageLinksToImages(html)
+        expect(result).toContain('<img')
+      })
     })
   })
 })

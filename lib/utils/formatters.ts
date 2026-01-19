@@ -53,12 +53,44 @@ export function decodeHtmlEntities(html: string): string {
 }
 
 /**
+ * Convert image URLs in links to actual img tags
+ * @param html - HTML string potentially containing image links
+ * @returns HTML with image links converted to img tags
+ */
+export function convertImageLinksToImages(html: string): string {
+  // Match <a> tags that link to image URLs
+  const imageLinkRegex =
+    /<a[^>]+href="(https?:\/\/[^"]+\.(?:jpg|jpeg|png|gif|webp|gifv)[^"]*)"[^>]*>([^<]*)<\/a>/gi
+
+  return html.replace(imageLinkRegex, (match, url, text) => {
+    // If the link text is the same as the URL or is empty, convert to img
+    const trimmedText = text.trim()
+    const isUrlAsText =
+      trimmedText === url ||
+      trimmedText === '' ||
+      url.includes(trimmedText.replace(/^https?:\/\//, ''))
+
+    if (isUrlAsText) {
+      // Convert gifv to gif for direct display
+      const imgUrl = url.replace(/\.gifv$/, '.gif')
+      return `<img src="${imgUrl}" alt="Image" />`
+    }
+
+    // Keep the link if it has meaningful link text
+    return match
+  })
+}
+
+/**
  * Sanitize HTML with sanitize-html and allow safe tags
  * @param html - HTML string to sanitize
  * @returns Sanitized HTML string
  */
 export function sanitizeText(html: string): string {
-  return sanitizeHtml(html || '', {
+  // First convert image links to img tags
+  const processedHtml = convertImageLinksToImages(html || '')
+
+  return sanitizeHtml(processedHtml, {
     allowedTags: [
       'b',
       'i',
@@ -88,12 +120,17 @@ export function sanitizeText(html: string): string {
       'tbody',
       'tr',
       'th',
-      'td'
+      'td',
+      'img'
     ],
     allowedAttributes: {
       a: ['href', 'title', 'target', 'rel'],
+      img: ['src', 'alt', 'title', 'width', 'height'],
       '*': ['class']
     },
-    allowedSchemes: ['http', 'https', 'mailto']
+    allowedSchemes: ['http', 'https', 'mailto'],
+    allowedSchemesByTag: {
+      img: ['http', 'https']
+    }
   })
 }
