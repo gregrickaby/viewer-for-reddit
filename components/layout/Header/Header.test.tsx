@@ -112,6 +112,24 @@ describe('Header', () => {
   })
 
   describe('navigation toggles', () => {
+    it('renders mobile burger in closed state by default', () => {
+      render(<Header />)
+
+      const mobileToggle = screen.getByRole('button', {
+        name: /toggle mobile navigation/i
+      })
+      expect(mobileToggle).toBeInTheDocument()
+    })
+
+    it('renders mobile burger in opened state when mobileOpened is true', () => {
+      render(<Header mobileOpened />)
+
+      const mobileToggle = screen.getByRole('button', {
+        name: /toggle mobile navigation/i
+      })
+      expect(mobileToggle).toBeInTheDocument()
+    })
+
     it('calls onToggleMobile when mobile burger clicked', async () => {
       const user = userEvent.setup()
       const onToggleMobile = vi.fn()

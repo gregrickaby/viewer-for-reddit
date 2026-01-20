@@ -80,6 +80,7 @@ export function AppLayout({
           isAuthenticated={isAuthenticated}
           username={username}
           avatarUrl={avatarUrl}
+          mobileOpened={mobileOpened}
           onToggleMobile={toggleMobile}
           onToggleDesktop={toggleDesktop}
         />

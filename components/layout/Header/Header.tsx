@@ -17,6 +17,8 @@ interface HeaderProps {
   username?: string
   /** Avatar URL for the authenticated user */
   avatarUrl?: string
+  /** Whether the mobile navigation drawer is open */
+  mobileOpened?: boolean
   /** Callback to toggle mobile navigation drawer */
   onToggleMobile?: () => void
   /** Callback to toggle desktop navigation sidebar */
@@ -47,6 +49,7 @@ export function Header({
   isAuthenticated,
   username,
   avatarUrl,
+  mobileOpened,
   onToggleMobile,
   onToggleDesktop
 }: Readonly<HeaderProps>) {
@@ -61,7 +64,7 @@ export function Header({
     >
       <Group gap="xs">
         <Burger
-          opened={false}
+          opened={mobileOpened}
           onClick={onToggleMobile}
           hiddenFrom="sm"
           size="sm"

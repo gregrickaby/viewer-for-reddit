@@ -88,16 +88,6 @@ export function UserMenu({
             />
           </Anchor>
         )}
-        <Anchor
-          component={Link}
-          href={`/u/${username}`}
-          size="sm"
-          c="dimmed"
-          visibleFrom="sm"
-          data-umami-event="nav-user-profile"
-        >
-          u/{username}
-        </Anchor>
         <Button
           variant="subtle"
           leftSection={<IconLogout size={16} />}

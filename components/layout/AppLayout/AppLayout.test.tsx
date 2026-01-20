@@ -1,4 +1,5 @@
 import {render, screen} from '@/test-utils'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 import {AppLayout} from './AppLayout'
 
@@ -7,17 +8,20 @@ vi.mock('../Header/Header', () => ({
   Header: ({
     isAuthenticated,
     username,
+    mobileOpened,
     onToggleMobile,
     onToggleDesktop
   }: {
     isAuthenticated?: boolean
     username?: string
+    mobileOpened?: boolean
     onToggleMobile?: () => void
     onToggleDesktop?: () => void
   }) => (
     <div data-testid="header">
       <div data-testid="is-authenticated">{String(isAuthenticated)}</div>
       <div data-testid="username">{username}</div>
+      <div data-testid="mobile-opened">{String(mobileOpened)}</div>
       <button type="button" onClick={onToggleMobile}>
         Toggle Mobile
       </button>
@@ -176,6 +180,26 @@ describe('AppLayout', () => {
       expect(
         screen.queryByTestId('sidebar-multireddits')
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('mobile drawer state', () => {
+    it('starts with mobile drawer closed', () => {
+      render(<AppLayout>Content</AppLayout>)
+
+      expect(screen.getByTestId('mobile-opened')).toHaveTextContent('false')
+    })
+
+    it('toggles mobile drawer state when toggle button clicked', async () => {
+      const user = userEvent.setup()
+      render(<AppLayout>Content</AppLayout>)
+
+      expect(screen.getByTestId('mobile-opened')).toHaveTextContent('false')
+
+      const toggleButton = screen.getByRole('button', {name: /toggle mobile/i})
+      await user.click(toggleButton)
+
+      expect(screen.getByTestId('mobile-opened')).toHaveTextContent('true')
     })
   })
 
