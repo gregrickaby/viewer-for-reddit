@@ -5,7 +5,8 @@ import {Carousel} from '@mantine/carousel'
 import '@mantine/carousel/styles.css'
 import {ActionIcon, Text} from '@mantine/core'
 import {IconChevronLeft, IconChevronRight} from '@tabler/icons-react'
-import {memo, useRef} from 'react'
+import type {EmblaCarouselType} from 'embla-carousel'
+import {memo, useState} from 'react'
 import styles from './Gallery.module.css'
 
 /**
@@ -39,28 +40,24 @@ interface GalleryProps {
  * ```
  */
 function GalleryComponent({items, title}: Readonly<GalleryProps>) {
-  const carouselRef = useRef<any>(null)
+  const [emblaApi, setEmblaApi] = useState<EmblaCarouselType | null>(null)
 
   if (!items || items.length === 0) {
     return null
   }
 
   const handlePrev = () => {
-    if (carouselRef.current?.embla) {
-      carouselRef.current.embla.scrollPrev()
-    }
+    emblaApi?.scrollPrev()
   }
 
   const handleNext = () => {
-    if (carouselRef.current?.embla) {
-      carouselRef.current.embla.scrollNext()
-    }
+    emblaApi?.scrollNext()
   }
 
   return (
     <div className={styles.galleryWrapper}>
       <Carousel
-        ref={carouselRef}
+        getEmblaApi={setEmblaApi}
         className={styles.carousel}
         withIndicators
         withControls={false}
