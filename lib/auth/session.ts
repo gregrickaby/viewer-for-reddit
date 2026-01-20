@@ -69,5 +69,28 @@ export async function getSession(): Promise<IronSession<SessionData>> {
  */
 export async function isAuthenticated(): Promise<boolean> {
   const session = await getSession()
-  return !!session.accessToken && session.expiresAt > Date.now()
+  const hasToken = !!session.accessToken
+  const notExpired = session.expiresAt ? session.expiresAt > Date.now() : false
+  return hasToken && notExpired
+}
+
+/**
+ * Check if the session exists but is expired.
+ * Used to detect when a user needs to re-authenticate.
+ *
+ * @returns Promise resolving to true if session exists but is expired
+ *
+ * @example
+ * ```typescript
+ * const expired = await isSessionExpired()
+ * if (expired) {
+ *   // Show re-authentication prompt
+ * }
+ * ```
+ */
+export async function isSessionExpired(): Promise<boolean> {
+  const session = await getSession()
+  const hasToken = !!session.accessToken
+  const isExpired = session.expiresAt ? session.expiresAt <= Date.now() : true
+  return hasToken && isExpired
 }

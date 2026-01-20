@@ -1,9 +1,10 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {getAuthStatus, logout} from './auth'
+import {clearExpiredSession, getAuthStatus, logout} from './auth'
 
 // Mock dependencies BEFORE imports
 vi.mock('@/lib/auth/session', () => ({
-  getSession: vi.fn()
+  getSession: vi.fn(),
+  isSessionExpired: vi.fn()
 }))
 
 vi.mock('@/lib/utils/logger', () => ({
@@ -14,10 +15,11 @@ vi.mock('@/lib/utils/logger', () => ({
 }))
 
 // Import mocked modules
-const {getSession} = await import('@/lib/auth/session')
+const {getSession, isSessionExpired} = await import('@/lib/auth/session')
 const {logger} = await import('@/lib/utils/logger')
 
 const mockGetSession = vi.mocked(getSession)
+const mockIsSessionExpired = vi.mocked(isSessionExpired)
 const mockLogger = vi.mocked(logger)
 
 describe('auth actions', () => {
@@ -203,6 +205,70 @@ describe('auth actions', () => {
       expect(result).toEqual({
         isAuthenticated: false,
         username: null
+      })
+    })
+
+    describe('clearExpiredSession', () => {
+      it('destroys session when it is expired', async () => {
+        const mockDestroy = vi.fn()
+        mockIsSessionExpired.mockResolvedValue(true)
+        mockGetSession.mockResolvedValue({
+          destroy: mockDestroy
+        } as any)
+
+        const result = await clearExpiredSession()
+
+        expect(mockIsSessionExpired).toHaveBeenCalledTimes(1)
+        expect(mockDestroy).toHaveBeenCalledTimes(1)
+        expect(mockLogger.info).toHaveBeenCalledWith('Expired session cleared')
+        expect(result).toEqual({success: true, wasExpired: true})
+      })
+
+      it('does not destroy session when it is not expired', async () => {
+        const mockDestroy = vi.fn()
+        mockIsSessionExpired.mockResolvedValue(false)
+        mockGetSession.mockResolvedValue({
+          destroy: mockDestroy
+        } as any)
+
+        const result = await clearExpiredSession()
+
+        expect(mockIsSessionExpired).toHaveBeenCalledTimes(1)
+        expect(mockDestroy).not.toHaveBeenCalled()
+        expect(mockLogger.info).not.toHaveBeenCalled()
+        expect(result).toEqual({success: true, wasExpired: false})
+      })
+
+      it('handles errors when checking session expiry', async () => {
+        mockIsSessionExpired.mockRejectedValue(new Error('Check failed'))
+
+        const result = await clearExpiredSession()
+
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          'Failed to clear expired session',
+          expect.any(Error),
+          {context: 'clearExpiredSession'}
+        )
+        expect(result).toEqual({success: false, wasExpired: false})
+      })
+
+      it('handles errors when destroying session', async () => {
+        const mockDestroy = vi.fn().mockImplementation(() => {
+          throw new Error('Destroy failed')
+        })
+        mockIsSessionExpired.mockResolvedValue(true)
+        mockGetSession.mockResolvedValue({
+          destroy: mockDestroy
+        } as any)
+
+        const result = await clearExpiredSession()
+
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          'Failed to clear expired session',
+          expect.any(Error),
+          {context: 'clearExpiredSession'}
+        )
+        expect(result).toEqual({success: false, wasExpired: false})
       })
     })
   })

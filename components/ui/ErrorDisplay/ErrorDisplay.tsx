@@ -1,5 +1,6 @@
 'use client'
 
+import {AuthExpiredError} from '@/components/ui/AuthExpiredError'
 import {Button, Card, Group, Stack, Text} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
@@ -28,6 +29,7 @@ interface ErrorDisplayProps {
  * - Optional retry button (calls router.refresh())
  * - Optional home button (navigates to /)
  * - Alert icon for visual feedback
+ * - Auto-detects authentication errors and shows AuthExpiredError
  *
  * @example
  * ```typescript
@@ -45,6 +47,16 @@ export function ErrorDisplay({
   showHome = true
 }: Readonly<ErrorDisplayProps>) {
   const router = useRouter()
+
+  // Check if error is authentication-related
+  const isAuthError =
+    message.includes('Authentication expired') ||
+    message.includes('Session expired') ||
+    message.includes('Authentication required')
+
+  if (isAuthError) {
+    return <AuthExpiredError />
+  }
 
   return (
     <Card withBorder padding="xl" radius="md" className={styles.container}>

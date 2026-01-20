@@ -22,7 +22,7 @@ vi.mock('@/lib/utils/env', () => ({
 import {getEnvVar, isProduction} from '@/lib/utils/env'
 import {getIronSession} from 'iron-session'
 import {cookies} from 'next/headers'
-import {getSession, isAuthenticated} from './session'
+import {getSession, isAuthenticated, isSessionExpired} from './session'
 
 const mockCookies = vi.mocked(cookies)
 const mockGetIronSession = vi.mocked(getIronSession)
@@ -282,6 +282,93 @@ describe('session', () => {
       const result = await isAuthenticated()
 
       expect(result).toBe(true)
+    })
+  })
+
+  describe('isSessionExpired', () => {
+    it('returns true when session has token but is expired', async () => {
+      const pastTime = Date.now() - 3600000 // 1 hour ago
+      const mockSession = {
+        accessToken: 'valid-token',
+        expiresAt: pastTime
+      }
+
+      mockCookies.mockResolvedValue({} as any)
+      mockGetIronSession.mockResolvedValue(mockSession as any)
+
+      const result = await isSessionExpired()
+
+      expect(result).toBe(true)
+    })
+
+    it('returns true when session has token but expiresAt equals now', async () => {
+      const now = Date.now()
+      const mockSession = {
+        accessToken: 'valid-token',
+        expiresAt: now
+      }
+
+      mockCookies.mockResolvedValue({} as any)
+      mockGetIronSession.mockResolvedValue(mockSession as any)
+
+      const result = await isSessionExpired()
+
+      expect(result).toBe(true)
+    })
+
+    it('returns false when session is valid (not expired)', async () => {
+      const futureTime = Date.now() + 3600000 // 1 hour from now
+      const mockSession = {
+        accessToken: 'valid-token',
+        expiresAt: futureTime
+      }
+
+      mockCookies.mockResolvedValue({} as any)
+      mockGetIronSession.mockResolvedValue(mockSession as any)
+
+      const result = await isSessionExpired()
+
+      expect(result).toBe(false)
+    })
+
+    it('returns false when session has no token', async () => {
+      const pastTime = Date.now() - 3600000
+      const mockSession = {
+        accessToken: undefined,
+        expiresAt: pastTime
+      }
+
+      mockCookies.mockResolvedValue({} as any)
+      mockGetIronSession.mockResolvedValue(mockSession as any)
+
+      const result = await isSessionExpired()
+
+      expect(result).toBe(false)
+    })
+
+    it('returns true when session has token but no expiresAt', async () => {
+      const mockSession = {
+        accessToken: 'valid-token',
+        expiresAt: undefined
+      }
+
+      mockCookies.mockResolvedValue({} as any)
+      mockGetIronSession.mockResolvedValue(mockSession as any)
+
+      const result = await isSessionExpired()
+
+      expect(result).toBe(true)
+    })
+
+    it('returns false when session is empty', async () => {
+      const mockSession = {}
+
+      mockCookies.mockResolvedValue({} as any)
+      mockGetIronSession.mockResolvedValue(mockSession as any)
+
+      const result = await isSessionExpired()
+
+      expect(result).toBe(false)
     })
   })
 })

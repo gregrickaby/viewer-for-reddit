@@ -1,6 +1,6 @@
 'use server'
 
-import {getSession} from '@/lib/auth/session'
+import {getSession, isSessionExpired} from '@/lib/auth/session'
 import {logger} from '@/lib/utils/logger'
 
 /**
@@ -64,5 +64,42 @@ export async function getAuthStatus(): Promise<{
   return {
     isAuthenticated,
     username: session.username
+  }
+}
+
+/**
+ * Clear expired session.
+ * Server Action that destroys session if it has expired.
+ *
+ * @returns Promise resolving to success status
+ *
+ * @example
+ * ```typescript
+ * const result = await clearExpiredSession()
+ * if (result.success) {
+ *   router.push('/api/auth/login')
+ * }
+ * ```
+ */
+export async function clearExpiredSession(): Promise<{
+  success: boolean
+  wasExpired: boolean
+}> {
+  try {
+    const expired = await isSessionExpired()
+
+    if (expired) {
+      const session = await getSession()
+      session.destroy()
+      logger.info('Expired session cleared')
+      return {success: true, wasExpired: true}
+    }
+
+    return {success: true, wasExpired: false}
+  } catch (error) {
+    logger.error('Failed to clear expired session', error, {
+      context: 'clearExpiredSession'
+    })
+    return {success: false, wasExpired: false}
   }
 }

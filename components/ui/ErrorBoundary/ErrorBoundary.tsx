@@ -1,5 +1,6 @@
 'use client'
 
+import {AuthExpiredError} from '@/components/ui/AuthExpiredError'
 import {logger} from '@/lib/utils/logger'
 import {Button, Card, Container, Stack, Text, Title} from '@mantine/core'
 import {Component, ReactNode} from 'react'
@@ -67,6 +68,21 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback
       }
 
+      // Check if error is authentication-related
+      const errorMessage = this.state.error?.message || ''
+      const isAuthError =
+        errorMessage.includes('Authentication expired') ||
+        errorMessage.includes('Session expired') ||
+        errorMessage.includes('Authentication required')
+
+      if (isAuthError) {
+        return (
+          <Container size="sm" py="xl">
+            <AuthExpiredError />
+          </Container>
+        )
+      }
+
       return (
         <Container size="sm" py="xl">
           <Card withBorder padding="xl" radius="md">
@@ -75,7 +91,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 Something went wrong
               </Title>
               <Text size="sm" c="dimmed" ta="center">
-                {this.state.error?.message ||
+                {errorMessage ||
                   'An unexpected error occurred. Please try again.'}
               </Text>
               <Button
