@@ -23,6 +23,7 @@ import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
+import {decodeHtmlEntities} from '@/lib/utils/formatters'
 
 interface PageProps {
   params: Promise<{subreddit: string}>
@@ -125,7 +126,7 @@ async function SubredditInfo({
             </Group>
           </Group>
           {info.public_description && (
-            <Text size="sm">{info.public_description}</Text>
+            <Text size="sm">{decodeHtmlEntities(info.public_description)}</Text>
           )}
         </Stack>
       </Card>
