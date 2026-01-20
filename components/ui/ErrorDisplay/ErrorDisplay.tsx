@@ -18,6 +18,8 @@ interface ErrorDisplayProps {
   showRetry?: boolean
   /** Whether to show the go home button (default: true) */
   showHome?: boolean
+  /** Optional custom onClick handler for retry button */
+  onClick?: () => void
 }
 
 /**
@@ -44,7 +46,8 @@ export function ErrorDisplay({
   title = 'Something went wrong',
   message = 'An unexpected error occurred. Please try again.',
   showRetry = true,
-  showHome = true
+  showHome = true,
+  onClick
 }: Readonly<ErrorDisplayProps>) {
   const router = useRouter()
 
@@ -56,6 +59,14 @@ export function ErrorDisplay({
 
   if (isAuthError) {
     return <AuthExpiredError />
+  }
+
+  const handleRetry = () => {
+    if (onClick) {
+      onClick()
+    } else {
+      router.refresh()
+    }
   }
 
   return (
@@ -71,7 +82,7 @@ export function ErrorDisplay({
 
         <Group>
           {showRetry && (
-            <Button onClick={() => router.refresh()} variant="light">
+            <Button onClick={handleRetry} variant="light">
               Try Again
             </Button>
           )}
