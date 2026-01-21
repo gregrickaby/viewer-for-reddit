@@ -1,7 +1,6 @@
 'use client'
 
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
-import {logout} from '@/lib/actions/auth'
 import {logger} from '@/lib/utils/logger'
 import {
   Button,
@@ -13,7 +12,7 @@ import {
 } from '@mantine/core'
 import '@mantine/core/styles.css'
 import {IconAlertTriangle, IconHome, IconRefresh} from '@tabler/icons-react'
-import {useEffect, useState, useTransition} from 'react'
+import {useEffect} from 'react'
 
 /**
  * Props for GlobalError component.
@@ -60,9 +59,6 @@ export default function GlobalError({
   error,
   reset
 }: Readonly<GlobalErrorProps>) {
-  const [isPending, startTransition] = useTransition()
-  const [isAuthError, setIsAuthError] = useState(false)
-
   /**
    * Log error to console and error reporting service on mount.
    * Runs only once when component mounts.
@@ -74,44 +70,7 @@ export default function GlobalError({
       message: error.message,
       stack: error.stack
     })
-
-    // Check if this is an authentication error
-    const authErrorPatterns = [
-      'authentication',
-      'expired',
-      'unauthorized',
-      '401',
-      'session',
-      'token'
-    ]
-    const errorMessage = error.message.toLowerCase()
-    const isAuth = authErrorPatterns.some((pattern) =>
-      errorMessage.includes(pattern)
-    )
-    setIsAuthError(isAuth)
   }, [error])
-
-  /**
-   * Handle navigation to home with session cleanup.
-   * Clears session and forces full page reload to avoid cached error state.
-   */
-  const handleGoHome = () => {
-    if (isPending) return
-
-    startTransition(async () => {
-      try {
-        // Clear session if auth error
-        if (isAuthError) {
-          await logout()
-        }
-      } catch (err) {
-        logger.error('Failed to clear session on home navigation', err)
-      } finally {
-        // Force full page reload to clear any cached state
-        globalThis.location.href = '/'
-      }
-    })
-  }
 
   return (
     <html lang="en">
@@ -145,13 +104,13 @@ export default function GlobalError({
                 />
 
                 <Text size="xl" fw={700} ta="center">
-                  {isAuthError ? 'Session Expired' : 'Something Went Wrong'}
+                  Something Went Wrong
                 </Text>
 
                 <Text size="sm" c="dimmed" ta="center">
-                  {isAuthError
-                    ? 'Your session may have expired. Click below to return home and sign in again.'
-                    : "An unexpected error occurred. This has been logged and we'll look into it."}
+                  An unexpected error occurred. This has been logged and
+                  we&apos;ll look into it. If you&apos;re stuck, please try
+                  clearing your browser cache and cookies.
                 </Text>
 
                 {error.digest && (
@@ -161,26 +120,23 @@ export default function GlobalError({
                 )}
 
                 <Group justify="center" gap="md">
-                  {!isAuthError && (
-                    <Button
-                      onClick={reset}
-                      variant="filled"
-                      leftSection={<IconRefresh size={16} />}
-                      aria-label="Try again by reloading the page"
-                      disabled={isPending}
-                    >
-                      Try Again
-                    </Button>
-                  )}
+                  <Button
+                    onClick={reset}
+                    variant="filled"
+                    leftSection={<IconRefresh size={16} />}
+                    aria-label="Try again by reloading the page"
+                  >
+                    Try Again
+                  </Button>
 
                   <Button
-                    onClick={handleGoHome}
-                    variant={isAuthError ? 'filled' : 'outline'}
+                    component="a"
+                    href="/"
+                    variant="outline"
                     leftSection={<IconHome size={16} />}
                     aria-label="Return to home page"
-                    loading={isPending}
                   >
-                    {isAuthError ? 'Clear Session & Go Home' : 'Go Home'}
+                    Go Home
                   </Button>
                 </Group>
               </Stack>
