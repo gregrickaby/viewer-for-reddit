@@ -1,6 +1,5 @@
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
 import {Analytics} from '@/components/ui/Analytics/Analytics'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {appConfig} from '@/lib/config/app.config'
 import {
   getAnalyticsConfig,
@@ -85,9 +84,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body>
-        <ThemeProvider>
-          <ErrorBoundary>{children}</ErrorBoundary>
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
         <Analytics {...analytics} />
       </body>
     </html>

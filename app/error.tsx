@@ -33,11 +33,12 @@ export default function Error({
   }, [error])
 
   // Check if error is authentication-related
+  // Match exact error messages from server actions (lib/actions/reddit.ts)
   const errorMessage = error.message || ''
   const isAuthError =
-    errorMessage.includes('Authentication expired') ||
-    errorMessage.includes('Session expired') ||
-    errorMessage.includes('Authentication required')
+    errorMessage === 'Authentication expired' ||
+    errorMessage === 'Session expired' ||
+    errorMessage === 'Authentication required'
 
   if (isAuthError) {
     return <AuthExpiredError />

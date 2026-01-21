@@ -217,6 +217,7 @@ export function Sidebar({
             <Collapse in={subredditsOpen}>
               <Stack gap="xs">
                 <TextInput
+                  id="sidebar-search-input"
                   placeholder="Search subreddits..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.currentTarget.value)}
@@ -225,6 +226,7 @@ export function Sidebar({
                   aria-label="Search subscriptions"
                 />
                 <Select
+                  id="sidebar-sort-select"
                   size="xs"
                   data={[
                     {value: 'default', label: 'Default Order'},

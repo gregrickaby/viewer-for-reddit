@@ -69,11 +69,12 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       // Check if error is authentication-related
+      // Match exact error messages from server actions (lib/actions/reddit.ts)
       const errorMessage = this.state.error?.message || ''
       const isAuthError =
-        errorMessage.includes('Authentication expired') ||
-        errorMessage.includes('Session expired') ||
-        errorMessage.includes('Authentication required')
+        errorMessage === 'Authentication expired' ||
+        errorMessage === 'Session expired' ||
+        errorMessage === 'Authentication required'
 
       if (isAuthError) {
         return (

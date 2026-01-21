@@ -33,18 +33,19 @@ export default function SubredditError({
   }, [error])
 
   // Check if error is authentication-related
+  // Match exact error messages from server actions (lib/actions/reddit.ts)
   const errorMessage = error.message || ''
   const isAuthError =
-    errorMessage.includes('Authentication expired') ||
-    errorMessage.includes('Session expired') ||
-    errorMessage.includes('Authentication required')
+    errorMessage === 'Authentication expired' ||
+    errorMessage === 'Session expired' ||
+    errorMessage === 'Authentication required'
 
   if (isAuthError) {
     return <AuthExpiredError />
   }
 
   // Handle specific error types
-  if (errorMessage.includes('Subreddit not found')) {
+  if (errorMessage === 'Subreddit not found') {
     return (
       <ErrorDisplay
         title="Subreddit not found"
@@ -56,7 +57,7 @@ export default function SubredditError({
     )
   }
 
-  if (errorMessage.includes('Rate limit exceeded')) {
+  if (errorMessage.startsWith('Rate limit exceeded')) {
     return (
       <ErrorDisplay
         title="Too many requests"

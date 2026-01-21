@@ -133,6 +133,7 @@ export function SearchBar({
     >
       <Combobox.Target>
         <InputBase
+          id="reddit-search-input"
           ref={inputRef}
           leftSection={<IconSearch size={16} />}
           rightSection={isLoading ? <Loader size={16} /> : null}
