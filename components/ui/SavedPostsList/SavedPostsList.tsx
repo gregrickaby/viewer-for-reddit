@@ -5,7 +5,6 @@ import type {RedditPost} from '@/lib/types/reddit'
 import {logger} from '@/lib/utils/logger'
 import {Center, Container, Loader, Stack, Text} from '@mantine/core'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {ErrorDisplay} from '../ErrorDisplay/ErrorDisplay'
 import {PostCard} from '../PostCard/PostCard'
 
 /**
@@ -112,11 +111,10 @@ export function SavedPostsList({
 
   if (error) {
     return (
-      <ErrorDisplay
-        title="Failed to load saved posts"
-        message={error}
-        showRetry
-      />
+      <div style={{padding: '2rem', textAlign: 'center'}}>
+        <h3>Failed to load saved posts</h3>
+        <p>{error}</p>
+      </div>
     )
   }
 

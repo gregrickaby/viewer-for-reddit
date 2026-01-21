@@ -6,16 +6,12 @@
  * ```typescript
  * // Instead of multiple imports:
  * import {formatNumber} from '@/lib/utils/formatters'
- * import {isAuthError} from '@/lib/utils/errors'
  * import {logger} from '@/lib/utils/logger'
  *
  * // You can do:
- * import {formatNumber, isAuthError, logger} from '@/lib/utils'
+ * import {formatNumber, logger} from '@/lib/utils'
  * ```
  */
-
-// Error utilities
-export * from './errors'
 
 // Formatting utilities
 export * from './formatters'

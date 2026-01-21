@@ -1,5 +1,3 @@
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-
 /**
  * Root not-found page - handles unmatched URLs.
  * This is shown when Next.js can't find a matching route.
@@ -8,11 +6,10 @@ import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
  */
 export default function NotFound() {
   return (
-    <ErrorDisplay
-      title="404 - Page Not Found"
-      message="The page you are looking for does not exist or has been moved."
-      showRetry={false}
-      showHome
-    />
+    <div style={{padding: '2rem', textAlign: 'center'}}>
+      <h1>404 - Page Not Found</h1>
+      <p>The page you are looking for does not exist or has been moved.</p>
+      <a href="/">Go Home</a>
+    </div>
   )
 }

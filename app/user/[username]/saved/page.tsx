@@ -2,7 +2,6 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {SavedPostsList} from '@/components/ui/SavedPostsList'
 import {
   fetchMultireddits,
@@ -69,11 +68,10 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
           multireddits={[]}
         >
           <Container size="lg">
-            <ErrorDisplay
-              title="Authentication Required"
-              message="You must be logged in to view saved posts."
-              showRetry={false}
-            />
+            <div style={{padding: '2rem', textAlign: 'center'}}>
+              <h2>Authentication Required</h2>
+              <p>You must be logged in to view saved posts.</p>
+            </div>
           </Container>
         </AppLayout>
         <BossButton />
@@ -155,7 +153,10 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
           multireddits={multireddits}
         >
           <Container size="lg">
-            <ErrorDisplay title="Error" message={errorMessage} showRetry />
+            <div style={{padding: '2rem', textAlign: 'center'}}>
+              <h2>Error</h2>
+              <p>{errorMessage}</p>
+            </div>
           </Container>
         </AppLayout>
         <BossButton />
