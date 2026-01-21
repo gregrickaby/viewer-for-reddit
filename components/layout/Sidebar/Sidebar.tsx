@@ -1,6 +1,16 @@
 'use client'
 
-import {Collapse, Group, NavLink, ScrollArea, Stack, Text} from '@mantine/core'
+import {useSubscriptionsFilterSort} from '@/lib/hooks'
+import {
+  Collapse,
+  Group,
+  NavLink,
+  ScrollArea,
+  Select,
+  Stack,
+  Text,
+  TextInput
+} from '@mantine/core'
 import {
   IconBookmark,
   IconBrandGithub,
@@ -10,6 +20,7 @@ import {
   IconFlame,
   IconHeart,
   IconInfoCircle,
+  IconSearch,
   IconTrendingUp
 } from '@tabler/icons-react'
 import Link from 'next/link'
@@ -44,11 +55,11 @@ interface SidebarProps {
  * Features:
  * - Default feeds (Popular, All, About, Donate, GitHub)
  * - Saved Posts (authenticated only)
- * - User subscriptions (authenticated only)
- * - User multireddits (authenticated only)
+ * - User subscriptions with search and infinite scroll (authenticated only)
+ * - User multireddits (authenticated only, sorted alphabetically)
  * - Collapsible sections
- * - Alphabetically sorted lists
- * - Scrollable long lists (max 400px height)
+ * - Searchable subscription list (unsorted to prevent jumping)
+ * - Lazy loading for large subscription lists
  *
  * @example
  * ```typescript
@@ -70,13 +81,15 @@ export function Sidebar({
   const [subredditsOpen, setSubredditsOpen] = useState(false)
   const [multiredditsOpen, setMultiredditsOpen] = useState(false)
 
-  const sortedSubscriptions = useMemo(
-    () =>
-      [...subscriptions].sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ),
-    [subscriptions]
-  )
+  const {
+    filteredSubscriptions,
+    searchQuery,
+    setSearchQuery,
+    sortBy,
+    setSortBy
+  } = useSubscriptionsFilterSort({
+    initialSubscriptions: subscriptions
+  })
 
   const sortedMultireddits = useMemo(
     () =>
@@ -202,19 +215,43 @@ export function Sidebar({
               )}
             </Group>
             <Collapse in={subredditsOpen}>
-              <ScrollArea.Autosize mah={400}>
-                <Stack gap={4}>
-                  {sortedSubscriptions.map((sub) => (
-                    <NavLink
-                      key={sub.name}
-                      component={Link}
-                      href={`/r/${sub.name}`}
-                      label={sub.displayName}
-                      data-umami-event="nav-subreddit"
-                    />
-                  ))}
-                </Stack>
-              </ScrollArea.Autosize>
+              <Stack gap="xs">
+                <TextInput
+                  placeholder="Search subreddits..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                  leftSection={<IconSearch size={16} />}
+                  size="xs"
+                  aria-label="Search subscriptions"
+                />
+                <Select
+                  size="xs"
+                  data={[
+                    {value: 'default', label: 'Default Order'},
+                    {value: 'a-z', label: 'A-Z'},
+                    {value: 'z-a', label: 'Z-A'}
+                  ]}
+                  value={sortBy}
+                  onChange={(value) =>
+                    setSortBy(value as 'default' | 'a-z' | 'z-a')
+                  }
+                  aria-label="Sort subscriptions"
+                  allowDeselect={false}
+                />
+                <ScrollArea.Autosize mah={400}>
+                  <Stack gap={4}>
+                    {filteredSubscriptions.map((sub) => (
+                      <NavLink
+                        key={sub.name}
+                        component={Link}
+                        href={`/r/${sub.name}`}
+                        label={sub.displayName}
+                        data-umami-event="nav-subreddit"
+                      />
+                    ))}
+                  </Stack>
+                </ScrollArea.Autosize>
+              </Stack>
             </Collapse>
           </div>
         )}

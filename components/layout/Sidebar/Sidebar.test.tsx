@@ -1,7 +1,12 @@
 import {render, screen, waitFor} from '@/test-utils'
 import {userEvent} from '@testing-library/user-event'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 import {Sidebar} from './Sidebar'
+
+// Mock fetchUserSubscriptions to avoid env var errors
+vi.mock('@/lib/actions/reddit', () => ({
+  fetchUserSubscriptions: vi.fn()
+}))
 
 describe('Sidebar', () => {
   const mockSubscriptions = [
@@ -237,6 +242,81 @@ describe('Sidebar', () => {
       expect(screen.getByText('My Subreddits')).toBeInTheDocument()
     })
 
+    it('renders search input when subscriptions section is expanded', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Expand to see search input
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      await waitFor(() => {
+        const searchInput = screen.getByPlaceholderText('Search subreddits...')
+        expect(searchInput).toBeInTheDocument()
+      })
+    })
+
+    it('renders sort select when subscriptions section is expanded', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Expand to see sort select
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      // Mantine Select renders an input with the aria-label
+      await waitFor(() => {
+        expect(
+          screen.getByRole('textbox', {
+            name: /sort subscriptions/i
+          })
+        ).toBeInTheDocument()
+      })
+
+      const sortInput = screen.getByRole('textbox', {
+        name: /sort subscriptions/i
+      })
+      expect(sortInput).toHaveValue('Default Order')
+    })
+
+    it('filters subscriptions by search query', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Expand to see search input
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      await waitFor(() => {
+        expect(
+          screen.getByPlaceholderText('Search subreddits...')
+        ).toBeInTheDocument()
+      })
+
+      const searchInput = screen.getByPlaceholderText('Search subreddits...')
+      await user.type(searchInput, 'java')
+
+      // Wait for filtering to complete
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /r\/javascript/i})
+        ).toBeInTheDocument()
+      })
+
+      expect(
+        screen.queryByRole('link', {name: /r\/programming/i})
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {name: /r\/typescript/i})
+      ).not.toBeInTheDocument()
+    })
+
     it('renders all subscription links', async () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
@@ -260,7 +340,7 @@ describe('Sidebar', () => {
       ).toBeInTheDocument()
     })
 
-    it('sorts subscriptions alphabetically', async () => {
+    it('maintains subscription order (no sorting)', async () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
@@ -285,8 +365,9 @@ describe('Sidebar', () => {
         return href?.startsWith('/r/') && href !== '/r/all'
       })
 
-      expect(subscriptionLinks[0]).toHaveTextContent('r/javascript')
-      expect(subscriptionLinks[1]).toHaveTextContent('r/programming')
+      // Should maintain original order: programming, javascript, typescript
+      expect(subscriptionLinks[0]).toHaveTextContent('r/programming')
+      expect(subscriptionLinks[1]).toHaveTextContent('r/javascript')
       expect(subscriptionLinks[2]).toHaveTextContent('r/typescript')
     })
 

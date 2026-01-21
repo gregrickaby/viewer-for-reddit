@@ -360,10 +360,10 @@ describe('reddit server actions', () => {
   })
 
   describe('fetchUserSubscriptions', () => {
-    it('returns empty array when not authenticated', async () => {
-      const subs = await fetchUserSubscriptions()
+    it('returns empty result when not authenticated', async () => {
+      const result = await fetchUserSubscriptions()
 
-      expect(subs).toEqual([])
+      expect(result).toEqual([])
     })
 
     it('fetches subscriptions when authenticated', async () => {
@@ -378,12 +378,12 @@ describe('reddit server actions', () => {
       )
 
       // MSW handler not configured for this endpoint, returns empty
-      const subs = await fetchUserSubscriptions()
+      const result = await fetchUserSubscriptions()
 
-      expect(Array.isArray(subs)).toBe(true)
+      expect(Array.isArray(result)).toBe(true)
     })
 
-    it('returns empty array on error', async () => {
+    it('returns empty result on error', async () => {
       mockGetSession.mockResolvedValue(
         createMockSession({
           accessToken: 'mock-token',
@@ -400,9 +400,70 @@ describe('reddit server actions', () => {
         )
       )
 
-      const subs = await fetchUserSubscriptions()
+      const result = await fetchUserSubscriptions()
 
-      expect(subs).toEqual([])
+      expect(result).toEqual([])
+    })
+
+    it('fetches all pages and returns complete list', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/subreddits/mine/subscriber.json',
+          ({request}) => {
+            const url = new URL(request.url)
+            const after = url.searchParams.get('after')
+
+            if (after === 'page2') {
+              return HttpResponse.json({
+                data: {
+                  children: [
+                    {
+                      data: {
+                        display_name: 'javascript',
+                        display_name_prefixed: 'r/javascript',
+                        icon_img: '',
+                        subscribers: 2000
+                      }
+                    }
+                  ],
+                  after: null
+                }
+              })
+            }
+
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    data: {
+                      display_name: 'programming',
+                      display_name_prefixed: 'r/programming',
+                      icon_img: '',
+                      subscribers: 5000
+                    }
+                  }
+                ],
+                after: 'page2'
+              }
+            })
+          }
+        )
+      )
+
+      const result = await fetchUserSubscriptions()
+
+      // Should fetch all pages and return combined results
+      expect(Array.isArray(result)).toBe(true)
+      expect(result).toHaveLength(2)
+      expect(result[0].name).toBe('programming')
+      expect(result[1].name).toBe('javascript')
     })
   })
 

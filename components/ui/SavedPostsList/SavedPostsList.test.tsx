@@ -1,8 +1,4 @@
-import {fetchSavedPosts} from '@/lib/actions/reddit'
-import type {RedditPost} from '@/lib/types/reddit'
-import {render, screen} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {SavedPostsList} from './SavedPostsList'
 
 // Mock server actions to avoid env var errors
 vi.mock('@/lib/actions/reddit', () => ({
@@ -11,6 +7,15 @@ vi.mock('@/lib/actions/reddit', () => ({
     after: null
   }))
 }))
+
+vi.mock('@/lib/actions/auth', () => ({
+  clearExpiredSession: vi.fn(async () => {})
+}))
+
+import {fetchSavedPosts} from '@/lib/actions/reddit'
+import type {RedditPost} from '@/lib/types/reddit'
+import {render, screen} from '@/test-utils'
+import {SavedPostsList} from './SavedPostsList'
 
 const mockFetchSavedPosts = vi.mocked(fetchSavedPosts)
 

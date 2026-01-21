@@ -383,16 +383,16 @@ export const fetchSubredditInfo = cache(
 )
 
 /**
- * Fetch authenticated user's subreddit subscriptions.
+ * Fetch ALL authenticated user's subreddit subscriptions.
  * Server Action wrapped with React cache() for automatic deduplication.
  * Results cached for 10 minutes. Returns empty array for unauthenticated users.
+ * Automatically fetches all pages to return complete subscription list.
  *
- * @returns Promise resolving to array of subscribed subreddits (max 50)
+ * @returns Promise resolving to complete subscriptions array
  *
  * @example
  * ```typescript
- * const subs = await fetchUserSubscriptions()
- * subs.forEach(sub => console.log(sub.displayName))
+ * const subscriptions = await fetchUserSubscriptions()
  * ```
  */
 export const fetchUserSubscriptions = cache(
@@ -410,35 +410,59 @@ export const fetchUserSubscriptions = cache(
         return []
       }
 
-      const url = `${REDDIT_API_URL}/subreddits/mine/subscriber.json?limit=50`
+      const allSubscriptions: Array<{
+        name: string
+        displayName: string
+        icon: string
+        subscribers: number
+      }> = []
+      let after: string | null = null
 
-      const response = await fetch(url, {
-        headers: await getHeaders(true),
-        next: {revalidate: TEN_MINUTES}
-      })
+      // Loop through all pages to get complete subscription list
+      do {
+        const url = new URL(`${REDDIT_API_URL}/subreddits/mine/subscriber.json`)
+        url.searchParams.set('limit', '100')
+        url.searchParams.set('raw_json', '1')
+        if (after) {
+          url.searchParams.set('after', after)
+        }
 
-      if (!response.ok) {
-        logger.warn(
-          `Failed to fetch subscriptions: ${response.status} ${response.statusText}`,
-          undefined,
-          {context: 'fetchUserSubscriptions'}
+        const response = await fetch(url.toString(), {
+          headers: await getHeaders(true),
+          next: {revalidate: TEN_MINUTES}
+        })
+
+        if (!response.ok) {
+          logger.warn(
+            `Failed to fetch subscriptions: ${response.status} ${response.statusText}`,
+            undefined,
+            {context: 'fetchUserSubscriptions'}
+          )
+          break
+        }
+
+        const data = await response.json()
+        const subscriptions = data.data.children.map(
+          (child: {data: Record<string, unknown>}) => ({
+            name: child.data.display_name as string,
+            displayName: child.data.display_name_prefixed as string,
+            icon:
+              (child.data.icon_img as string) ||
+              (child.data.community_icon as string) ||
+              '',
+            subscribers: (child.data.subscribers as number) || 0
+          })
         )
-        return []
-      }
 
-      const data = await response.json()
-      const subscriptions = data.data.children.map((child: any) => ({
-        name: child.data.display_name,
-        displayName: child.data.display_name_prefixed,
-        icon: child.data.icon_img || child.data.community_icon,
-        subscribers: child.data.subscribers
-      }))
+        allSubscriptions.push(...subscriptions)
+        after = data.data?.after || null
+      } while (after)
 
-      logger.debug('Fetched subscriptions successfully', {
-        count: subscriptions.length
+      logger.debug('Fetched all subscriptions successfully', {
+        count: allSubscriptions.length
       })
 
-      return subscriptions
+      return allSubscriptions
     } catch (error) {
       logger.error('Error fetching subscriptions', error, {
         context: 'fetchUserSubscriptions'
