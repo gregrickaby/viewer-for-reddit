@@ -2,6 +2,7 @@
 
 import {AuthExpiredError} from '@/components/ui/AuthExpiredError'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
+import {isAuthError} from '@/lib/utils/errors'
 import {logger} from '@/lib/utils/logger'
 import {useEffect} from 'react'
 
@@ -32,17 +33,12 @@ export default function SubredditError({
     )
   }, [error])
 
-  // Check if error is authentication-related
-  // Match exact error messages from server actions (lib/actions/reddit.ts)
-  const errorMessage = error.message || ''
-  const isAuthError =
-    errorMessage === 'Authentication expired' ||
-    errorMessage === 'Session expired' ||
-    errorMessage === 'Authentication required'
-
-  if (isAuthError) {
+  // Check if error is authentication-related using error.code property
+  if (isAuthError(error)) {
     return <AuthExpiredError />
   }
+
+  const errorMessage = error.message || ''
 
   // Handle specific error types
   if (errorMessage === 'Subreddit not found') {

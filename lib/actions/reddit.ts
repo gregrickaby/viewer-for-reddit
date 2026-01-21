@@ -21,6 +21,12 @@ import {
   TEN_MINUTES
 } from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
+import {
+  AuthenticationError,
+  ForbiddenError,
+  NotFoundError,
+  RateLimitError
+} from '@/lib/utils/errors'
 import {logger} from '@/lib/utils/logger'
 import {retryWithBackoff} from '@/lib/utils/retry'
 import {cache} from 'react'
@@ -77,19 +83,19 @@ async function handleFetchPostsError(
   )
 
   if (response.status === 401) {
-    throw new Error('Authentication expired')
+    throw new AuthenticationError('Authentication expired')
   }
   if (response.status === 403) {
-    throw new Error('Access forbidden')
+    throw new ForbiddenError('Access forbidden')
   }
   if (response.status === 404) {
-    throw new Error('Subreddit not found')
+    throw new NotFoundError('Subreddit not found')
   }
   if (response.status === 429) {
     const message = isAuthenticated
       ? 'Rate limit exceeded'
       : 'Rate limit exceeded. Log in to continue viewing the site.'
-    throw new Error(message)
+    throw new RateLimitError(message)
   }
   throw new Error(`Reddit API error: ${response.statusText}`)
 }
@@ -291,7 +297,7 @@ export const fetchPost = cache(
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Post not found')
+          throw new NotFoundError('Post not found')
         }
         throw new Error(`Reddit API error: ${response.statusText}`)
       }
@@ -359,7 +365,7 @@ export const fetchSubredditInfo = cache(
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Subreddit not found')
+          throw new NotFoundError('Subreddit not found')
         }
         throw new Error(`Reddit API error: ${response.statusText}`)
       }
@@ -500,6 +506,7 @@ export async function votePost(
   direction: 1 | 0 | -1
 ): Promise<{success: boolean; error?: string}> {
   'use server'
+
   try {
     const session = await getSession()
     if (!session.accessToken) {
@@ -521,10 +528,10 @@ export async function votePost(
 
       if (!res.ok) {
         if (res.status === 401) {
-          throw new Error('Session expired')
+          throw new AuthenticationError('Session expired')
         }
         if (res.status === 429) {
-          throw new Error(
+          throw new RateLimitError(
             'Rate limit exceeded. Log in to continue viewing the site.'
           )
         }
@@ -590,10 +597,10 @@ export async function savePost(
 
       if (!res.ok) {
         if (res.status === 401) {
-          throw new Error('Session expired')
+          throw new AuthenticationError('Session expired')
         }
         if (res.status === 429) {
-          throw new Error(
+          throw new RateLimitError(
             'Rate limit exceeded. Log in to continue viewing the site.'
           )
         }
@@ -717,7 +724,7 @@ export const fetchUserInfo = cache(
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('User not found')
+          throw new NotFoundError('User not found')
         }
         throw new Error(`Reddit API error: ${response.statusText}`)
       }
@@ -819,7 +826,7 @@ export const fetchUserPosts = cache(
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('User not found')
+          throw new NotFoundError('User not found')
         }
         throw new Error(`Reddit API error: ${response.statusText}`)
       }
@@ -1121,7 +1128,7 @@ export const fetchSavedPosts = cache(
     try {
       const session = await getSession()
       if (!session.accessToken) {
-        throw new Error('Authentication required')
+        throw new AuthenticationError('Authentication required')
       }
 
       const headers = await getHeaders(true)
@@ -1150,13 +1157,13 @@ export const fetchSavedPosts = cache(
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Authentication required')
+          throw new AuthenticationError('Authentication required')
         }
         if (response.status === 404) {
-          throw new Error('User not found')
+          throw new NotFoundError('User not found')
         }
         if (response.status === 429) {
-          throw new Error(
+          throw new RateLimitError(
             'Rate limit exceeded. Log in to continue viewing the site.'
           )
         }

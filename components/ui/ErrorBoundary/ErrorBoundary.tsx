@@ -1,6 +1,11 @@
 'use client'
 
 import {AuthExpiredError} from '@/components/ui/AuthExpiredError'
+import {
+  isAuthError,
+  isNotFoundError,
+  isRateLimitError
+} from '@/lib/utils/errors'
 import {logger} from '@/lib/utils/logger'
 import {Button, Card, Container, Stack, Text, Title} from '@mantine/core'
 import {Component, ReactNode} from 'react'
@@ -64,19 +69,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback
-      }
-
-      // Check if error is authentication-related
-      // Match exact error messages from server actions (lib/actions/reddit.ts)
-      const errorMessage = this.state.error?.message || ''
-      const isAuthError =
-        errorMessage === 'Authentication expired' ||
-        errorMessage === 'Session expired' ||
-        errorMessage === 'Authentication required'
-
-      if (isAuthError) {
+      // Check if error is authentication-related FIRST (before fallback)
+      // This ensures auth errors always show AuthExpiredError component
+      if (isAuthError(this.state.error)) {
         return (
           <Container size="sm" py="xl">
             <AuthExpiredError />
@@ -84,25 +79,46 @@ export class ErrorBoundary extends Component<Props, State> {
         )
       }
 
+      if (this.props.fallback) {
+        return this.props.fallback
+      }
+
+      const errorMessage = this.state.error?.message || ''
+      const isRateLimit = isRateLimitError(this.state.error)
+      const isNotFound = isNotFoundError(this.state.error)
+
+      let title = 'Something went wrong'
+      if (isRateLimit) {
+        title = 'Rate Limit Reached'
+      } else if (isNotFound) {
+        title = 'Not Found'
+      }
+
       return (
         <Container size="sm" py="xl">
           <Card withBorder padding="xl" radius="md">
             <Stack gap="md" align="center">
               <Title order={2} c="red">
-                Something went wrong
+                {title}
               </Title>
               <Text size="sm" c="dimmed" ta="center">
                 {errorMessage ||
                   'An unexpected error occurred. Please try again.'}
               </Text>
-              <Button
-                onClick={() => {
-                  this.setState({hasError: false, error: undefined})
-                  globalThis.location.reload()
-                }}
-              >
-                Reload Page
-              </Button>
+              {isRateLimit ? (
+                <Button component="a" href="/api/auth/login">
+                  Sign In
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    this.setState({hasError: false, error: undefined})
+                    globalThis.location.reload()
+                  }}
+                >
+                  Reload Page
+                </Button>
+              )}
             </Stack>
           </Card>
         </Container>
