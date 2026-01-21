@@ -28,14 +28,29 @@ export default function Error({
   useEffect(() => {
     logger.error(
       'App-level error caught',
-      {error, digest: error.digest},
+      {
+        error,
+        digest: error.digest,
+        name: error.name,
+        code: (error as any).code
+      },
       {context: 'RootErrorBoundary', forceProduction: true}
     )
   }, [error])
 
-  // Check if error is authentication-related using error.code property
-  // The code property survives Next.js serialization in production
-  if (isAuthError(error)) {
+  // In production, Next.js strips error messages but preserves error.digest
+  // Check digest for our custom error codes
+  const errorDigest = error.digest || ''
+  const errorCode = (error as any).code || ''
+
+  // Check if this is an auth error by any available property
+  const isAuth =
+    isAuthError(error) ||
+    errorDigest.includes('AUTH_EXPIRED') ||
+    errorCode === 'AUTH_EXPIRED' ||
+    error.name === 'AuthenticationError'
+
+  if (isAuth) {
     return <AuthExpiredError />
   }
 
