@@ -1,7 +1,9 @@
-import {logger} from '@/lib/utils/logger'
-import {render, screen} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {ErrorBoundary} from './ErrorBoundary'
+
+// Mock server actions to avoid env var errors
+vi.mock('@/lib/actions/auth', () => ({
+  clearExpiredSession: vi.fn(async () => {})
+}))
 
 vi.mock('@/lib/utils/logger', () => ({
   logger: {
@@ -11,6 +13,10 @@ vi.mock('@/lib/utils/logger', () => ({
     debug: vi.fn()
   }
 }))
+
+import {logger} from '@/lib/utils/logger'
+import {render, screen} from '@/test-utils'
+import {ErrorBoundary} from './ErrorBoundary'
 
 const mockLoggerError = vi.mocked(logger.error)
 

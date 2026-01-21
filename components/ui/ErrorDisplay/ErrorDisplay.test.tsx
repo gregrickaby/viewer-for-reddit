@@ -1,11 +1,17 @@
-import {render, screen, user} from '@/test-utils'
-import {useRouter} from 'next/navigation'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {ErrorDisplay} from './ErrorDisplay'
+
+// Mock server actions to avoid env var errors
+vi.mock('@/lib/actions/auth', () => ({
+  clearExpiredSession: vi.fn(async () => {})
+}))
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn()
 }))
+
+import {render, screen, user} from '@/test-utils'
+import {useRouter} from 'next/navigation'
+import {ErrorDisplay} from './ErrorDisplay'
 
 const mockUseRouter = vi.mocked(useRouter)
 

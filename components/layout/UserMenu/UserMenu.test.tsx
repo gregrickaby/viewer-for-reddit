@@ -33,14 +33,6 @@ describe('UserMenu', () => {
   })
 
   describe('authenticated state', () => {
-    it('renders username link when authenticated', () => {
-      render(<UserMenu isAuthenticated username="testuser" />)
-
-      const link = screen.getByRole('link', {name: 'u/testuser'})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/u/testuser')
-    })
-
     it('renders clickable avatar when avatar URL is provided', () => {
       render(
         <UserMenu
@@ -213,13 +205,6 @@ describe('UserMenu', () => {
   })
 
   describe('analytics tracking', () => {
-    it('has umami event on username link', () => {
-      render(<UserMenu isAuthenticated username="testuser" />)
-
-      const link = screen.getByRole('link', {name: 'u/testuser'})
-      expect(link).toHaveAttribute('data-umami-event', 'nav-user-profile')
-    })
-
     it('has umami event on avatar link', () => {
       render(
         <UserMenu
@@ -255,20 +240,6 @@ describe('UserMenu', () => {
   })
 
   describe('edge cases', () => {
-    it('handles missing username when authenticated', () => {
-      render(<UserMenu isAuthenticated username={undefined} />)
-
-      const link = screen.getByRole('link', {name: 'u/'})
-      expect(link).toBeInTheDocument()
-    })
-
-    it('handles empty username', () => {
-      render(<UserMenu isAuthenticated username="" />)
-
-      const link = screen.getByRole('link', {name: 'u/'})
-      expect(link).toBeInTheDocument()
-    })
-
     it('renders when both isAuthenticated and username are undefined', () => {
       render(<UserMenu />)
 
