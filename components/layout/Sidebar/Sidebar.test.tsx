@@ -243,15 +243,9 @@ describe('Sidebar', () => {
     })
 
     it('renders search input when subscriptions section is expanded', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Expand to see search input
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now expanded by default
       await waitFor(() => {
         const searchInput = screen.getByPlaceholderText('Search subreddits...')
         expect(searchInput).toBeInTheDocument()
@@ -259,15 +253,9 @@ describe('Sidebar', () => {
     })
 
     it('renders sort select when subscriptions section is expanded', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Expand to see sort select
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now expanded by default
       // Mantine Select renders an input with the aria-label
       await waitFor(() => {
         expect(
@@ -287,12 +275,7 @@ describe('Sidebar', () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Expand to see search input
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now expanded by default
       await waitFor(() => {
         expect(
           screen.getByPlaceholderText('Search subreddits...')
@@ -318,15 +301,9 @@ describe('Sidebar', () => {
     })
 
     it('renders all subscription links', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now expanded by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /r\/programming/i})
@@ -341,15 +318,9 @@ describe('Sidebar', () => {
     })
 
     it('maintains subscription order (no sorting)', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now expanded by default
       await waitFor(() => {
         const links = screen.getAllByRole('link')
         const subscriptionLinks = links.filter((link) => {
@@ -372,15 +343,9 @@ describe('Sidebar', () => {
     })
 
     it('has correct href for subscription links', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now expanded by default
       const programmingLink = await screen.findByRole('link', {
         name: /r\/programming/i
       })
@@ -391,21 +356,22 @@ describe('Sidebar', () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
+      // Now starts expanded, so first click should collapse
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse my subreddits/i
       })
-      await user.click(expandButton)
-
-      expect(
-        screen.getByRole('button', {name: /collapse my subreddits/i})
-      ).toBeInTheDocument()
-    })
-
-    it('shows subscriptions initially closed', () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      await user.click(collapseButton)
 
       expect(
         screen.getByRole('button', {name: /expand my subreddits/i})
+      ).toBeInTheDocument()
+    })
+
+    it('shows subscriptions initially open', () => {
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      expect(
+        screen.getByRole('button', {name: /collapse my subreddits/i})
       ).toBeInTheDocument()
     })
 
@@ -413,23 +379,23 @@ describe('Sidebar', () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Click the entire header (not just icon) to expand
+      // Click the entire header (not just icon) to collapse (starts expanded)
       const header = screen.getByRole('button', {
-        name: /expand my subreddits/i
+        name: /collapse my subreddits/i
       })
-      await user.click(header)
-
-      // Should be expanded now
-      expect(
-        screen.getByRole('button', {name: /collapse my subreddits/i})
-      ).toBeInTheDocument()
-
-      // Click again to collapse
       await user.click(header)
 
       // Should be collapsed now
       expect(
         screen.getByRole('button', {name: /expand my subreddits/i})
+      ).toBeInTheDocument()
+
+      // Click again to expand
+      await user.click(header)
+
+      // Should be expanded now
+      expect(
+        screen.getByRole('button', {name: /collapse my subreddits/i})
       ).toBeInTheDocument()
     })
   })
@@ -647,15 +613,15 @@ describe('Sidebar', () => {
         />
       )
 
-      // Both start collapsed - expand subreddits
+      // Subreddits start open, multireddits start closed - collapse subreddits
       const subredditsToggle = screen.getByRole('button', {
-        name: /expand my subreddits/i
+        name: /collapse my subreddits/i
       })
       await user.click(subredditsToggle)
 
-      // Subreddits now open
+      // Subreddits now closed
       expect(
-        screen.getByRole('button', {name: /collapse my subreddits/i})
+        screen.getByRole('button', {name: /expand my subreddits/i})
       ).toBeInTheDocument()
 
       // Multireddits still closed
@@ -681,15 +647,9 @@ describe('Sidebar', () => {
     })
 
     it('has analytics event on subscription links', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand my subreddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now expanded by default
       const link = await screen.findByRole('link', {name: /r\/programming/i})
       expect(link).toHaveAttribute('data-umami-event', 'nav-subreddit')
     })

@@ -78,7 +78,7 @@ export function Sidebar({
   multireddits = []
 }: Readonly<SidebarProps>) {
   const [navigationOpen, setNavigationOpen] = useState(true)
-  const [subredditsOpen, setSubredditsOpen] = useState(false)
+  const [subredditsOpen, setSubredditsOpen] = useState(true)
   const [multiredditsOpen, setMultiredditsOpen] = useState(false)
 
   const {
