@@ -19,6 +19,11 @@ import {
   votePost
 } from './reddit'
 
+// Mock getValidAccessToken BEFORE imports
+vi.mock('@/lib/actions/auth', () => ({
+  getValidAccessToken: vi.fn(async () => 'test-access-token')
+}))
+
 // Mock session module
 vi.mock('@/lib/auth/session', () => ({
   getSession: vi.fn()

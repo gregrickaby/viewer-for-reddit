@@ -1,5 +1,6 @@
 'use server'
 
+import {getValidAccessToken} from '@/lib/actions/auth'
 import {getSession} from '@/lib/auth/session'
 import type {
   ApiSubredditAboutResponse,
@@ -148,9 +149,10 @@ async function getHeaders(useAuth: boolean = false) {
   }
 
   if (useAuth) {
-    const session = await getSession()
-    if (session.accessToken) {
-      headers.Authorization = `Bearer ${session.accessToken}`
+    // Automatically refresh token if needed
+    const accessToken = await getValidAccessToken()
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`
     }
   } else {
     // Use application-only token for anonymous access

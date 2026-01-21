@@ -7,10 +7,29 @@ vi.mock('@/lib/auth/session', () => ({
   isSessionExpired: vi.fn()
 }))
 
+vi.mock('@/lib/utils/env', () => ({
+  getEnvVar: vi.fn((key: string) => {
+    if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
+    if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
+    if (key === 'REDDIT_REDIRECT_URI')
+      return 'http://localhost:3000/api/auth/callback/reddit'
+    return 'test-value'
+  })
+}))
+
+vi.mock('arctic', () => ({
+  Reddit: vi.fn(function (this: any) {
+    this.refreshAccessToken = vi.fn()
+    return this
+  })
+}))
+
 vi.mock('@/lib/utils/logger', () => ({
   logger: {
     info: vi.fn(),
-    error: vi.fn()
+    error: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn()
   }
 }))
 
@@ -270,6 +289,104 @@ describe('auth actions', () => {
         )
         expect(result).toEqual({success: false, wasExpired: false})
       })
+    })
+  })
+
+  describe('refreshAccessToken', () => {
+    it('successfully refreshes access token', async () => {
+      const mockSave = vi.fn()
+      const mockDestroy = vi.fn()
+      const mockTokens = {
+        accessToken: vi.fn(() => 'new-access-token'),
+        refreshToken: vi.fn(() => 'new-refresh-token'),
+        accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
+      }
+
+      mockGetSession.mockResolvedValue({
+        refreshToken: 'old-refresh-token',
+        save: mockSave,
+        destroy: mockDestroy
+      } as any)
+
+      // Mock Arctic refresh to succeed
+      const {Reddit} = await import('arctic')
+      const redditInstance = new (Reddit as any)()
+      redditInstance.refreshAccessToken = vi.fn().mockResolvedValue(mockTokens)
+
+      const {refreshAccessToken} = await import('./auth')
+      const result = await refreshAccessToken()
+
+      expect(mockSave).toHaveBeenCalled()
+      expect(result).toEqual({success: true})
+    })
+
+    it('returns error when no refresh token available', async () => {
+      const mockDestroy = vi.fn()
+      mockGetSession.mockResolvedValue({
+        refreshToken: '',
+        destroy: mockDestroy
+      } as any)
+
+      const {refreshAccessToken} = await import('./auth')
+      const result = await refreshAccessToken()
+
+      expect(result).toEqual({
+        success: false,
+        error: 'No refresh token available'
+      })
+    })
+  })
+
+  describe('getValidAccessToken', () => {
+    it('returns existing token if not expired', async () => {
+      const futureTime = Date.now() + 600000 // 10 minutes from now
+      mockGetSession.mockResolvedValue({
+        accessToken: 'valid-token',
+        expiresAt: futureTime
+      } as any)
+
+      const {getValidAccessToken} = await import('./auth')
+      const token = await getValidAccessToken()
+
+      expect(token).toBe('valid-token')
+    })
+
+    it('refreshes token when expiring soon', async () => {
+      const soonTime = Date.now() + 60000 // 1 minute from now (within 5 min threshold)
+      const mockSave = vi.fn()
+      const mockDestroy = vi.fn()
+
+      // First call: token expiring soon
+      mockGetSession.mockResolvedValueOnce({
+        accessToken: 'expiring-token',
+        expiresAt: soonTime,
+        refreshToken: 'refresh-token',
+        save: mockSave,
+        destroy: mockDestroy
+      } as any)
+
+      // Second call: after refresh
+      mockGetSession.mockResolvedValueOnce({
+        accessToken: 'new-token',
+        expiresAt: Date.now() + 3600000
+      } as any)
+
+      const {getValidAccessToken} = await import('./auth')
+      const token = await getValidAccessToken()
+
+      expect(mockSave).toHaveBeenCalled()
+      expect(token).toBe('new-token')
+    })
+
+    it('returns null when no access token', async () => {
+      mockGetSession.mockResolvedValue({
+        accessToken: ''
+      } as any)
+
+      const {getValidAccessToken} = await import('./auth')
+      const token = await getValidAccessToken()
+
+      expect(token).toBeNull()
     })
   })
 })

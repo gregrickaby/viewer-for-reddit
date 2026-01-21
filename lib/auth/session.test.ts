@@ -61,7 +61,7 @@ describe('session', () => {
           secure: false,
           httpOnly: true,
           sameSite: 'lax',
-          maxAge: 2592000, // 30 days in seconds
+          maxAge: 604800, // 7 days in seconds
           path: '/'
         }
       })
@@ -146,7 +146,7 @@ describe('session', () => {
           cookieOptions: expect.objectContaining({
             httpOnly: true,
             sameSite: 'lax',
-            maxAge: 2592000,
+            maxAge: 604800, // 7 days in seconds
             path: '/'
           })
         })
