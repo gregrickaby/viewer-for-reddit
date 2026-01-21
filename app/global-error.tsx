@@ -1,6 +1,7 @@
 'use client'
 
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
+import {logout} from '@/lib/actions/auth'
 import {logger} from '@/lib/utils/logger'
 import {
   Button,
@@ -12,7 +13,7 @@ import {
 } from '@mantine/core'
 import '@mantine/core/styles.css'
 import {IconAlertTriangle, IconHome, IconRefresh} from '@tabler/icons-react'
-import {useEffect} from 'react'
+import {useEffect, useState, useTransition} from 'react'
 
 /**
  * Props for GlobalError component.
@@ -59,6 +60,9 @@ export default function GlobalError({
   error,
   reset
 }: Readonly<GlobalErrorProps>) {
+  const [isPending, startTransition] = useTransition()
+  const [isAuthError, setIsAuthError] = useState(false)
+
   /**
    * Log error to console and error reporting service on mount.
    * Runs only once when component mounts.
@@ -70,15 +74,50 @@ export default function GlobalError({
       message: error.message,
       stack: error.stack
     })
+
+    // Check if this is an authentication error
+    const authErrorPatterns = [
+      'authentication',
+      'expired',
+      'unauthorized',
+      '401',
+      'session',
+      'token'
+    ]
+    const errorMessage = error.message.toLowerCase()
+    const isAuth = authErrorPatterns.some((pattern) =>
+      errorMessage.includes(pattern)
+    )
+    setIsAuthError(isAuth)
   }, [error])
 
+  /**
+   * Handle navigation to home with session cleanup.
+   * Clears session and forces full page reload to avoid cached error state.
+   */
+  const handleGoHome = () => {
+    if (isPending) return
+
+    startTransition(async () => {
+      try {
+        // Clear session if auth error
+        if (isAuthError) {
+          await logout()
+        }
+      } catch (err) {
+        logger.error('Failed to clear session on home navigation', err)
+      } finally {
+        // Force full page reload to clear any cached state
+        globalThis.location.href = '/'
+      }
+    })
+  }
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
-        <title>Application Error - Reddit Viewer</title>
+        <title>Error - Viewer for Reddit</title>
         <ColorSchemeScript defaultColorScheme="auto" />
-        <meta name="color-scheme" content="light dark" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
         <ThemeProvider>
@@ -88,11 +127,16 @@ export default function GlobalError({
               alignItems: 'center',
               justifyContent: 'center',
               minHeight: '100vh',
-              padding: '1rem',
-              backgroundColor: 'var(--mantine-color-body)'
+              padding: '1rem'
             }}
           >
-            <Card withBorder padding="xl" radius="md" maw={500}>
+            <Card
+              shadow="sm"
+              padding="xl"
+              radius="md"
+              withBorder
+              style={{maxWidth: '600px', width: '100%'}}
+            >
               <Stack align="center" gap="md">
                 <IconAlertTriangle
                   size={48}
@@ -101,13 +145,13 @@ export default function GlobalError({
                 />
 
                 <Text size="xl" fw={700} ta="center">
-                  Something Went Wrong
+                  {isAuthError ? 'Session Expired' : 'Something Went Wrong'}
                 </Text>
 
                 <Text size="sm" c="dimmed" ta="center">
-                  An unexpected error occurred. This has been logged and we'll
-                  look into it. You can try reloading the page or return to the
-                  home page.
+                  {isAuthError
+                    ? 'Your session may have expired. Click below to return home and sign in again.'
+                    : "An unexpected error occurred. This has been logged and we'll look into it."}
                 </Text>
 
                 {error.digest && (
@@ -117,23 +161,26 @@ export default function GlobalError({
                 )}
 
                 <Group justify="center" gap="md">
-                  <Button
-                    onClick={reset}
-                    variant="filled"
-                    leftSection={<IconRefresh size={16} />}
-                    aria-label="Try again by reloading the page"
-                  >
-                    Try Again
-                  </Button>
+                  {!isAuthError && (
+                    <Button
+                      onClick={reset}
+                      variant="filled"
+                      leftSection={<IconRefresh size={16} />}
+                      aria-label="Try again by reloading the page"
+                      disabled={isPending}
+                    >
+                      Try Again
+                    </Button>
+                  )}
 
                   <Button
-                    component="a"
-                    href="/"
-                    variant="outline"
+                    onClick={handleGoHome}
+                    variant={isAuthError ? 'filled' : 'outline'}
                     leftSection={<IconHome size={16} />}
                     aria-label="Return to home page"
+                    loading={isPending}
                   >
-                    Go Home
+                    {isAuthError ? 'Clear Session & Go Home' : 'Go Home'}
                   </Button>
                 </Group>
               </Stack>

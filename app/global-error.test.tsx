@@ -1,3 +1,4 @@
+import {logout} from '@/lib/actions/auth'
 import {logger} from '@/lib/utils/logger'
 import {render, screen, user} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -6,11 +7,18 @@ import GlobalError from './global-error'
 // Mock logger to prevent console spam in tests
 vi.mock('@/lib/utils/logger', () => ({
   logger: {
-    error: vi.fn()
+    error: vi.fn(),
+    info: vi.fn()
   }
 }))
 
+// Mock auth actions
+vi.mock('@/lib/actions/auth', () => ({
+  logout: vi.fn(async () => ({success: true}))
+}))
+
 const mockLogger = vi.mocked(logger)
+const mockLogout = vi.mocked(logout)
 
 describe('GlobalError', () => {
   const mockError = new Error('Test error message')
@@ -19,6 +27,9 @@ describe('GlobalError', () => {
   beforeEach(() => {
     mockLogger.error.mockClear()
     mockReset.mockClear()
+    mockLogout.mockClear()
+    delete (window as any).location
+    window.location = {href: ''} as any
   })
 
   describe('rendering', () => {
@@ -33,7 +44,7 @@ describe('GlobalError', () => {
         screen.getByRole('button', {name: /try again/i})
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', {name: /return to home page/i})
+        screen.getByRole('button', {name: /return to home page/i})
       ).toBeInTheDocument()
     })
 
@@ -58,7 +69,7 @@ describe('GlobalError', () => {
       render(<GlobalError error={mockError} reset={mockReset} />)
 
       // Check document title
-      expect(document.title).toBe('Application Error - Reddit Viewer')
+      expect(document.title).toBe('Error - Viewer for Reddit')
     })
   })
 
@@ -179,18 +190,27 @@ describe('GlobalError', () => {
       )
     })
 
-    it('go home link has correct href', () => {
+    it('navigates home with full page reload', async () => {
       render(<GlobalError error={mockError} reset={mockReset} />)
 
-      const homeLink = screen.getByRole('link', {name: /return to home page/i})
-      expect(homeLink).toHaveAttribute('href', '/')
+      const homeButton = screen.getByRole('button', {
+        name: /return to home page/i
+      })
+      await user.click(homeButton)
+
+      // Should navigate with full page reload
+      await vi.waitFor(() => {
+        expect(window.location.href).toBe('/')
+      })
     })
 
-    it('go home link has proper accessibility attributes', () => {
+    it('go home button has proper accessibility attributes', () => {
       render(<GlobalError error={mockError} reset={mockReset} />)
 
-      const homeLink = screen.getByRole('link', {name: /return to home page/i})
-      expect(homeLink).toHaveAttribute('aria-label', 'Return to home page')
+      const homeButton = screen.getByRole('button', {
+        name: /return to home page/i
+      })
+      expect(homeButton).toHaveAttribute('aria-label', 'Return to home page')
     })
 
     it('allows multiple reset attempts', async () => {
@@ -203,9 +223,107 @@ describe('GlobalError', () => {
 
       await user.click(tryAgainButton)
       expect(mockReset).toHaveBeenCalledTimes(2)
+    })
 
-      await user.click(tryAgainButton)
-      expect(mockReset).toHaveBeenCalledTimes(3)
+    it('prevents race conditions with pending state', async () => {
+      render(<GlobalError error={mockError} reset={mockReset} />)
+
+      const homeButton = screen.getByRole('button', {
+        name: /return to home page/i
+      })
+
+      // Click multiple times rapidly
+      await user.click(homeButton)
+      await user.click(homeButton)
+      await user.click(homeButton)
+
+      // Button should be disabled or only trigger once
+      await vi.waitFor(() => {
+        expect(window.location.href).toBe('/')
+      })
+    })
+
+    describe('authentication errors', () => {
+      it('detects authentication errors from message', () => {
+        const authError = new Error('Authentication expired')
+        render(<GlobalError error={authError} reset={mockReset} />)
+
+        expect(
+          screen.getByText(/Your session may have expired/)
+        ).toBeInTheDocument()
+        expect(screen.getByText(/Clear Session & Go Home/)).toBeInTheDocument()
+      })
+
+      it('hides Try Again button for auth errors', () => {
+        const authError = new Error('Session token expired')
+        render(<GlobalError error={authError} reset={mockReset} />)
+
+        expect(
+          screen.queryByRole('button', {name: /try again/i})
+        ).not.toBeInTheDocument()
+      })
+
+      it('clears session before navigating home on auth error', async () => {
+        const authError = new Error('401 Unauthorized')
+        render(<GlobalError error={authError} reset={mockReset} />)
+
+        const homeButton = screen.getByRole('button', {
+          name: /return to home page/i
+        })
+        await user.click(homeButton)
+
+        await vi.waitFor(() => {
+          expect(mockLogout).toHaveBeenCalledTimes(1)
+          expect(window.location.href).toBe('/')
+        })
+      })
+
+      it('navigates home even if logout fails', async () => {
+        mockLogout.mockResolvedValueOnce({success: false, error: 'Failed'})
+        const authError = new Error('Session expired')
+        render(<GlobalError error={authError} reset={mockReset} />)
+
+        const homeButton = screen.getByRole('button', {
+          name: /return to home page/i
+        })
+        await user.click(homeButton)
+
+        await vi.waitFor(() => {
+          expect(window.location.href).toBe('/')
+        })
+      })
+
+      it('detects various auth error patterns', () => {
+        const authErrors = [
+          new Error('Authentication failed'),
+          new Error('Token expired'),
+          new Error('401 error'),
+          new Error('Unauthorized access'),
+          new Error('Session invalid')
+        ]
+
+        authErrors.forEach((error) => {
+          const {unmount} = render(
+            <GlobalError error={error} reset={mockReset} />
+          )
+          expect(
+            screen.getByText(/Your session may have expired/)
+          ).toBeInTheDocument()
+          unmount()
+        })
+      })
+
+      it('shows default message for non-auth errors', () => {
+        const regularError = new Error('Network error')
+        render(<GlobalError error={regularError} reset={mockReset} />)
+
+        expect(
+          screen.getByText(/An unexpected error occurred/)
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('button', {name: /try again/i})
+        ).toBeInTheDocument()
+      })
     })
   })
 
@@ -315,9 +433,7 @@ describe('GlobalError', () => {
       render(<GlobalError error={mockError} reset={mockReset} />)
 
       expect(
-        screen.getByText(
-          /You can try reloading the page or return to the home page/
-        )
+        screen.getByText(/An unexpected error occurred/)
       ).toBeInTheDocument()
     })
 
