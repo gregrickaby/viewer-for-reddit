@@ -1,5 +1,4 @@
 import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {
   fetchMultireddits,
   fetchUserSubscriptions,
@@ -99,10 +98,8 @@ function DonatePageSkeleton() {
  */
 export default function DonatePage() {
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<DonatePageSkeleton />}>
-        <DonatePageContent />
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense fallback={<DonatePageSkeleton />}>
+      <DonatePageContent />
+    </Suspense>
   )
 }

@@ -2,8 +2,6 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {
   fetchMultireddits,
@@ -152,25 +150,15 @@ export default async function MultiredditPage({
             {multiname}
           </Title>
 
-          <ErrorBoundary
-            fallback={
-              <ErrorDisplay
-                title="Failed to load multireddit"
-                message="Unable to fetch posts for this multireddit. Please try again."
-                showHome={false}
-              />
-            }
-          >
-            <Suspense fallback={<TabsSkeleton />}>
-              <MultiredditPosts
-                username={username}
-                multiname={multiname}
-                isAuthenticated={isAuthenticated}
-                sort={postSort}
-                timeFilter={timeFilter}
-              />
-            </Suspense>
-          </ErrorBoundary>
+          <Suspense fallback={<TabsSkeleton />}>
+            <MultiredditPosts
+              username={username}
+              multiname={multiname}
+              isAuthenticated={isAuthenticated}
+              sort={postSort}
+              timeFilter={timeFilter}
+            />
+          </Suspense>
         </Container>
       </AppLayout>
       <BossButton />

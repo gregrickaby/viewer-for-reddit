@@ -2,7 +2,6 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {SavedPostsList} from '@/components/ui/SavedPostsList'
 import {
@@ -129,22 +128,13 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
             <Title order={2} mb="md">
               Saved Posts
             </Title>
-            <ErrorBoundary
-              fallback={
-                <ErrorDisplay
-                  title="Failed to load saved posts"
-                  message="An error occurred while loading your saved posts."
-                />
-              }
-            >
-              <Suspense fallback={<PostSkeleton />}>
-                <SavedPostsList
-                  initialPosts={posts}
-                  username={username}
-                  initialAfter={after}
-                />
-              </Suspense>
-            </ErrorBoundary>
+            <Suspense fallback={<PostSkeleton />}>
+              <SavedPostsList
+                initialPosts={posts}
+                username={username}
+                initialAfter={after}
+              />
+            </Suspense>
           </Container>
         </AppLayout>
         <BossButton />

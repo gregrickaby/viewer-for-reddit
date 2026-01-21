@@ -2,8 +2,6 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {
   fetchMultireddits,
@@ -128,16 +126,14 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
               {feedTitle}
             </Title>
 
-            <ErrorBoundary fallback={<ErrorDisplay />}>
-              <Suspense fallback={<TabsSkeleton />}>
-                <PostsContent
-                  feedType={feedType}
-                  isAuthenticated={isAuthenticated}
-                  sort={postSort}
-                  timeFilter={timeFilter}
-                />
-              </Suspense>
-            </ErrorBoundary>
+            <Suspense fallback={<TabsSkeleton />}>
+              <PostsContent
+                feedType={feedType}
+                isAuthenticated={isAuthenticated}
+                sort={postSort}
+                timeFilter={timeFilter}
+              />
+            </Suspense>
           </div>
         </Container>
       </AppLayout>

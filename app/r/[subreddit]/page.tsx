@@ -3,8 +3,6 @@ import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleto
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import {
@@ -233,33 +231,21 @@ export default async function SubredditPage({
       >
         <Container size="lg">
           <div style={{maxWidth: '800px'}}>
-            <ErrorBoundary fallback={<ErrorDisplay showHome={false} />}>
-              <Suspense fallback={<SubredditInfoSkeleton />}>
-                <SubredditInfo
-                  subreddit={subreddit}
-                  isAuthenticated={isAuthenticated}
-                />
-              </Suspense>
-            </ErrorBoundary>
+            <Suspense fallback={<SubredditInfoSkeleton />}>
+              <SubredditInfo
+                subreddit={subreddit}
+                isAuthenticated={isAuthenticated}
+              />
+            </Suspense>
 
-            <ErrorBoundary
-              fallback={
-                <ErrorDisplay
-                  title="Failed to load posts"
-                  message="Unable to fetch posts for this subreddit. Please try again."
-                  showHome={false}
-                />
-              }
-            >
-              <Suspense fallback={<TabsSkeleton />}>
-                <SubredditPosts
-                  subreddit={subreddit}
-                  isAuthenticated={isAuthenticated}
-                  sort={postSort}
-                  timeFilter={timeFilter}
-                />
-              </Suspense>
-            </ErrorBoundary>
+            <Suspense fallback={<TabsSkeleton />}>
+              <SubredditPosts
+                subreddit={subreddit}
+                isAuthenticated={isAuthenticated}
+                sort={postSort}
+                timeFilter={timeFilter}
+              />
+            </Suspense>
           </div>
         </Container>
       </AppLayout>
