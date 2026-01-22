@@ -16,6 +16,7 @@ import {RedditUser, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
 import {logger} from '@/lib/utils/logger'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
+import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
@@ -174,9 +175,17 @@ async function UserPosts({
 
   if (result.posts.length === 0) {
     return (
-      <Text size="sm" c="dimmed">
-        This user hasn&apos;t posted anything yet
-      </Text>
+      <Card withBorder padding="xl" radius="md">
+        <Stack align="center" gap="md">
+          <IconAlertCircle size={48} color="var(--mantine-color-yellow-6)" />
+          <Text size="lg" fw={600} ta="center">
+            No Posts Found
+          </Text>
+          <Text size="sm" c="dimmed" ta="center">
+            This user is either private or hasn&apos;t posted anything yet.
+          </Text>
+        </Stack>
+      </Card>
     )
   }
 
