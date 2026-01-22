@@ -65,11 +65,12 @@ describe('PostCard', () => {
     })
 
     it('has umami event on post text preview link', () => {
-      render(<PostCard post={mockPost} />)
+      const {container} = render(<PostCard post={mockPost} />)
 
-      const textLink = screen
-        .getByText('This is the post body text')
-        .closest('a')
+      // Find the link containing the preview content
+      // eslint-disable-next-line testing-library/no-container
+      const previewDiv = container.querySelector('[class*="postBodyPreview"]')
+      const textLink = previewDiv?.closest('a')
       expect(textLink).toHaveAttribute(
         'data-umami-event',
         'post-text-preview-click'
@@ -126,9 +127,13 @@ describe('PostCard', () => {
 
   describe('selftext', () => {
     it('shows truncated selftext by default', () => {
-      render(<PostCard post={mockPost} />)
+      const {container} = render(<PostCard post={mockPost} />)
 
-      expect(screen.getByText('This is the post body text')).toBeInTheDocument()
+      // Check that HTML content is rendered in preview mode
+      // eslint-disable-next-line testing-library/no-container
+      const htmlContent = container.querySelector('[class*="postBodyPreview"]')
+      expect(htmlContent).toBeInTheDocument()
+      expect(htmlContent?.innerHTML).toContain('<strong>post body</strong>')
     })
 
     it('shows full HTML selftext when showFullText is true', () => {
@@ -165,11 +170,12 @@ describe('PostCard', () => {
     })
 
     it('links truncated text to post', () => {
-      render(<PostCard post={mockPost} />)
+      const {container} = render(<PostCard post={mockPost} />)
 
-      const textLink = screen
-        .getByText('This is the post body text')
-        .closest('a')
+      // Find the link containing the preview content
+      // eslint-disable-next-line testing-library/no-container
+      const previewDiv = container.querySelector('[class*="postBodyPreview"]')
+      const textLink = previewDiv?.closest('a')
       expect(textLink).toHaveAttribute(
         'href',
         '/r/test/comments/test123/test_post'

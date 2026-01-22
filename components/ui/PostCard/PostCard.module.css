@@ -24,3 +24,36 @@
 .postBody p:last-child {
   margin-bottom: 0;
 }
+
+.postBodyPreview {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--mantine-color-dimmed);
+}
+
+.postBodyPreview a {
+  color: var(--mantine-color-blue-6);
+  text-decoration: underline;
+}
+
+.postBodyPreview a:hover {
+  color: var(--mantine-color-blue-7);
+}
+
+.postBodyPreview p {
+  margin: 0.25rem 0;
+  display: inline;
+}
+
+.postBodyPreview p:first-child {
+  margin-top: 0;
+}
+
+.postBodyPreview p:last-child {
+  margin-bottom: 0;
+}

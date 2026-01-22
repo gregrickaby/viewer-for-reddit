@@ -98,13 +98,35 @@ export const PostCard = memo(
 
           {post.selftext && (
             <>
-              {showFullText && post.selftext_html ? (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: sanitizeText(decodeHtmlEntities(post.selftext_html))
-                  }}
-                  className={styles.postBody}
-                />
+              {post.selftext_html ? (
+                showFullText ? (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeText(
+                        decodeHtmlEntities(post.selftext_html)
+                      )
+                    }}
+                    className={styles.postBody}
+                  />
+                ) : (
+                  <Anchor
+                    component={Link}
+                    href={postUrl}
+                    underline="never"
+                    c="dimmed"
+                    style={{textDecoration: 'none'}}
+                    data-umami-event="post-text-preview-click"
+                  >
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: sanitizeText(
+                          decodeHtmlEntities(post.selftext_html)
+                        )
+                      }}
+                      className={styles.postBodyPreview}
+                    />
+                  </Anchor>
+                )
               ) : (
                 <Anchor
                   component={Link}
