@@ -79,7 +79,7 @@ export function Sidebar({
 }: Readonly<SidebarProps>) {
   const [navigationOpen, setNavigationOpen] = useState(true)
   const [subredditsOpen, setSubredditsOpen] = useState(true)
-  const [multiredditsOpen, setMultiredditsOpen] = useState(false)
+  const [multiredditsOpen, setMultiredditsOpen] = useState(true)
 
   const {
     filteredSubscriptions,

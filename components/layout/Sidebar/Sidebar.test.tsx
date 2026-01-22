@@ -421,18 +421,11 @@ describe('Sidebar', () => {
 
   describe('multireddits - authenticated', () => {
     it('renders multireddits section when authenticated', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
       expect(screen.getByText('My Multireddits')).toBeInTheDocument()
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand multireddits/i
-      })
-      await user.click(expandButton)
-
-      // Wait for collapse animation and verify content is visible
+      // Section is now open by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /tech news/i})
@@ -441,15 +434,9 @@ describe('Sidebar', () => {
     })
 
     it('renders all multireddit links', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand multireddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now open by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /tech news/i})
@@ -459,15 +446,9 @@ describe('Sidebar', () => {
     })
 
     it('sorts multireddits alphabetically', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand multireddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now open by default
       await waitFor(() => {
         const links = screen.getAllByRole('link')
         const multiLinks = links.filter((link) =>
@@ -486,15 +467,9 @@ describe('Sidebar', () => {
     })
 
     it('has correct href for multireddit links', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand multireddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now open by default
       const techLink = await screen.findByRole('link', {name: /tech news/i})
       expect(techLink).toHaveAttribute('href', '/user/testuser/m/tech')
     })
@@ -503,21 +478,22 @@ describe('Sidebar', () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
-      const expandButton = screen.getByRole('button', {
-        name: /expand multireddits/i
+      // Now starts open, first click collapses
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse multireddits/i
       })
-      await user.click(expandButton)
-
-      expect(
-        screen.getByRole('button', {name: /collapse multireddits/i})
-      ).toBeInTheDocument()
-    })
-
-    it('shows multireddits initially closed', () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      await user.click(collapseButton)
 
       expect(
         screen.getByRole('button', {name: /expand multireddits/i})
+      ).toBeInTheDocument()
+    })
+
+    it('shows multireddits initially open', () => {
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      expect(
+        screen.getByRole('button', {name: /collapse multireddits/i})
       ).toBeInTheDocument()
     })
 
@@ -525,28 +501,29 @@ describe('Sidebar', () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
-      // Click the entire header (not just icon) to expand
-      const header = screen.getByRole('button', {name: /expand multireddits/i})
-      await user.click(header)
-
-      // Should be expanded now
-      expect(
-        screen.getByRole('button', {name: /collapse multireddits/i})
-      ).toBeInTheDocument()
-
-      // Click again to collapse
+      // Click the entire header (not just icon) to collapse (starts open)
+      const header = screen.getByRole('button', {
+        name: /collapse multireddits/i
+      })
       await user.click(header)
 
       // Should be collapsed now
       expect(
         screen.getByRole('button', {name: /expand multireddits/i})
       ).toBeInTheDocument()
+
+      // Click again to expand
+      await user.click(header)
+
+      // Should be expanded now
+      expect(
+        screen.getByRole('button', {name: /collapse multireddits/i})
+      ).toBeInTheDocument()
     })
   })
 
   describe('authenticated with both subscriptions and multireddits', () => {
     it('renders both sections', async () => {
-      const user = userEvent.setup()
       render(
         <Sidebar
           isAuthenticated
@@ -558,13 +535,7 @@ describe('Sidebar', () => {
       expect(screen.getByText('My Subreddits')).toBeInTheDocument()
       expect(screen.getByText('My Multireddits')).toBeInTheDocument()
 
-      // Expand both sections to verify they work
-      const expandButtons = screen.getAllByRole('button', {name: /expand/i})
-      for (const button of expandButtons) {
-        await user.click(button)
-      }
-
-      // Wait for content to be visible
+      // Both sections start open, content should be visible
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /r\/programming/i})
@@ -573,7 +544,6 @@ describe('Sidebar', () => {
     })
 
     it('renders all links from both sections', async () => {
-      const user = userEvent.setup()
       render(
         <Sidebar
           isAuthenticated
@@ -582,13 +552,7 @@ describe('Sidebar', () => {
         />
       )
 
-      // Expand both sections
-      const expandButtons = screen.getAllByRole('button', {name: /expand/i})
-      for (const button of expandButtons) {
-        await user.click(button)
-      }
-
-      // Wait for collapse animations to complete
+      // Both sections start open, content should be visible
       await waitFor(() => {
         // Subscriptions
         expect(
@@ -613,7 +577,7 @@ describe('Sidebar', () => {
         />
       )
 
-      // Subreddits start open, multireddits start closed - collapse subreddits
+      // Both sections start open - collapse subreddits
       const subredditsToggle = screen.getByRole('button', {
         name: /collapse my subreddits/i
       })
@@ -624,9 +588,9 @@ describe('Sidebar', () => {
         screen.getByRole('button', {name: /expand my subreddits/i})
       ).toBeInTheDocument()
 
-      // Multireddits still closed
+      // Multireddits still open
       expect(
-        screen.getByRole('button', {name: /expand multireddits/i})
+        screen.getByRole('button', {name: /collapse multireddits/i})
       ).toBeInTheDocument()
     })
   })
@@ -655,15 +619,9 @@ describe('Sidebar', () => {
     })
 
     it('has analytics event on multireddit links', async () => {
-      const user = userEvent.setup()
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
-      // Expand to see links
-      const expandButton = screen.getByRole('button', {
-        name: /expand multireddits/i
-      })
-      await user.click(expandButton)
-
+      // Section is now open by default
       const link = await screen.findByRole('link', {name: /tech news/i})
       expect(link).toHaveAttribute('data-umami-event', 'nav-multireddit')
     })

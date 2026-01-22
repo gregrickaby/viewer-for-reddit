@@ -114,7 +114,7 @@ describe('PostListWithTabs', () => {
       const topTab = screen.getByRole('tab', {name: /top/i})
       await user.click(topTab)
 
-      expect(mockPush).toHaveBeenCalledWith('?sort=top&time=day')
+      expect(mockPush).toHaveBeenCalledWith('?sort=top&time=week')
     })
 
     it('navigates when clicking rising tab', async () => {
