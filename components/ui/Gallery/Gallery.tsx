@@ -3,10 +3,8 @@
 import {GalleryItem} from '@/lib/types/reddit'
 import {Carousel} from '@mantine/carousel'
 import '@mantine/carousel/styles.css'
-import {ActionIcon, Text} from '@mantine/core'
-import {IconChevronLeft, IconChevronRight} from '@tabler/icons-react'
-import type {EmblaCarouselType} from 'embla-carousel'
-import {memo, useState} from 'react'
+import {Box, Text} from '@mantine/core'
+import {memo} from 'react'
 import styles from './Gallery.module.css'
 
 /**
@@ -25,10 +23,11 @@ interface GalleryProps {
  *
  * Features:
  * - Swipeable carousel navigation
+ * - Built-in Mantine navigation controls
  * - Dot indicators for current slide
  * - Optional captions per image
  * - Image counter (e.g., "2 / 5")
- * - Lazy loading with blur placeholders
+ * - Lazy loading for performance
  * - Memoized for performance
  *
  * @example
@@ -40,29 +39,43 @@ interface GalleryProps {
  * ```
  */
 function GalleryComponent({items, title}: Readonly<GalleryProps>) {
-  const [emblaApi, setEmblaApi] = useState<EmblaCarouselType | null>(null)
-
+  // Return null if no items
   if (!items || items.length === 0) {
     return null
   }
 
-  const handlePrev = () => {
-    emblaApi?.scrollPrev()
+  // Single item doesn't need carousel
+  if (items.length === 1) {
+    const item = items[0]
+    return (
+      <Box className={styles.singleImageWrapper}>
+        <Box className={styles.imageContainer}>
+          <img
+            src={item.url}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            className={styles.image}
+          />
+        </Box>
+        {item.caption && (
+          <Text className={styles.caption} size="sm" c="dimmed">
+            {item.caption}
+          </Text>
+        )}
+      </Box>
+    )
   }
 
-  const handleNext = () => {
-    emblaApi?.scrollNext()
-  }
-
+  // Multiple items - use carousel
   return (
-    <div className={styles.galleryWrapper}>
+    <Box className={styles.galleryWrapper}>
       <Carousel
-        getEmblaApi={setEmblaApi}
-        className={styles.carousel}
         withIndicators
-        withControls={false}
         classNames={{
           root: styles.carouselRoot,
+          viewport: styles.carouselViewport,
+          container: styles.carouselContainer,
           controls: styles.carouselControls,
           control: styles.carouselControl,
           indicators: styles.carouselIndicators,
@@ -70,52 +83,30 @@ function GalleryComponent({items, title}: Readonly<GalleryProps>) {
         }}
       >
         {items.map((item, index) => (
-          <Carousel.Slide key={item.id} className={styles.slide}>
-            <div className={styles.imageContainer}>
-              <img
-                src={item.url}
-                alt={`${title} - ${index + 1} of ${items.length}`}
-                loading="lazy"
-                decoding="async"
-                className={styles.image}
-              />
+          <Carousel.Slide key={item.id}>
+            <Box className={styles.slideContent}>
+              <Box className={styles.imageContainer}>
+                <img
+                  src={item.url}
+                  alt={`${title} - ${index + 1} of ${items.length}`}
+                  loading="lazy"
+                  decoding="async"
+                  className={styles.image}
+                />
+              </Box>
               {item.caption && (
-                <Text className={styles.caption} size="sm">
+                <Text className={styles.caption} size="sm" c="dimmed">
                   {item.caption}
                 </Text>
               )}
-            </div>
-            {items.length > 1 && (
-              <Text className={styles.counter} size="sm" c="dimmed">
+              <Text className={styles.counter} size="xs" c="dimmed" fw={500}>
                 {index + 1} / {items.length}
               </Text>
-            )}
+            </Box>
           </Carousel.Slide>
         ))}
       </Carousel>
-      {items.length > 1 && (
-        <>
-          <ActionIcon
-            className={styles.customControlPrev}
-            onClick={handlePrev}
-            aria-label="Previous image"
-            size="lg"
-            variant="default"
-          >
-            <IconChevronLeft aria-hidden="true" />
-          </ActionIcon>
-          <ActionIcon
-            className={styles.customControlNext}
-            onClick={handleNext}
-            aria-label="Next image"
-            size="lg"
-            variant="default"
-          >
-            <IconChevronRight aria-hidden="true" />
-          </ActionIcon>
-        </>
-      )}
-    </div>
+    </Box>
   )
 }
 
