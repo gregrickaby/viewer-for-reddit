@@ -52,3 +52,41 @@ export function extractSlug(permalink: string, postId: string): string {
 export function getIsVertical(width?: number, height?: number): boolean {
   return !!(width && height && height > width)
 }
+
+/**
+ * Builds the appropriate URL path based on feed type.
+ * Handles regular subreddits, home feed, and multireddits.
+ *
+ * @param baseUrl - Base Reddit API URL
+ * @param subreddit - Subreddit name, 'home', or multireddit path (e.g., 'user/username/m/multiname')
+ * @param sort - Sort option
+ * @returns URL path string
+ *
+ * @example
+ * ```typescript
+ * buildFeedUrlPath('https://oauth.reddit.com', 'popular', 'hot')
+ * // Returns: 'https://oauth.reddit.com/r/popular/hot.json'
+ *
+ * buildFeedUrlPath('https://oauth.reddit.com', 'home', 'hot')
+ * // Returns: 'https://oauth.reddit.com/hot.json'
+ *
+ * buildFeedUrlPath('https://oauth.reddit.com', 'user/johndoe/m/tech', 'top')
+ * // Returns: 'https://oauth.reddit.com/user/johndoe/m/tech/top.json'
+ * ```
+ */
+export function buildFeedUrlPath(
+  baseUrl: string,
+  subreddit: string,
+  sort: string
+): string {
+  if (subreddit === '' || subreddit === 'home') {
+    // Authenticated user's home feed (subscribed subreddits)
+    return `${baseUrl}/${sort}.json`
+  }
+  if (subreddit.startsWith('user/')) {
+    // Multireddit: /user/username/m/multiname/sort.json
+    return `${baseUrl}/${subreddit}/${sort}.json`
+  }
+  // Regular subreddit: /r/subreddit/sort.json
+  return `${baseUrl}/r/${subreddit}/${sort}.json`
+}

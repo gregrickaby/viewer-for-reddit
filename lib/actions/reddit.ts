@@ -23,33 +23,8 @@ import {
 } from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
 import {logger} from '@/lib/utils/logger'
+import {buildFeedUrlPath} from '@/lib/utils/reddit-helpers'
 import {retryWithBackoff} from '@/lib/utils/retry'
-import {cache} from 'react'
-
-/**
- * Builds the appropriate URL path based on feed type.
- *
- * @param baseUrl - Base Reddit API URL
- * @param subreddit - Subreddit name or feed type
- * @param sort - Sort option
- * @returns URL path string
- */
-function buildFeedUrlPath(
-  baseUrl: string,
-  subreddit: string,
-  sort: SortOption
-): string {
-  if (subreddit === '' || subreddit === 'home') {
-    // Authenticated user's home feed (subscribed subreddits)
-    return `${baseUrl}/${sort}.json`
-  }
-  if (subreddit.startsWith('user/')) {
-    // Multireddit: /user/username/m/multiname/sort.json
-    return `${baseUrl}/${subreddit}/${sort}.json`
-  }
-  // Regular subreddit: /r/subreddit/sort.json
-  return `${baseUrl}/r/${subreddit}/${sort}.json`
-}
 
 /**
  * Handles Reddit API error responses with specific error messages.
@@ -165,7 +140,7 @@ async function getHeaders(useAuth: boolean = false) {
 
 /**
  * Fetch posts from a subreddit, user home feed, or multireddit.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  *
  * Supports:
  * - Regular subreddits: 'popular', 'pics', etc.
@@ -193,70 +168,68 @@ async function getHeaders(useAuth: boolean = false) {
  * const {posts: topWeek} = await fetchPosts('popular', 'top', undefined, 'week')
  * ```
  */
-export const fetchPosts = cache(
-  async (
-    subreddit: string = 'popular',
-    sort: SortOption = 'hot',
-    after?: string,
-    timeFilter?: TimeFilter
-  ): Promise<{posts: RedditPost[]; after: string | null}> => {
-    try {
-      const session = await getSession()
-      const isAuthenticated = !!session.accessToken
+export async function fetchPosts(
+  subreddit: string = 'popular',
+  sort: SortOption = 'hot',
+  after?: string,
+  timeFilter?: TimeFilter
+): Promise<{posts: RedditPost[]; after: string | null}> {
+  try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
 
-      // Always use OAuth endpoint (works with both user and app tokens)
-      const baseUrl = REDDIT_API_URL
+    // Always use OAuth endpoint (works with both user and app tokens)
+    const baseUrl = REDDIT_API_URL
 
-      // Handle different feed types
-      const urlPath = buildFeedUrlPath(baseUrl, subreddit, sort)
-      const url = new URL(urlPath)
+    // Handle different feed types
+    const urlPath = buildFeedUrlPath(baseUrl, subreddit, sort)
+    const url = new URL(urlPath)
 
-      if (after) {
-        url.searchParams.set('after', after)
-      }
-      // Add time filter for top/controversial sorts
-      if (timeFilter && (sort === 'top' || sort === 'controversial')) {
-        url.searchParams.set('t', timeFilter)
-      }
-      url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-      url.searchParams.set('raw_json', '1')
-
-      const response = await fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
-        next: {revalidate: FIVE_MINUTES}
-      })
-
-      if (!response.ok) {
-        await handleFetchPostsError(response, url, isAuthenticated)
-      }
-
-      // Use codegen type for API response, then transform to simplified type
-      const data: ApiSubredditPostsResponse = await response.json()
-      const posts = (data.data?.children?.map((child) => child.data) ??
-        []) as RedditPost[]
-      const afterCursor = data.data?.after ?? null
-
-      logger.debug('Fetched posts successfully', {
-        subreddit,
-        sort,
-        count: posts.length,
-        hasMore: !!afterCursor
-      })
-
-      return {
-        posts,
-        after: afterCursor
-      }
-    } catch (error) {
-      logger.error('Error fetching posts', error, {context: 'fetchPosts'})
-      throw error
+    if (after) {
+      url.searchParams.set('after', after)
     }
+    // Add time filter for top/controversial sorts
+    if (timeFilter && (sort === 'top' || sort === 'controversial')) {
+      url.searchParams.set('t', timeFilter)
+    }
+    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
+    url.searchParams.set('raw_json', '1')
+
+    const response = await fetch(url.toString(), {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: FIVE_MINUTES}
+    })
+
+    if (!response.ok) {
+      await handleFetchPostsError(response, url, isAuthenticated)
+    }
+
+    // Use codegen type for API response, then transform to simplified type
+    const data: ApiSubredditPostsResponse = await response.json()
+    const posts = (data.data?.children?.map((child) => child.data) ??
+      []) as RedditPost[]
+    const afterCursor = data.data?.after ?? null
+
+    logger.debug('Fetched posts successfully', {
+      subreddit,
+      sort,
+      count: posts.length,
+      hasMore: !!afterCursor
+    })
+
+    return {
+      posts,
+      after: afterCursor
+    }
+  } catch (error) {
+    logger.error('Error fetching posts', error, {context: 'fetchPosts'})
+    throw error
   }
-)
+}
 
 /**
  * Fetch a single Reddit post with its comments.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  *
  * @param subreddit - Subreddit name
  * @param postId - Reddit post ID (without 't3_' prefix)
@@ -272,63 +245,61 @@ export const fetchPosts = cache(
  * const {post, comments} = await fetchPost('AskReddit', 'abc123', 'best')
  * ```
  */
-export const fetchPost = cache(
-  async (
-    subreddit: string,
-    postId: string,
-    sort: CommentSortOption = 'best'
-  ): Promise<{post: RedditPost; comments: RedditComment[]}> => {
-    try {
-      const session = await getSession()
-      const isAuthenticated = !!session.accessToken
+export async function fetchPost(
+  subreddit: string,
+  postId: string,
+  sort: CommentSortOption = 'best'
+): Promise<{post: RedditPost; comments: RedditComment[]}> {
+  try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
 
-      // Always use OAuth endpoint (works with both user and app tokens)
-      const baseUrl = REDDIT_API_URL
-      const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
+    // Always use OAuth endpoint (works with both user and app tokens)
+    const baseUrl = REDDIT_API_URL
+    const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
 
-      const response = await fetch(url, {
-        headers: await getHeaders(isAuthenticated),
-        next: {revalidate: FIVE_MINUTES}
-      })
+    const response = await fetch(url, {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: FIVE_MINUTES}
+    })
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Post not found')
-        }
-        throw new Error(`Reddit API error: ${response.statusText}`)
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Post not found')
       }
-
-      const [postData, commentsData] = await response.json()
-      const post = postData.data.children[0]?.data as RedditPost
-      const comments = commentsData.data.children
-        .filter(
-          (child: {
-            kind: string
-            data: unknown
-          }): child is {kind: 't1'; data: RedditComment} => child.kind === 't1'
-        )
-        .map((child: {kind: 't1'; data: RedditComment}) => child.data)
-
-      logger.debug('Fetched post successfully', {
-        postId,
-        subreddit,
-        commentCount: comments.length
-      })
-
-      return {
-        post,
-        comments
-      }
-    } catch (error) {
-      logger.error('Error fetching post', error, {context: 'fetchPost'})
-      throw error
+      throw new Error(`Reddit API error: ${response.statusText}`)
     }
+
+    const [postData, commentsData] = await response.json()
+    const post = postData.data.children[0]?.data as RedditPost
+    const comments = commentsData.data.children
+      .filter(
+        (child: {
+          kind: string
+          data: unknown
+        }): child is {kind: 't1'; data: RedditComment} => child.kind === 't1'
+      )
+      .map((child: {kind: 't1'; data: RedditComment}) => child.data)
+
+    logger.debug('Fetched post successfully', {
+      postId,
+      subreddit,
+      commentCount: comments.length
+    })
+
+    return {
+      post,
+      comments
+    }
+  } catch (error) {
+    logger.error('Error fetching post', error, {context: 'fetchPost'})
+    throw error
   }
-)
+}
 
 /**
  * Fetch information about a subreddit.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  * Results cached for 1 hour.
  *
  * @param subreddit - Subreddit name
@@ -344,49 +315,49 @@ export const fetchPost = cache(
  * console.log(info.subscribers) // 12345678
  * ```
  */
-export const fetchSubredditInfo = cache(
-  async (subreddit: string): Promise<RedditSubreddit> => {
-    try {
-      const session = await getSession()
-      const isAuthenticated = !!session.accessToken
+export async function fetchSubredditInfo(
+  subreddit: string
+): Promise<RedditSubreddit> {
+  try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
 
-      // Always use OAuth endpoint (works with both user and app tokens)
-      const baseUrl = REDDIT_API_URL
-      const url = `${baseUrl}/r/${subreddit}/about.json`
+    // Always use OAuth endpoint (works with both user and app tokens)
+    const baseUrl = REDDIT_API_URL
+    const url = `${baseUrl}/r/${subreddit}/about.json`
 
-      const response = await fetch(url, {
-        headers: await getHeaders(isAuthenticated),
-        next: {revalidate: ONE_HOUR}
-      })
+    const response = await fetch(url, {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: ONE_HOUR}
+    })
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Subreddit not found')
-        }
-        throw new Error(`Reddit API error: ${response.statusText}`)
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Subreddit not found')
       }
-
-      const data: ApiSubredditAboutResponse = await response.json()
-      const subredditData = data.data as RedditSubreddit
-
-      logger.debug('Fetched subreddit info successfully', {
-        subreddit,
-        subscribers: subredditData.subscribers
-      })
-
-      return subredditData
-    } catch (error) {
-      logger.error('Error fetching subreddit info', error, {
-        context: 'fetchSubredditInfo'
-      })
-      throw error
+      throw new Error(`Reddit API error: ${response.statusText}`)
     }
+
+    const data: ApiSubredditAboutResponse = await response.json()
+    const subredditData = data.data as RedditSubreddit
+
+    logger.debug('Fetched subreddit info successfully', {
+      subreddit,
+      subscribers: subredditData.subscribers
+    })
+
+    return subredditData
+  } catch (error) {
+    logger.error('Error fetching subreddit info', error, {
+      context: 'fetchSubredditInfo'
+    })
+    throw error
   }
-)
+}
 
 /**
  * Fetch ALL authenticated user's subreddit subscriptions.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  * Results cached for 10 minutes. Returns empty array for unauthenticated users.
  * Automatically fetches all pages to return complete subscription list.
  *
@@ -397,82 +368,80 @@ export const fetchSubredditInfo = cache(
  * const subscriptions = await fetchUserSubscriptions()
  * ```
  */
-export const fetchUserSubscriptions = cache(
-  async (): Promise<
-    Array<{
+export async function fetchUserSubscriptions(): Promise<
+  Array<{
+    name: string
+    displayName: string
+    icon: string
+    subscribers: number
+  }>
+> {
+  try {
+    const session = await getSession()
+    if (!session.accessToken) {
+      return []
+    }
+
+    const allSubscriptions: Array<{
       name: string
       displayName: string
       icon: string
       subscribers: number
-    }>
-  > => {
-    try {
-      const session = await getSession()
-      if (!session.accessToken) {
-        return []
+    }> = []
+    let after: string | null = null
+
+    // Loop through all pages to get complete subscription list
+    do {
+      const url = new URL(`${REDDIT_API_URL}/subreddits/mine/subscriber.json`)
+      url.searchParams.set('limit', '100')
+      url.searchParams.set('raw_json', '1')
+      if (after) {
+        url.searchParams.set('after', after)
       }
 
-      const allSubscriptions: Array<{
-        name: string
-        displayName: string
-        icon: string
-        subscribers: number
-      }> = []
-      let after: string | null = null
+      const response = await fetch(url.toString(), {
+        headers: await getHeaders(true),
+        next: {revalidate: TEN_MINUTES}
+      })
 
-      // Loop through all pages to get complete subscription list
-      do {
-        const url = new URL(`${REDDIT_API_URL}/subreddits/mine/subscriber.json`)
-        url.searchParams.set('limit', '100')
-        url.searchParams.set('raw_json', '1')
-        if (after) {
-          url.searchParams.set('after', after)
-        }
-
-        const response = await fetch(url.toString(), {
-          headers: await getHeaders(true),
-          next: {revalidate: TEN_MINUTES}
-        })
-
-        if (!response.ok) {
-          logger.warn(
-            `Failed to fetch subscriptions: ${response.status} ${response.statusText}`,
-            undefined,
-            {context: 'fetchUserSubscriptions'}
-          )
-          break
-        }
-
-        const data = await response.json()
-        const subscriptions = data.data.children.map(
-          (child: {data: Record<string, unknown>}) => ({
-            name: child.data.display_name as string,
-            displayName: child.data.display_name_prefixed as string,
-            icon:
-              (child.data.icon_img as string) ||
-              (child.data.community_icon as string) ||
-              '',
-            subscribers: (child.data.subscribers as number) || 0
-          })
+      if (!response.ok) {
+        logger.warn(
+          `Failed to fetch subscriptions: ${response.status} ${response.statusText}`,
+          undefined,
+          {context: 'fetchUserSubscriptions'}
         )
+        break
+      }
 
-        allSubscriptions.push(...subscriptions)
-        after = data.data?.after || null
-      } while (after)
+      const data = await response.json()
+      const subscriptions = data.data.children.map(
+        (child: {data: Record<string, unknown>}) => ({
+          name: child.data.display_name as string,
+          displayName: child.data.display_name_prefixed as string,
+          icon:
+            (child.data.icon_img as string) ||
+            (child.data.community_icon as string) ||
+            '',
+          subscribers: (child.data.subscribers as number) || 0
+        })
+      )
 
-      logger.debug('Fetched all subscriptions successfully', {
-        count: allSubscriptions.length
-      })
+      allSubscriptions.push(...subscriptions)
+      after = data.data?.after || null
+    } while (after)
 
-      return allSubscriptions
-    } catch (error) {
-      logger.error('Error fetching subscriptions', error, {
-        context: 'fetchUserSubscriptions'
-      })
-      return []
-    }
+    logger.debug('Fetched all subscriptions successfully', {
+      count: allSubscriptions.length
+    })
+
+    return allSubscriptions
+  } catch (error) {
+    logger.error('Error fetching subscriptions', error, {
+      context: 'fetchUserSubscriptions'
+    })
+    return []
   }
-)
+}
 
 /**
  * Cast a vote on a Reddit post or comment.
@@ -618,7 +587,7 @@ export async function savePost(
 
 /**
  * Fetch authenticated user's custom multireddits.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  * Results cached for 10 minutes. Returns empty array for unauthenticated users.
  *
  * @returns Promise resolving to array of multireddit objects
@@ -631,62 +600,60 @@ export async function savePost(
  * })
  * ```
  */
-export const fetchMultireddits = cache(
-  async (): Promise<
-    Array<{
-      name: string
-      displayName: string
-      path: string
-      subreddits: string[]
-    }>
-  > => {
-    try {
-      const session = await getSession()
-      if (!session.accessToken) {
-        return []
-      }
-
-      const url = `${REDDIT_API_URL}/api/multi/mine`
-
-      const response = await fetch(url, {
-        headers: await getHeaders(true),
-        next: {revalidate: TEN_MINUTES}
-      })
-
-      if (!response.ok) {
-        logger.warn(
-          `Failed to fetch multireddits: ${response.status} ${response.statusText}`,
-          undefined,
-          {context: 'fetchMultireddits'}
-        )
-        return []
-      }
-
-      const data = await response.json()
-      const multireddits = data.map((multi: any) => ({
-        name: multi.data.name,
-        displayName: multi.data.display_name,
-        path: multi.data.path,
-        subreddits: multi.data.subreddits?.map((sub: any) => sub.name) || []
-      }))
-
-      logger.debug('Fetched multireddits successfully', {
-        count: multireddits.length
-      })
-
-      return multireddits
-    } catch (error) {
-      logger.error('Error fetching multireddits', error, {
-        context: 'fetchMultireddits'
-      })
+export async function fetchMultireddits(): Promise<
+  Array<{
+    name: string
+    displayName: string
+    path: string
+    subreddits: string[]
+  }>
+> {
+  try {
+    const session = await getSession()
+    if (!session.accessToken) {
       return []
     }
+
+    const url = `${REDDIT_API_URL}/api/multi/mine`
+
+    const response = await fetch(url, {
+      headers: await getHeaders(true),
+      next: {revalidate: TEN_MINUTES}
+    })
+
+    if (!response.ok) {
+      logger.warn(
+        `Failed to fetch multireddits: ${response.status} ${response.statusText}`,
+        undefined,
+        {context: 'fetchMultireddits'}
+      )
+      return []
+    }
+
+    const data = await response.json()
+    const multireddits = data.map((multi: any) => ({
+      name: multi.data.name,
+      displayName: multi.data.display_name,
+      path: multi.data.path,
+      subreddits: multi.data.subreddits?.map((sub: any) => sub.name) || []
+    }))
+
+    logger.debug('Fetched multireddits successfully', {
+      count: multireddits.length
+    })
+
+    return multireddits
+  } catch (error) {
+    logger.error('Error fetching multireddits', error, {
+      context: 'fetchMultireddits'
+    })
+    return []
   }
-)
+}
 
 /**
  * Fetch Reddit user profile information.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  * Results cached for 5 minutes.
  *
  * @param username - Reddit username (without 'u/' prefix)
@@ -703,52 +670,50 @@ export const fetchMultireddits = cache(
  * console.log(`Total karma: ${user.total_karma}`)
  * ```
  */
-export const fetchUserInfo = cache(
-  async (username: string): Promise<RedditUser> => {
-    try {
-      const session = await getSession()
-      const isAuthenticated = !!session.accessToken
+export async function fetchUserInfo(username: string): Promise<RedditUser> {
+  try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
 
-      // Always use OAuth endpoint (works with both user and app tokens)
-      const baseUrl = REDDIT_API_URL
-      const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
+    // Always use OAuth endpoint (works with both user and app tokens)
+    const baseUrl = REDDIT_API_URL
+    const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
 
-      const response = await fetch(url, {
-        headers: await getHeaders(isAuthenticated),
-        next: {revalidate: FIVE_MINUTES}
-      })
+    const response = await fetch(url, {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: FIVE_MINUTES}
+    })
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('User not found')
-        }
-        throw new Error(`Reddit API error: ${response.statusText}`)
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('User not found')
       }
-
-      const data: ApiUserProfileResponse = await response.json()
-      if (!data.data) {
-        throw new Error('Invalid user data received from API')
-      }
-      const userData = data.data as RedditUser
-
-      logger.debug('Fetched user info successfully', {
-        username,
-        karma: userData.total_karma
-      })
-
-      return userData
-    } catch (error) {
-      logger.error('Error fetching user info', error, {
-        context: 'fetchUserInfo'
-      })
-      throw error
+      throw new Error(`Reddit API error: ${response.statusText}`)
     }
+
+    const data: ApiUserProfileResponse = await response.json()
+    if (!data.data) {
+      throw new Error('Invalid user data received from API')
+    }
+    const userData = data.data as RedditUser
+
+    logger.debug('Fetched user info successfully', {
+      username,
+      karma: userData.total_karma
+    })
+
+    return userData
+  } catch (error) {
+    logger.error('Error fetching user info', error, {
+      context: 'fetchUserInfo'
+    })
+    throw error
   }
-)
+}
 
 /**
  * Get the current authenticated user's avatar URL.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  * Returns null if not authenticated or if avatar is not available.
  * Results cached for 10 minutes.
  *
@@ -759,7 +724,7 @@ export const fetchUserInfo = cache(
  * const avatarUrl = await getCurrentUserAvatar()
  * ```
  */
-export const getCurrentUserAvatar = cache(async (): Promise<string | null> => {
+export async function getCurrentUserAvatar(): Promise<string | null> {
   try {
     const session = await getSession()
     if (!session.accessToken || !session.username) {
@@ -774,11 +739,11 @@ export const getCurrentUserAvatar = cache(async (): Promise<string | null> => {
     })
     return null
   }
-})
+}
 
 /**
  * Fetch posts submitted by a Reddit user.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  * Results cached for 5 minutes.
  *
  * @param username - Reddit username (without 'u/' prefix)
@@ -796,64 +761,62 @@ export const getCurrentUserAvatar = cache(async (): Promise<string | null> => {
  * const {posts: morePosts} = await fetchUserPosts('spez', after)
  * ```
  */
-export const fetchUserPosts = cache(
-  async (
-    username: string,
-    after?: string
-  ): Promise<{posts: RedditPost[]; after: string | null}> => {
-    try {
-      const session = await getSession()
-      const isAuthenticated = !!session.accessToken
+export async function fetchUserPosts(
+  username: string,
+  after?: string
+): Promise<{posts: RedditPost[]; after: string | null}> {
+  try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
 
-      // Always use OAuth endpoint (works with both user and app tokens)
-      const baseUrl = REDDIT_API_URL
-      const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
+    // Always use OAuth endpoint (works with both user and app tokens)
+    const baseUrl = REDDIT_API_URL
+    const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
 
-      url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-      url.searchParams.set('raw_json', '1')
-      if (after) {
-        url.searchParams.set('after', after)
-      }
-
-      const response = await fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
-        next: {revalidate: FIVE_MINUTES}
-      })
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('User not found')
-        }
-        throw new Error(`Reddit API error: ${response.statusText}`)
-      }
-
-      const data: ApiSubredditPostsResponse = await response.json()
-      const posts = (data.data?.children?.map((child) => child.data) ??
-        []) as RedditPost[]
-      const afterCursor = data.data?.after ?? null
-
-      logger.debug('Fetched user posts successfully', {
-        username,
-        count: posts.length,
-        hasMore: !!afterCursor
-      })
-
-      return {
-        posts,
-        after: afterCursor
-      }
-    } catch (error) {
-      logger.error('Error fetching user posts', error, {
-        context: 'fetchUserPosts'
-      })
-      throw error
+    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
+    url.searchParams.set('raw_json', '1')
+    if (after) {
+      url.searchParams.set('after', after)
     }
+
+    const response = await fetch(url.toString(), {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: FIVE_MINUTES}
+    })
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('User not found')
+      }
+      throw new Error(`Reddit API error: ${response.statusText}`)
+    }
+
+    const data: ApiSubredditPostsResponse = await response.json()
+    const posts = (data.data?.children?.map((child) => child.data) ??
+      []) as RedditPost[]
+    const afterCursor = data.data?.after ?? null
+
+    logger.debug('Fetched user posts successfully', {
+      username,
+      count: posts.length,
+      hasMore: !!afterCursor
+    })
+
+    return {
+      posts,
+      after: afterCursor
+    }
+  } catch (error) {
+    logger.error('Error fetching user posts', error, {
+      context: 'fetchUserPosts'
+    })
+    throw error
   }
-)
+}
 
 /**
  * Search Reddit for posts matching a query.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  * Results cached for 5 minutes. Includes NSFW content.
  *
  * @param query - Search query string
@@ -868,57 +831,55 @@ export const fetchUserPosts = cache(
  * console.log(`Found ${posts.length} posts`)
  * ```
  */
-export const searchReddit = cache(
-  async (
-    query: string,
-    after?: string
-  ): Promise<{posts: RedditPost[]; after: string | null}> => {
-    try {
-      const session = await getSession()
-      const isAuthenticated = !!session.accessToken
+export async function searchReddit(
+  query: string,
+  after?: string
+): Promise<{posts: RedditPost[]; after: string | null}> {
+  try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
 
-      // Always use OAuth endpoint (works with both user and app tokens)
-      const baseUrl = REDDIT_API_URL
-      const url = new URL(`${baseUrl}/search.json`)
+    // Always use OAuth endpoint (works with both user and app tokens)
+    const baseUrl = REDDIT_API_URL
+    const url = new URL(`${baseUrl}/search.json`)
 
-      url.searchParams.set('q', query)
-      url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-      url.searchParams.set('raw_json', '1')
-      url.searchParams.set('include_over_18', 'on')
-      if (after) {
-        url.searchParams.set('after', after)
-      }
-
-      const response = await fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
-        next: {revalidate: FIVE_MINUTES}
-      })
-
-      if (!response.ok) {
-        throw new Error(`Reddit API error: ${response.statusText}`)
-      }
-
-      const data: ApiSubredditPostsResponse = await response.json()
-      const posts = (data.data?.children?.map((child) => child.data) ??
-        []) as RedditPost[]
-      const afterCursor = data.data?.after ?? null
-
-      logger.debug('Search successful', {
-        query,
-        count: posts.length,
-        hasMore: !!afterCursor
-      })
-
-      return {
-        posts,
-        after: afterCursor
-      }
-    } catch (error) {
-      logger.error('Error searching Reddit', error, {context: 'searchReddit'})
-      throw error
+    url.searchParams.set('q', query)
+    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
+    url.searchParams.set('raw_json', '1')
+    url.searchParams.set('include_over_18', 'on')
+    if (after) {
+      url.searchParams.set('after', after)
     }
+
+    const response = await fetch(url.toString(), {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: FIVE_MINUTES}
+    })
+
+    if (!response.ok) {
+      throw new Error(`Reddit API error: ${response.statusText}`)
+    }
+
+    const data: ApiSubredditPostsResponse = await response.json()
+    const posts = (data.data?.children?.map((child) => child.data) ??
+      []) as RedditPost[]
+    const afterCursor = data.data?.after ?? null
+
+    logger.debug('Search successful', {
+      query,
+      count: posts.length,
+      hasMore: !!afterCursor
+    })
+
+    return {
+      posts,
+      after: afterCursor
+    }
+  } catch (error) {
+    logger.error('Error searching Reddit', error, {context: 'searchReddit'})
+    throw error
   }
-)
+}
 
 /**
  * Search for subreddits using Reddit's autocomplete API.
@@ -1096,7 +1057,7 @@ export async function toggleSubscription(
 
 /**
  * Fetch saved posts for a user.
- * Server Action wrapped with React cache() for automatic deduplication.
+ * Server Action with Next.js fetch caching.
  *
  * Returns only posts (not comments) that are not stickied.
  *
@@ -1116,86 +1077,84 @@ export async function toggleSubscription(
  * const {posts: morePosts} = await fetchSavedPosts('johndoe', after)
  * ```
  */
-export const fetchSavedPosts = cache(
-  async (
-    username: string,
-    after?: string
-  ): Promise<{posts: RedditPost[]; after: string | null}> => {
-    try {
-      const session = await getSession()
-      if (!session.accessToken) {
+export async function fetchSavedPosts(
+  username: string,
+  after?: string
+): Promise<{posts: RedditPost[]; after: string | null}> {
+  try {
+    const session = await getSession()
+    if (!session.accessToken) {
+      throw new Error('Authentication required')
+    }
+
+    const headers = await getHeaders(true)
+
+    const url = new URL(`${REDDIT_API_URL}/user/${username}/saved.json`)
+    url.searchParams.set('limit', '100')
+    url.searchParams.set('raw_json', '1')
+    if (after) {
+      url.searchParams.set('after', after)
+    }
+
+    logger.debug('Fetching saved posts', {
+      username,
+      after,
+      url: url.toString()
+    })
+
+    const response = await retryWithBackoff(
+      () =>
+        fetch(url.toString(), {
+          headers,
+          next: {revalidate: FIVE_MINUTES}
+        }),
+      3
+    )
+
+    if (!response.ok) {
+      if (response.status === 401) {
         throw new Error('Authentication required')
       }
-
-      const headers = await getHeaders(true)
-
-      const url = new URL(`${REDDIT_API_URL}/user/${username}/saved.json`)
-      url.searchParams.set('limit', '100')
-      url.searchParams.set('raw_json', '1')
-      if (after) {
-        url.searchParams.set('after', after)
+      if (response.status === 404) {
+        throw new Error('User not found')
       }
-
-      logger.debug('Fetching saved posts', {
-        username,
-        after,
-        url: url.toString()
-      })
-
-      const response = await retryWithBackoff(
-        () =>
-          fetch(url.toString(), {
-            headers,
-            next: {revalidate: FIVE_MINUTES}
-          }),
-        3
-      )
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Authentication required')
-        }
-        if (response.status === 404) {
-          throw new Error('User not found')
-        }
-        if (response.status === 429) {
-          throw new Error(
-            'Rate limit exceeded. Log in to continue viewing the site.'
-          )
-        }
-        throw new Error(`Reddit API error: ${response.statusText}`)
-      }
-
-      const data: ApiSubredditPostsResponse = await response.json()
-
-      // Filter to only posts (t3) and exclude stickied posts
-      const allChildren = data.data?.children || []
-      const posts = allChildren
-        .filter(
-          (child) =>
-            child.kind === 't3' &&
-            child.data &&
-            !(child.data as RedditPost).stickied
+      if (response.status === 429) {
+        throw new Error(
+          'Rate limit exceeded. Log in to continue viewing the site.'
         )
-        .map((child) => child.data as RedditPost)
-
-      logger.debug('Fetched saved posts', {
-        username,
-        count: posts.length,
-        after: data.data?.after
-      })
-
-      return {
-        posts,
-        after: data.data?.after || null
       }
-    } catch (error) {
-      logger.error('Error fetching saved posts', error, {
-        context: 'fetchSavedPosts',
-        username,
-        after
-      })
-      throw error
+      throw new Error(`Reddit API error: ${response.statusText}`)
     }
+
+    const data: ApiSubredditPostsResponse = await response.json()
+
+    // Filter to only posts (t3) and exclude stickied posts
+    const allChildren = data.data?.children || []
+    const posts = allChildren
+      .filter(
+        (child) =>
+          child.kind === 't3' &&
+          child.data &&
+          !(child.data as RedditPost).stickied
+      )
+      .map((child) => child.data as RedditPost)
+
+    logger.debug('Fetched saved posts', {
+      username,
+      count: posts.length,
+      after: data.data?.after
+    })
+
+    return {
+      posts,
+      after: data.data?.after || null
+    }
+  } catch (error) {
+    logger.error('Error fetching saved posts', error, {
+      context: 'fetchSavedPosts',
+      username,
+      after
+    })
+    throw error
   }
-)
+}

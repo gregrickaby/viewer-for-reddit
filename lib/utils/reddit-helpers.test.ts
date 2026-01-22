@@ -1,5 +1,6 @@
 import {describe, expect, it} from 'vitest'
 import {
+  buildFeedUrlPath,
   extractSlug,
   getInitialVoteState,
   getIsVertical,
@@ -159,6 +160,129 @@ describe('reddit-helpers', () => {
     it('handles very large dimensions', () => {
       expect(getIsVertical(10000, 20000)).toBe(true)
       expect(getIsVertical(20000, 10000)).toBe(false)
+    })
+  })
+
+  describe('buildFeedUrlPath', () => {
+    const baseUrl = 'https://oauth.reddit.com'
+
+    describe('regular subreddits', () => {
+      it('builds path for regular subreddit with hot sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'popular', 'hot')).toBe(
+          'https://oauth.reddit.com/r/popular/hot.json'
+        )
+      })
+
+      it('builds path for regular subreddit with new sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'javascript', 'new')).toBe(
+          'https://oauth.reddit.com/r/javascript/new.json'
+        )
+      })
+
+      it('builds path for regular subreddit with top sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'programming', 'top')).toBe(
+          'https://oauth.reddit.com/r/programming/top.json'
+        )
+      })
+
+      it('builds path for regular subreddit with rising sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'askreddit', 'rising')).toBe(
+          'https://oauth.reddit.com/r/askreddit/rising.json'
+        )
+      })
+
+      it('builds path for regular subreddit with controversial sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'worldnews', 'controversial')).toBe(
+          'https://oauth.reddit.com/r/worldnews/controversial.json'
+        )
+      })
+
+      it('handles subreddit names with underscores', () => {
+        expect(buildFeedUrlPath(baseUrl, 'web_design', 'hot')).toBe(
+          'https://oauth.reddit.com/r/web_design/hot.json'
+        )
+      })
+
+      it('handles subreddit names with numbers', () => {
+        expect(buildFeedUrlPath(baseUrl, 'formula1', 'hot')).toBe(
+          'https://oauth.reddit.com/r/formula1/hot.json'
+        )
+      })
+    })
+
+    describe('home feed', () => {
+      it('builds path for empty string (home feed)', () => {
+        expect(buildFeedUrlPath(baseUrl, '', 'hot')).toBe(
+          'https://oauth.reddit.com/hot.json'
+        )
+      })
+
+      it('builds path for "home" string', () => {
+        expect(buildFeedUrlPath(baseUrl, 'home', 'hot')).toBe(
+          'https://oauth.reddit.com/hot.json'
+        )
+      })
+
+      it('builds path for home feed with different sorts', () => {
+        expect(buildFeedUrlPath(baseUrl, 'home', 'new')).toBe(
+          'https://oauth.reddit.com/new.json'
+        )
+        expect(buildFeedUrlPath(baseUrl, '', 'top')).toBe(
+          'https://oauth.reddit.com/top.json'
+        )
+      })
+    })
+
+    describe('multireddits', () => {
+      it('builds path for multireddit with hot sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'user/johndoe/m/tech', 'hot')).toBe(
+          'https://oauth.reddit.com/user/johndoe/m/tech/hot.json'
+        )
+      })
+
+      it('builds path for multireddit with new sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'user/janedoe/m/gaming', 'new')).toBe(
+          'https://oauth.reddit.com/user/janedoe/m/gaming/new.json'
+        )
+      })
+
+      it('builds path for multireddit with top sort', () => {
+        expect(buildFeedUrlPath(baseUrl, 'user/testuser/m/news', 'top')).toBe(
+          'https://oauth.reddit.com/user/testuser/m/news/top.json'
+        )
+      })
+
+      it('handles multireddit with underscore in name', () => {
+        expect(buildFeedUrlPath(baseUrl, 'user/test/m/my_multi', 'hot')).toBe(
+          'https://oauth.reddit.com/user/test/m/my_multi/hot.json'
+        )
+      })
+
+      it('handles multireddit with different username formats', () => {
+        expect(
+          buildFeedUrlPath(baseUrl, 'user/test_user_123/m/multi', 'hot')
+        ).toBe('https://oauth.reddit.com/user/test_user_123/m/multi/hot.json')
+      })
+    })
+
+    describe('edge cases', () => {
+      it('handles different base URLs', () => {
+        expect(
+          buildFeedUrlPath('https://www.reddit.com', 'popular', 'hot')
+        ).toBe('https://www.reddit.com/r/popular/hot.json')
+      })
+
+      it('handles base URL without trailing slash', () => {
+        expect(
+          buildFeedUrlPath('https://oauth.reddit.com', 'pics', 'new')
+        ).toBe('https://oauth.reddit.com/r/pics/new.json')
+      })
+
+      it('handles single character subreddit', () => {
+        expect(buildFeedUrlPath(baseUrl, 'a', 'hot')).toBe(
+          'https://oauth.reddit.com/r/a/hot.json'
+        )
+      })
     })
   })
 })

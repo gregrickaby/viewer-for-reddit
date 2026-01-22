@@ -93,16 +93,15 @@ const handleVote = (direction: number) => {
 
 ### Data Fetching
 
-- [ ] **Cache Wrapper**: Server actions wrapped with React `cache()` for deduplication
+- [ ] **Next.js Fetch Caching**: Server actions use `fetch()` with `next: {revalidate: seconds}` for automatic caching and request deduplication
 - [ ] **Error Handling**: Comprehensive try/catch with specific error messages
-- [ ] **Next.js Caching**: Uses `next: {revalidate: seconds}` for appropriate cache times
+- [ ] **Explicit Cache Times**: Uses constants like `FIVE_MINUTES`, `TEN_MINUTES` for revalidate values
 
 ```typescript
 // ✅ CORRECT Pattern
-import {cache} from 'react'
 import {REDDIT_API_URL, FIVE_MINUTES} from '@/lib/utils/constants'
 
-export const fetchPosts = cache(async (subreddit: string) => {
+export async function fetchPosts(subreddit: string) {
   const session = await getSession()
   const headers = await getHeaders(!!session.accessToken)
 
@@ -119,7 +118,7 @@ export const fetchPosts = cache(async (subreddit: string) => {
   }
 
   return response.json()
-})
+}
 ```
 
 ### Component Architecture
@@ -417,7 +416,6 @@ export function InteractiveComponent({...props}: Readonly<Props>) {
 ```typescript
 'use server'
 
-import {cache} from 'react'
 import {getSession} from '@/lib/auth/session'
 import {getEnvVar} from '@/lib/utils/env'
 import {REDDIT_API_URL, FIVE_MINUTES} from '@/lib/utils/constants'
@@ -438,7 +436,7 @@ async function getHeaders(useAuth: boolean = false) {
   return headers
 }
 
-export const fetchData = cache(async (id: string) => {
+export async function fetchData(id: string) {
   const session = await getSession()
   const headers = await getHeaders(!!session.accessToken)
 
@@ -455,7 +453,7 @@ export const fetchData = cache(async (id: string) => {
   }
 
   return response.json()
-})
+}
 ```
 
 ## File Organization Standards

@@ -37,7 +37,7 @@ These specialized instructions apply automatically when editing relevant files v
 
 **Server Components by Default** - No `"use client"` needed. Only add for interactivity (hooks, events, browser APIs).
 
-**All API Calls in Server Actions** - `/lib/actions/reddit.ts` wrapped with React `cache()` for deduplication.
+**All API Calls in Server Actions** - `/lib/actions/reddit.ts` uses Next.js `fetch()` with `next: {revalidate}` for caching and automatic request deduplication.
 
 **Critical Conventions**:
 

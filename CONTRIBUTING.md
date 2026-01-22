@@ -247,10 +247,9 @@ export function PostCard({post}: Readonly<PostCardProps>) {
 ```typescript
 'use server'
 
-import {cache} from 'react'
 import {REDDIT_API_URL, FIVE_MINUTES} from '@/lib/utils/constants'
 
-export const fetchPosts = cache(async (subreddit: string, sort: SortOption) => {
+export async function fetchPosts(subreddit: string, sort: SortOption) {
   const session = await getSession()
   const headers = await getHeaders(!!session.accessToken)
 
@@ -269,7 +268,7 @@ export const fetchPosts = cache(async (subreddit: string, sort: SortOption) => {
   const data: ApiSubredditPostsResponse = await response.json()
   const posts = data.data?.children?.map((c) => c.data) as RedditPost[]
   return {posts, after: data.data?.after}
-})
+}
 ```
 
 **Why?**
@@ -587,7 +586,7 @@ Before submitting a pull request:
 - [ ] No TypeScript errors
 - [ ] No ESLint warnings
 - [ ] Code follows project conventions (see `.github/instructions/code-standards.instructions.md`)
-- [ ] Server Actions wrapped with `cache()`
+- [ ] Server Actions use Next.js fetch with `next: {revalidate}` for caching
 - [ ] Error messages are specific by HTTP status
 - [ ] HTML sanitized with `DOMPurify.sanitize()`
 - [ ] Race conditions prevented (`if (isPending) return`)

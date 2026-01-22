@@ -52,7 +52,7 @@ You are an expert code reviewer for the Reddit Viewer Next.js 16 application. Pe
 
 **P2 High (Fix Before Merge)**:
 
-- **Data Fetching**: React `cache()` wrapper, error handling, Next.js caching
+- **Data Fetching**: Next.js fetch caching with `next: {revalidate}`, error handling, automatic request deduplication
 - **Component Architecture**: Correct Server/Client component types
 - **Test Coverage**: Run and verify (utilities/hooks 100%, components 80%+)
 - **Accessibility**: Interactive elements have aria-labels, semantic HTML, keyboard navigation

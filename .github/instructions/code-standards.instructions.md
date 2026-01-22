@@ -126,36 +126,37 @@ export function PostCard({post}: Readonly<PostCardProps>) {
 ```typescript
 'use server'
 
-import {cache} from 'react'
 import {REDDIT_API_URL, FIVE_MINUTES} from '@/lib/utils/constants'
 
-export const fetchPosts = cache(
-  async (subreddit: string, sort: SortOption, after?: string) => {
-    const session = await getSession()
-    const headers = await getHeaders(!!session.accessToken)
+export async function fetchPosts(
+  subreddit: string,
+  sort: SortOption,
+  after?: string
+) {
+  const session = await getSession()
+  const headers = await getHeaders(!!session.accessToken)
 
-    const response = await fetch(url, {
-      headers,
-      next: {revalidate: FIVE_MINUTES}
-    })
+  const response = await fetch(url, {
+    headers,
+    next: {revalidate: FIVE_MINUTES}
+  })
 
-    if (!response.ok) {
-      if (response.status === 401) throw new Error('Authentication expired')
-      if (response.status === 404) throw new Error('Subreddit not found')
-      if (response.status === 429) throw new Error('Rate limit exceeded')
-      throw new Error(`Reddit API error: ${response.statusText}`)
-    }
-
-    const data: ApiSubredditPostsResponse = await response.json()
-    const posts = data.data?.children?.map((c) => c.data) as RedditPost[]
-    return {posts, after: data.data?.after}
+  if (!response.ok) {
+    if (response.status === 401) throw new Error('Authentication expired')
+    if (response.status === 404) throw new Error('Subreddit not found')
+    if (response.status === 429) throw new Error('Rate limit exceeded')
+    throw new Error(`Reddit API error: ${response.statusText}`)
   }
-)
+
+  const data: ApiSubredditPostsResponse = await response.json()
+  const posts = data.data?.children?.map((c) => c.data) as RedditPost[]
+  return {posts, after: data.data?.after}
+}
 ```
 
 **Required patterns:**
 
-1. **React `cache()` wrapper** - Automatic request deduplication
+1. **Next.js fetch caching** - Use `next: {revalidate}` for automatic caching and request deduplication
 2. **Specific error messages** - Different message per HTTP status
 3. **Explicit caching** - Use constants: `FIVE_MINUTES`, `TEN_MINUTES`, `ONE_HOUR`
 4. **Type transformation** - API types → simplified app types at boundary
@@ -524,11 +525,16 @@ const sessionOptions: SessionOptions = {
 
 ## Performance Optimizations
 
-### 1. React cache() for Deduplication
+### 1. Next.js Fetch Deduplication and Caching
 
 ```typescript
-export const fetchPosts = cache(async (...) => {...})
-// Multiple components call → only 1 API request
+export async function fetchPosts(...) {
+  const response = await fetch(url, {
+    next: {revalidate: FIVE_MINUTES}
+  })
+  // Next.js automatically deduplicates identical GET requests in same render pass
+  // AND caches responses across requests based on revalidate time
+}
 ```
 
 ### 2. Next.js Route Cache
@@ -669,7 +675,7 @@ await fetch(url, {next: {revalidate: FIVE_MINUTES}})
 
 - [ ] Server Components by default (no `'use client'` unless needed)
 - [ ] All Reddit API calls in `lib/actions/reddit.ts`
-- [ ] Server Actions wrapped with `cache()`
+- [ ] Server Actions use Next.js fetch with `next: {revalidate}` for caching
 - [ ] No ENV var access or functions in Client Components
 - [ ] Specific error messages by HTTP status
 - [ ] Check `if (isPending) return` in async handlers
