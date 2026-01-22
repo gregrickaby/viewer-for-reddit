@@ -10,16 +10,25 @@ vi.mock('@/lib/actions/reddit', () => ({
 
 describe('Sidebar', () => {
   const mockSubscriptions = [
-    {name: 'programming', displayName: 'r/programming', icon: 'icon1.png'},
+    {
+      name: 'programming',
+      displayName: 'r/programming',
+      icon: 'https://example.com/icon1.png'
+    },
     {name: 'javascript', displayName: 'r/javascript'},
-    {name: 'typescript', displayName: 'r/typescript'}
+    {
+      name: 'typescript',
+      displayName: 'r/typescript',
+      icon: 'https://example.com/icon2.png'
+    }
   ]
 
   const mockMultireddits = [
     {
       name: 'tech',
       displayName: 'Tech News',
-      path: '/user/testuser/m/tech'
+      path: '/user/testuser/m/tech',
+      icon: 'https://example.com/tech-icon.png'
     },
     {
       name: 'gaming',
@@ -352,6 +361,58 @@ describe('Sidebar', () => {
       expect(programmingLink).toHaveAttribute('href', '/r/programming')
     })
 
+    it('renders subreddit icon when available', async () => {
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Section is expanded by default
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /r\/programming/i})
+        ).toBeInTheDocument()
+      })
+
+      // Check for Avatar component with icon
+      const iconImg = screen.getByAltText('r/programming icon')
+      expect(iconImg).toBeInTheDocument()
+      expect(iconImg).toHaveAttribute('src', 'https://example.com/icon1.png')
+    })
+
+    it('renders fallback icon when subreddit has no icon', async () => {
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Section is expanded by default
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /r\/javascript/i})
+        ).toBeInTheDocument()
+      })
+
+      // Should render with the default message icon (no Avatar with alt text)
+      expect(screen.queryByAltText('r/javascript icon')).not.toBeInTheDocument()
+    })
+
+    it('renders multiple icons correctly', async () => {
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      // Section is expanded by default
+      await waitFor(() => {
+        const programmingIcon = screen.getByAltText('r/programming icon')
+        expect(programmingIcon).toHaveAttribute(
+          'src',
+          'https://example.com/icon1.png'
+        )
+      })
+
+      const typescriptIcon = screen.getByAltText('r/typescript icon')
+      expect(typescriptIcon).toHaveAttribute(
+        'src',
+        'https://example.com/icon2.png'
+      )
+
+      // javascript should not have an icon
+      expect(screen.queryByAltText('r/javascript icon')).not.toBeInTheDocument()
+    })
+
     it('toggles subscriptions collapse when button clicked', async () => {
       const user = userEvent.setup()
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
@@ -472,6 +533,39 @@ describe('Sidebar', () => {
       // Section is now open by default
       const techLink = await screen.findByRole('link', {name: /tech news/i})
       expect(techLink).toHaveAttribute('href', '/user/testuser/m/tech')
+    })
+
+    it('renders multireddit icon when available', async () => {
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      // Section is open by default
+      await waitFor(() => {
+        expect(
+          screen.getByRole('link', {name: /tech news/i})
+        ).toBeInTheDocument()
+      })
+
+      // Check for Avatar component with icon
+      const iconImg = screen.getByAltText('Tech News icon')
+      expect(iconImg).toBeInTheDocument()
+      expect(iconImg).toHaveAttribute(
+        'src',
+        'https://example.com/tech-icon.png'
+      )
+    })
+
+    it('renders fallback avatar with first letter when no icon', async () => {
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      // Section is open by default
+      await waitFor(() => {
+        expect(screen.getByRole('link', {name: /gaming/i})).toBeInTheDocument()
+      })
+
+      // Should render Avatar with first letter (no alt text for letter avatars)
+      expect(screen.queryByAltText('Gaming icon')).not.toBeInTheDocument()
+      // Check the text is present in the avatar
+      expect(screen.getByText('G')).toBeInTheDocument()
     })
 
     it('toggles multireddits collapse when button clicked', async () => {

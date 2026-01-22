@@ -28,6 +28,7 @@ interface AppLayoutProps {
     name: string
     displayName: string
     path: string
+    icon?: string
   }>
 }
 

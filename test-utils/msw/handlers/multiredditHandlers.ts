@@ -9,7 +9,8 @@ export const multiredditHandlers = [
           name: 'tech',
           display_name: 'Tech News',
           path: '/user/testuser/m/tech',
-          subreddits: [{name: 'programming'}, {name: 'technology'}]
+          subreddits: [{name: 'programming'}, {name: 'technology'}],
+          icon_url: 'https://example.com/tech-icon.png'
         }
       },
       {

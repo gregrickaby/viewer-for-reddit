@@ -606,6 +606,7 @@ export async function fetchMultireddits(): Promise<
     displayName: string
     path: string
     subreddits: string[]
+    icon?: string
   }>
 > {
   try {
@@ -635,7 +636,8 @@ export async function fetchMultireddits(): Promise<
       name: multi.data.name,
       displayName: multi.data.display_name,
       path: multi.data.path,
-      subreddits: multi.data.subreddits?.map((sub: any) => sub.name) || []
+      subreddits: multi.data.subreddits?.map((sub: any) => sub.name) || [],
+      icon: multi.data.icon_url || ''
     }))
 
     logger.debug('Fetched multireddits successfully', {
