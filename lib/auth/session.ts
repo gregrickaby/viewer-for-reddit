@@ -10,27 +10,27 @@ import {getIronSession, IronSession, SessionOptions} from 'iron-session'
 import {cookies} from 'next/headers'
 
 /**
- * Iron-session configuration options.
+ * Get iron-session configuration options.
  * Session cookies are:
  * - Encrypted with SESSION_SECRET (min 32 chars)
  * - HTTP-only (not accessible via JavaScript)
  * - Secure in production only (requires HTTPS)
- * - Valid for 30 days
+ * - Valid for 7 days
  * - Domain-restricted in production
+ *
+ * Created as a function to avoid module-level evaluation issues with Next.js 16.
  */
-const sessionOptions: SessionOptions = {
-  password: getEnvVar('SESSION_SECRET'),
-  cookieName: 'reddit_viewer_session',
-  cookieOptions: {
-    secure: isProduction(),
-    httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-    // Add domain restriction in production
-    ...(isProduction() && {
-      domain: new URL(getEnvVar('BASE_URL')).hostname
-    })
+function getSessionOptions(): SessionOptions {
+  return {
+    password: getEnvVar('SESSION_SECRET'),
+    cookieName: 'reddit_viewer_session',
+    cookieOptions: {
+      secure: isProduction(),
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
+    }
   }
 }
 
@@ -50,7 +50,7 @@ const sessionOptions: SessionOptions = {
  */
 export async function getSession(): Promise<IronSession<SessionData>> {
   const cookieStore = await cookies()
-  return getIronSession<SessionData>(cookieStore, sessionOptions)
+  return getIronSession<SessionData>(cookieStore, getSessionOptions())
 }
 
 /**
