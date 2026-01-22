@@ -61,7 +61,7 @@ describe('session', () => {
           secure: false,
           httpOnly: true,
           sameSite: 'lax',
-          maxAge: 604800, // 7 days in seconds
+          maxAge: 86400, // 1 day in seconds
           path: '/'
         }
       })
@@ -97,6 +97,44 @@ describe('session', () => {
       mockCookies.mockResolvedValue(mockCookieStore)
       mockGetIronSession.mockResolvedValue({} as any)
 
+      await getSession()
+
+      const callArgs = mockGetIronSession.mock.calls[0][1] as any
+      expect(callArgs.cookieOptions).not.toHaveProperty('domain')
+    })
+
+    it('includes domain restriction in production', async () => {
+      mockIsProduction.mockReturnValue(true)
+      mockGetEnvVar.mockImplementation((key: string) => {
+        if (key === 'SESSION_SECRET') return 'test-secret-key-32-chars-long!'
+        if (key === 'BASE_URL') return 'https://example.com'
+        return ''
+      })
+
+      const mockCookieStore = {} as any
+      mockCookies.mockResolvedValue(mockCookieStore)
+      mockGetIronSession.mockResolvedValue({} as any)
+
+      await getSession()
+
+      const callArgs = mockGetIronSession.mock.calls[0][1] as any
+      expect(callArgs.cookieOptions).toHaveProperty('domain', 'example.com')
+      expect(callArgs.cookieOptions.secure).toBe(true)
+    })
+
+    it('handles invalid BASE_URL gracefully in production', async () => {
+      mockIsProduction.mockReturnValue(true)
+      mockGetEnvVar.mockImplementation((key: string) => {
+        if (key === 'SESSION_SECRET') return 'test-secret-key-32-chars-long!'
+        if (key === 'BASE_URL') return 'not-a-valid-url'
+        return ''
+      })
+
+      const mockCookieStore = {} as any
+      mockCookies.mockResolvedValue(mockCookieStore)
+      mockGetIronSession.mockResolvedValue({} as any)
+
+      // Should not throw, just continue without domain
       await getSession()
 
       const callArgs = mockGetIronSession.mock.calls[0][1] as any
@@ -146,7 +184,7 @@ describe('session', () => {
           cookieOptions: expect.objectContaining({
             httpOnly: true,
             sameSite: 'lax',
-            maxAge: 604800, // 7 days in seconds
+            maxAge: 86400, // 1 day in seconds
             path: '/'
           })
         })

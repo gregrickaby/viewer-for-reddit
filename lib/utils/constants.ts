@@ -7,6 +7,9 @@ export const FIVE_MINUTES = 300
 export const TEN_MINUTES = 600
 export const ONE_HOUR = 3600
 
+// Token refresh buffer time (in milliseconds)
+export const TOKEN_REFRESH_BUFFER = 5 * 60 * 1000 // 5 minutes before token expiry
+
 // Reddit API configuration
 export const REDDIT_API_URL = 'https://oauth.reddit.com'
 export const REDDIT_PUBLIC_API_URL = 'https://www.reddit.com'

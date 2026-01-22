@@ -7,7 +7,8 @@ import {
   REDDIT_API_URL,
   REDDIT_PUBLIC_API_URL,
   SCROLL_THRESHOLD,
-  TEN_MINUTES
+  TEN_MINUTES,
+  TOKEN_REFRESH_BUFFER
 } from './constants'
 
 describe('constants', () => {
@@ -28,6 +29,18 @@ describe('constants', () => {
       expect(TEN_MINUTES).toBe(FIVE_MINUTES * 2)
       expect(ONE_HOUR).toBe(FIVE_MINUTES * 12)
       expect(ONE_HOUR).toBe(TEN_MINUTES * 6)
+    })
+  })
+
+  describe('token refresh buffer', () => {
+    it('defines TOKEN_REFRESH_BUFFER as 5 minutes in milliseconds', () => {
+      expect(TOKEN_REFRESH_BUFFER).toBe(5 * 60 * 1000)
+      expect(TOKEN_REFRESH_BUFFER).toBe(300000)
+    })
+
+    it('validates buffer is positive and reasonable', () => {
+      expect(TOKEN_REFRESH_BUFFER).toBeGreaterThan(0)
+      expect(TOKEN_REFRESH_BUFFER).toBeLessThan(60 * 60 * 1000) // Less than 1 hour
     })
   })
 

@@ -15,23 +15,36 @@ import {cookies} from 'next/headers'
  * - Encrypted with SESSION_SECRET (min 32 chars)
  * - HTTP-only (not accessible via JavaScript)
  * - Secure in production only (requires HTTPS)
- * - Valid for 7 days
+ * - Valid for 1 day (aligned with token refresh cycle)
  * - Domain-restricted in production
  *
  * Created as a function to avoid module-level evaluation issues with Next.js 16.
  */
 function getSessionOptions(): SessionOptions {
-  return {
+  const options: SessionOptions = {
     password: getEnvVar('SESSION_SECRET'),
     cookieName: 'reddit_viewer_session',
     cookieOptions: {
       secure: isProduction(),
       httpOnly: true,
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24, // 1 day (better balance with token lifecycle)
       path: '/'
     }
   }
+
+  // Add domain restriction in production for enhanced security
+  if (isProduction() && options.cookieOptions) {
+    try {
+      const baseUrl = new URL(getEnvVar('BASE_URL'))
+      options.cookieOptions.domain = baseUrl.hostname
+    } catch (error) {
+      // If BASE_URL is invalid, continue without domain restriction
+      // Logging would happen at startup validation
+    }
+  }
+
+  return options
 }
 
 /**

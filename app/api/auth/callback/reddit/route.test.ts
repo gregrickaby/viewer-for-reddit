@@ -202,6 +202,11 @@ describe('GET /api/auth/callback/reddit', () => {
       expect.any(Object),
       expect.any(Object)
     )
+
+    // Verify state cookie is deleted
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+    expect(stateCookie?.value).toBe('')
   })
 
   it('rejects request with missing code', async () => {
@@ -218,6 +223,11 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(400)
     expect(await response.text()).toBe('Invalid state parameter')
+
+    // Verify state cookie is deleted on error
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+    expect(stateCookie?.value).toBe('')
   })
 
   it('rejects request with missing state', async () => {

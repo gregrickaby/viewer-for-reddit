@@ -357,6 +357,118 @@ describe('auth actions', () => {
         error: 'No refresh token available'
       })
     })
+
+    it('handles null refresh token', async () => {
+      const mockDestroy = vi.fn()
+      mockGetSession.mockResolvedValue({
+        refreshToken: null,
+        destroy: mockDestroy
+      } as any)
+
+      const result = await refreshAccessToken()
+
+      expect(result).toEqual({
+        success: false,
+        error: 'No refresh token available'
+      })
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'No refresh token available',
+        undefined,
+        {context: 'refreshAccessToken'}
+      )
+    })
+
+    it('handles destroy failure during token refresh error', async () => {
+      const mockDestroy = vi.fn().mockImplementation(() => {
+        throw new Error('Session destroy failed')
+      })
+      const mockSave = vi.fn()
+
+      // First call: get session for refresh attempt
+      mockGetSession.mockResolvedValueOnce({
+        refreshToken: 'test-token',
+        save: mockSave,
+        destroy: mockDestroy
+      } as any)
+
+      // Second call: get session for destroy after failure
+      mockGetSession.mockResolvedValueOnce({
+        destroy: mockDestroy
+      } as any)
+
+      globalThis.mockRefreshAccessTokenImpl.mockRejectedValueOnce(
+        new Error('Refresh failed')
+      )
+
+      const result = await refreshAccessToken()
+
+      expect(result.success).toBe(false)
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Token refresh failed',
+        expect.any(Error),
+        {context: 'refreshAccessToken'}
+      )
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to destroy session after refresh failure',
+        expect.any(Error),
+        {context: 'refreshAccessToken'}
+      )
+    })
+
+    it('logs when refresh token is rotated', async () => {
+      const mockSave = vi.fn()
+      const mockTokens = {
+        accessToken: vi.fn(() => 'new-access-token'),
+        refreshToken: vi.fn(() => 'new-different-refresh-token'),
+        accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
+      }
+
+      globalThis.mockRefreshAccessTokenImpl.mockResolvedValueOnce(mockTokens)
+
+      mockGetSession.mockResolvedValue({
+        refreshToken: 'old-refresh-token',
+        save: mockSave
+      } as any)
+
+      const result = await refreshAccessToken()
+
+      expect(result.success).toBe(true)
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Refresh token rotated by Reddit',
+        undefined,
+        {context: 'refreshAccessToken'}
+      )
+    })
+
+    it('returns existing promise when refresh already in progress', async () => {
+      const mockSave = vi.fn()
+      const mockTokens = {
+        accessToken: vi.fn(() => 'new-access-token'),
+        refreshToken: vi.fn(() => 'new-refresh-token'),
+        accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
+      }
+
+      globalThis.mockRefreshAccessTokenImpl.mockResolvedValue(mockTokens)
+
+      mockGetSession.mockResolvedValue({
+        refreshToken: 'old-refresh-token',
+        save: mockSave
+      } as any)
+
+      // Call refresh twice simultaneously
+      const promise1 = refreshAccessToken()
+      const promise2 = refreshAccessToken()
+
+      const [result1, result2] = await Promise.all([promise1, promise2])
+
+      expect(result1.success).toBe(true)
+      expect(result2.success).toBe(true)
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        'Refresh already in progress, returning existing promise',
+        undefined,
+        {context: 'refreshAccessToken'}
+      )
+    })
   })
 
   describe('getValidAccessToken', () => {
@@ -413,6 +525,45 @@ describe('auth actions', () => {
 
       expect(mockSave).toHaveBeenCalled()
       expect(token).toBe('new-token')
+    })
+
+    it('treats negative expiresAt as needing refresh', async () => {
+      const mockSave = vi.fn()
+      const mockTokens = {
+        accessToken: vi.fn(() => 'new-token'),
+        refreshToken: vi.fn(() => 'new-refresh-token'),
+        accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
+      }
+
+      globalThis.mockRefreshAccessTokenImpl.mockResolvedValueOnce(mockTokens)
+
+      // First call: check token (negative timestamp)
+      mockGetSession.mockResolvedValueOnce({
+        accessToken: 'token',
+        expiresAt: -1000,
+        refreshToken: 'refresh'
+      } as any)
+
+      // Second call: perform refresh
+      mockGetSession.mockResolvedValueOnce({
+        refreshToken: 'refresh',
+        save: mockSave
+      } as any)
+
+      // Third call: get updated token
+      mockGetSession.mockResolvedValueOnce({
+        accessToken: 'new-token',
+        expiresAt: Date.now() + 3600000
+      } as any)
+
+      const token = await getValidAccessToken()
+
+      expect(token).toBe('new-token')
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        'Token expired or expiring soon, refreshing',
+        undefined,
+        {context: 'getValidAccessToken'}
+      )
     })
 
     it('returns null when no access token', async () => {

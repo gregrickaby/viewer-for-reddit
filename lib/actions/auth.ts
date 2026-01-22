@@ -1,6 +1,7 @@
 'use server'
 
 import {getSession, isSessionExpired} from '@/lib/auth/session'
+import {TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
 import {logger} from '@/lib/utils/logger'
 import {Reddit} from 'arctic'
@@ -15,8 +16,15 @@ const reddit = new Reddit(
 )
 
 /**
+ * Refresh lock to prevent concurrent refresh attempts.
+ * When a refresh is in progress, subsequent calls return the existing promise.
+ */
+let refreshPromise: Promise<{success: boolean; error?: string}> | null = null
+
+/**
  * Refresh the access token using the refresh token.
  * Updates the session with new tokens and expiration time.
+ * Implements refresh lock to prevent concurrent refresh attempts.
  *
  * @returns Promise resolving to success status and optional error message
  *
@@ -30,6 +38,32 @@ const reddit = new Reddit(
  * ```
  */
 export async function refreshAccessToken(): Promise<{
+  success: boolean
+  error?: string
+}> {
+  // If refresh already in progress, return existing promise
+  if (refreshPromise) {
+    logger.debug(
+      'Refresh already in progress, returning existing promise',
+      undefined,
+      {context: 'refreshAccessToken'}
+    )
+    return refreshPromise
+  }
+
+  try {
+    refreshPromise = performRefresh()
+    return await refreshPromise
+  } finally {
+    refreshPromise = null
+  }
+}
+
+/**
+ * Performs the actual token refresh operation.
+ * Internal function called by refreshAccessToken with lock protection.
+ */
+async function performRefresh(): Promise<{
   success: boolean
   error?: string
 }> {
@@ -57,12 +91,26 @@ export async function refreshAccessToken(): Promise<{
     // Get new refresh token if provided
     let newRefreshToken = session.refreshToken
     try {
-      newRefreshToken = tokens.refreshToken() || session.refreshToken
+      const freshToken = tokens.refreshToken()
+      if (freshToken && freshToken !== session.refreshToken) {
+        newRefreshToken = freshToken
+        logger.info('Refresh token rotated by Reddit', undefined, {
+          context: 'refreshAccessToken'
+        })
+      } else if (freshToken) {
+        logger.debug(
+          'Reusing existing refresh token (no rotation)',
+          undefined,
+          {context: 'refreshAccessToken'}
+        )
+      }
     } catch {
       // Keep existing refresh token if new one not provided
-      logger.debug('Reusing existing refresh token', undefined, {
-        context: 'refreshAccessToken'
-      })
+      logger.debug(
+        'No new refresh token provided, keeping existing',
+        undefined,
+        {context: 'refreshAccessToken'}
+      )
     }
 
     // Update session with new tokens
@@ -83,8 +131,18 @@ export async function refreshAccessToken(): Promise<{
     })
 
     // Clear the session on refresh failure
-    const session = await getSession()
-    session.destroy()
+    try {
+      const session = await getSession()
+      session.destroy()
+    } catch (destroyError) {
+      logger.error(
+        'Failed to destroy session after refresh failure',
+        destroyError,
+        {
+          context: 'refreshAccessToken'
+        }
+      )
+    }
 
     return {
       success: false,
@@ -118,10 +176,9 @@ export async function getValidAccessToken(): Promise<string | null> {
     return null
   }
 
-  // Check if token is expired or expires within 5 minutes
-  const fiveMinutes = 5 * 60 * 1000
+  // Check if token is expired or expires within buffer time
   const needsRefresh =
-    !session.expiresAt || session.expiresAt - Date.now() < fiveMinutes
+    !session.expiresAt || session.expiresAt - Date.now() < TOKEN_REFRESH_BUFFER
 
   if (needsRefresh) {
     logger.debug('Token expired or expiring soon, refreshing', undefined, {

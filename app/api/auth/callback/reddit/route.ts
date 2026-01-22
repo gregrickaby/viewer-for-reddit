@@ -69,7 +69,12 @@ async function fetchUserData(accessToken: string): Promise<RedditUserData> {
     const errorText = await userResponse.text()
     logger.error(
       'Reddit API error',
-      {status: userResponse.status, errorText},
+      {
+        status: userResponse.status,
+        statusText: userResponse.statusText,
+        errorBody: errorText,
+        accessTokenPrefix: `${accessToken.substring(0, 10)}...`
+      },
       {context: 'fetchUserData'}
     )
     throw new Error(`Reddit API responded with ${userResponse.status}`)
@@ -171,9 +176,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     )
     const {protocol, host} = resolveHostFromRequest(request)
 
-    return NextResponse.redirect(
+    const response = NextResponse.redirect(
       new URL(`/?error=${encodeURIComponent(error)}`, `${protocol}://${host}`)
     )
+    response.cookies.delete('reddit_oauth_state')
+    return response
   }
 
   // Validate state to prevent CSRF attacks
@@ -187,7 +194,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       },
       {context: 'OAuth'}
     )
-    return new NextResponse('Invalid state parameter', {status: 400})
+    const response = new NextResponse('Invalid state parameter', {status: 400})
+    response.cookies.delete('reddit_oauth_state')
+    return response
   }
 
   // Log redirect URI for monitoring (validation handled by Reddit OAuth + state parameter)
