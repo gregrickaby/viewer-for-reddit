@@ -615,11 +615,13 @@ describe('reddit server actions', () => {
   })
 
   describe('fetchUserPosts', () => {
-    it('fetches user submitted posts', async () => {
+    it('fetches user submitted posts with default sort', async () => {
+      let requestUrl = ''
       server.use(
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
-          () => {
+          ({request}) => {
+            requestUrl = request.url
             return HttpResponse.json({
               data: {
                 children: [
@@ -644,6 +646,104 @@ describe('reddit server actions', () => {
       expect(posts.length).toBeGreaterThan(0)
       expect(posts[0].author).toBe('testuser')
       expect(after).toBeDefined()
+      expect(requestUrl).toContain('sort=new')
+    })
+
+    it('fetches user posts with custom sort', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/submitted.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    kind: 't3',
+                    data: {
+                      id: 'post1',
+                      title: 'Top Post',
+                      author: 'testuser'
+                    }
+                  }
+                ],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      const {posts} = await fetchUserPosts('testuser', 'top')
+
+      expect(posts.length).toBeGreaterThan(0)
+      expect(requestUrl).toContain('sort=top')
+    })
+
+    it('includes time filter for top sort', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/submitted.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    kind: 't3',
+                    data: {
+                      id: 'post1',
+                      title: 'Top Post This Week',
+                      author: 'testuser'
+                    }
+                  }
+                ],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await fetchUserPosts('testuser', 'top', undefined, 'week')
+
+      expect(requestUrl).toContain('sort=top')
+      expect(requestUrl).toContain('t=week')
+    })
+
+    it('handles pagination with after cursor', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/submitted.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    kind: 't3',
+                    data: {
+                      id: 'post2',
+                      title: 'Next Page Post',
+                      author: 'testuser'
+                    }
+                  }
+                ],
+                after: 't3_next'
+              }
+            })
+          }
+        )
+      )
+
+      const {posts, after} = await fetchUserPosts('testuser', 'new', 't3_after')
+
+      expect(posts.length).toBeGreaterThan(0)
+      expect(after).toBe('t3_next')
+      expect(requestUrl).toContain('after=t3_after')
     })
 
     it('handles 404 errors', async () => {

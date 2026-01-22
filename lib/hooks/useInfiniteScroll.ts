@@ -1,6 +1,6 @@
 'use client'
 
-import {fetchPosts} from '@/lib/actions/reddit'
+import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {logger} from '@/lib/utils/logger'
 import {useCallback, useEffect, useRef, useState} from 'react'
@@ -15,6 +15,8 @@ interface UseInfiniteScrollOptions {
   initialAfter?: string | null
   /** Subreddit name or multireddit path */
   subreddit?: string
+  /** Username (for user profile posts) */
+  username?: string
   /** Sort order for posts */
   sort?: SortOption
   /** Time filter for top/controversial sorts */
@@ -45,18 +47,28 @@ interface UseInfiniteScrollReturn {
  * - Automatic cleanup on unmount
  * - Resets state when initial data changes (e.g., tab changes)
  * - Error handling with logging
+ * - Supports both subreddit and user profile posts
  *
  * @param options - Configuration for infinite scroll
  * @returns Posts array, loading state, and sentinel ref
  *
  * @example
  * ```typescript
+ * // For subreddit posts
  * const {posts, loading, hasMore, sentinelRef} = useInfiniteScroll({
  *   initialPosts: serverPosts,
  *   initialAfter: 't3_abc123',
  *   subreddit: 'popular',
  *   sort: 'top',
  *   timeFilter: 'week'
+ * })
+ *
+ * // For user profile posts
+ * const {posts, loading, hasMore, sentinelRef} = useInfiniteScroll({
+ *   initialPosts: userPosts,
+ *   initialAfter: 't3_abc123',
+ *   username: 'spez',
+ *   sort: 'new'
  * })
  *
  * return (
@@ -71,6 +83,7 @@ export function useInfiniteScroll({
   initialPosts,
   initialAfter,
   subreddit = 'popular',
+  username,
   sort = 'hot',
   timeFilter
 }: Readonly<UseInfiniteScrollOptions>): UseInfiniteScrollReturn {
@@ -93,8 +106,10 @@ export function useInfiniteScroll({
     setLoading(true)
 
     try {
-      // Call Server Action for server-side data fetching
-      const result = await fetchPosts(subreddit, sort, after, timeFilter)
+      // Call appropriate Server Action based on context
+      const result = username
+        ? await fetchUserPosts(username, sort, after, timeFilter)
+        : await fetchPosts(subreddit, sort, after, timeFilter)
 
       if (result.posts && result.posts.length > 0) {
         setPosts((prev) => [...prev, ...result.posts])
@@ -107,6 +122,7 @@ export function useInfiniteScroll({
       logger.error('Failed to load more posts', error, {
         context: 'useInfiniteScroll',
         subreddit,
+        username,
         sort,
         timeFilter
       })
@@ -114,7 +130,7 @@ export function useInfiniteScroll({
     } finally {
       setLoading(false)
     }
-  }, [loading, after, hasMore, subreddit, sort, timeFilter])
+  }, [loading, after, hasMore, subreddit, username, sort, timeFilter])
 
   const sentinelRef = useCallback(
     (node: HTMLDivElement | null) => {

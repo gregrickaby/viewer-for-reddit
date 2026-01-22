@@ -2,7 +2,7 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {PostList} from '@/components/ui/PostList/PostList'
+import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {
   fetchMultireddits,
   fetchUserInfo,
@@ -12,7 +12,7 @@ import {
 } from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {RedditUser} from '@/lib/types/reddit'
+import {RedditUser, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
 import {logger} from '@/lib/utils/logger'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
@@ -23,6 +23,10 @@ import {Suspense} from 'react'
 interface PageProps {
   params: Promise<{
     username: string
+  }>
+  searchParams: Promise<{
+    sort?: string
+    time?: string
   }>
 }
 
@@ -130,15 +134,29 @@ async function UserProfile({username}: Readonly<{username: string}>) {
  * Fetches and displays all posts and comments from a user.
  *
  * @param username - Reddit username
+ * @param isAuthenticated - Whether user is logged in
+ * @param sort - Sort option (hot, new, top, rising)
+ * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
-async function UserPosts({username}: Readonly<{username: string}>) {
+async function UserPosts({
+  username,
+  isAuthenticated,
+  sort = 'new',
+  timeFilter
+}: Readonly<{
+  username: string
+  isAuthenticated: boolean
+  sort?: SortOption
+  timeFilter?: TimeFilter
+}>) {
   let result
 
   try {
-    result = await fetchUserPosts(username)
+    result = await fetchUserPosts(username, sort, undefined, timeFilter)
     logger.info(`Fetched ${result.posts.length} posts for user ${username}`, {
       context: 'UserPosts',
       username,
+      sort,
       count: result.posts.length
     })
   } catch (error) {
@@ -163,9 +181,12 @@ async function UserPosts({username}: Readonly<{username: string}>) {
   }
 
   return (
-    <PostList
-      initialPosts={result.posts}
-      initialAfter={result.after}
+    <PostListWithTabs
+      posts={result.posts}
+      after={result.after}
+      activeSort={sort}
+      activeTimeFilter={timeFilter}
+      isAuthenticated={isAuthenticated}
       username={username}
     />
   )
@@ -176,14 +197,22 @@ async function UserPosts({username}: Readonly<{username: string}>) {
  *
  * Features:
  * - User profile card (avatar, karma, cake day)
- * - User posts and comments
- * - No infinite scroll (Reddit API limitation)
+ * - User posts with sort tabs (hot, new, top, rising)
+ * - Infinite scroll for loading more posts
  * - Boss button and back-to-top button
  *
  * @param params - URL params (username)
+ * @param searchParams - URL search params (sort option)
  */
-export default async function UserPage({params}: Readonly<PageProps>) {
+export default async function UserPage({
+  params,
+  searchParams
+}: Readonly<PageProps>) {
   const {username} = await params
+  const {sort, time} = await searchParams
+  const postSort = (sort as SortOption) || 'new'
+  const timeFilter = time as TimeFilter | undefined
+
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
 
@@ -213,7 +242,12 @@ export default async function UserPage({params}: Readonly<PageProps>) {
                 Posts
               </Title>
               <Suspense fallback={<PostSkeleton />}>
-                <UserPosts username={username} />
+                <UserPosts
+                  username={username}
+                  isAuthenticated={isAuthenticated}
+                  sort={postSort}
+                  timeFilter={timeFilter}
+                />
               </Suspense>
             </div>
           </Stack>

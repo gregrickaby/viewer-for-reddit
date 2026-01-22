@@ -38,6 +38,8 @@ interface PostListWithTabsProps {
   isAuthenticated?: boolean
   /** Subreddit name (for infinite scroll) */
   subreddit?: string
+  /** Username (for user profile infinite scroll) */
+  username?: string
 }
 
 /**
@@ -62,15 +64,24 @@ interface PostListWithTabsProps {
  *   isAuthenticated={true}
  *   subreddit="popular"
  * />
+ * // For user profiles
+ * <PostListWithTabs
+ *   posts={userPosts}
+ *   after="t3_abc123"
+ *   activeSort="new"
+ *   isAuthenticated={true}
+ *   username="spez"
+ * />
  * ```
  */
 export function PostListWithTabs({
   posts: initialPosts,
   after: initialAfter,
   activeSort,
-  activeTimeFilter = 'day',
+  activeTimeFilter = 'week',
   isAuthenticated = false,
-  subreddit
+  subreddit,
+  username
 }: Readonly<PostListWithTabsProps>) {
   const router = useRouter()
   const [isPending] = useTransition()
@@ -79,6 +90,7 @@ export function PostListWithTabs({
     initialPosts,
     initialAfter,
     subreddit,
+    username,
     sort: activeSort,
     timeFilter: activeTimeFilter
   })
@@ -87,9 +99,10 @@ export function PostListWithTabs({
     if (isPending) return // Prevent race conditions
 
     startTransition(() => {
-      // Keep time filter when switching to top/controversial
+      // Keep time filter when switching to top/controversial, default to week
       if (sort === 'top' || sort === 'controversial') {
-        router.push(`?sort=${sort}&time=${activeTimeFilter}`)
+        const timeFilter = activeTimeFilter || 'week'
+        router.push(`?sort=${sort}&time=${timeFilter}`)
       } else {
         router.push(`?sort=${sort}`)
       }

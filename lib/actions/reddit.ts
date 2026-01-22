@@ -747,7 +747,9 @@ export async function getCurrentUserAvatar(): Promise<string | null> {
  * Results cached for 5 minutes.
  *
  * @param username - Reddit username (without 'u/' prefix)
+ * @param sort - Sort order (hot, new, top, controversial)
  * @param after - Pagination cursor for next page
+ * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  * @returns Promise resolving to posts array and next page cursor
  *
  * @throws {Error} Reddit API errors:
@@ -756,14 +758,18 @@ export async function getCurrentUserAvatar(): Promise<string | null> {
  *
  * @example
  * ```typescript
- * const {posts, after} = await fetchUserPosts('spez')
+ * const {posts, after} = await fetchUserPosts('spez', 'new')
  * // Fetch next page
- * const {posts: morePosts} = await fetchUserPosts('spez', after)
+ * const {posts: morePosts} = await fetchUserPosts('spez', 'new', after)
+ * // Fetch top posts from this week
+ * const {posts: topWeek} = await fetchUserPosts('spez', 'top', undefined, 'week')
  * ```
  */
 export async function fetchUserPosts(
   username: string,
-  after?: string
+  sort: SortOption = 'new',
+  after?: string,
+  timeFilter?: TimeFilter
 ): Promise<{posts: RedditPost[]; after: string | null}> {
   try {
     const session = await getSession()
@@ -775,8 +781,15 @@ export async function fetchUserPosts(
 
     url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
     url.searchParams.set('raw_json', '1')
+    url.searchParams.set('sort', sort)
+
     if (after) {
       url.searchParams.set('after', after)
+    }
+
+    // Add time filter for top/controversial sorts
+    if (timeFilter && (sort === 'top' || sort === 'controversial')) {
+      url.searchParams.set('t', timeFilter)
     }
 
     const response = await fetch(url.toString(), {
@@ -798,6 +811,7 @@ export async function fetchUserPosts(
 
     logger.debug('Fetched user posts successfully', {
       username,
+      sort,
       count: posts.length,
       hasMore: !!afterCursor
     })
