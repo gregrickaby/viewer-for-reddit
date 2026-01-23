@@ -3,6 +3,7 @@ import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import SwipeBack from '@/components/ui/SwipeBack/SwipeBack'
 import {
   fetchMultireddits,
   fetchUserInfo,
@@ -262,6 +263,7 @@ export default async function UserPage({
           </Stack>
         </Container>
       </AppLayout>
+      <SwipeBack />
       <BossButton />
       <BackToTop />
     </>

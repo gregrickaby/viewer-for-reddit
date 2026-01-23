@@ -5,6 +5,7 @@ import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
+import SwipeBack from '@/components/ui/SwipeBack/SwipeBack'
 import {
   fetchMultireddits,
   fetchPost,
@@ -200,6 +201,7 @@ export default async function PostPage({
           </Stack>
         </Container>
       </AppLayout>
+      <SwipeBack />
       <BossButton />
       <BackToTop />
     </>
