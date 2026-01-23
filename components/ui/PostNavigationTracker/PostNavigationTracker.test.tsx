@@ -101,12 +101,13 @@ describe('PostNavigationTracker', () => {
       ])
     })
 
-    it('clears posts on unmount', () => {
+    it('does not clear posts on unmount to preserve navigation context', () => {
       const {unmount} = render(<PostNavigationTracker posts={mockPosts} />)
 
       unmount()
 
-      expect(mockSetPosts).toHaveBeenCalledWith([])
+      // Posts should NOT be cleared on unmount to allow navigation on post pages
+      expect(mockSetPosts).not.toHaveBeenCalledWith([])
     })
 
     it('updates posts when prop changes', () => {
@@ -196,14 +197,15 @@ describe('PostNavigationTracker', () => {
       expect(mockSetCurrentPostId).toHaveBeenCalledWith('t3_post1')
     })
 
-    it('clears both on unmount', () => {
+    it('clears only currentPostId on unmount, preserves posts', () => {
       const {unmount} = render(
         <PostNavigationTracker posts={mockPosts} currentPostId="t3_post1" />
       )
 
       unmount()
 
-      expect(mockSetPosts).toHaveBeenCalledWith([])
+      // Posts should persist for navigation, only currentPostId is cleared
+      expect(mockSetPosts).not.toHaveBeenCalledWith([])
       expect(mockSetCurrentPostId).toHaveBeenCalledWith(null)
     })
   })

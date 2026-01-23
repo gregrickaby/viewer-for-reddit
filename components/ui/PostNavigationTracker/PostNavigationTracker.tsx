@@ -22,12 +22,15 @@ interface PostNavigationTrackerProps {
  * - On list pages: Registers post array for navigation
  * - On post pages: Sets current post ID
  *
- * Automatically cleans up on unmount to prevent stale navigation state.
+ * Navigation context persistence:
+ * - Posts array is preserved across page navigations to enable swipe navigation
+ * - Only currentPostId is cleared on unmount to reset active post state
+ * - This allows users to swipe through posts from the originating feed
  *
  * Must be used within PostNavigationProvider.
  *
  * @param posts - Array of Reddit posts from the feed (optional)
- * @param currentPostId - ID of current post being viewed (optional)
+ * @param currentPostId - ID of current post being viewed (optional, must include t3_ prefix)
  *
  * @example
  * ```typescript
@@ -63,11 +66,8 @@ export function PostNavigationTracker({
       setCurrentPostId(currentPostId)
     }
 
-    // Cleanup on unmount
+    // Cleanup on unmount: only clear currentPostId, keep posts for navigation
     return () => {
-      if (posts) {
-        setPosts([])
-      }
       if (currentPostId) {
         setCurrentPostId(null)
       }

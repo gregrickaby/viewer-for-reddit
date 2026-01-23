@@ -174,9 +174,12 @@ export default async function PostPage({
     isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
   ])
 
+  // Format postId as Reddit "name" (t3_ prefix) to match post list format
+  const currentPostId = `t3_${postId}`
+
   return (
     <>
-      <PostNavigationTracker currentPostId={postId} />
+      <PostNavigationTracker currentPostId={currentPostId} />
       <AppLayout
         isAuthenticated={isAuthenticated}
         username={session.username}
