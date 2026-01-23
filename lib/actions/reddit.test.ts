@@ -29,6 +29,20 @@ vi.mock('@/lib/auth/session', () => ({
   getSession: vi.fn()
 }))
 
+// Mock Next.js headers
+vi.mock('next/headers', () => ({
+  headers: vi.fn(async () => ({
+    get: vi.fn((name: string) => {
+      const mockHeaders: Record<string, string> = {
+        'user-agent': 'Mozilla/5.0 Test Browser',
+        'x-forwarded-for': '127.0.0.1',
+        referer: 'http://localhost:3000'
+      }
+      return mockHeaders[name] || null
+    })
+  }))
+}))
+
 const mockGetSession = vi.mocked(getSession)
 
 // Helper to create mock session

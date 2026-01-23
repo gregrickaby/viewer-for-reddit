@@ -21,6 +21,17 @@ interface ErrorContext {
   isAuthenticated?: boolean
   errorBody?: string
   context?: string
+  forceProduction?: boolean
+  rateLimitHeaders?: {
+    remaining: string | null
+    used: string | null
+    reset: string | null
+    retryAfter: string | null
+  }
+  redditUserAgent?: string
+  clientUserAgent?: string
+  clientIp?: string
+  referer?: string
   [key: string]: unknown
 }
 
@@ -116,7 +127,22 @@ class Logger {
         status: errorContext.status,
         statusText: errorContext.statusText,
         isAuthenticated: errorContext.isAuthenticated,
-        responseBody: errorContext.errorBody?.substring(0, 1000) // Limit size
+        responseBody: errorContext.errorBody?.substring(0, 1000), // Limit size
+        rateLimitHeaders: errorContext.rateLimitHeaders || null
+      }
+
+      // Add client request details to identify crawlers/bots
+      if (
+        errorContext.clientUserAgent ||
+        errorContext.clientIp ||
+        errorContext.referer
+      ) {
+        log.client = {
+          userAgent: errorContext.clientUserAgent || null,
+          ip: errorContext.clientIp || null,
+          referer: errorContext.referer || null,
+          redditUserAgent: errorContext.redditUserAgent || null
+        }
       }
 
       // Add error details if provided

@@ -5,10 +5,14 @@ import {MetadataRoute} from 'next'
  * The robots.txt route.
  *
  * Allows crawling of the homepage and about page.
- * Disallows crawling of user profiles and individual post pages to:
+ * Disallows crawling of ALL dynamic content to:
  * - Prevent excessive API usage from crawlers
  * - Avoid indexing duplicate Reddit content
+ * - Prevent soft 404s from Reddit API rate limits
  * - Focus SEO on the main landing page
+ *
+ * IMPORTANT: Blocks entire /r/ path (not just specific comment pages)
+ * to prevent Googlebot from discovering and crawling subreddits.
  *
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots
  */
@@ -17,8 +21,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/u/', '/r/*/comments/', '/user/', '/api/', '/search/'],
+        allow: ['/', '/about', '/donate'],
+        disallow: ['/r/', '/u/', '/user/', '/api/', '/search/'],
         crawlDelay: 2
       }
     ],

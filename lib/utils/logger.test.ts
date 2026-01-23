@@ -278,8 +278,10 @@ describe('logger', () => {
         status: 500,
         statusText: 'Internal Server Error',
         isAuthenticated: true,
-        responseBody: 'Server error details'
+        responseBody: 'Server error details',
+        rateLimitHeaders: null
       })
+      expect(logOutput.client).toBeUndefined() // No client info provided
     })
 
     it('includes Error object if provided', async () => {
@@ -362,6 +364,33 @@ describe('logger', () => {
       })
 
       expect(console.error).not.toHaveBeenCalled()
+    })
+
+    it('includes client metadata when provided', async () => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
+      const {logger} = await import('./logger')
+
+      logger.httpError('API request failed', {
+        url: 'https://api.example.com/posts',
+        status: 429,
+        statusText: 'Too Many Requests',
+        isAuthenticated: false,
+        clientUserAgent: 'Googlebot/2.1 (+http://www.google.com/bot.html)',
+        clientIp: '66.249.66.1',
+        referer: 'https://www.google.com/',
+        redditUserAgent: 'web:viewer-for-reddit:v9.0.0',
+        context: 'fetchPosts',
+        forceProduction: true
+      })
+
+      expect(console.error).toHaveBeenCalled()
+      const logOutput = JSON.parse(vi.mocked(console.error).mock.calls[0][0])
+      expect(logOutput.client).toEqual({
+        userAgent: 'Googlebot/2.1 (+http://www.google.com/bot.html)',
+        ip: '66.249.66.1',
+        referer: 'https://www.google.com/',
+        redditUserAgent: 'web:viewer-for-reddit:v9.0.0'
+      })
     })
   })
 

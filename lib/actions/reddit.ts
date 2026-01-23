@@ -26,6 +26,23 @@ import {getEnvVar} from '@/lib/utils/env'
 import {logger} from '@/lib/utils/logger'
 import {buildFeedUrlPath} from '@/lib/utils/reddit-helpers'
 import {retryWithBackoff} from '@/lib/utils/retry'
+import {headers} from 'next/headers'
+
+/**
+ * Capture incoming request metadata for debugging.
+ * Helps identify which clients (e.g., Googlebot) are hitting rate limits.
+ */
+async function getRequestMetadata() {
+  const headersList = await headers()
+  return {
+    clientUserAgent: headersList.get('user-agent') || 'unknown',
+    clientIp:
+      headersList.get('x-forwarded-for') ||
+      headersList.get('x-real-ip') ||
+      'unknown',
+    referer: headersList.get('referer') || 'none'
+  }
+}
 
 /**
  * Handles Reddit API error responses with specific error messages.
@@ -42,6 +59,17 @@ async function handleFetchPostsError(
 ): Promise<never> {
   const errorBody = await response.text()
 
+  // Extract rate limit headers
+  const rateLimitHeaders = {
+    remaining: response.headers.get('x-ratelimit-remaining'),
+    used: response.headers.get('x-ratelimit-used'),
+    reset: response.headers.get('x-ratelimit-reset'),
+    retryAfter: response.headers.get('retry-after')
+  }
+
+  // Capture incoming request metadata to identify crawlers
+  const requestMetadata = await getRequestMetadata()
+
   logger.httpError('Reddit API request failed', {
     url: url.toString(),
     method: 'GET',
@@ -49,7 +77,13 @@ async function handleFetchPostsError(
     statusText: response.statusText,
     isAuthenticated,
     errorBody,
-    context: 'fetchPosts'
+    rateLimitHeaders,
+    redditUserAgent: getEnvVar('USER_AGENT'),
+    clientUserAgent: requestMetadata.clientUserAgent,
+    clientIp: requestMetadata.clientIp,
+    referer: requestMetadata.referer,
+    context: 'fetchPosts',
+    forceProduction: true // Force this error to be logged even in environments where logging might otherwise be suppressed
   })
 
   if (response.status === 401) {
@@ -62,9 +96,19 @@ async function handleFetchPostsError(
     throw new Error('Subreddit not found')
   }
   if (response.status === 429) {
+    const resetTime = rateLimitHeaders.reset
+      ? new Date(
+          Number.parseInt(rateLimitHeaders.reset, 10) * 1000
+        ).toISOString()
+      : 'unknown'
+    const retryAfter = rateLimitHeaders.retryAfter || 'unknown'
+    const retryAfterDisplay =
+      retryAfter === 'unknown' ? retryAfter : `${retryAfter}s`
+
     const message = isAuthenticated
-      ? 'Rate limit exceeded'
-      : 'Rate limit exceeded. Log in to continue viewing the site.'
+      ? `Rate limit exceeded (reset: ${resetTime}, retry after: ${retryAfterDisplay})`
+      : `Rate limit exceeded. Log in to continue viewing the site. (reset: ${resetTime}, retry after: ${retryAfterDisplay})`
+
     throw new Error(message)
   }
   throw new Error(`Reddit API error: ${response.statusText}`)
