@@ -4,7 +4,7 @@ import {PostNavigationProvider} from '@/lib/contexts/PostNavigationContext'
  * Navigation layout - wraps pages that need swipe navigation.
  *
  * This layout provides PostNavigationContext only to pages that need it,
- * avoiding unnecessary re-renders on pages without navigation (homepage, about).
+ * avoiding unnecessary context on pages without navigation.
  *
  * Pages under this layout:
  * - Subreddit pages (/r/[subreddit])
