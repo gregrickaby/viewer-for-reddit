@@ -41,17 +41,16 @@ async function handleFetchPostsError(
   isAuthenticated: boolean
 ): Promise<never> {
   const errorBody = await response.text()
-  logger.error(
-    'Reddit API request failed',
-    {
-      status: response.status,
-      statusText: response.statusText,
-      url: url.toString(),
-      isAuthenticated,
-      errorBody: errorBody.substring(0, 500)
-    },
-    {context: 'fetchPosts'}
-  )
+
+  logger.httpError('Reddit API request failed', {
+    url: url.toString(),
+    method: 'GET',
+    status: response.status,
+    statusText: response.statusText,
+    isAuthenticated,
+    errorBody,
+    context: 'fetchPosts'
+  })
 
   if (response.status === 401) {
     throw new Error('Authentication expired')
@@ -265,6 +264,19 @@ export async function fetchPost(
     })
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Failed to fetch post', {
+        url,
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'fetchPost',
+        postId,
+        subreddit
+      })
+
       if (response.status === 404) {
         throw new Error('Post not found')
       }
@@ -334,6 +346,18 @@ export async function fetchSubredditInfo(
     })
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Failed to fetch subreddit info', {
+        url: url.toString(),
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'fetchSubredditInfo',
+        subreddit
+      })
+
       if (response.status === 404) {
         throw new Error('Subreddit not found')
       }
@@ -481,7 +505,8 @@ export async function votePost(
     }
 
     await retryWithBackoff(async () => {
-      const res = await fetch(`${REDDIT_API_URL}/api/vote`, {
+      const url = `${REDDIT_API_URL}/api/vote`
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           ...(await getHeaders(true)),
@@ -494,6 +519,19 @@ export async function votePost(
       })
 
       if (!res.ok) {
+        const errorBody = await res.text()
+        logger.httpError('Vote request failed', {
+          url,
+          method: 'POST',
+          status: res.status,
+          statusText: res.statusText,
+          isAuthenticated: true,
+          errorBody,
+          context: 'votePost',
+          postName,
+          direction
+        })
+
         if (res.status === 401) {
           throw new Error('Session expired')
         }
@@ -551,7 +589,8 @@ export async function savePost(
 
     const endpoint = save ? 'save' : 'unsave'
     await retryWithBackoff(async () => {
-      const res = await fetch(`${REDDIT_API_URL}/api/${endpoint}`, {
+      const url = `${REDDIT_API_URL}/api/${endpoint}`
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           ...(await getHeaders(true)),
@@ -563,6 +602,19 @@ export async function savePost(
       })
 
       if (!res.ok) {
+        const errorBody = await res.text()
+        logger.httpError('Save/unsave request failed', {
+          url,
+          method: 'POST',
+          status: res.status,
+          statusText: res.statusText,
+          isAuthenticated: true,
+          errorBody,
+          context: 'savePost',
+          postName,
+          action: save ? 'save' : 'unsave'
+        })
+
         if (res.status === 401) {
           throw new Error('Session expired')
         }
@@ -698,6 +750,18 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
     })
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Failed to fetch user info', {
+        url,
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'fetchUserInfo',
+        username
+      })
+
       if (response.status === 404) {
         throw new Error('User not found')
       }
@@ -811,6 +875,19 @@ export async function fetchUserPosts(
     })
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Failed to fetch user posts', {
+        url: url.toString(),
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'fetchUserPosts',
+        username,
+        sort
+      })
+
       if (response.status === 404) {
         throw new Error('User not found')
       }
@@ -884,6 +961,18 @@ export async function searchReddit(
     })
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Search request failed', {
+        url: url.toString(),
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'searchReddit',
+        query
+      })
+
       throw new Error(`Reddit API error: ${response.statusText}`)
     }
 
@@ -948,15 +1037,25 @@ export async function searchSubreddits(query: string): Promise<{
       typeahead_active: 'true'
     })
 
-    const response = await fetch(
-      `${REDDIT_API_URL}/api/subreddit_autocomplete_v2.json?${params}`,
-      {
-        headers: await getHeaders(isAuthenticated),
-        next: {revalidate: 60}
-      }
-    )
+    const url = `${REDDIT_API_URL}/api/subreddit_autocomplete_v2.json?${params}`
+    const response = await fetch(url, {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: 60}
+    })
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Subreddit search request failed', {
+        url,
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'searchSubreddits',
+        query
+      })
+
       throw new Error(`Reddit API error: ${response.statusText}`)
     }
 
@@ -1049,7 +1148,8 @@ export async function toggleSubscription(
       sr_name: subredditName
     })
 
-    const response = await fetch(`${REDDIT_API_URL}/api/subscribe`, {
+    const url = `${REDDIT_API_URL}/api/subscribe`
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         ...(await getHeaders(true)),
@@ -1059,6 +1159,19 @@ export async function toggleSubscription(
     })
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Subscription toggle request failed', {
+        url,
+        method: 'POST',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated: true,
+        errorBody,
+        context: 'toggleSubscription',
+        subreddit: subredditName,
+        action
+      })
+
       if (response.status === 401) {
         return {success: false, error: 'Authentication expired'}
       }
@@ -1146,6 +1259,19 @@ export async function fetchSavedPosts(
     )
 
     if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Failed to fetch saved posts', {
+        url: url.toString(),
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated: true,
+        errorBody,
+        context: 'fetchSavedPosts',
+        username,
+        after
+      })
+
       if (response.status === 401) {
         throw new Error('Authentication required')
       }

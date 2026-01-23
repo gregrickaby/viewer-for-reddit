@@ -58,7 +58,8 @@ function resolveHostFromRequest(request: NextRequest): {
  * @throws Error if Reddit API request fails
  */
 async function fetchUserData(accessToken: string): Promise<RedditUserData> {
-  const userResponse = await fetch('https://oauth.reddit.com/api/v1/me', {
+  const url = 'https://oauth.reddit.com/api/v1/me'
+  const userResponse = await fetch(url, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       'User-Agent': getEnvVar('USER_AGENT')
@@ -67,16 +68,16 @@ async function fetchUserData(accessToken: string): Promise<RedditUserData> {
 
   if (!userResponse.ok) {
     const errorText = await userResponse.text()
-    logger.error(
-      'Reddit API error',
-      {
-        status: userResponse.status,
-        statusText: userResponse.statusText,
-        errorBody: errorText,
-        accessTokenPrefix: `${accessToken.substring(0, 10)}...`
-      },
-      {context: 'fetchUserData'}
-    )
+    logger.httpError('Failed to fetch Reddit user data', {
+      url,
+      method: 'GET',
+      status: userResponse.status,
+      statusText: userResponse.statusText,
+      isAuthenticated: true,
+      errorBody: errorText,
+      context: 'fetchUserData',
+      accessTokenPrefix: `${accessToken.substring(0, 10)}...`
+    })
     throw new Error(`Reddit API responded with ${userResponse.status}`)
   }
 
@@ -188,9 +189,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     logger.error(
       'State validation failed - possible CSRF attack',
       {
-        state: !!state,
-        storedState: !!storedState,
-        statesMatch: state === storedState
+        hasCode: !!code,
+        hasState: !!state,
+        hasStoredState: !!storedState,
+        statesMatch: state === storedState,
+        url: url.toString(),
+        referer: request.headers.get('referer') || 'none',
+        userAgent:
+          request.headers.get('user-agent')?.substring(0, 100) || 'none'
       },
       {context: 'OAuth'}
     )
@@ -222,6 +228,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     session.username = sessionData.username
     session.userId = sessionData.userId
     await session.save()
+
+    logger.info(
+      'OAuth authentication successful',
+      {
+        username: sessionData.username,
+        userId: sessionData.userId,
+        hasRefreshToken: !!sessionData.refreshToken,
+        expiresIn: `${Math.round((sessionData.expiresAt - Date.now()) / 1000 / 60)}min`
+      },
+      {context: 'OAuthCallback'}
+    )
 
     // Build redirect URL using proper host (handles reverse proxies)
     const {protocol, host} = resolveHostFromRequest(request)

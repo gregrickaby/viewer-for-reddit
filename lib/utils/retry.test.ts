@@ -52,7 +52,7 @@ describe('retryWithBackoff', () => {
     expect(mockFn).toHaveBeenCalledTimes(2)
     expect(mockLogger.info).toHaveBeenCalledWith(
       'Rate limited, retrying in 1000ms (attempt 1/3)',
-      undefined,
+      {delay: 1000, attempt: 1, maxRetries: 3},
       {context: 'retryWithBackoff'}
     )
   })
@@ -86,7 +86,7 @@ describe('retryWithBackoff', () => {
     await vi.advanceTimersByTimeAsync(1000)
     expect(mockLogger.info).toHaveBeenCalledWith(
       'Rate limited, retrying in 1000ms (attempt 1/3)',
-      undefined,
+      {delay: 1000, attempt: 1, maxRetries: 3},
       {context: 'retryWithBackoff'}
     )
 
@@ -94,7 +94,7 @@ describe('retryWithBackoff', () => {
     await vi.advanceTimersByTimeAsync(2000)
     expect(mockLogger.info).toHaveBeenCalledWith(
       'Rate limited, retrying in 2000ms (attempt 2/3)',
-      undefined,
+      {delay: 2000, attempt: 2, maxRetries: 3},
       {context: 'retryWithBackoff'}
     )
 
@@ -132,10 +132,13 @@ describe('retryWithBackoff', () => {
     expect(mockFn).toHaveBeenCalledTimes(4) // Initial + 3 retries
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Max retries reached',
-      expect.any(Error),
+      expect.objectContaining({
+        errorMessage: 'Rate limit exceeded',
+        totalAttempts: 4,
+        totalDelay: 7000
+      }),
       {
-        context: 'retryWithBackoff',
-        attempts: 4
+        context: 'retryWithBackoff'
       }
     )
   })
@@ -154,10 +157,13 @@ describe('retryWithBackoff', () => {
     expect(mockFn).toHaveBeenCalledTimes(2) // Initial + 1 retry
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Max retries reached',
-      expect.any(Error),
+      expect.objectContaining({
+        errorMessage: 'Rate limit exceeded',
+        totalAttempts: 2,
+        totalDelay: 500
+      }),
       {
-        context: 'retryWithBackoff',
-        attempts: 2
+        context: 'retryWithBackoff'
       }
     )
   })
@@ -177,7 +183,7 @@ describe('retryWithBackoff', () => {
     expect(result).toBe('success')
     expect(mockLogger.info).toHaveBeenCalledWith(
       'Rate limited, retrying in 500ms (attempt 1/3)',
-      undefined,
+      {delay: 500, attempt: 1, maxRetries: 3},
       {context: 'retryWithBackoff'}
     )
   })
@@ -260,19 +266,19 @@ describe('retryWithBackoff', () => {
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       1,
       'Rate limited, retrying in 100ms (attempt 1/5)',
-      undefined,
+      {delay: 100, attempt: 1, maxRetries: 5},
       {context: 'retryWithBackoff'}
     )
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       2,
       'Rate limited, retrying in 200ms (attempt 2/5)',
-      undefined,
+      {delay: 200, attempt: 2, maxRetries: 5},
       {context: 'retryWithBackoff'}
     )
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       3,
       'Rate limited, retrying in 400ms (attempt 3/5)',
-      undefined,
+      {delay: 400, attempt: 3, maxRetries: 5},
       {context: 'retryWithBackoff'}
     )
   })

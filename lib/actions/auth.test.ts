@@ -405,12 +405,20 @@ describe('auth actions', () => {
       expect(result.success).toBe(false)
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Token refresh failed',
-        expect.any(Error),
+        expect.objectContaining({
+          errorType: 'Error',
+          errorMessage: 'Refresh failed',
+          hasRefreshToken: true,
+          refreshTokenAge: 'unknown'
+        }),
         {context: 'refreshAccessToken'}
       )
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to destroy session after refresh failure',
-        expect.any(Error),
+        expect.objectContaining({
+          destroyError: 'Session destroy failed',
+          originalError: 'Refresh failed'
+        }),
         {context: 'refreshAccessToken'}
       )
     })

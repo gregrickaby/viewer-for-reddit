@@ -67,8 +67,11 @@ async function performRefresh(): Promise<{
   success: boolean
   error?: string
 }> {
+  let sessionForLogging: Awaited<ReturnType<typeof getSession>> | null = null
+
   try {
     const session = await getSession()
+    sessionForLogging = session
 
     if (!session.refreshToken) {
       logger.warn('No refresh token available', undefined, {
@@ -126,18 +129,42 @@ async function performRefresh(): Promise<{
 
     return {success: true}
   } catch (error) {
-    logger.error('Token refresh failed', error, {
-      context: 'refreshAccessToken'
-    })
+    logger.error(
+      'Token refresh failed',
+      {
+        errorType:
+          error instanceof Error ? error.constructor.name : typeof error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        hasRefreshToken: sessionForLogging
+          ? !!sessionForLogging.refreshToken
+          : false,
+        refreshTokenAge: sessionForLogging?.expiresAt
+          ? Date.now() - sessionForLogging.expiresAt
+          : 'unknown'
+      },
+      {
+        context: 'refreshAccessToken'
+      }
+    )
 
     // Clear the session on refresh failure
     try {
       const session = await getSession()
       session.destroy()
+      logger.debug('Session destroyed after refresh failure', undefined, {
+        context: 'refreshAccessToken'
+      })
     } catch (destroyError) {
       logger.error(
         'Failed to destroy session after refresh failure',
-        destroyError,
+        {
+          destroyError:
+            destroyError instanceof Error
+              ? destroyError.message
+              : String(destroyError),
+          originalError: error instanceof Error ? error.message : String(error)
+        },
         {
           context: 'refreshAccessToken'
         }

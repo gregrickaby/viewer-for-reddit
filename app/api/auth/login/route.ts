@@ -34,8 +34,6 @@ const reddit = new Reddit(
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    logger.debug('OAuth login initiated', undefined, {context: 'OAuth'})
-
     const state = crypto.randomUUID()
     const scopes = [
       'identity',
@@ -48,6 +46,12 @@ export async function GET(): Promise<NextResponse> {
       'edit',
       'history'
     ]
+
+    logger.info(
+      'OAuth login initiated',
+      {scopes, state: `${state.substring(0, 8)}...`},
+      {context: 'OAuth'}
+    )
 
     // Create authorization URL with duration=permanent for refresh tokens
     const url = reddit.createAuthorizationURL(state, scopes)
@@ -64,16 +68,17 @@ export async function GET(): Promise<NextResponse> {
       maxAge: 600 // 10 minutes
     })
 
-    logger.debug(
-      'Redirecting to Reddit authorization',
-      {scopes: scopes.length, hasState: !!state},
-      {context: 'OAuth'}
-    )
-
     return response
   } catch (error) {
     logger.error('Failed to initiate OAuth login', error, {
-      context: 'OAuthLogin'
+      context: 'OAuthLogin',
+      errorDetails:
+        error instanceof Error
+          ? {
+              message: error.message,
+              stack: error.stack
+            }
+          : String(error)
     })
     return new NextResponse('Failed to initiate login', {status: 500})
   }

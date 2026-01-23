@@ -15,6 +15,7 @@ vi.mock('@/lib/utils/env', () => ({
 
 vi.mock('@/lib/utils/logger', () => ({
   logger: {
+    info: vi.fn(),
     debug: vi.fn(),
     error: vi.fn()
   }
@@ -69,6 +70,7 @@ describe('GET /api/auth/login', () => {
 
     // Check redirect URL contains state
     const redirectUrl = response.headers.get('location')
+    expect(redirectUrl).toBeTruthy()
     expect(redirectUrl).toContain(`state=${mockUUID}`)
   })
 
@@ -76,6 +78,7 @@ describe('GET /api/auth/login', () => {
     const response = await GET()
 
     const redirectUrl = response.headers.get('location')
+    expect(redirectUrl).toBeTruthy()
     expect(redirectUrl).toContain('duration=permanent')
   })
 
@@ -83,6 +86,7 @@ describe('GET /api/auth/login', () => {
     const response = await GET()
 
     const redirectUrl = response.headers.get('location')
+    expect(redirectUrl).toBeTruthy()
     const url = new URL(redirectUrl!)
 
     // Check that scope parameter includes expected scopes
@@ -135,6 +139,8 @@ describe('GET /api/auth/login', () => {
     const redirectUrl1 = response1.headers.get('location')
     const redirectUrl2 = response2.headers.get('location')
 
+    expect(redirectUrl1).toBeTruthy()
+    expect(redirectUrl2).toBeTruthy()
     expect(redirectUrl1).toContain(`state=${uuid1}`)
     expect(redirectUrl2).toContain(`state=${uuid2}`)
   })
@@ -142,17 +148,11 @@ describe('GET /api/auth/login', () => {
   it('logs OAuth flow initiation and redirect', async () => {
     await GET()
 
-    expect(mockLogger.debug).toHaveBeenCalledWith(
+    expect(mockLogger.info).toHaveBeenCalledWith(
       'OAuth login initiated',
-      undefined,
-      {context: 'OAuth'}
-    )
-
-    expect(mockLogger.debug).toHaveBeenCalledWith(
-      'Redirecting to Reddit authorization',
       expect.objectContaining({
-        scopes: 9,
-        hasState: true
+        scopes: expect.any(Array),
+        state: expect.stringMatching(/^.{8}\.\.\.$/)
       }),
       {context: 'OAuth'}
     )
@@ -168,7 +168,13 @@ describe('GET /api/auth/login', () => {
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Failed to initiate OAuth login',
       expect.any(Error),
-      {context: 'OAuthLogin'}
+      expect.objectContaining({
+        context: 'OAuthLogin',
+        errorDetails: expect.objectContaining({
+          message: expect.any(String),
+          stack: expect.any(String)
+        })
+      })
     )
 
     // Cleanup
