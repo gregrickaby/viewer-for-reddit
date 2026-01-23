@@ -5,7 +5,6 @@ import BossButton from '@/components/ui/BossButton/BossButton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
   fetchMultireddits,
@@ -194,17 +193,14 @@ async function UserPosts({
   }
 
   return (
-    <>
-      <PostNavigationTracker posts={result.posts} />
-      <PostListWithTabs
-        posts={result.posts}
-        after={result.after}
-        activeSort={sort}
-        activeTimeFilter={timeFilter}
-        isAuthenticated={isAuthenticated}
-        username={username}
-      />
-    </>
+    <PostListWithTabs
+      posts={result.posts}
+      after={result.after}
+      activeSort={sort}
+      activeTimeFilter={timeFilter}
+      isAuthenticated={isAuthenticated}
+      username={username}
+    />
   )
 }
 

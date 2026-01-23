@@ -5,7 +5,6 @@ import BossButton from '@/components/ui/BossButton/BossButton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostList} from '@/components/ui/PostList/PostList'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
   fetchMultireddits,
@@ -80,15 +79,12 @@ async function SearchResults({
   }
 
   return (
-    <>
-      <PostNavigationTracker posts={posts} />
-      <PostList
-        initialPosts={posts}
-        initialAfter={after}
-        searchQuery={decodedQuery}
-        isAuthenticated={isAuthenticated}
-      />
-    </>
+    <PostList
+      initialPosts={posts}
+      initialAfter={after}
+      searchQuery={decodedQuery}
+      isAuthenticated={isAuthenticated}
+    />
   )
 }
 

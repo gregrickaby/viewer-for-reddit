@@ -4,7 +4,6 @@ import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import {SavedPostsList} from '@/components/ui/SavedPostsList'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
@@ -121,7 +120,6 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
 
     return (
       <>
-        <PostNavigationTracker posts={posts} />
         <AppLayout
           isAuthenticated={isAuthenticated}
           username={session.username}

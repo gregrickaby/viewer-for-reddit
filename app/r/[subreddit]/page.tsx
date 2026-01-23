@@ -6,7 +6,6 @@ import BossButton from '@/components/ui/BossButton/BossButton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
@@ -182,17 +181,14 @@ async function SubredditPosts({
   }
 
   return (
-    <>
-      <PostNavigationTracker posts={posts} />
-      <PostListWithTabs
-        posts={posts}
-        after={after}
-        activeSort={sort}
-        activeTimeFilter={timeFilter}
-        isAuthenticated={isAuthenticated}
-        subreddit={subreddit}
-      />
-    </>
+    <PostListWithTabs
+      posts={posts}
+      after={after}
+      activeSort={sort}
+      activeTimeFilter={timeFilter}
+      isAuthenticated={isAuthenticated}
+      subreddit={subreddit}
+    />
   )
 }
 

@@ -7,7 +7,6 @@ import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentLi
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
   fetchMultireddits,
@@ -174,12 +173,8 @@ export default async function PostPage({
     isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
   ])
 
-  // Format postId as Reddit "name" (t3_ prefix) to match post list format
-  const currentPostId = `t3_${postId}`
-
   return (
     <>
-      <PostNavigationTracker currentPostId={currentPostId} />
       <AppLayout
         isAuthenticated={isAuthenticated}
         username={session.username}

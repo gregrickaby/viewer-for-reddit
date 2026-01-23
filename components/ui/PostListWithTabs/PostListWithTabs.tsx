@@ -21,7 +21,6 @@ import {useRouter} from 'next/navigation'
 import {startTransition, useTransition} from 'react'
 import {PostCard} from '../PostCard/PostCard'
 import styles from '../PostList/PostList.module.css'
-import {PostNavigationTracker} from '../PostNavigationTracker/PostNavigationTracker'
 
 /**
  * Props for the PostListWithTabs component.
@@ -131,67 +130,61 @@ export function PostListWithTabs({
 
   return (
     <>
-      <PostNavigationTracker posts={posts} />
-      <Stack gap="md" mb="lg">
-        <Tabs
-          value={activeSort}
-          onChange={(value) => value && handleSortChange(value)}
-        >
-          <Tabs.List
-            grow={false}
-            style={{flexWrap: 'nowrap', overflowX: 'auto'}}
+      <Tabs
+        value={activeSort}
+        onChange={(value) => value && handleSortChange(value)}
+      >
+        <Tabs.List grow={false} style={{flexWrap: 'nowrap', overflowX: 'auto'}}>
+          <Tabs.Tab
+            value="hot"
+            leftSection={<IconFlame aria-hidden="true" size={16} />}
+            disabled={isPending}
+            data-umami-event="sort-posts-hot"
           >
-            <Tabs.Tab
-              value="hot"
-              leftSection={<IconFlame aria-hidden="true" size={16} />}
-              disabled={isPending}
-              data-umami-event="sort-posts-hot"
-            >
-              Hot
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="new"
-              leftSection={<IconClock aria-hidden="true" size={16} />}
-              disabled={isPending}
-              data-umami-event="sort-posts-new"
-            >
-              New
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="top"
-              leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
-              disabled={isPending}
-              data-umami-event="sort-posts-top"
-            >
-              Top
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="rising"
-              leftSection={<IconRocket aria-hidden="true" size={16} />}
-              disabled={isPending}
-              data-umami-event="sort-posts-rising"
-            >
-              Rising
-            </Tabs.Tab>
-          </Tabs.List>
-        </Tabs>
+            Hot
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="new"
+            leftSection={<IconClock aria-hidden="true" size={16} />}
+            disabled={isPending}
+            data-umami-event="sort-posts-new"
+          >
+            New
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="top"
+            leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
+            disabled={isPending}
+            data-umami-event="sort-posts-top"
+          >
+            Top
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="rising"
+            leftSection={<IconRocket aria-hidden="true" size={16} />}
+            disabled={isPending}
+            data-umami-event="sort-posts-rising"
+          >
+            Rising
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
 
-        {showTimeFilter && (
-          <Group gap="xs">
-            <Text size="sm" fw={500} c="dimmed">
-              Time:
-            </Text>
-            <SegmentedControl
-              value={activeTimeFilter}
-              onChange={handleTimeFilterChange}
-              data={timeFilterOptions}
-              size="xs"
-              disabled={isPending}
-              data-umami-event="filter-posts-time"
-            />
-          </Group>
-        )}
-      </Stack>
+      {showTimeFilter && (
+        <Group gap="xs">
+          <Text size="sm" fw={500} c="dimmed">
+            Time:
+          </Text>
+          <SegmentedControl
+            value={activeTimeFilter}
+            onChange={handleTimeFilterChange}
+            data={timeFilterOptions}
+            size="xs"
+            disabled={isPending}
+            data-umami-event="filter-posts-time"
+          />
+        </Group>
+      )}
 
       <Stack
         gap="md"

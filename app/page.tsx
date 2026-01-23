@@ -11,7 +11,6 @@ import {
 } from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {PostNavigationProvider} from '@/lib/contexts/PostNavigationContext'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
@@ -113,7 +112,7 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
   const feedTitle = isAuthenticated ? 'Your Feed' : 'Popular Posts'
 
   return (
-    <PostNavigationProvider>
+    <>
       <AppLayout
         isAuthenticated={isAuthenticated}
         username={session.username}
@@ -140,6 +139,6 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
       </AppLayout>
       <BossButton />
       <BackToTop />
-    </PostNavigationProvider>
+    </>
   )
 }

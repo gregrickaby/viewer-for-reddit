@@ -1,6 +1,5 @@
 'use client'
 
-import {usePostNavigation} from '@/lib/contexts/PostNavigationContext'
 import {detectSwipe} from '@/lib/utils/touch-gestures'
 import {useRouter} from 'next/navigation'
 import {useCallback, useEffect, useRef} from 'react'
@@ -15,8 +14,6 @@ interface UseSwipeNavigationOptions {
   threshold?: number
   /** Maximum vertical movement allowed for horizontal swipe (default: 50) */
   maxVerticalMovement?: number
-  /** Enable swipe-left to go to next post (default: false) */
-  enableNextPost?: boolean
 }
 
 /**
@@ -24,13 +21,11 @@ interface UseSwipeNavigationOptions {
  *
  * Gestures:
  * - Swipe right (left to right): Navigate back to previous page
- * - Swipe left (right to left): Navigate to next post in feed (if available)
  *
  * Features:
  * - Configurable threshold and sensitivity
  * - Prevents accidental triggers with vertical movement check
  * - Only active on touch-enabled devices
- * - Integrates with PostNavigationContext for next/previous post
  * - Can be disabled via enabled option
  *
  * @param options - Configuration options
@@ -40,21 +35,16 @@ interface UseSwipeNavigationOptions {
  * // Basic usage - enable swipe back only
  * useSwipeNavigation()
  *
- * // Enable both back and next post navigation
- * useSwipeNavigation({ enableNextPost: true })
- *
  * // Custom threshold
- * useSwipeNavigation({ threshold: 150, enableNextPost: true })
+ * useSwipeNavigation({ threshold: 150 })
  * ```
  */
 export function useSwipeNavigation({
   enabled = true,
   threshold = 100,
-  maxVerticalMovement = 50,
-  enableNextPost = false
+  maxVerticalMovement = 50
 }: UseSwipeNavigationOptions = {}) {
   const router = useRouter()
-  const {getNextPost} = usePostNavigation()
   const touchStartX = useRef<number>(0)
   const touchStartY = useRef<number>(0)
   const touchEndX = useRef<number>(0)
@@ -64,24 +54,6 @@ export function useSwipeNavigation({
   const handleSwipeRight = useCallback(() => {
     router.back()
   }, [router])
-
-  // Memoized callback for left swipe (next post)
-  const handleSwipeLeft = useCallback(() => {
-    const nextPost = getNextPost()
-    if (nextPost) {
-      router.push(nextPost.url)
-    }
-  }, [getNextPost, router])
-
-  // Prefetch next post when available
-  useEffect(() => {
-    if (enableNextPost && enabled) {
-      const nextPost = getNextPost()
-      if (nextPost?.url) {
-        router.prefetch(nextPost.url)
-      }
-    }
-  }, [enableNextPost, enabled, getNextPost, router])
 
   useEffect(() => {
     if (!enabled) return
@@ -118,13 +90,6 @@ export function useSwipeNavigation({
         return
       }
 
-      // Left swipe: navigate to next post (if enabled)
-      if (swipe.direction === 'left' && enableNextPost) {
-        handleSwipeLeft()
-        resetTouchState()
-        return
-      }
-
       resetTouchState()
     }
 
@@ -146,12 +111,5 @@ export function useSwipeNavigation({
       document.removeEventListener('touchmove', handleTouchMove)
       document.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [
-    enabled,
-    threshold,
-    maxVerticalMovement,
-    enableNextPost,
-    handleSwipeRight,
-    handleSwipeLeft
-  ])
+  }, [enabled, threshold, maxVerticalMovement, handleSwipeRight])
 }
