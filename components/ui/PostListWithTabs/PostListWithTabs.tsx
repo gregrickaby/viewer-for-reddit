@@ -21,6 +21,7 @@ import {useRouter} from 'next/navigation'
 import {startTransition, useTransition} from 'react'
 import {PostCard} from '../PostCard/PostCard'
 import styles from '../PostList/PostList.module.css'
+import {PostNavigationTracker} from '../PostNavigationTracker/PostNavigationTracker'
 
 /**
  * Props for the PostListWithTabs component.
@@ -130,6 +131,7 @@ export function PostListWithTabs({
 
   return (
     <>
+      <PostNavigationTracker posts={posts} />
       <Stack gap="md" mb="lg">
         <Tabs
           value={activeSort}
