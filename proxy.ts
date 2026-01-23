@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
- * Middleware to add security and SEO headers.
+ * Proxy to add security and SEO headers.
  *
  * Adds X-Robots-Tag headers to dynamic routes to prevent indexing.
  * This provides defense-in-depth alongside meta robots tags and robots.txt.
@@ -20,7 +20,7 @@ import {NextRequest, NextResponse} from 'next/server'
  *
  * @see https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#xrobotstag
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const {pathname} = request.nextUrl
 
   // Check if path is a dynamic route that should not be indexed
@@ -43,7 +43,7 @@ export function middleware(request: NextRequest) {
 }
 
 /**
- * Configure which routes the middleware runs on.
+ * Configure which routes the proxy runs on.
  * Using matcher for performance - only runs on specified paths.
  *
  * Matcher pattern for dynamic, non-static routes:
@@ -55,7 +55,7 @@ export function middleware(request: NextRequest) {
  *   - Public asset files with extensions: svg, png, jpg, jpeg, gif, webp
  *
  * The negative lookahead ensures these asset paths are skipped so the
- * middleware only runs for HTML/document routes where SEO headers matter.
+ * proxy only runs for HTML/document routes where SEO headers matter.
  */
 export const config = {
   matcher: [
