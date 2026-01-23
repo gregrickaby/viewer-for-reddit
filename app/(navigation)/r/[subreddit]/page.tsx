@@ -3,8 +3,8 @@ import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleto
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
+import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {

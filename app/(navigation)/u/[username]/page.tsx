@@ -2,8 +2,8 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
+import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
   fetchMultireddits,
