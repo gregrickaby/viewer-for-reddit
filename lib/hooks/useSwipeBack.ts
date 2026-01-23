@@ -16,13 +16,13 @@ interface UseSwipeBackOptions {
 }
 
 /**
- * Custom hook to enable swipe-left-to-go-back gesture on mobile.
+ * Custom hook to enable swipe-right-to-go-back gesture on mobile.
  *
- * Mimics native Reddit app behavior where swiping left navigates back
+ * Mimics native app behavior where swiping right navigates back
  * to the previous page. Only works on touch devices.
  *
  * Features:
- * - Detects left swipe gesture (right to left)
+ * - Detects right swipe gesture (left to right)
  * - Configurable threshold and sensitivity
  * - Prevents accidental triggers with vertical movement check
  * - Only active on touch-enabled devices
@@ -70,9 +70,9 @@ export function useSwipeBack({
       const deltaX = touchEndX.current - touchStartX.current
       const deltaY = Math.abs(touchEndY.current - touchStartY.current)
 
-      // Check if it's a left swipe (negative deltaX means swiping left)
+      // Check if it's a right swipe (positive deltaX means swiping right)
       // and vertical movement is minimal (not a scroll)
-      if (deltaX < -threshold && deltaY < maxVerticalMovement) {
+      if (deltaX > threshold && deltaY < maxVerticalMovement) {
         router.back()
       }
 

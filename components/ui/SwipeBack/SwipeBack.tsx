@@ -4,14 +4,14 @@ import {useSwipeBack} from '@/lib/hooks'
 import {usePathname} from 'next/navigation'
 
 /**
- * SwipeBack component - enables swipe-left-to-go-back gesture on mobile.
+ * SwipeBack component - enables swipe-right-to-go-back gesture on mobile.
  *
- * Mimics native Reddit app behavior where swiping left navigates back
+ * Mimics native app behavior where swiping right navigates back
  * to the previous page. This component is automatically disabled on
  * the homepage to prevent accidentally leaving the site.
  *
  * Features:
- * - Detects left swipe gesture (right to left)
+ * - Detects right swipe gesture (left to right)
  * - Automatically disabled on homepage
  * - Only works on touch-enabled devices
  * - No visual UI, just gesture handling

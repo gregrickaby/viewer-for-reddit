@@ -35,21 +35,21 @@ describe('useSwipeBack', () => {
     document.dispatchEvent(touchEndEvent)
   }
 
-  describe('left swipe detection', () => {
-    it('navigates back on left swipe exceeding threshold', () => {
+  describe('right swipe detection', () => {
+    it('navigates back on right swipe exceeding threshold', () => {
       renderHook(() => useSwipeBack())
 
-      // Swipe left: start at 200, end at 50 (delta = -150, exceeds default 100 threshold)
-      simulateSwipe(200, 100, 50, 100)
+      // Swipe right: start at 50, end at 200 (delta = +150, exceeds default 100 threshold)
+      simulateSwipe(50, 100, 200, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
 
-    it('does not navigate on left swipe below threshold', () => {
+    it('does not navigate on right swipe below threshold', () => {
       renderHook(() => useSwipeBack())
 
-      // Swipe left but not enough: start at 100, end at 50 (delta = -50, below 100 threshold)
-      simulateSwipe(100, 100, 50, 100)
+      // Swipe right but not enough: start at 50, end at 100 (delta = +50, below 100 threshold)
+      simulateSwipe(50, 100, 100, 100)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -57,17 +57,17 @@ describe('useSwipeBack', () => {
     it('respects custom threshold', () => {
       renderHook(() => useSwipeBack({threshold: 50}))
 
-      // Swipe left: delta = -60, exceeds custom 50 threshold
-      simulateSwipe(150, 100, 90, 100)
+      // Swipe right: delta = +60, exceeds custom 50 threshold
+      simulateSwipe(90, 100, 150, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
 
-    it('does not navigate on right swipe', () => {
+    it('does not navigate on left swipe', () => {
       renderHook(() => useSwipeBack())
 
-      // Swipe right: start at 50, end at 200 (delta = +150)
-      simulateSwipe(50, 100, 200, 100)
+      // Swipe left: start at 200, end at 50 (delta = -150)
+      simulateSwipe(200, 100, 50, 100)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -75,8 +75,8 @@ describe('useSwipeBack', () => {
     it('handles exactly threshold distance', () => {
       renderHook(() => useSwipeBack({threshold: 100}))
 
-      // Swipe left: delta = -100, exactly at threshold (should not trigger)
-      simulateSwipe(200, 100, 100, 100)
+      // Swipe right: delta = +100, exactly at threshold (should not trigger)
+      simulateSwipe(100, 100, 200, 100)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -84,8 +84,8 @@ describe('useSwipeBack', () => {
     it('handles threshold + 1 distance', () => {
       renderHook(() => useSwipeBack({threshold: 100}))
 
-      // Swipe left: delta = -101, just over threshold (should trigger)
-      simulateSwipe(200, 100, 99, 100)
+      // Swipe right: delta = +101, just over threshold (should trigger)
+      simulateSwipe(99, 100, 200, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -95,10 +95,10 @@ describe('useSwipeBack', () => {
     it('does not navigate when vertical movement exceeds limit', () => {
       renderHook(() => useSwipeBack())
 
-      // Swipe left with too much vertical movement
-      // Horizontal: 200 -> 50 (delta = -150, exceeds threshold)
+      // Swipe right with too much vertical movement
+      // Horizontal: 50 -> 200 (delta = +150, exceeds threshold)
       // Vertical: 100 -> 160 (delta = 60, exceeds default maxVerticalMovement of 50)
-      simulateSwipe(200, 100, 50, 160)
+      simulateSwipe(50, 100, 200, 160)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -106,10 +106,10 @@ describe('useSwipeBack', () => {
     it('navigates when vertical movement is within limit', () => {
       renderHook(() => useSwipeBack())
 
-      // Swipe left with acceptable vertical movement
-      // Horizontal: 200 -> 50 (delta = -150)
+      // Swipe right with acceptable vertical movement
+      // Horizontal: 50 -> 200 (delta = +150)
       // Vertical: 100 -> 130 (delta = 30, within default 50 limit)
-      simulateSwipe(200, 100, 50, 130)
+      simulateSwipe(50, 100, 200, 130)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -118,7 +118,7 @@ describe('useSwipeBack', () => {
       renderHook(() => useSwipeBack({maxVerticalMovement: 20}))
 
       // Vertical movement of 30 exceeds custom limit of 20
-      simulateSwipe(200, 100, 50, 130)
+      simulateSwipe(50, 100, 200, 130)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -126,9 +126,9 @@ describe('useSwipeBack', () => {
     it('handles negative vertical movement', () => {
       renderHook(() => useSwipeBack())
 
-      // Swipe left with upward vertical movement
+      // Swipe right with upward vertical movement
       // Vertical: 100 -> 60 (delta = -40, abs = 40, within 50 limit)
-      simulateSwipe(200, 100, 50, 60)
+      simulateSwipe(50, 100, 200, 60)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -137,7 +137,7 @@ describe('useSwipeBack', () => {
       renderHook(() => useSwipeBack({maxVerticalMovement: 50}))
 
       // Vertical: exactly 50 (should not trigger)
-      simulateSwipe(200, 100, 50, 150)
+      simulateSwipe(50, 100, 200, 150)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -147,7 +147,7 @@ describe('useSwipeBack', () => {
     it('navigates when enabled is true', () => {
       renderHook(() => useSwipeBack({enabled: true}))
 
-      simulateSwipe(200, 100, 50, 100)
+      simulateSwipe(50, 100, 200, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -155,7 +155,7 @@ describe('useSwipeBack', () => {
     it('does not navigate when enabled is false', () => {
       renderHook(() => useSwipeBack({enabled: false}))
 
-      simulateSwipe(200, 100, 50, 100)
+      simulateSwipe(50, 100, 200, 100)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -209,7 +209,7 @@ describe('useSwipeBack', () => {
       unmount()
 
       // Try to swipe after unmount
-      simulateSwipe(200, 100, 50, 100)
+      simulateSwipe(50, 100, 200, 100)
 
       expect(mockBack).not.toHaveBeenCalled()
     })
@@ -219,9 +219,9 @@ describe('useSwipeBack', () => {
     it('handles multiple consecutive swipes', () => {
       renderHook(() => useSwipeBack())
 
-      simulateSwipe(200, 100, 50, 100)
-      simulateSwipe(200, 100, 50, 100)
-      simulateSwipe(200, 100, 50, 100)
+      simulateSwipe(50, 100, 200, 100)
+      simulateSwipe(50, 100, 200, 100)
+      simulateSwipe(50, 100, 200, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(3)
     })
@@ -230,11 +230,11 @@ describe('useSwipeBack', () => {
       renderHook(() => useSwipeBack())
 
       // First swipe - should trigger
-      simulateSwipe(200, 100, 50, 100)
+      simulateSwipe(50, 100, 200, 100)
       expect(mockBack).toHaveBeenCalledTimes(1)
 
       // Second swipe with different values - should also trigger
-      simulateSwipe(300, 200, 100, 200)
+      simulateSwipe(100, 200, 300, 200)
       expect(mockBack).toHaveBeenCalledTimes(2)
     })
   })
@@ -243,9 +243,8 @@ describe('useSwipeBack', () => {
     it('handles zero start position', () => {
       renderHook(() => useSwipeBack())
 
-      // Start at 0, swipe left is not possible (would be negative)
-      // But swipe from 150 to 0 should work
-      simulateSwipe(150, 100, 0, 100)
+      // Start at 0, swipe right to 150 should work
+      simulateSwipe(0, 100, 150, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -254,7 +253,7 @@ describe('useSwipeBack', () => {
       renderHook(() => useSwipeBack())
 
       // Very long swipe
-      simulateSwipe(1000, 100, 0, 100)
+      simulateSwipe(0, 100, 1000, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -263,7 +262,7 @@ describe('useSwipeBack', () => {
       renderHook(() => useSwipeBack())
 
       // Perfectly horizontal swipe
-      simulateSwipe(200, 100, 50, 100)
+      simulateSwipe(50, 100, 200, 100)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -272,7 +271,7 @@ describe('useSwipeBack', () => {
       renderHook(() => useSwipeBack())
 
       // Should work with defaults: threshold=100, maxVerticalMovement=50
-      simulateSwipe(200, 100, 50, 120)
+      simulateSwipe(50, 100, 200, 120)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
@@ -286,8 +285,8 @@ describe('useSwipeBack', () => {
         })
       )
 
-      // Swipe: delta = -100 (exceeds 75), vertical = 20 (within 30)
-      simulateSwipe(200, 100, 100, 120)
+      // Swipe: delta = +100 (exceeds 75), vertical = 20 (within 30)
+      simulateSwipe(100, 100, 200, 120)
 
       expect(mockBack).toHaveBeenCalledTimes(1)
     })
