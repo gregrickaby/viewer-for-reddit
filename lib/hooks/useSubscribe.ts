@@ -1,6 +1,7 @@
 'use client'
 
 import {toggleSubscription} from '@/lib/actions/reddit'
+import {logger} from '@/lib/utils/logger'
 import {useState, useTransition} from 'react'
 
 interface UseSubscribeOptions {
@@ -54,7 +55,11 @@ export function useSubscribe({
       // Rollback on failure
       if (!result.success) {
         setIsSubscribed(previousState)
-        console.error('Failed to toggle subscription:', result.error)
+        logger.error('Failed to toggle subscription', result.error, {
+          context: 'useSubscribe',
+          subredditName,
+          action
+        })
       }
     })
   }
