@@ -3,8 +3,10 @@ import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleto
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
@@ -235,23 +237,41 @@ export default async function SubredditPage({
         multireddits={multireddits}
       >
         <Container size="lg">
-          <div style={{maxWidth: '800px'}}>
-            <Suspense fallback={<SubredditInfoSkeleton />}>
-              <SubredditInfo
-                subreddit={subreddit}
-                isAuthenticated={isAuthenticated}
-              />
-            </Suspense>
+          <Stack gap="xl" maw={800}>
+            <ErrorBoundary
+              fallback={
+                <ErrorDisplay
+                  title="Failed to load subreddit info"
+                  message="Please try again in a moment."
+                />
+              }
+            >
+              <Suspense fallback={<SubredditInfoSkeleton />}>
+                <SubredditInfo
+                  subreddit={subreddit}
+                  isAuthenticated={isAuthenticated}
+                />
+              </Suspense>
+            </ErrorBoundary>
 
-            <Suspense fallback={<TabsSkeleton />}>
-              <SubredditPosts
-                subreddit={subreddit}
-                isAuthenticated={isAuthenticated}
-                sort={postSort}
-                timeFilter={timeFilter}
-              />
-            </Suspense>
-          </div>
+            <ErrorBoundary
+              fallback={
+                <ErrorDisplay
+                  title="Failed to load posts"
+                  message="Please try again in a moment."
+                />
+              }
+            >
+              <Suspense fallback={<TabsSkeleton />}>
+                <SubredditPosts
+                  subreddit={subreddit}
+                  isAuthenticated={isAuthenticated}
+                  sort={postSort}
+                  timeFilter={timeFilter}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          </Stack>
         </Container>
       </AppLayout>
       <SwipeNavigation />

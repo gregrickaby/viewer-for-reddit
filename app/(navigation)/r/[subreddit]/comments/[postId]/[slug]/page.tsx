@@ -4,6 +4,8 @@ import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
@@ -183,22 +185,40 @@ export default async function PostPage({
         multireddits={multireddits}
       >
         <Container size="lg">
-          <Stack gap="xl" style={{maxWidth: '800px'}}>
-            <Suspense fallback={<PostSkeleton />}>
-              <PostDetail subreddit={subreddit} postId={postId} />
-            </Suspense>
+          <Stack gap="xl" maw={800}>
+            <ErrorBoundary
+              fallback={
+                <ErrorDisplay
+                  title="Failed to load post"
+                  message="Please try again in a moment."
+                />
+              }
+            >
+              <Suspense fallback={<PostSkeleton />}>
+                <PostDetail subreddit={subreddit} postId={postId} />
+              </Suspense>
+            </ErrorBoundary>
 
             <div id="comments" style={{scrollMarginTop: '80px'}}>
               <Title order={3} mb="lg">
                 Comments
               </Title>
-              <Suspense fallback={<CommentListSkeleton />}>
-                <CommentList
-                  subreddit={subreddit}
-                  postId={postId}
-                  sort={commentSort}
-                />
-              </Suspense>
+              <ErrorBoundary
+                fallback={
+                  <ErrorDisplay
+                    title="Failed to load comments"
+                    message="Please try again in a moment."
+                  />
+                }
+              >
+                <Suspense fallback={<CommentListSkeleton />}>
+                  <CommentList
+                    subreddit={subreddit}
+                    postId={postId}
+                    sort={commentSort}
+                  />
+                </Suspense>
+              </ErrorBoundary>
             </div>
           </Stack>
         </Container>

@@ -2,8 +2,10 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
   fetchMultireddits,
@@ -155,15 +157,24 @@ export default async function MultiredditPage({
             {multiname}
           </Title>
 
-          <Suspense fallback={<TabsSkeleton />}>
-            <MultiredditPosts
-              username={username}
-              multiname={multiname}
-              isAuthenticated={isAuthenticated}
-              sort={postSort}
-              timeFilter={timeFilter}
-            />
-          </Suspense>
+          <ErrorBoundary
+            fallback={
+              <ErrorDisplay
+                title="Failed to load multireddit"
+                message="Please try again in a moment."
+              />
+            }
+          >
+            <Suspense fallback={<TabsSkeleton />}>
+              <MultiredditPosts
+                username={username}
+                multiname={multiname}
+                isAuthenticated={isAuthenticated}
+                sort={postSort}
+                timeFilter={timeFilter}
+              />
+            </Suspense>
+          </ErrorBoundary>
         </Container>
       </AppLayout>
       <SwipeNavigation />

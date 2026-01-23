@@ -2,8 +2,10 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
-import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
   fetchMultireddits,
@@ -246,23 +248,41 @@ export default async function UserPage({
         multireddits={multireddits}
       >
         <Container size="lg">
-          <Stack gap="xl" style={{maxWidth: '800px'}}>
-            <Suspense fallback={<PostSkeleton />}>
-              <UserProfile username={username} />
-            </Suspense>
+          <Stack gap="xl" maw={800}>
+            <ErrorBoundary
+              fallback={
+                <ErrorDisplay
+                  title="Failed to load profile"
+                  message="Please try again in a moment."
+                />
+              }
+            >
+              <Suspense fallback={<PostSkeleton />}>
+                <UserProfile username={username} />
+              </Suspense>
+            </ErrorBoundary>
 
             <div>
               <Title order={3} mb="lg">
                 Posts
               </Title>
-              <Suspense fallback={<PostSkeleton />}>
-                <UserPosts
-                  username={username}
-                  isAuthenticated={isAuthenticated}
-                  sort={postSort}
-                  timeFilter={timeFilter}
-                />
-              </Suspense>
+              <ErrorBoundary
+                fallback={
+                  <ErrorDisplay
+                    title="Failed to load posts"
+                    message="Please try again in a moment."
+                  />
+                }
+              >
+                <Suspense fallback={<PostSkeleton />}>
+                  <UserPosts
+                    username={username}
+                    isAuthenticated={isAuthenticated}
+                    sort={postSort}
+                    timeFilter={timeFilter}
+                  />
+                </Suspense>
+              </ErrorBoundary>
             </div>
           </Stack>
         </Container>

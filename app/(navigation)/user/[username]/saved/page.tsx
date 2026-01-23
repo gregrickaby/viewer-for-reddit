@@ -2,6 +2,8 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import {SavedPostsList} from '@/components/ui/SavedPostsList'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
@@ -12,7 +14,7 @@ import {
   getCurrentUserAvatar
 } from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
-import {Container, Text, Title} from '@mantine/core'
+import {Container, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 
@@ -70,10 +72,10 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
           multireddits={[]}
         >
           <Container size="lg">
-            <div style={{padding: '2rem', textAlign: 'center'}}>
-              <h2>Authentication Required</h2>
-              <p>You must be logged in to view saved posts.</p>
-            </div>
+            <Stack align="center" gap="xs" py="xl">
+              <Title order={2}>Authentication Required</Title>
+              <Text c="dimmed">You must be logged in to view saved posts.</Text>
+            </Stack>
           </Container>
         </AppLayout>
         <SwipeNavigation />
@@ -131,13 +133,22 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
             <Title order={2} mb="md">
               Saved Posts
             </Title>
-            <Suspense fallback={<PostSkeleton />}>
-              <SavedPostsList
-                initialPosts={posts}
-                username={username}
-                initialAfter={after}
-              />
-            </Suspense>
+            <ErrorBoundary
+              fallback={
+                <ErrorDisplay
+                  title="Failed to load saved posts"
+                  message="Please try again in a moment."
+                />
+              }
+            >
+              <Suspense fallback={<PostSkeleton />}>
+                <SavedPostsList
+                  initialPosts={posts}
+                  username={username}
+                  initialAfter={after}
+                />
+              </Suspense>
+            </ErrorBoundary>
           </Container>
         </AppLayout>
         <SwipeNavigation />
@@ -159,10 +170,10 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
           multireddits={multireddits}
         >
           <Container size="lg">
-            <div style={{padding: '2rem', textAlign: 'center'}}>
-              <h2>Error</h2>
-              <p>{errorMessage}</p>
-            </div>
+            <Stack align="center" gap="xs" py="xl">
+              <Title order={2}>Error</Title>
+              <Text c="dimmed">{errorMessage}</Text>
+            </Stack>
           </Container>
         </AppLayout>
         <SwipeNavigation />

@@ -2,9 +2,17 @@ import {render} from '@/test-utils'
 import {describe, expect, it, vi} from 'vitest'
 import SwipeNavigation from './SwipeNavigation'
 
+type SwipeNavigationOptions = {
+  enabled?: boolean
+  threshold?: number
+  maxVerticalMovement?: number
+  enableNextPost?: boolean
+}
+
 const mockUseSwipeNavigation = vi.fn()
 vi.mock('@/lib/hooks', () => ({
-  useSwipeNavigation: (options?: any) => mockUseSwipeNavigation(options)
+  useSwipeNavigation: (options?: SwipeNavigationOptions) =>
+    mockUseSwipeNavigation(options)
 }))
 
 let mockPathname = '/'

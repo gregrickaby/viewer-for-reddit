@@ -2,6 +2,8 @@ import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostList} from '@/components/ui/PostList/PostList'
 import {PostNavigationTracker} from '@/components/ui/PostNavigationTracker/PostNavigationTracker'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
@@ -123,11 +125,23 @@ export default async function SearchPage({params}: Readonly<PageProps>) {
         multireddits={multireddits}
       >
         <Container size="lg">
-          <Stack gap="xl" style={{maxWidth: '800px'}}>
+          <Stack gap="xl" maw={800}>
             <Title order={2}>Search results for: {decodedQuery}</Title>
-            <Suspense fallback={<PostSkeleton />}>
-              <SearchResults query={query} isAuthenticated={isAuthenticated} />
-            </Suspense>
+            <ErrorBoundary
+              fallback={
+                <ErrorDisplay
+                  title="Failed to load search results"
+                  message="Please try again in a moment."
+                />
+              }
+            >
+              <Suspense fallback={<PostSkeleton />}>
+                <SearchResults
+                  query={query}
+                  isAuthenticated={isAuthenticated}
+                />
+              </Suspense>
+            </ErrorBoundary>
           </Stack>
         </Container>
       </AppLayout>

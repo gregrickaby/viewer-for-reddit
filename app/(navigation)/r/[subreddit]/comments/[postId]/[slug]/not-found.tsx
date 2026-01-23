@@ -2,12 +2,19 @@
  * Post not found page.
  * Shown when notFound() is called from a post detail page.
  */
+import {Anchor, Container, Stack, Text, Title} from '@mantine/core'
+import Link from 'next/link'
+
 export default function PostNotFound() {
   return (
-    <div style={{padding: '2rem', textAlign: 'center'}}>
-      <h1>Post not found</h1>
-      <p>This post may have been deleted or removed.</p>
-      <a href="/">Go Home</a>
-    </div>
+    <Container size="sm" py="xl">
+      <Stack align="center" gap="xs">
+        <Title order={1}>Post not found</Title>
+        <Text c="dimmed">This post may have been deleted or removed.</Text>
+        <Anchor component={Link} href="/" fw={600}>
+          Go Home
+        </Anchor>
+      </Stack>
+    </Container>
   )
 }
