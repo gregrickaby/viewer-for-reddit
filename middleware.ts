@@ -46,14 +46,7 @@ export function middleware(request: NextRequest) {
  * Configure which routes the middleware runs on.
  * Using matcher for performance - only runs on specified paths.
  *
- * Note: We're matching all paths that need blocking.
- * Static files (_next, images, etc) are automatically excluded.
- */
-
-/**
- * Next.js middleware matcher pattern for dynamic, non-static routes.
- *
- * This pattern:
+ * Matcher pattern for dynamic, non-static routes:
  * - Matches all request paths under `/`
  * - Excludes:
  *   - `_next/static` (Next.js static assets)
@@ -64,9 +57,8 @@ export function middleware(request: NextRequest) {
  * The negative lookahead ensures these asset paths are skipped so the
  * middleware only runs for HTML/document routes where SEO headers matter.
  */
-const NON_INDEXED_PATH_MATCHER =
-  '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
-
 export const config = {
-  matcher: [NON_INDEXED_PATH_MATCHER]
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
+  ]
 }
