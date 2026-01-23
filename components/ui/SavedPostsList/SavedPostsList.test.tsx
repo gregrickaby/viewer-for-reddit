@@ -12,9 +12,13 @@ vi.mock('@/lib/actions/auth', () => ({
   clearExpiredSession: vi.fn(async () => {})
 }))
 
+vi.mock('../PostCard/PostCard', () => ({
+  PostCard: ({post}: {post: {title: string}}) => <div>{post.title}</div>
+}))
+
 import {fetchSavedPosts} from '@/lib/actions/reddit'
 import type {RedditPost} from '@/lib/types/reddit'
-import {render, screen} from '@/test-utils'
+import {act, render, screen, waitFor} from '@/test-utils'
 import {SavedPostsList} from './SavedPostsList'
 
 const mockFetchSavedPosts = vi.mocked(fetchSavedPosts)
@@ -67,12 +71,26 @@ const mockPosts: RedditPost[] = [
 ]
 
 describe('SavedPostsList', () => {
+  let observerCallback: IntersectionObserverCallback | null = null
+
   beforeEach(() => {
     mockFetchSavedPosts.mockClear()
     mockFetchSavedPosts.mockResolvedValue({
       posts: [],
       after: null
     })
+
+    observerCallback = null
+    global.IntersectionObserver = class IntersectionObserver {
+      constructor(callback?: IntersectionObserverCallback) {
+        if (callback) {
+          observerCallback = callback
+        }
+      }
+      observe = vi.fn()
+      disconnect = vi.fn()
+      unobserve = vi.fn()
+    } as unknown as typeof IntersectionObserver
   })
 
   describe('initial rendering', () => {
@@ -129,12 +147,15 @@ describe('SavedPostsList', () => {
 
   describe('infinite scroll setup', () => {
     it('sets up IntersectionObserver when there are more posts', () => {
-      const observeMock = vi.fn()
-      global.IntersectionObserver = vi.fn(function (this: any) {
-        this.observe = observeMock
-        this.disconnect = vi.fn()
-        this.unobserve = vi.fn()
-      }) as any
+      const constructorSpy = vi.fn()
+      global.IntersectionObserver = class IntersectionObserver {
+        constructor() {
+          constructorSpy()
+        }
+        observe = vi.fn()
+        disconnect = vi.fn()
+        unobserve = vi.fn()
+      } as unknown as typeof IntersectionObserver
 
       render(
         <SavedPostsList
@@ -145,17 +166,10 @@ describe('SavedPostsList', () => {
       )
 
       // Verify IntersectionObserver was created
-      expect(global.IntersectionObserver).toHaveBeenCalled()
+      expect(constructorSpy).toHaveBeenCalled()
     })
 
     it('does not set up IntersectionObserver when no more posts', () => {
-      const observeMock = vi.fn()
-      global.IntersectionObserver = vi.fn(function (this: any) {
-        this.observe = observeMock
-        this.disconnect = vi.fn()
-        this.unobserve = vi.fn()
-      }) as any
-
       render(
         <SavedPostsList
           initialPosts={mockPosts}
@@ -166,6 +180,111 @@ describe('SavedPostsList', () => {
 
       // Sentinel should not be present (no loader visible initially)
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('infinite scroll loading', () => {
+    beforeEach(() => {
+      global.IntersectionObserver = class IntersectionObserver {
+        constructor(callback: IntersectionObserverCallback) {
+          observerCallback = callback
+        }
+        observe = vi.fn()
+        disconnect = vi.fn()
+        unobserve = vi.fn()
+      } as unknown as typeof IntersectionObserver
+    })
+
+    it('loads more posts when sentinel intersects', async () => {
+      mockFetchSavedPosts.mockResolvedValueOnce({
+        posts: [{...mockPosts[0], id: 'saved3'}],
+        after: null
+      })
+
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter="t3_cursor"
+        />
+      )
+
+      await waitFor(() => {
+        expect(observerCallback).not.toBeNull()
+      })
+
+      await act(async () => {
+        observerCallback?.(
+          [{isIntersecting: true}] as IntersectionObserverEntry[],
+          {} as IntersectionObserver
+        )
+      })
+
+      await waitFor(() => {
+        expect(mockFetchSavedPosts).toHaveBeenCalledWith(
+          'testuser',
+          't3_cursor'
+        )
+      })
+    })
+
+    it('shows error message when fetch fails', async () => {
+      mockFetchSavedPosts.mockRejectedValueOnce(new Error('Network error'))
+
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter="t3_cursor"
+        />
+      )
+
+      await waitFor(() => {
+        expect(observerCallback).not.toBeNull()
+      })
+
+      await act(async () => {
+        observerCallback?.(
+          [{isIntersecting: true}] as IntersectionObserverEntry[],
+          {} as IntersectionObserver
+        )
+      })
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Failed to load saved posts')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('shows no-more message after empty response', async () => {
+      mockFetchSavedPosts.mockResolvedValueOnce({
+        posts: [],
+        after: null
+      })
+
+      render(
+        <SavedPostsList
+          initialPosts={mockPosts}
+          username="testuser"
+          initialAfter="t3_cursor"
+        />
+      )
+
+      await waitFor(() => {
+        expect(observerCallback).not.toBeNull()
+      })
+
+      await act(async () => {
+        observerCallback?.(
+          [{isIntersecting: true}] as IntersectionObserverEntry[],
+          {} as IntersectionObserver
+        )
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText('No more saved posts')).toBeInTheDocument()
+      })
     })
   })
 
@@ -184,8 +303,8 @@ describe('SavedPostsList', () => {
       expect(screen.getByText('Second saved post')).toBeInTheDocument()
 
       // Verify post metadata is rendered
-      expect(screen.getByText('r/testsubreddit')).toBeInTheDocument()
-      expect(screen.getByText('r/programming')).toBeInTheDocument()
+      expect(screen.queryByText('r/testsubreddit')).not.toBeInTheDocument()
+      expect(screen.queryByText('r/programming')).not.toBeInTheDocument()
     })
   })
 })

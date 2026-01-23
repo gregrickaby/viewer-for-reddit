@@ -44,7 +44,7 @@ These specialized instructions apply automatically when editing relevant files v
 - Arctic OAuth tokens are **methods**: `tokens.accessToken()` NOT `.accessToken` property
 - Always wrap async components: `<ErrorBoundary><Suspense fallback={...}>`
 - Prevent race conditions: `if (isPending) return` at start of all async handlers
-- Sanitize user HTML: `DOMPurify.sanitize()` before rendering
+- Sanitize user HTML with `sanitize-html` via `sanitizeText()` before rendering
 - Wrap Next.js `<Link>` with Mantine `<Anchor component={Link}>`
 - Props typed with `Readonly<>`, avoid `any`
 - Never use `NEXT_PUBLIC_` env prefix (all server-side only)

@@ -146,19 +146,7 @@ export function VideoPlayer({
 
   // Validate URL before rendering
   if (!isValidVideoUrl(src)) {
-    return (
-      <div
-        style={{
-          padding: '2rem',
-          textAlign: 'center',
-          color: '#666',
-          borderRadius: 8,
-          backgroundColor: '#f5f5f5'
-        }}
-      >
-        Video unavailable
-      </div>
-    )
+    return <div className={styles.error}>Video unavailable</div>
   }
 
   return (

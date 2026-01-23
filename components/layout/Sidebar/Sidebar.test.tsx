@@ -459,6 +459,37 @@ describe('Sidebar', () => {
         screen.getByRole('button', {name: /collapse my subreddits/i})
       ).toBeInTheDocument()
     })
+
+    it('toggles subscriptions by keyboard', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+
+      let toggleButton = screen.getByRole('button', {
+        name: /collapse my subreddits/i
+      })
+
+      toggleButton.focus()
+      await user.keyboard('{Enter}')
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /expand my subreddits/i})
+        ).toBeInTheDocument()
+      })
+
+      toggleButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+
+      toggleButton.focus()
+      await user.keyboard(' ')
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /collapse my subreddits/i})
+        ).toBeInTheDocument()
+      })
+    })
   })
 
   describe('multireddits - unauthenticated', () => {
@@ -613,6 +644,37 @@ describe('Sidebar', () => {
       expect(
         screen.getByRole('button', {name: /collapse multireddits/i})
       ).toBeInTheDocument()
+    })
+
+    it('toggles multireddits by keyboard', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+
+      let toggleButton = screen.getByRole('button', {
+        name: /collapse multireddits/i
+      })
+
+      toggleButton.focus()
+      await user.keyboard('{Enter}')
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /expand multireddits/i})
+        ).toBeInTheDocument()
+      })
+
+      toggleButton = screen.getByRole('button', {
+        name: /expand multireddits/i
+      })
+
+      toggleButton.focus()
+      await user.keyboard(' ')
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /collapse multireddits/i})
+        ).toBeInTheDocument()
+      })
     })
   })
 

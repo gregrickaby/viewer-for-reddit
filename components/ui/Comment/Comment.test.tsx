@@ -155,7 +155,7 @@ describe('Comment', () => {
       }
       const {container} = render(<Comment comment={dangerousComment} />)
 
-      // Script tag should be removed by DOMPurify
+      // Script tag should be removed by sanitize-html
       // eslint-disable-next-line testing-library/no-container
       expect(container.querySelector('script')).not.toBeInTheDocument()
     })

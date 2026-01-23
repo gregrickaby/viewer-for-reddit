@@ -13,7 +13,7 @@ These issues pose security risks, break functionality, or violate critical patte
 
 ### Security
 
-- [ ] **HTML Sanitization**: All user-generated HTML uses `DOMPurify.sanitize()` before rendering
+- [ ] **HTML Sanitization**: All user-generated HTML uses `sanitize-html` via `sanitizeText()` before rendering
 - [ ] **No Committed Secrets**: No API keys, tokens, or credentials in code
 - [ ] **Server-Side Only Env Vars**: NO `NEXT_PUBLIC_` prefix (all env vars are server-side) No env var access or functions in Client Components
 
@@ -22,10 +22,9 @@ These issues pose security risks, break functionality, or violate critical patte
 <div dangerouslySetInnerHTML={{__html: comment.body_html}} />
 
 // ✅ CORRECT - Sanitized
-import DOMPurify from 'isomorphic-dompurify'
-import {decodeHtmlEntities} from '@/lib/utils/formatters'
+import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 
-const sanitized = DOMPurify.sanitize(decodeHtmlEntities(comment.body_html))
+const sanitized = sanitizeText(decodeHtmlEntities(comment.body_html))
 <div dangerouslySetInnerHTML={{__html: sanitized}} />
 ```
 

@@ -28,3 +28,11 @@
   max-width: 100%;
   width: auto;
 }
+
+.error {
+  padding: 2rem;
+  text-align: center;
+  color: var(--mantine-color-dimmed);
+  border-radius: 8px;
+  background-color: var(--mantine-color-gray-1);
+}

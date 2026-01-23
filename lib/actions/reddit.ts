@@ -12,6 +12,7 @@ import type {
   RedditSubreddit,
   RedditUser,
   SortOption,
+  SubredditItem,
   TimeFilter
 } from '@/lib/types/reddit'
 import {
@@ -324,9 +325,10 @@ export async function fetchSubredditInfo(
 
     // Always use OAuth endpoint (works with both user and app tokens)
     const baseUrl = REDDIT_API_URL
-    const url = `${baseUrl}/r/${subreddit}/about.json`
+    const url = new URL(`${baseUrl}/r/${subreddit}/about.json`)
+    url.searchParams.set('raw_json', '1')
 
-    const response = await fetch(url, {
+    const response = await fetch(url.toString(), {
       headers: await getHeaders(isAuthenticated),
       next: {revalidate: ONE_HOUR}
     })
@@ -631,12 +633,21 @@ export async function fetchMultireddits(): Promise<
       return []
     }
 
-    const data = await response.json()
-    const multireddits = data.map((multi: any) => ({
+    const data: Array<{
+      data: {
+        name: string
+        display_name: string
+        path: string
+        icon_url?: string
+        subreddits?: Array<{name: string}>
+      }
+    }> = await response.json()
+
+    const multireddits = data.map((multi) => ({
       name: multi.data.name,
       displayName: multi.data.display_name,
       path: multi.data.path,
-      subreddits: multi.data.subreddits?.map((sub: any) => sub.name) || [],
+      subreddits: multi.data.subreddits?.map((sub) => sub.name) || [],
       icon: multi.data.icon_url || ''
     }))
 
@@ -916,7 +927,7 @@ export async function searchReddit(
  */
 export async function searchSubreddits(query: string): Promise<{
   success: boolean
-  data: any[]
+  data: SubredditItem[]
   error?: string
 }> {
   'use server'
@@ -949,18 +960,26 @@ export async function searchSubreddits(query: string): Promise<{
       throw new Error(`Reddit API error: ${response.statusText}`)
     }
 
-    const data = await response.json()
+    const data: {
+      data?: {
+        children?: Array<{
+          data?: {
+            display_name?: string
+            display_name_prefixed?: string
+            icon_img?: string
+            community_icon?: string
+            subscribers?: number
+            over18?: boolean
+          }
+        }>
+      }
+    } = await response.json()
+
     const children = data?.data?.children || []
 
-    const results: Array<{
-      name: string
-      displayName: string
-      icon: string
-      subscribers: number
-      over18: boolean
-    }> = children
-      .map((child: any) => {
-        const item = {
+    const results: SubredditItem[] = children
+      .map((child) => {
+        const item: SubredditItem = {
           name: child.data?.display_name || '',
           displayName: child.data?.display_name_prefixed || '',
           icon: child.data?.icon_img || child.data?.community_icon || '',
@@ -969,7 +988,7 @@ export async function searchSubreddits(query: string): Promise<{
         }
         return item
       })
-      .filter((item: any) => item.name)
+      .filter((item) => item.name)
 
     logger.debug('Subreddit search results', {
       query,
@@ -1033,8 +1052,7 @@ export async function toggleSubscription(
     const response = await fetch(`${REDDIT_API_URL}/api/subscribe`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-        'User-Agent': getEnvVar('USER_AGENT'),
+        ...(await getHeaders(true)),
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: formData.toString()

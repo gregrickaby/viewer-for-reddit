@@ -11,6 +11,7 @@ import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
   Badge,
+  Box,
   Card,
   Collapse,
   Group,
@@ -83,7 +84,7 @@ export function Comment({
   }
 
   return (
-    <div style={{marginLeft: depth > 0 ? 20 : 0}}>
+    <Box ml={depth > 0 ? 20 : 0}>
       <Card withBorder padding="md" radius="md" mb="sm">
         <Stack gap="sm">
           <Group gap="xs">
@@ -146,10 +147,11 @@ export function Comment({
                     onClick={() => isAuthenticated && vote(1)}
                     loading={isPending}
                     disabled={!isAuthenticated}
-                    style={{
-                      cursor: isAuthenticated ? 'pointer' : 'not-allowed',
-                      opacity: isAuthenticated ? 1 : 0.5
-                    }}
+                    className={
+                      isAuthenticated
+                        ? styles.voteButton
+                        : styles.voteButtonDisabled
+                    }
                     aria-label={`${voteState === 1 ? 'Upvoted' : 'Upvote'} comment (${score} points)`}
                     aria-disabled={!isAuthenticated}
                     data-umami-event="comment-upvote"
@@ -166,10 +168,11 @@ export function Comment({
                     onClick={() => isAuthenticated && vote(-1)}
                     loading={isPending}
                     disabled={!isAuthenticated}
-                    style={{
-                      cursor: isAuthenticated ? 'pointer' : 'not-allowed',
-                      opacity: isAuthenticated ? 1 : 0.5
-                    }}
+                    className={
+                      isAuthenticated
+                        ? styles.voteButton
+                        : styles.voteButtonDisabled
+                    }
                     aria-label={`${voteState === -1 ? 'Downvoted' : 'Downvote'} comment (${score} points)`}
                     aria-disabled={!isAuthenticated}
                     data-umami-event="comment-downvote"
@@ -193,6 +196,6 @@ export function Comment({
           />
         ))}
       </Collapse>
-    </div>
+    </Box>
   )
 }

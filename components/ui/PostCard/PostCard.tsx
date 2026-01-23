@@ -114,7 +114,6 @@ export const PostCard = memo(
                     href={postUrl}
                     underline="never"
                     c="dimmed"
-                    style={{textDecoration: 'none'}}
                     data-umami-event="post-text-preview-click"
                   >
                     <div
@@ -133,7 +132,6 @@ export const PostCard = memo(
                   href={postUrl}
                   underline="never"
                   c="dimmed"
-                  style={{textDecoration: 'none'}}
                   data-umami-event="post-text-preview-click"
                 >
                   <Text size="sm" c="dimmed" lineClamp={3}>

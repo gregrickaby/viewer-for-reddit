@@ -1,4 +1,5 @@
 import {searchSubreddits} from '@/lib/actions/reddit'
+import {logger} from '@/lib/utils/logger'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useSearch} from './useSearch'
@@ -44,6 +45,16 @@ describe('useSearch', () => {
     expect(result.current.query).toBe('test')
   })
 
+  it('sets loading immediately for valid query length', () => {
+    const {result} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('ab')
+    })
+
+    expect(result.current.isLoading).toBe(true)
+  })
+
   it('does not search when query is too short', async () => {
     const {result} = renderHook(() => useSearch())
 
@@ -59,7 +70,14 @@ describe('useSearch', () => {
   it('searches after debounce delay', async () => {
     mockSearchSubreddits.mockResolvedValueOnce({
       success: true,
-      data: [{name: 'pics', over18: false, subscribers: 1000000}]
+      data: [
+        {
+          name: 'pics',
+          displayName: 'r/pics',
+          over18: false,
+          subscribers: 1000000
+        }
+      ]
     })
 
     const {result} = renderHook(() => useSearch())
@@ -79,9 +97,24 @@ describe('useSearch', () => {
     mockSearchSubreddits.mockResolvedValueOnce({
       success: true,
       data: [
-        {name: 'pics', over18: false, subscribers: 1000000},
-        {name: 'nsfw_sub', over18: true, subscribers: 50000},
-        {name: 'videos', over18: false, subscribers: 800000}
+        {
+          name: 'pics',
+          displayName: 'r/pics',
+          over18: false,
+          subscribers: 1000000
+        },
+        {
+          name: 'nsfw_sub',
+          displayName: 'r/nsfw_sub',
+          over18: true,
+          subscribers: 50000
+        },
+        {
+          name: 'videos',
+          displayName: 'r/videos',
+          over18: false,
+          subscribers: 800000
+        }
       ]
     })
 
@@ -122,6 +155,120 @@ describe('useSearch', () => {
       expect(result.current.errorMessage).toBe('API error')
       expect(result.current.groupedResults.communities).toEqual([])
     })
+  })
+
+  it('uses fallback error message when API provides none', async () => {
+    mockSearchSubreddits.mockResolvedValueOnce({
+      success: false,
+      data: []
+    })
+
+    const {result} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('test')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    await waitFor(() => {
+      expect(result.current.errorMessage).toBe('Search failed')
+    })
+  })
+
+  it('handles network errors', async () => {
+    mockSearchSubreddits.mockRejectedValueOnce(new Error('Network down'))
+
+    const {result} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('test')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    await waitFor(() => {
+      expect(result.current.hasError).toBe(true)
+      expect(result.current.errorMessage).toBe(
+        'Network error. Please try again.'
+      )
+    })
+  })
+
+  it('aborts in-flight request when query changes', async () => {
+    const pendingPromise = new Promise(() => {})
+    mockSearchSubreddits.mockReturnValueOnce(pendingPromise as never)
+
+    const {result} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('test')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    act(() => {
+      result.current.setQuery('tests')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    expect(mockSearchSubreddits).toHaveBeenCalledTimes(2)
+  })
+
+  it('ignores aborted requests without logging errors', async () => {
+    const errorSpy = vi.spyOn(logger, 'error').mockImplementation(() => {})
+    let rejectPromise: (error: Error) => void = () => {}
+
+    mockSearchSubreddits.mockReturnValueOnce(
+      new Promise((_, reject) => {
+        rejectPromise = reject
+      }) as never
+    )
+
+    const {result, unmount} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('test')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    unmount()
+
+    await act(async () => {
+      rejectPromise(new Error('aborted'))
+      await Promise.resolve()
+    })
+
+    expect(errorSpy).not.toHaveBeenCalled()
+    errorSpy.mockRestore()
+  })
+
+  it('ignores resolved results after abort', async () => {
+    let resolvePromise: (value: {success: boolean; data: []}) => void = () => {}
+    mockSearchSubreddits.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolvePromise = resolve
+      }) as never
+    )
+
+    const {result, unmount} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('test')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    unmount()
+
+    await act(async () => {
+      resolvePromise({success: true, data: []})
+      await Promise.resolve()
+    })
+
+    expect(mockSearchSubreddits).toHaveBeenCalled()
   })
 
   it('navigates to subreddit on option select', () => {

@@ -11,3 +11,12 @@
   margin: 0.5rem 0;
   display: block;
 }
+
+.voteButton {
+  cursor: pointer;
+}
+
+.voteButtonDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

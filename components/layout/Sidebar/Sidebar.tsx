@@ -27,6 +27,7 @@ import {
 } from '@tabler/icons-react'
 import Link from 'next/link'
 import {useMemo, useState} from 'react'
+import styles from './Sidebar.module.css'
 
 /**
  * Props for the Sidebar component.
@@ -109,7 +110,7 @@ export function Sidebar({
           justify="space-between"
           mb="sm"
           onClick={() => setNavigationOpen(!navigationOpen)}
-          style={{cursor: 'pointer'}}
+          className={styles.toggleHeader}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
@@ -191,7 +192,7 @@ export function Sidebar({
             justify="space-between"
             mb="sm"
             onClick={() => setMultiredditsOpen(!multiredditsOpen)}
-            style={{cursor: 'pointer'}}
+            className={styles.toggleHeader}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -252,7 +253,7 @@ export function Sidebar({
             justify="space-between"
             mb="sm"
             onClick={() => setSubredditsOpen(!subredditsOpen)}
-            style={{cursor: 'pointer'}}
+            className={styles.toggleHeader}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {

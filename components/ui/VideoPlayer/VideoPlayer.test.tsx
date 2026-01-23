@@ -1,4 +1,4 @@
-import {render, screen} from '@/test-utils'
+import {fireEvent, render, screen} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {VideoPlayer} from './VideoPlayer'
 
@@ -264,6 +264,56 @@ describe('VideoPlayer', () => {
       unmount()
 
       expect(mockObserver.unobserve).toHaveBeenCalled()
+    })
+
+    it('pauses video when intersection callback runs', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      const video = screen.getByLabelText('Video: Test Video')
+      const pauseSpy = vi.fn()
+
+      Object.defineProperty(video, 'paused', {
+        value: false,
+        writable: true
+      })
+      Object.defineProperty(video, 'pause', {
+        value: pauseSpy,
+        writable: true
+      })
+
+      mockObserver.callback([{target: video}])
+
+      expect(pauseSpy).toHaveBeenCalled()
+    })
+  })
+
+  describe('play behavior', () => {
+    it('pauses other videos when one starts playing', () => {
+      render(
+        <>
+          <VideoPlayer src="https://v.redd.it/one.mp4" title="Video One" />
+          <VideoPlayer src="https://v.redd.it/two.mp4" title="Video Two" />
+        </>
+      )
+
+      const firstVideo = screen.getByLabelText('Video: Video One')
+      const secondVideo = screen.getByLabelText('Video: Video Two')
+
+      const secondPauseSpy = vi.fn()
+      Object.defineProperty(secondVideo, 'paused', {
+        value: false,
+        writable: true
+      })
+      Object.defineProperty(secondVideo, 'pause', {
+        value: secondPauseSpy,
+        writable: true
+      })
+
+      fireEvent.play(firstVideo)
+
+      expect(secondPauseSpy).toHaveBeenCalled()
     })
   })
 

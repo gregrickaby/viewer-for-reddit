@@ -327,13 +327,13 @@ const token = tokens.accessToken()
 **HTML Sanitization (Security):**
 
 ```typescript
-import DOMPurify from 'isomorphic-dompurify'
+import {sanitizeText} from '@/lib/utils/formatters'
 import {decodeHtmlEntities} from '@/lib/utils/formatters'
 
 // ✅ CORRECT
 <div
   dangerouslySetInnerHTML={{
-    __html: DOMPurify.sanitize(decodeHtmlEntities(post.selftext_html))
+    __html: sanitizeText(decodeHtmlEntities(post.selftext_html))
   }}
 />
 ```
@@ -588,7 +588,7 @@ Before submitting a pull request:
 - [ ] Code follows project conventions (see `.github/instructions/code-standards.instructions.md`)
 - [ ] Server Actions use Next.js fetch with `next: {revalidate}` for caching
 - [ ] Error messages are specific by HTTP status
-- [ ] HTML sanitized with `DOMPurify.sanitize()`
+- [ ] HTML sanitized with `sanitize-html` via `sanitizeText()`
 - [ ] Race conditions prevented (`if (isPending) return`)
 - [ ] Props use `Readonly<>` wrapper
 

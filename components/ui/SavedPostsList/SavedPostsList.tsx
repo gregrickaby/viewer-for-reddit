@@ -111,10 +111,14 @@ export function SavedPostsList({
 
   if (error) {
     return (
-      <div style={{padding: '2rem', textAlign: 'center'}}>
-        <h3>Failed to load saved posts</h3>
-        <p>{error}</p>
-      </div>
+      <Center py="xl">
+        <Stack gap="xs" align="center">
+          <Text fw={600}>Failed to load saved posts</Text>
+          <Text size="sm" c="dimmed">
+            {error}
+          </Text>
+        </Stack>
+      </Center>
     )
   }
 

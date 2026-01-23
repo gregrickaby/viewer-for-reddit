@@ -346,13 +346,12 @@ const refresh = tokens.refreshToken()
 **ALWAYS sanitize user-generated HTML:**
 
 ```typescript
-import DOMPurify from 'isomorphic-dompurify'
-import {decodeHtmlEntities} from '@/lib/utils/formatters'
+import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 
 // ✅ CORRECT
 <div
   dangerouslySetInnerHTML={{
-    __html: DOMPurify.sanitize(decodeHtmlEntities(post.selftext_html))
+    __html: sanitizeText(decodeHtmlEntities(post.selftext_html))
   }}
 />
 
@@ -500,7 +499,7 @@ const clientId = getEnvVar('REDDIT_CLIENT_ID')
 
 ### 2. HTML Sanitization
 
-Always use `DOMPurify.sanitize()` before rendering user HTML.
+Always use `sanitize-html` via `sanitizeText()` before rendering user HTML.
 
 ### 3. OAuth Security
 
@@ -653,7 +652,7 @@ export function Component({data}: Readonly<ComponentProps>) {}
 REDDIT_CLIENT_ID=xxx
 
 // ✅ Sanitize HTML
-<div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(userHtml)}} />
+<div dangerouslySetInnerHTML={{__html: sanitizeText(userHtml)}} />
 
 // ✅ Mantine Anchor wrapper
 <Anchor component={Link} href="/path">Link</Anchor>

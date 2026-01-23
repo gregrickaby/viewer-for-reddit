@@ -90,6 +90,25 @@ describe('formatters', () => {
       // Verify legitimate &lt; still decodes correctly
       expect(decodeHtmlEntities('&lt;div&gt;')).toBe('<div>')
     })
+
+    it('uses server-side fallback when document is unavailable', () => {
+      const originalDocument = globalThis.document
+
+      Object.defineProperty(globalThis, 'document', {
+        value: undefined,
+        configurable: true
+      })
+
+      try {
+        expect(decodeHtmlEntities('&lt;div&gt;')).toBe('<div>')
+        expect(decodeHtmlEntities('&amp;lt;')).toBe('&lt;')
+      } finally {
+        Object.defineProperty(globalThis, 'document', {
+          value: originalDocument,
+          configurable: true
+        })
+      }
+    })
   })
 
   describe('sanitizeText', () => {

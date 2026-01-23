@@ -390,7 +390,7 @@ const post: RedditPost = {
 7. **Respect rate limits** - Monitor `X-Ratelimit-*` headers
 8. **Transform API responses** - Map to simplified application types
 9. **Use Arctic token methods** - `tokens.accessToken()` NOT `tokens.accessToken`
-10. **Sanitize HTML** - Use DOMPurify for `body_html`, `selftext_html`, etc.
+10. **Sanitize HTML** - Use `sanitize-html` via `sanitizeText()` for `body_html`, `selftext_html`, etc.
 
 ## Common Gotchas
 
