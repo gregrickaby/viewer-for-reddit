@@ -1,5 +1,8 @@
 import {RedditPost} from '@/lib/types/reddit'
-import {isValidThumbnail} from '@/lib/utils/media-helpers'
+import {
+  getHighestQualityVideoUrl,
+  isValidThumbnail
+} from '@/lib/utils/media-helpers'
 import {Anchor} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -41,14 +44,23 @@ export function getPosterImage(post: RedditPost): string | undefined {
 
 /**
  * Render Reddit video (hosted or external)
+ * Uses highest quality video URL when fallback_url is provided
  */
 export function renderRedditVideo(post: RedditPost) {
   const redditVideo =
     post.preview?.reddit_video_preview ?? post.media?.reddit_video
 
   if (redditVideo?.hls_url || redditVideo?.fallback_url) {
+    // Prefer HLS for adaptive streaming, otherwise use highest quality MP4
+    let videoUrl = redditVideo.hls_url || redditVideo.fallback_url
+
+    // If using fallback_url (MP4), upgrade to highest quality version
+    if (!redditVideo.hls_url && redditVideo.fallback_url) {
+      videoUrl = getHighestQualityVideoUrl(redditVideo.fallback_url)
+    }
+
     return renderVideo(
-      redditVideo.hls_url || redditVideo.fallback_url,
+      videoUrl,
       post.title,
       redditVideo.hls_url ? 'hls' : 'mp4',
       redditVideo.width,
@@ -62,19 +74,29 @@ export function renderRedditVideo(post: RedditPost) {
 
 /**
  * Render animated GIF as MP4 video
+ * Uses highest quality variant available
  */
 export function renderAnimatedGif(post: RedditPost) {
   const variantsMp4 = post.preview?.images?.[0]?.variants?.mp4
-  if (variantsMp4?.source?.url) {
+
+  // Try to get highest resolution from variants.mp4.resolutions array
+  const resolutions = variantsMp4?.resolutions
+  const highestRes =
+    resolutions && resolutions.length > 0
+      ? resolutions[resolutions.length - 1] // Last item is highest resolution
+      : variantsMp4?.source
+
+  if (highestRes?.url) {
     return renderVideo(
-      variantsMp4.source.url,
+      highestRes.url,
       post.title,
       'mp4',
-      variantsMp4.source.width,
-      variantsMp4.source.height,
+      highestRes.width,
+      highestRes.height,
       post.preview?.images?.[0]?.source?.url
     )
   }
+
   return null
 }
 

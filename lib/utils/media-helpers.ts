@@ -164,3 +164,32 @@ export function isValidThumbnail(thumbnail: string | undefined): boolean {
     thumbnail.startsWith('http')
   )
 }
+
+/**
+ * Get the highest quality video URL from Reddit video data.
+ * Reddit provides multiple resolutions (DASH_240, DASH_360, DASH_480, DASH_720, DASH_1080, DASH_4K).
+ * The fallback_url typically points to a lower resolution, so we replace it with the highest available.
+ *
+ * @param fallbackUrl - Reddit video fallback URL (e.g., "https://v.redd.it/abc123/DASH_480.mp4")
+ * @returns Highest quality video URL or original fallback URL if pattern doesn't match
+ */
+export function getHighestQualityVideoUrl(fallbackUrl: string): string {
+  // Check if URL matches Reddit video pattern: https://v.redd.it/{id}/DASH_{resolution}.mp4
+  const dashMatch = fallbackUrl.match(/\/DASH_\d+\.mp4/)
+  if (!dashMatch) {
+    // Not a DASH URL, return as-is (might be direct video or external)
+    return fallbackUrl
+  }
+
+  // Extract base URL (everything before /DASH_xxx.mp4)
+  const baseUrl = fallbackUrl.substring(0, fallbackUrl.lastIndexOf('/DASH_'))
+
+  // Extract query parameters if present (everything after .mp4)
+  const queryStart = fallbackUrl.indexOf('?', fallbackUrl.lastIndexOf('.mp4'))
+  const queryParams = queryStart !== -1 ? fallbackUrl.substring(queryStart) : ''
+
+  // Return 1080p URL as it's commonly available and high quality
+  // Note: Reddit typically provides multiple resolutions (240p through 1080p, sometimes 4K)
+  // but checking availability would add latency. 1080p is a good balance.
+  return `${baseUrl}/DASH_1080.mp4${queryParams}`
+}

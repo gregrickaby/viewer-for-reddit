@@ -3,6 +3,7 @@ import {describe, expect, it} from 'vitest'
 import {
   decodeImageUrl,
   extractGalleryItems,
+  getHighestQualityVideoUrl,
   getMediumImage,
   getMp4Variant,
   isValidThumbnail,
@@ -576,6 +577,54 @@ describe('media-helpers', () => {
 
       expect(items?.[0].width).toBe(0)
       expect(items?.[0].height).toBe(0)
+    })
+  })
+
+  describe('getHighestQualityVideoUrl', () => {
+    it('upgrades DASH_480 to DASH_1080', () => {
+      const url = 'https://v.redd.it/abc123/DASH_480.mp4'
+      expect(getHighestQualityVideoUrl(url)).toBe(
+        'https://v.redd.it/abc123/DASH_1080.mp4'
+      )
+    })
+
+    it('upgrades DASH_360 to DASH_1080', () => {
+      const url = 'https://v.redd.it/xyz789/DASH_360.mp4'
+      expect(getHighestQualityVideoUrl(url)).toBe(
+        'https://v.redd.it/xyz789/DASH_1080.mp4'
+      )
+    })
+
+    it('upgrades DASH_720 to DASH_1080', () => {
+      const url = 'https://v.redd.it/test/DASH_720.mp4'
+      expect(getHighestQualityVideoUrl(url)).toBe(
+        'https://v.redd.it/test/DASH_1080.mp4'
+      )
+    })
+
+    it('upgrades DASH_240 to DASH_1080', () => {
+      const url = 'https://v.redd.it/video/DASH_240.mp4'
+      expect(getHighestQualityVideoUrl(url)).toBe(
+        'https://v.redd.it/video/DASH_1080.mp4'
+      )
+    })
+
+    it('returns original URL if not a DASH format', () => {
+      const url = 'https://v.redd.it/abc123/video.mp4'
+      expect(getHighestQualityVideoUrl(url)).toBe(url)
+    })
+
+    it('returns original URL if external video', () => {
+      const url = 'https://example.com/video.mp4'
+      expect(getHighestQualityVideoUrl(url)).toBe(url)
+    })
+
+    it('handles URLs with query parameters', () => {
+      const url = 'https://v.redd.it/abc123/DASH_480.mp4?source=fallback'
+      // Should still work - matches /DASH_xxx.mp4 pattern
+      expect(getHighestQualityVideoUrl(url)).toBe(
+        'https://v.redd.it/abc123/DASH_1080.mp4?source=fallback'
+      )
     })
   })
 })
