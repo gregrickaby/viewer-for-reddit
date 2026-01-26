@@ -52,6 +52,13 @@ describe('formatters', () => {
       expect(formatTimeAgo(now - 86400)).toBe('1d ago')
       expect(formatTimeAgo(now - 172800)).toBe('2d ago')
     })
+
+    it('formats years', () => {
+      const now = Math.floor(Date.now() / 1000)
+      expect(formatTimeAgo(now - 31536000)).toBe('1y ago')
+      expect(formatTimeAgo(now - 63072000)).toBe('2y ago')
+      expect(formatTimeAgo(now - 77760000)).toBe('2y ago') // 900 days = 2.46 years
+    })
   })
 
   describe('decodeHtmlEntities', () => {

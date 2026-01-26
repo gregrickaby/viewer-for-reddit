@@ -14,14 +14,15 @@ export function formatNumber(num: number): string {
 /**
  * Formats a Unix timestamp into a relative time string
  * @param timestamp - Unix timestamp in seconds
- * @returns Formatted string (e.g., "5m ago", "2h ago")
+ * @returns Formatted string (e.g., "5m ago", "2h ago", "3y ago")
  */
 export function formatTimeAgo(timestamp: number): string {
   const seconds = Math.floor(Date.now() / 1000 - timestamp)
   if (seconds < 60) return `${seconds}s ago`
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
-  return `${Math.floor(seconds / 86400)}d ago`
+  if (seconds < 31536000) return `${Math.floor(seconds / 86400)}d ago`
+  return `${Math.floor(seconds / 31536000)}y ago`
 }
 
 /**
