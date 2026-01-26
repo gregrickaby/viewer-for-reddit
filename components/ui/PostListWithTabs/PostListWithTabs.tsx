@@ -129,7 +129,7 @@ export function PostListWithTabs({
   ]
 
   return (
-    <>
+    <Stack gap="md">
       <Tabs
         value={activeSort}
         onChange={(value) => value && handleSortChange(value)}
@@ -239,6 +239,6 @@ export function PostListWithTabs({
           </Center>
         )}
       </Stack>
-    </>
+    </Stack>
   )
 }
