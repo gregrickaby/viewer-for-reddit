@@ -963,6 +963,102 @@ export async function fetchUserPosts(
 }
 
 /**
+ * Fetch a user's comments.
+ * Server Action with Next.js fetch caching.
+ * Results cached for 5 minutes.
+ *
+ * @param username - Reddit username (without u/ prefix)
+ * @param sort - Sort option (new, top, hot, controversial)
+ * @param after - Pagination cursor for next page
+ * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
+ * @returns Promise resolving to comments array and next page cursor
+ *
+ * @throws {Error} User not found (404)
+ * @throws {Error} Generic Reddit API errors
+ *
+ * @example
+ * ```typescript
+ * const {comments, after} = await fetchUserComments('spez', 'new')
+ * console.log(`Found ${comments.length} comments`)
+ * ```
+ */
+export async function fetchUserComments(
+  username: string,
+  sort: SortOption = 'new',
+  after?: string,
+  timeFilter?: TimeFilter
+): Promise<{comments: RedditComment[]; after: string | null}> {
+  try {
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
+
+    // Always use OAuth endpoint (works with both user and app tokens)
+    const baseUrl = REDDIT_API_URL
+    const url = new URL(`${baseUrl}/user/${username}/comments.json`)
+
+    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
+    url.searchParams.set('raw_json', '1')
+    url.searchParams.set('sort', sort)
+
+    if (after) {
+      url.searchParams.set('after', after)
+    }
+
+    // Add time filter for top/controversial sorts
+    if (timeFilter && (sort === 'top' || sort === 'controversial')) {
+      url.searchParams.set('t', timeFilter)
+    }
+
+    const response = await fetch(url.toString(), {
+      headers: await getHeaders(isAuthenticated),
+      next: {revalidate: FIVE_MINUTES}
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Failed to fetch user comments', {
+        url: url.toString(),
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'fetchUserComments',
+        username,
+        sort
+      })
+
+      if (response.status === 404) {
+        throw new Error('User not found')
+      }
+      throw new Error(`Reddit API error: ${response.statusText}`)
+    }
+
+    const data: ApiSubredditPostsResponse = await response.json()
+    const comments = (data.data?.children?.map((child) => child.data) ??
+      []) as RedditComment[]
+    const afterCursor = data.data?.after ?? null
+
+    logger.debug('Fetched user comments successfully', {
+      username,
+      sort,
+      count: comments.length,
+      hasMore: !!afterCursor
+    })
+
+    return {
+      comments,
+      after: afterCursor
+    }
+  } catch (error) {
+    logger.error('Error fetching user comments', error, {
+      context: 'fetchUserComments'
+    })
+    throw error
+  }
+}
+
+/**
  * Search Reddit for posts matching a query.
  * Server Action with Next.js fetch caching.
  * Results cached for 5 minutes. Includes NSFW content.

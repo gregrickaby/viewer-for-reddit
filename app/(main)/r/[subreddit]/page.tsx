@@ -1,16 +1,13 @@
 import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleton/SubredditInfoSkeleton'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import {fetchPosts, fetchSubredditInfo} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {logger} from '@/lib/utils/logger'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
-import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
@@ -76,9 +73,7 @@ async function SubredditInfo({
   const specialFeeds = ['all', 'popular']
   const isSpecialFeed = specialFeeds.includes(subreddit.toLowerCase())
 
-  const info = isSpecialFeed
-    ? null
-    : await fetchSubredditInfo(subreddit).catch(() => null)
+  const info = isSpecialFeed ? null : await fetchSubredditInfo(subreddit)
 
   if (info) {
     return (
@@ -151,20 +146,12 @@ async function SubredditPosts({
   sort?: SortOption
   timeFilter?: TimeFilter
 }>) {
-  const postsResult = await fetchPosts(
+  const {posts, after} = await fetchPosts(
     subreddit,
     sort,
     undefined,
     timeFilter
-  ).catch((error) => {
-    logger.error('Failed to fetch posts for subreddit', error, {
-      context: 'SubredditPage',
-      subreddit
-    })
-    notFound()
-  })
-
-  const {posts, after} = postsResult
+  )
 
   if (posts.length === 0) {
     return <Text>No posts found in this subreddit.</Text>
@@ -210,14 +197,7 @@ export default async function SubredditPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary
-          fallback={
-            <ErrorDisplay
-              title="Failed to load subreddit info"
-              message="Please try again in a moment."
-            />
-          }
-        >
+        <ErrorBoundary title="Failed to load subreddit info">
           <Suspense fallback={<SubredditInfoSkeleton />}>
             <SubredditInfo
               subreddit={subreddit}
@@ -226,14 +206,7 @@ export default async function SubredditPage({
           </Suspense>
         </ErrorBoundary>
 
-        <ErrorBoundary
-          fallback={
-            <ErrorDisplay
-              title="Failed to load posts"
-              message="Please try again in a moment."
-            />
-          }
-        >
+        <ErrorBoundary title="Failed to load posts">
           <Suspense fallback={<TabsSkeleton />}>
             <SubredditPosts
               subreddit={subreddit}

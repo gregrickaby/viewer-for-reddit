@@ -2,12 +2,10 @@ import {CommentListSkeleton} from '@/components/skeletons/CommentSkeleton/Commen
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {fetchPost} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {logger} from '@/lib/utils/logger'
 import {Container, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
@@ -74,26 +72,15 @@ async function PostDetail({
   subreddit: string
   postId: string
 }>) {
-  try {
-    const {post} = await fetchPost(subreddit, postId)
-    const session = await getSession()
-    const isAuthenticated = !!session.accessToken
+  const {post} = await fetchPost(subreddit, postId)
+  const session = await getSession()
+  const isAuthenticated = !!session.accessToken
 
-    if (!post) {
-      notFound()
-    }
-
-    return (
-      <PostCard post={post} isAuthenticated={isAuthenticated} showFullText />
-    )
-  } catch (error) {
-    logger.error('Failed to fetch post', error, {
-      context: 'PostDetail',
-      subreddit,
-      postId
-    })
+  if (!post) {
     notFound()
   }
+
+  return <PostCard post={post} isAuthenticated={isAuthenticated} showFullText />
 }
 
 /**
@@ -112,26 +99,17 @@ async function CommentList({
   postId: string
   sort?: CommentSortOption
 }>) {
-  try {
-    const {comments} = await fetchPost(subreddit, postId, sort)
-    const session = await getSession()
-    const isAuthenticated = !!session.accessToken
+  const {comments} = await fetchPost(subreddit, postId, sort)
+  const session = await getSession()
+  const isAuthenticated = !!session.accessToken
 
-    return (
-      <CommentListWithTabs
-        comments={comments}
-        activeSort={sort}
-        isAuthenticated={isAuthenticated}
-      />
-    )
-  } catch (error) {
-    logger.error('Failed to fetch comments', error, {
-      context: 'CommentList',
-      subreddit,
-      postId
-    })
-    return <Title order={4}>Failed to load comments</Title>
-  }
+  return (
+    <CommentListWithTabs
+      comments={comments}
+      activeSort={sort}
+      isAuthenticated={isAuthenticated}
+    />
+  )
 }
 
 /**
@@ -158,14 +136,7 @@ export default async function PostPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary
-          fallback={
-            <ErrorDisplay
-              title="Failed to load post"
-              message="Please try again in a moment."
-            />
-          }
-        >
+        <ErrorBoundary title="Failed to load post">
           <Suspense fallback={<PostSkeleton />}>
             <PostDetail subreddit={subreddit} postId={postId} />
           </Suspense>
@@ -175,14 +146,7 @@ export default async function PostPage({
           <Title order={3} mb="lg">
             Comments
           </Title>
-          <ErrorBoundary
-            fallback={
-              <ErrorDisplay
-                title="Failed to load comments"
-                message="Please try again in a moment."
-              />
-            }
-          >
+          <ErrorBoundary title="Failed to load comments">
             <Suspense fallback={<CommentListSkeleton />}>
               <CommentList
                 subreddit={subreddit}

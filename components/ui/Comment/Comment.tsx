@@ -10,6 +10,7 @@ import {
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
+  Anchor,
   Badge,
   Box,
   Card,
@@ -25,6 +26,7 @@ import {
   IconChevronDown,
   IconChevronUp
 } from '@tabler/icons-react'
+import Link from 'next/link'
 import {useState} from 'react'
 import styles from './Comment.module.css'
 
@@ -83,6 +85,12 @@ export function Comment({
     setIsCollapsed(!isCollapsed)
   }
 
+  // Don't link to deleted/suspended users
+  const isSpecialUser =
+    comment.author === '[deleted]' ||
+    comment.author === '[removed]' ||
+    comment.author === 'AutoModerator'
+
   return (
     <Box ml={depth > 0 ? 20 : 0}>
       <Card withBorder padding="md" radius="md" mb="sm">
@@ -107,9 +115,21 @@ export function Comment({
                 )}
               </ActionIcon>
             )}
-            <Text size="sm" fw={600}>
-              u/{comment.author}
-            </Text>
+            {isSpecialUser ? (
+              <Text size="sm" fw={600} c="dimmed">
+                u/{comment.author}
+              </Text>
+            ) : (
+              <Anchor
+                component={Link}
+                href={`/u/${comment.author}`}
+                size="sm"
+                fw={600}
+                underline="hover"
+              >
+                u/{comment.author}
+              </Anchor>
+            )}
             {comment.distinguished && (
               <Badge size="xs" color="green">
                 {comment.distinguished}

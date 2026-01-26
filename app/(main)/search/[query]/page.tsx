@@ -1,11 +1,9 @@
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostList} from '@/components/ui/PostList/PostList'
 import {searchReddit} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {logger} from '@/lib/utils/logger'
 import {Container, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
@@ -56,12 +54,7 @@ async function SearchResults({
 }>) {
   const decodedQuery = decodeURIComponent(query)
 
-  const searchResult = await searchReddit(decodedQuery).catch((error) => {
-    logger.error('Failed to search', error, {context: 'SearchPage', query})
-    return {posts: [], after: null}
-  })
-
-  const {posts, after} = searchResult
+  const {posts, after} = await searchReddit(decodedQuery)
 
   if (posts.length === 0) {
     return (
@@ -100,14 +93,7 @@ export default async function SearchPage({params}: Readonly<PageProps>) {
     <Container size="lg">
       <Stack gap="xl" maw={800}>
         <Title order={2}>Search results for: {decodedQuery}</Title>
-        <ErrorBoundary
-          fallback={
-            <ErrorDisplay
-              title="Failed to load search results"
-              message="Please try again in a moment."
-            />
-          }
-        >
+        <ErrorBoundary title="Failed to load search results">
           <Suspense fallback={<PostSkeleton />}>
             <SearchResults query={query} isAuthenticated={isAuthenticated} />
           </Suspense>

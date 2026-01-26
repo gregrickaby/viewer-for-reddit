@@ -1,14 +1,11 @@
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {logger} from '@/lib/utils/logger'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
-import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
@@ -70,20 +67,12 @@ async function MultiredditPosts({
 }>) {
   const multiredditPath = `user/${username}/m/${multiname}`
 
-  const postsResult = await fetchPosts(
+  const {posts, after} = await fetchPosts(
     multiredditPath,
     sort,
     undefined,
     timeFilter
-  ).catch((error) => {
-    logger.error('Failed to fetch multireddit posts', error, {
-      context: 'MultiredditPage',
-      multiredditPath
-    })
-    notFound()
-  })
-
-  const {posts, after} = postsResult
+  )
 
   return (
     <PostListWithTabs
@@ -130,14 +119,7 @@ export default async function MultiredditPage({
         {multiname}
       </Title>
 
-      <ErrorBoundary
-        fallback={
-          <ErrorDisplay
-            title="Failed to load multireddit"
-            message="Please try again in a moment."
-          />
-        }
-      >
+      <ErrorBoundary title="Failed to load multireddit">
         <Suspense fallback={<TabsSkeleton />}>
           <MultiredditPosts
             username={username}

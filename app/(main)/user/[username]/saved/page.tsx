@@ -1,6 +1,5 @@
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {SavedPostsList} from '@/components/ui/SavedPostsList'
 import {fetchSavedPosts} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
@@ -82,14 +81,7 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
         <Title order={2} mb="md">
           Saved Posts
         </Title>
-        <ErrorBoundary
-          fallback={
-            <ErrorDisplay
-              title="Failed to load saved posts"
-              message="Please try again in a moment."
-            />
-          }
-        >
+        <ErrorBoundary title="Failed to load saved posts">
           <Suspense fallback={<PostSkeleton />}>
             <SavedPostsList
               initialPosts={posts}
