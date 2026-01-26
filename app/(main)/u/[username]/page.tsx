@@ -1,4 +1,5 @@
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
+import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
@@ -246,7 +247,7 @@ export default async function UserPage({
               />
             }
           >
-            <Suspense fallback={<PostSkeleton />}>
+            <Suspense fallback={<TabsSkeleton />}>
               <UserPosts
                 username={username}
                 isAuthenticated={isAuthenticated}
