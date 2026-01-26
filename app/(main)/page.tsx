@@ -1,14 +1,6 @@
-import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import BackToTop from '@/components/ui/BackToTop/BackToTop'
-import BossButton from '@/components/ui/BossButton/BossButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
-import {
-  fetchMultireddits,
-  fetchPosts,
-  fetchUserSubscriptions,
-  getCurrentUserAvatar
-} from '@/lib/actions/reddit'
+import {fetchPosts} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Title} from '@mantine/core'
@@ -103,42 +95,27 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
 
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
-  const subscriptions = isAuthenticated ? await fetchUserSubscriptions() : []
-  const multireddits = isAuthenticated ? await fetchMultireddits() : []
-  const avatarUrl = isAuthenticated ? await getCurrentUserAvatar() : undefined
 
   // Show personalized home feed for authenticated users, popular for guests
   const feedType = isAuthenticated ? 'home' : 'popular'
   const feedTitle = isAuthenticated ? 'Your Feed' : 'Popular Posts'
 
   return (
-    <>
-      <AppLayout
-        isAuthenticated={isAuthenticated}
-        username={session.username}
-        avatarUrl={avatarUrl ?? undefined}
-        subscriptions={subscriptions}
-        multireddits={multireddits}
-      >
-        <Container size="lg">
-          <div style={{maxWidth: '800px'}}>
-            <Title order={2} mb="lg">
-              {feedTitle}
-            </Title>
+    <Container size="lg">
+      <div style={{maxWidth: '800px'}}>
+        <Title order={2} mb="lg">
+          {feedTitle}
+        </Title>
 
-            <Suspense fallback={<TabsSkeleton />}>
-              <PostsContent
-                feedType={feedType}
-                isAuthenticated={isAuthenticated}
-                sort={postSort}
-                timeFilter={timeFilter}
-              />
-            </Suspense>
-          </div>
-        </Container>
-      </AppLayout>
-      <BossButton />
-      <BackToTop />
-    </>
+        <Suspense fallback={<TabsSkeleton />}>
+          <PostsContent
+            feedType={feedType}
+            isAuthenticated={isAuthenticated}
+            sort={postSort}
+            timeFilter={timeFilter}
+          />
+        </Suspense>
+      </div>
+    </Container>
   )
 }

@@ -1,20 +1,10 @@
-import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleton/SubredditInfoSkeleton'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import BackToTop from '@/components/ui/BackToTop/BackToTop'
-import BossButton from '@/components/ui/BossButton/BossButton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
-import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
-import {
-  fetchMultireddits,
-  fetchPosts,
-  fetchSubredditInfo,
-  fetchUserSubscriptions,
-  getCurrentUserAvatar
-} from '@/lib/actions/reddit'
+import {fetchPosts, fetchSubredditInfo} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {logger} from '@/lib/utils/logger'
@@ -217,62 +207,43 @@ export default async function SubredditPage({
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
 
-  const [subscriptions, multireddits, avatarUrl] = await Promise.all([
-    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
-    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
-    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
-  ])
-
   return (
-    <>
-      <AppLayout
-        isAuthenticated={isAuthenticated}
-        username={session.username}
-        avatarUrl={avatarUrl ?? undefined}
-        subscriptions={subscriptions}
-        multireddits={multireddits}
-      >
-        <Container size="lg">
-          <Stack gap="xl" maw={800}>
-            <ErrorBoundary
-              fallback={
-                <ErrorDisplay
-                  title="Failed to load subreddit info"
-                  message="Please try again in a moment."
-                />
-              }
-            >
-              <Suspense fallback={<SubredditInfoSkeleton />}>
-                <SubredditInfo
-                  subreddit={subreddit}
-                  isAuthenticated={isAuthenticated}
-                />
-              </Suspense>
-            </ErrorBoundary>
+    <Container size="lg">
+      <Stack gap="xl" maw={800}>
+        <ErrorBoundary
+          fallback={
+            <ErrorDisplay
+              title="Failed to load subreddit info"
+              message="Please try again in a moment."
+            />
+          }
+        >
+          <Suspense fallback={<SubredditInfoSkeleton />}>
+            <SubredditInfo
+              subreddit={subreddit}
+              isAuthenticated={isAuthenticated}
+            />
+          </Suspense>
+        </ErrorBoundary>
 
-            <ErrorBoundary
-              fallback={
-                <ErrorDisplay
-                  title="Failed to load posts"
-                  message="Please try again in a moment."
-                />
-              }
-            >
-              <Suspense fallback={<TabsSkeleton />}>
-                <SubredditPosts
-                  subreddit={subreddit}
-                  isAuthenticated={isAuthenticated}
-                  sort={postSort}
-                  timeFilter={timeFilter}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          </Stack>
-        </Container>
-      </AppLayout>
-      <SwipeNavigation />
-      <BossButton />
-      <BackToTop />
-    </>
+        <ErrorBoundary
+          fallback={
+            <ErrorDisplay
+              title="Failed to load posts"
+              message="Please try again in a moment."
+            />
+          }
+        >
+          <Suspense fallback={<TabsSkeleton />}>
+            <SubredditPosts
+              subreddit={subreddit}
+              isAuthenticated={isAuthenticated}
+              sort={postSort}
+              timeFilter={timeFilter}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      </Stack>
+    </Container>
   )
 }

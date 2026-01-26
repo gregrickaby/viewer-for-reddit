@@ -1,19 +1,10 @@
-import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {CommentListSkeleton} from '@/components/skeletons/CommentSkeleton/CommentSkeleton'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import BackToTop from '@/components/ui/BackToTop/BackToTop'
-import BossButton from '@/components/ui/BossButton/BossButton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
-import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
-import {
-  fetchMultireddits,
-  fetchPost,
-  fetchUserSubscriptions,
-  getCurrentUserAvatar
-} from '@/lib/actions/reddit'
+import {fetchPost} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {logger} from '@/lib/utils/logger'
@@ -164,66 +155,44 @@ export default async function PostPage({
   const {sort} = await searchParams
   const commentSort = (sort as CommentSortOption) || 'best'
 
-  const session = await getSession()
-  const isAuthenticated = !!session.accessToken
-
-  const [subscriptions, multireddits, avatarUrl] = await Promise.all([
-    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
-    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
-    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
-  ])
-
   return (
-    <>
-      <AppLayout
-        isAuthenticated={isAuthenticated}
-        username={session.username}
-        avatarUrl={avatarUrl ?? undefined}
-        subscriptions={subscriptions}
-        multireddits={multireddits}
-      >
-        <Container size="lg">
-          <Stack gap="xl" maw={800}>
-            <ErrorBoundary
-              fallback={
-                <ErrorDisplay
-                  title="Failed to load post"
-                  message="Please try again in a moment."
-                />
-              }
-            >
-              <Suspense fallback={<PostSkeleton />}>
-                <PostDetail subreddit={subreddit} postId={postId} />
-              </Suspense>
-            </ErrorBoundary>
+    <Container size="lg">
+      <Stack gap="xl" maw={800}>
+        <ErrorBoundary
+          fallback={
+            <ErrorDisplay
+              title="Failed to load post"
+              message="Please try again in a moment."
+            />
+          }
+        >
+          <Suspense fallback={<PostSkeleton />}>
+            <PostDetail subreddit={subreddit} postId={postId} />
+          </Suspense>
+        </ErrorBoundary>
 
-            <div id="comments" style={{scrollMarginTop: '80px'}}>
-              <Title order={3} mb="lg">
-                Comments
-              </Title>
-              <ErrorBoundary
-                fallback={
-                  <ErrorDisplay
-                    title="Failed to load comments"
-                    message="Please try again in a moment."
-                  />
-                }
-              >
-                <Suspense fallback={<CommentListSkeleton />}>
-                  <CommentList
-                    subreddit={subreddit}
-                    postId={postId}
-                    sort={commentSort}
-                  />
-                </Suspense>
-              </ErrorBoundary>
-            </div>
-          </Stack>
-        </Container>
-      </AppLayout>
-      <SwipeNavigation />
-      <BossButton />
-      <BackToTop />
-    </>
+        <div id="comments" style={{scrollMarginTop: '80px'}}>
+          <Title order={3} mb="lg">
+            Comments
+          </Title>
+          <ErrorBoundary
+            fallback={
+              <ErrorDisplay
+                title="Failed to load comments"
+                message="Please try again in a moment."
+              />
+            }
+          >
+            <Suspense fallback={<CommentListSkeleton />}>
+              <CommentList
+                subreddit={subreddit}
+                postId={postId}
+                sort={commentSort}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        </div>
+      </Stack>
+    </Container>
   )
 }

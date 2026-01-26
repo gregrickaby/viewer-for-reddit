@@ -1,17 +1,8 @@
-import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import BackToTop from '@/components/ui/BackToTop/BackToTop'
-import BossButton from '@/components/ui/BossButton/BossButton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostList} from '@/components/ui/PostList/PostList'
-import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
-import {
-  fetchMultireddits,
-  fetchUserSubscriptions,
-  getCurrentUserAvatar,
-  searchReddit
-} from '@/lib/actions/reddit'
+import {searchReddit} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {logger} from '@/lib/utils/logger'
@@ -105,45 +96,23 @@ export default async function SearchPage({params}: Readonly<PageProps>) {
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
 
-  const [subscriptions, multireddits, avatarUrl] = await Promise.all([
-    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
-    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
-    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
-  ])
-
   return (
-    <>
-      <AppLayout
-        isAuthenticated={isAuthenticated}
-        username={session.username}
-        avatarUrl={avatarUrl ?? undefined}
-        subscriptions={subscriptions}
-        multireddits={multireddits}
-      >
-        <Container size="lg">
-          <Stack gap="xl" maw={800}>
-            <Title order={2}>Search results for: {decodedQuery}</Title>
-            <ErrorBoundary
-              fallback={
-                <ErrorDisplay
-                  title="Failed to load search results"
-                  message="Please try again in a moment."
-                />
-              }
-            >
-              <Suspense fallback={<PostSkeleton />}>
-                <SearchResults
-                  query={query}
-                  isAuthenticated={isAuthenticated}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          </Stack>
-        </Container>
-      </AppLayout>
-      <SwipeNavigation />
-      <BossButton />
-      <BackToTop />
-    </>
+    <Container size="lg">
+      <Stack gap="xl" maw={800}>
+        <Title order={2}>Search results for: {decodedQuery}</Title>
+        <ErrorBoundary
+          fallback={
+            <ErrorDisplay
+              title="Failed to load search results"
+              message="Please try again in a moment."
+            />
+          }
+        >
+          <Suspense fallback={<PostSkeleton />}>
+            <SearchResults query={query} isAuthenticated={isAuthenticated} />
+          </Suspense>
+        </ErrorBoundary>
+      </Stack>
+    </Container>
   )
 }

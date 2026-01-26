@@ -1,17 +1,8 @@
-import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import BackToTop from '@/components/ui/BackToTop/BackToTop'
-import BossButton from '@/components/ui/BossButton/BossButton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
-import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
-import {
-  fetchMultireddits,
-  fetchPosts,
-  fetchUserSubscriptions,
-  getCurrentUserAvatar
-} from '@/lib/actions/reddit'
+import {fetchPosts} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {logger} from '@/lib/utils/logger'
@@ -133,49 +124,30 @@ export default async function MultiredditPage({
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
 
-  const [subscriptions, multireddits, avatarUrl] = await Promise.all([
-    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
-    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
-    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
-  ])
-
   return (
-    <>
-      <AppLayout
-        isAuthenticated={isAuthenticated}
-        username={session.username}
-        avatarUrl={avatarUrl ?? undefined}
-        subscriptions={subscriptions}
-        multireddits={multireddits}
-      >
-        <Container size="lg">
-          <Title order={2} mb="lg">
-            {multiname}
-          </Title>
+    <Container size="lg">
+      <Title order={2} mb="lg">
+        {multiname}
+      </Title>
 
-          <ErrorBoundary
-            fallback={
-              <ErrorDisplay
-                title="Failed to load multireddit"
-                message="Please try again in a moment."
-              />
-            }
-          >
-            <Suspense fallback={<TabsSkeleton />}>
-              <MultiredditPosts
-                username={username}
-                multiname={multiname}
-                isAuthenticated={isAuthenticated}
-                sort={postSort}
-                timeFilter={timeFilter}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        </Container>
-      </AppLayout>
-      <SwipeNavigation />
-      <BossButton />
-      <BackToTop />
-    </>
+      <ErrorBoundary
+        fallback={
+          <ErrorDisplay
+            title="Failed to load multireddit"
+            message="Please try again in a moment."
+          />
+        }
+      >
+        <Suspense fallback={<TabsSkeleton />}>
+          <MultiredditPosts
+            username={username}
+            multiname={multiname}
+            isAuthenticated={isAuthenticated}
+            sort={postSort}
+            timeFilter={timeFilter}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    </Container>
   )
 }
