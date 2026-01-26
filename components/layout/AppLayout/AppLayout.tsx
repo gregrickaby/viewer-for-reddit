@@ -30,6 +30,13 @@ interface AppLayoutProps {
     path: string
     icon?: string
   }>
+  /** Users being followed */
+  following?: Array<{
+    name: string
+    id: string
+    date: number
+    note?: string
+  }>
 }
 
 /**
@@ -50,6 +57,7 @@ interface AppLayoutProps {
  *   username="johndoe"
  *   subscriptions={subs}
  *   multireddits={multis}
+ *   following={following}
  * >
  *   <PageContent />
  * </AppLayout>
@@ -61,7 +69,8 @@ export function AppLayout({
   username,
   avatarUrl,
   subscriptions,
-  multireddits
+  multireddits,
+  following
 }: Readonly<AppLayoutProps>) {
   const [mobileOpened, {toggle: toggleMobile}] = useDisclosure()
   const [desktopOpened, {toggle: toggleDesktop}] = useDisclosure(true)
@@ -93,6 +102,7 @@ export function AppLayout({
           username={username}
           subscriptions={subscriptions}
           multireddits={multireddits}
+          following={following}
         />
       </AppShell.Navbar>
 

@@ -3,6 +3,7 @@ import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
+  fetchFollowedUsers,
   fetchMultireddits,
   fetchUserSubscriptions,
   getCurrentUserAvatar
@@ -18,7 +19,7 @@ interface MainLayoutProps {
  *
  * Handles:
  * - Authentication state
- * - User data (subscriptions, multireddits, avatar)
+ * - User data (subscriptions, multireddits, following, avatar)
  * - AppLayout wrapper with sidebar navigation
  * - Utility buttons (Boss button, Back to top, Swipe navigation)
  *
@@ -30,11 +31,14 @@ export default async function MainLayout({
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
 
-  const [subscriptions, multireddits, avatarUrl] = await Promise.all([
-    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
-    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
-    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
-  ])
+  const [subscriptions, multireddits, following, avatarUrl] = await Promise.all(
+    [
+      isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
+      isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
+      isAuthenticated ? fetchFollowedUsers() : Promise.resolve([]),
+      isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
+    ]
+  )
 
   return (
     <>
@@ -44,6 +48,7 @@ export default async function MainLayout({
         avatarUrl={avatarUrl ?? undefined}
         subscriptions={subscriptions}
         multireddits={multireddits}
+        following={following}
       >
         {children}
       </AppLayout>

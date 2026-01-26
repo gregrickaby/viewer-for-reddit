@@ -268,6 +268,13 @@ export interface SubredditItem {
   over18?: boolean
 }
 
+export interface RedditFollowing {
+  name: string
+  id: string
+  date: number
+  note?: string
+}
+
 export type SortOption = 'hot' | 'new' | 'top' | 'rising' | 'controversial'
 export type CommentSortOption =
   | 'best'

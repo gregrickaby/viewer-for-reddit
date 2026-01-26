@@ -1458,3 +1458,80 @@ export async function fetchSavedPosts(
     throw error
   }
 }
+
+/**
+ * Fetch authenticated user's followed users (friends).
+ * Server Action with Next.js fetch caching.
+ * Results cached for 10 minutes. Returns empty array for unauthenticated users.
+ *
+ * @returns Promise resolving to array of followed user objects
+ *
+ * @example
+ * ```typescript
+ * const following = await fetchFollowedUsers()
+ * following.forEach(user => {
+ *   console.log(`${user.name} - added on ${new Date(user.date * 1000)}`)
+ * })
+ * ```
+ */
+export async function fetchFollowedUsers(): Promise<
+  Array<{
+    name: string
+    id: string
+    date: number
+    note?: string
+  }>
+> {
+  try {
+    const session = await getSession()
+    if (!session.accessToken) {
+      return []
+    }
+
+    const url = `${REDDIT_API_URL}/api/v1/me/friends`
+
+    const response = await fetch(url, {
+      headers: await getHeaders(true),
+      next: {revalidate: TEN_MINUTES}
+    })
+
+    if (!response.ok) {
+      logger.warn(
+        `Failed to fetch followed users: ${response.status} ${response.statusText}`,
+        undefined,
+        {context: 'fetchFollowedUsers'}
+      )
+      return []
+    }
+
+    const data: {
+      data?: {
+        children?: Array<{
+          name: string
+          id: string
+          date: number
+          note?: string
+        }>
+      }
+    } = await response.json()
+
+    const following =
+      data.data?.children?.map((user) => ({
+        name: user.name,
+        id: user.id,
+        date: user.date,
+        note: user.note
+      })) || []
+
+    logger.debug('Fetched followed users successfully', {
+      count: following.length
+    })
+
+    return following
+  } catch (error) {
+    logger.error('Error fetching followed users', error, {
+      context: 'fetchFollowedUsers'
+    })
+    return []
+  }
+}

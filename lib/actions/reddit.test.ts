@@ -4,6 +4,7 @@ import {http, HttpResponse, server} from '@/test-utils'
 import type {IronSession} from 'iron-session'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
+  fetchFollowedUsers,
   fetchMultireddits,
   fetchPost,
   fetchPosts,
@@ -1007,6 +1008,99 @@ describe('reddit server actions', () => {
       await expect(fetchSavedPosts('nonexistent')).rejects.toThrow(
         'User not found'
       )
+    })
+  })
+
+  describe('fetchFollowedUsers', () => {
+    it('fetches followed users for authenticated user', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/api/v1/me/friends', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {
+                  name: 'user1',
+                  id: 't2_user1',
+                  date: 1609459200,
+                  note: 'Great content'
+                },
+                {
+                  name: 'user2',
+                  id: 't2_user2',
+                  date: 1609545600
+                }
+              ]
+            }
+          })
+        })
+      )
+
+      const following = await fetchFollowedUsers()
+
+      expect(following).toHaveLength(2)
+      expect(following[0].name).toBe('user1')
+      expect(following[0].id).toBe('t2_user1')
+      expect(following[0].date).toBe(1609459200)
+      expect(following[0].note).toBe('Great content')
+      expect(following[1].name).toBe('user2')
+      expect(following[1].note).toBeUndefined()
+    })
+
+    it('returns empty array for unauthenticated users', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      const following = await fetchFollowedUsers()
+
+      expect(following).toEqual([])
+    })
+
+    it('returns empty array when API fails', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/api/v1/me/friends', () => {
+          return new HttpResponse(null, {status: 500})
+        })
+      )
+
+      const following = await fetchFollowedUsers()
+
+      expect(following).toEqual([])
+    })
+
+    it('handles empty following list', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/api/v1/me/friends', () => {
+          return HttpResponse.json({
+            data: {
+              children: []
+            }
+          })
+        })
+      )
+
+      const following = await fetchFollowedUsers()
+
+      expect(following).toEqual([])
     })
   })
 })
