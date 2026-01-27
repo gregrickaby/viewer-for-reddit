@@ -9,11 +9,20 @@ import {Reddit} from 'arctic'
 /**
  * Reddit OAuth client instance for token refresh.
  */
-const reddit = new Reddit(
-  getEnvVar('REDDIT_CLIENT_ID'),
-  getEnvVar('REDDIT_CLIENT_SECRET'),
-  getEnvVar('REDDIT_REDIRECT_URI')
-)
+let reddit: Reddit | null = null
+
+/**
+ * Get or create the Reddit OAuth client instance.
+ * @returns Reddit OAuth client
+ */
+function getRedditClient(): Reddit {
+  reddit ??= new Reddit(
+    getEnvVar('REDDIT_CLIENT_ID'),
+    getEnvVar('REDDIT_CLIENT_SECRET'),
+    getEnvVar('REDDIT_REDIRECT_URI')
+  )
+  return reddit
+}
 
 /**
  * Refresh lock to prevent concurrent refresh attempts.
@@ -60,6 +69,87 @@ export async function refreshAccessToken(): Promise<{
 }
 
 /**
+ * Extract and handle refresh token from OAuth response.
+ * @param tokens - OAuth tokens from Arctic
+ * @param currentRefreshToken - Current refresh token to compare against
+ * @returns New refresh token (either rotated or existing)
+ */
+function extractRefreshToken(
+  tokens: Awaited<
+    ReturnType<ReturnType<typeof getRedditClient>['refreshAccessToken']>
+  >,
+  currentRefreshToken: string
+): string {
+  try {
+    const freshToken = tokens.refreshToken()
+    if (freshToken && freshToken !== currentRefreshToken) {
+      logger.info('Refresh token rotated by Reddit', undefined, {
+        context: 'refreshAccessToken'
+      })
+      return freshToken
+    }
+    if (freshToken) {
+      logger.debug('Reusing existing refresh token (no rotation)', undefined, {
+        context: 'refreshAccessToken'
+      })
+    }
+  } catch {
+    logger.debug('No new refresh token provided, keeping existing', undefined, {
+      context: 'refreshAccessToken'
+    })
+  }
+  return currentRefreshToken
+}
+
+/**
+ * Update session with new OAuth tokens.
+ * @param session - Current session to update
+ * @param tokens - New OAuth tokens from Arctic
+ * @param currentRefreshToken - Current refresh token
+ */
+async function updateSessionWithTokens(
+  session: Awaited<ReturnType<typeof getSession>>,
+  tokens: Awaited<
+    ReturnType<ReturnType<typeof getRedditClient>['refreshAccessToken']>
+  >,
+  currentRefreshToken: string
+): Promise<void> {
+  session.accessToken = tokens.accessToken()
+  session.refreshToken = extractRefreshToken(tokens, currentRefreshToken)
+  session.expiresAt =
+    tokens.accessTokenExpiresAt()?.getTime() || Date.now() + 3600000
+  await session.save()
+}
+
+/**
+ * Destroy session after refresh failure.
+ */
+async function destroySessionOnFailure(originalError: unknown): Promise<void> {
+  try {
+    const session = await getSession()
+    session.destroy()
+    logger.debug('Session destroyed after refresh failure', undefined, {
+      context: 'refreshAccessToken'
+    })
+  } catch (destroyError) {
+    logger.error(
+      'Failed to destroy session after refresh failure',
+      {
+        destroyError:
+          destroyError instanceof Error
+            ? destroyError.message
+            : String(destroyError),
+        originalError:
+          originalError instanceof Error
+            ? originalError.message
+            : String(originalError)
+      },
+      {context: 'refreshAccessToken'}
+    )
+  }
+}
+
+/**
  * Performs the actual token refresh operation.
  * Internal function called by refreshAccessToken with lock protection.
  */
@@ -67,61 +157,32 @@ async function performRefresh(): Promise<{
   success: boolean
   error?: string
 }> {
-  let sessionForLogging: Awaited<ReturnType<typeof getSession>> | null = null
+  // Variables for error logging (captured before potential failure)
+  let hasRefreshToken = false
+  let expiresAt: number | undefined
 
   try {
     const session = await getSession()
-    sessionForLogging = session
 
     if (!session.refreshToken) {
       logger.warn('No refresh token available', undefined, {
         context: 'refreshAccessToken'
       })
-      return {
-        success: false,
-        error: 'No refresh token available'
-      }
+      return {success: false, error: 'No refresh token available'}
     }
+
+    // Capture session state for potential error logging
+    hasRefreshToken = true // NOSONAR - Used in catch block for diagnostics
+    expiresAt = session.expiresAt // NOSONAR - Used in catch block for diagnostics
 
     logger.debug('Refreshing access token', undefined, {
       context: 'refreshAccessToken'
     })
 
-    // Use Arctic to refresh the token
-    const tokens = await reddit.refreshAccessToken(session.refreshToken)
-    const newAccessToken = tokens.accessToken()
-
-    // Get new refresh token if provided
-    let newRefreshToken = session.refreshToken
-    try {
-      const freshToken = tokens.refreshToken()
-      if (freshToken && freshToken !== session.refreshToken) {
-        newRefreshToken = freshToken
-        logger.info('Refresh token rotated by Reddit', undefined, {
-          context: 'refreshAccessToken'
-        })
-      } else if (freshToken) {
-        logger.debug(
-          'Reusing existing refresh token (no rotation)',
-          undefined,
-          {context: 'refreshAccessToken'}
-        )
-      }
-    } catch {
-      // Keep existing refresh token if new one not provided
-      logger.debug(
-        'No new refresh token provided, keeping existing',
-        undefined,
-        {context: 'refreshAccessToken'}
-      )
-    }
-
-    // Update session with new tokens
-    session.accessToken = newAccessToken
-    session.refreshToken = newRefreshToken
-    session.expiresAt =
-      tokens.accessTokenExpiresAt()?.getTime() || Date.now() + 3600000
-    await session.save()
+    const tokens = await getRedditClient().refreshAccessToken(
+      session.refreshToken
+    )
+    await updateSessionWithTokens(session, tokens, session.refreshToken)
 
     logger.info('Access token refreshed successfully', undefined, {
       context: 'refreshAccessToken'
@@ -136,40 +197,13 @@ async function performRefresh(): Promise<{
           error instanceof Error ? error.constructor.name : typeof error,
         errorMessage: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
-        hasRefreshToken: sessionForLogging
-          ? !!sessionForLogging.refreshToken
-          : false,
-        refreshTokenAge: sessionForLogging?.expiresAt
-          ? Date.now() - sessionForLogging.expiresAt
-          : 'unknown'
+        hasRefreshToken,
+        refreshTokenAge: expiresAt ? Date.now() - expiresAt : 'unknown'
       },
-      {
-        context: 'refreshAccessToken'
-      }
+      {context: 'refreshAccessToken'}
     )
 
-    // Clear the session on refresh failure
-    try {
-      const session = await getSession()
-      session.destroy()
-      logger.debug('Session destroyed after refresh failure', undefined, {
-        context: 'refreshAccessToken'
-      })
-    } catch (destroyError) {
-      logger.error(
-        'Failed to destroy session after refresh failure',
-        {
-          destroyError:
-            destroyError instanceof Error
-              ? destroyError.message
-              : String(destroyError),
-          originalError: error instanceof Error ? error.message : String(error)
-        },
-        {
-          context: 'refreshAccessToken'
-        }
-      )
-    }
+    await destroySessionOnFailure(error)
 
     return {
       success: false,

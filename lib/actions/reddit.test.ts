@@ -44,6 +44,11 @@ vi.mock('next/headers', () => ({
   }))
 }))
 
+// Mock Next.js cache
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn()
+}))
+
 const mockGetSession = vi.mocked(getSession)
 
 // Helper to create mock session
