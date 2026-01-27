@@ -28,6 +28,12 @@ vi.mock('next/image', () => ({
   }
 }))
 
+// Mock Next.js cache functions
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+  revalidateTag: vi.fn()
+}))
+
 // Polyfill: Vitest does not provide URLSearchParams in Node by default
 // https://github.com/vitest-dev/vitest/issues/7906
 globalThis.URLSearchParams = NodeURLSearchParams as any

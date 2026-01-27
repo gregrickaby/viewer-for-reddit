@@ -144,8 +144,8 @@ describe('PostHeader', () => {
       } // 1 year ago
       render(<PostHeader post={oldPost} />)
 
-      // Format is "365d ago" (days)
-      expect(screen.getByText(/d ago/)).toBeInTheDocument()
+      // Format is "1y ago" (years) for dates older than 365 days
+      expect(screen.getByText(/y ago/)).toBeInTheDocument()
     })
 
     it('handles special characters in subreddit name', () => {
