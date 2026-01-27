@@ -1,14 +1,16 @@
-import {Alert, Stack, Text} from '@mantine/core'
+import {Alert, Code, Stack, Text} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
 
 interface ErrorDisplayProps {
   title?: string
   message?: string
+  digest?: string
 }
 
 export function ErrorDisplay({
   title = 'Something went wrong',
-  message = 'Please try again in a moment.'
+  message = 'Please try again in a moment.',
+  digest
 }: Readonly<ErrorDisplayProps>) {
   return (
     <Alert
@@ -17,8 +19,13 @@ export function ErrorDisplay({
       color="red"
       variant="light"
     >
-      <Stack gap={4}>
+      <Stack gap="xs">
         <Text size="sm">{message}</Text>
+        {digest && (
+          <Text size="xs" c="dimmed">
+            Error ID: <Code>{digest}</Code>
+          </Text>
+        )}
       </Stack>
     </Alert>
   )

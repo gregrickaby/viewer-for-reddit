@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       '@mantine/carousel',
       '@mantine/core',
       '@mantine/hooks',
+      '@mantine/notifications',
       '@tabler/icons-react'
     ]
   },

@@ -1,4 +1,5 @@
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
+import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
@@ -107,14 +108,16 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
           {feedTitle}
         </Title>
 
-        <Suspense fallback={<TabsSkeleton />}>
-          <PostsContent
-            feedType={feedType}
-            isAuthenticated={isAuthenticated}
-            sort={postSort}
-            timeFilter={timeFilter}
-          />
-        </Suspense>
+        <ErrorBoundary title="Failed to load posts">
+          <Suspense fallback={<TabsSkeleton />}>
+            <PostsContent
+              feedType={feedType}
+              isAuthenticated={isAuthenticated}
+              sort={postSort}
+              timeFilter={timeFilter}
+            />
+          </Suspense>
+        </ErrorBoundary>
       </div>
     </Container>
   )
