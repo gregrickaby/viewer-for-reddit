@@ -149,8 +149,15 @@ export function VideoPlayer({
     return <div className={styles.error}>Video unavailable</div>
   }
 
+  // Calculate aspect ratio for container to prevent layout shifts
+  const containerStyle =
+    width && height ? {aspectRatio: `${width} / ${height}`} : undefined
+
   return (
-    <div className={clsx(styles.container, isVertical && styles.vertical)}>
+    <div
+      className={clsx(styles.container, isVertical && styles.vertical)}
+      style={containerStyle}
+    >
       <video
         aria-label={`Video: ${title}`}
         className={styles.video}
@@ -160,6 +167,8 @@ export function VideoPlayer({
         poster={poster}
         preload="metadata"
         ref={videoRef}
+        width={width}
+        height={height}
       >
         <source
           src={src}

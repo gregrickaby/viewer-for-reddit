@@ -3,15 +3,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 358px;
   max-height: 60vh;
   border-radius: 8px;
   overflow: hidden;
-}
-
-.vertical {
-  min-height: 556px;
-  max-height: 60vh;
 }
 
 .video {
@@ -21,12 +15,6 @@
   max-width: 100%;
   object-fit: contain;
   width: 100%;
-}
-
-.vertical .video {
-  height: 100%;
-  max-width: 100%;
-  width: auto;
 }
 
 .error {
