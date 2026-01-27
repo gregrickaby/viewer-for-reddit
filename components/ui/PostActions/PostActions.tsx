@@ -96,6 +96,15 @@ function PostActionsComponent({
     }
   }
 
+  const handleSave = () => {
+    onToggleSave()
+    notifications.show({
+      message: isSaved ? 'Post unsaved' : 'Post saved',
+      color: isSaved ? 'gray' : 'yellow',
+      autoClose: 3000
+    })
+  }
+
   return (
     <Group gap="sm">
       <Group gap={2}>
@@ -141,23 +150,13 @@ function PostActionsComponent({
           </ActionIcon>
           <Text size="sm">{formatNumber(numComments)}</Text>
         </Group>
-
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          aria-label="Share post"
-          onClick={handleShare}
-          data-umami-event="share-post"
-        >
-          <IconShare aria-hidden="true" size={18} />
-        </ActionIcon>
       </Anchor>
 
       <ActionIcon
         variant="subtle"
         color={isSaved ? 'yellow' : 'gray'}
         aria-label={isSaved ? 'Unsave post' : 'Save post'}
-        onClick={onToggleSave}
+        onClick={handleSave}
         loading={isPending}
         disabled={!isAuthenticated}
         style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
@@ -168,6 +167,16 @@ function PostActionsComponent({
         ) : (
           <IconBookmark aria-hidden="true" size={18} />
         )}
+      </ActionIcon>
+
+      <ActionIcon
+        variant="subtle"
+        color="gray"
+        aria-label="Share post"
+        onClick={handleShare}
+        data-umami-event="share-post"
+      >
+        <IconShare aria-hidden="true" size={18} />
       </ActionIcon>
     </Group>
   )

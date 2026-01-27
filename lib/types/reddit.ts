@@ -203,6 +203,7 @@ export interface RedditComment {
   distinguished?: string
   likes?: boolean | null
   score_hidden: boolean
+  saved?: boolean
 }
 
 export interface RedditCommentListing {

@@ -56,7 +56,7 @@ export function ThemeProvider({
 }: Readonly<{children: React.ReactNode}>) {
   return (
     <MantineProvider theme={theme} defaultColorScheme="auto">
-      <Notifications position="top-right" />
+      <Notifications position="bottom-right" />
       {children}
     </MantineProvider>
   )

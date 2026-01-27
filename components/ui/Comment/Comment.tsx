@@ -1,6 +1,6 @@
 'use client'
 
-import {useVote} from '@/lib/hooks'
+import {useSavePost, useVote} from '@/lib/hooks'
 import {RedditComment as RedditCommentType} from '@/lib/types/reddit'
 import {
   decodeHtmlEntities,
@@ -24,6 +24,8 @@ import {notifications} from '@mantine/notifications'
 import {
   IconArrowDown,
   IconArrowUp,
+  IconBookmark,
+  IconBookmarkFilled,
   IconChevronDown,
   IconChevronUp,
   IconShare
@@ -71,11 +73,27 @@ export function Comment({
   isAuthenticated = false
 }: Readonly<CommentProps>) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const {voteState, score, isPending, vote} = useVote({
+  const {
+    voteState,
+    score,
+    isPending: isVotePending,
+    vote
+  } = useVote({
     itemName: comment.name,
     initialLikes: comment.likes,
     initialScore: comment.score
   })
+
+  const {
+    isSaved,
+    isPending: isSavePending,
+    toggleSave
+  } = useSavePost({
+    postName: comment.name,
+    initialSaved: comment.saved || false
+  })
+
+  const isPending = isVotePending || isSavePending
 
   const replies =
     comment.replies?.data?.children?.filter(
@@ -103,6 +121,15 @@ export function Comment({
         autoClose: 3000
       })
     }
+  }
+
+  const handleSave = () => {
+    toggleSave()
+    notifications.show({
+      message: isSaved ? 'Comment unsaved' : 'Comment saved',
+      color: isSaved ? 'gray' : 'yellow',
+      autoClose: 3000
+    })
   }
 
   // Don't link to deleted/suspended users
@@ -220,6 +247,28 @@ export function Comment({
                     <IconArrowDown aria-hidden="true" size={14} />
                   </ActionIcon>
                 </Group>
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  color={isSaved ? 'yellow' : 'gray'}
+                  onClick={handleSave}
+                  loading={isPending}
+                  disabled={!isAuthenticated}
+                  className={
+                    isAuthenticated
+                      ? styles.voteButton
+                      : styles.voteButtonDisabled
+                  }
+                  aria-label={isSaved ? 'Unsave comment' : 'Save comment'}
+                  aria-disabled={!isAuthenticated}
+                  data-umami-event={isSaved ? 'comment-unsave' : 'comment-save'}
+                >
+                  {isSaved ? (
+                    <IconBookmarkFilled aria-hidden="true" size={14} />
+                  ) : (
+                    <IconBookmark aria-hidden="true" size={14} />
+                  )}
+                </ActionIcon>
                 <ActionIcon
                   variant="subtle"
                   size="sm"
