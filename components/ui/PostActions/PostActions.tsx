@@ -3,12 +3,14 @@
 import {formatNumber} from '@/lib/utils/formatters'
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {ActionIcon, Anchor, Group, Text} from '@mantine/core'
+import {notifications} from '@mantine/notifications'
 import {
   IconArrowDown,
   IconArrowUp,
   IconBookmark,
   IconBookmarkFilled,
-  IconMessage
+  IconMessage,
+  IconShare
 } from '@tabler/icons-react'
 import Link from 'next/link'
 import {memo} from 'react'
@@ -76,6 +78,24 @@ function PostActionsComponent({
   onToggleSave,
   isAuthenticated = false
 }: Readonly<PostActionsProps>) {
+  const handleShare = async () => {
+    try {
+      const url = `${window.location.origin}${postUrl}`
+      await navigator.clipboard.writeText(url)
+      notifications.show({
+        message: 'Link copied to clipboard',
+        color: 'teal',
+        autoClose: 3000
+      })
+    } catch (error) {
+      notifications.show({
+        message: 'Failed to copy link',
+        color: 'red',
+        autoClose: 3000
+      })
+    }
+  }
+
   return (
     <Group gap="sm">
       <Group gap={2}>
@@ -121,6 +141,16 @@ function PostActionsComponent({
           </ActionIcon>
           <Text size="sm">{formatNumber(numComments)}</Text>
         </Group>
+
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          aria-label="Share post"
+          onClick={handleShare}
+          data-umami-event="share-post"
+        >
+          <IconShare aria-hidden="true" size={18} />
+        </ActionIcon>
       </Anchor>
 
       <ActionIcon

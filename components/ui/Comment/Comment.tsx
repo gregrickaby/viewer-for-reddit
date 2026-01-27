@@ -20,11 +20,13 @@ import {
   Stack,
   Text
 } from '@mantine/core'
+import {notifications} from '@mantine/notifications'
 import {
   IconArrowDown,
   IconArrowUp,
   IconChevronDown,
-  IconChevronUp
+  IconChevronUp,
+  IconShare
 } from '@tabler/icons-react'
 import Link from 'next/link'
 import {useState} from 'react'
@@ -83,6 +85,24 @@ export function Comment({
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed)
+  }
+
+  const handleShare = async () => {
+    try {
+      const url = `${window.location.origin}${comment.permalink}`
+      await navigator.clipboard.writeText(url)
+      notifications.show({
+        message: 'Link copied to clipboard',
+        color: 'teal',
+        autoClose: 3000
+      })
+    } catch (error) {
+      notifications.show({
+        message: 'Failed to copy link',
+        color: 'red',
+        autoClose: 3000
+      })
+    }
   }
 
   // Don't link to deleted/suspended users
@@ -200,6 +220,16 @@ export function Comment({
                     <IconArrowDown aria-hidden="true" size={14} />
                   </ActionIcon>
                 </Group>
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  color="gray"
+                  onClick={handleShare}
+                  aria-label="Share comment"
+                  data-umami-event="comment-share"
+                >
+                  <IconShare aria-hidden="true" size={14} />
+                </ActionIcon>
               </Group>
             </Stack>
           </Collapse>
