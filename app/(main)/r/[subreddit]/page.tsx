@@ -12,6 +12,7 @@ import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
 import {decodeHtmlEntities} from '@/lib/utils/formatters'
+import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 
 interface PageProps {
   params: Promise<{subreddit: string}>
@@ -25,33 +26,12 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const params = await props.params
   const subreddit = params.subreddit
 
-  const title = `r/${subreddit} - ${appConfig.site.name}`
-  const description = `Browse posts in r/${subreddit} with ${appConfig.site.name}.`
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `/r/${subreddit}`
-    },
-    robots: {
-      index: false,
-      follow: true
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/r/${subreddit}`,
-      images: [
-        {
-          url: '/social-share.webp',
-          width: 1200,
-          height: 630,
-          alt: appConfig.site.name
-        }
-      ]
-    }
-  }
+  return generateListingMetadata({
+    title: `r/${subreddit}`,
+    description: `Browse posts in r/${subreddit} with ${appConfig.site.name}.`,
+    canonicalUrl: `/r/${subreddit}`,
+    index: false
+  })
 }
 
 /**

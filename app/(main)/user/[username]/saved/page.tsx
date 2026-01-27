@@ -3,6 +3,7 @@ import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {SavedItemsList} from '@/components/ui/SavedItemsList/SavedItemsList'
 import {fetchSavedItems} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
+import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
@@ -21,10 +22,12 @@ export async function generateMetadata({
 }: Readonly<PageProps>): Promise<Metadata> {
   const {username} = await params
 
-  return {
-    title: `${username}'s Saved - Reddit Viewer`,
-    description: `View saved posts and comments for Reddit user ${username}`
-  }
+  return generateListingMetadata({
+    title: `${username}'s Saved`,
+    description: `View saved posts and comments for Reddit user ${username}`,
+    canonicalUrl: `/user/${username}/saved`,
+    index: false
+  })
 }
 
 /**

@@ -13,6 +13,7 @@ import {appConfig} from '@/lib/config/app.config'
 import {RedditUser, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
 import {logger} from '@/lib/utils/logger'
+import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
@@ -38,33 +39,12 @@ interface PageProps {
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   const {username} = await params
 
-  const title = `u/${username} - ${appConfig.site.name}`
-  const description = `View u/${username} profile, posts, and comments with ${appConfig.site.name}.`
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `/u/${username}`
-    },
-    robots: {
-      index: false,
-      follow: true
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/u/${username}`,
-      images: [
-        {
-          url: '/social-share.webp',
-          width: 1200,
-          height: 630,
-          alt: appConfig.site.name
-        }
-      ]
-    }
-  }
+  return generateListingMetadata({
+    title: `u/${username}`,
+    description: `View u/${username} profile, posts, and comments with ${appConfig.site.name}.`,
+    canonicalUrl: `/u/${username}`,
+    index: false
+  })
 }
 
 /**

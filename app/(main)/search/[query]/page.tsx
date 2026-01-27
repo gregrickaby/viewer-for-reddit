@@ -3,7 +3,7 @@ import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostList} from '@/components/ui/PostList/PostList'
 import {searchReddit} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
-import {appConfig} from '@/lib/config/app.config'
+import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
@@ -21,22 +21,11 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   const {query} = await params
   const decodedQuery = decodeURIComponent(query)
 
-  return {
-    title: `Search: ${decodedQuery} - ${appConfig.site.name}`,
+  return generateListingMetadata({
+    title: `Search: ${decodedQuery}`,
     description: `Search results for "${decodedQuery}" on Reddit`,
-    alternates: {
-      canonical: `/search/${query}`
-    },
-    robots: {
-      index: false,
-      follow: false
-    },
-    openGraph: {
-      title: `Search: ${decodedQuery} - ${appConfig.site.name}`,
-      description: `Search results for "${decodedQuery}" on Reddit`,
-      url: `/search/${query}`
-    }
-  }
+    canonicalUrl: `/search/${query}`
+  })
 }
 
 /**

@@ -5,13 +5,12 @@ import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {fetchPost} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
-import {appConfig} from '@/lib/config/app.config'
+import {CommentSortOption} from '@/lib/types/reddit'
+import {generatePostMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
-
-import {CommentSortOption} from '@/lib/types/reddit'
 
 interface PageProps {
   params: Promise<{
@@ -26,36 +25,17 @@ interface PageProps {
  * Generate static metadata for single post pages.
  */
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
-  const {subreddit, postId} = await params
-  const title = `Post in r/${subreddit} - ${appConfig.site.name}`
-  const description = `View post and comments in r/${subreddit}`
-  const canonicalUrl = `/r/${subreddit}/comments/${postId}/`
+  const {subreddit, postId, slug} = await params
 
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: canonicalUrl
-    },
-    robots: {
-      index: false,
-      follow: true
-    },
-    openGraph: {
-      title,
-      description,
-      url: canonicalUrl,
-      type: 'article',
-      images: [
-        {
-          url: '/social-share.webp',
-          width: 1200,
-          height: 630,
-          alt: appConfig.site.name
-        }
-      ]
-    }
+  // Fetch the post to get actual title and content
+  const {post} = await fetchPost(subreddit, postId)
+
+  if (!post) {
+    notFound()
   }
+
+  const canonicalUrl = `/r/${subreddit}/comments/${postId}/${slug}`
+  return generatePostMetadata(post, canonicalUrl)
 }
 
 /**
