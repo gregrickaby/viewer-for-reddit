@@ -2,6 +2,7 @@
 
 import {getIsVertical} from '@/lib/utils/reddit-helpers'
 import clsx from 'clsx'
+import Hls from 'hls.js'
 import {useEffect, useRef} from 'react'
 import styles from './VideoPlayer.module.css'
 
@@ -64,6 +65,8 @@ function isValidVideoUrl(url: string): boolean {
  *
  * Features:
  * - URL validation (prevents XSS)
+ * - HLS streaming support via hls.js (adaptive quality)
+ * - Native HLS support for Safari
  * - Auto-pause when scrolled out of view (IntersectionObserver)
  * - Auto-pause other videos when one starts playing
  * - Shared IntersectionObserver for performance
@@ -97,6 +100,28 @@ export function VideoPlayer({
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+
+    let hls: Hls | null = null
+
+    // Initialize HLS.js for HLS streams (if browser doesn't support it natively)
+    if (type === 'hls') {
+      if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS support (Safari)
+        video.src = src
+      } else if (Hls.isSupported()) {
+        // Use HLS.js for browsers that don't support HLS natively
+        hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: false,
+          backBufferLength: 90
+        })
+        hls.loadSource(src)
+        hls.attachMedia(video)
+      } else {
+        // Fallback: try to play HLS URL directly (may not work, but prevents black screen)
+        video.src = src
+      }
+    }
 
     // Pause other videos when this one starts playing
     const handlePlay = () => {
@@ -141,8 +166,12 @@ export function VideoPlayer({
           sharedObserver = null
         }
       }
+      // Clean up HLS.js instance
+      if (hls) {
+        hls.destroy()
+      }
     }
-  }, [])
+  }, [src, type])
 
   // Validate URL before rendering
   if (!isValidVideoUrl(src)) {
@@ -170,10 +199,7 @@ export function VideoPlayer({
         width={width}
         height={height}
       >
-        <source
-          src={src}
-          type={type === 'hls' ? 'application/x-mpegURL' : 'video/mp4'}
-        />
+        {type === 'mp4' && <source src={src} type="video/mp4" />}
         <track kind="captions" label="English" />
         Your browser does not support the video tag.
       </video>

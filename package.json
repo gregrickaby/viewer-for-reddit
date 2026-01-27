@@ -41,6 +41,7 @@
     "@tabler/icons-react": "^3.36.1",
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",
+    "hls.js": "^1.6.15",
     "iron-session": "^8.0.4",
     "next": "^16.1.5",
     "react": "^19.2.4",
