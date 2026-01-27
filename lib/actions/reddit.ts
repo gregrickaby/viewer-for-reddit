@@ -11,6 +11,7 @@ import type {
   RedditPost,
   RedditSubreddit,
   RedditUser,
+  SavedItem,
   SortOption,
   SubredditItem,
   TimeFilter
@@ -26,6 +27,7 @@ import {getEnvVar} from '@/lib/utils/env'
 import {logger} from '@/lib/utils/logger'
 import {buildFeedUrlPath} from '@/lib/utils/reddit-helpers'
 import {retryWithBackoff} from '@/lib/utils/retry'
+import {revalidatePath} from 'next/cache'
 import {headers} from 'next/headers'
 
 /**
@@ -674,6 +676,11 @@ export async function savePost(
     })
 
     logger.debug('Save/unsave successful', {postName, save})
+
+    // Revalidate saved items page to update the list
+    if (session.username) {
+      revalidatePath(`/user/${session.username}/saved`)
+    }
 
     return {success: true}
   } catch (error) {
@@ -1343,14 +1350,14 @@ export async function toggleSubscription(
 }
 
 /**
- * Fetch saved posts for a user.
+ * Fetch saved items (posts and comments) for a user.
  * Server Action with Next.js fetch caching.
  *
- * Returns only posts (not comments) that are not stickied.
+ * Returns both posts and comments that are not stickied.
  *
  * @param username - Reddit username
  * @param after - Pagination cursor for next page
- * @returns Promise resolving to posts array and next page cursor
+ * @returns Promise resolving to items array and next page cursor
  *
  * @throws {Error} Various Reddit API errors:
  * - 'Authentication required' (401)
@@ -1359,15 +1366,15 @@ export async function toggleSubscription(
  *
  * @example
  * ```typescript
- * const {posts, after} = await fetchSavedPosts('johndoe')
+ * const {items, after} = await fetchSavedItems('johndoe')
  * // Fetch next page
- * const {posts: morePosts} = await fetchSavedPosts('johndoe', after)
+ * const {items: moreItems} = await fetchSavedItems('johndoe', after)
  * ```
  */
-export async function fetchSavedPosts(
+export async function fetchSavedItems(
   username: string,
   after?: string
-): Promise<{posts: RedditPost[]; after: string | null}> {
+): Promise<{items: SavedItem[]; after: string | null}> {
   try {
     const session = await getSession()
     if (!session.accessToken) {
@@ -1383,7 +1390,7 @@ export async function fetchSavedPosts(
       url.searchParams.set('after', after)
     }
 
-    logger.debug('Fetching saved posts', {
+    logger.debug('Fetching saved items', {
       username,
       after,
       url: url.toString()
@@ -1400,14 +1407,14 @@ export async function fetchSavedPosts(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Failed to fetch saved posts', {
+      logger.httpError('Failed to fetch saved items', {
         url: url.toString(),
         method: 'GET',
         status: response.status,
         statusText: response.statusText,
         isAuthenticated: true,
         errorBody,
-        context: 'fetchSavedPosts',
+        context: 'fetchSavedItems',
         username,
         after
       })
@@ -1428,30 +1435,48 @@ export async function fetchSavedPosts(
 
     const data: ApiSubredditPostsResponse = await response.json()
 
-    // Filter to only posts (t3) and exclude stickied posts
+    // Process both posts (t3) and comments (t1), exclude stickied items
     const allChildren = data.data?.children || []
-    const posts = allChildren
-      .filter(
-        (child) =>
-          child.kind === 't3' &&
-          child.data &&
-          !(child.data as RedditPost).stickied
-      )
-      .map((child) => child.data as RedditPost)
+    const items: SavedItem[] = allChildren
+      .filter((child) => {
+        if (child.kind === 't3') {
+          // Filter out stickied posts
+          return !(child.data as RedditPost).stickied
+        }
+        if (child.kind === 't1') {
+          // Filter out stickied comments
+          return !(child.data as RedditComment).stickied
+        }
+        return false
+      })
+      .map((child) => {
+        if (child.kind === 't3') {
+          return {type: 'post' as const, data: child.data as RedditPost}
+        }
+        // For comments, add additional context fields
+        const commentData = child.data as RedditComment & {
+          link_title?: string
+          link_url?: string
+          subreddit?: string
+        }
+        return {type: 'comment' as const, data: commentData}
+      })
 
-    logger.debug('Fetched saved posts', {
+    logger.debug('Fetched saved items', {
       username,
-      count: posts.length,
+      count: items.length,
+      posts: items.filter((i) => i.type === 'post').length,
+      comments: items.filter((i) => i.type === 'comment').length,
       after: data.data?.after
     })
 
     return {
-      posts,
+      items,
       after: data.data?.after || null
     }
   } catch (error) {
-    logger.error('Error fetching saved posts', error, {
-      context: 'fetchSavedPosts',
+    logger.error('Error fetching saved items', error, {
+      context: 'fetchSavedItems',
       username,
       after
     })

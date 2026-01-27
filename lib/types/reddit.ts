@@ -299,6 +299,20 @@ export interface PostWithComments {
   comments: RedditComment[]
 }
 
+/**
+ * Saved item that can be either a post or a comment
+ */
+export type SavedItem =
+  | {type: 'post'; data: RedditPost}
+  | {
+      type: 'comment'
+      data: RedditComment & {
+        link_title?: string
+        link_url?: string
+        subreddit?: string
+      }
+    }
+
 export interface SubredditInfo {
   display_name: string
   display_name_prefixed: string

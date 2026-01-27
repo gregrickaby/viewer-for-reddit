@@ -24,6 +24,8 @@ interface PostCardProps {
   showFullText?: boolean
   /** Whether this is a priority post (for LCP optimization) */
   priority?: boolean
+  /** Optional callback when item is unsaved (for saved items list) */
+  onUnsave?: () => void
 }
 
 /**
@@ -50,7 +52,8 @@ export const PostCard = memo(
     post,
     isAuthenticated = false,
     showFullText = false,
-    priority = false
+    priority = false,
+    onUnsave
   }: Readonly<PostCardProps>) => {
     const slug = extractSlug(post.permalink, post.id)
     const postUrl = `/r/${post.subreddit}/comments/${post.id}/${slug}`
@@ -72,7 +75,8 @@ export const PostCard = memo(
       toggleSave
     } = useSavePost({
       postName: post.name,
-      initialSaved: post.saved || false
+      initialSaved: post.saved || false,
+      onUnsave
     })
 
     const isPending = isVotePending || isSavePending

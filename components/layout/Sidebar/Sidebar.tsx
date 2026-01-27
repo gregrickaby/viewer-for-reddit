@@ -36,7 +36,7 @@ import styles from './Sidebar.module.css'
 interface SidebarProps {
   /** Whether the current user is authenticated */
   isAuthenticated?: boolean
-  /** Username for authenticated user (for saved posts link) */
+  /** Username for authenticated user (for saved items link) */
   username?: string
   /** User's subscribed subreddits */
   subscriptions?: Array<{
@@ -66,7 +66,7 @@ interface SidebarProps {
  *
  * Features:
  * - Default feeds (Popular, All, About, Donate, GitHub)
- * - Saved Posts (authenticated only)
+ * - Saved items (posts and comments) (authenticated only)
  * - User subscriptions with search and infinite scroll (authenticated only)
  * - User multireddits (authenticated only, sorted alphabetically)
  * - Followed users (authenticated only, sorted alphabetically)
@@ -174,7 +174,7 @@ export function Sidebar({
                 <NavLink
                   component={Link}
                   href={`/user/${username}/saved`}
-                  label="Saved Posts"
+                  label="Saved"
                   leftSection={<IconBookmark size={16} />}
                   data-umami-event="nav-saved"
                 />

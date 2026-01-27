@@ -180,39 +180,39 @@ describe('Sidebar', () => {
     })
   })
 
-  describe('saved posts link', () => {
-    it('does not show Saved Posts link when not authenticated', () => {
+  describe('saved link', () => {
+    it('does not show Saved link when not authenticated', () => {
       render(<Sidebar isAuthenticated={false} />)
 
       expect(
-        screen.queryByRole('link', {name: /saved posts/i})
+        screen.queryByRole('link', {name: /saved/i})
       ).not.toBeInTheDocument()
     })
 
-    it('does not show Saved Posts link when authenticated but no username', () => {
+    it('does not show Saved link when authenticated but no username', () => {
       render(<Sidebar isAuthenticated />)
 
       expect(
-        screen.queryByRole('link', {name: /saved posts/i})
+        screen.queryByRole('link', {name: /saved/i})
       ).not.toBeInTheDocument()
     })
 
-    it('shows Saved Posts link when authenticated with username', () => {
+    it('shows Saved link when authenticated with username', () => {
       render(<Sidebar isAuthenticated username="testuser" />)
 
-      const link = screen.getByRole('link', {name: /saved posts/i})
+      const link = screen.getByRole('link', {name: /saved/i})
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/user/testuser/saved')
     })
 
-    it('has analytics event on Saved Posts link', () => {
+    it('has analytics event on Saved link', () => {
       render(<Sidebar isAuthenticated username="testuser" />)
 
-      const link = screen.getByRole('link', {name: /saved posts/i})
+      const link = screen.getByRole('link', {name: /saved/i})
       expect(link).toHaveAttribute('data-umami-event', 'nav-saved')
     })
 
-    it('renders Saved Posts link in correct position (after All)', () => {
+    it('renders Saved link in correct position (after All)', () => {
       render(<Sidebar isAuthenticated username="testuser" />)
 
       const allLinks = screen.getAllByRole('link')
@@ -220,7 +220,7 @@ describe('Sidebar', () => {
 
       expect(navLinks[0]).toHaveTextContent('Home')
       expect(navLinks[1]).toHaveTextContent('All')
-      expect(navLinks[2]).toHaveTextContent('Saved Posts')
+      expect(navLinks[2]).toHaveTextContent('Saved')
       expect(navLinks[3]).toHaveTextContent('About')
     })
   })

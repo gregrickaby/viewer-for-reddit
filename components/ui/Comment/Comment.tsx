@@ -44,6 +44,8 @@ interface CommentProps {
   depth?: number
   /** Whether the current user is authenticated */
   isAuthenticated?: boolean
+  /** Optional callback when item is unsaved (for saved items list) */
+  onUnsave?: () => void
 }
 
 /**
@@ -70,7 +72,8 @@ interface CommentProps {
 export function Comment({
   comment,
   depth = 0,
-  isAuthenticated = false
+  isAuthenticated = false,
+  onUnsave
 }: Readonly<CommentProps>) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const {
@@ -90,7 +93,8 @@ export function Comment({
     toggleSave
   } = useSavePost({
     postName: comment.name,
-    initialSaved: comment.saved || false
+    initialSaved: comment.saved || false,
+    onUnsave
   })
 
   const isPending = isVotePending || isSavePending

@@ -8,7 +8,7 @@ import {
   fetchMultireddits,
   fetchPost,
   fetchPosts,
-  fetchSavedPosts,
+  fetchSavedItems,
   fetchSubredditInfo,
   fetchUserInfo,
   fetchUserPosts,
@@ -950,14 +950,14 @@ describe('reddit server actions', () => {
     })
   })
 
-  describe('fetchSavedPosts', () => {
+  describe('fetchSavedItems', () => {
     it('requires authentication', async () => {
-      await expect(fetchSavedPosts('testuser')).rejects.toThrow(
+      await expect(fetchSavedItems('testuser')).rejects.toThrow(
         'Authentication required'
       )
     })
 
-    it('fetches saved posts when authenticated', async () => {
+    it('fetches saved items (posts and comments) when authenticated', async () => {
       mockGetSession.mockResolvedValue(
         createMockSession({
           accessToken: 'mock-token',
@@ -977,6 +977,16 @@ describe('reddit server actions', () => {
                     title: 'Saved Post',
                     stickied: false
                   }
+                },
+                {
+                  kind: 't1',
+                  data: {
+                    id: 'comment1',
+                    body: 'Saved Comment',
+                    stickied: false,
+                    link_title: 'Original Post',
+                    subreddit: 'testsubreddit'
+                  }
                 }
               ],
               after: 't3_after'
@@ -985,10 +995,71 @@ describe('reddit server actions', () => {
         })
       )
 
-      const {posts, after} = await fetchSavedPosts('testuser')
+      const {items, after} = await fetchSavedItems('testuser')
 
-      expect(posts.length).toBeGreaterThan(0)
-      expect(after).toBeDefined()
+      expect(items.length).toBe(2)
+      expect(items[0].type).toBe('post')
+      expect(items[1].type).toBe('comment')
+      expect(after).toBe('t3_after')
+    })
+
+    it('filters out stickied posts and comments', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/saved.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'saved1',
+                    title: 'Normal Post',
+                    stickied: false
+                  }
+                },
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'sticky1',
+                    title: 'Sticky Post',
+                    stickied: true
+                  }
+                },
+                {
+                  kind: 't1',
+                  data: {
+                    id: 'comment1',
+                    body: 'Normal Comment',
+                    stickied: false
+                  }
+                },
+                {
+                  kind: 't1',
+                  data: {
+                    id: 'sticky_comment1',
+                    body: 'Sticky Comment',
+                    stickied: true
+                  }
+                }
+              ],
+              after: null
+            }
+          })
+        })
+      )
+
+      const {items} = await fetchSavedItems('testuser')
+
+      expect(items.length).toBe(2)
+      expect(items[0].data.id).toBe('saved1')
+      expect(items[1].data.id).toBe('comment1')
     })
 
     it('handles 404 errors', async () => {
@@ -1005,9 +1076,43 @@ describe('reddit server actions', () => {
         })
       )
 
-      await expect(fetchSavedPosts('nonexistent')).rejects.toThrow(
+      await expect(fetchSavedItems('nonexistent')).rejects.toThrow(
         'User not found'
       )
+    })
+
+    it('handles pagination with after parameter', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/saved.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'saved2',
+                    title: 'Next Page Post',
+                    stickied: false
+                  }
+                }
+              ],
+              after: null
+            }
+          })
+        })
+      )
+
+      const {items, after} = await fetchSavedItems('testuser', 't3_cursor')
+
+      expect(items.length).toBe(1)
+      expect(after).toBeNull()
     })
   })
 

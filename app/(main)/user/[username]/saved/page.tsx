@@ -1,7 +1,7 @@
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
-import {SavedPostsList} from '@/components/ui/SavedPostsList'
-import {fetchSavedPosts} from '@/lib/actions/reddit'
+import {SavedItemsList} from '@/components/ui/SavedItemsList/SavedItemsList'
+import {fetchSavedItems} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {Container, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
@@ -14,7 +14,7 @@ interface PageProps {
 }
 
 /**
- * Generate metadata for saved posts page.
+ * Generate metadata for saved items page.
  */
 export async function generateMetadata({
   params
@@ -22,14 +22,14 @@ export async function generateMetadata({
   const {username} = await params
 
   return {
-    title: `${username}'s Saved Posts - Reddit Viewer`,
-    description: `View saved posts for Reddit user ${username}`
+    title: `${username}'s Saved - Reddit Viewer`,
+    description: `View saved posts and comments for Reddit user ${username}`
   }
 }
 
 /**
- * Saved posts page for a user.
- * Server Component that fetches initial saved posts and renders SavedPostsList.
+ * Saved items page for a user.
+ * Server Component that fetches initial saved items and renders SavedItemsList.
  *
  * Features:
  * - Authentication required
@@ -39,11 +39,12 @@ export async function generateMetadata({
  * - Loading skeleton
  * - App layout with sidebar navigation
  * - Boss button and back-to-top button
+ * - Displays both saved posts and comments
  *
  * @example
  * URL: /user/johndoe/saved
  */
-export default async function SavedPostsPage({params}: Readonly<PageProps>) {
+export default async function SavedItemsPage({params}: Readonly<PageProps>) {
   const {username} = await params
 
   // Check authentication and fetch data
@@ -55,23 +56,23 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
       <Container size="lg">
         <Stack align="center" gap="xs" py="xl">
           <Title order={2}>Authentication Required</Title>
-          <Text c="dimmed">You must be logged in to view saved posts.</Text>
+          <Text c="dimmed">You must be logged in to view saved items.</Text>
         </Stack>
       </Container>
     )
   }
 
-  // Fetch initial posts
+  // Fetch initial items
   try {
-    const {posts, after} = await fetchSavedPosts(username)
+    const {items, after} = await fetchSavedItems(username)
 
-    if (posts.length === 0) {
+    if (items.length === 0) {
       return (
         <Container size="lg">
           <Title order={2} mb="md">
-            Saved Posts
+            Saved
           </Title>
-          <Text c="dimmed">No saved posts yet.</Text>
+          <Text c="dimmed">No saved items yet.</Text>
         </Container>
       )
     }
@@ -79,14 +80,15 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
     return (
       <Container size="lg">
         <Title order={2} mb="md">
-          Saved Posts
+          Saved
         </Title>
-        <ErrorBoundary title="Failed to load saved posts">
+        <ErrorBoundary title="Failed to load saved items">
           <Suspense fallback={<PostSkeleton />}>
-            <SavedPostsList
-              initialPosts={posts}
+            <SavedItemsList
+              initialItems={items}
               username={username}
               initialAfter={after}
+              isAuthenticated={isAuthenticated}
             />
           </Suspense>
         </ErrorBoundary>
@@ -94,7 +96,7 @@ export default async function SavedPostsPage({params}: Readonly<PageProps>) {
     )
   } catch (error) {
     const errorMessage =
-      error instanceof Error ? error.message : 'Failed to load saved posts'
+      error instanceof Error ? error.message : 'Failed to load saved items'
 
     return (
       <Container size="lg">

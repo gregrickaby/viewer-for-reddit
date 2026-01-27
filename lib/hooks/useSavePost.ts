@@ -11,6 +11,8 @@ interface UseSavePostOptions {
   postName: string
   /** Initial saved state from Reddit API */
   initialSaved: boolean
+  /** Optional callback when item is unsaved (for saved items list) */
+  onUnsave?: () => void
 }
 
 /**
@@ -51,7 +53,8 @@ interface UseSavePostReturn {
  */
 export function useSavePost({
   postName,
-  initialSaved
+  initialSaved,
+  onUnsave
 }: Readonly<UseSavePostOptions>): UseSavePostReturn {
   const [isPending, startTransition] = useTransition()
   const [isSaved, setIsSaved] = useState(initialSaved)
@@ -71,6 +74,9 @@ export function useSavePost({
       if (!result.success) {
         // Revert on failure
         setIsSaved(currentSaveState)
+      } else if (!newSaveState && onUnsave) {
+        // Item was unsaved successfully, notify parent
+        onUnsave()
       }
     })
   }
