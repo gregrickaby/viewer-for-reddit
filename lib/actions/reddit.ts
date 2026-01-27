@@ -1203,6 +1203,13 @@ export async function searchSubreddits(query: string): Promise<{
         query
       })
 
+      if (response.status === 429) {
+        const message = isAuthenticated
+          ? 'Rate limit exceeded'
+          : 'Rate limit exceeded. Please log in to continue.'
+        return {success: false, data: [], error: message}
+      }
+
       throw new Error(`Reddit API error: ${response.statusText}`)
     }
 

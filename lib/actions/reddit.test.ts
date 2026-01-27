@@ -906,6 +906,49 @@ describe('reddit server actions', () => {
       expect(result.success).toBe(false)
       expect(result.error).toBeDefined()
     })
+
+    it('handles 429 rate limit for non-authenticated users with login prompt', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => {
+            return new HttpResponse(null, {status: 429})
+          }
+        )
+      )
+
+      const result = await searchSubreddits('tech')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe(
+        'Rate limit exceeded. Please log in to continue.'
+      )
+    })
+
+    it('handles 429 rate limit for authenticated users', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => {
+            return new HttpResponse(null, {status: 429})
+          }
+        )
+      )
+
+      const result = await searchSubreddits('tech')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Rate limit exceeded')
+    })
   })
 
   describe('toggleSubscription', () => {
