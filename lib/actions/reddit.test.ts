@@ -924,7 +924,9 @@ describe('reddit server actions', () => {
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Something went wrong. Please try again.')
+      expect(result.error).toBe(
+        'Reddit rate limit exceeded. Log in to continue.'
+      )
     })
 
     it('handles 429 rate limit for authenticated users', async () => {
@@ -947,7 +949,7 @@ describe('reddit server actions', () => {
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Something went wrong. Please try again.')
+      expect(result.error).toBe('Reddit rate limit exceeded. Try again later.')
     })
   })
 

@@ -1125,6 +1125,13 @@ export async function searchSubreddits(query: string): Promise<{
         query
       })
 
+      if (response.status === 429) {
+        const rateLimitMessage = isAuthenticated
+          ? 'Reddit rate limit exceeded. Try again later.'
+          : 'Reddit rate limit exceeded. Log in to continue.'
+        return {success: false, data: [], error: rateLimitMessage}
+      }
+
       throw new Error(GENERIC_SERVER_ERROR)
     }
 

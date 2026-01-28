@@ -176,6 +176,54 @@ describe('useSearch', () => {
     })
   })
 
+  it('shows rate limit error for non-authenticated users', async () => {
+    mockSearchSubreddits.mockResolvedValueOnce({
+      success: false,
+      error: 'Reddit rate limit exceeded. Log in to continue.',
+      data: []
+    })
+
+    const {result} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('test')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    await waitFor(() => {
+      expect(result.current.hasError).toBe(true)
+      expect(result.current.errorMessage).toBe(
+        'Reddit rate limit exceeded. Log in to continue.'
+      )
+      expect(result.current.groupedResults.communities).toEqual([])
+    })
+  })
+
+  it('shows rate limit error for authenticated users', async () => {
+    mockSearchSubreddits.mockResolvedValueOnce({
+      success: false,
+      error: 'Reddit rate limit exceeded. Try again later.',
+      data: []
+    })
+
+    const {result} = renderHook(() => useSearch())
+
+    act(() => {
+      result.current.setQuery('test')
+    })
+
+    await new Promise((r) => setTimeout(r, 350))
+
+    await waitFor(() => {
+      expect(result.current.hasError).toBe(true)
+      expect(result.current.errorMessage).toBe(
+        'Reddit rate limit exceeded. Try again later.'
+      )
+      expect(result.current.groupedResults.communities).toEqual([])
+    })
+  })
+
   it('handles network errors', async () => {
     mockSearchSubreddits.mockRejectedValueOnce(new Error('Network down'))
 
