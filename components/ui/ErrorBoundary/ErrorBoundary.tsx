@@ -34,7 +34,7 @@ function getUserFriendlyMessage(
   const errorMsg = error.message.toLowerCase()
 
   if (errorMsg.includes('rate limit')) {
-    return 'Too many requests. Please wait a moment and try again. Logging in may help increase your rate limit.'
+    return "You have reached Reddit's rate limit. Please log in to continue or try again later."
   }
 
   if (errorMsg.includes('not found') || errorMsg.includes('404')) {
@@ -56,7 +56,7 @@ function getUserFriendlyMessage(
     errorMsg.includes('server components') &&
     errorMsg.includes('production')
   ) {
-    return 'Unable to load this content. This may be due to rate limiting or temporary unavailability. Please try again in a moment or log in to continue.'
+    return "Unable to load this content right now. This is often due to Reddit's rate limiting. Try logging in for higher rate limits or wait a few minutes."
   }
 
   // Return original message or fallback
