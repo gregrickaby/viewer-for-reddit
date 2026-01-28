@@ -177,7 +177,7 @@ export default async function SubredditPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary title="Failed to load subreddit info">
+        <ErrorBoundary>
           <Suspense fallback={<SubredditInfoSkeleton />}>
             <SubredditInfo
               subreddit={subreddit}
@@ -186,7 +186,7 @@ export default async function SubredditPage({
           </Suspense>
         </ErrorBoundary>
 
-        <ErrorBoundary title="Failed to load posts">
+        <ErrorBoundary>
           <Suspense fallback={<TabsSkeleton />}>
             <SubredditPosts
               subreddit={subreddit}

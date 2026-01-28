@@ -108,7 +108,7 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
           {feedTitle}
         </Title>
 
-        <ErrorBoundary title="Failed to load posts">
+        <ErrorBoundary>
           <Suspense fallback={<TabsSkeleton />}>
             <PostsContent
               feedType={feedType}

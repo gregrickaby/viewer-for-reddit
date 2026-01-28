@@ -30,6 +30,9 @@ import {retryWithBackoff} from '@/lib/utils/retry'
 import {revalidatePath} from 'next/cache'
 import {headers} from 'next/headers'
 
+const GENERIC_SERVER_ERROR = 'Something went wrong.'
+const GENERIC_ACTION_ERROR = 'Something went wrong. Please try again.'
+
 /**
  * Capture incoming request metadata for debugging.
  * Helps identify which clients (e.g., Googlebot) are hitting rate limits.
@@ -47,17 +50,15 @@ async function getRequestMetadata() {
 }
 
 /**
- * Handles Reddit API error responses with specific error messages.
+ * Handles Reddit API error responses with generic errors.
  *
  * @param response - Fetch response
  * @param url - Request URL
- * @param isAuthenticated - Whether user is authenticated
- * @throws Error with specific message based on status code
+ * @throws Error with a generic message
  */
 async function handleFetchPostsError(
   response: Response,
-  url: URL,
-  isAuthenticated: boolean
+  url: URL
 ): Promise<never> {
   const errorBody = await response.text()
 
@@ -77,7 +78,6 @@ async function handleFetchPostsError(
     method: 'GET',
     status: response.status,
     statusText: response.statusText,
-    isAuthenticated,
     errorBody,
     rateLimitHeaders,
     redditUserAgent: getEnvVar('USER_AGENT'),
@@ -88,32 +88,7 @@ async function handleFetchPostsError(
     forceProduction: true // Force this error to be logged even in environments where logging might otherwise be suppressed
   })
 
-  if (response.status === 401) {
-    throw new Error('Authentication expired')
-  }
-  if (response.status === 403) {
-    throw new Error('Access forbidden')
-  }
-  if (response.status === 404) {
-    throw new Error('Subreddit not found')
-  }
-  if (response.status === 429) {
-    const resetTime = rateLimitHeaders.reset
-      ? new Date(
-          Number.parseInt(rateLimitHeaders.reset, 10) * 1000
-        ).toISOString()
-      : 'unknown'
-    const retryAfter = rateLimitHeaders.retryAfter || 'unknown'
-    const retryAfterDisplay =
-      retryAfter === 'unknown' ? retryAfter : `${retryAfter}s`
-
-    const message = isAuthenticated
-      ? `Rate limit exceeded (reset: ${resetTime}, retry after: ${retryAfterDisplay})`
-      : `Rate limit exceeded. Log in to continue viewing the site. (reset: ${resetTime}, retry after: ${retryAfterDisplay})`
-
-    throw new Error(message)
-  }
-  throw new Error(`Reddit API error: ${response.statusText}`)
+  throw new Error(GENERIC_SERVER_ERROR)
 }
 
 /**
@@ -199,11 +174,7 @@ async function getHeaders(useAuth: boolean = false) {
  * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  * @returns Promise resolving to posts array and next page cursor
  *
- * @throws {Error} Various Reddit API errors:
- * - 'Authentication expired' (401)
- * - 'Access forbidden' (403)
- * - 'Subreddit not found' (404)
- * - 'Rate limit exceeded' (429)
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -247,7 +218,7 @@ export async function fetchPosts(
     })
 
     if (!response.ok) {
-      await handleFetchPostsError(response, url, isAuthenticated)
+      await handleFetchPostsError(response, url)
     }
 
     // Use codegen type for API response, then transform to simplified type
@@ -282,9 +253,7 @@ export async function fetchPosts(
  * @param sort - Comment sort option (best, top, new, controversial, old, qa)
  * @returns Promise resolving to post and comments array
  *
- * @throws {Error} Reddit API errors:
- * - 'Post not found' (404)
- * - Generic API errors
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -323,10 +292,7 @@ export async function fetchPost(
         subreddit
       })
 
-      if (response.status === 404) {
-        throw new Error('Post not found')
-      }
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const [postData, commentsData] = await response.json()
@@ -364,9 +330,7 @@ export async function fetchPost(
  * @param subreddit - Subreddit name
  * @returns Promise resolving to subreddit metadata
  *
- * @throws {Error} Reddit API errors:
- * - 'Subreddit not found' (404)
- * - Generic API errors
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -404,10 +368,7 @@ export async function fetchSubredditInfo(
         subreddit
       })
 
-      if (response.status === 404) {
-        throw new Error('Subreddit not found')
-      }
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const data: ApiSubredditAboutResponse = await response.json()
@@ -524,10 +485,7 @@ export async function fetchUserSubscriptions(): Promise<
  * @param direction - Vote direction: 1 (upvote), 0 (remove vote), -1 (downvote)
  * @returns Promise resolving to success status and optional error message
  *
- * @throws {Error} Reddit API errors:
- * - 'Session expired' (401)
- * - 'Rate limit exceeded' (429)
- * - Generic vote failures
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -547,7 +505,7 @@ export async function votePost(
   try {
     const session = await getSession()
     if (!session.accessToken) {
-      return {success: false, error: 'Not authenticated'}
+      return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     await retryWithBackoff(async () => {
@@ -578,15 +536,7 @@ export async function votePost(
           direction
         })
 
-        if (res.status === 401) {
-          throw new Error('Session expired')
-        }
-        if (res.status === 429) {
-          throw new Error(
-            'Rate limit exceeded. Log in to continue viewing the site.'
-          )
-        }
-        throw new Error(`Vote failed: ${res.statusText}`)
+        throw new Error(GENERIC_ACTION_ERROR)
       }
 
       return res
@@ -597,8 +547,7 @@ export async function votePost(
     return {success: true}
   } catch (error) {
     logger.error('Error voting', error, {context: 'votePost'})
-    const errorMessage = error instanceof Error ? error.message : 'Error voting'
-    return {success: false, error: errorMessage}
+    return {success: false, error: GENERIC_ACTION_ERROR}
   }
 }
 
@@ -611,10 +560,7 @@ export async function votePost(
  * @param save - True to save, false to unsave
  * @returns Promise resolving to success status and optional error message
  *
- * @throws {Error} Reddit API errors:
- * - 'Session expired' (401)
- * - 'Rate limit exceeded' (429)
- * - Generic save failures
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -630,7 +576,7 @@ export async function savePost(
   try {
     const session = await getSession()
     if (!session.accessToken) {
-      return {success: false, error: 'Not authenticated'}
+      return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const endpoint = save ? 'save' : 'unsave'
@@ -661,15 +607,7 @@ export async function savePost(
           action: save ? 'save' : 'unsave'
         })
 
-        if (res.status === 401) {
-          throw new Error('Session expired')
-        }
-        if (res.status === 429) {
-          throw new Error(
-            'Rate limit exceeded. Log in to continue viewing the site.'
-          )
-        }
-        throw new Error(`Save failed: ${res.statusText}`)
+        throw new Error(GENERIC_ACTION_ERROR)
       }
 
       return res
@@ -685,8 +623,7 @@ export async function savePost(
     return {success: true}
   } catch (error) {
     logger.error('Error saving', error, {context: 'savePost'})
-    const errorMessage = error instanceof Error ? error.message : 'Error saving'
-    return {success: false, error: errorMessage}
+    return {success: false, error: GENERIC_ACTION_ERROR}
   }
 }
 
@@ -775,10 +712,7 @@ export async function fetchMultireddits(): Promise<
  * @param username - Reddit username (without 'u/' prefix)
  * @returns Promise resolving to user profile data
  *
- * @throws {Error} Reddit API errors:
- * - 'User not found' (404)
- * - 'Invalid user data received from API'
- * - Generic API errors
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -813,15 +747,12 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
         username
       })
 
-      if (response.status === 404) {
-        throw new Error('User not found')
-      }
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const data: ApiUserProfileResponse = await response.json()
     if (!data.data) {
-      throw new Error('Invalid user data received from API')
+      throw new Error(GENERIC_SERVER_ERROR)
     }
     const userData = data.data as RedditUser
 
@@ -880,9 +811,7 @@ export async function getCurrentUserAvatar(): Promise<string | null> {
  * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  * @returns Promise resolving to posts array and next page cursor
  *
- * @throws {Error} Reddit API errors:
- * - 'User not found' (404)
- * - Generic API errors
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -939,10 +868,7 @@ export async function fetchUserPosts(
         sort
       })
 
-      if (response.status === 404) {
-        throw new Error('User not found')
-      }
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const data: ApiSubredditPostsResponse = await response.json()
@@ -980,8 +906,7 @@ export async function fetchUserPosts(
  * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  * @returns Promise resolving to comments array and next page cursor
  *
- * @throws {Error} User not found (404)
- * @throws {Error} Generic Reddit API errors
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -1035,10 +960,7 @@ export async function fetchUserComments(
         sort
       })
 
-      if (response.status === 404) {
-        throw new Error('User not found')
-      }
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const data: ApiSubredditPostsResponse = await response.json()
@@ -1074,7 +996,7 @@ export async function fetchUserComments(
  * @param after - Pagination cursor for next page
  * @returns Promise resolving to posts array and next page cursor
  *
- * @throws {Error} Generic Reddit API errors
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -1120,7 +1042,7 @@ export async function searchReddit(
         query
       })
 
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const data: ApiSubredditPostsResponse = await response.json()
@@ -1203,14 +1125,7 @@ export async function searchSubreddits(query: string): Promise<{
         query
       })
 
-      if (response.status === 429) {
-        const message = isAuthenticated
-          ? 'Rate limit exceeded'
-          : 'Rate limit exceeded. Please log in to continue.'
-        return {success: false, data: [], error: message}
-      }
-
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const data: {
@@ -1253,9 +1168,7 @@ export async function searchSubreddits(query: string): Promise<{
     logger.error('Error searching subreddits', error, {
       context: 'searchSubreddits'
     })
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to search subreddits'
-    return {success: false, data: [], error: errorMessage}
+    return {success: false, data: [], error: GENERIC_ACTION_ERROR}
   }
 }
 
@@ -1267,9 +1180,7 @@ export async function searchSubreddits(query: string): Promise<{
  * @param action - 'sub' to subscribe, 'unsub' to unsubscribe
  * @returns Promise resolving to success status and optional error message
  *
- * @throws {Error} Authentication errors:
- * - 'Authentication required' if not logged in
- * - Reddit API errors
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -1289,7 +1200,7 @@ export async function toggleSubscription(
     const session = await getSession()
 
     if (!session.accessToken) {
-      return {success: false, error: 'Authentication required'}
+      return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     logger.debug('Toggling subscription', {
@@ -1326,16 +1237,7 @@ export async function toggleSubscription(
         action
       })
 
-      if (response.status === 401) {
-        return {success: false, error: 'Authentication expired'}
-      }
-      if (response.status === 429) {
-        return {
-          success: false,
-          error: 'Rate limit exceeded. Log in to continue viewing the site.'
-        }
-      }
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_ACTION_ERROR)
     }
 
     logger.debug('Subscription toggled successfully', {
@@ -1350,9 +1252,7 @@ export async function toggleSubscription(
       subreddit: subredditName,
       action
     })
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to toggle subscription'
-    return {success: false, error: errorMessage}
+    return {success: false, error: GENERIC_ACTION_ERROR}
   }
 }
 
@@ -1366,10 +1266,7 @@ export async function toggleSubscription(
  * @param after - Pagination cursor for next page
  * @returns Promise resolving to items array and next page cursor
  *
- * @throws {Error} Various Reddit API errors:
- * - 'Authentication required' (401)
- * - 'User not found' (404)
- * - 'Rate limit exceeded' (429)
+ * @throws {Error} Generic Reddit API error
  *
  * @example
  * ```typescript
@@ -1385,7 +1282,7 @@ export async function fetchSavedItems(
   try {
     const session = await getSession()
     if (!session.accessToken) {
-      throw new Error('Authentication required')
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const headers = await getHeaders(true)
@@ -1426,18 +1323,7 @@ export async function fetchSavedItems(
         after
       })
 
-      if (response.status === 401) {
-        throw new Error('Authentication required')
-      }
-      if (response.status === 404) {
-        throw new Error('User not found')
-      }
-      if (response.status === 429) {
-        throw new Error(
-          'Rate limit exceeded. Log in to continue viewing the site.'
-        )
-      }
-      throw new Error(`Reddit API error: ${response.statusText}`)
+      throw new Error(GENERIC_SERVER_ERROR)
     }
 
     const data: ApiSubredditPostsResponse = await response.json()

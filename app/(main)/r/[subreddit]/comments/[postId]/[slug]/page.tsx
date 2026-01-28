@@ -116,7 +116,7 @@ export default async function PostPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary title="Failed to load post">
+        <ErrorBoundary>
           <Suspense fallback={<PostSkeleton />}>
             <PostDetail subreddit={subreddit} postId={postId} />
           </Suspense>
@@ -126,7 +126,7 @@ export default async function PostPage({
           <Title order={3} mb="lg">
             Comments
           </Title>
-          <ErrorBoundary title="Failed to load comments">
+          <ErrorBoundary>
             <Suspense fallback={<CommentListSkeleton />}>
               <CommentList
                 subreddit={subreddit}

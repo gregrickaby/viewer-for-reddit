@@ -153,7 +153,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchPosts('nonexistent', 'hot')).rejects.toThrow(
-        'Subreddit not found'
+        'Something went wrong.'
       )
     })
 
@@ -165,7 +165,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchPosts('popular', 'hot')).rejects.toThrow(
-        'Rate limit exceeded. Log in to continue viewing the site.'
+        'Something went wrong.'
       )
     })
 
@@ -347,7 +347,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchPost('AskReddit', 'missing', 'best')).rejects.toThrow(
-        'Post not found'
+        'Something went wrong.'
       )
     })
   })
@@ -379,7 +379,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchSubredditInfo('nonexistent')).rejects.toThrow(
-        'Subreddit not found'
+        'Something went wrong.'
       )
     })
   })
@@ -497,7 +497,7 @@ describe('reddit server actions', () => {
       const result = await votePost('t3_test123', 1)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Not authenticated')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
     it('votes successfully when authenticated', async () => {
@@ -530,7 +530,7 @@ describe('reddit server actions', () => {
       const result = await votePost('t3_test123', 1)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Session expired')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
   })
 
@@ -539,7 +539,7 @@ describe('reddit server actions', () => {
       const result = await savePost('t3_test123', true)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Not authenticated')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
     it('saves post when authenticated', async () => {
@@ -629,7 +629,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchUserInfo('nonexistent')).rejects.toThrow(
-        'User not found'
+        'Something went wrong.'
       )
     })
   })
@@ -777,7 +777,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchUserPosts('nonexistent')).rejects.toThrow(
-        'User not found'
+        'Something went wrong.'
       )
     })
   })
@@ -833,7 +833,9 @@ describe('reddit server actions', () => {
         })
       )
 
-      await expect(searchReddit('test')).rejects.toThrow('Reddit API error')
+      await expect(searchReddit('test')).rejects.toThrow(
+        'Something went wrong.'
+      )
     })
   })
 
@@ -904,7 +906,7 @@ describe('reddit server actions', () => {
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBeDefined()
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
     it('handles 429 rate limit for non-authenticated users with login prompt', async () => {
@@ -922,9 +924,7 @@ describe('reddit server actions', () => {
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe(
-        'Rate limit exceeded. Please log in to continue.'
-      )
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
     it('handles 429 rate limit for authenticated users', async () => {
@@ -947,7 +947,7 @@ describe('reddit server actions', () => {
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Rate limit exceeded')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
   })
 
@@ -956,7 +956,7 @@ describe('reddit server actions', () => {
       const result = await toggleSubscription('programming', 'sub')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Authentication required')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
     it('subscribes to subreddit when authenticated', async () => {
@@ -992,16 +992,14 @@ describe('reddit server actions', () => {
       const result = await toggleSubscription('programming', 'sub')
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain(
-        'Rate limit exceeded. Log in to continue viewing the site.'
-      )
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
   })
 
   describe('fetchSavedItems', () => {
     it('requires authentication', async () => {
       await expect(fetchSavedItems('testuser')).rejects.toThrow(
-        'Authentication required'
+        'Something went wrong.'
       )
     })
 
@@ -1125,7 +1123,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchSavedItems('nonexistent')).rejects.toThrow(
-        'User not found'
+        'Something went wrong.'
       )
     })
 

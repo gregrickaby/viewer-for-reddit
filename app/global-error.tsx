@@ -1,19 +1,11 @@
 'use client'
 
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
-import {logout} from '@/lib/actions/auth'
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {logger} from '@/lib/utils/logger'
-import {
-  Button,
-  Card,
-  ColorSchemeScript,
-  Group,
-  Stack,
-  Text
-} from '@mantine/core'
+import {Card, Center, ColorSchemeScript, Stack} from '@mantine/core'
 import '@mantine/core/styles.css'
-import {IconAlertTriangle, IconHome, IconRefresh} from '@tabler/icons-react'
-import {useEffect, useTransition} from 'react'
+import {useEffect} from 'react'
 
 /**
  * Props for GlobalError component.
@@ -56,30 +48,7 @@ interface GlobalErrorProps {
  * // No manual usage required
  * ```
  */
-/**
- * Check if error is an authentication error based on message patterns.
- */
-function isAuthError(error: Error): boolean {
-  const message = error.message.toLowerCase()
-  const authPatterns = [
-    'authentication',
-    'auth',
-    'token',
-    'expired',
-    '401',
-    'unauthorized',
-    'session'
-  ]
-  return authPatterns.some((pattern) => message.includes(pattern))
-}
-
-export default function GlobalError({
-  error,
-  reset
-}: Readonly<GlobalErrorProps>) {
-  const [isPending, startTransition] = useTransition()
-  const isAuth = isAuthError(error)
-
+export default function GlobalError({error}: Readonly<GlobalErrorProps>) {
   /**
    * Log error to console and error reporting service on mount.
    * Runs only once when component mounts.
@@ -93,20 +62,6 @@ export default function GlobalError({
     })
   }, [error])
 
-  /**
-   * Handle navigation home, clearing session first if auth error.
-   */
-  const handleGoHome = () => {
-    if (isPending) return
-
-    startTransition(async () => {
-      if (isAuth) {
-        await logout()
-      }
-      window.location.href = '/'
-    })
-  }
-
   return (
     <html lang="en">
       <head>
@@ -115,70 +70,13 @@ export default function GlobalError({
       </head>
       <body>
         <ThemeProvider>
-          <main
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '100vh',
-              padding: '1rem'
-            }}
-          >
-            <Card
-              shadow="sm"
-              padding="xl"
-              radius="md"
-              withBorder
-              style={{maxWidth: '600px', width: '100%'}}
-            >
+          <Center component="main" mih="100vh" p="md">
+            <Card w="100%" maw={600} padding="xl" radius="md" withBorder>
               <Stack align="center" gap="md">
-                <IconAlertTriangle
-                  size={48}
-                  color="var(--mantine-color-red-6)"
-                  aria-hidden="true"
-                />
-
-                <Text size="xl" fw={700} ta="center">
-                  Something Went Wrong
-                </Text>
-
-                <Text size="sm" c="dimmed" ta="center">
-                  {isAuth
-                    ? 'Your session may have expired. Please log in again to continue.'
-                    : "An unexpected error occurred. This has been logged and we'll look into it. If you're stuck, please try clearing your browser cache and cookies."}
-                </Text>
-
-                {error.digest && (
-                  <Text size="xs" c="dimmed" ff="monospace" ta="center">
-                    Error ID: {error.digest}
-                  </Text>
-                )}
-
-                <Group justify="center" gap="md">
-                  {!isAuth && (
-                    <Button
-                      onClick={reset}
-                      variant="filled"
-                      leftSection={<IconRefresh size={16} />}
-                      aria-label="Try again by reloading the page"
-                    >
-                      Try Again
-                    </Button>
-                  )}
-
-                  <Button
-                    onClick={handleGoHome}
-                    variant={isAuth ? 'filled' : 'outline'}
-                    leftSection={<IconHome size={16} />}
-                    aria-label="Return to home page"
-                    disabled={isPending}
-                  >
-                    {isAuth ? 'Clear Session & Go Home' : 'Go Home'}
-                  </Button>
-                </Group>
+                <ErrorDisplay />
               </Stack>
             </Card>
-          </main>
+          </Center>
         </ThemeProvider>
       </body>
     </html>

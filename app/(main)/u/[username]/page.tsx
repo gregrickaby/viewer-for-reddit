@@ -285,7 +285,7 @@ export default async function UserPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary title="Failed to load profile">
+        <ErrorBoundary>
           <Suspense fallback={<PostSkeleton />}>
             <UserProfile username={username} />
           </Suspense>
@@ -295,7 +295,7 @@ export default async function UserPage({
           username={username}
           activeTab={activeTab}
           postsContent={
-            <ErrorBoundary title="Failed to load posts">
+            <ErrorBoundary>
               <Suspense fallback={<TabsSkeleton />}>
                 <UserPosts
                   username={username}
@@ -307,7 +307,7 @@ export default async function UserPage({
             </ErrorBoundary>
           }
           commentsContent={
-            <ErrorBoundary title="Failed to load comments">
+            <ErrorBoundary>
               <Suspense fallback={<CommentSkeleton />}>
                 <UserComments
                   username={username}

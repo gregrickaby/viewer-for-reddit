@@ -119,7 +119,7 @@ export default async function MultiredditPage({
         {multiname}
       </Title>
 
-      <ErrorBoundary title="Failed to load multireddit">
+      <ErrorBoundary>
         <Suspense fallback={<TabsSkeleton />}>
           <MultiredditPosts
             username={username}

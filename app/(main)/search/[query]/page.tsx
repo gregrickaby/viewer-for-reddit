@@ -82,7 +82,7 @@ export default async function SearchPage({params}: Readonly<PageProps>) {
     <Container size="lg">
       <Stack gap="xl" maw={800}>
         <Title order={2}>Search results for: {decodedQuery}</Title>
-        <ErrorBoundary title="Failed to load search results">
+        <ErrorBoundary>
           <Suspense fallback={<PostSkeleton />}>
             <SearchResults query={query} isAuthenticated={isAuthenticated} />
           </Suspense>

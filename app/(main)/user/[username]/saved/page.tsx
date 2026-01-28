@@ -85,7 +85,7 @@ export default async function SavedItemsPage({params}: Readonly<PageProps>) {
         <Title order={2} mb="md">
           Saved
         </Title>
-        <ErrorBoundary title="Failed to load saved items">
+        <ErrorBoundary>
           <Suspense fallback={<PostSkeleton />}>
             <SavedItemsList
               initialItems={items}
