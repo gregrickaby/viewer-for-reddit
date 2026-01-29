@@ -49,16 +49,10 @@ interface GlobalErrorProps {
  * ```
  */
 export default function GlobalError({error}: Readonly<GlobalErrorProps>) {
-  /**
-   * Log error to console and error reporting service on mount.
-   * Runs only once when component mounts.
-   */
   useEffect(() => {
     logger.error('Global error boundary caught error', error, {
       context: 'GlobalError',
-      digest: error.digest,
-      message: error.message,
-      stack: error.stack
+      digest: error.digest
     })
   }, [error])
 

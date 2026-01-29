@@ -24,6 +24,12 @@ import {
   TEN_MINUTES
 } from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
+import {
+  AuthenticationError,
+  NotFoundError,
+  RateLimitError,
+  RedditAPIError
+} from '@/lib/utils/errors'
 import {logger} from '@/lib/utils/logger'
 import {buildFeedUrlPath} from '@/lib/utils/reddit-helpers'
 import {retryWithBackoff} from '@/lib/utils/retry'
@@ -50,15 +56,19 @@ async function getRequestMetadata() {
 }
 
 /**
- * Handles Reddit API error responses with generic errors.
+ * Handles Reddit API error responses with enhanced error context.
  *
  * @param response - Fetch response
  * @param url - Request URL
- * @throws Error with a generic message
+ * @param operation - Operation being performed (e.g., 'fetchPosts', 'fetchPost')
+ * @param resource - Resource being accessed (e.g., subreddit name, post ID)
+ * @throws AppError with operation context
  */
 async function handleFetchPostsError(
   response: Response,
-  url: URL
+  url: URL,
+  operation: string,
+  resource: string
 ): Promise<never> {
   const errorBody = await response.text()
 
@@ -73,7 +83,7 @@ async function handleFetchPostsError(
   // Capture incoming request metadata to identify crawlers
   const requestMetadata = await getRequestMetadata()
 
-  logger.httpError('Reddit API request failed', {
+  const errorContext = {
     url: url.toString(),
     method: 'GET',
     status: response.status,
@@ -84,11 +94,47 @@ async function handleFetchPostsError(
     clientUserAgent: requestMetadata.clientUserAgent,
     clientIp: requestMetadata.clientIp,
     referer: requestMetadata.referer,
-    context: 'fetchPosts',
-    forceProduction: true // Force this error to be logged even in environments where logging might otherwise be suppressed
-  })
+    context: operation,
+    resource,
+    forceProduction: true
+  }
 
-  throw new Error(GENERIC_SERVER_ERROR)
+  logger.httpError(`Reddit API ${operation} failed`, errorContext)
+
+  // Throw specific error types based on status code
+  const retryAfter = response.headers.get('retry-after')
+  const retryAfterSeconds = retryAfter
+    ? Number.parseInt(retryAfter, 10)
+    : undefined
+
+  switch (response.status) {
+    case 401:
+    case 403:
+      throw new AuthenticationError(GENERIC_SERVER_ERROR, operation, {
+        resource,
+        statusCode: response.status
+      })
+    case 404:
+      throw new NotFoundError(GENERIC_SERVER_ERROR, operation, resource, {
+        statusCode: response.status
+      })
+    case 429:
+      throw new RateLimitError(
+        GENERIC_SERVER_ERROR,
+        operation,
+        retryAfterSeconds,
+        {resource, statusCode: response.status}
+      )
+    default:
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        operation,
+        url.toString(),
+        'GET',
+        {resource},
+        response.status
+      )
+  }
 }
 
 /**
@@ -119,7 +165,28 @@ async function getAppAccessToken(): Promise<string> {
   })
 
   if (!response.ok) {
-    throw new Error(`Failed to get app token: ${response.statusText}`)
+    // Log detailed error context
+    logger.httpError(
+      'Failed to get application access token',
+      {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      },
+      {
+        context: 'getAppAccessToken',
+        operation: 'getAppAccessToken',
+        endpoint: '/api/v1/access_token',
+        method: 'POST',
+        grantType: 'client_credentials'
+      }
+    )
+
+    throw new AuthenticationError(
+      `Failed to get app token: ${response.statusText}`,
+      'getAppAccessToken',
+      {endpoint: '/api/v1/access_token', grantType: 'client_credentials'}
+    )
   }
 
   const data = await response.json()
@@ -218,7 +285,7 @@ export async function fetchPosts(
     })
 
     if (!response.ok) {
-      await handleFetchPostsError(response, url)
+      await handleFetchPostsError(response, url, 'fetchPosts', subreddit)
     }
 
     // Use codegen type for API response, then transform to simplified type
@@ -280,6 +347,8 @@ export async function fetchPost(
 
     if (!response.ok) {
       const errorBody = await response.text()
+      const requestMetadata = await getRequestMetadata()
+
       logger.httpError('Failed to fetch post', {
         url,
         method: 'GET',
@@ -289,10 +358,19 @@ export async function fetchPost(
         errorBody,
         context: 'fetchPost',
         postId,
-        subreddit
+        subreddit,
+        ...requestMetadata,
+        forceProduction: true
       })
 
-      throw new Error(GENERIC_SERVER_ERROR)
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'fetchPost',
+        url,
+        'GET',
+        {subreddit, postId},
+        response.status
+      )
     }
 
     const [postData, commentsData] = await response.json()
@@ -357,6 +435,8 @@ export async function fetchSubredditInfo(
 
     if (!response.ok) {
       const errorBody = await response.text()
+      const requestMetadata = await getRequestMetadata()
+
       logger.httpError('Failed to fetch subreddit info', {
         url: url.toString(),
         method: 'GET',
@@ -365,10 +445,19 @@ export async function fetchSubredditInfo(
         isAuthenticated,
         errorBody,
         context: 'fetchSubredditInfo',
-        subreddit
+        subreddit,
+        ...requestMetadata,
+        forceProduction: true
       })
 
-      throw new Error(GENERIC_SERVER_ERROR)
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'fetchSubredditInfo',
+        url.toString(),
+        'GET',
+        {subreddit},
+        response.status
+      )
     }
 
     const data: ApiSubredditAboutResponse = await response.json()
@@ -736,6 +825,8 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
 
     if (!response.ok) {
       const errorBody = await response.text()
+      const requestMetadata = await getRequestMetadata()
+
       logger.httpError('Failed to fetch user info', {
         url,
         method: 'GET',
@@ -744,15 +835,38 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
         isAuthenticated,
         errorBody,
         context: 'fetchUserInfo',
-        username
+        username,
+        ...requestMetadata,
+        forceProduction: true
       })
 
-      throw new Error(GENERIC_SERVER_ERROR)
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'fetchUserInfo',
+        url,
+        'GET',
+        {username},
+        response.status
+      )
     }
 
     const data: ApiUserProfileResponse = await response.json()
     if (!data.data) {
-      throw new Error(GENERIC_SERVER_ERROR)
+      logger.error(
+        'Invalid user data response',
+        {data},
+        {
+          context: 'fetchUserInfo',
+          username
+        }
+      )
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'fetchUserInfo',
+        url,
+        'GET',
+        {username, reason: 'invalid_response'}
+      )
     }
     const userData = data.data as RedditUser
 
@@ -856,6 +970,8 @@ export async function fetchUserPosts(
 
     if (!response.ok) {
       const errorBody = await response.text()
+      const requestMetadata = await getRequestMetadata()
+
       logger.httpError('Failed to fetch user posts', {
         url: url.toString(),
         method: 'GET',
@@ -865,10 +981,19 @@ export async function fetchUserPosts(
         errorBody,
         context: 'fetchUserPosts',
         username,
-        sort
+        sort,
+        ...requestMetadata,
+        forceProduction: true
       })
 
-      throw new Error(GENERIC_SERVER_ERROR)
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'fetchUserPosts',
+        url.toString(),
+        'GET',
+        {username, sort},
+        response.status
+      )
     }
 
     const data: ApiSubredditPostsResponse = await response.json()
@@ -948,6 +1073,8 @@ export async function fetchUserComments(
 
     if (!response.ok) {
       const errorBody = await response.text()
+      const requestMetadata = await getRequestMetadata()
+
       logger.httpError('Failed to fetch user comments', {
         url: url.toString(),
         method: 'GET',
@@ -957,10 +1084,19 @@ export async function fetchUserComments(
         errorBody,
         context: 'fetchUserComments',
         username,
-        sort
+        sort,
+        ...requestMetadata,
+        forceProduction: true
       })
 
-      throw new Error(GENERIC_SERVER_ERROR)
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'fetchUserComments',
+        url.toString(),
+        'GET',
+        {username, sort},
+        response.status
+      )
     }
 
     const data: ApiSubredditPostsResponse = await response.json()
@@ -1031,6 +1167,8 @@ export async function searchReddit(
 
     if (!response.ok) {
       const errorBody = await response.text()
+      const requestMetadata = await getRequestMetadata()
+
       logger.httpError('Search request failed', {
         url: url.toString(),
         method: 'GET',
@@ -1039,10 +1177,19 @@ export async function searchReddit(
         isAuthenticated,
         errorBody,
         context: 'searchReddit',
-        query
+        query,
+        ...requestMetadata,
+        forceProduction: true
       })
 
-      throw new Error(GENERIC_SERVER_ERROR)
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'searchReddit',
+        url.toString(),
+        'GET',
+        {query},
+        response.status
+      )
     }
 
     const data: ApiSubredditPostsResponse = await response.json()
