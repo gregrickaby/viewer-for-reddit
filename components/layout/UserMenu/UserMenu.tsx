@@ -2,7 +2,7 @@
 import {logout} from '@/lib/actions/auth'
 import {logger} from '@/lib/utils/logger'
 import {Anchor, Avatar, Button, Group} from '@mantine/core'
-import {IconLogout} from '@tabler/icons-react'
+import {IconBrandReddit, IconLogout} from '@tabler/icons-react'
 import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 import {useState, useTransition} from 'react'
@@ -117,13 +117,14 @@ export function UserMenu({
 
   return (
     <Button
+      aria-label="Sign in with Reddit"
       component="a"
-      href="/api/auth/login"
-      aria-label="Login with Reddit"
-      size="sm"
       data-umami-event="login-button"
+      href="/api/auth/login"
+      leftSection={<IconBrandReddit size={16} />}
+      size="sm"
     >
-      Login
+      Sign in with Reddit
     </Button>
   )
 }

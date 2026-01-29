@@ -111,7 +111,7 @@ describe('UserMenu', () => {
       render(<UserMenu isAuthenticated={false} />)
 
       const loginButton = screen.getByRole('link', {
-        name: 'Login with Reddit'
+        name: 'Sign in with Reddit'
       })
       expect(loginButton).toBeInTheDocument()
     })
@@ -120,7 +120,7 @@ describe('UserMenu', () => {
       render(<UserMenu isAuthenticated={false} />)
 
       const loginButton = screen.getByRole('link', {
-        name: 'Login with Reddit'
+        name: 'Sign in with Reddit'
       })
       expect(loginButton).toHaveAttribute('href', '/api/auth/login')
     })
@@ -233,7 +233,7 @@ describe('UserMenu', () => {
       render(<UserMenu isAuthenticated={false} />)
 
       const loginButton = screen.getByRole('link', {
-        name: 'Login with Reddit'
+        name: 'Sign in with Reddit'
       })
       expect(loginButton).toHaveAttribute('data-umami-event', 'login-button')
     })
@@ -244,7 +244,7 @@ describe('UserMenu', () => {
       render(<UserMenu />)
 
       const loginButton = screen.getByRole('link', {
-        name: 'Login with Reddit'
+        name: 'Sign in with Reddit'
       })
       expect(loginButton).toBeInTheDocument()
     })

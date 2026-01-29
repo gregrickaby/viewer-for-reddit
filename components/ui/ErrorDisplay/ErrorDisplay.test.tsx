@@ -15,7 +15,7 @@ describe('ErrorDisplay', () => {
     expect(list).toBeInTheDocument()
 
     // Verify login button appears for unauthenticated
-    const loginButton = screen.getByRole('link', {name: /log in with reddit/i})
+    const loginButton = screen.getByRole('link', {name: /sign in with reddit/i})
     expect(loginButton).toBeInTheDocument()
     expect(loginButton).toHaveAttribute('href', '/api/auth/login')
   })
@@ -23,7 +23,7 @@ describe('ErrorDisplay', () => {
   it('shows login button when user is not authenticated', () => {
     render(<ErrorDisplay isAuthenticated={false} />)
 
-    const loginButton = screen.getByRole('link', {name: /log in with reddit/i})
+    const loginButton = screen.getByRole('link', {name: /sign in with reddit/i})
     expect(loginButton).toBeInTheDocument()
     expect(loginButton).toHaveAttribute('href', '/api/auth/login')
   })
@@ -38,7 +38,7 @@ describe('ErrorDisplay', () => {
 
     // Login button should NOT appear
     expect(
-      screen.queryByRole('link', {name: /log in with reddit/i})
+      screen.queryByRole('link', {name: /sign in with reddit/i})
     ).not.toBeInTheDocument()
   })
 })

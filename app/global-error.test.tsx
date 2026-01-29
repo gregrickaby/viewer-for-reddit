@@ -34,7 +34,7 @@ describe('GlobalError', () => {
 
     // Verify login button
     expect(
-      screen.getByRole('link', {name: /log in with reddit/i})
+      screen.getByRole('link', {name: /sign in with reddit/i})
     ).toBeInTheDocument()
   })
 
@@ -42,7 +42,7 @@ describe('GlobalError', () => {
     render(<GlobalError error={mockError} reset={mockReset} />)
 
     const loginButton = screen.getByRole('link', {
-      name: /log in with reddit/i
+      name: /sign in with reddit/i
     })
     expect(loginButton.closest('a')).toHaveAttribute('href', '/api/auth/login')
   })

@@ -36,7 +36,7 @@ describe('ErrorBoundary', () => {
 
     // Verify login button (error boundary doesn't pass auth prop)
     expect(
-      screen.getByRole('link', {name: /log in with reddit/i})
+      screen.getByRole('link', {name: /sign in with reddit/i})
     ).toBeInTheDocument()
   })
 })
