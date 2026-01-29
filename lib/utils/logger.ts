@@ -116,32 +116,50 @@ class Logger {
         : false
 
     if (this.shouldLog(forceProduction)) {
-      const log = this.formatStructuredLog('error', message, errorContext, {
-        context: errorContext.context
-      })
+      // Extract application-specific context (non-HTTP, non-client metadata)
+      const {
+        url,
+        method,
+        status,
+        statusText,
+        isAuthenticated,
+        errorBody,
+        rateLimitHeaders,
+        clientUserAgent,
+        clientIp,
+        referer,
+        redditUserAgent,
+        context,
+        forceProduction: _forceProduction, // Exclude internal flags
+        ...appContext
+      } = errorContext
+
+      const log: Record<string, unknown> = {
+        timestamp: new Date().toISOString(),
+        level: 'ERROR',
+        message,
+        context: context || 'unknown',
+        ...appContext // Application-specific fields (postId, subreddit, etc.)
+      }
 
       // Add HTTP-specific context
       log.http = {
-        url: errorContext.url,
-        method: errorContext.method || 'GET',
-        status: errorContext.status,
-        statusText: errorContext.statusText,
-        isAuthenticated: errorContext.isAuthenticated,
-        responseBody: errorContext.errorBody?.substring(0, 1000), // Limit size
-        rateLimitHeaders: errorContext.rateLimitHeaders || null
+        url,
+        method: method || 'GET',
+        status,
+        statusText,
+        isAuthenticated,
+        responseBody: errorBody?.substring(0, 1000), // Limit size
+        rateLimitHeaders: rateLimitHeaders || null
       }
 
       // Add client request details to identify crawlers/bots
-      if (
-        errorContext.clientUserAgent ||
-        errorContext.clientIp ||
-        errorContext.referer
-      ) {
+      if (clientUserAgent || clientIp || referer) {
         log.client = {
-          userAgent: errorContext.clientUserAgent || null,
-          ip: errorContext.clientIp || null,
-          referer: errorContext.referer || null,
-          redditUserAgent: errorContext.redditUserAgent || null
+          userAgent: clientUserAgent || null,
+          ip: clientIp || null,
+          referer: referer || null,
+          redditUserAgent: redditUserAgent || null
         }
       }
 

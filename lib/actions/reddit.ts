@@ -39,6 +39,11 @@ import {headers} from 'next/headers'
 const GENERIC_SERVER_ERROR = 'Something went wrong.'
 const GENERIC_ACTION_ERROR = 'Something went wrong. Please try again.'
 
+// Internal error messages for logging (more specific)
+const RATE_LIMIT_ERROR = 'Rate limit exceeded'
+const AUTH_ERROR = 'Authentication failed'
+const NOT_FOUND_ERROR = 'Resource not found'
+
 /**
  * Capture incoming request metadata for debugging.
  * Helps identify which clients (e.g., Googlebot) are hitting rate limits.
@@ -110,21 +115,22 @@ async function handleFetchPostsError(
   switch (response.status) {
     case 401:
     case 403:
-      throw new AuthenticationError(GENERIC_SERVER_ERROR, operation, {
+      throw new AuthenticationError(AUTH_ERROR, operation, {
         resource,
-        statusCode: response.status
+        statusCode: response.status,
+        userMessage: GENERIC_SERVER_ERROR
       })
     case 404:
-      throw new NotFoundError(GENERIC_SERVER_ERROR, operation, resource, {
-        statusCode: response.status
+      throw new NotFoundError(NOT_FOUND_ERROR, operation, resource, {
+        statusCode: response.status,
+        userMessage: GENERIC_SERVER_ERROR
       })
     case 429:
-      throw new RateLimitError(
-        GENERIC_SERVER_ERROR,
-        operation,
-        retryAfterSeconds,
-        {resource, statusCode: response.status}
-      )
+      throw new RateLimitError(RATE_LIMIT_ERROR, operation, retryAfterSeconds, {
+        resource,
+        statusCode: response.status,
+        userMessage: GENERIC_SERVER_ERROR
+      })
     default:
       throw new RedditAPIError(
         GENERIC_SERVER_ERROR,
