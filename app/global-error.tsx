@@ -3,7 +3,7 @@
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {logger} from '@/lib/utils/logger'
-import {Card, Center, ColorSchemeScript, Stack} from '@mantine/core'
+import {Center, ColorSchemeScript} from '@mantine/core'
 import '@mantine/core/styles.css'
 import {useEffect} from 'react'
 
@@ -71,11 +71,7 @@ export default function GlobalError({error}: Readonly<GlobalErrorProps>) {
       <body>
         <ThemeProvider>
           <Center component="main" mih="100vh" p="md">
-            <Card w="100%" maw={600} padding="xl" radius="md" withBorder>
-              <Stack align="center" gap="md">
-                <ErrorDisplay />
-              </Stack>
-            </Card>
+            <ErrorDisplay />
           </Center>
         </ThemeProvider>
       </body>

@@ -1,6 +1,5 @@
-import {Alert, Button, List, Stack} from '@mantine/core'
+import {Button, Card, Stack, Text} from '@mantine/core'
 import {IconAlertCircle, IconBrandReddit} from '@tabler/icons-react'
-import classes from './ErrorDisplay.module.css'
 
 interface ErrorDisplayProps {
   isAuthenticated?: boolean
@@ -8,36 +7,35 @@ interface ErrorDisplayProps {
 
 export function ErrorDisplay({isAuthenticated}: Readonly<ErrorDisplayProps>) {
   return (
-    <Alert
-      color="red"
-      classNames={{title: classes.title}}
-      icon={<IconAlertCircle size={20} />}
-      title="Something went wrong"
-      variant="outline"
-    >
-      <Stack gap="sm">
-        <List type="ordered" size="sm" spacing="xs" withPadding>
-          <List.Item>Content not found or set to private</List.Item>
-          <List.Item>Server or network issue</List.Item>
-          <List.Item>Reddit rate limits</List.Item>
-        </List>
+    <Card withBorder padding="xl" radius="md" maw={600}>
+      <Stack align="center" gap="md">
+        <IconAlertCircle size={48} color="var(--mantine-color-red-6)" />
+        <Text size="xl" fw={600}>
+          Something went wrong
+        </Text>
+        <Text size="sm" c="dimmed" ta="center">
+          The content was not found or set to private, a server issue occurred,
+          or you've reached Reddit's rate limit.
+        </Text>
+        <Text size="sm" c="dimmed" ta="center">
+          Sign in to remove rate limits or try again later.
+        </Text>
 
         {!isAuthenticated && (
           <Button
             aria-label="Sign in with Reddit"
-            color="blue"
+            color="red"
             component="a"
             data-umami-event="login-button-error-display"
             href="/api/auth/login"
             leftSection={<IconBrandReddit size={16} />}
-            size="sm"
-            variant="light"
-            w="fit-content"
+            maw={200}
+            variant="filled"
           >
             Sign in with Reddit
           </Button>
         )}
       </Stack>
-    </Alert>
+    </Card>
   )
 }
