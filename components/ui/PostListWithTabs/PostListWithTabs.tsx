@@ -18,7 +18,7 @@ import {
   IconTrendingUp
 } from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
-import {startTransition, useTransition} from 'react'
+import {useTransition} from 'react'
 import {PostCard} from '../PostCard/PostCard'
 import styles from '../PostList/PostList.module.css'
 
@@ -84,7 +84,7 @@ export function PostListWithTabs({
   username
 }: Readonly<PostListWithTabsProps>) {
   const router = useRouter()
-  const [isPending] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
   const {posts, hasMore, sentinelRef} = useInfiniteScroll({
     initialPosts,

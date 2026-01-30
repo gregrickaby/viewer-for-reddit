@@ -10,7 +10,7 @@ import {
   IconTrendingUp
 } from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
-import {startTransition, useTransition} from 'react'
+import {useTransition} from 'react'
 import {Comment} from '../Comment/Comment'
 
 /**
@@ -51,7 +51,7 @@ export function CommentListWithTabs({
   isAuthenticated = false
 }: Readonly<CommentListWithTabsProps>) {
   const router = useRouter()
-  const [isPending] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
   const handleSortChange = (sort: string) => {
     if (isPending) return // Prevent race conditions
