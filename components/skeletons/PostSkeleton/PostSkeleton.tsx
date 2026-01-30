@@ -20,7 +20,7 @@ export function PostSkeleton() {
           <Skeleton height={20} width={50} />
         </Group>
         <Skeleton height={12} width="40%" />
-        <Skeleton height={200} />
+        <Skeleton height={700} />
         <Group gap="md">
           <Skeleton height={30} width={80} />
           <Skeleton height={30} width={80} />
