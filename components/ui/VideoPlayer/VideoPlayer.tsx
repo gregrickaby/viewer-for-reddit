@@ -191,13 +191,12 @@ export function VideoPlayer({
         aria-label={`Video: ${title}`}
         className={styles.video}
         controls
-        controlsList="nodownload"
+        height={height}
         playsInline
         poster={poster}
-        preload="metadata"
+        preload="none"
         ref={videoRef}
         width={width}
-        height={height}
       >
         {type === 'mp4' && <source src={src} type="video/mp4" />}
         <track kind="captions" label="English" />
