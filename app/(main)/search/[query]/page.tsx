@@ -1,12 +1,9 @@
-import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostList} from '@/components/ui/PostList/PostList'
 import {searchReddit} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
-import {Suspense} from 'react'
 
 interface PageProps {
   params: Promise<{
@@ -82,11 +79,7 @@ export default async function SearchPage({params}: Readonly<PageProps>) {
     <Container size="lg">
       <Stack gap="xl" maw={800}>
         <Title order={2}>Search results for: {decodedQuery}</Title>
-        <ErrorBoundary>
-          <Suspense fallback={<PostSkeleton />}>
-            <SearchResults query={query} isAuthenticated={isAuthenticated} />
-          </Suspense>
-        </ErrorBoundary>
+        <SearchResults query={query} isAuthenticated={isAuthenticated} />
       </Stack>
     </Container>
   )

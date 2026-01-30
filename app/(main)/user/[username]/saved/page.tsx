@@ -1,12 +1,9 @@
-import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {SavedItemsList} from '@/components/ui/SavedItemsList/SavedItemsList'
 import {fetchSavedItems} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
-import {Suspense} from 'react'
 
 interface PageProps {
   params: Promise<{
@@ -85,16 +82,12 @@ export default async function SavedItemsPage({params}: Readonly<PageProps>) {
         <Title order={2} mb="md">
           Saved
         </Title>
-        <ErrorBoundary>
-          <Suspense fallback={<PostSkeleton />}>
-            <SavedItemsList
-              initialItems={items}
-              username={username}
-              initialAfter={after}
-              isAuthenticated={isAuthenticated}
-            />
-          </Suspense>
-        </ErrorBoundary>
+        <SavedItemsList
+          initialItems={items}
+          username={username}
+          initialAfter={after}
+          isAuthenticated={isAuthenticated}
+        />
       </Container>
     )
   } catch (error) {

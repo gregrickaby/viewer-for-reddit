@@ -1,7 +1,3 @@
-import {CommentSkeleton} from '@/components/skeletons/CommentSkeleton/CommentSkeleton'
-import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {
   fetchUserComments,
@@ -18,7 +14,6 @@ import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
-import {Suspense} from 'react'
 import {UserCommentListWithTabs} from './UserCommentListWithTabs'
 import {UserProfileTabs} from './UserProfileTabs'
 
@@ -285,38 +280,26 @@ export default async function UserPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary>
-          <Suspense fallback={<PostSkeleton />}>
-            <UserProfile username={username} />
-          </Suspense>
-        </ErrorBoundary>
+        <UserProfile username={username} />
 
         <UserProfileTabs
           username={username}
           activeTab={activeTab}
           postsContent={
-            <ErrorBoundary>
-              <Suspense fallback={<TabsSkeleton />}>
-                <UserPosts
-                  username={username}
-                  isAuthenticated={isAuthenticated}
-                  sort={postSort}
-                  timeFilter={timeFilter}
-                />
-              </Suspense>
-            </ErrorBoundary>
+            <UserPosts
+              username={username}
+              isAuthenticated={isAuthenticated}
+              sort={postSort}
+              timeFilter={timeFilter}
+            />
           }
           commentsContent={
-            <ErrorBoundary>
-              <Suspense fallback={<CommentSkeleton />}>
-                <UserComments
-                  username={username}
-                  isAuthenticated={isAuthenticated}
-                  sort={postSort}
-                  timeFilter={timeFilter}
-                />
-              </Suspense>
-            </ErrorBoundary>
+            <UserComments
+              username={username}
+              isAuthenticated={isAuthenticated}
+              sort={postSort}
+              timeFilter={timeFilter}
+            />
           }
         />
       </Stack>

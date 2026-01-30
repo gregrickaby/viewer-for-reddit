@@ -30,7 +30,7 @@ components/
     BossButton/
     Comment/
     CommentListWithTabs/
-    ErrorBoundary/
+    ErrorBoundary/      - Legacy class-based (still used in global-error.tsx)
     ErrorDisplay/
     Gallery/
     PostActions/
@@ -71,20 +71,15 @@ export default async function SubredditPage({params}: PageProps) {
   const {subreddit} = await params // Next.js 16 requirement
   const {posts} = await fetchPosts(subreddit, 'hot')
 
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<PostSkeleton />}>
-        <PostListWithTabs posts={posts} />
-      </Suspense>
-    </ErrorBoundary>
-  )
+  return <PostListWithTabs posts={posts} />
 }
 ```
 
 **Rules:**
 
 - Server Components are async when fetching data
-- Always wrap async components: `<ErrorBoundary><Suspense>`
+- Error boundaries handled by `error.tsx` files (Next.js convention)
+- Loading states handled by `loading.tsx` files (Next.js convention)
 - Direct server action calls allowed
 - No React hooks (useState, useEffect, etc.)
 
@@ -300,16 +295,40 @@ export default async function Page({params}: PageProps) {
 }
 ```
 
-**ErrorBoundary + Suspense (required):**
+**Error boundaries via error.tsx:**
 
 ```typescript
-// ✅ CORRECT - ErrorBoundary outside Suspense
-<ErrorBoundary fallback={<ErrorDisplay />}>
-  <Suspense fallback={<PostSkeleton />}>
-    <AsyncContent />
-  </Suspense>
-</ErrorBoundary>
+// app/(main)/error.tsx
+'use client'
+
+export default function Error({error, reset}: {
+  error: Error & {digest?: string}
+  reset: () => void
+}) {
+  useEffect(() => {
+    logger.error('Route error', error, {digest: error.digest})
+  }, [error])
+
+  return <ErrorDisplay onReset={reset} />
+}
 ```
+
+**Loading states via loading.tsx:**
+
+```typescript
+// app/(main)/loading.tsx
+export default function Loading() {
+  return <TabsSkeleton />
+}
+```
+
+**Benefits:**
+
+- Automatic Suspense boundary wrapping by Next.js
+- Automatic error boundary wrapping by Next.js
+- Cleaner page components (no manual wrapping)
+- Reset functionality via `reset()` callback
+- Scoped to specific route segments
 
 ### Race Condition Prevention
 
@@ -611,6 +630,12 @@ const {id} = params // Error: Promise not destructurable
 // ❌ Missing Readonly on props
 export function Component({data}: ComponentProps) {} // ❌
 
+// ❌ Manual ErrorBoundary in pages (use error.tsx instead)
+<ErrorBoundary><Component /></ErrorBoundary> // ❌
+
+// ❌ Manual Suspense in pages (use loading.tsx instead)
+<Suspense fallback={<Skeleton />}><Component /></Suspense> // ❌
+
 // ❌ NEXT_PUBLIC_ env vars
 NEXT_PUBLIC_REDDIT_CLIENT_ID=xxx // ❌
 
@@ -648,6 +673,19 @@ const {id} = await params
 // ✅ Readonly props
 export function Component({data}: Readonly<ComponentProps>) {}
 
+// ✅ Use error.tsx for error boundaries
+// app/(main)/error.tsx
+'use client'
+export default function Error({error, reset}) {
+  return <ErrorDisplay onReset={reset} />
+}
+
+// ✅ Use loading.tsx for loading states
+// app/(main)/loading.tsx
+export default function Loading() {
+  return <TabsSkeleton />
+}
+
 // ✅ Server-only env vars
 REDDIT_CLIENT_ID=xxx
 
@@ -678,7 +716,8 @@ await fetch(url, {next: {revalidate: FIVE_MINUTES}})
 - [ ] No ENV var access or functions in Client Components
 - [ ] Specific error messages by HTTP status
 - [ ] Check `if (isPending) return` in async handlers
-- [ ] Wrap async components: `<ErrorBoundary><Suspense>`
+- [ ] Use `error.tsx` for route-level error boundaries (not manual `<ErrorBoundary>`)
+- [ ] Use `loading.tsx` for route-level loading states (not manual `<Suspense>`)
 - [ ] Use `Readonly<>` on props
 - [ ] Await params in Next.js 16 pages
 - [ ] Use constants from `lib/utils/constants.ts`

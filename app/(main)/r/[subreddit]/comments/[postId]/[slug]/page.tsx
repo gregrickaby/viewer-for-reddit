@@ -1,7 +1,4 @@
-import {CommentListSkeleton} from '@/components/skeletons/CommentSkeleton/CommentSkeleton'
-import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {fetchPost} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
@@ -10,7 +7,6 @@ import {generatePostMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
-import {Suspense} from 'react'
 
 interface PageProps {
   params: Promise<{
@@ -116,25 +112,17 @@ export default async function PostPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary>
-          <Suspense fallback={<PostSkeleton />}>
-            <PostDetail subreddit={subreddit} postId={postId} />
-          </Suspense>
-        </ErrorBoundary>
+        <PostDetail subreddit={subreddit} postId={postId} />
 
         <div id="comments" style={{scrollMarginTop: '80px'}}>
           <Title order={3} mb="lg">
             Comments
           </Title>
-          <ErrorBoundary>
-            <Suspense fallback={<CommentListSkeleton />}>
-              <CommentList
-                subreddit={subreddit}
-                postId={postId}
-                sort={commentSort}
-              />
-            </Suspense>
-          </ErrorBoundary>
+          <CommentList
+            subreddit={subreddit}
+            postId={postId}
+            sort={commentSort}
+          />
         </div>
       </Stack>
     </Container>

@@ -1,12 +1,9 @@
-import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
-import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
 
@@ -108,16 +105,12 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
           {feedTitle}
         </Title>
 
-        <ErrorBoundary>
-          <Suspense fallback={<TabsSkeleton />}>
-            <PostsContent
-              feedType={feedType}
-              isAuthenticated={isAuthenticated}
-              sort={postSort}
-              timeFilter={timeFilter}
-            />
-          </Suspense>
-        </ErrorBoundary>
+        <PostsContent
+          feedType={feedType}
+          isAuthenticated={isAuthenticated}
+          sort={postSort}
+          timeFilter={timeFilter}
+        />
       </div>
     </Container>
   )

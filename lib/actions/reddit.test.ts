@@ -153,7 +153,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchPosts('nonexistent', 'hot')).rejects.toThrow(
-        'Something went wrong.'
+        'Resource not found'
       )
     })
 
@@ -165,7 +165,7 @@ describe('reddit server actions', () => {
       )
 
       await expect(fetchPosts('popular', 'hot')).rejects.toThrow(
-        'Something went wrong.'
+        'Rate limit exceeded'
       )
     })
 

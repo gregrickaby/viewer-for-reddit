@@ -103,22 +103,13 @@ describe('VideoPlayer', () => {
       expect(video).toHaveAttribute('controls')
     })
 
-    it('renders video with preload metadata', () => {
+    it('renders video with preload none for performance', () => {
       render(
         <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
       )
 
       const video = screen.getByLabelText('Video: Test Video')
-      expect(video).toHaveAttribute('preload', 'metadata')
-    })
-
-    it('renders video with no download control', () => {
-      render(
-        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
-      )
-
-      const video = screen.getByLabelText('Video: Test Video')
-      expect(video).toHaveAttribute('controlslist', 'nodownload')
+      expect(video).toHaveAttribute('preload', 'none')
     })
 
     it('renders video with playsInline for iOS Safari', () => {

@@ -42,7 +42,8 @@ These specialized instructions apply automatically when editing relevant files v
 **Critical Conventions**:
 
 - Arctic OAuth tokens are **methods**: `tokens.accessToken()` NOT `.accessToken` property
-- Always wrap async components: `<ErrorBoundary><Suspense fallback={...}>`
+- Use `error.tsx` for route-level error boundaries (not manual `<ErrorBoundary>` in pages)
+- Use `loading.tsx` for route-level loading states (not manual `<Suspense>` in pages)
 - Prevent race conditions: `if (isPending) return` at start of all async handlers
 - Sanitize user HTML with `sanitize-html` via `sanitizeText()` before rendering
 - Wrap Next.js `<Link>` with Mantine `<Anchor component={Link}>`
@@ -75,7 +76,7 @@ components/
     BossButton/
     Comment/
     CommentListWithTabs/
-    ErrorBoundary/
+    ErrorBoundary/      - Legacy class-based (only used in global-error.tsx)
     ErrorDisplay/
     Gallery/
     PostActions/
@@ -91,6 +92,8 @@ components/
     PostSkeleton/
     SubredditInfoSkeleton/
     TabsSkeleton/
+
+Note: Pages use Next.js 16 file conventions (error.tsx, loading.tsx) instead of manual wrapping.
 ```
 
 ## Always do

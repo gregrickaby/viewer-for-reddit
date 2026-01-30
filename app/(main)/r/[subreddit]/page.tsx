@@ -1,6 +1,3 @@
-import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleton/SubredditInfoSkeleton'
-import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import {ErrorBoundary} from '@/components/ui/ErrorBoundary/ErrorBoundary'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import {fetchPosts, fetchSubredditInfo} from '@/lib/actions/reddit'
@@ -8,7 +5,6 @@ import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
-import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
 import {decodeHtmlEntities} from '@/lib/utils/formatters'
@@ -177,25 +173,17 @@ export default async function SubredditPage({
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <ErrorBoundary>
-          <Suspense fallback={<SubredditInfoSkeleton />}>
-            <SubredditInfo
-              subreddit={subreddit}
-              isAuthenticated={isAuthenticated}
-            />
-          </Suspense>
-        </ErrorBoundary>
+        <SubredditInfo
+          subreddit={subreddit}
+          isAuthenticated={isAuthenticated}
+        />
 
-        <ErrorBoundary>
-          <Suspense fallback={<TabsSkeleton />}>
-            <SubredditPosts
-              subreddit={subreddit}
-              isAuthenticated={isAuthenticated}
-              sort={postSort}
-              timeFilter={timeFilter}
-            />
-          </Suspense>
-        </ErrorBoundary>
+        <SubredditPosts
+          subreddit={subreddit}
+          isAuthenticated={isAuthenticated}
+          sort={postSort}
+          timeFilter={timeFilter}
+        />
       </Stack>
     </Container>
   )

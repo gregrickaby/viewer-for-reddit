@@ -45,11 +45,30 @@ const refresh = tokens.refreshToken()
 
 ### Core Patterns
 
-- [ ] **ErrorBoundary + Suspense**: Async components wrapped with both (ErrorBoundary outside)
+- [ ] **error.tsx Files**: Route-level error boundaries using Next.js 16 file conventions (not manual `<ErrorBoundary>`)
+- [ ] **loading.tsx Files**: Route-level loading states using Next.js 16 file conventions (not manual `<Suspense>`)
 - [ ] **Specific Error Messages**: HTTP errors return specific messages (401: "Authentication expired", 404: "Not found", 429: "Rate limit exceeded")
 
 ```typescript
-// ✅ CORRECT Pattern
+// ✅ CORRECT Pattern - Use Next.js file conventions
+// app/(main)/error.tsx
+'use client'
+export default function Error({error, reset}) {
+  return <ErrorDisplay onReset={reset} />
+}
+
+// app/(main)/loading.tsx
+export default function Loading() {
+  return <PostSkeleton />
+}
+
+// app/(main)/page.tsx - Clean, no manual wrapping
+export default async function Page() {
+  const posts = await fetchPosts()
+  return <PostList posts={posts} />
+}
+
+// ❌ WRONG Pattern - Don't use manual wrapping in pages
 <ErrorBoundary fallback={<ErrorDisplay />}>
   <Suspense fallback={<PostSkeleton />}>
     <AsyncPostList />
@@ -368,16 +387,11 @@ await fetch(url, {next: {revalidate: FIVE_MINUTES}})
 
 ```typescript
 // Default export, no "use client"
+// error.tsx and loading.tsx handle boundaries automatically
 export default async function Page({params}: Readonly<PageProps>) {
   const {subreddit} = await params
 
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<PostSkeleton />}>
-        <AsyncComponent />
-      </Suspense>
-    </ErrorBoundary>
-  )
+  return <AsyncComponent />
 }
 ```
 
