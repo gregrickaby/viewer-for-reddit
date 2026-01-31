@@ -103,8 +103,7 @@ Reddit has aggressive rate limits:
 
 1. **Use conditional requests:** Pass `If-Modified-Since` or `If-None-Match` headers
 2. **Cache responses:** Use Next.js `next: {revalidate: seconds}` option
-3. **Retry with exponential backoff:** Use `retryWithBackoff()` helper for 429 responses
-4. **Respect `X-Ratelimit-*` headers:**
+3. **Respect `X-Ratelimit-*` headers:**
    - `X-Ratelimit-Used` - Requests used in current window
    - `X-Ratelimit-Remaining` - Requests remaining
    - `X-Ratelimit-Reset` - Unix timestamp when limit resets
@@ -382,15 +381,14 @@ const post: RedditPost = {
 ## Best Practices
 
 1. **Always use `raw_json=1`** - Avoid HTML entity escaping
-2. **Implement retry with exponential backoff** - Handle 429 rate limits gracefully
-3. **Cache aggressively** - Use Next.js `revalidate` option (300s = 5 min)
-4. **Use cursor pagination** - `after`/`before`, never page numbers
-5. **Check fullname prefixes** - Validate `t1_`, `t3_` etc. before operations
-6. **Graceful auth failure** - Always work for unauthenticated users when possible
-7. **Respect rate limits** - Monitor `X-Ratelimit-*` headers
-8. **Transform API responses** - Map to simplified application types
-9. **Use Arctic token methods** - `tokens.accessToken()` NOT `tokens.accessToken`
-10. **Sanitize HTML** - Use `sanitize-html` via `sanitizeText()` for `body_html`, `selftext_html`, etc.
+2. **Cache aggressively** - Use Next.js `revalidate` option (300s = 5 min)
+3. **Use cursor pagination** - `after`/`before`, never page numbers
+4. **Check fullname prefixes** - Validate `t1_`, `t3_` etc. before operations
+5. **Graceful auth failure** - Always work for unauthenticated users when possible
+6. **Respect rate limits** - Monitor `X-Ratelimit-*` headers
+7. **Transform API responses** - Map to simplified application types
+8. **Use Arctic token methods** - `tokens.accessToken()` NOT `tokens.accessToken`
+9. **Sanitize HTML** - Use `sanitize-html` via `sanitizeText()` for `body_html`, `selftext_html`, etc.
 
 ## Common Gotchas
 
@@ -401,4 +399,4 @@ const post: RedditPost = {
 5. **Vote direction is numeric** - `1` (up), `0` (remove), `-1` (down), NOT strings
 6. **Media in multiple places** - Check `preview.reddit_video_preview` first, then `media.reddit_video`
 7. **Some endpoints return arrays** - Comments endpoint returns `[post, comments]`
-8. **Rate limits are aggressive** - Implement exponential backoff, respect headers
+8. **Rate limits are aggressive** - Respect headers and cache appropriately

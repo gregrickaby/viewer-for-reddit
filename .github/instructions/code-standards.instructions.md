@@ -241,7 +241,6 @@ export function getInitialVoteState(
 - `lib/utils/media-helpers.ts` - Media extraction
 - `lib/utils/env.ts` - Environment variable access
 - `lib/utils/logger.ts` - Structured logging
-- `lib/utils/retry.ts` - Retry with exponential backoff
 
 ### 6. Type System
 

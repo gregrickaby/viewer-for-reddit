@@ -23,7 +23,8 @@ export const CACHE_SEARCH = TEN_MINUTES // Was FIVE_MINUTES
 export const TOKEN_REFRESH_BUFFER = 5 * 60 * 1000 // 5 minutes before token expiry
 
 // Reddit API configuration
-export const REDDIT_API_URL = 'https://oauth.reddit.com'
+export const REDDIT_API_URL = 'https://oauth.reddit.com' // Authenticated requests
+export const REDDIT_PUBLIC_API_URL = 'https://www.reddit.com' // Unauthenticated requests
 
 // Pagination
 export const DEFAULT_POST_LIMIT = 25
