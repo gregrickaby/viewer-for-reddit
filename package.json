@@ -80,6 +80,7 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "yaml": "^2.8.2"
   }
 }

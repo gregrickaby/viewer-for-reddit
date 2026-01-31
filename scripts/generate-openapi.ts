@@ -244,8 +244,49 @@ class OpenAPIGenerator {
     return urls
   }
 
+  private inferArraySchema(value: unknown[], depth: number): JSONSchema {
+    if (value.length === 0) {
+      return {type: 'array', items: {}}
+    }
+
+    const itemSchemas = this.collectUniqueItemSchemas(value, depth)
+
+    if (itemSchemas.length === 1) {
+      return {type: 'array', items: itemSchemas[0]}
+    }
+    return {type: 'array', items: {oneOf: itemSchemas}}
+  }
+
+  private collectUniqueItemSchemas(
+    value: unknown[],
+    depth: number
+  ): JSONSchema[] {
+    const itemSchemas: JSONSchema[] = []
+    const seenTypes = new Set<string>()
+
+    for (const item of value.slice(0, 5)) {
+      const itemSchema = this.inferSchemaFromValue(item, depth + 1)
+      const typeKey = JSON.stringify(itemSchema)
+      if (!seenTypes.has(typeKey)) {
+        seenTypes.add(typeKey)
+        itemSchemas.push(itemSchema)
+      }
+    }
+
+    return itemSchemas
+  }
+
+  private inferObjectSchema(value: object, depth: number): JSONSchema {
+    const properties: Record<string, JSONSchema> = {}
+
+    for (const [key, val] of Object.entries(value)) {
+      properties[key] = this.inferSchemaFromValue(val, depth + 1)
+    }
+
+    return {type: 'object', properties}
+  }
+
   private inferSchemaFromValue(value: unknown, depth = 0): JSONSchema {
-    // Prevent infinite recursion
     if (depth > 10) {
       return {type: 'object', additionalProperties: true}
     }
@@ -255,39 +296,11 @@ class OpenAPIGenerator {
     }
 
     if (Array.isArray(value)) {
-      if (value.length === 0) {
-        return {type: 'array', items: {}}
-      }
-
-      // Collect all unique schemas from array items
-      const itemSchemas: JSONSchema[] = []
-      const seenTypes = new Set<string>()
-
-      for (const item of value.slice(0, 5)) {
-        // Sample first 5 items
-        const itemSchema = this.inferSchemaFromValue(item, depth + 1)
-        const typeKey = JSON.stringify(itemSchema)
-        if (!seenTypes.has(typeKey)) {
-          seenTypes.add(typeKey)
-          itemSchemas.push(itemSchema)
-        }
-      }
-
-      if (itemSchemas.length === 1) {
-        return {type: 'array', items: itemSchemas[0]}
-      } else {
-        return {type: 'array', items: {oneOf: itemSchemas}}
-      }
+      return this.inferArraySchema(value, depth)
     }
 
     if (typeof value === 'object') {
-      const properties: Record<string, JSONSchema> = {}
-
-      for (const [key, val] of Object.entries(value)) {
-        properties[key] = this.inferSchemaFromValue(val, depth + 1)
-      }
-
-      return {type: 'object', properties}
+      return this.inferObjectSchema(value, depth)
     }
 
     return {type: typeof value}
@@ -432,31 +445,33 @@ class OpenAPIGenerator {
 // Export for use as module
 export {OpenAPIGenerator, redditEndpoints}
 
-// Run if called directly (top-level await)
+// Run if called directly
 if (require.main === module) {
-  const generator = new OpenAPIGenerator()
+  void (async () => {
+    const generator = new OpenAPIGenerator()
 
-  try {
-    // Fetch sample data
-    await generator.fetchSampleData()
+    try {
+      // Fetch sample data
+      await generator.fetchSampleData()
 
-    // Generate schemas from responses
-    generator.generateSchemas()
+      // Generate schemas from responses
+      generator.generateSchemas()
 
-    // Save OpenAPI spec
-    const specPath = path.join(process.cwd(), 'scripts/reddit-openapi.json')
-    await generator.saveOpenAPISpec(specPath)
+      // Save OpenAPI spec
+      const specPath = path.join(process.cwd(), 'scripts/reddit-openapi.json')
+      await generator.saveOpenAPISpec(specPath)
 
-    // Generate TypeScript types
-    const typesPath = path.join(process.cwd(), 'lib/types/reddit-api.ts')
-    await generator.generateTypes(specPath, typesPath)
+      // Generate TypeScript types
+      const typesPath = path.join(process.cwd(), 'lib/types/reddit-api.ts')
+      await generator.generateTypes(specPath, typesPath)
 
-    console.log('\n🎉 OpenAPI generation complete!')
-    console.log('\nGenerated files:')
-    console.log(`  - ${specPath}`)
-    console.log(`  - ${typesPath}`)
-  } catch (error) {
-    console.error('❌ Generation failed:', error)
-    process.exit(1)
-  }
+      console.log('\n🎉 OpenAPI generation complete!')
+      console.log('\nGenerated files:')
+      console.log(`  - ${specPath}`)
+      console.log(`  - ${typesPath}`)
+    } catch (error) {
+      console.error('❌ Generation failed:', error)
+      process.exit(1)
+    }
+  })()
 }
