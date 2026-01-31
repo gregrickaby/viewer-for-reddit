@@ -52,11 +52,11 @@ jobs:
           USER_AGENT=${{ secrets.USER_AGENT }}
           EOF
 
-      - name: Validate (Format / Typecheck / Lint / Test)
-        run: npm run validate:ci
-
       - name: Build
         run: npm run build
+
+      - name: Validate (Format / Typecheck / Lint / Test)
+        run: npm run validate:ci
 
       - name: Upload Coverage Report
         if: always()
