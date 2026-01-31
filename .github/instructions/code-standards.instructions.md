@@ -348,13 +348,9 @@ return <Button disabled={isPending} onClick={handleVote} />
 
 ### Arctic OAuth Token Methods
 
-**Tokens are methods, not properties:**
+**CRITICAL**: Tokens are methods, not properties. See [Reddit API Patterns](../instructions/reddit-api.instructions.md) for details.
 
 ```typescript
-// ❌ WRONG - Property access
-const token = tokens.accessToken
-const refresh = tokens.refreshToken
-
 // ✅ CORRECT - Method call
 const token = tokens.accessToken()
 const refresh = tokens.refreshToken()
@@ -608,96 +604,36 @@ See [GitHub Copilot Instructions](../copilot-instructions.md) for testing patter
 
 ## Common Mistakes
 
-### ❌ Wrong Patterns
+### Common Mistakes
 
-```typescript
-// ❌ Missing 'use client' with hooks
-export function Component() {
-  const [state, setState] = useState() // Error
-}
+**❌ Wrong:**
 
-// ❌ Direct fetch in component/hook
-const data = await fetch('https://oauth.reddit.com/...') // ❌
+- Missing `'use client'` with hooks
+- Direct fetch in components/hooks (use server actions)
+- Not checking `if (isPending) return`
+- Not awaiting `params` (Next.js 16)
+- Missing `Readonly<>` on props
+- Manual `<ErrorBoundary>` in pages (use `error.tsx`)
+- Manual `<Suspense>` in pages (use `loading.tsx`)
+- Using `NEXT_PUBLIC_` env prefix
+- Not sanitizing HTML with `sanitizeText()`
+- Plain Next.js `<Link>` (wrap with Mantine `<Anchor>`)
+- Magic numbers (use constants like `FIVE_MINUTES`)
+- Arctic token property access (use methods: `.accessToken()`)
 
-// ❌ Not checking isPending
-const handleVote = () => {
-  startTransition(async () => await votePost(...)) // Race condition
-}
+**✅ Correct:**
 
-// ❌ Not awaiting params (Next.js 16)
-const {id} = params // Error: Promise not destructurable
-
-// ❌ Missing Readonly on props
-export function Component({data}: ComponentProps) {} // ❌
-
-// ❌ Manual ErrorBoundary in pages (use error.tsx instead)
-<ErrorBoundary><Component /></ErrorBoundary> // ❌
-
-// ❌ Manual Suspense in pages (use loading.tsx instead)
-<Suspense fallback={<Skeleton />}><Component /></Suspense> // ❌
-
-// ❌ NEXT_PUBLIC_ env vars
-NEXT_PUBLIC_REDDIT_CLIENT_ID=xxx // ❌
-
-// ❌ Not sanitizing HTML
-<div dangerouslySetInnerHTML={{__html: userHtml}} /> // XSS
-
-// ❌ Plain Next.js Link
-<Link href="/path">Link</Link> // ❌
-
-// ❌ Magic numbers
-await fetch(url, {next: {revalidate: 300}}) // ❌
-```
-
-### ✅ Correct Patterns
-
-```typescript
-// ✅ Add 'use client' with hooks
-'use client'
-export function Component() {
-  const [state, setState] = useState()
-}
-
-// ✅ Call server action
-const {posts} = await fetchPosts(subreddit, 'hot')
-
-// ✅ Check isPending first
-const handleVote = () => {
-  if (isPending) return
-  startTransition(async () => await votePost(...))
-}
-
-// ✅ Await params (Next.js 16)
-const {id} = await params
-
-// ✅ Readonly props
-export function Component({data}: Readonly<ComponentProps>) {}
-
-// ✅ Use error.tsx for error boundaries
-// app/(main)/error.tsx
-'use client'
-export default function Error({error, reset}) {
-  return <ErrorDisplay onReset={reset} />
-}
-
-// ✅ Use loading.tsx for loading states
-// app/(main)/loading.tsx
-export default function Loading() {
-  return <TabsSkeleton />
-}
-
-// ✅ Server-only env vars
-REDDIT_CLIENT_ID=xxx
-
-// ✅ Sanitize HTML
-<div dangerouslySetInnerHTML={{__html: sanitizeText(userHtml)}} />
-
-// ✅ Mantine Anchor wrapper
-<Anchor component={Link} href="/path">Link</Anchor>
-
-// ✅ Use constants
-await fetch(url, {next: {revalidate: FIVE_MINUTES}})
-```
+- Add `'use client'` only when needed
+- Call server actions from hooks/components
+- Always check `isPending` before async operations
+- `const {id} = await params` in Next.js 16
+- Use `Readonly<ComponentProps>`
+- Use `error.tsx` and `loading.tsx` for boundaries
+- Server-only env vars (no `NEXT_PUBLIC_`)
+- Sanitize: `sanitizeText(userHtml)`
+- Wrap: `<Anchor component={Link}>`
+- Use constants from `lib/utils/constants.ts`
+- Arctic methods: `tokens.accessToken()`
 
 ---
 

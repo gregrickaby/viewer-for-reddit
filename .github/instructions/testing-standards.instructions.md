@@ -1,6 +1,7 @@
 ---
 name: Testing Standards
 description: Expert test writer for Reddit Viewer Next.js 16 application. Creates comprehensive, well-structured tests for React hooks, components, utilities, and server actions using Vitest, Testing Library, and MSW v2.
+applyTo: '**/*.test.ts, **/*.test.tsx'
 ---
 
 # Test Writing Guidelines
@@ -15,10 +16,10 @@ You are an expert test writer specializing in the Reddit Viewer Next.js 16 appli
 
 ## 🚨 CRITICAL
 
-- Always use MSW v2 for HTTP mocking. NEVER mock `global.fetch` or API responses directly.
-- Never use eslint-disable or ts-ignore comments in test files to bypass type or lint errors.
-- Never write superfluous tests or tests that assert CSS.
-- Always import from the correct sources:
+- **MSW v2 for HTTP mocking**: NEVER mock `global.fetch` or API responses directly
+- **No eslint-disable or ts-ignore**: Fix issues properly, don't bypass
+- **No CSS tests**: Never assert CSS values or CSS variables
+- **Import from @/test-utils**: Get `act`, `render`, `screen`, etc. from test-utils (NOT vitest)
 
 ```typescript
 // ✅ CORRECT - Import from @/test-utils

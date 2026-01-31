@@ -54,47 +54,7 @@ These specialized instructions apply automatically when editing relevant files v
 
 ## Project Structure
 
-```
-app/                    - Next.js pages (Server Components by default)
-lib/actions/reddit.ts   - ALL Reddit API calls (Server Actions)
-lib/auth/session.ts     - Session management
-lib/types/reddit-api.ts - Auto-generated (DO NOT EDIT, use `npm run typegen`)
-lib/types/reddit.ts     - Manual application types
-lib/utils/              - Helpers, constants, formatters
-components/
-  layout/               - Structural components (each in own directory)
-    AppLayout/
-    Header/
-    SearchBar/
-    Sidebar/
-    UserMenu/
-    Logo/
-    ThemeProvider/
-  ui/                   - Feature components (each in own directory)
-    Analytics/
-    BackToTop/
-    BossButton/
-    Comment/
-    CommentListWithTabs/
-    ErrorBoundary/      - Legacy class-based (only used in global-error.tsx)
-    ErrorDisplay/
-    Gallery/
-    PostActions/
-    PostCard/
-    PostHeader/
-    PostList/
-    PostListWithTabs/
-    PostMedia/
-    SubscribeButton/
-    VideoPlayer/
-  skeletons/            - Loading states (each in own directory)
-    CommentSkeleton/
-    PostSkeleton/
-    SubredditInfoSkeleton/
-    TabsSkeleton/
-
-Note: Pages use Next.js 16 file conventions (error.tsx, loading.tsx) instead of manual wrapping.
-```
+See [Code Standards & Architecture](./instructions/code-standards.instructions.md) for detailed project structure and file organization.
 
 ## Always do
 
@@ -102,13 +62,14 @@ Note: Pages use Next.js 16 file conventions (error.tsx, loading.tsx) instead of 
 
 ## Never Do
 
-- Access Arctic tokens as properties (use methods: `.accessToken()`)
+- Access Arctic tokens as properties (use methods: `.accessToken()`, see [Reddit API Patterns](./instructions/reddit-api.instructions.md))
 - Use `NEXT_PUBLIC_` env prefix
 - Manually edit `/lib/types/reddit-api.ts`
 - Skip `npm run validate` before completion
 - Use 'any' type
 - Add superfluous comments or tests
 - Start dev server (user manages it)
+- Mock `global.fetch` in tests (use MSW v2, see [Testing Standards](./instructions/testing-standards.instructions.md))
 
 ⚠️ **Ask before**: Modifying authentication flow, changing API structure, adding dependencies
 

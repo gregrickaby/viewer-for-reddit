@@ -30,18 +30,8 @@ const sanitized = sanitizeText(decodeHtmlEntities(comment.body_html))
 
 ### Authentication
 
-- [ ] **Arctic Token Methods**: Use `tokens.accessToken()` NOT property access `tokens.accessToken`
+- [ ] **Arctic Token Methods**: Use `tokens.accessToken()` NOT property access (see [Reddit API Patterns](./reddit-api.instructions.md))
 - [ ] **Graceful Degradation**: Unauthenticated users are never broken
-
-```typescript
-// ❌ WRONG - Property access
-const token = tokens.accessToken
-const refresh = tokens.refreshToken
-
-// ✅ CORRECT - Method call
-const token = tokens.accessToken()
-const refresh = tokens.refreshToken()
-```
 
 ### Core Patterns
 
@@ -112,70 +102,21 @@ const handleVote = (direction: number) => {
 ### Data Fetching
 
 - [ ] **Next.js Fetch Caching**: Server actions use `fetch()` with `next: {revalidate: seconds}` for automatic caching and request deduplication
-- [ ] **Error Handling**: Comprehensive try/catch with specific error messages
+- [ ] **Error Handling**: Comprehensive try/catch with specific error messages (see [Code Standards](./code-standards.instructions.md))
 - [ ] **Explicit Cache Times**: Uses constants like `FIVE_MINUTES`, `TEN_MINUTES` for revalidate values
-
-```typescript
-// ✅ CORRECT Pattern
-import {REDDIT_API_URL, FIVE_MINUTES} from '@/lib/utils/constants'
-
-export async function fetchPosts(subreddit: string) {
-  const session = await getSession()
-  const headers = await getHeaders(!!session.accessToken)
-
-  const response = await fetch(`${REDDIT_API_URL}/r/${subreddit}/hot.json`, {
-    headers,
-    next: {revalidate: FIVE_MINUTES}
-  })
-
-  if (!response.ok) {
-    if (response.status === 401) throw new Error('Authentication expired')
-    if (response.status === 404) throw new Error('Subreddit not found')
-    if (response.status === 429) throw new Error('Rate limit exceeded')
-    throw new Error(`Reddit API error: ${response.statusText}`)
-  }
-
-  return response.json()
-}
-```
 
 ### Component Architecture
 
 - [ ] **Correct Component Type**: Server Component by default, Client Component (`"use client"`) only when using hooks/events
 - [ ] **Server Actions**: All Reddit API calls in `/lib/actions/reddit.ts`
 - [ ] **Async Page Pattern**: Pages await `params` (Next.js 16 requirement)
-
-```typescript
-// ✅ CORRECT Next.js 16 Page Pattern
-interface PageProps {
-  params: Promise<{subreddit: string}>
-}
-
-export default async function SubredditPage({params}: Readonly<PageProps>) {
-  const {subreddit} = await params // Next.js 16 requires await
-
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<PostSkeleton />}>
-        <PostsList subreddit={subreddit} />
-      </Suspense>
-    </ErrorBoundary>
-  )
-}
-```
+- [ ] **Use error.tsx/loading.tsx**: Route-level boundaries via Next.js conventions (see [Code Standards](./code-standards.instructions.md))
 
 ### Test Coverage
 
-- [ ] **Utilities**: 100% test coverage required
-- [ ] **Hooks**: 100% test coverage required
-- [ ] **Components**: 80%+ test coverage required
+- [ ] **Coverage Requirements**: Utilities 100%, Hooks 100%, Components 80%+ (see [Testing Standards](./testing-standards.instructions.md))
 - [ ] **Test Files Exist**: All new utilities, hooks, and major components have `.test.ts` or `.test.tsx` files
-- [ ] **Tests Pass**: `npm test` passes without errors
-
-```bash
-# Verify coverage before merging
-npm test:coverage
-```
+- [ ] **Tests Pass**: Run `npm test:coverage` before merging
 
 ## Medium (P3) - Improve If Possible
 
@@ -246,61 +187,16 @@ import Link from 'next/link'
 
 All new code must meet these testing standards:
 
-### Test File Placement
-
-- [ ] Test files placed **next to source files** with `.test.ts` or `.test.tsx` extension
-- [ ] Example: `useVote.ts` → `useVote.test.ts`
-
-### Coverage Standards
-
-```typescript
-// Utilities: 100% coverage required
-describe('formatNumber', () => {
-  it('formats numbers under 1000 as-is', () => {
-    expect(formatNumber(42)).toBe('42')
-  })
-
-  it('formats thousands with K suffix', () => {
-    expect(formatNumber(1000)).toBe('1.0K')
-  })
-
-  it('handles edge cases', () => {
-    expect(formatNumber(0)).toBe('0')
-    expect(formatNumber(-1000)).toBe('-1.0K')
-  })
-})
-```
-
-```typescript
-// Hooks: 100% coverage required
-describe('useVote', () => {
-  it('initializes with correct values', () => {})
-  it('handles upvote with optimistic update', async () => {})
-  it('reverts on failure', async () => {})
-  it('prevents race conditions', async () => {})
-  it('handles different initial states', () => {})
-})
-```
-
-```typescript
-// Components: 80%+ coverage required
-describe('ErrorDisplay', () => {
-  it('renders with default props', () => {})
-  it('renders custom props', () => {})
-  it('handles user interactions', async () => {})
-  it('shows/hides elements conditionally', () => {})
-})
-```
-
 ### Test Quality Checks
 
+See [Testing Standards](./testing-standards.instructions.md) for comprehensive testing patterns and examples.
+
+- [ ] **Test Files Colocated**: `.test.ts` or `.test.tsx` next to source files
 - [ ] **Mocks Configured Properly**: `vi.mock()` placed BEFORE imports for load-time dependencies
 - [ ] **Race Conditions Tested**: Hooks test that `if (isPending) return` prevents double operations
 - [ ] **Optimistic Updates Tested**: Hooks test optimistic state changes and rollbacks
-- [ ] **Error States Tested**: Components test error boundaries and error displays
 - [ ] **No CSS Tests**: Tests NEVER check CSS values or CSS variables
-- [ ] **MSW for Integration**: Use MSW handlers for API integration tests
-- [ ] **Mock for Actions**: Use `vi.mock()` for server actions in hook tests
+- [ ] **MSW for HTTP Mocking**: NEVER mock `global.fetch` directly
 
 ## Validation Checklist
 
@@ -323,16 +219,6 @@ npm test:coverage    # Verify coverage meets requirements
 - [ ] **Verify accessibility**: Check keyboard navigation and screen reader support
 
 ## Common Issues to Watch For
-
-### Arctic OAuth
-
-```typescript
-// ❌ Property access
-const token = tokens.accessToken
-
-// ✅ Method call
-const token = tokens.accessToken()
-```
 
 ### Environment Variables
 
@@ -383,121 +269,12 @@ await fetch(url, {next: {revalidate: FIVE_MINUTES}})
 
 ## Architecture Patterns Reference
 
-### Server Component Pattern
+See [Code Standards & Architecture](./code-standards.instructions.md) for complete pattern reference:
 
-```typescript
-// Default export, no "use client"
-// error.tsx and loading.tsx handle boundaries automatically
-export default async function Page({params}: Readonly<PageProps>) {
-  const {subreddit} = await params
-
-  return <AsyncComponent />
-}
-```
-
-### Client Component Pattern
-
-```typescript
-"use client"
-
-import {useTransition, useState} from 'react'
-
-export function InteractiveComponent({...props}: Readonly<Props>) {
-  const [isPending, startTransition] = useTransition()
-  const [state, setState] = useState(initialState)
-
-  const handleAction = () => {
-    if (isPending) return // CRITICAL
-
-    // Optimistic update
-    setState(newState)
-
-    startTransition(async () => {
-      const result = await serverAction()
-      if (!result.success) {
-        setState(originalState) // Rollback
-      }
-    })
-  }
-
-  return <button onClick={handleAction} disabled={isPending}>...</button>
-}
-```
-
-### Server Action Pattern
-
-```typescript
-'use server'
-
-import {getSession} from '@/lib/auth/session'
-import {getEnvVar} from '@/lib/utils/env'
-import {REDDIT_API_URL, FIVE_MINUTES} from '@/lib/utils/constants'
-
-// Helper to get headers for Reddit API
-async function getHeaders(useAuth: boolean = false) {
-  const headers: HeadersInit = {
-    'User-Agent': getEnvVar('USER_AGENT')
-  }
-
-  if (useAuth) {
-    const session = await getSession()
-    if (session.accessToken) {
-      headers.Authorization = `Bearer ${session.accessToken}`
-    }
-  }
-
-  return headers
-}
-
-export async function fetchData(id: string) {
-  const session = await getSession()
-  const headers = await getHeaders(!!session.accessToken)
-
-  const response = await fetch(`${REDDIT_API_URL}/endpoint`, {
-    headers,
-    next: {revalidate: FIVE_MINUTES}
-  })
-
-  if (!response.ok) {
-    if (response.status === 401) throw new Error('Authentication expired')
-    if (response.status === 404) throw new Error('Not found')
-    if (response.status === 429) throw new Error('Rate limit exceeded')
-    throw new Error(`API error: ${response.statusText}`)
-  }
-
-  return response.json()
-}
-```
-
-## File Organization Standards
-
-```
-app/
-  api/auth/          - OAuth routes only
-  r/[subreddit]/     - Subreddit pages
-  u/[username]/      - User profiles
-
-components/
-  layout/            - Layout components (Header, Sidebar)
-  ui/                - UI components (PostCard, Comment)
-  skeletons/         - Loading states (PostSkeleton, TabsSkeleton)
-
-lib/
-  actions/reddit.ts  - ALL Reddit API calls (Server Actions)
-  auth/session.ts    - Session management (Arctic + iron-session)
-  types/
-    reddit-api.ts    - Auto-generated types (DO NOT EDIT)
-    reddit.ts        - Manual types and extensions
-  utils/
-    constants.ts     - Constants (URLs, cache times, limits)
-    reddit-helpers.ts - Shared helpers
-    formatters.ts    - Format utilities
-  hooks/             - Custom React hooks
-
-test-utils/
-  msw/               - MSW handlers and server setup
-  mocks/             - Mock data structures
-```
+- Server Component Pattern
+- Client Component Pattern
+- Server Action Pattern
+- File Organization Standards
 
 ## Review Process
 
@@ -523,8 +300,8 @@ Code can be merged when:
 
 ## Additional Resources
 
-- [GitHub Copilot Instructions](../copilot-instructions.md) - Complete project guidelines
-- [Code Standards & Architecture](./code-standards.instructions.md) - Patterns and conventions
-- [Reddit API Patterns](./reddit-api.instructions.md) - API interaction patterns
-- [Testing Standards](./testing-standards.instructions.md) - Comprehensive testing guidelines with examples
+- [GitHub Copilot Instructions](../copilot-instructions.md) - Project overview and core conventions
+- [Code Standards & Architecture](./code-standards.instructions.md) - Comprehensive patterns and architecture
+- [Reddit API Patterns](./reddit-api.instructions.md) - Reddit API interaction patterns
+- [Testing Standards](./testing-standards.instructions.md) - Complete testing guidelines with examples
 - [Mantine UI](https://mantine.dev/llms-full.txt) - UI library documentation

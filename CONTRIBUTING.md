@@ -48,7 +48,7 @@ That's it! You're ready to start contributing. 🎉
 
 ### Prerequisites
 
-- **Node.js v24.11+** (see `.nvmrc`)
+- **Node.js v24.13+** (see `.nvmrc`)
 - **npm v10+**
 - **Git**
 - **Reddit API credentials** (see [Authentication Setup](#authentication-setup))
@@ -137,222 +137,66 @@ git commit --no-verify -m "message"
 
 ## Project Architecture
 
+> **📚 For detailed technical patterns, see [`.github/instructions/`](.github/instructions/)**
+>
+> - **Code Standards**: [code-standards.instructions.md](.github/instructions/code-standards.instructions.md)
+> - **Testing Patterns**: [testing-standards.instructions.md](.github/instructions/testing-standards.instructions.md)
+> - **Reddit API Guide**: [reddit-api.instructions.md](.github/instructions/reddit-api.instructions.md)
+> - **Code Review Checklist**: [code-review.instructions.md](.github/instructions/code-review.instructions.md)
+
 ### Tech Stack
 
 - **Framework**: Next.js 16 (App Router, React Compiler, Turbopack)
 - **React**: React 19 (Server Components by default)
 - **UI**: Mantine v8 component library
-- **Styling**: CSS Modules with Mantine design tokens
 - **Auth**: Arctic 3.x (OAuth2) + iron-session 8.x (encrypted sessions)
-- **Types**: TypeScript 5 (strict mode, never use `any`)
+- **Types**: TypeScript 5 (strict mode, auto-generated from Reddit API)
 - **Testing**: Vitest v4 + Testing Library + MSW v2
 - **API**: Reddit REST API + OAuth 2.0
-- **Deployment**: Self-hosted (Coolify/Nixpacks)
 
-### Architecture Overview
+### Key Principles
 
-Viewer for Reddit uses **modern Next.js 16 patterns** with Server Components as the default rendering strategy.
+1. **Server-First** - Server Components by default, Client Components opt-in
+2. **All API Calls in Server Actions** - Single source in `/lib/actions/reddit.ts`
+3. **Optimistic Updates** - Immediate UI feedback with rollback on failure
+4. **Type Safety** - Auto-generated types from Reddit API
+5. **Test-Driven** - Tests required (utilities/hooks 100%, components 80%+)
 
-**Key Principles:**
-
-1. **Server-First** - Server Components by default, Client Components opt-in for interactivity
-2. **Server Actions** - All Reddit API calls in `/lib/actions/reddit.ts`
-3. **Progressive Enhancement** - Core functionality works without JavaScript
-4. **Optimistic Updates** - Immediate UI feedback with rollback on failure
-5. **Type Safety** - Auto-generated types from Reddit API
-
-**NOT a layered architecture** - This is a straightforward Next.js app with clear conventions, not a complex architectural pattern.
-
-### File Structure
+### Quick File Organization
 
 ```text
-app/                    # Next.js pages (Server Components by default)
-├── api/                # API routes (auth, logging)
-├── r/[subreddit]/      # Subreddit pages
-├── u/[username]/       # User profile pages
-├── search/[query]/     # Search results
-└── about/              # About page
-
-components/
-├── layout/             # Structural components (Header, Sidebar, AppLayout)
-├── ui/                 # Feature components (PostCard, Comment, Gallery)
-└── skeletons/          # Loading states (PostSkeleton, TabsSkeleton)
-
+app/                    # Next.js pages (Server Components)
+components/             # UI components (layout/, ui/, skeletons/)
 lib/
-├── actions/
-│   └── reddit.ts       # ALL Reddit API calls (Server Actions)
-├── auth/
-│   └── session.ts      # Session management (Arctic + iron-session)
-├── hooks/              # Custom React hooks (useVote, useInfiniteScroll)
-├── types/
-│   ├── reddit-api.ts   # Auto-generated (DO NOT EDIT, use npm run typegen)
-│   └── reddit.ts       # Manual application types
+├── actions/reddit.ts   # ALL Reddit API calls here
+├── auth/session.ts     # Session management
+├── hooks/              # Custom React hooks
+├── types/              # TypeScript types
 └── utils/              # Helpers, constants, formatters
-
-scripts/                # Build and codegen scripts
 test-utils/             # Test setup and MSW handlers
 ```
 
-### Core Patterns
+**📖 See [code-standards.instructions.md](.github/instructions/code-standards.instructions.md) for complete architecture details.**
 
-#### 1. Server Components by Default
+### Critical Conventions
 
-**No `'use client'` needed** - Server Components are the default in React 19.
+**🚨 Before writing code, review these:**
 
-```typescript
-// ✅ CORRECT - Server Component (no directive)
-export default async function SubredditPage({params}: PageProps) {
-  const {subreddit} = await params // Next.js 16 requirement
-  const {posts} = await fetchPosts(subreddit, 'hot')
+1. **Arctic OAuth**: Use `tokens.accessToken()` (method, not property)
+2. **Server Actions**: All Reddit API calls in `/lib/actions/reddit.ts`
+3. **HTML Sanitization**: Always use `sanitizeText()` for user-generated HTML
+4. **Race Conditions**: Always check `if (isPending) return` before async operations
+5. **Mantine Links**: Wrap Next.js `<Link>` with Mantine `<Anchor component={Link}>`
+6. **Props**: Use `Readonly<>` wrapper on all component props
+7. **No `NEXT_PUBLIC_`**: All environment variables are server-only
 
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<PostSkeleton />}>
-        <PostListWithTabs posts={posts} />
-      </Suspense>
-    </ErrorBoundary>
-  )
-}
-```
-
-#### 2. Client Components for Interactivity
-
-Add `'use client'` only when needed:
-
-```typescript
-// ✅ CORRECT - Client Component for hooks/events
-'use client'
-
-export function PostCard({post}: Readonly<PostCardProps>) {
-  const {vote, isPending} = useVote({
-    itemName: post.name,
-    initialScore: post.score
-  })
-
-  return <PostActions onVote={vote} disabled={isPending} />
-}
-```
-
-**When to use Client Components:**
-
-- Need React hooks (useState, useEffect, useTransition)
-- Handle user interactions (onClick, onSubmit)
-- Access browser APIs (window, document)
-- Use context providers/consumers
-
-#### 3. All Reddit API Calls in Server Actions
-
-**CRITICAL:** ALL Reddit API calls MUST be in `/lib/actions/reddit.ts`
-
-```typescript
-'use server'
-
-import {REDDIT_API_URL, FIVE_MINUTES} from '@/lib/utils/constants'
-
-export async function fetchPosts(subreddit: string, sort: SortOption) {
-  const session = await getSession()
-  const headers = await getHeaders(!!session.accessToken)
-
-  const response = await fetch(url, {
-    headers,
-    next: {revalidate: FIVE_MINUTES}
-  })
-
-  if (!response.ok) {
-    if (response.status === 401) throw new Error('Authentication expired')
-    if (response.status === 404) throw new Error('Subreddit not found')
-    if (response.status === 429) throw new Error('Rate limit exceeded')
-    throw new Error(`Reddit API error: ${response.statusText}`)
-  }
-
-  const data: ApiSubredditPostsResponse = await response.json()
-  const posts = data.data?.children?.map((c) => c.data) as RedditPost[]
-  return {posts, after: data.data?.after}
-}
-```
-
-**Why?**
-
-- ✅ Single source of truth
-- ✅ Consistent error handling
-- ✅ Centralized caching strategy
-- ✅ Easy security auditing
-- ✅ Testable boundaries
-
-#### 4. Custom Hooks for Client State
-
-**Location:** `lib/hooks/`
-
-```typescript
-export function useVote({itemName, initialScore}: UseVoteOptions) {
-  const [isPending, startTransition] = useTransition()
-  const [score, setScore] = useState(initialScore)
-
-  const vote = (direction: 1 | -1) => {
-    if (isPending) return // CRITICAL: Race condition prevention
-
-    const currentScore = score
-    setScore(score + direction) // Optimistic update
-
-    startTransition(async () => {
-      const result = await votePost(itemName, direction)
-      if (!result.success) {
-        setScore(currentScore) // Rollback on failure
-      }
-    })
-  }
-
-  return {score, isPending, vote}
-}
-```
-
-**Patterns:**
-
-- **Optimistic updates** - Immediate UI feedback, rollback on failure
-- **Race condition prevention** - Always check `if (isPending) return`
-- **Server action calls** - Hooks call actions, not direct fetch
-
-#### 5. Critical Conventions
-
-**Arctic OAuth Tokens (Methods, Not Properties):**
-
-```typescript
-// ❌ WRONG - Property access
-const token = tokens.accessToken
-
-// ✅ CORRECT - Method call
-const token = tokens.accessToken()
-```
-
-**HTML Sanitization (Security):**
-
-```typescript
-import {sanitizeText} from '@/lib/utils/formatters'
-import {decodeHtmlEntities} from '@/lib/utils/formatters'
-
-// ✅ CORRECT
-<div
-  dangerouslySetInnerHTML={{
-    __html: sanitizeText(decodeHtmlEntities(post.selftext_html))
-  }}
-/>
-```
-
-**Mantine UI Integration:**
-
-```typescript
-import {Anchor} from '@mantine/core'
-import Link from 'next/link'
-
-// ✅ CORRECT - Wrap Next.js Link with Mantine Anchor
-<Anchor component={Link} href="/path" c="blue" fw={500}>
-  Link text
-</Anchor>
-```
+**📖 See [code-standards.instructions.md](.github/instructions/code-standards.instructions.md) for code examples.**
 
 ---
 
 ## Testing
+
+> **📚 For comprehensive test patterns, see [testing-standards.instructions.md](.github/instructions/testing-standards.instructions.md)**
 
 ### Test-Driven Development
 
@@ -363,13 +207,6 @@ This is a **test-driven codebase**. Tests must be written/updated alongside code
 - **Utilities**: 100% coverage required
 - **Hooks**: 100% coverage required
 - **Components**: 80%+ coverage required
-
-**Testing Philosophy:**
-
-- Write tests for control flow, not implementation details
-- Use `it.each()` loops to minimize duplication
-- Don't create superfluous tests that don't add value
-- Focus on user behavior and edge cases
 
 ### Running Tests
 
@@ -390,32 +227,27 @@ npm run test:ui
 npx vitest path/to/file.test.ts --run
 ```
 
-### MSW v2 HTTP Mocking
+### Testing Quick Reference
 
-**🚨 CRITICAL: Always use MSW v2 for HTTP mocking. NEVER mock `global.fetch`.**
+**🚨 CRITICAL Rules:**
 
-**Global Setup** (handled in `vitest.setup.ts`):
+- **Always use MSW v2** for HTTP mocking (NEVER mock `global.fetch`)
+- **Mock server actions** with `vi.mock()` to avoid env var errors
+- **Place `vi.mock()` BEFORE imports** for load-time dependencies
+- **Never test CSS** values or CSS variables
+- **Test files colocated** with source files (`.test.ts` or `.test.tsx`)
 
-- `beforeAll`: `server.listen()` - starts MSW server
-- `afterEach`: `server.resetHandlers()` - resets to default handlers
-- `afterAll`: `server.close()` - shuts down server
+**Key Patterns:**
 
-**Pre-configured Handlers** (in `test-utils/msw/handlers/`):
+- Use `act()` for state updates
+- Use `waitFor()` for async operations
+- Test optimistic updates + rollbacks
+- Test race conditions (`if (isPending) return`)
 
-- `postsHandlers.ts` - Subreddit posts endpoints
-- `commentHandlers.ts` - Post comments endpoints
-- `userHandlers.ts` - User profile and content endpoints
-- `voteHandlers.ts` - Vote endpoints
-- `authHandlers.ts` - Authentication endpoints
-- `searchHandlers.ts` - Search endpoints
-- `subredditHandlers.ts` - Subreddit info endpoints
-
-### Writing Tests
-
-**Test File Pattern:**
+**Example Test Structure:**
 
 ```typescript
-import {describe, expect, it, vi, beforeEach} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 import {renderHook, waitFor, act} from '@/test-utils'
 import {useVote} from './useVote'
 import {votePost} from '@/lib/actions/reddit'
@@ -425,74 +257,21 @@ vi.mock('@/lib/actions/reddit', () => ({
   votePost: vi.fn(async () => ({success: true}))
 }))
 
-const mockVotePost = vi.mocked(votePost)
-
 describe('useVote', () => {
-  beforeEach(() => {
-    mockVotePost.mockClear()
-  })
-
-  it('initializes with correct values', () => {
-    const {result} = renderHook(() =>
-      useVote({
-        itemName: 't3_test123',
-        initialScore: 100
-      })
-    )
-
-    expect(result.current.score).toBe(100)
-    expect(result.current.isPending).toBe(false)
-  })
-
   it('performs optimistic update', async () => {
     const {result} = renderHook(() =>
-      useVote({
-        itemName: 't3_test123',
-        initialScore: 100
-      })
+      useVote({itemName: 't3_123', initialScore: 100})
     )
 
-    act(() => {
-      result.current.vote(1)
-    })
+    act(() => result.current.vote(1))
+    expect(result.current.score).toBe(101) // Optimistic
 
-    // Optimistic update happens immediately
-    expect(result.current.score).toBe(101)
-
-    await waitFor(() => {
-      expect(result.current.isPending).toBe(false)
-    })
-
-    expect(mockVotePost).toHaveBeenCalledWith('t3_test123', 1)
+    await waitFor(() => expect(result.current.isPending).toBe(false))
   })
 })
 ```
 
-**Key Patterns:**
-
-- Mock server actions with `vi.mock()` to avoid env var errors
-- Use `act()` for state updates
-- Use `waitFor()` for async operations
-- Test optimistic updates + rollbacks
-- Test race conditions (`if (isPending) return`)
-
-**For integration tests with MSW:**
-
-```typescript
-import {server} from '@/test-utils/msw/server'
-import {http, HttpResponse} from 'msw'
-
-it('handles 404 error', async () => {
-  server.use(
-    http.get('https://oauth.reddit.com/r/:subreddit/hot.json', () => {
-      return new HttpResponse(null, {status: 404})
-    })
-  )
-
-  const result = await fetchPosts('nonexistent', 'hot')
-  expect(result.error).toBe('Subreddit not found')
-})
-```
+**📖 For complete testing patterns, MSW handlers, and examples, see [testing-standards.instructions.md](.github/instructions/testing-standards.instructions.md)**
 
 ---
 
@@ -570,27 +349,35 @@ npm run typegen:validate  # Validate OpenAPI spec with Redocly
 
 ## Code Review Process
 
-Before submitting a pull request:
+> **📚 For complete review checklist, see [code-review.instructions.md](.github/instructions/code-review.instructions.md)**
 
-1. **Run quality gates**: `npm run validate`
-2. **Run tests**: `npm run test:coverage`
-3. **Test authenticated state**: Log in and test features
-4. **Test unauthenticated state**: Log out and verify graceful degradation
-5. **Check browser console**: No errors or warnings
-6. **Test mobile**: Verify responsive layout
+### Before Submitting a Pull Request
 
-**Review Checklist:**
+**Required Steps:**
 
-- [ ] All tests pass
-- [ ] Test coverage meets requirements (utilities/hooks 100%, components 80%+)
-- [ ] No TypeScript errors
-- [ ] No ESLint warnings
-- [ ] Code follows project conventions (see `.github/instructions/code-standards.instructions.md`)
-- [ ] Server Actions use Next.js fetch with `next: {revalidate}` for caching
-- [ ] Error messages are specific by HTTP status
-- [ ] HTML sanitized with `sanitize-html` via `sanitizeText()`
-- [ ] Race conditions prevented (`if (isPending) return`)
+1. ✅ **Run quality gates**: `npm run validate` (format + typecheck + lint)
+2. ✅ **Run tests with coverage**: `npm run test:coverage`
+3. ✅ **Test authenticated state**: Log in and test your changes
+4. ✅ **Test unauthenticated state**: Log out and verify graceful degradation
+5. ✅ **Check browser console**: No errors or warnings
+6. ✅ **Test mobile**: Verify responsive layout
+
+### Quick Review Checklist
+
+**Critical Items:**
+
+- [ ] All tests pass with required coverage (utilities/hooks 100%, components 80%+)
+- [ ] `npm run validate` passes (format, typecheck, lint)
+- [ ] No TypeScript errors or ESLint warnings
+- [ ] Arctic OAuth uses methods: `tokens.accessToken()` not `.accessToken`
+- [ ] HTML sanitized with `sanitizeText()` before rendering
+- [ ] Race conditions prevented with `if (isPending) return`
+- [ ] Server Actions in `/lib/actions/reddit.ts` use `next: {revalidate}`
+- [ ] Error messages specific by HTTP status (401, 404, 429, etc.)
 - [ ] Props use `Readonly<>` wrapper
+- [ ] Mantine `<Anchor component={Link}>` wraps Next.js `<Link>`
+
+**📖 For complete P1/P2/P3 review criteria, see [code-review.instructions.md](.github/instructions/code-review.instructions.md)**
 
 ---
 
