@@ -12,7 +12,7 @@ import {useEffect} from 'react'
  * @param error - Error object with optional digest
  * @param reset - Function to re-render the route segment
  */
-export default function Error({
+export default function RouteError({
   error,
   reset
 }: Readonly<{

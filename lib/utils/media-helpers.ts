@@ -157,8 +157,10 @@ export function extractGalleryItems(post: RedditPost): GalleryItem[] | null {
  * @returns True if thumbnail is valid
  */
 export function isValidThumbnail(thumbnail: string | undefined): boolean {
-  return !!(
-    thumbnail &&
+  if (!thumbnail) {
+    return false
+  }
+  return (
     thumbnail !== 'self' &&
     thumbnail !== 'default' &&
     thumbnail.startsWith('http')
@@ -175,8 +177,8 @@ export function isValidThumbnail(thumbnail: string | undefined): boolean {
  */
 export function getHighestQualityVideoUrl(fallbackUrl: string): string {
   // Check if URL matches Reddit video pattern: https://v.redd.it/{id}/DASH_{resolution}.mp4
-  const dashMatch = fallbackUrl.match(/\/DASH_\d+\.mp4/)
-  if (!dashMatch) {
+  const dashRegex = /\/DASH_\d+\.mp4/
+  if (!dashRegex.exec(fallbackUrl)) {
     // Not a DASH URL, return as-is (might be direct video or external)
     return fallbackUrl
   }
@@ -186,7 +188,7 @@ export function getHighestQualityVideoUrl(fallbackUrl: string): string {
 
   // Extract query parameters if present (everything after .mp4)
   const queryStart = fallbackUrl.indexOf('?', fallbackUrl.lastIndexOf('.mp4'))
-  const queryParams = queryStart !== -1 ? fallbackUrl.substring(queryStart) : ''
+  const queryParams = queryStart >= 0 ? fallbackUrl.substring(queryStart) : ''
 
   // Return 1080p URL as it's commonly available and high quality
   // Note: Reddit typically provides multiple resolutions (240p through 1080p, sometimes 4K)

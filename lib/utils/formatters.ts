@@ -63,7 +63,7 @@ export function convertImageLinksToImages(html: string): string {
   const imageLinkRegex =
     /<a[^>]+href="(https?:\/\/[^"]+\.(?:jpg|jpeg|png|gif|webp|gifv)[^"]*)"[^>]*>([^<]*)<\/a>/gi
 
-  return html.replace(imageLinkRegex, (match, url, text) => {
+  return html.replaceAll(imageLinkRegex, (match, url, text) => {
     // If the link text is the same as the URL or is empty, convert to img
     const trimmedText = text.trim()
     const isUrlAsText =

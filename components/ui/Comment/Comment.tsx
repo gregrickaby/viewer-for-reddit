@@ -7,6 +7,7 @@ import {
   formatTimeAgo,
   sanitizeText
 } from '@/lib/utils/formatters'
+import {logger} from '@/lib/utils/logger'
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
@@ -46,6 +47,168 @@ interface CommentProps {
   isAuthenticated?: boolean
   /** Optional callback when item is unsaved (for saved items list) */
   onUnsave?: () => void
+}
+
+/**
+ * Helper to render author name (special users vs normal users)
+ */
+function renderAuthor(author: string) {
+  const isSpecialUser =
+    author === '[deleted]' ||
+    author === '[removed]' ||
+    author === 'AutoModerator'
+
+  if (isSpecialUser) {
+    return (
+      <Text size="sm" fw={600} c="dimmed">
+        u/{author}
+      </Text>
+    )
+  }
+
+  return (
+    <Anchor
+      component={Link}
+      href={`/u/${author}`}
+      size="sm"
+      fw={600}
+      underline="hover"
+    >
+      u/{author}
+    </Anchor>
+  )
+}
+
+/**
+ * Handle sharing comment link to clipboard
+ */
+async function handleShareComment(permalink: string) {
+  try {
+    const url = `${globalThis.location.origin}${permalink}`
+    await navigator.clipboard.writeText(url)
+    notifications.show({
+      message: 'Link copied to clipboard',
+      color: 'teal',
+      autoClose: 3000
+    })
+  } catch (error) {
+    logger.error('Failed to copy comment link', error)
+    notifications.show({
+      message: 'Failed to copy link',
+      color: 'red',
+      autoClose: 3000
+    })
+  }
+}
+
+/**
+ * Handle save/unsave notification
+ */
+function showSaveNotification(isSaved: boolean) {
+  notifications.show({
+    message: isSaved ? 'Comment unsaved' : 'Comment saved',
+    color: isSaved ? 'gray' : 'yellow',
+    autoClose: 3000
+  })
+}
+
+/**
+ * Render vote action buttons with score display
+ */
+function renderVoteActions(
+  voteState: 1 | 0 | -1 | null,
+  score: number,
+  isPending: boolean,
+  isAuthenticated: boolean,
+  vote: (direction: 1 | -1) => void,
+  styles: {readonly [key: string]: string}
+) {
+  return (
+    <Group gap={4}>
+      <ActionIcon
+        variant="subtle"
+        size="sm"
+        color={voteState === 1 ? 'orange' : 'gray'}
+        onClick={() => isAuthenticated && vote(1)}
+        loading={isPending}
+        disabled={!isAuthenticated}
+        className={
+          isAuthenticated ? styles.voteButton : styles.voteButtonDisabled
+        }
+        aria-label={`${voteState === 1 ? 'Upvoted' : 'Upvote'} comment (${score} points)`}
+        aria-disabled={!isAuthenticated}
+        data-umami-event="comment-upvote"
+      >
+        <IconArrowUp aria-hidden="true" size={14} />
+      </ActionIcon>
+      <Text size="xs" fw={600} c={getVoteColor(voteState)}>
+        <NumberFormatter value={score} thousandSeparator="," />
+      </Text>
+      <ActionIcon
+        variant="subtle"
+        size="sm"
+        color={voteState === -1 ? 'blue' : 'gray'}
+        onClick={() => isAuthenticated && vote(-1)}
+        loading={isPending}
+        disabled={!isAuthenticated}
+        className={
+          isAuthenticated ? styles.voteButton : styles.voteButtonDisabled
+        }
+        aria-label={`${voteState === -1 ? 'Downvoted' : 'Downvote'} comment (${score} points)`}
+        aria-disabled={!isAuthenticated}
+        data-umami-event="comment-downvote"
+      >
+        <IconArrowDown aria-hidden="true" size={14} />
+      </ActionIcon>
+    </Group>
+  )
+}
+
+/**
+ * Render save and share action buttons
+ */
+function renderActionButtons(
+  isSaved: boolean,
+  isPending: boolean,
+  isAuthenticated: boolean,
+  handleSave: () => void,
+  handleShare: () => void,
+  styles: {readonly [key: string]: string}
+) {
+  return (
+    <>
+      <ActionIcon
+        variant="subtle"
+        size="sm"
+        color={isSaved ? 'yellow' : 'gray'}
+        onClick={handleSave}
+        loading={isPending}
+        disabled={!isAuthenticated}
+        className={
+          isAuthenticated ? styles.voteButton : styles.voteButtonDisabled
+        }
+        aria-label={isSaved ? 'Unsave comment' : 'Save comment'}
+        aria-disabled={!isAuthenticated}
+        data-umami-event={isSaved ? 'comment-unsave' : 'comment-save'}
+      >
+        {isSaved ? (
+          <IconBookmarkFilled aria-hidden="true" size={14} />
+        ) : (
+          <IconBookmark aria-hidden="true" size={14} />
+        )}
+      </ActionIcon>
+      <ActionIcon
+        variant="subtle"
+        size="sm"
+        color="gray"
+        onClick={handleShare}
+        aria-label="Share comment"
+        data-umami-event="comment-share"
+      >
+        <IconShare aria-hidden="true" size={14} />
+      </ActionIcon>
+    </>
+  )
 }
 
 /**
@@ -109,38 +272,12 @@ export function Comment({
     setIsCollapsed(!isCollapsed)
   }
 
-  const handleShare = async () => {
-    try {
-      const url = `${window.location.origin}${comment.permalink}`
-      await navigator.clipboard.writeText(url)
-      notifications.show({
-        message: 'Link copied to clipboard',
-        color: 'teal',
-        autoClose: 3000
-      })
-    } catch (error) {
-      notifications.show({
-        message: 'Failed to copy link',
-        color: 'red',
-        autoClose: 3000
-      })
-    }
-  }
+  const handleShare = () => handleShareComment(comment.permalink)
 
   const handleSave = () => {
     toggleSave()
-    notifications.show({
-      message: isSaved ? 'Comment unsaved' : 'Comment saved',
-      color: isSaved ? 'gray' : 'yellow',
-      autoClose: 3000
-    })
+    showSaveNotification(isSaved)
   }
-
-  // Don't link to deleted/suspended users
-  const isSpecialUser =
-    comment.author === '[deleted]' ||
-    comment.author === '[removed]' ||
-    comment.author === 'AutoModerator'
 
   return (
     <Box ml={depth > 0 ? 20 : 0}>
@@ -166,21 +303,7 @@ export function Comment({
                 )}
               </ActionIcon>
             )}
-            {isSpecialUser ? (
-              <Text size="sm" fw={600} c="dimmed">
-                u/{comment.author}
-              </Text>
-            ) : (
-              <Anchor
-                component={Link}
-                href={`/u/${comment.author}`}
-                size="sm"
-                fw={600}
-                underline="hover"
-              >
-                u/{comment.author}
-              </Anchor>
-            )}
+            {renderAuthor(comment.author)}
             {comment.distinguished && (
               <Badge size="xs" color="green">
                 {comment.distinguished}
@@ -210,79 +333,22 @@ export function Comment({
               />
 
               <Group gap="sm">
-                <Group gap={4}>
-                  <ActionIcon
-                    variant="subtle"
-                    size="sm"
-                    color={voteState === 1 ? 'orange' : 'gray'}
-                    onClick={() => isAuthenticated && vote(1)}
-                    loading={isPending}
-                    disabled={!isAuthenticated}
-                    className={
-                      isAuthenticated
-                        ? styles.voteButton
-                        : styles.voteButtonDisabled
-                    }
-                    aria-label={`${voteState === 1 ? 'Upvoted' : 'Upvote'} comment (${score} points)`}
-                    aria-disabled={!isAuthenticated}
-                    data-umami-event="comment-upvote"
-                  >
-                    <IconArrowUp aria-hidden="true" size={14} />
-                  </ActionIcon>
-                  <Text size="xs" fw={600} c={getVoteColor(voteState)}>
-                    <NumberFormatter value={score} thousandSeparator="," />
-                  </Text>
-                  <ActionIcon
-                    variant="subtle"
-                    size="sm"
-                    color={voteState === -1 ? 'blue' : 'gray'}
-                    onClick={() => isAuthenticated && vote(-1)}
-                    loading={isPending}
-                    disabled={!isAuthenticated}
-                    className={
-                      isAuthenticated
-                        ? styles.voteButton
-                        : styles.voteButtonDisabled
-                    }
-                    aria-label={`${voteState === -1 ? 'Downvoted' : 'Downvote'} comment (${score} points)`}
-                    aria-disabled={!isAuthenticated}
-                    data-umami-event="comment-downvote"
-                  >
-                    <IconArrowDown aria-hidden="true" size={14} />
-                  </ActionIcon>
-                </Group>
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  color={isSaved ? 'yellow' : 'gray'}
-                  onClick={handleSave}
-                  loading={isPending}
-                  disabled={!isAuthenticated}
-                  className={
-                    isAuthenticated
-                      ? styles.voteButton
-                      : styles.voteButtonDisabled
-                  }
-                  aria-label={isSaved ? 'Unsave comment' : 'Save comment'}
-                  aria-disabled={!isAuthenticated}
-                  data-umami-event={isSaved ? 'comment-unsave' : 'comment-save'}
-                >
-                  {isSaved ? (
-                    <IconBookmarkFilled aria-hidden="true" size={14} />
-                  ) : (
-                    <IconBookmark aria-hidden="true" size={14} />
-                  )}
-                </ActionIcon>
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  color="gray"
-                  onClick={handleShare}
-                  aria-label="Share comment"
-                  data-umami-event="comment-share"
-                >
-                  <IconShare aria-hidden="true" size={14} />
-                </ActionIcon>
+                {renderVoteActions(
+                  voteState,
+                  score,
+                  isPending,
+                  isAuthenticated,
+                  vote,
+                  styles
+                )}
+                {renderActionButtons(
+                  isSaved,
+                  isPending,
+                  isAuthenticated,
+                  handleSave,
+                  handleShare,
+                  styles
+                )}
               </Group>
             </Stack>
           </Collapse>

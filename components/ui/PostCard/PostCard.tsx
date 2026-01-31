@@ -13,6 +13,57 @@ import {PostMedia} from '../PostMedia/PostMedia'
 import styles from './PostCard.module.css'
 
 /**
+ * Render post self-text content with proper HTML/plain text handling
+ */
+function renderSelfText(
+  post: RedditPost,
+  postUrl: string,
+  showFullText: boolean
+) {
+  if (!post.selftext_html) {
+    return (
+      <Anchor
+        component={Link}
+        href={postUrl}
+        underline="never"
+        c="dimmed"
+        data-umami-event="post-text-preview-click"
+      >
+        <Text size="sm" c="dimmed" lineClamp={3}>
+          {post.selftext}
+        </Text>
+      </Anchor>
+    )
+  }
+
+  const sanitizedHtml = sanitizeText(decodeHtmlEntities(post.selftext_html))
+
+  if (showFullText) {
+    return (
+      <div
+        dangerouslySetInnerHTML={{__html: sanitizedHtml}}
+        className={styles.postBody}
+      />
+    )
+  }
+
+  return (
+    <Anchor
+      component={Link}
+      href={postUrl}
+      underline="never"
+      c="dimmed"
+      data-umami-event="post-text-preview-click"
+    >
+      <div
+        dangerouslySetInnerHTML={{__html: sanitizedHtml}}
+        className={styles.postBodyPreview}
+      />
+    </Anchor>
+  )
+}
+
+/**
  * Props for the PostCard component.
  */
 interface PostCardProps {
@@ -100,51 +151,7 @@ export const PostCard = memo(
 
           <PostMedia post={post} priority={priority} />
 
-          {post.selftext && (
-            <>
-              {post.selftext_html ? (
-                showFullText ? (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: sanitizeText(
-                        decodeHtmlEntities(post.selftext_html)
-                      )
-                    }}
-                    className={styles.postBody}
-                  />
-                ) : (
-                  <Anchor
-                    component={Link}
-                    href={postUrl}
-                    underline="never"
-                    c="dimmed"
-                    data-umami-event="post-text-preview-click"
-                  >
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: sanitizeText(
-                          decodeHtmlEntities(post.selftext_html)
-                        )
-                      }}
-                      className={styles.postBodyPreview}
-                    />
-                  </Anchor>
-                )
-              ) : (
-                <Anchor
-                  component={Link}
-                  href={postUrl}
-                  underline="never"
-                  c="dimmed"
-                  data-umami-event="post-text-preview-click"
-                >
-                  <Text size="sm" c="dimmed" lineClamp={3}>
-                    {post.selftext}
-                  </Text>
-                </Anchor>
-              )}
-            </>
-          )}
+          {post.selftext && renderSelfText(post, postUrl, showFullText)}
 
           <PostActions
             postUrl={postUrl}

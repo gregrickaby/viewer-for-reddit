@@ -16,7 +16,7 @@ import {useEffect} from 'react'
  *
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/error
  */
-export default function Error({
+export default function RouteError({
   error,
   reset
 }: Readonly<{

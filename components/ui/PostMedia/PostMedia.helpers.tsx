@@ -83,7 +83,7 @@ export function renderAnimatedGif(post: RedditPost) {
   const resolutions = variantsMp4?.resolutions
   const highestRes =
     resolutions && resolutions.length > 0
-      ? resolutions[resolutions.length - 1] // Last item is highest resolution
+      ? resolutions.at(-1) // Last item is highest resolution
       : variantsMp4?.source
 
   if (highestRes?.url) {

@@ -84,9 +84,15 @@ class Logger {
           stack: error.stack
         }
       } else if (error && typeof error === 'object') {
+        // Serialize object to avoid [object Object] in stringification
+        try {
+          log.error = structuredClone(error)
+        } catch {
+          // If structuredClone fails, convert to plain object
+          log.error = {...error}
+        }
+      } else if (error !== null && error !== undefined) {
         log.error = error
-      } else if (error) {
-        log.error = String(error)
       }
 
       console.error(JSON.stringify(log, null, 2))

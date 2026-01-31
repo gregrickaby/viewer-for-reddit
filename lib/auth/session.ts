@@ -40,7 +40,8 @@ function getSessionOptions(): SessionOptions {
       options.cookieOptions.domain = baseUrl.hostname
     } catch (error) {
       // If BASE_URL is invalid, continue without domain restriction
-      // Logging would happen at startup validation
+      // This is a fallback case - startup validation should catch invalid BASE_URL
+      console.warn('Invalid BASE_URL, skipping domain restriction:', error)
     }
   }
 
