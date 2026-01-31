@@ -31,7 +31,13 @@ import {
   RedditAPIError
 } from '@/lib/utils/errors'
 import {logger} from '@/lib/utils/logger'
-import {buildFeedUrlPath} from '@/lib/utils/reddit-helpers'
+import {
+  buildFeedUrlPath,
+  isValidFullname,
+  isValidPostId,
+  isValidSubredditName,
+  isValidUsername
+} from '@/lib/utils/reddit-helpers'
 import {retryWithBackoff} from '@/lib/utils/retry'
 import {revalidatePath} from 'next/cache'
 import {headers} from 'next/headers'
@@ -43,6 +49,44 @@ const GENERIC_ACTION_ERROR = 'Something went wrong. Please try again.'
 const RATE_LIMIT_ERROR = 'Rate limit exceeded'
 const AUTH_ERROR = 'Authentication failed'
 const NOT_FOUND_ERROR = 'Resource not found'
+
+// Allowed domains for SSRF prevention
+const ALLOWED_REDDIT_DOMAINS = new Set([
+  'oauth.reddit.com',
+  'www.reddit.com',
+  'reddit.com'
+])
+
+/**
+ * Validates that a URL is pointing to an allowed Reddit domain.
+ * Prevents SSRF attacks by ensuring we only make requests to Reddit's API.
+ *
+ * @param url - URL to validate
+ * @throws {Error} If URL is not a Reddit domain
+ */
+function validateRedditUrl(url: string): void {
+  let parsedUrl: URL
+  try {
+    parsedUrl = new URL(url)
+  } catch {
+    throw new Error('Invalid URL format')
+  }
+
+  // Ensure the hostname is one of the allowed Reddit domains
+  if (!ALLOWED_REDDIT_DOMAINS.has(parsedUrl.hostname)) {
+    logger.error('SSRF attempt detected', new Error('Invalid domain'), {
+      attemptedUrl: url,
+      hostname: parsedUrl.hostname,
+      context: 'validateRedditUrl'
+    })
+    throw new Error('Invalid request destination')
+  }
+
+  // Ensure HTTPS protocol
+  if (parsedUrl.protocol !== 'https:') {
+    throw new Error('Invalid protocol - HTTPS required')
+  }
+}
 
 /**
  * Capture incoming request metadata for debugging.
@@ -271,9 +315,22 @@ export async function fetchPosts(
     // Always use OAuth endpoint (works with both user and app tokens)
     const baseUrl = REDDIT_API_URL
 
-    // Handle different feed types
-    const urlPath = buildFeedUrlPath(baseUrl, subreddit, sort)
+    // Handle different feed types - buildFeedUrlPath validates input
+    let urlPath: string
+    try {
+      urlPath = buildFeedUrlPath(baseUrl, subreddit, sort)
+    } catch (error) {
+      logger.error('Invalid subreddit parameter', error, {
+        context: 'fetchPosts',
+        subreddit
+      })
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const url = new URL(urlPath)
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url.toString())
 
     if (after) {
       url.searchParams.set('after', after)
@@ -339,12 +396,44 @@ export async function fetchPost(
   sort: CommentSortOption = 'best'
 ): Promise<{post: RedditPost; comments: RedditComment[]}> {
   try {
+    // Validate inputs to prevent SSRF
+    if (
+      !isValidSubredditName(subreddit) &&
+      subreddit !== 'home' &&
+      !subreddit.startsWith('user/')
+    ) {
+      logger.error(
+        'Invalid subreddit parameter',
+        new Error('Validation failed'),
+        {
+          context: 'fetchPost',
+          subreddit
+        }
+      )
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
+    if (!isValidPostId(postId)) {
+      logger.error(
+        'Invalid post ID parameter',
+        new Error('Validation failed'),
+        {
+          context: 'fetchPost',
+          postId
+        }
+      )
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
     // Always use OAuth endpoint (works with both user and app tokens)
     const baseUrl = REDDIT_API_URL
     const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url)
 
     const response = await fetch(url, {
       headers: await getHeaders(isAuthenticated),
@@ -426,6 +515,19 @@ export async function fetchSubredditInfo(
   subreddit: string
 ): Promise<RedditSubreddit> {
   try {
+    // Validate input to prevent SSRF
+    if (!isValidSubredditName(subreddit)) {
+      logger.error(
+        'Invalid subreddit parameter',
+        new Error('Validation failed'),
+        {
+          context: 'fetchSubredditInfo',
+          subreddit
+        }
+      )
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
@@ -433,6 +535,9 @@ export async function fetchSubredditInfo(
     const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/r/${subreddit}/about.json`)
     url.searchParams.set('raw_json', '1')
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url.toString())
 
     const response = await fetch(url.toString(), {
       headers: await getHeaders(isAuthenticated),
@@ -598,6 +703,15 @@ export async function votePost(
   'use server'
 
   try {
+    // Validate input to prevent SSRF
+    if (!isValidFullname(postName)) {
+      logger.error('Invalid post fullname', new Error('Validation failed'), {
+        context: 'votePost',
+        postName
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
     const session = await getSession()
     if (!session.accessToken) {
       return {success: false, error: GENERIC_ACTION_ERROR}
@@ -605,6 +719,9 @@ export async function votePost(
 
     await retryWithBackoff(async () => {
       const url = `${REDDIT_API_URL}/api/vote`
+
+      // Validate URL is pointing to Reddit
+      validateRedditUrl(url)
       const res = await fetch(url, {
         method: 'POST',
         headers: {
@@ -669,6 +786,15 @@ export async function savePost(
 ): Promise<{success: boolean; error?: string}> {
   'use server'
   try {
+    // Validate input to prevent SSRF
+    if (!isValidFullname(postName)) {
+      logger.error('Invalid post fullname', new Error('Validation failed'), {
+        context: 'savePost',
+        postName
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
     const session = await getSession()
     if (!session.accessToken) {
       return {success: false, error: GENERIC_ACTION_ERROR}
@@ -677,6 +803,9 @@ export async function savePost(
     const endpoint = save ? 'save' : 'unsave'
     await retryWithBackoff(async () => {
       const url = `${REDDIT_API_URL}/api/${endpoint}`
+
+      // Validate URL is pointing to Reddit
+      validateRedditUrl(url)
       const res = await fetch(url, {
         method: 'POST',
         headers: {
@@ -817,12 +946,28 @@ export async function fetchMultireddits(): Promise<
  */
 export async function fetchUserInfo(username: string): Promise<RedditUser> {
   try {
+    // Validate input to prevent SSRF
+    if (!isValidUsername(username)) {
+      logger.error(
+        'Invalid username parameter',
+        new Error('Validation failed'),
+        {
+          context: 'fetchUserInfo',
+          username
+        }
+      )
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
     // Always use OAuth endpoint (works with both user and app tokens)
     const baseUrl = REDDIT_API_URL
     const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url)
 
     const response = await fetch(url, {
       headers: await getHeaders(isAuthenticated),
@@ -949,12 +1094,28 @@ export async function fetchUserPosts(
   timeFilter?: TimeFilter
 ): Promise<{posts: RedditPost[]; after: string | null}> {
   try {
+    // Validate input to prevent SSRF
+    if (!isValidUsername(username)) {
+      logger.error(
+        'Invalid username parameter',
+        new Error('Validation failed'),
+        {
+          context: 'fetchUserPosts',
+          username
+        }
+      )
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
     // Always use OAuth endpoint (works with both user and app tokens)
     const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url.toString())
 
     url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
     url.searchParams.set('raw_json', '1')
@@ -1052,12 +1213,28 @@ export async function fetchUserComments(
   timeFilter?: TimeFilter
 ): Promise<{comments: RedditComment[]; after: string | null}> {
   try {
+    // Validate input to prevent SSRF
+    if (!isValidUsername(username)) {
+      logger.error(
+        'Invalid username parameter',
+        new Error('Validation failed'),
+        {
+          context: 'fetchUserComments',
+          username
+        }
+      )
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
     // Always use OAuth endpoint (works with both user and app tokens)
     const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/user/${username}/comments.json`)
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url.toString())
 
     url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
     url.searchParams.set('raw_json', '1')
@@ -1151,12 +1328,24 @@ export async function searchReddit(
   after?: string
 ): Promise<{posts: RedditPost[]; after: string | null}> {
   try {
+    // Validate query to prevent SSRF
+    if (!query || typeof query !== 'string' || query.length > 512) {
+      logger.error('Invalid search query', new Error('Validation failed'), {
+        context: 'searchReddit',
+        queryLength: query?.length
+      })
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
     // Always use OAuth endpoint (works with both user and app tokens)
     const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/search.json`)
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url.toString())
 
     url.searchParams.set('q', query)
     url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
@@ -1247,6 +1436,19 @@ export async function searchSubreddits(query: string): Promise<{
     return {success: true, data: []}
   }
 
+  // Validate query to prevent SSRF
+  if (typeof query !== 'string' || query.length > 100) {
+    logger.error(
+      'Invalid subreddit search query',
+      new Error('Validation failed'),
+      {
+        context: 'searchSubreddits',
+        queryLength: query?.length
+      }
+    )
+    return {success: false, data: [], error: GENERIC_ACTION_ERROR}
+  }
+
   try {
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
@@ -1260,6 +1462,9 @@ export async function searchSubreddits(query: string): Promise<{
     })
 
     const url = `${REDDIT_API_URL}/api/subreddit_autocomplete_v2.json?${params}`
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url)
     const response = await fetch(url, {
       headers: await getHeaders(isAuthenticated),
       next: {revalidate: 60}
@@ -1357,6 +1562,15 @@ export async function toggleSubscription(
   'use server'
 
   try {
+    // Validate input to prevent SSRF
+    if (!isValidSubredditName(subredditName)) {
+      logger.error('Invalid subreddit name', new Error('Validation failed'), {
+        context: 'toggleSubscription',
+        subredditName
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
     const session = await getSession()
 
     if (!session.accessToken) {
@@ -1374,6 +1588,9 @@ export async function toggleSubscription(
     })
 
     const url = `${REDDIT_API_URL}/api/subscribe`
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url)
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1440,6 +1657,19 @@ export async function fetchSavedItems(
   after?: string
 ): Promise<{items: SavedItem[]; after: string | null}> {
   try {
+    // Validate input to prevent SSRF
+    if (!isValidUsername(username)) {
+      logger.error(
+        'Invalid username parameter',
+        new Error('Validation failed'),
+        {
+          context: 'fetchSavedItems',
+          username
+        }
+      )
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
     const session = await getSession()
     if (!session.accessToken) {
       throw new Error(GENERIC_SERVER_ERROR)
@@ -1448,6 +1678,9 @@ export async function fetchSavedItems(
     const headers = await getHeaders(true)
 
     const url = new URL(`${REDDIT_API_URL}/user/${username}/saved.json`)
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url.toString())
     url.searchParams.set('limit', '100')
     url.searchParams.set('raw_json', '1')
     if (after) {
