@@ -4,7 +4,7 @@
 
 New here? **[Start browsing now →](https://reddit-viewer.com)**
 
-## What You Get
+## How It Works
 
 - **Browse instantly** - No sign-up required. Start exploring right away.
 - **Your communities** - Add favorite subreddits to your homepage for quick access.
@@ -14,15 +14,30 @@ New here? **[Start browsing now →](https://reddit-viewer.com)**
 - **Works everywhere** - Fast, clean interface on desktop, tablet, or phone.
 - **Boss button** - Discreetly close Reddit by pressing `esc` or with one click (no judgment!).
 
-## How It Works
+## Frequently Asked Questions
 
-**No account? No problem.** Jump in and start browsing right now. The homepage shows popular posts, and you can search for any community.
+### Why am I seeing "Rate limit exceeded" errors?
 
-**Want more?** Sign in with your Reddit account to access your personalized feed, custom feeds, and saved posts. You can also vote on and save posts, plus join or leave communities.
+Reddit has aggressive rate limits on their API-among the strictest in the industry. When you see this message, it means Reddit's servers are temporarily blocking requests. Here's what you need to know:
 
-**Your privacy is protected.** We use Reddit's official login system (oAuth2) so your password never touches our servers. We store temporary access tokens that get deleted when you sign out. That's it.
+- **It's not you, it's Reddit** - These limits apply to all third-party apps, not just ours
+- **Wait it out** - Rate limits typically reset within a few minutes
+- **Peak times are worse** - You might experience more errors during high-traffic periods
+- **Authenticated helps** - Signing in with your Reddit account will eliminate rate limits
 
-The app does anonymously tracks button clicks with Umami's [Track Events](https://umami.is/docs/track-events) system. The data is used to make the app better by guiding which features to build next.
+We've implemented smart caching and request optimization to minimize these errors, but Reddit's limits are ultimately out of our control.
+
+### Do I need a Reddit account to use this?
+
+Nope! You can browse posts, search communities, and explore Reddit without signing in. You only need an account if you want to vote, comment, save posts, or access your personalized feed.
+
+### How is this different from Reddit's official app?
+
+Viewer for Reddit focuses on a clean, distraction-free reading experience. No ads, no algorithmic manipulation of your feed, no tracking of your behavior for advertisers. Just the content you want to see, presented simply.
+
+### Is my data safe?
+
+Yes. We use Reddit's official OAuth2 system, which means your password never touches our servers. We only store temporary access tokens that expire and get deleted when you sign out. The app tracks [anonymous button clicks](https://umami.is/docs/track-events) to improve features, but no personal information is collected or sold.Your password never touches our servers—we use Reddit's official OAuth2 system.
 
 ## The Story Behind It
 

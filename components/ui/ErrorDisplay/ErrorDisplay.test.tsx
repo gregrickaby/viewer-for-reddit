@@ -32,4 +32,12 @@ describe('ErrorDisplay', () => {
       screen.queryByRole('link', {name: /sign in with reddit/i})
     ).not.toBeInTheDocument()
   })
+
+  it('includes link to FAQ page', () => {
+    render(<ErrorDisplay />)
+
+    const faqLink = screen.getByRole('link', {name: /faq's/i})
+    expect(faqLink).toBeInTheDocument()
+    expect(faqLink).toHaveAttribute('href', '/about')
+  })
 })

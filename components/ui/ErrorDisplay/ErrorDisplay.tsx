@@ -1,9 +1,10 @@
-import {Button, Card, Stack, Text} from '@mantine/core'
+import {Anchor, Button, Card, Stack, Text} from '@mantine/core'
 import {
   IconAlertCircle,
   IconBrandReddit,
   IconRefresh
 } from '@tabler/icons-react'
+import Link from 'next/link'
 
 interface ErrorDisplayProps {
   isAuthenticated?: boolean
@@ -23,7 +24,11 @@ export function ErrorDisplay({
         </Text>
         <Text size="sm" c="dimmed" ta="center">
           This content was not found, set to private or you've reached Reddit's
-          rate limit.
+          rate limit. If you continue to see this message, please see our{' '}
+          <Anchor component={Link} href="/about" c="blue" fw={500}>
+            FAQ's
+          </Anchor>
+          .
         </Text>
         <Text size="sm" c="dimmed" ta="center">
           Sign in to remove rate limits or try again later.
