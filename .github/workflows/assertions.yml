@@ -1,11 +1,12 @@
 name: Assertions
 
 on:
-  # Run on pull requests to main branch
+  push:
+    branches: [main]
+
   pull_request:
     branches: [main]
 
-  # Manual trigger
   workflow_dispatch:
 
 permissions:
@@ -14,14 +15,15 @@ permissions:
 jobs:
   assertions:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - uses: actions/cache@v5
         with:
@@ -33,16 +35,40 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Install Dependencies
-        run: npm i
+        run: npm install # platform-specific binaries require full install
 
-      - name: Copy .env
-        run: cp .env.example .env
+      - name: Create Environment File
+        run: |
+          cat > .env << EOF
+          ANALYTICS_ID=${{ secrets.ANALYTICS_ID }}
+          ANALYTICS_SCRIPT_URL=${{ secrets.ANALYTICS_SCRIPT_URL }}
+          BASE_URL=${{ secrets.BASE_URL }}
+          ENABLE_ANALYTICS=${{ secrets.ENABLE_ANALYTICS }}
+          GOOGLE_SITE_VERIFICATION=${{ secrets.GOOGLE_SITE_VERIFICATION }}
+          REDDIT_CLIENT_ID=${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET=${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_REDIRECT_URI=${{ secrets.REDDIT_REDIRECT_URI }}
+          SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+          USER_AGENT=${{ secrets.USER_AGENT }}
+          EOF
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm run test
+      - name: Validate (Format / Typecheck / Lint / Test)
+        run: npm run validate:ci
 
       - name: Build
         run: npm run build
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-output
+          path: .next/
+          retention-days: 7
