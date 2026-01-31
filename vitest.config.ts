@@ -35,7 +35,7 @@ export default defineConfig({
         '**/*.config.*',
         '**/*.d.ts',
         '**/*.{spec,test}.{ts,tsx}',
-        '**/app/**/{page,layout,manifest,robots,sitemap,global-not-found}.{ts,tsx}',
+        '**/app/**/{page,layout,manifest,robots,sitemap,global-not-found,global-error,not-found,loading,error}.{ts,tsx}',
         '**/scripts/**',
         '**/skeletons/**',
         '**/test-utils/**',
