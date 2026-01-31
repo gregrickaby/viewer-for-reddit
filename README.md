@@ -6,7 +6,7 @@ New here? **[Start browsing now →](https://reddit-viewer.com)**
 
 ## How It Works
 
-- **Browse instantly** - No sign-up required. Start exploring right away.
+- **Browse instantly** - No sign-in required. Start exploring right away.
 - **Your communities** - Add favorite subreddits to your homepage for quick access.
 - **Vote & comment** - Sign in with your Reddit account to participate.
 - **Distraction-free** - No ads, no clickbait, no endless scrolling tricks.
@@ -27,17 +27,13 @@ Reddit has aggressive rate limits on their API-among the strictest in the indust
 
 We've implemented smart caching and request optimization to minimize these errors, but Reddit's limits are ultimately out of our control.
 
-### Do I need a Reddit account to use this?
-
-Nope! You can browse posts, search communities, and explore Reddit without signing in. You only need an account if you want to vote, comment, save posts, or access your personalized feed.
-
-### How is this different from Reddit's official app?
-
-Viewer for Reddit focuses on a clean, distraction-free reading experience. No ads, no algorithmic manipulation of your feed, no tracking of your behavior for advertisers. Just the content you want to see, presented simply.
-
 ### Is my data safe?
 
 Yes. We use Reddit's official OAuth2 system, which means your password never touches our servers. We only store temporary access tokens that expire and get deleted when you sign out. The app tracks [anonymous button clicks](https://umami.is/docs/track-events) to improve features, but no personal information is collected or sold.Your password never touches our servers—we use Reddit's official OAuth2 system.
+
+### Do I need a Reddit account to use this?
+
+Nope! You can browse posts, search communities, and explore Reddit without signing in. You only need an account if you want to vote, comment, save posts, access your personalized feed or are being rate limited by Reddit.
 
 ## The Story Behind It
 
