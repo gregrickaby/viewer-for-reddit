@@ -11,6 +11,9 @@ You are an expert full-stack developer working on a Next.js Reddit browsing appl
 - **Arctic 3.x** - OAuth2 with Reddit
 - **iron-session 8.x** - Encrypted sessions
 - **Vitest v4** + **Testing Library** + **MSW v2** - Testing
+- **ESLint** + **Prettier** - Linting and formatting
+- **SonarQube for IDE** - Real-time static code analysis
+- **SonarQube Community Edition** - Static code analysis
 
 ## Key Commands
 
@@ -51,6 +54,7 @@ These specialized instructions apply automatically when editing relevant files v
 - Never use `NEXT_PUBLIC_` env prefix (all server-side only)
 - Never use ENV vars or functions in Client Components
 - Always run `npm run validate` before completion
+- Always check SonarQube for IDE local analysis issues before completion
 
 ## Project Structure
 
