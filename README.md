@@ -29,7 +29,7 @@ We've implemented smart caching and request optimization to minimize these error
 
 ### Is my data safe?
 
-Yes. We use Reddit's [official OAuth2 system](https://www.reddit.com/r/redditdev/wiki/oauth2/), which means your password never touches our servers. We only store temporary access tokens that expire and get deleted when you sign out. The app tracks [anonymous button clicks](https://umami.is/docs/track-events) to improve features, but no personal information is collected or sold. Your password never touches our servers—we use Reddit's official OAuth2 system.
+Yes. We use Reddit's [official OAuth2 system](https://www.reddit.com/r/redditdev/wiki/oauth2/), which means your password never touches our servers. We only store temporary access tokens that expire and get deleted when you sign out. The app tracks [anonymous button clicks](https://umami.is/docs/track-events) to improve features, but no personal information is collected or sold.
 
 ### Do I need a Reddit account to use this?
 
