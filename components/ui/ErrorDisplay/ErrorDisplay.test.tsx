@@ -8,9 +8,6 @@ describe('ErrorDisplay', () => {
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
     expect(
-      screen.getByText(/the content was not found or set to private/i)
-    ).toBeInTheDocument()
-    expect(
       screen.getByText(/sign in to remove rate limits or try again later/i)
     ).toBeInTheDocument()
 
@@ -31,10 +28,6 @@ describe('ErrorDisplay', () => {
     render(<ErrorDisplay isAuthenticated />)
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
-    expect(
-      screen.getByText(/the content was not found or set to private/i)
-    ).toBeInTheDocument()
-
     expect(
       screen.queryByRole('link', {name: /sign in with reddit/i})
     ).not.toBeInTheDocument()

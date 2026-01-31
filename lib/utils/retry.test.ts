@@ -1,5 +1,12 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+// Mock rate-limit-state BEFORE imports
+vi.mock('@/lib/utils/rate-limit-state', () => ({
+  recordRateLimit: vi.fn(),
+  resetRateLimit: vi.fn(),
+  waitForRateLimit: vi.fn(async () => {})
+}))
+
 // Mock logger BEFORE imports
 vi.mock('@/lib/utils/logger', () => ({
   logger: {
@@ -11,14 +18,24 @@ vi.mock('@/lib/utils/logger', () => ({
 }))
 
 import {logger} from '@/lib/utils/logger'
+import {
+  recordRateLimit,
+  resetRateLimit,
+  waitForRateLimit
+} from '@/lib/utils/rate-limit-state'
 import {retryWithBackoff} from './retry'
 
 const mockLogger = vi.mocked(logger)
+const mockRecordRateLimit = vi.mocked(recordRateLimit)
+const mockResetRateLimit = vi.mocked(resetRateLimit)
+const mockWaitForRateLimit = vi.mocked(waitForRateLimit)
 
 describe('retryWithBackoff', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    // Reset mock implementations
+    mockWaitForRateLimit.mockResolvedValue()
   })
 
   afterEach(() => {
@@ -33,6 +50,8 @@ describe('retryWithBackoff', () => {
     expect(result).toBe('success')
     expect(mockFn).toHaveBeenCalledTimes(1)
     expect(mockLogger.info).not.toHaveBeenCalled()
+    expect(mockWaitForRateLimit).toHaveBeenCalledTimes(1)
+    expect(mockResetRateLimit).toHaveBeenCalledTimes(1)
   })
 
   it('retries on 429 rate limit error', async () => {
@@ -50,11 +69,9 @@ describe('retryWithBackoff', () => {
 
     expect(result).toBe('success')
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      'Rate limited, retrying in 1000ms (attempt 1/3)',
-      {delay: 1000, attempt: 1, maxRetries: 3},
-      {context: 'retryWithBackoff'}
-    )
+    expect(mockRecordRateLimit).toHaveBeenCalledWith(undefined)
+    // Rate limit errors don't log with logger.info - they use global state coordination
+    expect(mockLogger.info).not.toHaveBeenCalled()
   })
 
   it('retries on HTTP 429 status message', async () => {
@@ -73,11 +90,11 @@ describe('retryWithBackoff', () => {
     expect(mockFn).toHaveBeenCalledTimes(2)
   })
 
-  it('uses exponential backoff delays', async () => {
+  it('uses exponential backoff delays for network errors', async () => {
     const mockFn = vi
       .fn()
-      .mockRejectedValueOnce(new Error('Rate limit exceeded'))
-      .mockRejectedValueOnce(new Error('Rate limit exceeded'))
+      .mockRejectedValueOnce(new Error('fetch failed'))
+      .mockRejectedValueOnce(new Error('network error'))
       .mockResolvedValueOnce('success')
 
     const promise = retryWithBackoff(mockFn, 3, 1000)
@@ -85,16 +102,16 @@ describe('retryWithBackoff', () => {
     // First retry: 1000ms (1000 * 2^0)
     await vi.advanceTimersByTimeAsync(1000)
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'Rate limited, retrying in 1000ms (attempt 1/3)',
-      {delay: 1000, attempt: 1, maxRetries: 3},
+      'Network error, retrying in 1000ms (attempt 1/3)',
+      {delay: 1000, attempt: 1, maxRetries: 3, errorType: 'network'},
       {context: 'retryWithBackoff'}
     )
 
     // Second retry: 2000ms (1000 * 2^1)
     await vi.advanceTimersByTimeAsync(2000)
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'Rate limited, retrying in 2000ms (attempt 2/3)',
-      {delay: 2000, attempt: 2, maxRetries: 3},
+      'Network error, retrying in 2000ms (attempt 2/3)',
+      {delay: 2000, attempt: 2, maxRetries: 3, errorType: 'network'},
       {context: 'retryWithBackoff'}
     )
 
@@ -171,7 +188,7 @@ describe('retryWithBackoff', () => {
   it('respects custom baseDelay parameter', async () => {
     const mockFn = vi
       .fn()
-      .mockRejectedValueOnce(new Error('Rate limit exceeded'))
+      .mockRejectedValueOnce(new Error('fetch error'))
       .mockResolvedValueOnce('success')
 
     const promise = retryWithBackoff(mockFn, 3, 500)
@@ -182,8 +199,8 @@ describe('retryWithBackoff', () => {
 
     expect(result).toBe('success')
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'Rate limited, retrying in 500ms (attempt 1/3)',
-      {delay: 500, attempt: 1, maxRetries: 3},
+      'Network error, retrying in 500ms (attempt 1/3)',
+      {delay: 500, attempt: 1, maxRetries: 3, errorType: 'network'},
       {context: 'retryWithBackoff'}
     )
   })
@@ -250,9 +267,9 @@ describe('retryWithBackoff', () => {
   it('logs correct attempt numbers', async () => {
     const mockFn = vi
       .fn()
-      .mockRejectedValueOnce(new Error('429'))
-      .mockRejectedValueOnce(new Error('429'))
-      .mockRejectedValueOnce(new Error('429'))
+      .mockRejectedValueOnce(new Error('fetch timeout'))
+      .mockRejectedValueOnce(new Error('network issue'))
+      .mockRejectedValueOnce(new Error('fetch failed'))
       .mockResolvedValueOnce('success')
 
     const promise = retryWithBackoff(mockFn, 5, 100)
@@ -265,20 +282,20 @@ describe('retryWithBackoff', () => {
 
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       1,
-      'Rate limited, retrying in 100ms (attempt 1/5)',
-      {delay: 100, attempt: 1, maxRetries: 5},
+      'Network error, retrying in 100ms (attempt 1/5)',
+      {delay: 100, attempt: 1, maxRetries: 5, errorType: 'network'},
       {context: 'retryWithBackoff'}
     )
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       2,
-      'Rate limited, retrying in 200ms (attempt 2/5)',
-      {delay: 200, attempt: 2, maxRetries: 5},
+      'Network error, retrying in 200ms (attempt 2/5)',
+      {delay: 200, attempt: 2, maxRetries: 5, errorType: 'network'},
       {context: 'retryWithBackoff'}
     )
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       3,
-      'Rate limited, retrying in 400ms (attempt 3/5)',
-      {delay: 400, attempt: 3, maxRetries: 5},
+      'Network error, retrying in 400ms (attempt 3/5)',
+      {delay: 400, attempt: 3, maxRetries: 5, errorType: 'network'},
       {context: 'retryWithBackoff'}
     )
   })
@@ -291,5 +308,98 @@ describe('retryWithBackoff', () => {
     })
 
     expect(mockFn).toHaveBeenCalledTimes(1)
+  })
+
+  describe('rate limit state integration', () => {
+    it('calls waitForRateLimit before each attempt', async () => {
+      const mockFn = vi.fn(async () => 'success')
+
+      await retryWithBackoff(mockFn)
+
+      expect(mockWaitForRateLimit).toHaveBeenCalledTimes(1)
+      expect(mockWaitForRateLimit).toHaveBeenCalledBefore(mockFn)
+    })
+
+    it('records rate limit when 429 error occurs', async () => {
+      const mockFn = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('Rate limit exceeded'))
+        .mockResolvedValueOnce('success')
+
+      const promise = retryWithBackoff(mockFn, 3, 1000)
+      await vi.advanceTimersByTimeAsync(1000)
+      await promise
+
+      expect(mockRecordRateLimit).toHaveBeenCalledWith(undefined)
+    })
+
+    it('resets rate limit state on success', async () => {
+      const mockFn = vi.fn(async () => 'success')
+
+      await retryWithBackoff(mockFn)
+
+      expect(mockResetRateLimit).toHaveBeenCalledTimes(1)
+    })
+
+    it('extracts retryAfter from RateLimitError', async () => {
+      const rateLimitError = new Error('Rate limit exceeded')
+      // Simulate RateLimitError with retryAfter property
+      Object.assign(rateLimitError, {retryAfter: 60})
+
+      const mockFn = vi
+        .fn()
+        .mockRejectedValueOnce(rateLimitError)
+        .mockResolvedValueOnce('success')
+
+      const promise = retryWithBackoff(mockFn, 3, 1000)
+      await vi.advanceTimersByTimeAsync(1000)
+      await promise
+
+      expect(mockRecordRateLimit).toHaveBeenCalledWith(60)
+    })
+
+    it('propagates waitForRateLimit errors immediately', async () => {
+      const waitError = new Error(
+        'Reddit is experiencing high traffic. Please try again in 65 seconds.'
+      )
+      mockWaitForRateLimit.mockRejectedValueOnce(waitError)
+
+      const mockFn = vi.fn(async () => 'success')
+
+      await expect(retryWithBackoff(mockFn)).rejects.toThrow(
+        'Reddit is experiencing high traffic'
+      )
+
+      // Function should never be called if waitForRateLimit throws
+      expect(mockFn).not.toHaveBeenCalled()
+      expect(mockLogger.error).not.toHaveBeenCalled()
+    })
+
+    it('retries multiple times with rate limit coordination', async () => {
+      const mockFn = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('429'))
+        .mockRejectedValueOnce(new Error('Rate limit exceeded'))
+        .mockResolvedValueOnce('success')
+
+      const promise = retryWithBackoff(mockFn, 3, 1000)
+
+      await vi.advanceTimersByTimeAsync(1000)
+      await vi.advanceTimersByTimeAsync(2000)
+      await promise
+
+      expect(mockWaitForRateLimit).toHaveBeenCalledTimes(3)
+      expect(mockRecordRateLimit).toHaveBeenCalledTimes(2)
+      expect(mockResetRateLimit).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not record rate limit for non-rate-limit errors', async () => {
+      const mockFn = vi.fn().mockRejectedValue(new Error('Network error'))
+
+      await expect(retryWithBackoff(mockFn)).rejects.toThrow('Network error')
+
+      expect(mockRecordRateLimit).not.toHaveBeenCalled()
+      expect(mockWaitForRateLimit).toHaveBeenCalledTimes(1)
+    })
   })
 })

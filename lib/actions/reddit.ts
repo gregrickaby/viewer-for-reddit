@@ -17,12 +17,15 @@ import type {
   TimeFilter
 } from '@/lib/types/reddit'
 import {
+  CACHE_COMMENTS,
+  CACHE_POSTS,
+  CACHE_SEARCH,
+  CACHE_SUBREDDIT_INFO,
+  CACHE_SUBSCRIPTIONS,
+  CACHE_USER_INFO,
   DEFAULT_POST_LIMIT,
-  FIVE_MINUTES,
-  ONE_HOUR,
   REDDIT_API_URL,
-  REDDIT_PUBLIC_API_URL,
-  TEN_MINUTES
+  REDDIT_PUBLIC_API_URL
 } from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
 import {
@@ -32,6 +35,7 @@ import {
   RedditAPIError
 } from '@/lib/utils/errors'
 import {logger} from '@/lib/utils/logger'
+import {recordRateLimit} from '@/lib/utils/rate-limit-state'
 import {
   buildFeedUrlPath,
   isValidFullname,
@@ -171,6 +175,8 @@ async function handleFetchPostsError(
         userMessage: GENERIC_SERVER_ERROR
       })
     case 429:
+      // Record rate limit in global state for coordination
+      recordRateLimit(retryAfterSeconds)
       throw new RateLimitError(RATE_LIMIT_ERROR, operation, retryAfterSeconds, {
         resource,
         statusCode: response.status,
@@ -279,10 +285,15 @@ export async function fetchPosts(
     url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
     url.searchParams.set('raw_json', '1')
 
-    const response = await fetch(url.toString(), {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: FIVE_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url.toString(), {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: CACHE_POSTS,
+          tags: ['posts', subreddit]
+        }
+      })
+    )
 
     if (!response.ok) {
       await handleFetchPostsError(response, url, 'fetchPosts', subreddit)
@@ -372,10 +383,15 @@ export async function fetchPost(
     // Validate URL is pointing to Reddit
     validateRedditUrl(url)
 
-    const response = await fetch(url, {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: FIVE_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url, {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: CACHE_COMMENTS,
+          tags: ['post', postId]
+        }
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -476,10 +492,15 @@ export async function fetchSubredditInfo(
     // Validate URL is pointing to Reddit
     validateRedditUrl(url.toString())
 
-    const response = await fetch(url.toString(), {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: ONE_HOUR}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url.toString(), {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: CACHE_SUBREDDIT_INFO,
+          tags: ['subreddit', subreddit]
+        }
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -569,10 +590,15 @@ export async function fetchUserSubscriptions(): Promise<
         url.searchParams.set('after', after)
       }
 
-      const response = await fetch(url.toString(), {
-        headers: await getHeaders(true),
-        next: {revalidate: TEN_MINUTES}
-      })
+      const response = await retryWithBackoff(async () =>
+        fetch(url.toString(), {
+          headers: await getHeaders(true),
+          next: {
+            revalidate: CACHE_SUBSCRIPTIONS,
+            tags: ['subscriptions']
+          }
+        })
+      )
 
       if (!response.ok) {
         logger.warn(
@@ -820,10 +846,15 @@ export async function fetchMultireddits(): Promise<
 
     const url = `${REDDIT_API_URL}/api/multi/mine`
 
-    const response = await fetch(url, {
-      headers: await getHeaders(true),
-      next: {revalidate: TEN_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url, {
+        headers: await getHeaders(true),
+        next: {
+          revalidate: CACHE_SUBSCRIPTIONS,
+          tags: ['multireddits']
+        }
+      })
+    )
 
     if (!response.ok) {
       logger.warn(
@@ -906,10 +937,15 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
     // Validate URL is pointing to Reddit
     validateRedditUrl(url)
 
-    const response = await fetch(url, {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: FIVE_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url, {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: CACHE_USER_INFO,
+          tags: ['user', username]
+        }
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -1067,10 +1103,15 @@ export async function fetchUserPosts(
       url.searchParams.set('t', timeFilter)
     }
 
-    const response = await fetch(url.toString(), {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: FIVE_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url.toString(), {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: CACHE_USER_INFO,
+          tags: ['user-posts', username]
+        }
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -1186,10 +1227,15 @@ export async function fetchUserComments(
       url.searchParams.set('t', timeFilter)
     }
 
-    const response = await fetch(url.toString(), {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: FIVE_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url.toString(), {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: CACHE_USER_INFO,
+          tags: ['user-comments', username]
+        }
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -1292,10 +1338,15 @@ export async function searchReddit(
       url.searchParams.set('after', after)
     }
 
-    const response = await fetch(url.toString(), {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: FIVE_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url.toString(), {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: CACHE_SEARCH,
+          tags: ['search', query]
+        }
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -1402,10 +1453,15 @@ export async function searchSubreddits(query: string): Promise<{
 
     // Validate URL is pointing to Reddit
     validateRedditUrl(url)
-    const response = await fetch(url, {
-      headers: await getHeaders(isAuthenticated),
-      next: {revalidate: 60}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url, {
+        headers: await getHeaders(isAuthenticated),
+        next: {
+          revalidate: 60,
+          tags: ['search-subreddits']
+        }
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -1528,14 +1584,16 @@ export async function toggleSubscription(
 
     // Validate URL is pointing to Reddit
     validateRedditUrl(url)
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        ...(await getHeaders(true)),
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: formData.toString()
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          ...(await getHeaders(true)),
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
+      })
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
@@ -1634,7 +1692,10 @@ export async function fetchSavedItems(
       () =>
         fetch(url.toString(), {
           headers,
-          next: {revalidate: FIVE_MINUTES}
+          next: {
+            revalidate: CACHE_USER_INFO,
+            tags: ['saved', username]
+          }
         }),
       3
     )
@@ -1738,10 +1799,15 @@ export async function fetchFollowedUsers(): Promise<
 
     const url = `${REDDIT_API_URL}/api/v1/me/friends`
 
-    const response = await fetch(url, {
-      headers: await getHeaders(true),
-      next: {revalidate: TEN_MINUTES}
-    })
+    const response = await retryWithBackoff(async () =>
+      fetch(url, {
+        headers: await getHeaders(true),
+        next: {
+          revalidate: CACHE_SUBSCRIPTIONS,
+          tags: ['following']
+        }
+      })
+    )
 
     if (!response.ok) {
       logger.warn(

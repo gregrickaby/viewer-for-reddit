@@ -20,6 +20,13 @@ import {
   votePost
 } from './reddit'
 
+// Mock rate-limit-state BEFORE imports
+vi.mock('@/lib/utils/rate-limit-state', () => ({
+  recordRateLimit: vi.fn(),
+  resetRateLimit: vi.fn(),
+  waitForRateLimit: vi.fn(async () => {})
+}))
+
 // Mock getValidAccessToken BEFORE imports
 vi.mock('@/lib/actions/auth', () => ({
   getValidAccessToken: vi.fn(async () => 'test-access-token')
