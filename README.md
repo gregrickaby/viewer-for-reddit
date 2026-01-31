@@ -41,20 +41,20 @@ I'm [Greg Rickaby](https://gregrickaby.com), a software engineer who's been arou
 
 This side project started in 2020 as a fun way for me to learn TypeScript. It's grown into something with thousands of users, and I'm really proud of it. I use it every day and I'm always looking for ways to make it better.
 
-## Support & Feedback
-
-- **Found a bug?** [Let me know](https://github.com/gregrickaby/viewer-for-reddit/issues)
-- **Have an idea?** [Share it](https://github.com/gregrickaby/viewer-for-reddit/issues)
-- **Like the project?** Support development:
-  - ☕ [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby)
-  - 💸 [Venmo](https://venmo.com/u/GregRickaby)
-  - 💳 [PayPal](https://www.paypal.com/paypalme/GregRickaby)
-
 ## Tech & Open Source
 
 This is an open-source project built with modern web technologies (Next.js, React, TypeScript). The code is carefully organized, well-tested, and designed to be maintainable and scalable.
 
 If you're a developer interested in contributing, the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) has everything you need to get started. We follow enterprise-grade development practices with comprehensive testing and code quality standards.
+
+## Support & Feedback
+
+- **Found a bug?** [Let me know](https://github.com/gregrickaby/viewer-for-reddit/issues)
+- **Have an idea?** [Share it](https://github.com/gregrickaby/viewer-for-reddit/issues)
+- **Like the project?**
+  - ☕ [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby)
+  - 💸 [Venmo](https://venmo.com/u/GregRickaby)
+  - 💳 [PayPal](https://www.paypal.com/paypalme/GregRickaby)
 
 ---
 
