@@ -24,7 +24,6 @@ export const TOKEN_REFRESH_BUFFER = 5 * 60 * 1000 // 5 minutes before token expi
 
 // Reddit API configuration
 export const REDDIT_API_URL = 'https://oauth.reddit.com'
-export const REDDIT_PUBLIC_API_URL = 'https://www.reddit.com'
 
 // Pagination
 export const DEFAULT_POST_LIMIT = 25

@@ -24,8 +24,7 @@ import {
   CACHE_SUBSCRIPTIONS,
   CACHE_USER_INFO,
   DEFAULT_POST_LIMIT,
-  REDDIT_API_URL,
-  REDDIT_PUBLIC_API_URL
+  REDDIT_API_URL
 } from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
 import {
@@ -196,25 +195,21 @@ async function handleFetchPostsError(
 
 /**
  * Create HTTP headers for Reddit API requests.
- * For authenticated users: uses user's OAuth token
- * For anonymous users: only sends User-Agent (no auth token)
+ * Attempts to use OAuth token if available (better rate limits).
+ * Falls back to unauthenticated requests if no token available.
  *
- * @param useAuth - Whether user is authenticated
  * @returns Promise resolving to headers object
  */
-async function getHeaders(useAuth: boolean = false) {
+async function getHeaders() {
   const headers: HeadersInit = {
     'User-Agent': getEnvVar('USER_AGENT')
   }
 
-  if (useAuth) {
-    // Automatically refresh token if needed
-    const accessToken = await getValidAccessToken()
-    if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`
-    }
+  // Always try to get access token if available (better rate limits)
+  const accessToken = await getValidAccessToken()
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`
   }
-  // Anonymous users: no Authorization header (uses public API rate limits per IP)
 
   return headers
 }
@@ -252,11 +247,8 @@ export async function fetchPosts(
   timeFilter?: TimeFilter
 ): Promise<{posts: RedditPost[]; after: string | null}> {
   try {
-    const session = await getSession()
-    const isAuthenticated = !!session.accessToken
-
-    // Use OAuth endpoint for authenticated, public API for anonymous
-    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+    // Always use OAuth endpoint
+    const baseUrl = REDDIT_API_URL
 
     // Handle different feed types - buildFeedUrlPath validates input
     let urlPath: string
@@ -287,7 +279,7 @@ export async function fetchPosts(
 
     const response = await retryWithBackoff(async () =>
       fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_POSTS,
           tags: ['posts', subreddit]
@@ -376,8 +368,8 @@ export async function fetchPost(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Use OAuth endpoint for authenticated, public API for anonymous
-    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+    // Always use OAuth endpoint
+    const baseUrl = REDDIT_API_URL
     const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
 
     // Validate URL is pointing to Reddit
@@ -385,7 +377,7 @@ export async function fetchPost(
 
     const response = await retryWithBackoff(async () =>
       fetch(url, {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_COMMENTS,
           tags: ['post', postId]
@@ -484,8 +476,8 @@ export async function fetchSubredditInfo(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Use OAuth endpoint for authenticated, public API for anonymous
-    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+    // Always use OAuth endpoint
+    const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/r/${subreddit}/about.json`)
     url.searchParams.set('raw_json', '1')
 
@@ -494,7 +486,7 @@ export async function fetchSubredditInfo(
 
     const response = await retryWithBackoff(async () =>
       fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_SUBREDDIT_INFO,
           tags: ['subreddit', subreddit]
@@ -592,7 +584,7 @@ export async function fetchUserSubscriptions(): Promise<
 
       const response = await retryWithBackoff(async () =>
         fetch(url.toString(), {
-          headers: await getHeaders(true),
+          headers: await getHeaders(),
           next: {
             revalidate: CACHE_SUBSCRIPTIONS,
             tags: ['subscriptions']
@@ -688,7 +680,7 @@ export async function votePost(
       const res = await fetch(url, {
         method: 'POST',
         headers: {
-          ...(await getHeaders(true)),
+          ...(await getHeaders()),
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
@@ -772,7 +764,7 @@ export async function savePost(
       const res = await fetch(url, {
         method: 'POST',
         headers: {
-          ...(await getHeaders(true)),
+          ...(await getHeaders()),
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
@@ -848,7 +840,7 @@ export async function fetchMultireddits(): Promise<
 
     const response = await retryWithBackoff(async () =>
       fetch(url, {
-        headers: await getHeaders(true),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_SUBSCRIPTIONS,
           tags: ['multireddits']
@@ -930,8 +922,8 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Use OAuth endpoint for authenticated, public API for anonymous
-    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+    // Always use OAuth endpoint
+    const baseUrl = REDDIT_API_URL
     const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
 
     // Validate URL is pointing to Reddit
@@ -939,7 +931,7 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
 
     const response = await retryWithBackoff(async () =>
       fetch(url, {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_USER_INFO,
           tags: ['user', username]
@@ -1083,8 +1075,8 @@ export async function fetchUserPosts(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Use OAuth endpoint for authenticated, public API for anonymous
-    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+    // Always use OAuth endpoint
+    const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
 
     // Validate URL is pointing to Reddit
@@ -1105,7 +1097,7 @@ export async function fetchUserPosts(
 
     const response = await retryWithBackoff(async () =>
       fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_USER_INFO,
           tags: ['user-posts', username]
@@ -1207,8 +1199,8 @@ export async function fetchUserComments(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Use OAuth endpoint for authenticated, public API for anonymous
-    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+    // Always use OAuth endpoint
+    const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/user/${username}/comments.json`)
 
     // Validate URL is pointing to Reddit
@@ -1229,7 +1221,7 @@ export async function fetchUserComments(
 
     const response = await retryWithBackoff(async () =>
       fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_USER_INFO,
           tags: ['user-comments', username]
@@ -1323,8 +1315,8 @@ export async function searchReddit(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Use OAuth endpoint for authenticated, public API for anonymous
-    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
+    // Always use OAuth endpoint
+    const baseUrl = REDDIT_API_URL
     const url = new URL(`${baseUrl}/search.json`)
 
     // Validate URL is pointing to Reddit
@@ -1340,7 +1332,7 @@ export async function searchReddit(
 
     const response = await retryWithBackoff(async () =>
       fetch(url.toString(), {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_SEARCH,
           tags: ['search', query]
@@ -1455,7 +1447,7 @@ export async function searchSubreddits(query: string): Promise<{
     validateRedditUrl(url)
     const response = await retryWithBackoff(async () =>
       fetch(url, {
-        headers: await getHeaders(isAuthenticated),
+        headers: await getHeaders(),
         next: {
           revalidate: 60,
           tags: ['search-subreddits']
@@ -1588,7 +1580,7 @@ export async function toggleSubscription(
       fetch(url, {
         method: 'POST',
         headers: {
-          ...(await getHeaders(true)),
+          ...(await getHeaders()),
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: formData.toString()
@@ -1670,7 +1662,7 @@ export async function fetchSavedItems(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const headers = await getHeaders(true)
+    const headers = await getHeaders()
 
     const url = new URL(`${REDDIT_API_URL}/user/${username}/saved.json`)
 
@@ -1801,7 +1793,7 @@ export async function fetchFollowedUsers(): Promise<
 
     const response = await retryWithBackoff(async () =>
       fetch(url, {
-        headers: await getHeaders(true),
+        headers: await getHeaders(),
         next: {
           revalidate: CACHE_SUBSCRIPTIONS,
           tags: ['following']

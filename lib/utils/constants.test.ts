@@ -5,7 +5,6 @@ import {
   FIVE_MINUTES,
   ONE_HOUR,
   REDDIT_API_URL,
-  REDDIT_PUBLIC_API_URL,
   SCROLL_THRESHOLD,
   TEN_MINUTES,
   TOKEN_REFRESH_BUFFER
@@ -49,13 +48,8 @@ describe('constants', () => {
       expect(REDDIT_API_URL).toBe('https://oauth.reddit.com')
     })
 
-    it('defines REDDIT_PUBLIC_API_URL for public access', () => {
-      expect(REDDIT_PUBLIC_API_URL).toBe('https://www.reddit.com')
-    })
-
-    it('uses HTTPS for all API URLs', () => {
+    it('uses HTTPS for API URL', () => {
       expect(REDDIT_API_URL).toMatch(/^https:\/\//)
-      expect(REDDIT_PUBLIC_API_URL).toMatch(/^https:\/\//)
     })
   })
 
