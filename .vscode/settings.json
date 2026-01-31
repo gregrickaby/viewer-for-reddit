@@ -38,5 +38,9 @@
     "unsub",
     "unvote",
     "upvotes"
-  ]
+  ],
+  "sonarlint.connectedMode.project": {
+    "connectionId": "http-localhost-9000",
+    "projectKey": "viewer-for-reddit"
+  }
 }
