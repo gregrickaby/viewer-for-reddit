@@ -18,7 +18,7 @@ import {
 } from '../../mocks/userProfile'
 
 export const userHandlers = [
-  // User profile
+  // User profile (OAuth - authenticated)
   http.get('https://oauth.reddit.com/user/:username/about.json', ({params}) => {
     const {username} = params
 
@@ -49,7 +49,38 @@ export const userHandlers = [
     return HttpResponse.json(userProfileMock)
   }),
 
-  // User posts
+  // User profile (public - anonymous)
+  http.get('https://www.reddit.com/user/:username/about.json', ({params}) => {
+    const {username} = params
+
+    if (username === 'nonexistentuser') {
+      return HttpResponse.json(userNotFoundMock, {status: 404})
+    }
+
+    if (username === 'emailverified') {
+      return HttpResponse.json(emailVerifiedUserMock)
+    }
+
+    if (username === 'adminuser') {
+      return HttpResponse.json(adminUserMock)
+    }
+
+    if (username === 'golduser') {
+      return HttpResponse.json(goldUserMock)
+    }
+
+    if (username === 'limiteduser') {
+      return HttpResponse.json(limitedUserMock)
+    }
+
+    if (username === 'emptyuser') {
+      return HttpResponse.json(emptyUserMock)
+    }
+
+    return HttpResponse.json(userProfileMock)
+  }),
+
+  // User posts (OAuth - authenticated)
   http.get(
     'https://oauth.reddit.com/user/:username/submitted.json',
     ({params, request}) => {
@@ -80,7 +111,38 @@ export const userHandlers = [
     }
   ),
 
-  // User comments
+  // User posts (public - anonymous)
+  http.get(
+    'https://www.reddit.com/user/:username/submitted.json',
+    ({params, request}) => {
+      const {username} = params
+      const url = new URL(request.url)
+      const after = url.searchParams.get('after')
+
+      if (username === 'nonexistentuser') {
+        return HttpResponse.json(userNotFoundMock, {status: 404})
+      }
+
+      if (username === 'emptyuser' || after === 'no-more-posts') {
+        return HttpResponse.json(userPostsEmptyMock)
+      }
+
+      if (username === 'limiteduser') {
+        // Return posts without 'after' to indicate no more pages
+        return HttpResponse.json({
+          ...userPostsMock,
+          data: {
+            ...userPostsMock.data,
+            after: null // No more pages available
+          }
+        })
+      }
+
+      return HttpResponse.json(userPostsMock)
+    }
+  ),
+
+  // User comments (OAuth - authenticated)
   http.get(
     'https://oauth.reddit.com/user/:username/comments.json',
     ({params, request}) => {
@@ -111,7 +173,38 @@ export const userHandlers = [
     }
   ),
 
-  // User saved posts
+  // User comments (public - anonymous)
+  http.get(
+    'https://www.reddit.com/user/:username/comments.json',
+    ({params, request}) => {
+      const {username} = params
+      const url = new URL(request.url)
+      const after = url.searchParams.get('after')
+
+      if (username === 'nonexistentuser') {
+        return HttpResponse.json(userNotFoundMock, {status: 404})
+      }
+
+      if (username === 'emptyuser' || after === 'no-more-comments') {
+        return HttpResponse.json(userCommentsEmptyMock)
+      }
+
+      if (username === 'limiteduser') {
+        // Return comments without 'after' to indicate no more pages
+        return HttpResponse.json({
+          ...userCommentsMock,
+          data: {
+            ...userCommentsMock.data,
+            after: null // No more pages available
+          }
+        })
+      }
+
+      return HttpResponse.json(userCommentsMock)
+    }
+  ),
+
+  // User saved posts (OAuth - authenticated only)
   http.get(
     'https://oauth.reddit.com/user/:username/saved.json',
     ({params, request}) => {

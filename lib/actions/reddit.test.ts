@@ -149,6 +149,9 @@ describe('reddit server actions', () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
           return new HttpResponse(null, {status: 404})
+        }),
+        http.get('https://www.reddit.com/r/:subreddit/:sort.json', () => {
+          return new HttpResponse(null, {status: 404})
         })
       )
 
@@ -160,6 +163,9 @@ describe('reddit server actions', () => {
     it('handles 429 rate limit', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
+          return new HttpResponse(null, {status: 429})
+        }),
+        http.get('https://www.reddit.com/r/:subreddit/:sort.json', () => {
           return new HttpResponse(null, {status: 429})
         })
       )
@@ -343,6 +349,12 @@ describe('reddit server actions', () => {
           () => {
             return new HttpResponse(null, {status: 404})
           }
+        ),
+        http.get(
+          'https://www.reddit.com/r/:subreddit/comments/:postId.json',
+          () => {
+            return new HttpResponse(null, {status: 404})
+          }
         )
       )
 
@@ -356,6 +368,14 @@ describe('reddit server actions', () => {
     it('fetches subreddit information', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/about.json', () => {
+          return HttpResponse.json({
+            data: {
+              display_name: 'aww',
+              subscribers: 37661216
+            }
+          })
+        }),
+        http.get('https://www.reddit.com/r/:subreddit/about.json', () => {
           return HttpResponse.json({
             data: {
               display_name: 'aww',
@@ -658,6 +678,27 @@ describe('reddit server actions', () => {
               }
             })
           }
+        ),
+        http.get(
+          'https://www.reddit.com/user/:username/submitted.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    kind: 't3',
+                    data: {
+                      id: 'post1',
+                      title: 'Test Post',
+                      author: 'testuser'
+                    }
+                  }
+                ],
+                after: 't3_after'
+              }
+            })
+          }
         )
       )
 
@@ -671,27 +712,33 @@ describe('reddit server actions', () => {
 
     it('fetches user posts with custom sort', async () => {
       let requestUrl = ''
+      const handler = ({request}: {request: Request}) => {
+        requestUrl = request.url
+        return HttpResponse.json({
+          data: {
+            children: [
+              {
+                kind: 't3',
+                data: {
+                  id: 'post1',
+                  title: 'Top Post',
+                  author: 'testuser'
+                }
+              }
+            ],
+            after: null
+          }
+        })
+      }
+
       server.use(
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
-          ({request}) => {
-            requestUrl = request.url
-            return HttpResponse.json({
-              data: {
-                children: [
-                  {
-                    kind: 't3',
-                    data: {
-                      id: 'post1',
-                      title: 'Top Post',
-                      author: 'testuser'
-                    }
-                  }
-                ],
-                after: null
-              }
-            })
-          }
+          handler
+        ),
+        http.get(
+          'https://www.reddit.com/user/:username/submitted.json',
+          handler
         )
       )
 
@@ -703,27 +750,33 @@ describe('reddit server actions', () => {
 
     it('includes time filter for top sort', async () => {
       let requestUrl = ''
+      const handler = ({request}: {request: Request}) => {
+        requestUrl = request.url
+        return HttpResponse.json({
+          data: {
+            children: [
+              {
+                kind: 't3',
+                data: {
+                  id: 'post1',
+                  title: 'Top Post This Week',
+                  author: 'testuser'
+                }
+              }
+            ],
+            after: null
+          }
+        })
+      }
+
       server.use(
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
-          ({request}) => {
-            requestUrl = request.url
-            return HttpResponse.json({
-              data: {
-                children: [
-                  {
-                    kind: 't3',
-                    data: {
-                      id: 'post1',
-                      title: 'Top Post This Week',
-                      author: 'testuser'
-                    }
-                  }
-                ],
-                after: null
-              }
-            })
-          }
+          handler
+        ),
+        http.get(
+          'https://www.reddit.com/user/:username/submitted.json',
+          handler
         )
       )
 
@@ -735,27 +788,33 @@ describe('reddit server actions', () => {
 
     it('handles pagination with after cursor', async () => {
       let requestUrl = ''
+      const handler = ({request}: {request: Request}) => {
+        requestUrl = request.url
+        return HttpResponse.json({
+          data: {
+            children: [
+              {
+                kind: 't3',
+                data: {
+                  id: 'post2',
+                  title: 'Next Page Post',
+                  author: 'testuser'
+                }
+              }
+            ],
+            after: 't3_next'
+          }
+        })
+      }
+
       server.use(
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
-          ({request}) => {
-            requestUrl = request.url
-            return HttpResponse.json({
-              data: {
-                children: [
-                  {
-                    kind: 't3',
-                    data: {
-                      id: 'post2',
-                      title: 'Next Page Post',
-                      author: 'testuser'
-                    }
-                  }
-                ],
-                after: 't3_next'
-              }
-            })
-          }
+          handler
+        ),
+        http.get(
+          'https://www.reddit.com/user/:username/submitted.json',
+          handler
         )
       )
 

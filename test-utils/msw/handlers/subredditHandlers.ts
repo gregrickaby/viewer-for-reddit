@@ -5,7 +5,7 @@ import {searchMock} from '../../mocks/search'
 import {subredditMock} from '../../mocks/subreddit'
 
 export const subredditHandlers = [
-  // About subreddit
+  // About subreddit (OAuth - authenticated)
   http.get('https://oauth.reddit.com/r/:slug/about.json', ({params}) => {
     const {slug} = params
     if (slug === 'notarealsubreddit') {
@@ -14,7 +14,16 @@ export const subredditHandlers = [
     return HttpResponse.json(aboutMock)
   }),
 
-  // Popular subreddits
+  // About subreddit (public - anonymous)
+  http.get('https://www.reddit.com/r/:slug/about.json', ({params}) => {
+    const {slug} = params
+    if (slug === 'notarealsubreddit') {
+      return new HttpResponse(null, {status: 404})
+    }
+    return HttpResponse.json(aboutMock)
+  }),
+
+  // Popular subreddits (OAuth)
   http.get('https://oauth.reddit.com/subreddits/popular.json', ({request}) => {
     const url = new URL(request.url)
     const limit = url.searchParams.get('limit')
@@ -91,7 +100,7 @@ export const subredditHandlers = [
     return HttpResponse.json(popularMock)
   }),
 
-  // Subreddit search autocomplete
+  // Subreddit search autocomplete (OAuth)
   http.get(
     'https://oauth.reddit.com/api/subreddit_autocomplete_v2',
     ({request}) => {
@@ -114,7 +123,7 @@ export const subredditHandlers = [
     }
   ),
 
-  // Subreddit posts
+  // Subreddit posts (OAuth - kept as is for multi/home tests)
   http.get('https://oauth.reddit.com/r/:slug/:sort.json', ({params}) => {
     const {slug} = params
 

@@ -21,6 +21,7 @@ import {
   FIVE_MINUTES,
   ONE_HOUR,
   REDDIT_API_URL,
+  REDDIT_PUBLIC_API_URL,
   TEN_MINUTES
 } from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
@@ -188,70 +189,9 @@ async function handleFetchPostsError(
 }
 
 /**
- * Get application-only access token for anonymous Reddit API access.
- * Uses client credentials grant type. Token is cached for 1 hour.
- */
-let appToken: {token: string; expiresAt: number} | null = null
-
-async function getAppAccessToken(): Promise<string> {
-  // Return cached token if still valid
-  if (appToken && appToken.expiresAt > Date.now()) {
-    return appToken.token
-  }
-
-  // Get new token using client credentials
-  const credentials = Buffer.from(
-    `${getEnvVar('REDDIT_CLIENT_ID')}:${getEnvVar('REDDIT_CLIENT_SECRET')}`
-  ).toString('base64')
-
-  const response = await fetch('https://www.reddit.com/api/v1/access_token', {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${credentials}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'User-Agent': getEnvVar('USER_AGENT')
-    },
-    body: 'grant_type=client_credentials'
-  })
-
-  if (!response.ok) {
-    // Log detailed error context
-    logger.httpError(
-      'Failed to get application access token',
-      {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      },
-      {
-        context: 'getAppAccessToken',
-        operation: 'getAppAccessToken',
-        endpoint: '/api/v1/access_token',
-        method: 'POST',
-        grantType: 'client_credentials'
-      }
-    )
-
-    throw new AuthenticationError(
-      `Failed to get app token: ${response.statusText}`,
-      'getAppAccessToken',
-      {endpoint: '/api/v1/access_token', grantType: 'client_credentials'}
-    )
-  }
-
-  const data = await response.json()
-  appToken = {
-    token: data.access_token,
-    expiresAt: Date.now() + data.expires_in * 1000 - 60000 // Refresh 1 min early
-  }
-
-  return appToken.token
-}
-
-/**
  * Create HTTP headers for Reddit API requests.
  * For authenticated users: uses user's OAuth token
- * For anonymous users: uses application-only token
+ * For anonymous users: only sends User-Agent (no auth token)
  *
  * @param useAuth - Whether user is authenticated
  * @returns Promise resolving to headers object
@@ -267,11 +207,8 @@ async function getHeaders(useAuth: boolean = false) {
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`
     }
-  } else {
-    // Use application-only token for anonymous access
-    const token = await getAppAccessToken()
-    headers.Authorization = `Bearer ${token}`
   }
+  // Anonymous users: no Authorization header (uses public API rate limits per IP)
 
   return headers
 }
@@ -312,8 +249,8 @@ export async function fetchPosts(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Always use OAuth endpoint (works with both user and app tokens)
-    const baseUrl = REDDIT_API_URL
+    // Use OAuth endpoint for authenticated, public API for anonymous
+    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
 
     // Handle different feed types - buildFeedUrlPath validates input
     let urlPath: string
@@ -428,8 +365,8 @@ export async function fetchPost(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Always use OAuth endpoint (works with both user and app tokens)
-    const baseUrl = REDDIT_API_URL
+    // Use OAuth endpoint for authenticated, public API for anonymous
+    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
     const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
 
     // Validate URL is pointing to Reddit
@@ -531,8 +468,8 @@ export async function fetchSubredditInfo(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Always use OAuth endpoint (works with both user and app tokens)
-    const baseUrl = REDDIT_API_URL
+    // Use OAuth endpoint for authenticated, public API for anonymous
+    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
     const url = new URL(`${baseUrl}/r/${subreddit}/about.json`)
     url.searchParams.set('raw_json', '1')
 
@@ -962,8 +899,8 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Always use OAuth endpoint (works with both user and app tokens)
-    const baseUrl = REDDIT_API_URL
+    // Use OAuth endpoint for authenticated, public API for anonymous
+    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
     const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
 
     // Validate URL is pointing to Reddit
@@ -1110,8 +1047,8 @@ export async function fetchUserPosts(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Always use OAuth endpoint (works with both user and app tokens)
-    const baseUrl = REDDIT_API_URL
+    // Use OAuth endpoint for authenticated, public API for anonymous
+    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
     const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
 
     // Validate URL is pointing to Reddit
@@ -1229,8 +1166,8 @@ export async function fetchUserComments(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Always use OAuth endpoint (works with both user and app tokens)
-    const baseUrl = REDDIT_API_URL
+    // Use OAuth endpoint for authenticated, public API for anonymous
+    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
     const url = new URL(`${baseUrl}/user/${username}/comments.json`)
 
     // Validate URL is pointing to Reddit
@@ -1340,8 +1277,8 @@ export async function searchReddit(
     const session = await getSession()
     const isAuthenticated = !!session.accessToken
 
-    // Always use OAuth endpoint (works with both user and app tokens)
-    const baseUrl = REDDIT_API_URL
+    // Use OAuth endpoint for authenticated, public API for anonymous
+    const baseUrl = isAuthenticated ? REDDIT_API_URL : REDDIT_PUBLIC_API_URL
     const url = new URL(`${baseUrl}/search.json`)
 
     // Validate URL is pointing to Reddit
