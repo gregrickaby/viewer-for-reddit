@@ -1,4 +1,6 @@
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {UserCommentListWithTabs} from '@/components/ui/UserCommentListWithTabs/UserCommentListWithTabs'
+import {UserProfileTabs} from '@/components/ui/UserProfileTabs/UserProfileTabs'
 import {
   fetchUserComments,
   fetchUserInfo,
@@ -14,8 +16,6 @@ import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
-import {UserCommentListWithTabs} from './UserCommentListWithTabs'
-import {UserProfileTabs} from './UserProfileTabs'
 
 interface PageProps {
   params: Promise<{
