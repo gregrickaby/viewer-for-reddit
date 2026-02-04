@@ -2,7 +2,7 @@
 
 import {detectSwipe} from '@/lib/utils/touch-gestures'
 import {useRouter} from 'next/navigation'
-import {useCallback, useEffect, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 
 /**
  * Options for useSwipeNavigation hook.
@@ -50,10 +50,10 @@ export function useSwipeNavigation({
   const touchEndX = useRef<number>(0)
   const touchEndY = useRef<number>(0)
 
-  // Memoized callback for right swipe (back navigation)
-  const handleSwipeRight = useCallback(() => {
+  // Handle right swipe (back navigation)
+  const handleSwipeRight = () => {
     router.back()
-  }, [router])
+  }
 
   useEffect(() => {
     if (!enabled) return

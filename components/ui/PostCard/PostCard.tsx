@@ -6,7 +6,6 @@ import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {extractSlug} from '@/lib/utils/reddit-helpers'
 import {Anchor, Card, Stack, Text} from '@mantine/core'
 import Link from 'next/link'
-import {memo} from 'react'
 import {PostActions} from '../PostActions/PostActions'
 import {PostHeader} from '../PostHeader/PostHeader'
 import {PostMedia} from '../PostMedia/PostMedia'
@@ -87,7 +86,7 @@ interface PostCardProps {
  * - Optimistic voting and saving with useVote/useSavePost hooks
  * - HTML sanitization for user-generated content
  * - Responsive media display (images, videos, galleries)
- * - Memoized for performance
+ * - Optimized by React 19 Compiler
  *
  * @example
  * ```typescript
@@ -98,74 +97,72 @@ interface PostCardProps {
  * />
  * ```
  */
-export const PostCard = memo(
-  ({
-    post,
-    isAuthenticated = false,
-    showFullText = false,
-    priority = false,
+export function PostCard({
+  post,
+  isAuthenticated = false,
+  showFullText = false,
+  priority = false,
+  onUnsave
+}: Readonly<PostCardProps>) {
+  const slug = extractSlug(post.permalink, post.id)
+  const postUrl = `/r/${post.subreddit}/comments/${post.id}/${slug}`
+
+  const {
+    voteState,
+    score,
+    isPending: isVotePending,
+    vote
+  } = useVote({
+    itemName: post.name,
+    initialLikes: post.likes,
+    initialScore: post.score
+  })
+
+  const {
+    isSaved,
+    isPending: isSavePending,
+    toggleSave
+  } = useSavePost({
+    postName: post.name,
+    initialSaved: post.saved || false,
     onUnsave
-  }: Readonly<PostCardProps>) => {
-    const slug = extractSlug(post.permalink, post.id)
-    const postUrl = `/r/${post.subreddit}/comments/${post.id}/${slug}`
+  })
 
-    const {
-      voteState,
-      score,
-      isPending: isVotePending,
-      vote
-    } = useVote({
-      itemName: post.name,
-      initialLikes: post.likes,
-      initialScore: post.score
-    })
+  const isPending = isVotePending || isSavePending
 
-    const {
-      isSaved,
-      isPending: isSavePending,
-      toggleSave
-    } = useSavePost({
-      postName: post.name,
-      initialSaved: post.saved || false,
-      onUnsave
-    })
+  return (
+    <Card withBorder padding="md" radius="md">
+      <Stack gap="xs">
+        <PostHeader post={post} />
 
-    const isPending = isVotePending || isSavePending
+        <Anchor
+          component={Link}
+          href={postUrl}
+          underline="never"
+          c="inherit"
+          data-umami-event="post-title-click"
+        >
+          <Text size="md" fw={600} mt={2}>
+            {post.title}
+          </Text>
+        </Anchor>
 
-    return (
-      <Card withBorder padding="md" radius="md">
-        <Stack gap="xs">
-          <PostHeader post={post} />
+        <PostMedia post={post} priority={priority} />
 
-          <Anchor
-            component={Link}
-            href={postUrl}
-            underline="never"
-            c="inherit"
-            data-umami-event="post-title-click"
-          >
-            <Text size="md" fw={600} mt={2}>
-              {post.title}
-            </Text>
-          </Anchor>
+        {post.selftext && renderSelfText(post, postUrl, showFullText)}
 
-          <PostMedia post={post} priority={priority} />
-
-          {post.selftext && renderSelfText(post, postUrl, showFullText)}
-
-          <PostActions
-            postUrl={postUrl}
-            numComments={post.num_comments}
-            voteState={voteState}
-            score={score}
-            isSaved={isSaved}
-            isPending={isPending}
-            onVote={vote}
-            onToggleSave={toggleSave}
-            isAuthenticated={isAuthenticated}
-          />
-        </Stack>
-      </Card>
-    )
-  }
-)
+        <PostActions
+          postUrl={postUrl}
+          numComments={post.num_comments}
+          voteState={voteState}
+          score={score}
+          isSaved={isSaved}
+          isPending={isPending}
+          onVote={vote}
+          onToggleSave={toggleSave}
+          isAuthenticated={isAuthenticated}
+        />
+      </Stack>
+    </Card>
+  )
+}

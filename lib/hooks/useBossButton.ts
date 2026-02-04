@@ -6,7 +6,7 @@
  * Features:
  * - Auto-shows after scrolling past 200px
  * - Keyboard shortcut (Escape key)
- * - Memoized button text for performance
+ * - Dynamic button text based on state
  *
  * @param redirectUrl - URL to navigate to when activated
  * @returns Object containing visibility state, URL, and button text
@@ -24,17 +24,14 @@
  */
 import {useWindowScroll} from '@mantine/hooks'
 import {useRouter} from 'next/navigation'
-import {useEffect, useMemo} from 'react'
+import {useEffect} from 'react'
 
 export function useBossButton(redirectUrl: string) {
   const router = useRouter()
   const [scroll] = useWindowScroll()
 
-  const buttonText = useMemo(
-    () =>
-      'The boss button. Click or press Escape to instantly navigate to DuckDuckGo.',
-    []
-  )
+  const buttonText =
+    'The boss button. Click or press Escape to instantly navigate to DuckDuckGo.'
 
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {

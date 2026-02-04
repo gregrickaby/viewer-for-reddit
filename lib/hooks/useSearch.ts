@@ -5,7 +5,7 @@ import type {SubredditItem} from '@/lib/types/reddit'
 import {logger} from '@/lib/utils/logger'
 import {useDebouncedValue} from '@mantine/hooks'
 import {useRouter} from 'next/navigation'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 /**
  * Grouped search results separated by NSFW status.
@@ -163,29 +163,24 @@ export function useSearch(): UseSearchReturn {
   }, [debouncedQuery])
 
   // Group results by NSFW status
-  const groupedResults = useMemo<GroupedResults>(() => {
-    const communities = results.filter((item) => !item.over18)
-    const nsfw = results.filter((item) => item.over18)
-    return {communities, nsfw}
-  }, [results])
+  const communities = results.filter((item) => !item.over18)
+  const nsfw = results.filter((item) => item.over18)
+  const groupedResults: GroupedResults = {communities, nsfw}
 
   // Handle selecting a subreddit from dropdown
-  const handleOptionSelect = useCallback(
-    (value: string) => {
-      // Extract subreddit name from value (e.g., "r/pics" -> "pics")
-      const subreddit = value.replace(/^r\//, '')
-      router.push(`/r/${subreddit}`)
-      setQuery('')
-    },
-    [router]
-  )
+  const handleOptionSelect = (value: string) => {
+    // Extract subreddit name from value (e.g., "r/pics" -> "pics")
+    const subreddit = value.replace(/^r\//, '')
+    router.push(`/r/${subreddit}`)
+    setQuery('')
+  }
 
   // Handle form submission (Enter key) - navigate to search page
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = () => {
     if (query.trim().length === 0) return
     router.push(`/search/${encodeURIComponent(query.trim())}`)
     setQuery('')
-  }, [query, router])
+  }
 
   return {
     query,

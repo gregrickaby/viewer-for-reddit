@@ -14,7 +14,6 @@ import {
   IconShare
 } from '@tabler/icons-react'
 import Link from 'next/link'
-import {memo} from 'react'
 
 /**
  * Props for the PostActions component.
@@ -51,7 +50,7 @@ interface PostActionsProps {
  * - Save/unsave toggle button
  * - Disabled state for unauthenticated users
  * - Loading state during API calls
- * - Memoized for performance
+ * - Optimized by React 19 Compiler
  *
  * @example
  * ```typescript
@@ -68,7 +67,7 @@ interface PostActionsProps {
  * />
  * ```
  */
-function PostActionsComponent({
+export function PostActions({
   postUrl,
   numComments,
   voteState,
@@ -183,5 +182,3 @@ function PostActionsComponent({
     </Group>
   )
 }
-
-export const PostActions = memo(PostActionsComponent)

@@ -154,7 +154,7 @@ describe('useBossButton', () => {
     })
   })
 
-  it('memoizes button text to prevent unnecessary recalculations', () => {
+  it('provides consistent button text based on state', () => {
     const {result, rerender} = renderHook(() => useBossButton(redirectUrl))
 
     const initialText = result.current.buttonText

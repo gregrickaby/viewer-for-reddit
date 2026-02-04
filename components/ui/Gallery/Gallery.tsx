@@ -4,7 +4,6 @@ import {GalleryItem} from '@/lib/types/reddit'
 import {Carousel} from '@mantine/carousel'
 import '@mantine/carousel/styles.css'
 import {Box, Text} from '@mantine/core'
-import {memo} from 'react'
 import styles from './Gallery.module.css'
 
 /**
@@ -28,7 +27,6 @@ interface GalleryProps {
  * - Optional captions per image
  * - Image counter (e.g., "2 / 5")
  * - Lazy loading for performance
- * - Memoized for performance
  *
  * @example
  * ```typescript
@@ -38,7 +36,7 @@ interface GalleryProps {
  * />
  * ```
  */
-function GalleryComponent({items, title}: Readonly<GalleryProps>) {
+export function Gallery({items, title}: Readonly<GalleryProps>) {
   // Return null if no items
   if (!items || items.length === 0) {
     return null
@@ -109,5 +107,3 @@ function GalleryComponent({items, title}: Readonly<GalleryProps>) {
     </Box>
   )
 }
-
-export const Gallery = memo(GalleryComponent)

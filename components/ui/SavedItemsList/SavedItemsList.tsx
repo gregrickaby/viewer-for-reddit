@@ -4,7 +4,7 @@ import {fetchSavedItems} from '@/lib/actions/reddit'
 import type {SavedItem} from '@/lib/types/reddit'
 import {logger} from '@/lib/utils/logger'
 import {Card, Center, Container, Loader, Stack, Text} from '@mantine/core'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {Comment} from '../Comment/Comment'
 import {PostCard} from '../PostCard/PostCard'
 
@@ -57,11 +57,11 @@ export function SavedItemsList({
   const observerRef = useRef<IntersectionObserver | null>(null)
 
   // Handler to remove an item from the list when unsaved
-  const handleItemRemoved = useCallback((itemId: string) => {
+  const handleItemRemoved = (itemId: string) => {
     setItems((prev) => prev.filter((item) => item.data.id !== itemId))
-  }, [])
+  }
 
-  const loadMore = useCallback(async () => {
+  const loadMore = async () => {
     if (loading || !after || !hasMore) return
 
     setLoading(true)
@@ -89,28 +89,25 @@ export function SavedItemsList({
     } finally {
       setLoading(false)
     }
-  }, [loading, after, hasMore, username])
+  }
 
-  const sentinelRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return
+  const sentinelRef = (node: HTMLDivElement | null) => {
+    if (loading) return
 
-      if (observerRef.current) {
-        observerRef.current.disconnect()
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+    }
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loading) {
+        loadMore()
       }
+    })
 
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          loadMore()
-        }
-      })
-
-      if (node) {
-        observerRef.current.observe(node)
-      }
-    },
-    [loading, hasMore, loadMore]
-  )
+    if (node) {
+      observerRef.current.observe(node)
+    }
+  }
 
   useEffect(() => {
     return () => {

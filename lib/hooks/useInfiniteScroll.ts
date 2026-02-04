@@ -3,7 +3,7 @@
 import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {logger} from '@/lib/utils/logger'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 /**
  * Options for configuring the useInfiniteScroll hook.
@@ -100,7 +100,7 @@ export function useInfiniteScroll({
     setHasMore(!!initialAfter)
   }, [initialPosts, initialAfter])
 
-  const loadMore = useCallback(async () => {
+  const loadMore = async () => {
     if (loading || !after || !hasMore) return
 
     setLoading(true)
@@ -130,28 +130,25 @@ export function useInfiniteScroll({
     } finally {
       setLoading(false)
     }
-  }, [loading, after, hasMore, subreddit, username, sort, timeFilter])
+  }
 
-  const sentinelRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return
+  const sentinelRef = (node: HTMLDivElement | null) => {
+    if (loading) return
 
-      if (observerRef.current) {
-        observerRef.current.disconnect()
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+    }
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !loading) {
+        loadMore()
       }
+    })
 
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !loading) {
-          loadMore()
-        }
-      })
-
-      if (node) {
-        observerRef.current.observe(node)
-      }
-    },
-    [loading, hasMore, loadMore]
-  )
+    if (node) {
+      observerRef.current.observe(node)
+    }
+  }
 
   useEffect(() => {
     return () => {

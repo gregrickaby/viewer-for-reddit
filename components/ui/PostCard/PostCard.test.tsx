@@ -299,10 +299,9 @@ describe('PostCard', () => {
     })
   })
 
-  describe('memoization', () => {
-    it('is a memoized component', () => {
-      // PostCard uses memo(), but displayName may not be set
-      // Check that it renders correctly (memoization is internal)
+  describe('component rendering', () => {
+    it('renders correctly', () => {
+      // React Compiler handles optimization automatically
       render(<PostCard post={mockPost} />)
       expect(screen.getByText('Test Post Title')).toBeInTheDocument()
     })

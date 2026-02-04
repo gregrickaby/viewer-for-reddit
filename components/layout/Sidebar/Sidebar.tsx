@@ -27,7 +27,7 @@ import {
   IconUser
 } from '@tabler/icons-react'
 import Link from 'next/link'
-import {useMemo, useState} from 'react'
+import {useState} from 'react'
 import styles from './Sidebar.module.css'
 
 /**
@@ -107,20 +107,12 @@ export function Sidebar({
     initialSubscriptions: subscriptions
   })
 
-  const sortedMultireddits = useMemo(
-    () =>
-      [...multireddits].sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ),
-    [multireddits]
+  const sortedMultireddits = [...multireddits].sort((a, b) =>
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   )
 
-  const sortedFollowing = useMemo(
-    () =>
-      [...following].sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ),
-    [following]
+  const sortedFollowing = [...following].sort((a, b) =>
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   )
 
   return (
