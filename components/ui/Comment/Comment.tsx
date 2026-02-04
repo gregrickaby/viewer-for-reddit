@@ -1,13 +1,17 @@
 'use client'
 
-import {useSavePost, useVote} from '@/lib/hooks'
+import {
+  useCommentCollapse,
+  useSavePost,
+  useSharePost,
+  useVote
+} from '@/lib/hooks'
 import {RedditComment as RedditCommentType} from '@/lib/types/reddit'
 import {
   decodeHtmlEntities,
   formatTimeAgo,
   sanitizeText
 } from '@/lib/utils/formatters'
-import {logger} from '@/lib/utils/logger'
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
@@ -32,7 +36,6 @@ import {
   IconShare
 } from '@tabler/icons-react'
 import Link from 'next/link'
-import {useState} from 'react'
 import styles from './Comment.module.css'
 
 /**
@@ -77,39 +80,6 @@ function renderAuthor(author: string) {
       u/{author}
     </Anchor>
   )
-}
-
-/**
- * Handle sharing comment link to clipboard
- */
-async function handleShareComment(permalink: string) {
-  try {
-    const url = `${globalThis.location.origin}${permalink}`
-    await navigator.clipboard.writeText(url)
-    notifications.show({
-      message: 'Link copied to clipboard',
-      color: 'teal',
-      autoClose: 3000
-    })
-  } catch (error) {
-    logger.error('Failed to copy comment link', error)
-    notifications.show({
-      message: 'Failed to copy link',
-      color: 'red',
-      autoClose: 3000
-    })
-  }
-}
-
-/**
- * Handle save/unsave notification
- */
-function showSaveNotification(isSaved: boolean) {
-  notifications.show({
-    message: isSaved ? 'Comment unsaved' : 'Comment saved',
-    color: isSaved ? 'gray' : 'yellow',
-    autoClose: 3000
-  })
 }
 
 /**
@@ -238,7 +208,9 @@ export function Comment({
   isAuthenticated = false,
   onUnsave
 }: Readonly<CommentProps>) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const {isCollapsed, toggleCollapse} = useCommentCollapse()
+  const {sharePost} = useSharePost()
+
   const {
     voteState,
     score,
@@ -268,15 +240,15 @@ export function Comment({
         child.kind === 't1'
     ) || []
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
-  }
-
-  const handleShare = () => handleShareComment(comment.permalink)
+  const handleShare = () => sharePost(comment.permalink)
 
   const handleSave = () => {
     toggleSave()
-    showSaveNotification(isSaved)
+    notifications.show({
+      message: isSaved ? 'Comment unsaved' : 'Comment saved',
+      color: isSaved ? 'gray' : 'yellow',
+      autoClose: 3000
+    })
   }
 
   return (

@@ -22,6 +22,13 @@ vi.mock('@/lib/hooks', () => ({
     isSaved: false,
     isPending: false,
     toggleSave: vi.fn()
+  })),
+  useCommentCollapse: vi.fn(() => ({
+    isCollapsed: false,
+    toggleCollapse: vi.fn()
+  })),
+  useSharePost: vi.fn(() => ({
+    sharePost: vi.fn()
   }))
 }))
 

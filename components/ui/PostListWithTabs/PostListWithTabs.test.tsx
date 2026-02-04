@@ -28,6 +28,9 @@ vi.mock('@/lib/hooks', () => ({
     hasMore: false,
     loading: false,
     sentinelRef: vi.fn()
+  })),
+  useSharePost: vi.fn(() => ({
+    sharePost: vi.fn()
   }))
 }))
 

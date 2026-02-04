@@ -1,11 +1,8 @@
 'use client'
-import {logout} from '@/lib/actions/auth'
-import {logger} from '@/lib/utils/logger'
+import {useLogout} from '@/lib/hooks'
 import {Anchor, Avatar, Button, Group} from '@mantine/core'
 import {IconBrandReddit, IconLogout} from '@tabler/icons-react'
 import Link from 'next/link'
-import {useRouter} from 'next/navigation'
-import {useState, useTransition} from 'react'
 
 /**
  * Props for the UserMenu component.
@@ -44,31 +41,7 @@ export function UserMenu({
   username,
   avatarUrl
 }: Readonly<UserMenuProps>) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
-
-  const handleLogout = async () => {
-    if (isPending || isLoggingOut) return
-
-    setIsLoggingOut(true)
-
-    startTransition(async () => {
-      try {
-        const result = await logout()
-
-        if (result.success) {
-          router.push('/')
-          router.refresh()
-        }
-      } catch (error) {
-        // Log error but don't throw - component stays mounted
-        logger.error('Logout failed', error, {context: 'UserMenu'})
-      } finally {
-        setIsLoggingOut(false)
-      }
-    })
-  }
+  const {isLoggingOut, handleLogout} = useLogout()
 
   if (isAuthenticated) {
     return (

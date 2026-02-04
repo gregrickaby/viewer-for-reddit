@@ -1,7 +1,7 @@
 'use client'
 
+import {useSharePost} from '@/lib/hooks'
 import {formatNumber} from '@/lib/utils/formatters'
-import {logger} from '@/lib/utils/logger'
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {ActionIcon, Anchor, Group, Text} from '@mantine/core'
 import {notifications} from '@mantine/notifications'
@@ -78,24 +78,9 @@ export function PostActions({
   onToggleSave,
   isAuthenticated = false
 }: Readonly<PostActionsProps>) {
-  const handleShare = async () => {
-    try {
-      const url = `${globalThis.location.origin}${postUrl}`
-      await navigator.clipboard.writeText(url)
-      notifications.show({
-        message: 'Link copied to clipboard',
-        color: 'teal',
-        autoClose: 3000
-      })
-    } catch (error) {
-      logger.error('Failed to copy post link', error)
-      notifications.show({
-        message: 'Failed to copy link',
-        color: 'red',
-        autoClose: 3000
-      })
-    }
-  }
+  const {sharePost} = useSharePost()
+
+  const handleShare = () => sharePost(postUrl)
 
   const handleSave = () => {
     onToggleSave()

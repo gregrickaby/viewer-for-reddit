@@ -1,10 +1,8 @@
 'use client'
 
-import {fetchSavedItems} from '@/lib/actions/reddit'
+import {useInfiniteSavedItems} from '@/lib/hooks'
 import type {SavedItem} from '@/lib/types/reddit'
-import {logger} from '@/lib/utils/logger'
 import {Card, Center, Container, Loader, Stack, Text} from '@mantine/core'
-import {useEffect, useRef, useState} from 'react'
 import {Comment} from '../Comment/Comment'
 import {PostCard} from '../PostCard/PostCard'
 
@@ -49,73 +47,12 @@ export function SavedItemsList({
   initialAfter,
   isAuthenticated = false
 }: Readonly<SavedItemsListProps>) {
-  const [items, setItems] = useState<SavedItem[]>(initialItems)
-  const [after, setAfter] = useState<string | null>(initialAfter)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(!!initialAfter)
-  const [error, setError] = useState<string | null>(null)
-  const observerRef = useRef<IntersectionObserver | null>(null)
-
-  // Handler to remove an item from the list when unsaved
-  const handleItemRemoved = (itemId: string) => {
-    setItems((prev) => prev.filter((item) => item.data.id !== itemId))
-  }
-
-  const loadMore = async () => {
-    if (loading || !after || !hasMore) return
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const result = await fetchSavedItems(username, after)
-
-      if (result.items && result.items.length > 0) {
-        setItems((prev) => [...prev, ...result.items])
-        setAfter(result.after)
-        setHasMore(!!result.after)
-      } else {
-        setHasMore(false)
-      }
-    } catch (err) {
-      logger.error('Failed to load more saved items', err, {
-        context: 'SavedItemsList',
-        username
-      })
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to load more items'
-      setError(errorMessage)
-      setHasMore(false)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const sentinelRef = (node: HTMLDivElement | null) => {
-    if (loading) return
-
-    if (observerRef.current) {
-      observerRef.current.disconnect()
-    }
-
-    observerRef.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore && !loading) {
-        loadMore()
-      }
+  const {items, loading, hasMore, error, sentinelRef, removeItem} =
+    useInfiniteSavedItems({
+      initialItems,
+      initialAfter,
+      username
     })
-
-    if (node) {
-      observerRef.current.observe(node)
-    }
-  }
-
-  useEffect(() => {
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect()
-      }
-    }
-  }, [])
 
   if (error) {
     return (
@@ -140,7 +77,7 @@ export function SavedItemsList({
                 key={`post-${item.data.id}-${index}`}
                 post={item.data}
                 isAuthenticated={isAuthenticated}
-                onUnsave={() => handleItemRemoved(item.data.id)}
+                onUnsave={() => removeItem(item.data.id)}
               />
             )
           }
@@ -162,7 +99,7 @@ export function SavedItemsList({
                   comment={item.data}
                   depth={0}
                   isAuthenticated={isAuthenticated}
-                  onUnsave={() => handleItemRemoved(item.data.id)}
+                  onUnsave={() => removeItem(item.data.id)}
                 />
               </Stack>
             </Card>

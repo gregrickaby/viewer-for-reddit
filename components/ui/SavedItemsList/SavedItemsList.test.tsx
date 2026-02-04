@@ -1,5 +1,17 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+// Mock hooks
+vi.mock('@/lib/hooks', () => ({
+  useInfiniteSavedItems: vi.fn(() => ({
+    items: [],
+    loading: false,
+    hasMore: false,
+    error: null,
+    sentinelRef: vi.fn(),
+    removeItem: vi.fn()
+  }))
+}))
+
 // Mock server actions to avoid env var errors
 vi.mock('@/lib/actions/reddit', () => ({
   fetchSavedItems: vi.fn(async () => ({
@@ -20,12 +32,12 @@ vi.mock('../Comment/Comment', () => ({
   Comment: ({comment}: {comment: {body: string}}) => <div>{comment.body}</div>
 }))
 
-import {fetchSavedItems} from '@/lib/actions/reddit'
+import {useInfiniteSavedItems} from '@/lib/hooks'
 import type {RedditComment, RedditPost, SavedItem} from '@/lib/types/reddit'
-import {act, render, screen, waitFor} from '@/test-utils'
+import {render, screen} from '@/test-utils'
 import {SavedItemsList} from './SavedItemsList'
 
-const mockFetchSavedItems = vi.mocked(fetchSavedItems)
+const mockUseInfiniteSavedItems = vi.mocked(useInfiniteSavedItems)
 
 const mockPost: RedditPost = {
   id: 'saved1',
@@ -81,30 +93,19 @@ const mockItems: SavedItem[] = [
 ]
 
 describe('SavedItemsList', () => {
-  let observerCallback: IntersectionObserverCallback | null = null
-
   beforeEach(() => {
-    mockFetchSavedItems.mockClear()
-    mockFetchSavedItems.mockResolvedValue({
-      items: [],
-      after: null
+    mockUseInfiniteSavedItems.mockReturnValue({
+      items: mockItems,
+      loading: false,
+      hasMore: false,
+      error: null,
+      sentinelRef: vi.fn(),
+      removeItem: vi.fn()
     })
-
-    observerCallback = null
-    global.IntersectionObserver = class IntersectionObserver {
-      constructor(callback?: IntersectionObserverCallback) {
-        if (callback) {
-          observerCallback = callback
-        }
-      }
-      observe = vi.fn()
-      disconnect = vi.fn()
-      unobserve = vi.fn()
-    } as unknown as typeof IntersectionObserver
   })
 
-  describe('initial rendering', () => {
-    it('renders initial saved items (posts and comments)', () => {
+  describe('rendering', () => {
+    it('renders saved items from hook', () => {
       render(
         <SavedItemsList
           initialItems={mockItems}
@@ -119,6 +120,15 @@ describe('SavedItemsList', () => {
     })
 
     it('renders comment context information', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [{type: 'comment', data: mockComment}],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={[{type: 'comment', data: mockComment}]}
@@ -134,6 +144,15 @@ describe('SavedItemsList', () => {
     })
 
     it('handles empty saved items', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={[]}
@@ -150,6 +169,15 @@ describe('SavedItemsList', () => {
     })
 
     it('shows "No more saved items" when there are no more items', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: mockItems,
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={mockItems}
@@ -163,6 +191,15 @@ describe('SavedItemsList', () => {
     })
 
     it('does not show "No more saved items" when there are more items', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: mockItems,
+        loading: false,
+        hasMore: true,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={mockItems}
@@ -174,62 +211,15 @@ describe('SavedItemsList', () => {
 
       expect(screen.queryByText('No more saved items')).not.toBeInTheDocument()
     })
-  })
 
-  describe('infinite scroll setup', () => {
-    it('sets up IntersectionObserver when there are more items', () => {
-      const constructorSpy = vi.fn()
-      global.IntersectionObserver = class IntersectionObserver {
-        constructor() {
-          constructorSpy()
-        }
-        observe = vi.fn()
-        disconnect = vi.fn()
-        unobserve = vi.fn()
-      } as unknown as typeof IntersectionObserver
-
-      render(
-        <SavedItemsList
-          initialItems={mockItems}
-          username="testuser"
-          initialAfter="t3_cursor"
-          isAuthenticated
-        />
-      )
-
-      expect(constructorSpy).toHaveBeenCalled()
-    })
-
-    it('does not set up IntersectionObserver when no more items', () => {
-      render(
-        <SavedItemsList
-          initialItems={mockItems}
-          username="testuser"
-          initialAfter={null}
-          isAuthenticated
-        />
-      )
-
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
-    })
-  })
-
-  describe('infinite scroll loading', () => {
-    beforeEach(() => {
-      global.IntersectionObserver = class IntersectionObserver {
-        constructor(callback: IntersectionObserverCallback) {
-          observerCallback = callback
-        }
-        observe = vi.fn()
-        disconnect = vi.fn()
-        unobserve = vi.fn()
-      } as unknown as typeof IntersectionObserver
-    })
-
-    it('loads more items when sentinel intersects', async () => {
-      mockFetchSavedItems.mockResolvedValueOnce({
-        items: [{type: 'post', data: {...mockPost, id: 'saved3'}}],
-        after: null
+    it('shows loading indicator when loading', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: mockItems,
+        loading: true,
+        hasMore: true,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
       })
 
       render(
@@ -241,89 +231,46 @@ describe('SavedItemsList', () => {
         />
       )
 
-      await waitFor(() => {
-        expect(observerCallback).not.toBeNull()
-      })
-
-      await act(async () => {
-        observerCallback?.(
-          [{isIntersecting: true}] as IntersectionObserverEntry[],
-          {} as IntersectionObserver
-        )
-      })
-
-      await waitFor(() => {
-        expect(mockFetchSavedItems).toHaveBeenCalledWith(
-          'testuser',
-          't3_cursor'
-        )
-      })
+      // Mantine Loader doesn't have specific aria role, just check it renders
+      const loader = document.querySelector('.mantine-Loader-root')
+      expect(loader).toBeInTheDocument()
     })
 
-    it('shows error message when fetch fails', async () => {
-      mockFetchSavedItems.mockRejectedValueOnce(new Error('Network error'))
-
-      render(
-        <SavedItemsList
-          initialItems={mockItems}
-          username="testuser"
-          initialAfter="t3_cursor"
-          isAuthenticated
-        />
-      )
-
-      await waitFor(() => {
-        expect(observerCallback).not.toBeNull()
-      })
-
-      await act(async () => {
-        observerCallback?.(
-          [{isIntersecting: true}] as IntersectionObserverEntry[],
-          {} as IntersectionObserver
-        )
-      })
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('Failed to load saved items')
-        ).toBeInTheDocument()
-      })
-    })
-
-    it('shows no-more message after empty response', async () => {
-      mockFetchSavedItems.mockResolvedValueOnce({
+    it('shows error message when error occurs', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
         items: [],
-        after: null
+        loading: false,
+        hasMore: false,
+        error: 'Network error',
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
       })
 
       render(
         <SavedItemsList
-          initialItems={mockItems}
+          initialItems={[]}
           username="testuser"
           initialAfter="t3_cursor"
           isAuthenticated
         />
       )
 
-      await waitFor(() => {
-        expect(observerCallback).not.toBeNull()
-      })
-
-      await act(async () => {
-        observerCallback?.(
-          [{isIntersecting: true}] as IntersectionObserverEntry[],
-          {} as IntersectionObserver
-        )
-      })
-
-      await waitFor(() => {
-        expect(screen.getByText('No more saved items')).toBeInTheDocument()
-      })
+      expect(screen.getByText('Failed to load saved items')).toBeInTheDocument()
+      expect(screen.getByText('Network error')).toBeInTheDocument()
     })
   })
 
   describe('item rendering', () => {
     it('renders posts with PostCard component', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [{type: 'post', data: mockPost}],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={[{type: 'post', data: mockPost}]}
@@ -337,6 +284,15 @@ describe('SavedItemsList', () => {
     })
 
     it('renders comments with Comment component', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [{type: 'comment', data: mockComment}],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={[{type: 'comment', data: mockComment}]}
@@ -350,6 +306,15 @@ describe('SavedItemsList', () => {
     })
 
     it('renders mixed posts and comments in order', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: mockItems,
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={mockItems}
@@ -365,7 +330,16 @@ describe('SavedItemsList', () => {
   })
 
   describe('authentication', () => {
-    it('passes isAuthenticated prop to Comment component', () => {
+    it('passes isAuthenticated prop to child components', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [{type: 'comment', data: mockComment}],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={[{type: 'comment', data: mockComment}]}
@@ -379,6 +353,15 @@ describe('SavedItemsList', () => {
     })
 
     it('works with isAuthenticated false', () => {
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [{type: 'comment', data: mockComment}],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: vi.fn(),
+        removeItem: vi.fn()
+      })
+
       render(
         <SavedItemsList
           initialItems={[{type: 'comment', data: mockComment}]}

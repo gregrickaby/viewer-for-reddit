@@ -5,7 +5,10 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 // Mock hooks before importing component
 vi.mock('@/lib/hooks', () => ({
   useVote: vi.fn(),
-  useSavePost: vi.fn()
+  useSavePost: vi.fn(),
+  useSharePost: vi.fn(() => ({
+    sharePost: vi.fn()
+  }))
 }))
 
 // Import after mocks

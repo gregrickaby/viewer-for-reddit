@@ -1,35 +1,24 @@
-import {logout} from '@/lib/actions/auth'
-import {render, screen, user, waitFor} from '@/test-utils'
-import {useRouter} from 'next/navigation'
+import {useLogout} from '@/lib/hooks'
+import {render, screen, user} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {UserMenu} from './UserMenu'
 
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn()
+vi.mock('@/lib/hooks', () => ({
+  useLogout: vi.fn()
 }))
 
-vi.mock('@/lib/actions/auth', () => ({
-  logout: vi.fn(async () => ({success: true}))
-}))
-
-const mockUseRouter = vi.mocked(useRouter)
-const mockLogout = vi.mocked(logout)
+const mockUseLogout = vi.mocked(useLogout)
 
 describe('UserMenu', () => {
-  const mockPush = vi.fn()
-  const mockRefresh = vi.fn()
+  const mockHandleLogout = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockLogout.mockResolvedValue({success: true})
-    mockUseRouter.mockReturnValue({
-      push: mockPush,
-      refresh: mockRefresh,
-      back: vi.fn(),
-      forward: vi.fn(),
-      prefetch: vi.fn(),
-      replace: vi.fn()
-    } as any)
+    mockUseLogout.mockReturnValue({
+      isLoggingOut: false,
+      isPending: false,
+      handleLogout: mockHandleLogout
+    })
   })
 
   describe('authenticated state', () => {
@@ -66,42 +55,25 @@ describe('UserMenu', () => {
       expect(logoutButtons.length).toBeGreaterThan(0)
     })
 
-    it('handles logout click', async () => {
+    it('calls handleLogout when logout button clicked', async () => {
       render(<UserMenu isAuthenticated username="testuser" />)
 
       const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
       await user.click(logoutButton)
 
-      expect(mockLogout).toHaveBeenCalled()
+      expect(mockHandleLogout).toHaveBeenCalledTimes(1)
     })
 
-    it('redirects to home and refreshes after logout', async () => {
-      render(<UserMenu isAuthenticated username="testuser" />)
-
-      const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
-      await user.click(logoutButton)
-
-      // Wait for the async operation
-      await vi.waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/')
-        expect(mockRefresh).toHaveBeenCalled()
+    it('shows loading state during logout', () => {
+      mockUseLogout.mockReturnValue({
+        isLoggingOut: true,
+        isPending: true,
+        handleLogout: mockHandleLogout
       })
-    })
-
-    it('disables logout button during logout', async () => {
-      mockLogout.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(() => resolve({success: true}), 100)
-          )
-      )
 
       render(<UserMenu isAuthenticated username="testuser" />)
 
       const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
-      await user.click(logoutButton)
-
-      // Button should show loading state
       expect(logoutButton).toHaveAttribute('data-loading', 'true')
     })
   })
@@ -137,70 +109,6 @@ describe('UserMenu', () => {
       render(<UserMenu isAuthenticated={false} />)
 
       expect(screen.queryByRole('link', {name: /u\//})).not.toBeInTheDocument()
-    })
-  })
-
-  describe('race condition prevention', () => {
-    it('prevents multiple logout clicks', async () => {
-      mockLogout.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(() => resolve({success: true}), 100)
-          )
-      )
-
-      render(<UserMenu isAuthenticated username="testuser" />)
-
-      const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
-
-      // Click multiple times rapidly
-      await user.click(logoutButton)
-      await user.click(logoutButton)
-      await user.click(logoutButton)
-
-      // Should only call logout once
-      expect(mockLogout).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('error handling', () => {
-    it('handles logout failure gracefully', async () => {
-      mockLogout.mockResolvedValue({success: false, error: 'Logout failed'})
-
-      render(<UserMenu isAuthenticated username="testuser" />)
-
-      const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
-      await user.click(logoutButton)
-
-      // Wait for logout to complete
-      await vi.waitFor(() => {
-        expect(mockLogout).toHaveBeenCalled()
-      })
-
-      // Button should not redirect on failure
-    })
-
-    it('handles network errors during logout', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      mockLogout.mockRejectedValueOnce(new Error('Network error'))
-
-      render(<UserMenu isAuthenticated username="testuser" />)
-
-      const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
-
-      // Click and expect the rejection to be thrown (component doesn't catch)
-      await user.click(logoutButton)
-
-      // Wait for logout to be called
-      await waitFor(() => {
-        expect(mockLogout).toHaveBeenCalled()
-      })
-
-      // Even though logout failed, the component stays mounted (finally block runs)
-      // and the isLoggingOut state is reset
-      expect(mockLogout).toHaveBeenCalledTimes(1)
-
-      consoleSpy.mockRestore()
     })
   })
 

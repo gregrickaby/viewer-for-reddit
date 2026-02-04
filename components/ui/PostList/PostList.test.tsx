@@ -16,6 +16,9 @@ vi.mock('@/lib/hooks', () => ({
     isSaved: false,
     isPending: false,
     toggleSave: vi.fn()
+  })),
+  useSharePost: vi.fn(() => ({
+    sharePost: vi.fn()
   }))
 }))
 
