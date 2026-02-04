@@ -89,6 +89,32 @@ describe('useSearchBar', () => {
       expect(mockHandleOptionSelect).toHaveBeenCalledWith('r/test')
       expect(mockCombobox.closeDropdown).toHaveBeenCalled()
     })
+
+    it('calls onMobileClose on mobile when selecting option', () => {
+      mockUseMediaQuery.mockReturnValue(true) // Mobile
+      const {result} = renderHook(() => useSearchBar(defaultOptions))
+
+      act(() => {
+        result.current.handleSelect('r/test')
+      })
+
+      expect(mockHandleOptionSelect).toHaveBeenCalledWith('r/test')
+      expect(mockCombobox.closeDropdown).toHaveBeenCalled()
+      expect(mockOnMobileClose).toHaveBeenCalled()
+    })
+
+    it('does not call onMobileClose on desktop', () => {
+      mockUseMediaQuery.mockReturnValue(false) // Desktop
+      const {result} = renderHook(() => useSearchBar(defaultOptions))
+
+      act(() => {
+        result.current.handleSelect('r/test')
+      })
+
+      expect(mockHandleOptionSelect).toHaveBeenCalledWith('r/test')
+      expect(mockCombobox.closeDropdown).toHaveBeenCalled()
+      expect(mockOnMobileClose).not.toHaveBeenCalled()
+    })
   })
 
   describe('handleKeyDown', () => {

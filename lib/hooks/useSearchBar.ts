@@ -117,6 +117,9 @@ export function useSearchBar({
   const handleSelect = (value: string) => {
     handleOptionSelect(value)
     combobox.closeDropdown()
+    if (isMobile && onMobileClose) {
+      onMobileClose()
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
