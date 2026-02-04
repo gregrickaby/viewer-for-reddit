@@ -3,5 +3,5 @@
   height: 48px;
   position: fixed;
   right: var(--mantine-spacing-lg);
-  z-index: 999999;
+  z-index: 99;
 }
