@@ -8,6 +8,8 @@ applyTo: lib/actions/**/*.ts, app/api/**, lib/types/reddit-api.ts, lib/types/red
 
 ## Core Concepts
 
+Public API is now 100 requests per minute. Authenticated endpoints have higher limits.
+
 ### Fullnames (Thing IDs)
 
 Reddit uses fullnames with type prefixes:
