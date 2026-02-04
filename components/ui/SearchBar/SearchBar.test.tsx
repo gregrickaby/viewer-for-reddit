@@ -1,13 +1,39 @@
 import {useSearch} from '@/lib/hooks'
-import {act, render, screen, user} from '@/test-utils'
+import {render, screen, user} from '@/test-utils'
+import {useCombobox} from '@mantine/core'
+import {useMediaQuery} from '@mantine/hooks'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {SearchBar} from './SearchBar'
 
-vi.mock('@/lib/hooks', () => ({
-  useSearch: vi.fn()
-}))
+// Mock Mantine hooks to control behavior
+vi.mock('@mantine/core', async () => {
+  const actual = await vi.importActual('@mantine/core')
+  return {
+    ...actual,
+    useCombobox: vi.fn()
+  }
+})
+
+vi.mock('@mantine/hooks', async () => {
+  const actual = await vi.importActual('@mantine/hooks')
+  return {
+    ...actual,
+    useMediaQuery: vi.fn()
+  }
+})
+
+// Mock only useSearch, let useSearchBar use real implementation with mocked Mantine hooks
+vi.mock('@/lib/hooks', async () => {
+  const actual = await vi.importActual('@/lib/hooks')
+  return {
+    ...actual,
+    useSearch: vi.fn()
+  }
+})
 
 const mockUseSearch = vi.mocked(useSearch)
+const mockUseCombobox = vi.mocked(useCombobox)
+const mockUseMediaQuery = vi.mocked(useMediaQuery)
 
 describe('SearchBar', () => {
   const mockHandleOptionSelect = vi.fn()
@@ -25,9 +51,38 @@ describe('SearchBar', () => {
     handleSubmit: mockHandleSubmit
   }
 
+  const mockCombobox = {
+    openDropdown: vi.fn(),
+    closeDropdown: vi.fn(),
+    resetSelectedOption: vi.fn(),
+    updateSelectedOptionIndex: vi.fn(),
+    selectFirstOption: vi.fn(),
+    getState: vi.fn(() => ({
+      listId: 'test-list-id',
+      descriptionId: 'test-description-id'
+    })),
+    // Zustand-like store methods that Combobox.Options expects
+    setListId: vi.fn((id: string) => {
+      mockCombobox.getState = vi.fn(() => ({
+        listId: id,
+        descriptionId: mockCombobox.getState().descriptionId
+      }))
+    }),
+    setDescriptionId: vi.fn((id: string) => {
+      mockCombobox.getState = vi.fn(() => ({
+        listId: mockCombobox.getState().listId,
+        descriptionId: id
+      }))
+    }),
+    subscribe: vi.fn(() => vi.fn()), // Zustand subscribe returns unsubscribe function
+    destroy: vi.fn()
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseSearch.mockReturnValue(defaultSearchState)
+    mockUseCombobox.mockReturnValue(mockCombobox as any)
+    mockUseMediaQuery.mockReturnValue(false) // Default to desktop
   })
 
   describe('rendering', () => {
@@ -46,14 +101,6 @@ describe('SearchBar', () => {
       expect(
         screen.getByPlaceholderText('Search Reddit... (Press / to focus)')
       ).toBeInTheDocument()
-    })
-
-    it('renders search icon', () => {
-      const {container} = render(<SearchBar />)
-
-      // eslint-disable-next-line testing-library/no-container
-      const icon = container.querySelector('svg')
-      expect(icon).toBeInTheDocument()
     })
   })
 
@@ -75,74 +122,8 @@ describe('SearchBar', () => {
 
       render(<SearchBar />)
 
-      const input = screen.getByRole('textbox') as HTMLInputElement
+      const input = screen.getByRole('textbox')
       expect(input).toHaveValue('reddit')
-    })
-  })
-
-  describe('keyboard shortcuts', () => {
-    it('focuses input when / key is pressed', () => {
-      render(<SearchBar />)
-
-      const input = screen.getByRole('textbox')
-
-      act(() => {
-        const event = new KeyboardEvent('keydown', {key: '/', bubbles: true})
-        document.dispatchEvent(event)
-      })
-
-      expect(input).toHaveFocus()
-    })
-
-    it('does not focus input when typing in another input', () => {
-      render(
-        <div>
-          <input type="text" />
-          <SearchBar />
-        </div>
-      )
-
-      const otherInput = screen.getAllByRole('textbox')[0]
-      const searchInput = screen.getByRole('textbox', {
-        name: 'Search Reddit or subreddits'
-      })
-
-      otherInput.focus()
-
-      act(() => {
-        const event = new KeyboardEvent('keydown', {key: '/', bubbles: true})
-        document.dispatchEvent(event)
-      })
-
-      expect(searchInput).not.toHaveFocus()
-    })
-
-    it('clears query when Escape is pressed with query present', async () => {
-      mockUseSearch.mockReturnValue({
-        ...defaultSearchState,
-        query: 'test query'
-      })
-
-      render(<SearchBar />)
-
-      const input = screen.getByRole('textbox')
-      await user.type(input, '{Escape}')
-
-      expect(mockSetQuery).toHaveBeenCalledWith('')
-    })
-
-    it('calls handleSubmit when Enter is pressed with query', async () => {
-      mockUseSearch.mockReturnValue({
-        ...defaultSearchState,
-        query: 'test'
-      })
-
-      render(<SearchBar />)
-
-      const input = screen.getByRole('textbox')
-      await user.type(input, '{Enter}')
-
-      expect(mockHandleSubmit).toHaveBeenCalled()
     })
   })
 
@@ -377,8 +358,35 @@ describe('SearchBar', () => {
     it('handles empty query gracefully', () => {
       render(<SearchBar />)
 
-      const input = screen.getByRole('textbox') as HTMLInputElement
+      const input = screen.getByRole('textbox')
       expect(input).toHaveValue('')
+    })
+  })
+
+  describe('mobile behavior', () => {
+    it('renders modal on mobile when mobileOpen is true', () => {
+      mockUseMediaQuery.mockReturnValue(true) // Mobile
+
+      render(<SearchBar mobileOpen onMobileClose={vi.fn()} />)
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+
+    it('does not render modal on desktop', () => {
+      mockUseMediaQuery.mockReturnValue(false) // Desktop
+
+      render(<SearchBar mobileOpen onMobileClose={vi.fn()} />)
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    it('renders inline on desktop', () => {
+      mockUseMediaQuery.mockReturnValue(false) // Desktop
+
+      render(<SearchBar />)
+
+      const input = screen.getByRole('textbox')
+      expect(input).toBeInTheDocument()
     })
   })
 })

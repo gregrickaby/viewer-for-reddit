@@ -1,6 +1,6 @@
 'use client'
 
-import {useSearch} from '@/lib/hooks'
+import {useSearch, useSearchBar} from '@/lib/hooks'
 import {
   Avatar,
   Badge,
@@ -11,12 +11,9 @@ import {
   Loader,
   Modal,
   Stack,
-  Text,
-  useCombobox
+  Text
 } from '@mantine/core'
-import {useMediaQuery} from '@mantine/hooks'
 import {IconSearch} from '@tabler/icons-react'
-import {useEffect, useRef} from 'react'
 
 /**
  * Props for the SearchBar component.
@@ -62,65 +59,21 @@ export function SearchBar({
     handleOptionSelect,
     handleSubmit
   } = useSearch()
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption()
-  })
-  const inputRef = useRef<HTMLInputElement>(null)
-  const isMobile = useMediaQuery('(max-width: 48em)') // sm breakpoint
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.key === '/' &&
-        document.activeElement?.tagName !== 'INPUT' &&
-        document.activeElement?.tagName !== 'TEXTAREA'
-      ) {
-        e.preventDefault()
-        inputRef.current?.focus()
-        combobox.openDropdown()
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [combobox])
-
-  // Auto-focus input when mobile search opens
-  useEffect(() => {
-    if (mobileOpen && inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [mobileOpen])
-
-  const handleSelect = (value: string) => {
-    handleOptionSelect(value)
-    combobox.closeDropdown()
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      e.preventDefault()
-      if (query) {
-        setQuery('')
-        combobox.closeDropdown()
-      } else if (isMobile && onMobileClose) {
-        onMobileClose()
-      }
-    }
-
-    if (e.key === 'Enter' && query.trim()) {
-      e.preventDefault()
-      handleSubmit()
-      combobox.closeDropdown()
-      if (isMobile && onMobileClose) {
-        onMobileClose()
-      }
-    }
-  }
+  const {inputRef, combobox, isMobile, handleSelect, handleKeyDown} =
+    useSearchBar({
+      query,
+      setQuery,
+      mobileOpen,
+      handleOptionSelect,
+      handleSubmit,
+      onMobileClose
+    })
 
   const {communities, nsfw} = groupedResults
   const hasResults = communities.length > 0 || nsfw.length > 0
   const showDropdown = query.length >= 2 || isLoading
+  // Show "no results" when: query is long enough, not loading, no error, and no results
   const shouldShowNoResults =
     query.length >= 2 && !isLoading && !hasError && !hasResults
 
@@ -153,6 +106,7 @@ export function SearchBar({
           aria-label="Search Reddit or subreddits"
           aria-expanded={showDropdown}
           aria-controls="search-dropdown"
+          aria-describedby={hasError ? 'search-error' : undefined}
           w={isMobile ? '100%' : 300}
           size={isMobile ? 'md' : 'sm'}
           data-umami-event="search"
@@ -179,7 +133,7 @@ export function SearchBar({
 
           {!isLoading && hasError && (
             <Combobox.Empty>
-              <Text size="sm" c="red">
+              <Text id="search-error" size="sm" c="red">
                 {errorMessage || 'Error loading results'}
               </Text>
             </Combobox.Empty>
