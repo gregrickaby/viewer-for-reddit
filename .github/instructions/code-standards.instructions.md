@@ -404,28 +404,34 @@ import Link from 'next/link'
 <div style={{color: 'red', marginTop: '10px'}}>Content</div>
 ```
 
-### Component Memoization
+### React 19 Compiler (Automatic Optimization)
+
+**React 19's compiler automatically handles memoization** - no need for manual `memo()`, `useCallback()`, or `useMemo()`.
 
 ```typescript
-import {memo} from 'react'
+// ✅ CORRECT - No memo needed, React Compiler optimizes automatically
+export function PostCard({post}: Readonly<PostCardProps>) {
+  // React Compiler automatically memoizes this component
+  return <div>{post.title}</div>
+}
 
-// ✅ Use memo for frequently rendered components
-export const PostCard = memo(({post}: Readonly<PostCardProps>) => {
-  // Only re-renders when props change
-})
+// ❌ WRONG - Don't use manual memoization
+import {memo} from 'react'
+export const PostCard = memo(({post}) => {...}) // Redundant!
 ```
 
-**When to use memo:**
+**Key Points:**
 
-- Components that render frequently (PostCard, Comment)
-- Components with expensive calculations
-- Components in lists
+- **Never use `memo()`** - React Compiler handles component memoization
+- **Never use `useCallback()`** - React Compiler handles function memoization
+- **Never use `useMemo()`** - React Compiler handles value memoization
+- Learn more: [React Compiler Documentation](https://react.dev/learn/react-compiler)
 
-**When NOT to use memo:**
+**What React Compiler does:**
 
-- Page components
-- Layout components (render once)
-- Trivial components with no props
+- Automatically memoizes components based on props changes
+- Optimizes re-renders without manual intervention
+- Eliminates need for performance hooks
 
 ---
 
@@ -574,13 +580,9 @@ const observer = new IntersectionObserver((entries) => {
 })
 ```
 
-### 4. Component Memoization
+### 4. React 19 Compiler Optimization
 
-```typescript
-export const PostCard = memo(({post}: Readonly<PostCardProps>) => {
-  // Only re-renders when props change
-})
-```
+React 19's compiler automatically optimizes components - no manual memoization needed. See [React Compiler Documentation](https://react.dev/learn/react-compiler) for details.
 
 ---
 
@@ -623,6 +625,7 @@ See [GitHub Copilot Instructions](../copilot-instructions.md) for testing patter
 - Plain Next.js `<Link>` (wrap with Mantine `<Anchor>`)
 - Magic numbers (use constants like `FIVE_MINUTES`)
 - Arctic token property access (use methods: `.accessToken()`)
+- Using `memo()`, `useCallback()`, or `useMemo()` (React Compiler handles this)
 
 **✅ Correct:**
 

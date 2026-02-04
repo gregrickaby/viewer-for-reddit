@@ -2,11 +2,10 @@ import type {RedditPost} from '@/lib/types/reddit'
 import * as mediaHelpers from '@/lib/utils/media-helpers'
 import {render, screen} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {PostMedia} from './PostMedia'
 
 // Mock hooks before importing component
 vi.mock('@/lib/utils/media-helpers')
-
-const {PostMedia} = await import('./PostMedia')
 
 const basePost: RedditPost = {
   id: 'test123',
@@ -442,17 +441,6 @@ describe('PostMedia', () => {
       expect(container.querySelector('video')).toBeInTheDocument()
       // eslint-disable-next-line testing-library/no-container
       expect(container.querySelector('img')).not.toBeInTheDocument()
-    })
-  })
-
-  describe('memoization', () => {
-    it('is a memoized component', () => {
-      const {rerender} = render(<PostMedia post={basePost} />)
-
-      // Re-render with same props shouldn't cause issues
-      rerender(<PostMedia post={basePost} />)
-
-      expect(true).toBe(true)
     })
   })
 })

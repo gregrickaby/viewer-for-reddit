@@ -6,6 +6,7 @@ import {
   getHighestQualityVideoUrl,
   getMediumImage,
   getMp4Variant,
+  getPosterImage,
   isValidThumbnail,
   isValidUrl,
   isVerticalImage
@@ -625,6 +626,85 @@ describe('media-helpers', () => {
       expect(getHighestQualityVideoUrl(url)).toBe(
         'https://v.redd.it/abc123/DASH_1080.mp4?source=fallback'
       )
+    })
+  })
+
+  describe('getPosterImage', () => {
+    it('returns preview source URL when available', () => {
+      const post = {
+        preview: {
+          images: [
+            {
+              source: {
+                url: 'https://preview.redd.it/poster.jpg',
+                width: 1920,
+                height: 1080
+              }
+            }
+          ]
+        }
+      } as unknown as RedditPost
+
+      expect(getPosterImage(post)).toBe('https://preview.redd.it/poster.jpg')
+    })
+
+    it('falls back to valid thumbnail when preview not available', () => {
+      const post = {
+        thumbnail: 'https://b.thumbs.redditmedia.com/thumb.jpg'
+      } as unknown as RedditPost
+
+      expect(getPosterImage(post)).toBe(
+        'https://b.thumbs.redditmedia.com/thumb.jpg'
+      )
+    })
+
+    it('returns undefined when thumbnail is "self"', () => {
+      const post = {
+        thumbnail: 'self'
+      } as unknown as RedditPost
+
+      expect(getPosterImage(post)).toBeUndefined()
+    })
+
+    it('returns undefined when thumbnail is "default"', () => {
+      const post = {
+        thumbnail: 'default'
+      } as unknown as RedditPost
+
+      expect(getPosterImage(post)).toBeUndefined()
+    })
+
+    it('returns undefined when no preview or valid thumbnail', () => {
+      const post = {} as RedditPost
+
+      expect(getPosterImage(post)).toBeUndefined()
+    })
+
+    it('prefers preview over thumbnail', () => {
+      const post = {
+        preview: {
+          images: [
+            {
+              source: {
+                url: 'https://preview.redd.it/poster.jpg',
+                width: 1920,
+                height: 1080
+              }
+            }
+          ]
+        },
+        thumbnail: 'https://b.thumbs.redditmedia.com/thumb.jpg'
+      } as unknown as RedditPost
+
+      expect(getPosterImage(post)).toBe('https://preview.redd.it/poster.jpg')
+    })
+
+    it('returns undefined when thumbnail is not a valid URL', () => {
+      const post = {
+        thumbnail: 'not-a-url'
+      } as unknown as RedditPost
+
+      expect(getPosterImage(post)).toBeUndefined()
     })
   })
 })

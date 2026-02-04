@@ -42,6 +42,8 @@ These specialized instructions apply automatically when editing relevant files v
 
 **All API Calls in Server Actions** - `/lib/actions/reddit.ts` uses Next.js `fetch()` with `next: {revalidate}` for caching and automatic request deduplication.
 
+**React 19 Compiler** - Automatically handles memoization. Never use `memo()`, `useCallback()`, or `useMemo()`.
+
 **Critical Conventions**:
 
 - Arctic OAuth tokens are **methods**: `tokens.accessToken()` NOT `.accessToken` property
@@ -74,6 +76,7 @@ See [Code Standards & Architecture](./instructions/code-standards.instructions.m
 - Add superfluous comments or tests
 - Start dev server (user manages it)
 - Mock `global.fetch` in tests (use MSW v2, see [Testing Standards](./instructions/testing-standards.instructions.md))
+- Use `memo()`, `useCallback()`, or `useMemo()` (React Compiler handles optimization)
 
 ⚠️ **Ask before**: Modifying authentication flow, changing API structure, adding dependencies
 

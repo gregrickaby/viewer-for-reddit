@@ -168,6 +168,18 @@ export function isValidThumbnail(thumbnail: string | undefined): boolean {
 }
 
 /**
+ * Get poster image from post preview or thumbnail
+ * @param post - Reddit post data
+ * @returns Poster image URL or undefined if not available
+ */
+export function getPosterImage(post: RedditPost): string | undefined {
+  return (
+    post.preview?.images?.[0]?.source?.url ??
+    (isValidThumbnail(post.thumbnail) ? post.thumbnail : undefined)
+  )
+}
+
+/**
  * Get the highest quality video URL from Reddit video data.
  * Reddit provides multiple resolutions (DASH_240, DASH_360, DASH_480, DASH_720, DASH_1080, DASH_4K).
  * The fallback_url typically points to a lower resolution, so we replace it with the highest available.
