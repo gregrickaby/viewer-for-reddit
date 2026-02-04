@@ -8,7 +8,7 @@ vi.mock('../Logo/Logo', () => ({
   Logo: () => <div data-testid="logo">Reddit Viewer Logo</div>
 }))
 
-vi.mock('../SearchBar/SearchBar', () => ({
+vi.mock('@/components/ui/SearchBar/SearchBar', () => ({
   SearchBar: ({
     mobileOpen,
     onMobileClose

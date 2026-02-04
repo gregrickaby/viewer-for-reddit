@@ -1,10 +1,10 @@
 'use client'
 
+import {SearchBar} from '@/components/ui/SearchBar/SearchBar'
 import {ActionIcon, Box, Burger, Group} from '@mantine/core'
 import {IconSearch} from '@tabler/icons-react'
 import {useState} from 'react'
 import {Logo} from '../Logo/Logo'
-import {SearchBar} from '../SearchBar/SearchBar'
 import {UserMenu} from '../UserMenu/UserMenu'
 
 /**

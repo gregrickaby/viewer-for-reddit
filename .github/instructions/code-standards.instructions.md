@@ -19,11 +19,10 @@ components/
   layout/               - Structural components (each in own directory)
     AppLayout/
     Header/
-    SearchBar/
-    Sidebar/
-    UserMenu/
     Logo/
+    Sidebar/
     ThemeProvider/
+    UserMenu/
   ui/                   - Feature components (each in own directory)
     Analytics/
     BackToTop/
@@ -39,7 +38,12 @@ components/
     PostList/
     PostListWithTabs/
     PostMedia/
+    SavedItemsList/
+    SearchBar/
     SubscribeButton/
+    SwipeNavigation/
+    UserCommentListWithTabs/
+    UserProfileTabs/
     VideoPlayer/
   skeletons/            - Loading states (each in own directory)
     CommentSkeleton/
