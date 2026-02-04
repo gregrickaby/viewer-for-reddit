@@ -126,10 +126,10 @@ export function SearchBar({
 
   const searchInput = (
     <Combobox
-      store={combobox}
       onOptionSubmit={handleSelect}
-      withinPortal
       position="bottom-start"
+      store={combobox}
+      withinPortal
     >
       <Combobox.Target>
         <InputBase
@@ -277,6 +277,7 @@ export function SearchBar({
         withCloseButton={false}
         size="xl"
         padding="lg"
+        zIndex={100}
       >
         {searchInput}
       </Modal>

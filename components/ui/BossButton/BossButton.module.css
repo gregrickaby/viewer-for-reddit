@@ -3,5 +3,5 @@
   position: fixed;
   right: var(--mantine-spacing-lg);
   top: 96px;
-  z-index: 9999999;
+  z-index: 99;
 }
