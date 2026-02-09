@@ -4,7 +4,6 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "sonarsource.sonarlint-vscode",
-    "GitHub.copilot",
     "GitHub.copilot-chat"
   ]
 }
