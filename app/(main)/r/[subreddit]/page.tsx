@@ -1,4 +1,5 @@
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {SubredditSearchBar} from '@/components/ui/SubredditSearchBar/SubredditSearchBar'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import {fetchPosts, fetchSubredditInfo} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
@@ -90,6 +91,7 @@ async function SubredditInfo({
           {info.public_description && (
             <Text size="sm">{decodeHtmlEntities(info.public_description)}</Text>
           )}
+          <SubredditSearchBar subreddit={subreddit} />
         </Stack>
       </Card>
     )
@@ -97,7 +99,10 @@ async function SubredditInfo({
 
   return (
     <Card withBorder padding="lg" radius="md" mb="lg">
-      <Title order={2}>r/{subreddit}</Title>
+      <Stack gap="sm">
+        <Title order={2}>r/{subreddit}</Title>
+        <SubredditSearchBar subreddit={subreddit} />
+      </Stack>
     </Card>
   )
 }
