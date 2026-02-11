@@ -1000,17 +1000,18 @@ describe('reddit server actions', () => {
 
       let capturedUrl = ''
       server.use(
-        http.get('https://oauth.reddit.com/r/:subreddit/search.json', ({
-          request
-        }) => {
-          capturedUrl = request.url
-          return HttpResponse.json({
-            data: {
-              children: [],
-              after: null
-            }
-          })
-        })
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/search.json',
+          ({request}) => {
+            capturedUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [],
+                after: null
+              }
+            })
+          }
+        )
       )
 
       await searchSubreddit('programming', 'typescript', undefined, 'new')
@@ -1028,20 +1029,27 @@ describe('reddit server actions', () => {
 
       let capturedUrl = ''
       server.use(
-        http.get('https://oauth.reddit.com/r/:subreddit/search.json', ({
-          request
-        }) => {
-          capturedUrl = request.url
-          return HttpResponse.json({
-            data: {
-              children: [],
-              after: null
-            }
-          })
-        })
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/search.json',
+          ({request}) => {
+            capturedUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [],
+                after: null
+              }
+            })
+          }
+        )
       )
 
-      await searchSubreddit('programming', 'typescript', undefined, 'top', 'week')
+      await searchSubreddit(
+        'programming',
+        'typescript',
+        undefined,
+        'top',
+        'week'
+      )
 
       expect(capturedUrl).toContain('sort=top')
       expect(capturedUrl).toContain('t=week')
@@ -1055,9 +1063,9 @@ describe('reddit server actions', () => {
 
     it('validates query length', async () => {
       const longQuery = 'a'.repeat(513)
-      await expect(
-        searchSubreddit('programming', longQuery)
-      ).rejects.toThrow('Something went wrong.')
+      await expect(searchSubreddit('programming', longQuery)).rejects.toThrow(
+        'Something went wrong.'
+      )
     })
 
     it('handles API errors', async () => {
@@ -1073,9 +1081,9 @@ describe('reddit server actions', () => {
         })
       )
 
-      await expect(
-        searchSubreddit('nonexistent', 'query')
-      ).rejects.toThrow('Something went wrong.')
+      await expect(searchSubreddit('nonexistent', 'query')).rejects.toThrow(
+        'Something went wrong.'
+      )
     })
   })
 

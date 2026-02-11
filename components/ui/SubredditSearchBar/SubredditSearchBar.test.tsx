@@ -65,9 +65,7 @@ describe('SubredditSearchBar', () => {
     await user.type(input, 'react hooks')
     await user.keyboard('{Enter}')
 
-    expect(mockPush).toHaveBeenCalledWith(
-      '/r/programming/search/react%20hooks'
-    )
+    expect(mockPush).toHaveBeenCalledWith('/r/programming/search/react%20hooks')
   })
 
   it('trims whitespace from query', async () => {

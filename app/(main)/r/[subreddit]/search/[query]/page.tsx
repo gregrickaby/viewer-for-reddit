@@ -56,7 +56,9 @@ async function SearchResults({
         <Title order={4}>
           No results found for &quot;{decodedQuery}&quot; in r/{subreddit}
         </Title>
-        <Text c="dimmed">Try a different search term or browse the subreddit.</Text>
+        <Text c="dimmed">
+          Try a different search term or browse the subreddit.
+        </Text>
       </Stack>
     )
   }
