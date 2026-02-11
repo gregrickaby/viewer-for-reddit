@@ -6,11 +6,10 @@ import {
 } from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
-import {Container, Skeleton, Typography} from '@mantine/core'
+import {Container, Typography} from '@mantine/core'
 import type {Metadata} from 'next'
 import fs from 'node:fs'
 import path from 'node:path'
-import {Suspense} from 'react'
 import ReactMarkdown from 'react-markdown'
 
 /**
@@ -40,9 +39,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Donate page content component - fetches data and renders content.
+ * Donate page - displays donation options and information.
+ *
+ * Static content page that reads and renders the content.md file.
+ * No loading state needed as it's server-rendered with local file access.
  */
-async function DonatePageContent() {
+export default async function DonatePage() {
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
 
@@ -71,35 +73,5 @@ async function DonatePageContent() {
         </Typography>
       </Container>
     </AppLayout>
-  )
-}
-
-/**
- * Loading skeleton for Donate page.
- */
-function DonatePageSkeleton() {
-  return (
-    <AppLayout isAuthenticated={false} subscriptions={[]} multireddits={[]}>
-      <Container size="md" py="xl">
-        <Skeleton height={40} mb="xl" width="60%" />
-        <Skeleton height={20} mb="md" />
-        <Skeleton height={20} mb="md" />
-        <Skeleton height={20} mb="md" width="80%" />
-        <Skeleton height={20} mb="xl" />
-        <Skeleton height={20} mb="md" />
-        <Skeleton height={20} mb="md" width="90%" />
-      </Container>
-    </AppLayout>
-  )
-}
-
-/**
- * Donate page - displays donation options and information.
- */
-export default function DonatePage() {
-  return (
-    <Suspense fallback={<DonatePageSkeleton />}>
-      <DonatePageContent />
-    </Suspense>
   )
 }
