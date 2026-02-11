@@ -35,7 +35,7 @@ export function SubredditSearchBar({
   const [query, setQuery] = useState('')
   const [isPending, startTransition] = useTransition()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: {preventDefault: () => void}) => {
     e.preventDefault()
     if (isPending) return
     if (!query.trim()) return

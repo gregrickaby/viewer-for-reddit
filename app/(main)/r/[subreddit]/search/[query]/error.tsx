@@ -7,7 +7,7 @@ import {IconAlertCircle, IconRefresh} from '@tabler/icons-react'
  * Error boundary for subreddit search page.
  * Displays a user-friendly error message with retry option.
  */
-export default function Error({
+export default function SubredditSearchError({
   error,
   reset
 }: Readonly<{

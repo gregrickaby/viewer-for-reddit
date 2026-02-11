@@ -6,9 +6,10 @@ import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
+import ReactMarkdown from 'react-markdown'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
-import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
+import {formatNumber} from '@/lib/utils/formatters'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 
 interface PageProps {
@@ -89,7 +90,9 @@ async function SubredditInfo({
             </Group>
           </Group>
           {info.public_description && (
-            <Text size="sm">{decodeHtmlEntities(info.public_description)}</Text>
+            <Text size="sm" component="div">
+              <ReactMarkdown>{info.public_description}</ReactMarkdown>
+            </Text>
           )}
           <SubredditSearchBar subreddit={subreddit} />
         </Stack>
