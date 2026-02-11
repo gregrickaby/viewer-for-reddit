@@ -106,13 +106,19 @@ describe('SubredditSearchBar', () => {
 
     const clearButton = screen.getByLabelText('Clear search')
     expect(clearButton).toBeInTheDocument()
+    expect(clearButton.parentElement).toHaveStyle({opacity: '1'})
   })
 
   it('hides clear button when input is empty', () => {
     render(<SubredditSearchBar subreddit="programming" />)
 
-    const clearButton = screen.queryByLabelText('Clear search')
-    expect(clearButton).not.toBeInTheDocument()
+    const clearButton = screen.getByLabelText('Clear search')
+    expect(clearButton).toBeInTheDocument()
+    // Button should be visually hidden (opacity 0) and not interactive
+    expect(clearButton.parentElement).toHaveStyle({
+      opacity: '0',
+      pointerEvents: 'none'
+    })
   })
 
   it('clears input when clear button is clicked', async () => {

@@ -59,19 +59,25 @@ export function SubredditSearchBar({
         disabled={isPending}
         leftSection={<IconSearch size={16} />}
         rightSection={
-          query && (
-            <Group gap={4} wrap="nowrap">
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="sm"
-                onClick={handleClear}
-                aria-label="Clear search"
-              >
-                <IconX size={14} />
-              </ActionIcon>
-            </Group>
-          )
+          <Group
+            gap={4}
+            wrap="nowrap"
+            style={{
+              opacity: query ? 1 : 0,
+              pointerEvents: query ? 'auto' : 'none'
+            }}
+          >
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              size="sm"
+              onClick={handleClear}
+              aria-label="Clear search"
+              tabIndex={query ? 0 : -1}
+            >
+              <IconX size={14} />
+            </ActionIcon>
+          </Group>
         }
         aria-label={`Search within r/${subreddit}`}
         data-umami-event="subreddit-search"
