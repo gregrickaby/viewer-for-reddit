@@ -8,7 +8,7 @@ import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
-import {decodeHtmlEntities} from '@/lib/utils/formatters'
+import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 
 interface PageProps {
@@ -74,7 +74,7 @@ async function SubredditInfo({
             <Group gap="md" wrap="nowrap">
               <div>
                 <Text size="sm" fw={600}>
-                  {info.subscribers?.toLocaleString()}
+                  {info.subscribers ? formatNumber(info.subscribers) : '0'}
                 </Text>
                 <Text size="xs" c="dimmed">
                   subscribers
