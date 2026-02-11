@@ -1,5 +1,6 @@
 'use client'
 
+import {formatNumber} from '@/lib/utils/formatters'
 import {useSearch, useSearchBar} from '@/lib/hooks'
 import {
   Avatar,
@@ -169,7 +170,7 @@ export function SearchBar({
                           </Text>
                           {item.subscribers && item.subscribers > 0 && (
                             <Text size="xs" c="dimmed">
-                              {item.subscribers.toLocaleString()} members
+                              {formatNumber(item.subscribers)} members
                             </Text>
                           )}
                         </Stack>
@@ -206,7 +207,7 @@ export function SearchBar({
                           </Group>
                           {item.subscribers && item.subscribers > 0 && (
                             <Text size="xs" c="dimmed">
-                              {item.subscribers.toLocaleString()} members
+                              {formatNumber(item.subscribers)} members
                             </Text>
                           )}
                         </Stack>

@@ -197,7 +197,7 @@ describe('SearchBar', () => {
 
       expect(screen.getByText('COMMUNITIES')).toBeInTheDocument()
       expect(screen.getByText('r/test')).toBeInTheDocument()
-      expect(screen.getByText('1,000 members')).toBeInTheDocument()
+      expect(screen.getByText('1.0K members')).toBeInTheDocument()
     })
 
     it('shows NSFW results separately', () => {

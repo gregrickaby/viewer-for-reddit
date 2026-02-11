@@ -18,6 +18,8 @@ interface PostListProps {
   subreddit?: string
   /** Search query (disables infinite scroll) */
   searchQuery?: string
+  /** Subreddit to search within (disables infinite scroll) */
+  searchSubreddit?: string
   /** Username (disables infinite scroll) */
   username?: string
   /** Whether the current user is authenticated */
@@ -52,11 +54,12 @@ export function PostList({
   initialAfter,
   subreddit,
   searchQuery,
+  searchSubreddit,
   username,
   isAuthenticated = false
 }: Readonly<PostListProps>) {
   // Disable infinite scroll for search and user pages (not supported yet)
-  const disableInfiniteScroll = !!(searchQuery || username)
+  const disableInfiniteScroll = !!(searchQuery || searchSubreddit || username)
 
   const {posts, hasMore, sentinelRef} = useInfiniteScroll({
     initialPosts,

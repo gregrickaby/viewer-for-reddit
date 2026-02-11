@@ -15,6 +15,7 @@ import {
   fetchUserSubscriptions,
   savePost,
   searchReddit,
+  searchSubreddit,
   searchSubreddits,
   toggleSubscription,
   votePost
@@ -900,6 +901,187 @@ describe('reddit server actions', () => {
       )
 
       await expect(searchReddit('test')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+  })
+
+  describe('searchSubreddit', () => {
+    it('searches within a specific subreddit', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/r/:subreddit/search.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'result1',
+                    title: 'TypeScript Guide',
+                    author: 'programmer',
+                    score: 100,
+                    subreddit: 'programming'
+                  }
+                },
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'result2',
+                    title: 'Advanced TypeScript',
+                    author: 'dev',
+                    score: 85,
+                    subreddit: 'programming'
+                  }
+                }
+              ],
+              after: 't3_next'
+            }
+          })
+        })
+      )
+
+      const {posts, after} = await searchSubreddit('programming', 'typescript')
+
+      expect(posts.length).toBe(2)
+      expect(posts[0].title).toBe('TypeScript Guide')
+      expect(after).toBe('t3_next')
+    })
+
+    it('handles pagination with after cursor', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/r/:subreddit/search.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {
+                  kind: 't3',
+                  data: {
+                    id: 'page2_1',
+                    title: 'Second Page Result',
+                    author: 'user',
+                    score: 50
+                  }
+                }
+              ],
+              after: null
+            }
+          })
+        })
+      )
+
+      const {posts, after} = await searchSubreddit(
+        'programming',
+        'typescript',
+        't3_after'
+      )
+
+      expect(posts.length).toBe(1)
+      expect(after).toBeNull()
+    })
+
+    it('supports different sort options', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      let capturedUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/search.json',
+          ({request}) => {
+            capturedUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await searchSubreddit('programming', 'typescript', undefined, 'new')
+
+      expect(capturedUrl).toContain('sort=new')
+      expect(capturedUrl).toContain('restrict_sr=true')
+    })
+
+    it('includes time filter for top sort', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      let capturedUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/search.json',
+          ({request}) => {
+            capturedUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await searchSubreddit(
+        'programming',
+        'typescript',
+        undefined,
+        'top',
+        'week'
+      )
+
+      expect(capturedUrl).toContain('sort=top')
+      expect(capturedUrl).toContain('t=week')
+    })
+
+    it('validates subreddit name', async () => {
+      await expect(
+        searchSubreddit('invalid@subreddit', 'query')
+      ).rejects.toThrow('Something went wrong.')
+    })
+
+    it('validates query length', async () => {
+      const longQuery = 'a'.repeat(513)
+      await expect(searchSubreddit('programming', longQuery)).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('handles API errors', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/r/:subreddit/search.json', () => {
+          return new HttpResponse(null, {status: 404})
+        })
+      )
+
+      await expect(searchSubreddit('nonexistent', 'query')).rejects.toThrow(
         'Something went wrong.'
       )
     })

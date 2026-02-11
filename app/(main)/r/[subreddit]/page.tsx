@@ -1,13 +1,15 @@
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {SubredditSearchBar} from '@/components/ui/SubredditSearchBar/SubredditSearchBar'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import {fetchPosts, fetchSubredditInfo} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
+import ReactMarkdown from 'react-markdown'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
-import {decodeHtmlEntities} from '@/lib/utils/formatters'
+import {formatNumber} from '@/lib/utils/formatters'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 
 interface PageProps {
@@ -73,7 +75,7 @@ async function SubredditInfo({
             <Group gap="md" wrap="nowrap">
               <div>
                 <Text size="sm" fw={600}>
-                  {info.subscribers?.toLocaleString()}
+                  {info.subscribers ? formatNumber(info.subscribers) : '0'}
                 </Text>
                 <Text size="xs" c="dimmed">
                   subscribers
@@ -88,8 +90,11 @@ async function SubredditInfo({
             </Group>
           </Group>
           {info.public_description && (
-            <Text size="sm">{decodeHtmlEntities(info.public_description)}</Text>
+            <Text size="sm" component="div">
+              <ReactMarkdown>{info.public_description}</ReactMarkdown>
+            </Text>
           )}
+          <SubredditSearchBar subreddit={subreddit} />
         </Stack>
       </Card>
     )
@@ -97,7 +102,10 @@ async function SubredditInfo({
 
   return (
     <Card withBorder padding="lg" radius="md" mb="lg">
-      <Title order={2}>r/{subreddit}</Title>
+      <Stack gap="sm">
+        <Title order={2}>r/{subreddit}</Title>
+        <SubredditSearchBar subreddit={subreddit} />
+      </Stack>
     </Card>
   )
 }

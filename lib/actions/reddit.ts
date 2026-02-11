@@ -1375,6 +1375,138 @@ export async function searchReddit(
 }
 
 /**
+ * Search within a specific subreddit using Reddit's search API.
+ * Server Action for searching posts within a subreddit.
+ * Returns posts matching the query within the specified subreddit.
+ * Supports pagination via 'after' cursor.
+ *
+ * @param subreddit - Subreddit to search within
+ * @param query - Search query (max 512 characters)
+ * @param after - Optional pagination cursor
+ * @param sort - Sort option (relevance, hot, top, new, comments). Default: relevance
+ * @param time - Time filter for top sort (hour, day, week, month, year, all)
+ * @returns Promise resolving to posts array and pagination cursor
+ *
+ * @throws {Error} Validation errors for invalid inputs
+ * @throws {RedditAPIError} API errors with status codes
+ *
+ * @example
+ * ```typescript
+ * const {posts, after} = await searchSubreddit('programming', 'nextjs')
+ * console.log(`Found ${posts.length} posts`)
+ * ```
+ */
+export async function searchSubreddit(
+  subreddit: string,
+  query: string,
+  after?: string,
+  sort: 'relevance' | 'hot' | 'top' | 'new' | 'comments' = 'relevance',
+  time?: TimeFilter
+): Promise<{posts: RedditPost[]; after: string | null}> {
+  try {
+    // Validate subreddit name
+    if (!isValidSubredditName(subreddit)) {
+      logger.error('Invalid subreddit name', new Error('Validation failed'), {
+        context: 'searchSubreddit',
+        subreddit
+      })
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
+    // Validate query to prevent SSRF
+    if (!query || typeof query !== 'string' || query.length > 512) {
+      logger.error('Invalid search query', new Error('Validation failed'), {
+        context: 'searchSubreddit',
+        queryLength: query?.length
+      })
+      throw new Error(GENERIC_SERVER_ERROR)
+    }
+
+    const session = await getSession()
+    const isAuthenticated = !!session.accessToken
+
+    // Get headers and appropriate base URL (OAuth or public)
+    const {headers, baseUrl} = await getHeaders()
+    const url = new URL(`${baseUrl}/r/${subreddit}/search.json`)
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url.toString())
+
+    url.searchParams.set('q', query)
+    url.searchParams.set('restrict_sr', 'true') // Restrict to this subreddit
+    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
+    url.searchParams.set('raw_json', '1')
+    url.searchParams.set('include_over_18', 'on')
+    url.searchParams.set('sort', sort)
+    if (after) {
+      url.searchParams.set('after', after)
+    }
+    if (time && (sort === 'top' || sort === 'relevance')) {
+      url.searchParams.set('t', time)
+    }
+
+    const response = await fetch(url.toString(), {
+      headers,
+      next: {
+        revalidate: CACHE_SEARCH,
+        tags: ['search', subreddit, query]
+      }
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      const requestMetadata = await getRequestMetadata()
+
+      logger.httpError('Subreddit search request failed', {
+        url: url.toString(),
+        method: 'GET',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated,
+        errorBody,
+        context: 'searchSubreddit',
+        subreddit,
+        query,
+        ...requestMetadata,
+        forceProduction: true
+      })
+
+      throw new RedditAPIError(
+        GENERIC_SERVER_ERROR,
+        'searchSubreddit',
+        url.toString(),
+        'GET',
+        {subreddit, query},
+        response.status
+      )
+    }
+
+    const data: ApiSubredditPostsResponse = await response.json()
+    const posts = (data.data?.children?.map((child) => child.data) ??
+      []) as RedditPost[]
+    const afterCursor = data.data?.after ?? null
+
+    logger.debug('Subreddit search successful', {
+      subreddit,
+      query,
+      count: posts.length,
+      hasMore: !!afterCursor
+    })
+
+    return {
+      posts,
+      after: afterCursor
+    }
+  } catch (error) {
+    logger.error('Error searching subreddit', error, {
+      context: 'searchSubreddit',
+      subreddit
+    })
+    throw error
+  }
+}
+
+/**
  * Search for subreddits using Reddit's autocomplete API.
  * Server Action for typeahead search suggestions.
  * Returns empty array for queries < 2 characters.
