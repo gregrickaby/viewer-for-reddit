@@ -10,7 +10,8 @@ export default function UserNotFound() {
       <Stack align="center" gap="xs">
         <Title order={1}>User not found</Title>
         <Text c="dimmed">
-          This user account doesn't exist or has been deleted.
+          This user account doesn't exist, is set to private, or has been
+          deleted.
         </Text>
         <Anchor href="/" fw={600}>
           Go Home

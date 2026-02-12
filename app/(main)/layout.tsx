@@ -1,6 +1,7 @@
 import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
+import RouteScrollReset from '@/components/ui/RouteScrollReset/RouteScrollReset'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {
   fetchFollowedUsers,
@@ -52,6 +53,7 @@ export default async function MainLayout({
       >
         {children}
       </AppLayout>
+      <RouteScrollReset />
       <SwipeNavigation />
       <BossButton />
       <BackToTop />

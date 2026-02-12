@@ -29,11 +29,12 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
     <Group justify="space-between" wrap="nowrap" gap="xs">
       <Group gap={6}>
         <Badge
-          variant="light"
-          size="xs"
           component={Link}
           href={`/r/${post.subreddit}`}
+          scroll
+          size="xs"
           style={{cursor: 'pointer'}}
+          variant="light"
         >
           {post.subreddit_name_prefixed}
         </Badge>
@@ -45,10 +46,11 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
             </Text>
           ) : (
             <Anchor
+              c="dimmed"
               component={Link}
               href={`/u/${post.author}`}
+              scroll
               size="xs"
-              c="dimmed"
             >
               u/{post.author}
             </Anchor>

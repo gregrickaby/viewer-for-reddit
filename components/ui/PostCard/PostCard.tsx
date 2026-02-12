@@ -22,11 +22,12 @@ function renderSelfText(
   if (!post.selftext_html) {
     return (
       <Anchor
-        component={Link}
-        href={postUrl}
-        underline="never"
         c="dimmed"
+        component={Link}
         data-umami-event="post-text-preview-click"
+        href={postUrl}
+        scroll
+        underline="never"
       >
         <Text size="sm" c="dimmed" lineClamp={3}>
           {post.selftext}
@@ -48,11 +49,12 @@ function renderSelfText(
 
   return (
     <Anchor
-      component={Link}
-      href={postUrl}
-      underline="never"
       c="dimmed"
+      component={Link}
       data-umami-event="post-text-preview-click"
+      href={postUrl}
+      scroll
+      underline="never"
     >
       <div
         dangerouslySetInnerHTML={{__html: sanitizedHtml}}
@@ -136,11 +138,12 @@ export function PostCard({
         <PostHeader post={post} />
 
         <Anchor
-          component={Link}
-          href={postUrl}
-          underline="never"
           c="inherit"
+          component={Link}
           data-umami-event="post-title-click"
+          href={postUrl}
+          scroll
+          underline="never"
         >
           <Text size="md" fw={600} mt={2}>
             {post.title}
