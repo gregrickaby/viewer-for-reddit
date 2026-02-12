@@ -12,6 +12,7 @@ describe('RouteScrollReset', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUsePathname.mockReturnValue('/')
+    globalThis.sessionStorage.clear()
 
     globalThis.history.replaceState({}, '', '/')
     vi.spyOn(globalThis, 'scrollTo').mockImplementation(() => undefined)
@@ -42,5 +43,29 @@ describe('RouteScrollReset', () => {
     rerender(<RouteScrollReset />)
 
     expect(globalThis.scrollTo).toHaveBeenCalledTimes(1)
+  })
+
+  it('restores saved scroll position on popstate navigation', () => {
+    const {rerender} = render(<RouteScrollReset />)
+
+    Object.defineProperty(globalThis, 'scrollY', {
+      value: 1875,
+      writable: true,
+      configurable: true
+    })
+
+    mockUsePathname.mockReturnValue('/r/typescript')
+    rerender(<RouteScrollReset />)
+
+    globalThis.dispatchEvent(new PopStateEvent('popstate'))
+
+    mockUsePathname.mockReturnValue('/')
+    rerender(<RouteScrollReset />)
+
+    expect(globalThis.scrollTo).toHaveBeenLastCalledWith({
+      top: 1875,
+      left: 0,
+      behavior: 'auto'
+    })
   })
 })
