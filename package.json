@@ -34,7 +34,7 @@
     "validate:ci": "npm run format:check && npm run typecheck && npm run lint && npm run test:coverage"
   },
   "dependencies": {
-    "@mantine/carousel": "^8.3.14",
+    "@mantine/carousel": "^8.3.15",
     "@mantine/core": "^8.3.14",
     "@mantine/hooks": "^8.3.14",
     "@mantine/notifications": "^8.3.14",
