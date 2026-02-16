@@ -36,7 +36,7 @@
   "dependencies": {
     "@mantine/carousel": "^8.3.14",
     "@mantine/core": "^8.3.14",
-    "@mantine/hooks": "^8.3.14",
+    "@mantine/hooks": "^8.3.15",
     "@mantine/notifications": "^8.3.14",
     "@tabler/icons-react": "^3.36.1",
     "arctic": "^3.7.0",
