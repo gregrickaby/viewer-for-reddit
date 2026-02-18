@@ -1,7 +1,12 @@
 'use client'
 
 import {MultiredditManager} from '@/components/ui/MultiredditManager/MultiredditManager'
-import {useSubscriptionsFilterSort, type ManagedMultireddit} from '@/lib/hooks'
+import {SubredditManager} from '@/components/ui/SubredditManager/SubredditManager'
+import {
+  useSubscriptionsFilterSort,
+  type ManagedMultireddit,
+  type ManagedSubscription
+} from '@/lib/hooks'
 import {
   ActionIcon,
   Avatar,
@@ -44,11 +49,7 @@ interface SidebarProps {
   /** Username for authenticated user (for saved items link) */
   username?: string
   /** User's subscribed subreddits */
-  subscriptions?: Array<{
-    name: string
-    displayName: string
-    icon?: string
-  }>
+  subscriptions?: ManagedSubscription[]
   /** User's custom multireddits */
   multireddits?: ManagedMultireddit[]
   /** Users being followed */
@@ -97,6 +98,8 @@ export function Sidebar({
   const [multiredditsOpen, setMultiredditsOpen] = useState(true)
   const [followingOpen, setFollowingOpen] = useState(true)
   const [managerOpened, {open: openManager, close: closeManager}] =
+    useDisclosure(false)
+  const [subManagerOpened, {open: openSubManager, close: closeSubManager}] =
     useDisclosure(false)
 
   const {
@@ -329,34 +332,45 @@ export function Sidebar({
 
           {isAuthenticated && subscriptions.length > 0 && (
             <div>
-              <Group
-                justify="space-between"
-                mb="sm"
-                onClick={() => setSubredditsOpen(!subredditsOpen)}
-                className={styles.toggleHeader}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    setSubredditsOpen(!subredditsOpen)
+              <Group justify="space-between" mb="sm">
+                <Group
+                  flex={1}
+                  onClick={() => setSubredditsOpen(!subredditsOpen)}
+                  className={styles.toggleHeader}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSubredditsOpen(!subredditsOpen)
+                    }
+                  }}
+                  aria-expanded={subredditsOpen}
+                  aria-label={
+                    subredditsOpen
+                      ? 'Collapse My Subreddits'
+                      : 'Expand My Subreddits'
                   }
-                }}
-                aria-expanded={subredditsOpen}
-                aria-label={
-                  subredditsOpen
-                    ? 'Collapse My Subreddits'
-                    : 'Expand My Subreddits'
-                }
-              >
-                <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-                  My Subreddits
-                </Text>
-                {subredditsOpen ? (
-                  <IconChevronUp aria-hidden="true" size={16} />
-                ) : (
-                  <IconChevronDown aria-hidden="true" size={16} />
-                )}
+                >
+                  <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+                    My Subreddits
+                  </Text>
+                  {subredditsOpen ? (
+                    <IconChevronUp aria-hidden="true" size={16} />
+                  ) : (
+                    <IconChevronDown aria-hidden="true" size={16} />
+                  )}
+                </Group>
+                <Tooltip label="Manage subreddits" withArrow>
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    onClick={openSubManager}
+                    aria-label="Manage subreddits"
+                  >
+                    <IconSettings size={14} />
+                  </ActionIcon>
+                </Tooltip>
               </Group>
               <Collapse in={subredditsOpen}>
                 <Stack gap="xs">
@@ -419,6 +433,11 @@ export function Sidebar({
         opened={managerOpened}
         onClose={closeManager}
         multireddits={multireddits}
+      />
+      <SubredditManager
+        opened={subManagerOpened}
+        onClose={closeSubManager}
+        subscriptions={subscriptions}
       />
     </>
   )
