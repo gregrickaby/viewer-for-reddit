@@ -270,6 +270,18 @@ export interface SubredditItem {
   over18?: boolean
 }
 
+export interface SearchAutocompleteItem {
+  /** Subreddit name or username (without r/ or u/ prefix) */
+  name: string
+  /** Display name with prefix: r/subreddit or u/username */
+  displayName: string
+  icon?: string
+  subscribers?: number
+  over18?: boolean
+  /** Distinguishes subreddits from user profiles */
+  type: 'subreddit' | 'user'
+}
+
 export interface RedditFollowing {
   name: string
   id: string

@@ -40,7 +40,13 @@ vi.mock('../Sidebar/Sidebar', () => ({
   }: {
     isAuthenticated?: boolean
     subscriptions?: Array<{name: string; displayName: string; icon?: string}>
-    multireddits?: Array<{name: string; displayName: string; path: string}>
+    multireddits?: Array<{
+      name: string
+      displayName: string
+      path: string
+      subreddits: string[]
+      icon?: string
+    }>
   }) => (
     <div data-testid="sidebar">
       <div data-testid="sidebar-authenticated">{String(isAuthenticated)}</div>
@@ -68,7 +74,8 @@ describe('AppLayout', () => {
     {
       name: 'tech',
       displayName: 'Tech News',
-      path: '/user/testuser/m/tech'
+      path: '/user/testuser/m/tech',
+      subreddits: []
     }
   ]
 

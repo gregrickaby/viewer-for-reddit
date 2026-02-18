@@ -1,7 +1,12 @@
+import {AddToMultiredditButton} from '@/components/ui/AddToMultiredditButton/AddToMultiredditButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubredditSearchBar} from '@/components/ui/SubredditSearchBar/SubredditSearchBar'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
-import {fetchPosts, fetchSubredditInfo} from '@/lib/actions/reddit'
+import {
+  fetchMultireddits,
+  fetchPosts,
+  fetchSubredditInfo
+} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
@@ -42,10 +47,12 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
  */
 async function SubredditInfo({
   subreddit,
-  isAuthenticated
+  isAuthenticated,
+  multireddits
 }: Readonly<{
   subreddit: string
   isAuthenticated: boolean
+  multireddits: Awaited<ReturnType<typeof fetchMultireddits>>
 }>) {
   // Special feeds like 'all' and 'popular' don't have subreddit info
   const specialFeeds = ['all', 'popular']
@@ -82,10 +89,18 @@ async function SubredditInfo({
                 </Text>
               </div>
               {isAuthenticated && (
-                <SubscribeButton
-                  subredditName={info.display_name}
-                  initialIsSubscribed={info.user_is_subscriber ?? false}
-                />
+                <Group gap="xs" wrap="nowrap">
+                  {multireddits.length > 0 && (
+                    <AddToMultiredditButton
+                      subredditName={info.display_name}
+                      multireddits={multireddits}
+                    />
+                  )}
+                  <SubscribeButton
+                    subredditName={info.display_name}
+                    initialIsSubscribed={info.user_is_subscriber ?? false}
+                  />
+                </Group>
               )}
             </Group>
           </Group>
@@ -177,6 +192,7 @@ export default async function SubredditPage({
 
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
+  const multireddits = isAuthenticated ? await fetchMultireddits() : []
 
   return (
     <Container size="lg">
@@ -184,6 +200,7 @@ export default async function SubredditPage({
         <SubredditInfo
           subreddit={subreddit}
           isAuthenticated={isAuthenticated}
+          multireddits={multireddits}
         />
 
         <SubredditPosts

@@ -28,12 +28,14 @@ describe('Sidebar', () => {
       name: 'tech',
       displayName: 'Tech News',
       path: '/user/testuser/m/tech',
+      subreddits: ['programming', 'webdev'],
       icon: 'https://example.com/tech-icon.png'
     },
     {
       name: 'gaming',
       displayName: 'Gaming',
-      path: '/user/testuser/m/gaming'
+      path: '/user/testuser/m/gaming',
+      subreddits: []
     }
   ]
 

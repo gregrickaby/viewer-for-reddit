@@ -28,6 +28,7 @@ interface AppLayoutProps {
     name: string
     displayName: string
     path: string
+    subreddits: string[]
     icon?: string
   }>
   /** Users being followed */

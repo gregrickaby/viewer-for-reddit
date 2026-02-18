@@ -1,7 +1,9 @@
 'use client'
 
-import {useSubscriptionsFilterSort} from '@/lib/hooks'
+import {MultiredditManager} from '@/components/ui/MultiredditManager/MultiredditManager'
+import {useSubscriptionsFilterSort, type ManagedMultireddit} from '@/lib/hooks'
 import {
+  ActionIcon,
   Avatar,
   Collapse,
   Group,
@@ -10,8 +12,10 @@ import {
   Select,
   Stack,
   Text,
-  TextInput
+  TextInput,
+  Tooltip
 } from '@mantine/core'
+import {useDisclosure} from '@mantine/hooks'
 import {
   IconBookmark,
   IconBrandGithub,
@@ -23,6 +27,7 @@ import {
   IconInfoCircle,
   IconMessage,
   IconSearch,
+  IconSettings,
   IconTrendingUp,
   IconUser
 } from '@tabler/icons-react'
@@ -45,12 +50,7 @@ interface SidebarProps {
     icon?: string
   }>
   /** User's custom multireddits */
-  multireddits?: Array<{
-    name: string
-    displayName: string
-    path: string
-    icon?: string
-  }>
+  multireddits?: ManagedMultireddit[]
   /** Users being followed */
   following?: Array<{
     name: string
@@ -96,6 +96,8 @@ export function Sidebar({
   const [subredditsOpen, setSubredditsOpen] = useState(true)
   const [multiredditsOpen, setMultiredditsOpen] = useState(true)
   const [followingOpen, setFollowingOpen] = useState(true)
+  const [managerOpened, {open: openManager, close: closeManager}] =
+    useDisclosure(false)
 
   const {
     filteredSubscriptions,
@@ -116,288 +118,308 @@ export function Sidebar({
   )
 
   return (
-    <ScrollArea type="auto" offsetScrollbars>
-      <Stack gap="md">
-        <div>
-          <Group
-            justify="space-between"
-            mb="sm"
-            onClick={() => setNavigationOpen(!navigationOpen)}
-            className={styles.toggleHeader}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                setNavigationOpen(!navigationOpen)
+    <>
+      <ScrollArea type="auto" offsetScrollbars>
+        <Stack gap="md">
+          <div>
+            <Group
+              justify="space-between"
+              mb="sm"
+              onClick={() => setNavigationOpen(!navigationOpen)}
+              className={styles.toggleHeader}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setNavigationOpen(!navigationOpen)
+                }
+              }}
+              aria-expanded={navigationOpen}
+              aria-label={
+                navigationOpen ? 'Collapse Navigation' : 'Expand Navigation'
               }
-            }}
-            aria-expanded={navigationOpen}
-            aria-label={
-              navigationOpen ? 'Collapse Navigation' : 'Expand Navigation'
-            }
-          >
-            <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-              Navigation
-            </Text>
-            {navigationOpen ? (
-              <IconChevronUp aria-hidden="true" size={16} />
-            ) : (
-              <IconChevronDown aria-hidden="true" size={16} />
-            )}
-          </Group>
-          <Collapse in={navigationOpen}>
-            <Stack gap={4}>
-              <NavLink
-                component={Link}
-                href="/"
-                label={isAuthenticated ? 'Home' : 'Popular'}
-                leftSection={<IconFlame size={16} />}
-                data-umami-event={isAuthenticated ? 'nav-home' : 'nav-popular'}
-              />
-              <NavLink
-                component={Link}
-                href="/r/all"
-                label="All"
-                leftSection={<IconTrendingUp size={16} />}
-                data-umami-event="nav-all"
-              />
-              {isAuthenticated && username && (
+            >
+              <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+                Navigation
+              </Text>
+              {navigationOpen ? (
+                <IconChevronUp aria-hidden="true" size={16} />
+              ) : (
+                <IconChevronDown aria-hidden="true" size={16} />
+              )}
+            </Group>
+            <Collapse in={navigationOpen}>
+              <Stack gap={4}>
                 <NavLink
                   component={Link}
-                  href={`/user/${username}/saved`}
-                  label="Saved"
-                  leftSection={<IconBookmark size={16} />}
-                  data-umami-event="nav-saved"
-                />
-              )}
-              <NavLink
-                component={Link}
-                href="/about"
-                label="About"
-                leftSection={<IconInfoCircle size={16} />}
-                data-umami-event="nav-about"
-              />
-              <NavLink
-                component={Link}
-                href="/donate"
-                label="Donate"
-                leftSection={<IconHeart size={16} />}
-                data-umami-event="nav-donate"
-              />
-              <NavLink
-                component="a"
-                href="https://github.com/gregrickaby/viewer-for-reddit"
-                label="GitHub"
-                leftSection={<IconBrandGithub size={16} />}
-                rightSection={<IconExternalLink size={14} />}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-umami-event="nav-github"
-              />
-            </Stack>
-          </Collapse>
-        </div>
-
-        {isAuthenticated && multireddits.length > 0 && (
-          <div>
-            <Group
-              justify="space-between"
-              mb="sm"
-              onClick={() => setMultiredditsOpen(!multiredditsOpen)}
-              className={styles.toggleHeader}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setMultiredditsOpen(!multiredditsOpen)
-                }
-              }}
-              aria-expanded={multiredditsOpen}
-              aria-label={
-                multiredditsOpen
-                  ? 'Collapse Multireddits'
-                  : 'Expand Multireddits'
-              }
-            >
-              <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-                My Multireddits
-              </Text>
-              {multiredditsOpen ? (
-                <IconChevronUp aria-hidden="true" size={16} />
-              ) : (
-                <IconChevronDown aria-hidden="true" size={16} />
-              )}
-            </Group>
-            <Collapse in={multiredditsOpen}>
-              <ScrollArea.Autosize mah={400}>
-                <Stack gap={4}>
-                  {sortedMultireddits.map((multi) => (
-                    <NavLink
-                      key={multi.path}
-                      component={Link}
-                      href={multi.path}
-                      label={multi.displayName}
-                      leftSection={
-                        multi.icon ? (
-                          <Avatar
-                            src={multi.icon}
-                            alt={`${multi.displayName} icon`}
-                            size={20}
-                            radius="sm"
-                          />
-                        ) : (
-                          <Avatar size={20} radius="sm" color="blue">
-                            {multi.displayName.charAt(0).toUpperCase()}
-                          </Avatar>
-                        )
-                      }
-                      data-umami-event="nav-multireddit"
-                    />
-                  ))}
-                </Stack>
-              </ScrollArea.Autosize>
-            </Collapse>
-          </div>
-        )}
-
-        {isAuthenticated && following.length > 0 && (
-          <div>
-            <Group
-              justify="space-between"
-              mb="sm"
-              onClick={() => setFollowingOpen(!followingOpen)}
-              className={styles.toggleHeader}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setFollowingOpen(!followingOpen)
-                }
-              }}
-              aria-expanded={followingOpen}
-              aria-label={
-                followingOpen ? 'Collapse Following' : 'Expand Following'
-              }
-            >
-              <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-                Following
-              </Text>
-              {followingOpen ? (
-                <IconChevronUp aria-hidden="true" size={16} />
-              ) : (
-                <IconChevronDown aria-hidden="true" size={16} />
-              )}
-            </Group>
-            <Collapse in={followingOpen}>
-              <ScrollArea.Autosize mah={400}>
-                <Stack gap={4}>
-                  {sortedFollowing.map((user) => (
-                    <NavLink
-                      key={user.id}
-                      component={Link}
-                      href={`/u/${user.name}`}
-                      label={user.name}
-                      description={user.note}
-                      leftSection={<IconUser size={16} />}
-                      data-umami-event="nav-following"
-                    />
-                  ))}
-                </Stack>
-              </ScrollArea.Autosize>
-            </Collapse>
-          </div>
-        )}
-
-        {isAuthenticated && subscriptions.length > 0 && (
-          <div>
-            <Group
-              justify="space-between"
-              mb="sm"
-              onClick={() => setSubredditsOpen(!subredditsOpen)}
-              className={styles.toggleHeader}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setSubredditsOpen(!subredditsOpen)
-                }
-              }}
-              aria-expanded={subredditsOpen}
-              aria-label={
-                subredditsOpen
-                  ? 'Collapse My Subreddits'
-                  : 'Expand My Subreddits'
-              }
-            >
-              <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-                My Subreddits
-              </Text>
-              {subredditsOpen ? (
-                <IconChevronUp aria-hidden="true" size={16} />
-              ) : (
-                <IconChevronDown aria-hidden="true" size={16} />
-              )}
-            </Group>
-            <Collapse in={subredditsOpen}>
-              <Stack gap="xs">
-                <TextInput
-                  id="sidebar-search-input"
-                  placeholder="Search subreddits..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.currentTarget.value)}
-                  leftSection={<IconSearch size={16} />}
-                  size="xs"
-                  aria-label="Search subscriptions"
-                />
-                <Select
-                  id="sidebar-sort-select"
-                  size="xs"
-                  data={[
-                    {value: 'default', label: 'Default Order'},
-                    {value: 'a-z', label: 'A-Z'},
-                    {value: 'z-a', label: 'Z-A'}
-                  ]}
-                  value={sortBy}
-                  onChange={(value) =>
-                    setSortBy(value as 'default' | 'a-z' | 'z-a')
+                  href="/"
+                  label={isAuthenticated ? 'Home' : 'Popular'}
+                  leftSection={<IconFlame size={16} />}
+                  data-umami-event={
+                    isAuthenticated ? 'nav-home' : 'nav-popular'
                   }
-                  aria-label="Sort subscriptions"
-                  allowDeselect={false}
                 />
+                <NavLink
+                  component={Link}
+                  href="/r/all"
+                  label="All"
+                  leftSection={<IconTrendingUp size={16} />}
+                  data-umami-event="nav-all"
+                />
+                {isAuthenticated && username && (
+                  <NavLink
+                    component={Link}
+                    href={`/user/${username}/saved`}
+                    label="Saved"
+                    leftSection={<IconBookmark size={16} />}
+                    data-umami-event="nav-saved"
+                  />
+                )}
+                <NavLink
+                  component={Link}
+                  href="/about"
+                  label="About"
+                  leftSection={<IconInfoCircle size={16} />}
+                  data-umami-event="nav-about"
+                />
+                <NavLink
+                  component={Link}
+                  href="/donate"
+                  label="Donate"
+                  leftSection={<IconHeart size={16} />}
+                  data-umami-event="nav-donate"
+                />
+                <NavLink
+                  component="a"
+                  href="https://github.com/gregrickaby/viewer-for-reddit"
+                  label="GitHub"
+                  leftSection={<IconBrandGithub size={16} />}
+                  rightSection={<IconExternalLink size={14} />}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-umami-event="nav-github"
+                />
+              </Stack>
+            </Collapse>
+          </div>
+
+          {isAuthenticated && multireddits.length > 0 && (
+            <div>
+              <Group justify="space-between" mb="sm">
+                <Group
+                  flex={1}
+                  onClick={() => setMultiredditsOpen(!multiredditsOpen)}
+                  className={styles.toggleHeader}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setMultiredditsOpen(!multiredditsOpen)
+                    }
+                  }}
+                  aria-expanded={multiredditsOpen}
+                  aria-label={
+                    multiredditsOpen
+                      ? 'Collapse Multireddits'
+                      : 'Expand Multireddits'
+                  }
+                >
+                  <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+                    My Multireddits
+                  </Text>
+                  {multiredditsOpen ? (
+                    <IconChevronUp aria-hidden="true" size={16} />
+                  ) : (
+                    <IconChevronDown aria-hidden="true" size={16} />
+                  )}
+                </Group>
+                <Tooltip label="Manage multireddits" withArrow>
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    onClick={openManager}
+                    aria-label="Manage multireddits"
+                  >
+                    <IconSettings size={14} />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+              <Collapse in={multiredditsOpen}>
                 <ScrollArea.Autosize mah={400}>
                   <Stack gap={4}>
-                    {filteredSubscriptions.map((sub) => (
+                    {sortedMultireddits.map((multi) => (
                       <NavLink
-                        key={sub.name}
+                        key={multi.path}
                         component={Link}
-                        href={`/r/${sub.name}`}
-                        label={sub.displayName}
+                        href={multi.path}
+                        label={multi.displayName}
                         leftSection={
-                          sub.icon ? (
+                          multi.icon ? (
                             <Avatar
-                              src={sub.icon}
-                              alt={`${sub.displayName} icon`}
+                              src={multi.icon}
+                              alt={`${multi.displayName} icon`}
                               size={20}
                               radius="sm"
                             />
                           ) : (
-                            <IconMessage size={16} />
+                            <Avatar size={20} radius="sm" color="blue">
+                              {multi.displayName.charAt(0).toUpperCase()}
+                            </Avatar>
                           )
                         }
-                        data-umami-event="nav-subreddit"
+                        data-umami-event="nav-multireddit"
                       />
                     ))}
                   </Stack>
                 </ScrollArea.Autosize>
-              </Stack>
-            </Collapse>
-          </div>
-        )}
-      </Stack>
-    </ScrollArea>
+              </Collapse>
+            </div>
+          )}
+
+          {isAuthenticated && following.length > 0 && (
+            <div>
+              <Group
+                justify="space-between"
+                mb="sm"
+                onClick={() => setFollowingOpen(!followingOpen)}
+                className={styles.toggleHeader}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setFollowingOpen(!followingOpen)
+                  }
+                }}
+                aria-expanded={followingOpen}
+                aria-label={
+                  followingOpen ? 'Collapse Following' : 'Expand Following'
+                }
+              >
+                <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+                  Following
+                </Text>
+                {followingOpen ? (
+                  <IconChevronUp aria-hidden="true" size={16} />
+                ) : (
+                  <IconChevronDown aria-hidden="true" size={16} />
+                )}
+              </Group>
+              <Collapse in={followingOpen}>
+                <ScrollArea.Autosize mah={400}>
+                  <Stack gap={4}>
+                    {sortedFollowing.map((user) => (
+                      <NavLink
+                        key={user.id}
+                        component={Link}
+                        href={`/u/${user.name}`}
+                        label={user.name}
+                        description={user.note}
+                        leftSection={<IconUser size={16} />}
+                        data-umami-event="nav-following"
+                      />
+                    ))}
+                  </Stack>
+                </ScrollArea.Autosize>
+              </Collapse>
+            </div>
+          )}
+
+          {isAuthenticated && subscriptions.length > 0 && (
+            <div>
+              <Group
+                justify="space-between"
+                mb="sm"
+                onClick={() => setSubredditsOpen(!subredditsOpen)}
+                className={styles.toggleHeader}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setSubredditsOpen(!subredditsOpen)
+                  }
+                }}
+                aria-expanded={subredditsOpen}
+                aria-label={
+                  subredditsOpen
+                    ? 'Collapse My Subreddits'
+                    : 'Expand My Subreddits'
+                }
+              >
+                <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+                  My Subreddits
+                </Text>
+                {subredditsOpen ? (
+                  <IconChevronUp aria-hidden="true" size={16} />
+                ) : (
+                  <IconChevronDown aria-hidden="true" size={16} />
+                )}
+              </Group>
+              <Collapse in={subredditsOpen}>
+                <Stack gap="xs">
+                  <TextInput
+                    id="sidebar-search-input"
+                    placeholder="Search subreddits..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                    leftSection={<IconSearch size={16} />}
+                    size="xs"
+                    aria-label="Search subscriptions"
+                  />
+                  <Select
+                    id="sidebar-sort-select"
+                    size="xs"
+                    data={[
+                      {value: 'default', label: 'Default Order'},
+                      {value: 'a-z', label: 'A-Z'},
+                      {value: 'z-a', label: 'Z-A'}
+                    ]}
+                    value={sortBy}
+                    onChange={(value) =>
+                      setSortBy(value as 'default' | 'a-z' | 'z-a')
+                    }
+                    aria-label="Sort subscriptions"
+                    allowDeselect={false}
+                  />
+                  <ScrollArea.Autosize mah={400}>
+                    <Stack gap={4}>
+                      {filteredSubscriptions.map((sub) => (
+                        <NavLink
+                          key={sub.name}
+                          component={Link}
+                          href={`/r/${sub.name}`}
+                          label={sub.displayName}
+                          leftSection={
+                            sub.icon ? (
+                              <Avatar
+                                src={sub.icon}
+                                alt={`${sub.displayName} icon`}
+                                size={20}
+                                radius="sm"
+                              />
+                            ) : (
+                              <IconMessage size={16} />
+                            )
+                          }
+                          data-umami-event="nav-subreddit"
+                        />
+                      ))}
+                    </Stack>
+                  </ScrollArea.Autosize>
+                </Stack>
+              </Collapse>
+            </div>
+          )}
+        </Stack>
+      </ScrollArea>
+      <MultiredditManager
+        opened={managerOpened}
+        onClose={closeManager}
+        multireddits={multireddits}
+      />
+    </>
   )
 }

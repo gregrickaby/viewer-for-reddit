@@ -27,10 +27,11 @@ export function FollowButton({
 
   return (
     <Button
-      onClick={toggleFollow}
-      disabled={isPending}
-      variant={isFollowing ? 'light' : 'filled'}
       color={isFollowing ? 'gray' : 'blue'}
+      data-umami-event={`${isFollowing ? 'unfollow-user-click' : 'follow-user-click'}`}
+      disabled={isPending}
+      onClick={toggleFollow}
+      variant={isFollowing ? 'light' : 'filled'}
       leftSection={
         isFollowing ? <IconUserCheck size={16} /> : <IconUserPlus size={16} />
       }
