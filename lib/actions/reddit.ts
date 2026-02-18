@@ -1958,3 +1958,147 @@ export async function fetchFollowedUsers(): Promise<
     return []
   }
 }
+
+/**
+ * Follow a Reddit user.
+ * Server Action — requires `subscribe` OAuth scope.
+ *
+ * @param username - Reddit username to follow
+ * @returns Promise resolving to success/error result
+ *
+ * @example
+ * ```typescript
+ * const result = await followUser('spez')
+ * if (!result.success) console.error(result.error)
+ * ```
+ */
+export async function followUser(
+  username: string
+): Promise<{success: boolean; error?: string}> {
+  try {
+    if (!isValidUsername(username)) {
+      logger.error(
+        'Invalid username parameter',
+        new Error('Validation failed'),
+        {
+          context: 'followUser',
+          username
+        }
+      )
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const session = await getSession()
+    if (!session.accessToken) {
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const url = `${REDDIT_API_URL}/api/v1/me/friends/${encodeURIComponent(username)}`
+    validateRedditUrl(url)
+
+    const {headers} = await getHeaders()
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({name: username})
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Follow user request failed', {
+        url,
+        method: 'PUT',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated: true,
+        errorBody,
+        context: 'followUser',
+        username
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    revalidatePath('/', 'layout')
+    logger.debug('Followed user successfully', {username})
+    return {success: true}
+  } catch (error) {
+    logger.error('Error following user', error, {
+      context: 'followUser',
+      username
+    })
+    return {success: false, error: GENERIC_ACTION_ERROR}
+  }
+}
+
+/**
+ * Unfollow a Reddit user.
+ * Server Action — requires `subscribe` OAuth scope.
+ *
+ * @param username - Reddit username to unfollow
+ * @returns Promise resolving to success/error result
+ *
+ * @example
+ * ```typescript
+ * const result = await unfollowUser('spez')
+ * if (!result.success) console.error(result.error)
+ * ```
+ */
+export async function unfollowUser(
+  username: string
+): Promise<{success: boolean; error?: string}> {
+  try {
+    if (!isValidUsername(username)) {
+      logger.error(
+        'Invalid username parameter',
+        new Error('Validation failed'),
+        {
+          context: 'unfollowUser',
+          username
+        }
+      )
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const session = await getSession()
+    if (!session.accessToken) {
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const url = `${REDDIT_API_URL}/api/v1/me/friends/${encodeURIComponent(username)}`
+    validateRedditUrl(url)
+
+    const {headers} = await getHeaders()
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Unfollow user request failed', {
+        url,
+        method: 'DELETE',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated: true,
+        errorBody,
+        context: 'unfollowUser',
+        username
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    revalidatePath('/', 'layout')
+    logger.debug('Unfollowed user successfully', {username})
+    return {success: true}
+  } catch (error) {
+    logger.error('Error unfollowing user', error, {
+      context: 'unfollowUser',
+      username
+    })
+    return {success: false, error: GENERIC_ACTION_ERROR}
+  }
+}

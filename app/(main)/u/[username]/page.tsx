@@ -1,3 +1,4 @@
+import {FollowButton} from '@/components/ui/FollowButton/FollowButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {UserCommentListWithTabs} from '@/components/ui/UserCommentListWithTabs/UserCommentListWithTabs'
 import {UserProfileTabs} from '@/components/ui/UserProfileTabs/UserProfileTabs'
@@ -57,7 +58,15 @@ function formatDate(timestamp: number): string {
   })
 }
 
-async function UserProfile({username}: Readonly<{username: string}>) {
+async function UserProfile({
+  username,
+  isAuthenticated,
+  currentUsername
+}: Readonly<{
+  username: string
+  isAuthenticated: boolean
+  currentUsername?: string
+}>) {
   try {
     const user: RedditUser = await fetchUserInfo(username)
 
@@ -69,12 +78,24 @@ async function UserProfile({username}: Readonly<{username: string}>) {
       ? decodeHtmlEntities(user.icon_img)
       : undefined
 
+    const isOwnProfile =
+      currentUsername?.toLowerCase() === username.toLowerCase()
+    const showFollowButton = isAuthenticated && !isOwnProfile
+
     return (
       <Card withBorder padding="lg" radius="md">
         <Group>
           <Avatar src={avatarUrl} size={80} radius="md" alt={`u/${username}`} />
-          <Stack gap="xs">
-            <Title order={2}>u/{user.name}</Title>
+          <Stack gap="xs" flex={1}>
+            <Group justify="space-between" align="flex-start">
+              <Title order={2}>u/{user.name}</Title>
+              {showFollowButton && (
+                <FollowButton
+                  username={user.name}
+                  initialIsFollowing={!!user.is_friend}
+                />
+              )}
+            </Group>
             <Group gap="xl">
               <div>
                 <Text size="sm" c="dimmed">
@@ -276,11 +297,16 @@ export default async function UserPage({
 
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
+  const currentUsername = session.username
 
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <UserProfile username={username} />
+        <UserProfile
+          username={username}
+          isAuthenticated={isAuthenticated}
+          currentUsername={currentUsername}
+        />
 
         <UserProfileTabs
           username={username}

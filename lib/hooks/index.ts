@@ -5,6 +5,7 @@
 
 export {useBossButton} from './useBossButton'
 export {useCommentCollapse} from './useCommentCollapse'
+export {useFollowUser} from './useFollowUser'
 export {useInfiniteSavedItems} from './useInfiniteSavedItems'
 export {useInfiniteScroll} from './useInfiniteScroll'
 export {useLogout} from './useLogout'

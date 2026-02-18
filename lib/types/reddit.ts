@@ -240,6 +240,7 @@ export interface RedditUser {
   is_gold: boolean
   is_mod: boolean
   has_verified_email: boolean
+  is_friend?: boolean
 }
 
 export interface RedditSubreddit {

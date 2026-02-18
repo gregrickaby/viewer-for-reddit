@@ -2,6 +2,7 @@ import {getSession} from '@/lib/auth/session'
 import type {SessionData} from '@/lib/types/reddit'
 import {http, HttpResponse, server} from '@/test-utils'
 import type {IronSession} from 'iron-session'
+import {revalidatePath} from 'next/cache'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
   fetchFollowedUsers,
@@ -13,11 +14,13 @@ import {
   fetchUserInfo,
   fetchUserPosts,
   fetchUserSubscriptions,
+  followUser,
   savePost,
   searchReddit,
   searchSubreddit,
   searchSubreddits,
   toggleSubscription,
+  unfollowUser,
   votePost
 } from './reddit'
 
@@ -1502,6 +1505,130 @@ describe('reddit server actions', () => {
       const following = await fetchFollowedUsers()
 
       expect(following).toEqual([])
+    })
+  })
+
+  describe('followUser', () => {
+    it('follows a user when authenticated', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'currentuser'
+        })
+      )
+
+      server.use(
+        http.put('https://oauth.reddit.com/api/v1/me/friends/testuser', () => {
+          return HttpResponse.json({name: 'testuser'})
+        })
+      )
+
+      const result = await followUser('testuser')
+
+      expect(result.success).toBe(true)
+      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+    })
+
+    it('returns failure for unauthenticated users', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      const result = await followUser('testuser')
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure when API call fails', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'currentuser'
+        })
+      )
+
+      server.use(
+        http.put('https://oauth.reddit.com/api/v1/me/friends/testuser', () => {
+          return new HttpResponse(null, {status: 403})
+        })
+      )
+
+      const result = await followUser('testuser')
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure for invalid username', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      const result = await followUser('../../invalid')
+
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('unfollowUser', () => {
+    it('unfollows a user when authenticated', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'currentuser'
+        })
+      )
+
+      server.use(
+        http.delete(
+          'https://oauth.reddit.com/api/v1/me/friends/testuser',
+          () => {
+            return new HttpResponse(null, {status: 204})
+          }
+        )
+      )
+
+      const result = await unfollowUser('testuser')
+
+      expect(result.success).toBe(true)
+      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+    })
+
+    it('returns failure for unauthenticated users', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      const result = await unfollowUser('testuser')
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure when API call fails', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'currentuser'
+        })
+      )
+
+      server.use(
+        http.delete(
+          'https://oauth.reddit.com/api/v1/me/friends/testuser',
+          () => {
+            return new HttpResponse(null, {status: 404})
+          }
+        )
+      )
+
+      const result = await unfollowUser('testuser')
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure for invalid username', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      const result = await unfollowUser('../../invalid')
+
+      expect(result.success).toBe(false)
     })
   })
 })
