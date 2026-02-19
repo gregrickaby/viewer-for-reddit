@@ -837,6 +837,9 @@ export async function fetchMultireddits(): Promise<
     // This endpoint requires OAuth - get headers with token
     const {headers} = await getHeaders()
 
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url)
+
     const response = await fetch(url, {
       headers,
       next: {
@@ -1559,6 +1562,7 @@ export async function searchSubreddits(query: string): Promise<{
 
     const params = new URLSearchParams({
       query,
+      raw_json: '1',
       limit: '10',
       include_over_18: 'true',
       include_profiles: 'false',
@@ -1691,6 +1695,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
 
     const params = new URLSearchParams({
       query,
+      raw_json: '1',
       limit: '10',
       include_over_18: 'true',
       include_profiles: 'true',
@@ -2043,6 +2048,9 @@ export async function fetchFollowedUsers(): Promise<
 
     // This endpoint requires OAuth - get headers with token
     const {headers} = await getHeaders()
+
+    // Validate URL is pointing to Reddit
+    validateRedditUrl(url)
 
     const response = await fetch(url, {
       headers,

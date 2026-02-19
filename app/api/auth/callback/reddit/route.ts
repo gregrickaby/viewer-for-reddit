@@ -3,6 +3,7 @@ import type {SessionData} from '@/lib/types/reddit'
 import {getEnvVar} from '@/lib/utils/env'
 import {logger} from '@/lib/utils/logger'
 import {Reddit} from 'arctic'
+import {timingSafeEqual} from 'crypto'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
@@ -184,15 +185,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return response
   }
 
-  // Validate state to prevent CSRF attacks
-  if (!code || !state || !storedState || state !== storedState) {
+  // Validate state to prevent CSRF attacks (timing-safe comparison)
+  const statesMatch =
+    !!state &&
+    !!storedState &&
+    state.length === storedState.length &&
+    timingSafeEqual(Buffer.from(state), Buffer.from(storedState))
+
+  if (!code || !state || !storedState || !statesMatch) {
     logger.error(
       'State validation failed - possible CSRF attack',
       {
         hasCode: !!code,
         hasState: !!state,
         hasStoredState: !!storedState,
-        statesMatch: state === storedState,
+        statesMatch,
         url: url.toString(),
         referer: request.headers.get('referer') || 'none',
         userAgent:

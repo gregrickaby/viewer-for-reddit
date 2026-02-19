@@ -33,3 +33,6 @@ export const DEFAULT_POST_LIMIT = 25
 // UI thresholds
 export const SCROLL_THRESHOLD = 100 // pixels from bottom to trigger infinite scroll
 export const BOSS_BUTTON_DELAY = 200 // milliseconds delay for boss button activation
+
+// Comment rendering
+export const MAX_COMMENT_DEPTH = 10 // Maximum nesting depth before "Continue thread" link

@@ -7,6 +7,7 @@ import {
   useVote
 } from '@/lib/hooks'
 import {RedditComment as RedditCommentType} from '@/lib/types/reddit'
+import {MAX_COMMENT_DEPTH} from '@/lib/utils/constants'
 import {
   decodeHtmlEntities,
   formatTimeAgo,
@@ -328,14 +329,27 @@ export function Comment({
       </Card>
 
       <Collapse in={!isCollapsed}>
-        {replies.map((reply) => (
-          <Comment
-            key={reply.data.id}
-            comment={reply.data}
-            depth={depth + 1}
-            isAuthenticated={isAuthenticated}
-          />
-        ))}
+        {depth >= MAX_COMMENT_DEPTH ? (
+          <Anchor
+            component={Link}
+            href={comment.permalink}
+            c="blue"
+            fz="sm"
+            ml={20}
+            mb="sm"
+          >
+            Continue this thread →
+          </Anchor>
+        ) : (
+          replies.map((reply) => (
+            <Comment
+              key={reply.data.id}
+              comment={reply.data}
+              depth={depth + 1}
+              isAuthenticated={isAuthenticated}
+            />
+          ))
+        )}
       </Collapse>
     </Box>
   )

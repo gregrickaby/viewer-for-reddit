@@ -527,9 +527,23 @@ Always use `sanitize-html` via `sanitizeText()` before rendering user HTML.
 
 ### 3. OAuth Security
 
-- CSRF protection via state parameter
+- CSRF protection via state parameter (timing-safe comparison)
 - Redirect URI validation
 - Encrypted HTTP-only session cookies
+
+```typescript
+// ✅ CORRECT - Use timing-safe comparison for CSRF state validation
+import {timingSafeEqual} from 'crypto'
+
+const statesMatch =
+  !!state &&
+  !!storedState &&
+  state.length === storedState.length &&
+  timingSafeEqual(Buffer.from(state), Buffer.from(storedState))
+
+// ❌ WRONG - Simple equality is vulnerable to timing attacks
+if (state !== storedState) { ... }
+```
 
 ```typescript
 const sessionOptions: SessionOptions = {
@@ -542,6 +556,16 @@ const sessionOptions: SessionOptions = {
     maxAge: 60 * 60 * 24 * 30 // 30 days
   }
 }
+```
+
+### 4. SSRF Prevention
+
+All URLs constructed from user input MUST be validated before fetch:
+
+```typescript
+// ✅ CORRECT - Always validate before fetch
+validateRedditUrl(url)
+const response = await fetch(url, { ... })
 ```
 
 ---
@@ -623,9 +647,13 @@ See [GitHub Copilot Instructions](../copilot-instructions.md) for testing patter
 - Using `NEXT_PUBLIC_` env prefix
 - Not sanitizing HTML with `sanitizeText()`
 - Plain Next.js `<Link>` (wrap with Mantine `<Anchor>`)
-- Magic numbers (use constants like `FIVE_MINUTES`)
+- Magic numbers (use constants like `FIVE_MINUTES`, `ONE_MINUTE`)
 - Arctic token property access (use methods: `.accessToken()`)
 - Using `memo()`, `useCallback()`, or `useMemo()` (React Compiler handles this)
+- Missing `validateRedditUrl()` before fetch in server actions
+- Missing `raw_json=1` parameter in Reddit API calls
+- Simple string equality for CSRF state comparison (use `timingSafeEqual`)
+- Unbounded recursive rendering (use `MAX_COMMENT_DEPTH`)
 
 **✅ Correct:**
 
@@ -640,6 +668,10 @@ See [GitHub Copilot Instructions](../copilot-instructions.md) for testing patter
 - Wrap: `<Anchor component={Link}>`
 - Use constants from `lib/utils/constants.ts`
 - Arctic methods: `tokens.accessToken()`
+- Always call `validateRedditUrl(url)` before fetch
+- Always include `raw_json=1` in Reddit API query params
+- Use `timingSafeEqual()` for security-sensitive comparisons
+- Limit recursive rendering with `MAX_COMMENT_DEPTH`
 
 ---
 
@@ -665,6 +697,10 @@ See [GitHub Copilot Instructions](../copilot-instructions.md) for testing patter
 - [ ] Use constants from `lib/utils/constants.ts`
 - [ ] Wrap Next.js Link with Mantine Anchor
 - [ ] Use Arctic token methods: `tokens.accessToken()`
+- [ ] Call `validateRedditUrl()` before all Reddit API fetches
+- [ ] Include `raw_json=1` in all Reddit API query params
+- [ ] Use `timingSafeEqual()` for security-sensitive comparisons
+- [ ] Limit recursive rendering depth (e.g., `MAX_COMMENT_DEPTH`)
 
 ### Before Completion
 
