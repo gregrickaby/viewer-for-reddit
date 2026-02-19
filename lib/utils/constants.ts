@@ -4,6 +4,7 @@
 
 // Cache revalidation times (in seconds)
 // Increased to reduce Reddit API rate limiting
+export const ONE_MINUTE = 60
 export const FIVE_MINUTES = 300
 export const TEN_MINUTES = 600
 export const FIFTEEN_MINUTES = 900

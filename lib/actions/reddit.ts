@@ -25,6 +25,7 @@ import {
   CACHE_SUBSCRIPTIONS,
   CACHE_USER_INFO,
   DEFAULT_POST_LIMIT,
+  ONE_MINUTE,
   REDDIT_API_URL,
   REDDIT_PUBLIC_API_URL
 } from '@/lib/utils/constants'
@@ -1571,7 +1572,7 @@ export async function searchSubreddits(query: string): Promise<{
     const response = await fetch(url, {
       headers,
       next: {
-        revalidate: 60,
+        revalidate: ONE_MINUTE,
         tags: ['search-subreddits']
       }
     })
@@ -1702,7 +1703,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
     const response = await fetch(url, {
       headers,
       next: {
-        revalidate: 60,
+        revalidate: ONE_MINUTE,
         tags: ['search-autocomplete']
       }
     })

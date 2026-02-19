@@ -3,7 +3,7 @@ import {searchSubreddit} from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {Container, Group, Stack, Text, Title} from '@mantine/core'
+import {Anchor, Container, Group, Stack, Text, Title} from '@mantine/core'
 import {IconArrowLeft} from '@tabler/icons-react'
 import type {Metadata} from 'next'
 import Link from 'next/link'
@@ -99,20 +99,19 @@ export default async function SubredditSearchPage({
       <Stack gap="xl" maw={800}>
         <Stack gap="sm">
           <Group gap="xs">
-            <Link
+            <Anchor
+              component={Link}
               href={`/r/${subreddit}`}
-              style={{
-                textDecoration: 'none',
-                color: 'var(--mantine-color-dimmed)',
-                fontSize: 'var(--mantine-font-size-sm)'
-              }}
+              td="none"
+              c="dimmed"
+              fz="sm"
               data-umami-event="back-to-subreddit"
             >
               <Group gap={4}>
                 <IconArrowLeft size={14} />
                 Back to r/{subreddit}
               </Group>
-            </Link>
+            </Anchor>
           </Group>
           <Title order={2}>
             Search results for: &quot;{decodedQuery}&quot;
