@@ -38,7 +38,7 @@
     "@mantine/core": "^8.3.15",
     "@mantine/hooks": "^8.3.15",
     "@mantine/notifications": "^8.3.15",
-    "@tabler/icons-react": "^3.36.1",
+    "@tabler/icons-react": "^3.37.1",
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",
     "hls.js": "^1.6.15",
