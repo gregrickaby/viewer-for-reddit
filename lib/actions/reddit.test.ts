@@ -6,6 +6,7 @@ import {revalidatePath} from 'next/cache'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
   addSubredditToMultireddit,
+  addUserToMultireddit,
   createMultireddit,
   deleteMultireddit,
   fetchFollowedUsers,
@@ -19,6 +20,7 @@ import {
   fetchUserSubscriptions,
   followUser,
   removeSubredditFromMultireddit,
+  removeUserFromMultireddit,
   savePost,
   searchReddit,
   searchSubreddit,
@@ -1975,6 +1977,180 @@ describe('reddit server actions', () => {
       const result = await removeSubredditFromMultireddit(
         '/user/testuser/m/tech',
         'typescript'
+      )
+
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('addUserToMultireddit', () => {
+    it('adds a user successfully via their user subreddit', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      server.use(
+        http.put(
+          'https://oauth.reddit.com/api/multi/user/testuser/m/tech/r/u_johndoe',
+          () => HttpResponse.json({data: {name: 'u_johndoe'}})
+        )
+      )
+
+      const result = await addUserToMultireddit(
+        '/user/testuser/m/tech',
+        'johndoe'
+      )
+
+      expect(result.success).toBe(true)
+      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+    })
+
+    it('strips u/ prefix from username', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      server.use(
+        http.put(
+          'https://oauth.reddit.com/api/multi/user/testuser/m/tech/r/u_johndoe',
+          () => HttpResponse.json({data: {name: 'u_johndoe'}})
+        )
+      )
+
+      const result = await addUserToMultireddit(
+        '/user/testuser/m/tech',
+        'u/johndoe'
+      )
+
+      expect(result.success).toBe(true)
+    })
+
+    it('returns failure for unauthenticated users', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      const result = await addUserToMultireddit(
+        '/user/testuser/m/tech',
+        'johndoe'
+      )
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure for invalid username', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      const result = await addUserToMultireddit(
+        '/user/testuser/m/tech',
+        '../attack'
+      )
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure when API call fails', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      server.use(
+        http.put(
+          'https://oauth.reddit.com/api/multi/user/testuser/m/tech/r/u_johndoe',
+          () => new HttpResponse(null, {status: 500})
+        )
+      )
+
+      const result = await addUserToMultireddit(
+        '/user/testuser/m/tech',
+        'johndoe'
+      )
+
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('removeUserFromMultireddit', () => {
+    it('removes a user successfully via their user subreddit', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      server.use(
+        http.delete(
+          'https://oauth.reddit.com/api/multi/user/testuser/m/tech/r/u_johndoe',
+          () => new HttpResponse(null, {status: 200})
+        )
+      )
+
+      const result = await removeUserFromMultireddit(
+        '/user/testuser/m/tech',
+        'johndoe'
+      )
+
+      expect(result.success).toBe(true)
+      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+    })
+
+    it('strips u/ prefix from username', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      server.use(
+        http.delete(
+          'https://oauth.reddit.com/api/multi/user/testuser/m/tech/r/u_johndoe',
+          () => new HttpResponse(null, {status: 200})
+        )
+      )
+
+      const result = await removeUserFromMultireddit(
+        '/user/testuser/m/tech',
+        'u/johndoe'
+      )
+
+      expect(result.success).toBe(true)
+    })
+
+    it('returns failure for unauthenticated users', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      const result = await removeUserFromMultireddit(
+        '/user/testuser/m/tech',
+        'johndoe'
+      )
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure for invalid username', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      const result = await removeUserFromMultireddit(
+        '/user/testuser/m/tech',
+        '../attack'
+      )
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure when API call fails', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      server.use(
+        http.delete(
+          'https://oauth.reddit.com/api/multi/user/testuser/m/tech/r/u_johndoe',
+          () => new HttpResponse(null, {status: 404})
+        )
+      )
+
+      const result = await removeUserFromMultireddit(
+        '/user/testuser/m/tech',
+        'johndoe'
       )
 
       expect(result.success).toBe(false)

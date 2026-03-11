@@ -8,7 +8,7 @@ import {
   updateMultiredditName
 } from '@/lib/actions/reddit'
 import {logger} from '@/lib/utils/logger'
-import {useState, useTransition} from 'react'
+import {useEffect, useState, useTransition} from 'react'
 
 export interface ManagedMultireddit {
   name: string
@@ -43,6 +43,10 @@ export function useMultiredditManager({
     useState<ManagedMultireddit[]>(initialMultireddits)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    setMultireddits(initialMultireddits)
+  }, [initialMultireddits])
 
   const clearError = () => setError(null)
 

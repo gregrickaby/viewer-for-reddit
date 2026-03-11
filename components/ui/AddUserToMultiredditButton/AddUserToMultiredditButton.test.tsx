@@ -1,11 +1,11 @@
 import {
-  addSubredditToMultireddit,
-  removeSubredditFromMultireddit
+  addUserToMultireddit,
+  removeUserFromMultireddit
 } from '@/lib/actions/reddit'
 import {render, screen, waitFor} from '@/test-utils'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {AddToMultiredditButton} from './AddToMultiredditButton'
+import {AddUserToMultiredditButton} from './AddUserToMultiredditButton'
 
 const mockRefresh = vi.fn()
 vi.mock('next/navigation', () => ({
@@ -13,19 +13,19 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/lib/actions/reddit', () => ({
-  addSubredditToMultireddit: vi.fn(async () => ({success: true})),
-  removeSubredditFromMultireddit: vi.fn(async () => ({success: true}))
+  addUserToMultireddit: vi.fn(async () => ({success: true})),
+  removeUserFromMultireddit: vi.fn(async () => ({success: true}))
 }))
 
-const mockAdd = vi.mocked(addSubredditToMultireddit)
-const mockRemove = vi.mocked(removeSubredditFromMultireddit)
+const mockAdd = vi.mocked(addUserToMultireddit)
+const mockRemove = vi.mocked(removeUserFromMultireddit)
 
 const mockMultireddits = [
   {
     name: 'tech',
     displayName: 'Tech News',
     path: '/user/testuser/m/tech',
-    subreddits: ['programming', 'javascript']
+    subreddits: ['programming', 'u_someuser']
   },
   {
     name: 'gaming',
@@ -35,7 +35,7 @@ const mockMultireddits = [
   }
 ]
 
-describe('AddToMultiredditButton', () => {
+describe('AddUserToMultiredditButton', () => {
   beforeEach(() => {
     mockAdd.mockClear()
     mockRemove.mockClear()
@@ -47,38 +47,38 @@ describe('AddToMultiredditButton', () => {
   describe('rendering', () => {
     it('renders the button when multireddits exist', () => {
       render(
-        <AddToMultiredditButton
-          subredditName="typescript"
+        <AddUserToMultiredditButton
+          username="johndoe"
           multireddits={mockMultireddits}
         />
       )
 
       expect(
-        screen.getByRole('button', {name: /add to multireddit/i})
+        screen.getByRole('button', {name: /add to custom feed/i})
       ).toBeInTheDocument()
     })
 
     it('renders nothing when multireddits is empty', () => {
       render(
-        <AddToMultiredditButton subredditName="typescript" multireddits={[]} />
+        <AddUserToMultiredditButton username="johndoe" multireddits={[]} />
       )
 
       expect(
-        screen.queryByRole('button', {name: /add to multireddit/i})
+        screen.queryByRole('button', {name: /add to custom feed/i})
       ).not.toBeInTheDocument()
     })
 
-    it('opens menu and shows multireddit list', async () => {
+    it('opens menu and shows custom feeds list', async () => {
       const user = userEvent.setup()
       render(
-        <AddToMultiredditButton
-          subredditName="typescript"
+        <AddUserToMultiredditButton
+          username="johndoe"
           multireddits={mockMultireddits}
         />
       )
 
       await user.click(
-        screen.getByRole('button', {name: /add to multireddit/i})
+        screen.getByRole('button', {name: /add to custom feed/i})
       )
 
       await waitFor(() => {
@@ -89,26 +89,25 @@ describe('AddToMultiredditButton', () => {
 
     it('is case-insensitive when checking membership', async () => {
       const user = userEvent.setup()
+      // "someuser" maps to "u_someuser" which is in tech's subreddits
       render(
-        <AddToMultiredditButton
-          subredditName="Programming"
+        <AddUserToMultiredditButton
+          username="SomeUser"
           multireddits={mockMultireddits}
         />
       )
 
       await user.click(
-        screen.getByRole('button', {name: /add to multireddit/i})
+        screen.getByRole('button', {name: /add to custom feed/i})
       )
 
-      // "Programming" matches "programming" case-insensitively, so Tech News item
-      // should trigger removeSubredditFromMultireddit, not add
       const techNewsItem = await screen.findByText('Tech News')
       await user.click(techNewsItem)
 
       await waitFor(() => {
         expect(mockRemove).toHaveBeenCalledWith(
           '/user/testuser/m/tech',
-          'Programming'
+          'SomeUser'
         )
         expect(mockAdd).not.toHaveBeenCalled()
       })
@@ -116,48 +115,44 @@ describe('AddToMultiredditButton', () => {
   })
 
   describe('interactions', () => {
-    it('calls addSubredditToMultireddit when adding to a multi', async () => {
+    it('calls addUserToMultireddit when adding to a feed', async () => {
       const user = userEvent.setup()
       render(
-        <AddToMultiredditButton
-          subredditName="typescript"
+        <AddUserToMultiredditButton
+          username="johndoe"
           multireddits={mockMultireddits}
         />
       )
 
       await user.click(
-        screen.getByRole('button', {name: /add to multireddit/i})
+        screen.getByRole('button', {name: /add to custom feed/i})
       )
       await user.click(await screen.findByText('Tech News'))
 
       await waitFor(() => {
-        expect(mockAdd).toHaveBeenCalledWith(
-          '/user/testuser/m/tech',
-          'typescript'
-        )
-        expect(mockRefresh).toHaveBeenCalled()
+        expect(mockAdd).toHaveBeenCalledWith('/user/testuser/m/tech', 'johndoe')
       })
     })
 
-    it('calls removeSubredditFromMultireddit when removing from a multi', async () => {
+    it('calls removeUserFromMultireddit when removing from a feed', async () => {
       const user = userEvent.setup()
+      // "someuser" maps to "u_someuser" which is in tech's subreddits
       render(
-        <AddToMultiredditButton
-          subredditName="programming"
+        <AddUserToMultiredditButton
+          username="someuser"
           multireddits={mockMultireddits}
         />
       )
 
       await user.click(
-        screen.getByRole('button', {name: /add to multireddit/i})
+        screen.getByRole('button', {name: /add to custom feed/i})
       )
-      // "programming" is in tech's subreddits, so clicking Tech News removes it
       await user.click(await screen.findByText('Tech News'))
 
       await waitFor(() => {
         expect(mockRemove).toHaveBeenCalledWith(
           '/user/testuser/m/tech',
-          'programming'
+          'someuser'
         )
       })
     })
@@ -172,14 +167,14 @@ describe('AddToMultiredditButton', () => {
       )
 
       render(
-        <AddToMultiredditButton
-          subredditName="typescript"
+        <AddUserToMultiredditButton
+          username="johndoe"
           multireddits={mockMultireddits}
         />
       )
 
       const triggerBtn = screen.getByRole('button', {
-        name: /add to multireddit/i
+        name: /add to custom feed/i
       })
       await user.click(triggerBtn)
       await user.click(await screen.findByText('Tech News'))

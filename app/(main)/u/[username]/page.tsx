@@ -1,8 +1,10 @@
+import {AddUserToMultiredditButton} from '@/components/ui/AddUserToMultiredditButton/AddUserToMultiredditButton'
 import {FollowButton} from '@/components/ui/FollowButton/FollowButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {UserCommentListWithTabs} from '@/components/ui/UserCommentListWithTabs/UserCommentListWithTabs'
 import {UserProfileTabs} from '@/components/ui/UserProfileTabs/UserProfileTabs'
 import {
+  fetchMultireddits,
   fetchUserComments,
   fetchUserInfo,
   fetchUserPosts
@@ -61,11 +63,13 @@ function formatDate(timestamp: number): string {
 async function UserProfile({
   username,
   isAuthenticated,
-  currentUsername
+  currentUsername,
+  multireddits
 }: Readonly<{
   username: string
   isAuthenticated: boolean
   currentUsername?: string
+  multireddits: Awaited<ReturnType<typeof fetchMultireddits>>
 }>) {
   try {
     const user: RedditUser = await fetchUserInfo(username)
@@ -90,10 +94,18 @@ async function UserProfile({
             <Group justify="space-between" align="flex-start">
               <Title order={2}>u/{user.name}</Title>
               {showFollowButton && (
-                <FollowButton
-                  username={user.name}
-                  initialIsFollowing={!!user.is_friend}
-                />
+                <Group gap="xs" wrap="nowrap">
+                  {multireddits.length > 0 && (
+                    <AddUserToMultiredditButton
+                      username={user.name}
+                      multireddits={multireddits}
+                    />
+                  )}
+                  <FollowButton
+                    username={user.name}
+                    initialIsFollowing={!!user.is_friend}
+                  />
+                </Group>
               )}
             </Group>
             <Group gap="xl">
@@ -298,6 +310,9 @@ export default async function UserPage({
   const session = await getSession()
   const isAuthenticated = !!session.accessToken
   const currentUsername = session.username
+  const isOwnProfile = currentUsername?.toLowerCase() === username.toLowerCase()
+  const multireddits =
+    isAuthenticated && !isOwnProfile ? await fetchMultireddits() : []
 
   return (
     <Container size="lg">
@@ -306,6 +321,7 @@ export default async function UserPage({
           username={username}
           isAuthenticated={isAuthenticated}
           currentUsername={currentUsername}
+          multireddits={multireddits}
         />
 
         <UserProfileTabs

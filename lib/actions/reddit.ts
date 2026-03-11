@@ -2669,3 +2669,174 @@ export async function removeSubredditFromMultireddit(
     return {success: false, error: GENERIC_ACTION_ERROR}
   }
 }
+
+/**
+ * Add a user to a multireddit via their user profile subreddit (u_username).
+ * Server Action — requires `mysubreddits` OAuth scope.
+ *
+ * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
+ * @param username - Reddit username to add (without 'u/' prefix)
+ * @returns Promise resolving to success status and optional error
+ *
+ * @example
+ * ```typescript
+ * const result = await addUserToMultireddit('/user/johndoe/m/tech', 'someuser')
+ * ```
+ */
+export async function addUserToMultireddit(
+  multiPath: string,
+  username: string
+): Promise<{success: boolean; error?: string}> {
+  'use server'
+
+  try {
+    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    if (!isValidMultiredditPath(normalizedPath)) {
+      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+        context: 'addUserToMultireddit',
+        multiPath
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const cleanUsername = username.trim().replace(/^u\//, '')
+    if (!isValidUsername(cleanUsername)) {
+      logger.error('Invalid username', new Error('Validation failed'), {
+        context: 'addUserToMultireddit',
+        username: cleanUsername
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const session = await getSession()
+    if (!session.accessToken) {
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const userSubreddit = `u_${cleanUsername}`
+    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
+    validateRedditUrl(url)
+
+    const {headers} = await getHeaders()
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        model: JSON.stringify({name: userSubreddit})
+      })
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Add user to multireddit request failed', {
+        url,
+        method: 'PUT',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated: true,
+        errorBody,
+        context: 'addUserToMultireddit',
+        multiPath,
+        username: cleanUsername
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    revalidatePath('/', 'layout')
+    logger.debug('Added user to multireddit successfully', {
+      multiPath,
+      username: cleanUsername
+    })
+    return {success: true}
+  } catch (error) {
+    logger.error('Error adding user to multireddit', error, {
+      context: 'addUserToMultireddit',
+      multiPath
+    })
+    return {success: false, error: GENERIC_ACTION_ERROR}
+  }
+}
+
+/**
+ * Remove a user from a multireddit via their user profile subreddit (u_username).
+ * Server Action — requires `mysubreddits` OAuth scope.
+ *
+ * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
+ * @param username - Reddit username to remove (without 'u/' prefix)
+ * @returns Promise resolving to success status and optional error
+ *
+ * @example
+ * ```typescript
+ * const result = await removeUserFromMultireddit('/user/johndoe/m/tech', 'someuser')
+ * ```
+ */
+export async function removeUserFromMultireddit(
+  multiPath: string,
+  username: string
+): Promise<{success: boolean; error?: string}> {
+  'use server'
+
+  try {
+    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    if (!isValidMultiredditPath(normalizedPath)) {
+      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+        context: 'removeUserFromMultireddit',
+        multiPath
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const cleanUsername = username.trim().replace(/^u\//, '')
+    if (!isValidUsername(cleanUsername)) {
+      logger.error('Invalid username', new Error('Validation failed'), {
+        context: 'removeUserFromMultireddit',
+        username: cleanUsername
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const session = await getSession()
+    if (!session.accessToken) {
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const userSubreddit = `u_${cleanUsername}`
+    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
+    validateRedditUrl(url)
+
+    const {headers} = await getHeaders()
+    const response = await fetch(url, {method: 'DELETE', headers})
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      logger.httpError('Remove user from multireddit request failed', {
+        url,
+        method: 'DELETE',
+        status: response.status,
+        statusText: response.statusText,
+        isAuthenticated: true,
+        errorBody,
+        context: 'removeUserFromMultireddit',
+        multiPath,
+        username: cleanUsername
+      })
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    revalidatePath('/', 'layout')
+    logger.debug('Removed user from multireddit successfully', {
+      multiPath,
+      username: cleanUsername
+    })
+    return {success: true}
+  } catch (error) {
+    logger.error('Error removing user from multireddit', error, {
+      context: 'removeUserFromMultireddit',
+      multiPath
+    })
+    return {success: false, error: GENERIC_ACTION_ERROR}
+  }
+}

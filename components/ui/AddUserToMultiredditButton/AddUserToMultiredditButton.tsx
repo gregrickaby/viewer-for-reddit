@@ -1,8 +1,8 @@
 'use client'
 
 import {
-  addSubredditToMultireddit,
-  removeSubredditFromMultireddit
+  addUserToMultireddit,
+  removeUserFromMultireddit
 } from '@/lib/actions/reddit'
 import type {ManagedMultireddit} from '@/lib/hooks'
 import {ActionIcon, Menu, Tooltip} from '@mantine/core'
@@ -10,37 +10,38 @@ import {IconCheck, IconList} from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
 
-interface AddToMultiredditButtonProps {
-  subredditName: string
+interface AddUserToMultiredditButtonProps {
+  username: string
   multireddits: ManagedMultireddit[]
 }
 
 /**
- * Menu button for adding or removing the current subreddit from the user's multireddits.
- * Renders nothing when the user has no multireddits.
+ * Menu button for adding or removing the current user from the viewer's custom feeds.
+ * Renders nothing when the viewer has no custom feeds.
  *
- * @param subredditName - Current subreddit name (without 'r/' prefix)
- * @param multireddits - User's multireddits list
+ * @param username - Reddit username (without 'u/' prefix)
+ * @param multireddits - Viewer's multireddits list
  */
-export function AddToMultiredditButton({
-  subredditName,
+export function AddUserToMultiredditButton({
+  username,
   multireddits
-}: Readonly<AddToMultiredditButtonProps>) {
+}: Readonly<AddUserToMultiredditButtonProps>) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
   const handleToggle = (multi: ManagedMultireddit) => {
     if (isPending) return
 
+    const userSubreddit = `u_${username}`
     const isInMulti = multi.subreddits.some(
-      (s) => s.toLowerCase() === subredditName.toLowerCase()
+      (s) => s.toLowerCase() === userSubreddit.toLowerCase()
     )
 
     startTransition(async () => {
       if (isInMulti) {
-        await removeSubredditFromMultireddit(multi.path, subredditName)
+        await removeUserFromMultireddit(multi.path, username)
       } else {
-        await addSubredditToMultireddit(multi.path, subredditName)
+        await addUserToMultireddit(multi.path, username)
       }
       router.refresh()
     })
@@ -51,22 +52,23 @@ export function AddToMultiredditButton({
   return (
     <Menu shadow="md" withinPortal>
       <Menu.Target>
-        <Tooltip label="Add to multireddit" withArrow>
+        <Tooltip label="Add to custom feed" withArrow>
           <ActionIcon
             variant="light"
             size="lg"
             disabled={isPending}
-            aria-label="Add to multireddit"
+            aria-label="Add to custom feed"
           >
             <IconList size={18} />
           </ActionIcon>
         </Tooltip>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Label>Your Multireddits</Menu.Label>
+        <Menu.Label>Your Custom Feeds</Menu.Label>
         {multireddits.map((multi) => {
+          const userSubreddit = `u_${username}`
           const isInMulti = multi.subreddits.some(
-            (s) => s.toLowerCase() === subredditName.toLowerCase()
+            (s) => s.toLowerCase() === userSubreddit.toLowerCase()
           )
           return (
             <Menu.Item

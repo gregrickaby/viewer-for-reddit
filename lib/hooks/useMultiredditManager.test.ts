@@ -8,7 +8,10 @@ import {
 import {logger} from '@/lib/utils/logger'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {useMultiredditManager} from './useMultiredditManager'
+import {
+  type ManagedMultireddit,
+  useMultiredditManager
+} from './useMultiredditManager'
 
 // Mock server actions before imports
 vi.mock('@/lib/actions/reddit', () => ({
@@ -477,6 +480,43 @@ describe('useMultiredditManager', () => {
       })
 
       expect(result.current.error).toBeNull()
+    })
+  })
+
+  describe('external state sync', () => {
+    it('syncs state when initialMultireddits prop changes', async () => {
+      const initial: ManagedMultireddit[] = [
+        {
+          name: 'tech',
+          displayName: 'Tech',
+          path: '/user/testuser/m/tech',
+          subreddits: []
+        }
+      ]
+      const updated: ManagedMultireddit[] = [
+        {
+          name: 'tech',
+          displayName: 'Tech',
+          path: '/user/testuser/m/tech',
+          subreddits: ['javascript']
+        }
+      ]
+
+      let currentProps = initial
+      const {result, rerender} = renderHook(() =>
+        useMultiredditManager({initialMultireddits: currentProps})
+      )
+
+      expect(result.current.multireddits[0].subreddits).toHaveLength(0)
+
+      currentProps = updated
+      rerender()
+
+      await waitFor(() => {
+        expect(result.current.multireddits[0].subreddits).toContain(
+          'javascript'
+        )
+      })
     })
   })
 })
