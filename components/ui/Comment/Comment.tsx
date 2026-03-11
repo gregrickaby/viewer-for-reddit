@@ -149,12 +149,11 @@ function renderActionButtons(
   return (
     <>
       <ActionIcon
-        variant="subtle"
+        variant={isSaved ? 'light' : 'subtle'}
         size="sm"
         color={isSaved ? 'yellow' : 'gray'}
         onClick={handleSave}
-        loading={isPending}
-        disabled={!isAuthenticated}
+        disabled={!isAuthenticated || isPending}
         className={
           isAuthenticated ? styles.voteButton : styles.voteButtonDisabled
         }

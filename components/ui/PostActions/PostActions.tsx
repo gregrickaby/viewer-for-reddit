@@ -139,12 +139,11 @@ export function PostActions({
       </Anchor>
 
       <ActionIcon
-        variant="subtle"
+        variant={isSaved ? 'light' : 'subtle'}
         color={isSaved ? 'yellow' : 'gray'}
         aria-label={isSaved ? 'Unsave post' : 'Save post'}
         onClick={handleSave}
-        loading={isPending}
-        disabled={!isAuthenticated}
+        disabled={!isAuthenticated || isPending}
         style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
         data-umami-event={isSaved ? 'unsave-post' : 'save-post'}
       >
