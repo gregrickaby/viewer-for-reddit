@@ -1,8 +1,15 @@
 'use client'
 
 import {SearchBar} from '@/components/ui/SearchBar/SearchBar'
-import {ActionIcon, Box, Burger, Group} from '@mantine/core'
-import {IconSearch} from '@tabler/icons-react'
+import {
+  ActionIcon,
+  Box,
+  Burger,
+  Group,
+  useComputedColorScheme,
+  useMantineColorScheme
+} from '@mantine/core'
+import {IconMoon, IconSearch, IconSun} from '@tabler/icons-react'
 import {useState} from 'react'
 import {Logo} from '../Logo/Logo'
 import {UserMenu} from '../UserMenu/UserMenu'
@@ -54,6 +61,14 @@ export function Header({
   onToggleDesktop
 }: Readonly<HeaderProps>) {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const {setColorScheme} = useMantineColorScheme()
+  const computedColorScheme = useComputedColorScheme('light', {
+    getInitialValueInEffect: true
+  })
+
+  const toggleColorScheme = () => {
+    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark')
+  }
 
   return (
     <Group
@@ -101,6 +116,25 @@ export function Header({
             onMobileClose={() => setMobileSearchOpen(false)}
           />
         </Box>
+
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          size="lg"
+          onClick={toggleColorScheme}
+          aria-label={
+            computedColorScheme === 'dark'
+              ? 'Switch to light mode'
+              : 'Switch to dark mode'
+          }
+          data-umami-event="toggle-color-scheme"
+        >
+          {computedColorScheme === 'dark' ? (
+            <IconSun aria-hidden="true" size={20} />
+          ) : (
+            <IconMoon aria-hidden="true" size={20} />
+          )}
+        </ActionIcon>
 
         <UserMenu
           isAuthenticated={isAuthenticated}

@@ -40,6 +40,18 @@ vi.mock('../UserMenu/UserMenu', () => ({
   )
 }))
 
+let mockComputedScheme = 'light'
+const mockSetColorScheme = vi.fn()
+
+vi.mock('@mantine/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@mantine/core')>()
+  return {
+    ...actual,
+    useMantineColorScheme: () => ({setColorScheme: mockSetColorScheme}),
+    useComputedColorScheme: () => mockComputedScheme
+  }
+})
+
 describe('Header', () => {
   describe('rendering', () => {
     it('renders Logo component', () => {
@@ -285,6 +297,69 @@ describe('Header', () => {
       })
       await user.click(mobileToggle)
       expect(onToggleMobile).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('theme toggle', () => {
+    it('renders theme toggle button', () => {
+      render(<Header />)
+
+      expect(
+        screen.getByRole('button', {name: /switch to dark mode/i})
+      ).toBeInTheDocument()
+    })
+
+    it('shows moon icon and "switch to dark mode" label in light mode', () => {
+      mockComputedScheme = 'light'
+      render(<Header />)
+
+      expect(
+        screen.getByRole('button', {name: /switch to dark mode/i})
+      ).toBeInTheDocument()
+    })
+
+    it('shows sun icon and "switch to light mode" label in dark mode', () => {
+      mockComputedScheme = 'dark'
+      render(<Header />)
+
+      expect(
+        screen.getByRole('button', {name: /switch to light mode/i})
+      ).toBeInTheDocument()
+    })
+
+    it('calls setColorScheme with "dark" when toggled from light', async () => {
+      mockComputedScheme = 'light'
+      mockSetColorScheme.mockClear()
+      const user = userEvent.setup()
+      render(<Header />)
+
+      await user.click(
+        screen.getByRole('button', {name: /switch to dark mode/i})
+      )
+
+      expect(mockSetColorScheme).toHaveBeenCalledWith('dark')
+    })
+
+    it('calls setColorScheme with "light" when toggled from dark', async () => {
+      mockComputedScheme = 'dark'
+      mockSetColorScheme.mockClear()
+      const user = userEvent.setup()
+      render(<Header />)
+
+      await user.click(
+        screen.getByRole('button', {name: /switch to light mode/i})
+      )
+
+      expect(mockSetColorScheme).toHaveBeenCalledWith('light')
+    })
+
+    it('has umami event on theme toggle button', () => {
+      mockComputedScheme = 'light'
+      render(<Header />)
+
+      expect(
+        screen.getByRole('button', {name: /switch to dark mode/i})
+      ).toHaveAttribute('data-umami-event', 'toggle-color-scheme')
     })
   })
 })
