@@ -8,7 +8,7 @@ import {
   updateMultiredditName
 } from '@/lib/actions/reddit'
 import {logger} from '@/lib/utils/logger'
-import {useEffect, useState, useTransition} from 'react'
+import {useOptimistic, useRef, useState, useTransition} from 'react'
 
 export interface ManagedMultireddit {
   name: string
@@ -41,20 +41,28 @@ export function useMultiredditManager({
 }: Readonly<UseMultiredditManagerOptions>) {
   const [multireddits, setMultireddits] =
     useState<ManagedMultireddit[]>(initialMultireddits)
+  const [optimisticMultireddits, setOptimisticMultireddits] =
+    useOptimistic(multireddits)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  useEffect(() => {
+  const prevInitialRef = useRef(initialMultireddits)
+  if (prevInitialRef.current !== initialMultireddits) {
+    prevInitialRef.current = initialMultireddits
     setMultireddits(initialMultireddits)
-  }, [initialMultireddits])
+  }
 
   const clearError = () => setError(null)
 
   const create = (name: string, displayName: string) => {
     if (isPending) return
-    setError(null)
 
     startTransition(async () => {
+      setError(null)
+      setOptimisticMultireddits([
+        ...multireddits,
+        {name, displayName, path: `_pending_${name}`, subreddits: []}
+      ])
       const result = await createMultireddit(name, displayName)
       if (result.success && result.path) {
         setMultireddits((prev) => [
@@ -74,15 +82,16 @@ export function useMultiredditManager({
 
   const remove = (multiPath: string) => {
     if (isPending) return
-    setError(null)
-
-    const snapshot = [...multireddits]
-    setMultireddits((prev) => prev.filter((m) => m.path !== multiPath))
 
     startTransition(async () => {
+      setError(null)
+      setOptimisticMultireddits(
+        multireddits.filter((m) => m.path !== multiPath)
+      )
       const result = await deleteMultireddit(multiPath)
-      if (!result.success) {
-        setMultireddits(snapshot)
+      if (result.success) {
+        setMultireddits((prev) => prev.filter((m) => m.path !== multiPath))
+      } else {
         const msg = result.error ?? 'Failed to delete multireddit'
         setError(msg)
         logger.error('Failed to delete multireddit', msg, {
@@ -95,19 +104,22 @@ export function useMultiredditManager({
 
   const rename = (multiPath: string, newDisplayName: string) => {
     if (isPending) return
-    setError(null)
-
-    const snapshot = [...multireddits]
-    setMultireddits((prev) =>
-      prev.map((m) =>
-        m.path === multiPath ? {...m, displayName: newDisplayName} : m
-      )
-    )
 
     startTransition(async () => {
+      setError(null)
+      setOptimisticMultireddits(
+        multireddits.map((m) =>
+          m.path === multiPath ? {...m, displayName: newDisplayName} : m
+        )
+      )
       const result = await updateMultiredditName(multiPath, newDisplayName)
-      if (!result.success) {
-        setMultireddits(snapshot)
+      if (result.success) {
+        setMultireddits((prev) =>
+          prev.map((m) =>
+            m.path === multiPath ? {...m, displayName: newDisplayName} : m
+          )
+        )
+      } else {
         const msg = result.error ?? 'Failed to rename multireddit'
         setError(msg)
         logger.error('Failed to rename multireddit', msg, {
@@ -120,21 +132,26 @@ export function useMultiredditManager({
 
   const addSubreddit = (multiPath: string, subredditName: string) => {
     if (isPending) return
-    setError(null)
-
-    const snapshot = [...multireddits]
-    setMultireddits((prev) =>
-      prev.map((m) =>
-        m.path === multiPath
-          ? {...m, subreddits: [...m.subreddits, subredditName]}
-          : m
-      )
-    )
 
     startTransition(async () => {
+      setError(null)
+      setOptimisticMultireddits(
+        multireddits.map((m) =>
+          m.path === multiPath
+            ? {...m, subreddits: [...m.subreddits, subredditName]}
+            : m
+        )
+      )
       const result = await addSubredditToMultireddit(multiPath, subredditName)
-      if (!result.success) {
-        setMultireddits(snapshot)
+      if (result.success) {
+        setMultireddits((prev) =>
+          prev.map((m) =>
+            m.path === multiPath
+              ? {...m, subreddits: [...m.subreddits, subredditName]}
+              : m
+          )
+        )
+      } else {
         const msg = result.error ?? 'Failed to add subreddit'
         setError(msg)
         logger.error('Failed to add subreddit to multireddit', msg, {
@@ -148,24 +165,35 @@ export function useMultiredditManager({
 
   const removeSubreddit = (multiPath: string, subredditName: string) => {
     if (isPending) return
-    setError(null)
-
-    const snapshot = [...multireddits]
-    setMultireddits((prev) =>
-      prev.map((m) =>
-        m.path === multiPath
-          ? {...m, subreddits: m.subreddits.filter((s) => s !== subredditName)}
-          : m
-      )
-    )
 
     startTransition(async () => {
+      setError(null)
+      setOptimisticMultireddits(
+        multireddits.map((m) =>
+          m.path === multiPath
+            ? {
+                ...m,
+                subreddits: m.subreddits.filter((s) => s !== subredditName)
+              }
+            : m
+        )
+      )
       const result = await removeSubredditFromMultireddit(
         multiPath,
         subredditName
       )
-      if (!result.success) {
-        setMultireddits(snapshot)
+      if (result.success) {
+        setMultireddits((prev) =>
+          prev.map((m) =>
+            m.path === multiPath
+              ? {
+                  ...m,
+                  subreddits: m.subreddits.filter((s) => s !== subredditName)
+                }
+              : m
+          )
+        )
+      } else {
         const msg = result.error ?? 'Failed to remove subreddit'
         setError(msg)
         logger.error('Failed to remove subreddit from multireddit', msg, {
@@ -178,7 +206,7 @@ export function useMultiredditManager({
   }
 
   return {
-    multireddits,
+    multireddits: optimisticMultireddits,
     error,
     isPending,
     clearError,

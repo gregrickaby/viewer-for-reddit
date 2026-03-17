@@ -13,7 +13,6 @@ import {
   useMultiredditManager
 } from './useMultiredditManager'
 
-// Mock server actions before imports
 vi.mock('@/lib/actions/reddit', () => ({
   createMultireddit: vi.fn(async () => ({
     success: true,
@@ -36,7 +35,9 @@ const mockAddSub = vi.mocked(addSubredditToMultireddit)
 const mockRemoveSub = vi.mocked(removeSubredditFromMultireddit)
 const mockLogger = vi.mocked(logger)
 
-const initialMultireddits = [
+const emptyMultireddits: ManagedMultireddit[] = []
+
+const initialMultireddits: ManagedMultireddit[] = [
   {
     name: 'tech',
     displayName: 'Tech News',
@@ -53,14 +54,7 @@ const initialMultireddits = [
 
 describe('useMultiredditManager', () => {
   beforeEach(() => {
-    mockCreate.mockClear()
-    mockDelete.mockClear()
-    mockRename.mockClear()
-    mockAddSub.mockClear()
-    mockRemoveSub.mockClear()
-    mockLogger.error.mockClear()
-
-    // Reset to defaults
+    vi.clearAllMocks()
     mockCreate.mockResolvedValue({
       success: true,
       path: '/user/testuser/m/new_multi'
@@ -76,7 +70,6 @@ describe('useMultiredditManager', () => {
       const {result} = renderHook(() =>
         useMultiredditManager({initialMultireddits})
       )
-
       expect(result.current.multireddits).toHaveLength(2)
       expect(result.current.multireddits[0].name).toBe('tech')
       expect(result.current.multireddits[1].name).toBe('gaming')
@@ -86,7 +79,6 @@ describe('useMultiredditManager', () => {
       const {result} = renderHook(() =>
         useMultiredditManager({initialMultireddits})
       )
-
       expect(result.current.error).toBeNull()
       expect(result.current.isPending).toBe(false)
     })
@@ -95,7 +87,6 @@ describe('useMultiredditManager', () => {
       const {result} = renderHook(() =>
         useMultiredditManager({initialMultireddits})
       )
-
       expect(typeof result.current.create).toBe('function')
       expect(typeof result.current.remove).toBe('function')
       expect(typeof result.current.rename).toBe('function')
@@ -106,9 +97,8 @@ describe('useMultiredditManager', () => {
 
     it('initializes with empty list', () => {
       const {result} = renderHook(() =>
-        useMultiredditManager({initialMultireddits: []})
+        useMultiredditManager({initialMultireddits: emptyMultireddits})
       )
-
       expect(result.current.multireddits).toHaveLength(0)
     })
   })
@@ -116,7 +106,7 @@ describe('useMultiredditManager', () => {
   describe('create', () => {
     it('adds new multireddit on success', async () => {
       const {result} = renderHook(() =>
-        useMultiredditManager({initialMultireddits: []})
+        useMultiredditManager({initialMultireddits: emptyMultireddits})
       )
 
       act(() => {
@@ -138,7 +128,7 @@ describe('useMultiredditManager', () => {
       mockCreate.mockResolvedValueOnce({success: false, error: 'API error'})
 
       const {result} = renderHook(() =>
-        useMultiredditManager({initialMultireddits: []})
+        useMultiredditManager({initialMultireddits: emptyMultireddits})
       )
 
       act(() => {
@@ -157,7 +147,7 @@ describe('useMultiredditManager', () => {
       mockCreate.mockResolvedValueOnce({success: false})
 
       const {result} = renderHook(() =>
-        useMultiredditManager({initialMultireddits: []})
+        useMultiredditManager({initialMultireddits: emptyMultireddits})
       )
 
       act(() => {
@@ -175,12 +165,12 @@ describe('useMultiredditManager', () => {
       mockCreate.mockImplementation(
         () =>
           new Promise((resolve) =>
-            setTimeout(() => resolve({success: true, path: '/user/u/m/m'}), 50)
+            setTimeout(() => resolve({success: true, path: '/u/u/m/m'}), 50)
           )
       )
 
       const {result} = renderHook(() =>
-        useMultiredditManager({initialMultireddits: []})
+        useMultiredditManager({initialMultireddits: emptyMultireddits})
       )
 
       act(() => {
@@ -211,7 +201,6 @@ describe('useMultiredditManager', () => {
         result.current.remove('/user/testuser/m/tech')
       })
 
-      // Optimistic removal
       expect(
         result.current.multireddits.find(
           (m) => m.path === '/user/testuser/m/tech'
@@ -286,7 +275,6 @@ describe('useMultiredditManager', () => {
         result.current.rename('/user/testuser/m/tech', 'Tech & Science')
       })
 
-      // Optimistic update
       expect(
         result.current.multireddits.find(
           (m) => m.path === '/user/testuser/m/tech'
@@ -337,7 +325,6 @@ describe('useMultiredditManager', () => {
         result.current.addSubreddit('/user/testuser/m/tech', 'typescript')
       })
 
-      // Optimistic update
       expect(
         result.current.multireddits.find(
           (m) => m.path === '/user/testuser/m/tech'
@@ -393,6 +380,8 @@ describe('useMultiredditManager', () => {
         result.current.addSubreddit('/user/testuser/m/tech', 'typescript')
       })
 
+      expect(result.current.isPending).toBe(true)
+
       act(() => {
         result.current.addSubreddit('/user/testuser/m/tech', 'rust')
       })
@@ -415,7 +404,6 @@ describe('useMultiredditManager', () => {
         result.current.removeSubreddit('/user/testuser/m/tech', 'javascript')
       })
 
-      // Optimistic removal
       expect(
         result.current.multireddits.find(
           (m) => m.path === '/user/testuser/m/tech'
@@ -480,6 +468,26 @@ describe('useMultiredditManager', () => {
       })
 
       expect(result.current.error).toBeNull()
+    })
+  })
+
+  describe('error logging', () => {
+    it('logs error on create failure', async () => {
+      mockCreate.mockResolvedValueOnce({success: false, error: 'Create failed'})
+
+      const {result} = renderHook(() =>
+        useMultiredditManager({initialMultireddits: emptyMultireddits})
+      )
+
+      act(() => {
+        result.current.create('test', 'Test')
+      })
+
+      await waitFor(() => {
+        expect(result.current.isPending).toBe(false)
+      })
+
+      expect(mockLogger.error).toHaveBeenCalled()
     })
   })
 

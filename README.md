@@ -1,6 +1,6 @@
 # About Viewer for Reddit
 
-**Viewer for Reddit** is a clean, distraction-free way to browse Reddit. No ads, no algorithmic feeds, no tracking—just Reddit content, the way it should be.
+**Viewer for Reddit** is a clean, distraction-free way to browse Reddit.
 
 New here? **[Start browsing now →](https://reddit-viewer.com)**
 

@@ -379,6 +379,10 @@ class OpenAPIGenerator {
     for (const endpoint of redditEndpoints) {
       const schemaName = this.generateSchemaName(endpoint.operationId)
 
+      const schemaRef = this.schemas[schemaName]
+        ? {$ref: `#/components/schemas/${schemaName}`}
+        : {type: 'object', additionalProperties: true}
+
       spec.paths[endpoint.path] = {
         [endpoint.method.toLowerCase()]: {
           operationId: endpoint.operationId,
@@ -390,9 +394,7 @@ class OpenAPIGenerator {
               description: 'Successful response',
               content: {
                 'application/json': {
-                  schema: {
-                    $ref: `#/components/schemas/${schemaName}`
-                  }
+                  schema: schemaRef
                 }
               }
             },
