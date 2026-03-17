@@ -83,14 +83,13 @@ export function useMultiredditManager({
   const remove = (multiPath: string) => {
     if (isPending) return
 
+    const filtered = multireddits.filter((m) => m.path !== multiPath)
     startTransition(async () => {
       setError(null)
-      setOptimisticMultireddits(
-        multireddits.filter((m) => m.path !== multiPath)
-      )
+      setOptimisticMultireddits(filtered)
       const result = await deleteMultireddit(multiPath)
       if (result.success) {
-        setMultireddits((prev) => prev.filter((m) => m.path !== multiPath))
+        setMultireddits(filtered)
       } else {
         const msg = result.error ?? 'Failed to delete multireddit'
         setError(msg)
@@ -105,20 +104,15 @@ export function useMultiredditManager({
   const rename = (multiPath: string, newDisplayName: string) => {
     if (isPending) return
 
+    const updated = multireddits.map((m) =>
+      m.path === multiPath ? {...m, displayName: newDisplayName} : m
+    )
     startTransition(async () => {
       setError(null)
-      setOptimisticMultireddits(
-        multireddits.map((m) =>
-          m.path === multiPath ? {...m, displayName: newDisplayName} : m
-        )
-      )
+      setOptimisticMultireddits(updated)
       const result = await updateMultiredditName(multiPath, newDisplayName)
       if (result.success) {
-        setMultireddits((prev) =>
-          prev.map((m) =>
-            m.path === multiPath ? {...m, displayName: newDisplayName} : m
-          )
-        )
+        setMultireddits(updated)
       } else {
         const msg = result.error ?? 'Failed to rename multireddit'
         setError(msg)
@@ -133,24 +127,17 @@ export function useMultiredditManager({
   const addSubreddit = (multiPath: string, subredditName: string) => {
     if (isPending) return
 
+    const updated = multireddits.map((m) =>
+      m.path === multiPath
+        ? {...m, subreddits: [...m.subreddits, subredditName]}
+        : m
+    )
     startTransition(async () => {
       setError(null)
-      setOptimisticMultireddits(
-        multireddits.map((m) =>
-          m.path === multiPath
-            ? {...m, subreddits: [...m.subreddits, subredditName]}
-            : m
-        )
-      )
+      setOptimisticMultireddits(updated)
       const result = await addSubredditToMultireddit(multiPath, subredditName)
       if (result.success) {
-        setMultireddits((prev) =>
-          prev.map((m) =>
-            m.path === multiPath
-              ? {...m, subreddits: [...m.subreddits, subredditName]}
-              : m
-          )
-        )
+        setMultireddits(updated)
       } else {
         const msg = result.error ?? 'Failed to add subreddit'
         setError(msg)
@@ -166,33 +153,20 @@ export function useMultiredditManager({
   const removeSubreddit = (multiPath: string, subredditName: string) => {
     if (isPending) return
 
+    const filterSubs = (subs: string[]) =>
+      subs.filter((s) => s !== subredditName)
+    const updated = multireddits.map((m) =>
+      m.path === multiPath ? {...m, subreddits: filterSubs(m.subreddits)} : m
+    )
     startTransition(async () => {
       setError(null)
-      setOptimisticMultireddits(
-        multireddits.map((m) =>
-          m.path === multiPath
-            ? {
-                ...m,
-                subreddits: m.subreddits.filter((s) => s !== subredditName)
-              }
-            : m
-        )
-      )
+      setOptimisticMultireddits(updated)
       const result = await removeSubredditFromMultireddit(
         multiPath,
         subredditName
       )
       if (result.success) {
-        setMultireddits((prev) =>
-          prev.map((m) =>
-            m.path === multiPath
-              ? {
-                  ...m,
-                  subreddits: m.subreddits.filter((s) => s !== subredditName)
-                }
-              : m
-          )
-        )
+        setMultireddits(updated)
       } else {
         const msg = result.error ?? 'Failed to remove subreddit'
         setError(msg)

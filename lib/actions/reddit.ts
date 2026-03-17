@@ -2365,7 +2365,7 @@ export async function deleteMultireddit(
   'use server'
 
   try {
-    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', new Error('Validation failed'), {
         context: 'deleteMultireddit',
@@ -2442,7 +2442,7 @@ export async function updateMultiredditName(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', new Error('Validation failed'), {
         context: 'updateMultiredditName',
@@ -2521,7 +2521,7 @@ export async function addSubredditToMultireddit(
   'use server'
 
   try {
-    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', new Error('Validation failed'), {
         context: 'addSubredditToMultireddit',
@@ -2610,7 +2610,7 @@ export async function removeSubredditFromMultireddit(
   'use server'
 
   try {
-    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', new Error('Validation failed'), {
         context: 'removeSubredditFromMultireddit',
@@ -2690,7 +2690,7 @@ export async function addUserToMultireddit(
   'use server'
 
   try {
-    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', new Error('Validation failed'), {
         context: 'addUserToMultireddit',
@@ -2780,7 +2780,7 @@ export async function removeUserFromMultireddit(
   'use server'
 
   try {
-    const normalizedPath = multiPath.replace(/^\/|\/$/g, '')
+    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', new Error('Validation failed'), {
         context: 'removeUserFromMultireddit',

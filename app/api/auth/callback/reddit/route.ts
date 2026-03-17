@@ -3,8 +3,8 @@ import type {SessionData} from '@/lib/types/reddit'
 import {getEnvVar} from '@/lib/utils/env'
 import {logger} from '@/lib/utils/logger'
 import {Reddit} from 'arctic'
-import {timingSafeEqual} from 'crypto'
 import {NextRequest, NextResponse} from 'next/server'
+import {timingSafeEqual} from 'node:crypto'
 
 /**
  * Reddit user data from /api/v1/me endpoint.

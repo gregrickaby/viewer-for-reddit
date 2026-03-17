@@ -80,7 +80,7 @@ export function useVote({
 
     const currentVote = voteData.voteState
     const currentScore = voteData.score
-    const newVote = (currentVote === direction ? 0 : direction) as 1 | 0 | -1
+    const newVote = currentVote === direction ? 0 : direction
     const newScore = currentScore + newVote - (currentVote ?? 0)
 
     startTransition(async () => {

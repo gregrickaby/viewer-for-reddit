@@ -45,14 +45,15 @@ export function useSubredditManager({
     if (isPending) return
     setError(null)
 
+    const snapshot = [...subscriptions]
     // Optimistic update
-    setSubscriptions((prev) => [...prev, sub])
+    setSubscriptions([...subscriptions, sub])
 
     startTransition(async () => {
       const result = await toggleSubscription(sub.name, 'sub')
       if (!result.success) {
         // Rollback
-        setSubscriptions((prev) => prev.filter((s) => s.name !== sub.name))
+        setSubscriptions(snapshot)
         const msg = result.error ?? 'Failed to join subreddit'
         setError(msg)
         logger.error('Failed to join subreddit', msg, {
