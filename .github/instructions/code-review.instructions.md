@@ -70,31 +70,36 @@ export default async function Page() {
 
 These issues affect reliability, performance, or maintainability.
 
-### Race Conditions
+### Race Conditions & Optimistic Updates
 
 - [ ] **isPending Guard**: All async handlers check `if (isPending) return` at the start
-- [ ] **Optimistic Updates**: State updates happen immediately, rollback on failure
+- [ ] **useOptimistic for optimistic state**: Use `useOptimistic` + `startTransition` — never `useState` with manual rollback
 
 ```typescript
-// ❌ WRONG - No race condition prevention
+// ❌ WRONG - useState set outside transition requires manual rollback (anti-pattern)
+const [score, setScore] = useState(initialScore)
+
 const handleVote = (direction: number) => {
+  if (isPending) return
+  const prev = score
+  setScore(score + direction) // outside transition = wrong
   startTransition(async () => {
-    await votePost(postId, direction)
+    const result = await votePost(postId, direction)
+    if (!result.success) setScore(prev) // manual revert = anti-pattern
   })
 }
 
-// ✅ CORRECT - Prevents double-clicks
+// ✅ CORRECT - useOptimistic inside startTransition, auto-reverts on failure
+const [voteData, setVoteData] = useState({score: initialScore})
+const [optimisticData, setOptimisticData] = useOptimistic(voteData)
+
 const handleVote = (direction: number) => {
   if (isPending) return // CRITICAL
-
-  const currentScore = score
-  setScore(score + direction) // Optimistic
-
   startTransition(async () => {
+    setOptimisticData({score: voteData.score + direction}) // inside transition
     const result = await votePost(postId, direction)
-    if (!result.success) {
-      setScore(currentScore) // Rollback
-    }
+    if (result.success) setVoteData({score: voteData.score + direction}) // commit
+    // failure = auto-revert, no manual rollback needed
   })
 }
 ```

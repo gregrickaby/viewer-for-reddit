@@ -77,6 +77,7 @@ See [Code Standards & Architecture](./instructions/code-standards.instructions.m
 - Start dev server (user manages it)
 - Mock `global.fetch` in tests (use MSW v2, see [Testing Standards](./instructions/testing-standards.instructions.md))
 - Use `memo()`, `useCallback()`, or `useMemo()` (React Compiler handles optimization)
+- Use `useState` + `useTransition` for optimistic updates — use `useOptimistic` inside `startTransition` instead (see [Code Standards](./instructions/code-standards.instructions.md))
 
 ⚠️ **Ask before**: Modifying authentication flow, changing API structure, adding dependencies
 

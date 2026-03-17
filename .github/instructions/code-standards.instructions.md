@@ -178,33 +178,67 @@ export function useVote() {
 **Location:** `lib/hooks/`
 
 ```typescript
-export function useVote({itemName, initialScore}: UseVoteOptions) {
+export function useVote({
+  itemName,
+  initialScore,
+  initialLikes
+}: UseVoteOptions) {
+  const [voteData, setVoteData] = useState({
+    voteState: getInitialVoteState(initialLikes),
+    score: initialScore
+  })
+  const [optimisticData, setOptimisticData] = useOptimistic(voteData)
   const [isPending, startTransition] = useTransition()
-  const [score, setScore] = useState(initialScore)
 
   const vote = (direction: 1 | -1) => {
     if (isPending) return // CRITICAL: Race condition prevention
 
-    const currentScore = score
-    setScore(score + direction) // Optimistic update
+    const newVote = (voteData.voteState === direction ? 0 : direction) as
+      | 1
+      | 0
+      | -1
+    const newScore = voteData.score + newVote - (voteData.voteState ?? 0)
 
     startTransition(async () => {
-      const result = await votePost(itemName, direction)
-      if (!result.success) {
-        setScore(currentScore) // Rollback on failure
+      setOptimisticData({voteState: newVote, score: newScore}) // optimistic inside transition
+      const result = await votePost(itemName, newVote)
+      if (result.success) {
+        setVoteData({voteState: newVote, score: newScore}) // commit on success
       }
+      // on failure: useOptimistic auto-reverts when transition ends
     })
   }
 
-  return {score, isPending, vote}
+  return {
+    voteState: optimisticData.voteState,
+    score: optimisticData.score,
+    isPending,
+    vote
+  }
 }
 ```
 
 **Hook patterns:**
 
-- **Optimistic updates** - Immediate UI feedback, rollback on failure
+- **Optimistic updates** - Use `useOptimistic` + `startTransition`. Set optimistic state _inside_ the transition; React auto-reverts on failure — no manual rollback needed
 - **Race condition prevention** - Always check `if (isPending) return`
 - **Server action calls** - Hooks call actions, not direct fetch
+
+**Anti-pattern — never do this:**
+
+```typescript
+// ❌ WRONG - Setting optimistic state outside startTransition requires manual rollback
+// and loses React's automatic revert behavior
+const [score, setScore] = useState(initialScore)
+
+const vote = (direction: 1 | -1) => {
+  setScore(score + direction) // ← outside transition = NOT useOptimistic
+  startTransition(async () => {
+    const result = await votePost(itemName, direction)
+    if (!result.success) setScore(originalScore) // ← manual revert = anti-pattern
+  })
+}
+```
 
 **Available hooks:**
 

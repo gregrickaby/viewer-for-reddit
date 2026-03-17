@@ -2,7 +2,7 @@
 
 import {votePost} from '@/lib/actions/reddit'
 import {getInitialVoteState} from '@/lib/utils/reddit-helpers'
-import {useState, useTransition} from 'react'
+import {useOptimistic, useState, useTransition} from 'react'
 
 /**
  * Options for configuring the useVote hook.
@@ -30,13 +30,18 @@ interface UseVoteReturn {
   vote: (direction: 1 | -1) => void
 }
 
+interface VoteData {
+  voteState: 1 | 0 | -1 | null
+  score: number
+}
+
 /**
  * Hook for handling Reddit voting with optimistic updates.
  * Implements race condition prevention and automatic rollback on failure.
  *
  * Features:
- * - Optimistic UI updates (immediate feedback)
- * - Automatic rollback on API failure
+ * - Optimistic UI updates via useOptimistic (immediate feedback)
+ * - Automatic rollback on API failure (no manual revert needed)
  * - Race condition prevention (ignores clicks while pending)
  * - Toggle behavior (clicking same direction removes vote)
  *
@@ -63,36 +68,33 @@ export function useVote({
   initialScore
 }: Readonly<UseVoteOptions>): UseVoteReturn {
   const initialVote = getInitialVoteState(initialLikes)
+  const [voteData, setVoteData] = useState<VoteData>({
+    voteState: initialVote,
+    score: initialScore
+  })
+  const [optimisticData, setOptimisticData] = useOptimistic(voteData)
   const [isPending, startTransition] = useTransition()
-  const [voteState, setVoteState] = useState<1 | 0 | -1 | null>(initialVote)
-  const [score, setScore] = useState(initialScore)
 
   const vote = (direction: 1 | -1) => {
-    // Prevent race conditions
     if (isPending) return
 
-    const currentVote = voteState
-    const currentScore = score
-    const newVote = currentVote === direction ? 0 : direction
-    const scoreDiff = newVote - (currentVote || 0)
-
-    // Optimistic update
-    setVoteState(newVote)
-    setScore(currentScore + scoreDiff)
+    const currentVote = voteData.voteState
+    const currentScore = voteData.score
+    const newVote = (currentVote === direction ? 0 : direction) as 1 | 0 | -1
+    const newScore = currentScore + newVote - (currentVote ?? 0)
 
     startTransition(async () => {
+      setOptimisticData({voteState: newVote, score: newScore})
       const result = await votePost(itemName, newVote)
-      if (!result.success) {
-        // Revert on failure
-        setVoteState(currentVote)
-        setScore(currentScore)
+      if (result.success) {
+        setVoteData({voteState: newVote, score: newScore})
       }
     })
   }
 
   return {
-    voteState,
-    score,
+    voteState: optimisticData.voteState,
+    score: optimisticData.score,
     isPending,
     vote
   }

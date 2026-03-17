@@ -2,7 +2,7 @@
 
 import {followUser, unfollowUser} from '@/lib/actions/reddit'
 import {logger} from '@/lib/utils/logger'
-import {useState, useTransition} from 'react'
+import {useOptimistic, useState, useTransition} from 'react'
 
 interface UseFollowUserOptions {
   username: string
@@ -35,32 +35,36 @@ export function useFollowUser({
   initialIsFollowing
 }: Readonly<UseFollowUserOptions>) {
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
+  const [optimisticIsFollowing, setOptimisticIsFollowing] =
+    useOptimistic(isFollowing)
   const [isPending, startTransition] = useTransition()
 
   const toggleFollow = () => {
     if (isPending) return
 
-    const previousState = isFollowing
-    setIsFollowing(!isFollowing)
+    const newState = !isFollowing
+    const action = isFollowing ? 'unfollow' : 'follow'
 
     startTransition(async () => {
+      setOptimisticIsFollowing(newState)
       const result = isFollowing
         ? await unfollowUser(username)
         : await followUser(username)
 
-      if (!result.success) {
-        setIsFollowing(previousState)
+      if (result.success) {
+        setIsFollowing(newState)
+      } else {
         logger.error('Failed to toggle follow', result.error, {
           context: 'useFollowUser',
           username,
-          action: isFollowing ? 'unfollow' : 'follow'
+          action
         })
       }
     })
   }
 
   return {
-    isFollowing,
+    isFollowing: optimisticIsFollowing,
     isPending,
     toggleFollow
   }

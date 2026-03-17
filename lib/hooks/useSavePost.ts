@@ -1,7 +1,7 @@
 'use client'
 
 import {savePost} from '@/lib/actions/reddit'
-import {useState, useTransition} from 'react'
+import {useOptimistic, useState, useTransition} from 'react'
 
 /**
  * Options for configuring the useSavePost hook.
@@ -56,33 +56,29 @@ export function useSavePost({
   initialSaved,
   onUnsave
 }: Readonly<UseSavePostOptions>): UseSavePostReturn {
-  const [isPending, startTransition] = useTransition()
   const [isSaved, setIsSaved] = useState(initialSaved)
+  const [optimisticIsSaved, setOptimisticIsSaved] = useOptimistic(isSaved)
+  const [isPending, startTransition] = useTransition()
 
   const toggleSave = () => {
-    // Prevent race conditions
     if (isPending) return
 
-    const currentSaveState = isSaved
-    const newSaveState = !currentSaveState
-
-    // Optimistic update
-    setIsSaved(newSaveState)
+    const newSaveState = !isSaved
 
     startTransition(async () => {
+      setOptimisticIsSaved(newSaveState)
       const result = await savePost(postName, newSaveState)
-      if (!result.success) {
-        // Revert on failure
-        setIsSaved(currentSaveState)
-      } else if (!newSaveState && onUnsave) {
-        // Item was unsaved successfully, notify parent
-        onUnsave()
+      if (result.success) {
+        setIsSaved(newSaveState)
+        if (!newSaveState && onUnsave) {
+          onUnsave()
+        }
       }
     })
   }
 
   return {
-    isSaved,
+    isSaved: optimisticIsSaved,
     isPending,
     toggleSave
   }

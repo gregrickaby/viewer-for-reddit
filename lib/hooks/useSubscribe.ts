@@ -2,7 +2,7 @@
 
 import {toggleSubscription} from '@/lib/actions/reddit'
 import {logger} from '@/lib/utils/logger'
-import {useState, useTransition} from 'react'
+import {useOptimistic, useState, useTransition} from 'react'
 
 interface UseSubscribeOptions {
   subredditName: string
@@ -35,26 +35,23 @@ export function useSubscribe({
   initialIsSubscribed
 }: Readonly<UseSubscribeOptions>) {
   const [isSubscribed, setIsSubscribed] = useState(initialIsSubscribed)
+  const [optimisticIsSubscribed, setOptimisticIsSubscribed] =
+    useOptimistic(isSubscribed)
   const [isPending, startTransition] = useTransition()
 
   const toggleSubscribe = () => {
-    // Prevent race conditions - ignore clicks while pending
     if (isPending) return
 
-    // Store current state for rollback
-    const previousState = isSubscribed
+    const newState = !isSubscribed
+    const action = isSubscribed ? 'unsub' : 'sub'
 
-    // Optimistic update - toggle immediately
-    setIsSubscribed(!isSubscribed)
-
-    // Perform server action
     startTransition(async () => {
-      const action = isSubscribed ? 'unsub' : 'sub'
+      setOptimisticIsSubscribed(newState)
       const result = await toggleSubscription(subredditName, action)
 
-      // Rollback on failure
-      if (!result.success) {
-        setIsSubscribed(previousState)
+      if (result.success) {
+        setIsSubscribed(newState)
+      } else {
         logger.error('Failed to toggle subscription', result.error, {
           context: 'useSubscribe',
           subredditName,
@@ -65,7 +62,7 @@ export function useSubscribe({
   }
 
   return {
-    isSubscribed,
+    isSubscribed: optimisticIsSubscribed,
     isPending,
     toggleSubscribe
   }
