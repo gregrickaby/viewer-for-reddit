@@ -38,7 +38,7 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
         >
           {post.subreddit_name_prefixed}
         </Badge>
-        <Text size="xs" c="dimmed">
+        <Text size="xs" c="dimmed" suppressHydrationWarning>
           Posted by{' '}
           {isDeletedAuthor ? (
             <Text span size="xs" c="dimmed">

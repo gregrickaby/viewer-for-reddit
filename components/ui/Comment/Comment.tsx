@@ -281,7 +281,7 @@ export function Comment({
                 {comment.distinguished}
               </Badge>
             )}
-            <Text size="xs" c="dimmed">
+            <Text size="xs" c="dimmed" suppressHydrationWarning>
               • {formatTimeAgo(comment.created_utc)}
             </Text>
             {isCollapsed && replies.length > 0 && (
