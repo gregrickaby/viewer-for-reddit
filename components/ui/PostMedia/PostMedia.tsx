@@ -108,6 +108,71 @@ function renderAnimatedGif(post: RedditPost) {
 }
 
 /**
+ * Allowed domains for oembed iframe embeds.
+ * Only known video providers are permitted to prevent XSS.
+ */
+const ALLOWED_OEMBED_DOMAINS = [
+  'youtube.com',
+  'vimeo.com',
+  'twitch.tv',
+  'streamable.com'
+]
+
+/**
+ * Extract and validate the iframe src from oembed HTML.
+ * The html field is HTML-encoded, so we decode entities before parsing.
+ */
+function getOembedSrc(html: string): string | null {
+  const decoded = html
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&amp;', '&')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+
+  const match = /src="([^"]+)"/.exec(decoded)
+  if (!match) return null
+
+  const src = match[1]
+  try {
+    const parsed = new URL(src)
+    if (parsed.protocol !== 'https:') return null
+    const hostname = parsed.hostname.toLowerCase()
+    const isAllowed = ALLOWED_OEMBED_DOMAINS.some(
+      (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
+    )
+    return isAllowed ? src : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Render an oembed video (YouTube, Vimeo, etc.) as a responsive iframe
+ */
+function renderOembed(post: RedditPost) {
+  const html = post.media?.oembed?.html
+  if (!html) return null
+
+  const src = getOembedSrc(html)
+  if (!src) return null
+
+  return (
+    <div className={styles.embedContainer}>
+      <iframe
+        src={src}
+        title={post.title}
+        className={styles.embed}
+        allowFullScreen
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        loading="lazy"
+      />
+    </div>
+  )
+}
+
+/**
  * Render external video
  */
 function renderExternalVideo(post: RedditPost) {
@@ -201,9 +266,10 @@ export function PostMedia({post, priority = false}: Readonly<PostMediaProps>) {
     return <Gallery items={galleryItems} title={post.title} />
   }
 
-  // Try to render video (Reddit, animated GIF, or external)
+  // Try to render video (Reddit, oembed/YouTube, animated GIF, or external)
   const videoElement =
     renderRedditVideo(post) ||
+    renderOembed(post) ||
     renderAnimatedGif(post) ||
     renderExternalVideo(post)
   if (videoElement) {
