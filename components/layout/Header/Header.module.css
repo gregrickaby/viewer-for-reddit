@@ -1,0 +1,8 @@
+/* Hide sun icon in light mode; hide moon icon in dark mode */
+:global([data-mantine-color-scheme='light']) .sun {
+  display: none;
+}
+
+:global([data-mantine-color-scheme='dark']) .moon {
+  display: none;
+}

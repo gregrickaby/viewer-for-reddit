@@ -13,6 +13,7 @@ import {IconMoon, IconSearch, IconSun} from '@tabler/icons-react'
 import {useState} from 'react'
 import {Logo} from '../Logo/Logo'
 import {UserMenu} from '../UserMenu/UserMenu'
+import styles from './Header.module.css'
 
 /**
  * Props for the Header component.
@@ -121,19 +122,17 @@ export function Header({
           variant="subtle"
           color="gray"
           size="lg"
-          onClick={toggleColorScheme}
+          onClick={() => toggleColorScheme()}
           aria-label={
             computedColorScheme === 'dark'
               ? 'Switch to light mode'
               : 'Switch to dark mode'
           }
           data-umami-event="toggle-color-scheme"
+          suppressHydrationWarning
         >
-          {computedColorScheme === 'dark' ? (
-            <IconSun aria-hidden="true" size={20} />
-          ) : (
-            <IconMoon aria-hidden="true" size={20} />
-          )}
+          <IconSun className={styles.sun} aria-hidden="true" size={20} />
+          <IconMoon className={styles.moon} aria-hidden="true" size={20} />
         </ActionIcon>
 
         <UserMenu
