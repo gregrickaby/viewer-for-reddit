@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
     globalNotFound: true,
+    useLightningcss: true,
+    prefetchInlining: true,
+    appNewScrollHandler: true,
+    lightningCssFeatures: {
+      include: ['light-dark', 'oklab-colors'],
+      exclude: ['nesting']
+    },
     optimizePackageImports: [
       '@mantine/carousel',
       '@mantine/core',
@@ -12,7 +19,10 @@ const nextConfig: NextConfig = {
       '@mantine/notifications',
       '@tabler/icons-react',
       'react-markdown'
-    ]
+    ],
+    sri: {
+      algorithm: 'sha256'
+    }
   },
   logging: {
     fetches: {
@@ -89,7 +99,7 @@ const nextConfig: NextConfig = {
               "media-src 'self' https://*.redd.it https://v.redd.it https://*.reddit.com; " +
               "connect-src 'self' https://oauth.reddit.com https://www.reddit.com https://umami.wiregrasswebsites.com https://static.cloudflareinsights.com; " +
               "font-src 'self' data:; " +
-              "frame-src 'none'; " +
+              'frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://player.twitch.tv https://streamable.com; ' +
               "object-src 'none'; " +
               "base-uri 'self'; " +
               "form-action 'self';"
