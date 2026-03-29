@@ -38,7 +38,7 @@
     "@mantine/core": "^8.3.18",
     "@mantine/hooks": "^8.3.18",
     "@mantine/notifications": "^8.3.18",
-    "@tabler/icons-react": "^3.40.0",
+    "@tabler/icons-react": "^3.41.0",
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",
     "hls.js": "^1.6.15",
@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^2.1.4",
-    "@redocly/cli": "^2.25.1",
+    "@redocly/cli": "^2.25.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
