@@ -291,7 +291,7 @@ export function Comment({
             )}
           </Group>
 
-          <Collapse in={!isCollapsed}>
+          <Collapse expanded={!isCollapsed}>
             <Stack gap="sm">
               <div
                 dangerouslySetInnerHTML={{
@@ -327,7 +327,7 @@ export function Comment({
         </Stack>
       </Card>
 
-      <Collapse in={!isCollapsed}>
+      <Collapse expanded={!isCollapsed}>
         {depth >= MAX_COMMENT_DEPTH ? (
           <Anchor
             component={Link}

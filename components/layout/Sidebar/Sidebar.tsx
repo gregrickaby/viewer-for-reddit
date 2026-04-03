@@ -152,7 +152,7 @@ export function Sidebar({
                 <IconChevronDown aria-hidden="true" size={16} />
               )}
             </Group>
-            <Collapse in={navigationOpen}>
+            <Collapse expanded={navigationOpen}>
               <Stack gap={4}>
                 <NavLink
                   component={Link}
@@ -249,7 +249,7 @@ export function Sidebar({
                   </ActionIcon>
                 </Tooltip>
               </Group>
-              <Collapse in={multiredditsOpen}>
+              <Collapse expanded={multiredditsOpen}>
                 <ScrollArea.Autosize mah={400}>
                   <Stack gap={4}>
                     {sortedMultireddits.map((multi) => (
@@ -310,7 +310,7 @@ export function Sidebar({
                   <IconChevronDown aria-hidden="true" size={16} />
                 )}
               </Group>
-              <Collapse in={followingOpen}>
+              <Collapse expanded={followingOpen}>
                 <ScrollArea.Autosize mah={400}>
                   <Stack gap={4}>
                     {sortedFollowing.map((user) => (
@@ -372,7 +372,7 @@ export function Sidebar({
                   </ActionIcon>
                 </Tooltip>
               </Group>
-              <Collapse in={subredditsOpen}>
+              <Collapse expanded={subredditsOpen}>
                 <Stack gap="xs">
                   <TextInput
                     id="sidebar-search-input"

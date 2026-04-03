@@ -19,7 +19,7 @@ import {useState} from 'react'
  * <Button onClick={toggleCollapse}>
  *   {isCollapsed ? 'Expand' : 'Collapse'}
  * </Button>
- * <Collapse in={!isCollapsed}>
+ * <Collapse expanded={!isCollapsed}>
  *   {comment.body}
  * </Collapse>
  * ```

@@ -266,19 +266,13 @@ describe('Sidebar', () => {
     it('renders sort select when subscriptions section is expanded', async () => {
       render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
 
-      // Section is now expanded by default
-      // Mantine Select renders an input with the aria-label
+      // In Mantine v9, aria-label is placed on the listbox rather than the textbox.
+      // Use getByDisplayValue to find the Select by its visible value instead.
       await waitFor(() => {
-        expect(
-          screen.getByRole('textbox', {
-            name: /sort subscriptions/i
-          })
-        ).toBeInTheDocument()
+        expect(screen.getByDisplayValue('Default Order')).toBeInTheDocument()
       })
 
-      const sortInput = screen.getByRole('textbox', {
-        name: /sort subscriptions/i
-      })
+      const sortInput = screen.getByDisplayValue('Default Order')
       expect(sortInput).toHaveValue('Default Order')
     })
 
