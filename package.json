@@ -34,10 +34,10 @@
     "validate:ci": "npm run format:check && npm run typecheck && npm run lint && npm run test:coverage"
   },
   "dependencies": {
-    "@mantine/carousel": "^9.0.0",
-    "@mantine/core": "^9.0.0",
-    "@mantine/hooks": "^9.0.0",
-    "@mantine/notifications": "^9.0.0",
+    "@mantine/carousel": "^9.0.1",
+    "@mantine/core": "^9.0.1",
+    "@mantine/hooks": "^9.0.1",
+    "@mantine/notifications": "^9.0.1",
     "@tabler/icons-react": "^3.41.1",
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",
@@ -50,7 +50,7 @@
     "sanitize-html": "^2.17.2"
   },
   "devDependencies": {
-    "@evilmartians/lefthook": "^2.1.4",
+    "@evilmartians/lefthook": "^2.1.5",
     "@redocly/cli": "^2.25.4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -73,7 +73,7 @@
     "eslint-plugin-testing-library": "^7.16.2",
     "jest-axe": "^10.0.0",
     "jsdom": "^29.0.1",
-    "msw": "^2.12.14",
+    "msw": "^2.13.0",
     "openapi-typescript": "^7.13.0",
     "postcss": "^8.5.8",
     "postcss-preset-mantine": "^1.18.0",
