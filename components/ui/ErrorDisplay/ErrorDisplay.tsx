@@ -23,8 +23,9 @@ export function ErrorDisplay({
           Something went wrong
         </Text>
         <Text size="sm" c="dimmed" ta="center">
-          This content was not found, set to private or you've reached Reddit's
-          rate limit. If you continue to see this message, please see our{' '}
+          This content was not found, set to private, Reddit is down, or you've
+          reached Reddit's rate limit. If you continue to see this message,
+          please see our{' '}
           <Anchor component={Link} href="/about" c="blue" fw={500}>
             FAQ's
           </Anchor>
