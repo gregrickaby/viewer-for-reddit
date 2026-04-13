@@ -1,5 +1,6 @@
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
 import {Analytics} from '@/components/ui/Analytics/Analytics'
+import {WebVitals} from '@/lib/axiom/client'
 import {appConfig} from '@/lib/config/app.config'
 import {
   getAnalyticsConfig,
@@ -84,6 +85,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body>
+        <WebVitals />
         <ThemeProvider>{children}</ThemeProvider>
         <Analytics {...analytics} />
       </body>

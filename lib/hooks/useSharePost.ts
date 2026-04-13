@@ -1,6 +1,6 @@
 'use client'
 
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {notifications} from '@mantine/notifications'
 
 /**
@@ -34,7 +34,8 @@ export function useSharePost() {
         autoClose: 3000
       })
     } catch (error) {
-      logger.error('Failed to copy link', error, {
+      logger.error('Failed to copy link', {
+        error: error instanceof Error ? error.message : String(error),
         context: 'useSharePost',
         path
       })

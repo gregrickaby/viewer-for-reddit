@@ -1,8 +1,8 @@
 'use client'
 
 import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit'
+import {logger} from '@/lib/axiom/client'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
-import {logger} from '@/lib/utils/logger'
 import {useEffect, useRef, useState} from 'react'
 
 /**
@@ -119,7 +119,8 @@ export function useInfiniteScroll({
         setHasMore(false)
       }
     } catch (error) {
-      logger.error('Failed to load more posts', error, {
+      logger.error('Failed to load more posts', {
+        error: error instanceof Error ? error.message : String(error),
         context: 'useInfiniteScroll',
         subreddit,
         username,

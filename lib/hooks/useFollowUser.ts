@@ -1,7 +1,7 @@
 'use client'
 
 import {followUser, unfollowUser} from '@/lib/actions/reddit'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {useOptimistic, useState, useTransition} from 'react'
 
 interface UseFollowUserOptions {
@@ -54,7 +54,8 @@ export function useFollowUser({
       if (result.success) {
         setIsFollowing(newState)
       } else {
-        logger.error('Failed to toggle follow', result.error, {
+        logger.error('Failed to toggle follow', {
+          error: result.error,
           context: 'useFollowUser',
           username,
           action

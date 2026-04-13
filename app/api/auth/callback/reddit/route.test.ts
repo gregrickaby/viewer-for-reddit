@@ -16,13 +16,12 @@ vi.mock('@/lib/utils/env', () => ({
   isProduction: vi.fn(() => false)
 }))
 
-vi.mock('@/lib/utils/logger', () => ({
+vi.mock('@/lib/axiom/server', () => ({
   logger: {
     debug: vi.fn(),
     info: vi.fn(),
     warn: vi.fn(),
-    error: vi.fn(),
-    httpError: vi.fn()
+    error: vi.fn()
   }
 }))
 
@@ -52,8 +51,8 @@ vi.mock('arctic', () => ({
 
 // Import after mocks
 import {getSession} from '@/lib/auth/session'
+import {logger} from '@/lib/axiom/server'
 import {getEnvVar} from '@/lib/utils/env'
-import {logger} from '@/lib/utils/logger'
 import {GET} from './route'
 
 const mockGetEnvVar = vi.mocked(getEnvVar)
@@ -200,7 +199,6 @@ describe('GET /api/auth/callback/reddit', () => {
     )
     expect(mockLogger.error).toHaveBeenCalledWith(
       'OAuth error from Reddit',
-      expect.any(Object),
       expect.any(Object)
     )
 
@@ -277,7 +275,6 @@ describe('GET /api/auth/callback/reddit', () => {
     expect(await response.text()).toBe('Invalid state parameter')
     expect(mockLogger.error).toHaveBeenCalledWith(
       'State validation failed - possible CSRF attack',
-      expect.any(Object),
       expect.any(Object)
     )
   })
@@ -304,7 +301,6 @@ describe('GET /api/auth/callback/reddit', () => {
     expect(response.status).toBe(307)
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'Redirect URI mismatch (expected in proxied environments)',
-      expect.any(Object),
       expect.any(Object)
     )
   })
@@ -438,8 +434,7 @@ describe('GET /api/auth/callback/reddit', () => {
     expect(sessionData.refreshToken).toBe('')
     expect(mockLogger.info).toHaveBeenCalledWith(
       'No refresh token provided by Reddit',
-      undefined,
-      expect.any(Object)
+      expect.objectContaining({context: 'handleTokens'})
     )
   })
 
@@ -463,14 +458,12 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(mockLogger.debug).toHaveBeenCalledWith(
       'OAuth Callback',
-      expect.any(Object),
       expect.any(Object)
     )
 
     expect(mockLogger.info).toHaveBeenCalledWith(
       'User authenticated',
-      {username: 'testuser'},
-      expect.any(Object)
+      expect.objectContaining({username: 'testuser', context: 'handleTokens'})
     )
   })
 
@@ -499,7 +492,6 @@ describe('GET /api/auth/callback/reddit', () => {
     // Should log warning about missing headers
     expect(mockLogger.warn).toHaveBeenCalledWith(
       'No proxy headers found, using request URL host',
-      expect.any(Object),
       expect.any(Object)
     )
   })

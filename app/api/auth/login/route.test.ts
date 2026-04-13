@@ -13,7 +13,7 @@ vi.mock('@/lib/utils/env', () => ({
   isProduction: vi.fn(() => false)
 }))
 
-vi.mock('@/lib/utils/logger', () => ({
+vi.mock('@/lib/axiom/server', () => ({
   logger: {
     info: vi.fn(),
     debug: vi.fn(),
@@ -42,8 +42,8 @@ Object.defineProperty(global.crypto, 'randomUUID', {
 })
 
 // Import after mocks
+import {logger} from '@/lib/axiom/server'
 import {getEnvVar, isProduction} from '@/lib/utils/env'
-import {logger} from '@/lib/utils/logger'
 import {GET} from './route'
 
 const mockGetEnvVar = vi.mocked(getEnvVar)
@@ -152,9 +152,9 @@ describe('GET /api/auth/login', () => {
       'OAuth login initiated',
       expect.objectContaining({
         scopes: expect.any(Array),
-        state: expect.stringMatching(/^.{8}\.\.\.$/)
-      }),
-      {context: 'OAuth'}
+        state: expect.stringMatching(/^.{8}\.\.\.$/),
+        context: 'OAuth'
+      })
     )
   })
 
@@ -167,13 +167,9 @@ describe('GET /api/auth/login', () => {
     expect(await response.text()).toBe('Failed to initiate login')
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Failed to initiate OAuth login',
-      expect.any(Error),
       expect.objectContaining({
         context: 'OAuthLogin',
-        errorDetails: expect.objectContaining({
-          message: expect.any(String),
-          stack: expect.any(String)
-        })
+        error: expect.any(String)
       })
     )
 

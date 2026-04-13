@@ -1,7 +1,7 @@
 'use client'
 
 import {toggleSubscription} from '@/lib/actions/reddit'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {useOptimistic, useState, useTransition} from 'react'
 
 interface UseSubscribeOptions {
@@ -52,7 +52,8 @@ export function useSubscribe({
       if (result.success) {
         setIsSubscribed(newState)
       } else {
-        logger.error('Failed to toggle subscription', result.error, {
+        logger.error('Failed to toggle subscription', {
+          error: result.error,
           context: 'useSubscribe',
           subredditName,
           action

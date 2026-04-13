@@ -1,7 +1,7 @@
 'use client'
 
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {Container, Stack} from '@mantine/core'
 import {useEffect} from 'react'
 
@@ -20,8 +20,9 @@ export default function RouteError({
   reset: () => void
 }>) {
   useEffect(() => {
-    logger.error('Multireddit page error', error, {
-      context: 'MultiredditError',
+    logger.error('Multireddit page error', {
+      error: error.message,
+      context: 'MultiredditPageError',
       digest: error.digest
     })
   }, [error])

@@ -50,3 +50,5 @@ next-env.d.ts
 # Generated OpenAPI specs and types
 scripts/reddit-openapi.json
 lib/types/reddit-api.ts
+
+certificates

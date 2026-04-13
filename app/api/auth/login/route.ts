@@ -1,5 +1,5 @@
+import {logger} from '@/lib/axiom/server'
 import {getEnvVar, isProduction} from '@/lib/utils/env'
-import {logger} from '@/lib/utils/logger'
 import {Reddit} from 'arctic'
 import {NextResponse} from 'next/server'
 
@@ -47,11 +47,11 @@ export async function GET(): Promise<NextResponse> {
       'history'
     ]
 
-    logger.info(
-      'OAuth login initiated',
-      {scopes, state: `${state.substring(0, 8)}...`},
-      {context: 'OAuth'}
-    )
+    logger.info('OAuth login initiated', {
+      scopes,
+      state: `${state.substring(0, 8)}...`,
+      context: 'OAuth'
+    })
 
     // Create authorization URL with duration=permanent for refresh tokens
     const url = reddit.createAuthorizationURL(state, scopes)
@@ -70,15 +70,9 @@ export async function GET(): Promise<NextResponse> {
 
     return response
   } catch (error) {
-    logger.error('Failed to initiate OAuth login', error, {
-      context: 'OAuthLogin',
-      errorDetails:
-        error instanceof Error
-          ? {
-              message: error.message,
-              stack: error.stack
-            }
-          : String(error)
+    logger.error('Failed to initiate OAuth login', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'OAuthLogin'
     })
     return new NextResponse('Failed to initiate login', {status: 500})
   }

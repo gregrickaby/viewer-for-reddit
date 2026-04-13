@@ -1,7 +1,7 @@
 'use client'
 
 import {logout} from '@/lib/actions/auth'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {useRouter} from 'next/navigation'
 import {useState, useTransition} from 'react'
 
@@ -63,7 +63,10 @@ export function useLogout(): UseLogoutReturn {
         }
       } catch (error) {
         // Log error but don't throw - component stays mounted
-        logger.error('Logout failed', error, {context: 'useLogout'})
+        logger.error('Logout failed', {
+          error: error instanceof Error ? error.message : String(error),
+          context: 'useLogout'
+        })
       } finally {
         setIsLoggingOut(false)
       }

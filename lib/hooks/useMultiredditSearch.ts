@@ -1,8 +1,8 @@
 'use client'
 
 import {searchSubredditsAndUsers} from '@/lib/actions/reddit'
+import {logger} from '@/lib/axiom/client'
 import type {SearchAutocompleteItem} from '@/lib/types/reddit'
-import {logger} from '@/lib/utils/logger'
 import {useDebouncedValue} from '@mantine/hooks'
 import {useEffect, useRef, useState} from 'react'
 
@@ -80,7 +80,8 @@ export function useMultiredditSearch(): UseMultiredditSearchReturn {
         }
       } catch (error) {
         if (abortController.signal.aborted) return
-        logger.error('Multireddit search error', error, {
+        logger.error('Multireddit search error', {
+          error: error instanceof Error ? error.message : String(error),
           context: 'useMultiredditSearch'
         })
         setHasError(true)

@@ -38,7 +38,7 @@ Welcome! 👋 This guide will help you contribute to Viewer for Reddit, whether 
 2. **Install dependencies**: `npm install`
 3. **Set up environment**: `cp .env.example .env` and add your Reddit API credentials
 4. **Start development**: `npm run dev`
-5. **Open**: <http://localhost:3000>
+5. **Open**: <https://localhost:3000>
 
 That's it! You're ready to start contributing. 🎉
 
@@ -86,7 +86,7 @@ SESSION_SECRET="generate_random_32_char_string"
 # Start development server
 npm run dev
 
-# View at http://localhost:3000
+# View at https://localhost:3000
 # Features: Hot reload, Turbopack, automatic .next cache clearing
 ```
 

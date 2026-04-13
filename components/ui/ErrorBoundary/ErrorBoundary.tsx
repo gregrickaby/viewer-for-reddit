@@ -1,7 +1,7 @@
 'use client'
 
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {Component, type ReactNode} from 'react'
 
 interface ErrorBoundaryProps {
@@ -23,7 +23,8 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error & {digest?: string}): void {
-    logger.error('ErrorBoundary caught error', error, {
+    logger.error('ErrorBoundary caught error', {
+      error: error.message,
       context: 'ErrorBoundary',
       digest: error.digest
     })

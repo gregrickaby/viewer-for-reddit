@@ -1,7 +1,7 @@
 'use client'
 
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {Container} from '@mantine/core'
 import {useEffect} from 'react'
 
@@ -20,7 +20,8 @@ export default function RouteError({
   reset: () => void
 }>) {
   useEffect(() => {
-    logger.error('Subreddit page error', error, {
+    logger.error('Subreddit page error', {
+      error: error.message,
       context: 'SubredditPageError',
       digest: error.digest
     })

@@ -39,7 +39,7 @@ vi.mock('arctic', () => {
   }
 })
 
-vi.mock('@/lib/utils/logger', () => ({
+vi.mock('@/lib/axiom/server', () => ({
   logger: {
     info: vi.fn(),
     error: vi.fn(),
@@ -59,7 +59,7 @@ import {
 
 // Import mocked modules
 const {getSession, isSessionExpired} = await import('@/lib/auth/session')
-const {logger} = await import('@/lib/utils/logger')
+const {logger} = await import('@/lib/axiom/server')
 
 const mockGetSession = vi.mocked(getSession)
 const mockIsSessionExpired = vi.mocked(isSessionExpired)
@@ -99,8 +99,7 @@ describe('auth actions', () => {
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Logout failed',
-        expect.any(Error),
-        {context: 'logout'}
+        expect.objectContaining({context: 'logout', error: expect.any(String)})
       )
       expect(result).toEqual({
         success: false,
@@ -115,8 +114,7 @@ describe('auth actions', () => {
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Logout failed',
-        expect.any(Error),
-        {context: 'logout'}
+        expect.objectContaining({context: 'logout', error: expect.any(String)})
       )
       expect(result).toEqual({
         success: false,
@@ -290,8 +288,10 @@ describe('auth actions', () => {
 
         expect(mockLogger.error).toHaveBeenCalledWith(
           'Failed to clear expired session',
-          expect.any(Error),
-          {context: 'clearExpiredSession'}
+          expect.objectContaining({
+            context: 'clearExpiredSession',
+            error: expect.any(String)
+          })
         )
         expect(result).toEqual({success: false, wasExpired: false})
       })
@@ -309,8 +309,10 @@ describe('auth actions', () => {
 
         expect(mockLogger.error).toHaveBeenCalledWith(
           'Failed to clear expired session',
-          expect.any(Error),
-          {context: 'clearExpiredSession'}
+          expect.objectContaining({
+            context: 'clearExpiredSession',
+            error: expect.any(String)
+          })
         )
         expect(result).toEqual({success: false, wasExpired: false})
       })
@@ -373,7 +375,6 @@ describe('auth actions', () => {
       })
       expect(mockLogger.warn).toHaveBeenCalledWith(
         'No refresh token available',
-        undefined,
         {context: 'refreshAccessToken'}
       )
     })
@@ -409,17 +410,17 @@ describe('auth actions', () => {
           errorType: 'Error',
           errorMessage: 'Refresh failed',
           hasRefreshToken: true,
-          refreshTokenAge: 'unknown'
-        }),
-        {context: 'refreshAccessToken'}
+          refreshTokenAge: 'unknown',
+          context: 'refreshAccessToken'
+        })
       )
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to destroy session after refresh failure',
         expect.objectContaining({
           destroyError: 'Session destroy failed',
-          originalError: 'Refresh failed'
-        }),
-        {context: 'refreshAccessToken'}
+          originalError: 'Refresh failed',
+          context: 'refreshAccessToken'
+        })
       )
     })
 
@@ -443,7 +444,6 @@ describe('auth actions', () => {
       expect(result.success).toBe(true)
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Refresh token rotated by Reddit',
-        undefined,
         {context: 'refreshAccessToken'}
       )
     })
@@ -473,7 +473,6 @@ describe('auth actions', () => {
       expect(result2.success).toBe(true)
       expect(mockLogger.debug).toHaveBeenCalledWith(
         'Refresh already in progress, returning existing promise',
-        undefined,
         {context: 'refreshAccessToken'}
       )
     })
@@ -569,7 +568,6 @@ describe('auth actions', () => {
       expect(token).toBe('new-token')
       expect(mockLogger.debug).toHaveBeenCalledWith(
         'Token expired or expiring soon, refreshing',
-        undefined,
         {context: 'getValidAccessToken'}
       )
     })

@@ -1,7 +1,7 @@
 'use client'
 
 import {toggleSubscription} from '@/lib/actions/reddit'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {useState, useTransition} from 'react'
 
 export interface ManagedSubscription {
@@ -56,7 +56,8 @@ export function useSubredditManager({
         setSubscriptions(snapshot)
         const msg = result.error ?? 'Failed to join subreddit'
         setError(msg)
-        logger.error('Failed to join subreddit', msg, {
+        logger.error('Failed to join subreddit', {
+          error: msg,
           context: 'useSubredditManager',
           subredditName: sub.name
         })
@@ -77,7 +78,8 @@ export function useSubredditManager({
         setSubscriptions(snapshot)
         const msg = result.error ?? 'Failed to leave subreddit'
         setError(msg)
-        logger.error('Failed to leave subreddit', msg, {
+        logger.error('Failed to leave subreddit', {
+          error: msg,
           context: 'useSubredditManager',
           subredditName: name
         })

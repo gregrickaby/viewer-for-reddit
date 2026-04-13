@@ -10,10 +10,10 @@ import {
   fetchUserPosts
 } from '@/lib/actions/reddit'
 import {getSession} from '@/lib/auth/session'
+import {logger} from '@/lib/axiom/server'
 import {appConfig} from '@/lib/config/app.config'
 import {RedditUser, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
-import {logger} from '@/lib/utils/logger'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
@@ -131,7 +131,8 @@ async function UserProfile({
       </Card>
     )
   } catch (error) {
-    logger.error('Failed to fetch user profile', error, {
+    logger.error('Failed to fetch user profile', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'UserProfile',
       username
     })
@@ -170,7 +171,8 @@ async function UserPosts({
       count: result.posts.length
     })
   } catch (error) {
-    logger.error('Failed to fetch user posts', error, {
+    logger.error('Failed to fetch user posts', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'UserPosts',
       username
     })
@@ -244,7 +246,8 @@ async function UserComments({
       }
     )
   } catch (error) {
-    logger.error('Failed to fetch user comments', error, {
+    logger.error('Failed to fetch user comments', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'UserComments',
       username
     })

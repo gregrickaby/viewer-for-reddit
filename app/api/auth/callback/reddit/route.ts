@@ -1,7 +1,7 @@
 import {getSession} from '@/lib/auth/session'
+import {logger} from '@/lib/axiom/server'
 import type {SessionData} from '@/lib/types/reddit'
 import {getEnvVar} from '@/lib/utils/env'
-import {logger} from '@/lib/utils/logger'
 import {Reddit} from 'arctic'
 import {NextRequest, NextResponse} from 'next/server'
 import {timingSafeEqual} from 'node:crypto'
@@ -41,11 +41,10 @@ function resolveHostFromRequest(request: NextRequest): {
   const protocol = request.headers.get('x-forwarded-proto') || 'https'
 
   if (!forwardedHost && !directHost) {
-    logger.warn(
-      'No proxy headers found, using request URL host',
-      {host},
-      {context: 'OAuth'}
-    )
+    logger.warn('No proxy headers found, using request URL host', {
+      host,
+      context: 'OAuth'
+    })
   }
 
   return {protocol, host}
@@ -69,15 +68,13 @@ async function fetchUserData(accessToken: string): Promise<RedditUserData> {
 
   if (!userResponse.ok) {
     const errorText = await userResponse.text()
-    logger.httpError('Failed to fetch Reddit user data', {
+    logger.error('Failed to fetch Reddit user data', {
       url,
       method: 'GET',
       status: userResponse.status,
       statusText: userResponse.statusText,
-      isAuthenticated: true,
       errorBody: errorText,
-      context: 'fetchUserData',
-      accessTokenPrefix: `${accessToken.substring(0, 10)}...`
+      context: 'fetchUserData'
     })
     throw new Error(`Reddit API responded with ${userResponse.status}`)
   }
@@ -100,24 +97,23 @@ async function handleTokens(code: string): Promise<SessionData> {
   try {
     refreshToken = tokens.refreshToken() || ''
   } catch {
-    logger.info('No refresh token provided by Reddit', undefined, {
+    logger.info('No refresh token provided by Reddit', {
       context: 'handleTokens'
     })
   }
 
-  logger.debug(
-    'Tokens received',
-    {hasAccessToken: !!accessToken, hasRefreshToken: !!refreshToken},
-    {context: 'handleTokens'}
-  )
+  logger.debug('Tokens received', {
+    hasAccessToken: !!accessToken,
+    hasRefreshToken: !!refreshToken,
+    context: 'handleTokens'
+  })
 
   const userData = await fetchUserData(accessToken)
 
-  logger.info(
-    'User authenticated',
-    {username: userData.name},
-    {context: 'handleTokens'}
-  )
+  logger.info('User authenticated', {
+    username: userData.name,
+    context: 'handleTokens'
+  })
 
   return {
     accessToken,
@@ -163,19 +159,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const error = url.searchParams.get('error')
   const storedState = request.cookies.get('reddit_oauth_state')?.value
 
-  logger.debug(
-    'OAuth Callback',
-    {code: !!code, state: !!state, storedState: !!storedState, error},
-    {context: 'OAuth'}
-  )
+  logger.debug('OAuth Callback', {
+    code: !!code,
+    state: !!state,
+    storedState: !!storedState,
+    error,
+    context: 'OAuth'
+  })
 
   // Handle OAuth error from Reddit
   if (error) {
-    logger.error(
-      'OAuth error from Reddit',
-      {error, description: url.searchParams.get('error_description')},
-      {context: 'OAuth'}
-    )
+    logger.error('OAuth error from Reddit', {
+      error,
+      description: url.searchParams.get('error_description'),
+      context: 'OAuth'
+    })
     const {protocol, host} = resolveHostFromRequest(request)
 
     const response = NextResponse.redirect(
@@ -193,20 +191,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     timingSafeEqual(Buffer.from(state), Buffer.from(storedState))
 
   if (!code || !state || !storedState || !statesMatch) {
-    logger.error(
-      'State validation failed - possible CSRF attack',
-      {
-        hasCode: !!code,
-        hasState: !!state,
-        hasStoredState: !!storedState,
-        statesMatch,
-        url: url.toString(),
-        referer: request.headers.get('referer') || 'none',
-        userAgent:
-          request.headers.get('user-agent')?.substring(0, 100) || 'none'
-      },
-      {context: 'OAuth'}
-    )
+    logger.error('State validation failed - possible CSRF attack', {
+      hasCode: !!code,
+      hasState: !!state,
+      hasStoredState: !!storedState,
+      statesMatch,
+      url: url.toString(),
+      referer: request.headers.get('referer') || 'none',
+      userAgent: request.headers.get('user-agent')?.substring(0, 100) || 'none',
+      context: 'OAuth'
+    })
     const response = new NextResponse('Invalid state parameter', {status: 400})
     response.cookies.delete('reddit_oauth_state')
     return response
@@ -218,11 +212,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   callbackUrl.search = ''
 
   if (callbackUrl.toString() !== configuredRedirectUri) {
-    logger.warn(
-      'Redirect URI mismatch (expected in proxied environments)',
-      {callback: callbackUrl.toString(), configured: configuredRedirectUri},
-      {context: 'OAuth'}
-    )
+    logger.warn('Redirect URI mismatch (expected in proxied environments)', {
+      callback: callbackUrl.toString(),
+      configured: configuredRedirectUri,
+      context: 'OAuth'
+    })
   }
 
   try {
@@ -236,16 +230,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     session.userId = sessionData.userId
     await session.save()
 
-    logger.info(
-      'OAuth authentication successful',
-      {
-        username: sessionData.username,
-        userId: sessionData.userId,
-        hasRefreshToken: !!sessionData.refreshToken,
-        expiresIn: `${Math.round((sessionData.expiresAt - Date.now()) / 1000 / 60)}min`
-      },
-      {context: 'OAuthCallback'}
-    )
+    logger.info('OAuth authentication successful', {
+      username: sessionData.username,
+      userId: sessionData.userId,
+      hasRefreshToken: !!sessionData.refreshToken,
+      expiresIn: `${Math.round((sessionData.expiresAt - Date.now()) / 1000 / 60)}min`,
+      context: 'OAuthCallback'
+    })
 
     // Build redirect URL using proper host (handles reverse proxies)
     const {protocol, host} = resolveHostFromRequest(request)
@@ -256,7 +247,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return response
   } catch (error) {
-    logger.error('OAuth authentication failed', error, {
+    logger.error('OAuth authentication failed', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'OAuthCallback'
     })
 

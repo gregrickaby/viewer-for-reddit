@@ -1,3 +1,5 @@
+import {logger} from '@/lib/axiom/server'
+import {transformMiddlewareRequest} from '@axiomhq/nextjs'
 import {NextRequest, NextResponse} from 'next/server'
 
 /**
@@ -21,6 +23,9 @@ import {NextRequest, NextResponse} from 'next/server'
  * @see https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#xrobotstag
  */
 export function proxy(request: NextRequest) {
+  logger.info('request', transformMiddlewareRequest(request))
+  void logger.flush()
+
   const {pathname} = request.nextUrl
 
   // Check if path is a dynamic route that should not be indexed

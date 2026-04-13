@@ -12,7 +12,7 @@ vi.mock('@/lib/actions/reddit', () => ({
   searchSubredditsAndUsers: vi.fn(async () => ({success: true, data: []}))
 }))
 
-vi.mock('@/lib/utils/logger', () => ({
+vi.mock('@/lib/axiom/client', () => ({
   logger: {error: vi.fn()}
 }))
 

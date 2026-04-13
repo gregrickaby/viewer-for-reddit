@@ -2,7 +2,7 @@
 
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {Center, ColorSchemeScript} from '@mantine/core'
 import '@mantine/core/styles.css'
 import {useEffect} from 'react'
@@ -50,7 +50,8 @@ interface GlobalErrorProps {
  */
 export default function GlobalError({error}: Readonly<GlobalErrorProps>) {
   useEffect(() => {
-    logger.error('Global error boundary caught error', error, {
+    logger.error('Global error boundary caught error', {
+      error: error.message,
       context: 'GlobalError',
       digest: error.digest
     })

@@ -2,6 +2,7 @@
 
 import {getValidAccessToken} from '@/lib/actions/auth'
 import {getSession} from '@/lib/auth/session'
+import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditAboutResponse,
   ApiSubredditPostsResponse,
@@ -36,7 +37,6 @@ import {
   RateLimitError,
   RedditAPIError
 } from '@/lib/utils/errors'
-import {logger} from '@/lib/utils/logger'
 import {
   buildFeedUrlPath,
   isValidFullname,
@@ -80,7 +80,7 @@ function validateRedditUrl(url: string): void {
 
   // Ensure the hostname is one of the allowed Reddit domains
   if (!ALLOWED_REDDIT_DOMAINS.has(parsedUrl.hostname)) {
-    logger.error('SSRF attempt detected', new Error('Invalid domain'), {
+    logger.error('SSRF attempt detected', {
       attemptedUrl: url,
       hostname: parsedUrl.hostname,
       context: 'validateRedditUrl'
@@ -138,7 +138,7 @@ async function handleFetchPostsError(
   // Capture incoming request metadata to identify crawlers
   const requestMetadata = await getRequestMetadata()
 
-  const errorContext = {
+  logger.error(`Reddit API ${operation} failed`, {
     url: url.toString(),
     method: 'GET',
     status: response.status,
@@ -150,11 +150,8 @@ async function handleFetchPostsError(
     clientIp: requestMetadata.clientIp,
     referer: requestMetadata.referer,
     context: operation,
-    resource,
-    forceProduction: true
-  }
-
-  logger.httpError(`Reddit API ${operation} failed`, errorContext)
+    resource
+  })
 
   // Throw specific error types based on status code
   const retryAfter = response.headers.get('retry-after')
@@ -260,7 +257,8 @@ export async function fetchPosts(
     try {
       urlPath = buildFeedUrlPath(baseUrl, subreddit, sort)
     } catch (error) {
-      logger.error('Invalid subreddit parameter', error, {
+      logger.error('Invalid subreddit parameter', {
+        error: error instanceof Error ? error.message : String(error),
         context: 'fetchPosts',
         subreddit
       })
@@ -312,7 +310,10 @@ export async function fetchPosts(
       after: afterCursor
     }
   } catch (error) {
-    logger.error('Error fetching posts', error, {context: 'fetchPosts'})
+    logger.error('Error fetching posts', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'fetchPosts'
+    })
     throw error
   }
 }
@@ -345,26 +346,15 @@ export async function fetchPost(
       subreddit !== 'home' &&
       !subreddit.startsWith('user/')
     ) {
-      logger.error(
-        'Invalid subreddit parameter',
-        new Error('Validation failed'),
-        {
-          context: 'fetchPost',
-          subreddit
-        }
-      )
+      logger.error('Invalid subreddit parameter', {
+        context: 'fetchPost',
+        subreddit
+      })
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
     if (!isValidPostId(postId)) {
-      logger.error(
-        'Invalid post ID parameter',
-        new Error('Validation failed'),
-        {
-          context: 'fetchPost',
-          postId
-        }
-      )
+      logger.error('Invalid post ID parameter', {context: 'fetchPost', postId})
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
@@ -390,7 +380,7 @@ export async function fetchPost(
       const errorBody = await response.text()
       const requestMetadata = await getRequestMetadata()
 
-      logger.httpError('Failed to fetch post', {
+      logger.error('Failed to fetch post', {
         url,
         method: 'GET',
         status: response.status,
@@ -400,8 +390,7 @@ export async function fetchPost(
         context: 'fetchPost',
         postId,
         subreddit,
-        ...requestMetadata,
-        forceProduction: true
+        ...requestMetadata
       })
 
       throw new RedditAPIError(
@@ -436,7 +425,10 @@ export async function fetchPost(
       comments
     }
   } catch (error) {
-    logger.error('Error fetching post', error, {context: 'fetchPost'})
+    logger.error('Error fetching post', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'fetchPost'
+    })
     throw error
   }
 }
@@ -463,14 +455,10 @@ export async function fetchSubredditInfo(
   try {
     // Validate input to prevent SSRF
     if (!isValidSubredditName(subreddit)) {
-      logger.error(
-        'Invalid subreddit parameter',
-        new Error('Validation failed'),
-        {
-          context: 'fetchSubredditInfo',
-          subreddit
-        }
-      )
+      logger.error('Invalid subreddit parameter', {
+        context: 'fetchSubredditInfo',
+        subreddit
+      })
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
@@ -497,7 +485,7 @@ export async function fetchSubredditInfo(
       const errorBody = await response.text()
       const requestMetadata = await getRequestMetadata()
 
-      logger.httpError('Failed to fetch subreddit info', {
+      logger.error('Failed to fetch subreddit info', {
         url: url.toString(),
         method: 'GET',
         status: response.status,
@@ -506,8 +494,7 @@ export async function fetchSubredditInfo(
         errorBody,
         context: 'fetchSubredditInfo',
         subreddit,
-        ...requestMetadata,
-        forceProduction: true
+        ...requestMetadata
       })
 
       throw new RedditAPIError(
@@ -530,7 +517,8 @@ export async function fetchSubredditInfo(
 
     return subredditData
   } catch (error) {
-    logger.error('Error fetching subreddit info', error, {
+    logger.error('Error fetching subreddit info', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchSubredditInfo'
     })
     throw error
@@ -595,7 +583,6 @@ export async function fetchUserSubscriptions(): Promise<
       if (!response.ok) {
         logger.warn(
           `Failed to fetch subscriptions: ${response.status} ${response.statusText}`,
-          undefined,
           {context: 'fetchUserSubscriptions'}
         )
         break
@@ -624,7 +611,8 @@ export async function fetchUserSubscriptions(): Promise<
 
     return allSubscriptions
   } catch (error) {
-    logger.error('Error fetching subscriptions', error, {
+    logger.error('Error fetching subscriptions', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchUserSubscriptions'
     })
     return []
@@ -660,10 +648,7 @@ export async function votePost(
   try {
     // Validate input to prevent SSRF
     if (!isValidFullname(postName)) {
-      logger.error('Invalid post fullname', new Error('Validation failed'), {
-        context: 'votePost',
-        postName
-      })
+      logger.error('Invalid post fullname', {context: 'votePost', postName})
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -692,12 +677,11 @@ export async function votePost(
 
     if (!res.ok) {
       const errorBody = await res.text()
-      logger.httpError('Vote request failed', {
+      logger.error('Vote request failed', {
         url,
         method: 'POST',
         status: res.status,
         statusText: res.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'votePost',
         postName,
@@ -711,7 +695,10 @@ export async function votePost(
 
     return {success: true}
   } catch (error) {
-    logger.error('Error voting', error, {context: 'votePost'})
+    logger.error('Error voting', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'votePost'
+    })
     return {success: false, error: GENERIC_ACTION_ERROR}
   }
 }
@@ -741,10 +728,7 @@ export async function savePost(
   try {
     // Validate input to prevent SSRF
     if (!isValidFullname(postName)) {
-      logger.error('Invalid post fullname', new Error('Validation failed'), {
-        context: 'savePost',
-        postName
-      })
+      logger.error('Invalid post fullname', {context: 'savePost', postName})
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -773,12 +757,11 @@ export async function savePost(
 
     if (!res.ok) {
       const errorBody = await res.text()
-      logger.httpError('Save/unsave request failed', {
+      logger.error('Save/unsave request failed', {
         url,
         method: 'POST',
         status: res.status,
         statusText: res.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'savePost',
         postName,
@@ -797,7 +780,10 @@ export async function savePost(
 
     return {success: true}
   } catch (error) {
-    logger.error('Error saving', error, {context: 'savePost'})
+    logger.error('Error saving', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'savePost'
+    })
     return {success: false, error: GENERIC_ACTION_ERROR}
   }
 }
@@ -851,7 +837,6 @@ export async function fetchMultireddits(): Promise<
     if (!response.ok) {
       logger.warn(
         `Failed to fetch multireddits: ${response.status} ${response.statusText}`,
-        undefined,
         {context: 'fetchMultireddits'}
       )
       return []
@@ -881,7 +866,8 @@ export async function fetchMultireddits(): Promise<
 
     return multireddits
   } catch (error) {
-    logger.error('Error fetching multireddits', error, {
+    logger.error('Error fetching multireddits', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchMultireddits'
     })
     return []
@@ -908,14 +894,10 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
   try {
     // Validate input to prevent SSRF
     if (!isValidUsername(username)) {
-      logger.error(
-        'Invalid username parameter',
-        new Error('Validation failed'),
-        {
-          context: 'fetchUserInfo',
-          username
-        }
-      )
+      logger.error('Invalid username parameter', {
+        context: 'fetchUserInfo',
+        username
+      })
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
@@ -941,7 +923,7 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
       const errorBody = await response.text()
       const requestMetadata = await getRequestMetadata()
 
-      logger.httpError('Failed to fetch user info', {
+      logger.error('Failed to fetch user info', {
         url,
         method: 'GET',
         status: response.status,
@@ -950,8 +932,7 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
         errorBody,
         context: 'fetchUserInfo',
         username,
-        ...requestMetadata,
-        forceProduction: true
+        ...requestMetadata
       })
 
       throw new RedditAPIError(
@@ -966,14 +947,11 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
 
     const data: ApiUserProfileResponse = await response.json()
     if (!data.data) {
-      logger.error(
-        'Invalid user data response',
-        {data},
-        {
-          context: 'fetchUserInfo',
-          username
-        }
-      )
+      logger.error('Invalid user data response', {
+        data,
+        context: 'fetchUserInfo',
+        username
+      })
       throw new RedditAPIError(
         GENERIC_SERVER_ERROR,
         'fetchUserInfo',
@@ -991,7 +969,8 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
 
     return userData
   } catch (error) {
-    logger.error('Error fetching user info', error, {
+    logger.error('Error fetching user info', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchUserInfo'
     })
     throw error
@@ -1021,7 +1000,8 @@ export async function getCurrentUserAvatar(): Promise<string | null> {
     const userInfo = await fetchUserInfo(session.username)
     return userInfo.icon_img || null
   } catch (error) {
-    logger.error('Error fetching current user avatar', error, {
+    logger.error('Error fetching current user avatar', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'getCurrentUserAvatar'
     })
     return null
@@ -1059,14 +1039,10 @@ export async function fetchUserPosts(
   try {
     // Validate input to prevent SSRF
     if (!isValidUsername(username)) {
-      logger.error(
-        'Invalid username parameter',
-        new Error('Validation failed'),
-        {
-          context: 'fetchUserPosts',
-          username
-        }
-      )
+      logger.error('Invalid username parameter', {
+        context: 'fetchUserPosts',
+        username
+      })
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
@@ -1105,7 +1081,7 @@ export async function fetchUserPosts(
       const errorBody = await response.text()
       const requestMetadata = await getRequestMetadata()
 
-      logger.httpError('Failed to fetch user posts', {
+      logger.error('Failed to fetch user posts', {
         url: url.toString(),
         method: 'GET',
         status: response.status,
@@ -1115,8 +1091,7 @@ export async function fetchUserPosts(
         context: 'fetchUserPosts',
         username,
         sort,
-        ...requestMetadata,
-        forceProduction: true
+        ...requestMetadata
       })
 
       throw new RedditAPIError(
@@ -1146,7 +1121,8 @@ export async function fetchUserPosts(
       after: afterCursor
     }
   } catch (error) {
-    logger.error('Error fetching user posts', error, {
+    logger.error('Error fetching user posts', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchUserPosts'
     })
     throw error
@@ -1181,14 +1157,10 @@ export async function fetchUserComments(
   try {
     // Validate input to prevent SSRF
     if (!isValidUsername(username)) {
-      logger.error(
-        'Invalid username parameter',
-        new Error('Validation failed'),
-        {
-          context: 'fetchUserComments',
-          username
-        }
-      )
+      logger.error('Invalid username parameter', {
+        context: 'fetchUserComments',
+        username
+      })
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
@@ -1227,7 +1199,7 @@ export async function fetchUserComments(
       const errorBody = await response.text()
       const requestMetadata = await getRequestMetadata()
 
-      logger.httpError('Failed to fetch user comments', {
+      logger.error('Failed to fetch user comments', {
         url: url.toString(),
         method: 'GET',
         status: response.status,
@@ -1237,8 +1209,7 @@ export async function fetchUserComments(
         context: 'fetchUserComments',
         username,
         sort,
-        ...requestMetadata,
-        forceProduction: true
+        ...requestMetadata
       })
 
       throw new RedditAPIError(
@@ -1268,7 +1239,8 @@ export async function fetchUserComments(
       after: afterCursor
     }
   } catch (error) {
-    logger.error('Error fetching user comments', error, {
+    logger.error('Error fetching user comments', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchUserComments'
     })
     throw error
@@ -1299,7 +1271,7 @@ export async function searchReddit(
   try {
     // Validate query to prevent SSRF
     if (!query || typeof query !== 'string' || query.length > 512) {
-      logger.error('Invalid search query', new Error('Validation failed'), {
+      logger.error('Invalid search query', {
         context: 'searchReddit',
         queryLength: query?.length
       })
@@ -1336,7 +1308,7 @@ export async function searchReddit(
       const errorBody = await response.text()
       const requestMetadata = await getRequestMetadata()
 
-      logger.httpError('Search request failed', {
+      logger.error('Search request failed', {
         url: url.toString(),
         method: 'GET',
         status: response.status,
@@ -1345,8 +1317,7 @@ export async function searchReddit(
         errorBody,
         context: 'searchReddit',
         query,
-        ...requestMetadata,
-        forceProduction: true
+        ...requestMetadata
       })
 
       throw new RedditAPIError(
@@ -1375,7 +1346,10 @@ export async function searchReddit(
       after: afterCursor
     }
   } catch (error) {
-    logger.error('Error searching Reddit', error, {context: 'searchReddit'})
+    logger.error('Error searching Reddit', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'searchReddit'
+    })
     throw error
   }
 }
@@ -1412,7 +1386,7 @@ export async function searchSubreddit(
   try {
     // Validate subreddit name
     if (!isValidSubredditName(subreddit)) {
-      logger.error('Invalid subreddit name', new Error('Validation failed'), {
+      logger.error('Invalid subreddit name', {
         context: 'searchSubreddit',
         subreddit
       })
@@ -1421,7 +1395,7 @@ export async function searchSubreddit(
 
     // Validate query to prevent SSRF
     if (!query || typeof query !== 'string' || query.length > 512) {
-      logger.error('Invalid search query', new Error('Validation failed'), {
+      logger.error('Invalid search query', {
         context: 'searchSubreddit',
         queryLength: query?.length
       })
@@ -1463,7 +1437,7 @@ export async function searchSubreddit(
       const errorBody = await response.text()
       const requestMetadata = await getRequestMetadata()
 
-      logger.httpError('Subreddit search request failed', {
+      logger.error('Subreddit search request failed', {
         url: url.toString(),
         method: 'GET',
         status: response.status,
@@ -1473,8 +1447,7 @@ export async function searchSubreddit(
         context: 'searchSubreddit',
         subreddit,
         query,
-        ...requestMetadata,
-        forceProduction: true
+        ...requestMetadata
       })
 
       throw new RedditAPIError(
@@ -1504,7 +1477,8 @@ export async function searchSubreddit(
       after: afterCursor
     }
   } catch (error) {
-    logger.error('Error searching subreddit', error, {
+    logger.error('Error searching subreddit', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'searchSubreddit',
       subreddit
     })
@@ -1542,14 +1516,10 @@ export async function searchSubreddits(query: string): Promise<{
 
   // Validate query to prevent SSRF
   if (typeof query !== 'string' || query.length > 100) {
-    logger.error(
-      'Invalid subreddit search query',
-      new Error('Validation failed'),
-      {
-        context: 'searchSubreddits',
-        queryLength: query?.length
-      }
-    )
+    logger.error('Invalid subreddit search query', {
+      context: 'searchSubreddits',
+      queryLength: query?.length
+    })
     return {success: false, data: [], error: GENERIC_ACTION_ERROR}
   }
 
@@ -1583,7 +1553,7 @@ export async function searchSubreddits(query: string): Promise<{
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Subreddit search request failed', {
+      logger.error('Subreddit search request failed', {
         url,
         method: 'GET',
         status: response.status,
@@ -1641,7 +1611,8 @@ export async function searchSubreddits(query: string): Promise<{
     })
     return {success: true, data: results}
   } catch (error) {
-    logger.error('Error searching subreddits', error, {
+    logger.error('Error searching subreddits', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'searchSubreddits'
     })
     return {success: false, data: [], error: GENERIC_ACTION_ERROR}
@@ -1676,14 +1647,10 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
   }
 
   if (typeof query !== 'string' || query.length > 100) {
-    logger.error(
-      'Invalid autocomplete search query',
-      new Error('Validation failed'),
-      {
-        context: 'searchSubredditsAndUsers',
-        queryLength: query?.length
-      }
-    )
+    logger.error('Invalid autocomplete search query', {
+      context: 'searchSubredditsAndUsers',
+      queryLength: query?.length
+    })
     return {success: false, data: [], error: GENERIC_ACTION_ERROR}
   }
 
@@ -1715,7 +1682,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Subreddit/user autocomplete request failed', {
+      logger.error('Subreddit/user autocomplete request failed', {
         url,
         method: 'GET',
         status: response.status,
@@ -1773,7 +1740,8 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
 
     return {success: true, data: results}
   } catch (error) {
-    logger.error('Error searching subreddits and users', error, {
+    logger.error('Error searching subreddits and users', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'searchSubredditsAndUsers'
     })
     return {success: false, data: [], error: GENERIC_ACTION_ERROR}
@@ -1807,7 +1775,7 @@ export async function toggleSubscription(
   try {
     // Validate input to prevent SSRF
     if (!isValidSubredditName(subredditName)) {
-      logger.error('Invalid subreddit name', new Error('Validation failed'), {
+      logger.error('Invalid subreddit name', {
         context: 'toggleSubscription',
         subredditName
       })
@@ -1847,12 +1815,11 @@ export async function toggleSubscription(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Subscription toggle request failed', {
+      logger.error('Subscription toggle request failed', {
         url,
         method: 'POST',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'toggleSubscription',
         subreddit: subredditName,
@@ -1869,7 +1836,8 @@ export async function toggleSubscription(
 
     return {success: true}
   } catch (error) {
-    logger.error('Error toggling subscription', error, {
+    logger.error('Error toggling subscription', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'toggleSubscription',
       subreddit: subredditName,
       action
@@ -1904,14 +1872,10 @@ export async function fetchSavedItems(
   try {
     // Validate input to prevent SSRF
     if (!isValidUsername(username)) {
-      logger.error(
-        'Invalid username parameter',
-        new Error('Validation failed'),
-        {
-          context: 'fetchSavedItems',
-          username
-        }
-      )
+      logger.error('Invalid username parameter', {
+        context: 'fetchSavedItems',
+        username
+      })
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
@@ -1949,12 +1913,11 @@ export async function fetchSavedItems(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Failed to fetch saved items', {
+      logger.error('Failed to fetch saved items', {
         url: url.toString(),
         method: 'GET',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'fetchSavedItems',
         username,
@@ -2006,7 +1969,8 @@ export async function fetchSavedItems(
       after: data.data?.after || null
     }
   } catch (error) {
-    logger.error('Error fetching saved items', error, {
+    logger.error('Error fetching saved items', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchSavedItems',
       username,
       after
@@ -2063,7 +2027,6 @@ export async function fetchFollowedUsers(): Promise<
     if (!response.ok) {
       logger.warn(
         `Failed to fetch followed users: ${response.status} ${response.statusText}`,
-        undefined,
         {context: 'fetchFollowedUsers'}
       )
       return []
@@ -2094,7 +2057,8 @@ export async function fetchFollowedUsers(): Promise<
 
     return following
   } catch (error) {
-    logger.error('Error fetching followed users', error, {
+    logger.error('Error fetching followed users', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'fetchFollowedUsers'
     })
     return []
@@ -2121,14 +2085,10 @@ export async function followUser(
 
   try {
     if (!isValidUsername(username)) {
-      logger.error(
-        'Invalid username parameter',
-        new Error('Validation failed'),
-        {
-          context: 'followUser',
-          username
-        }
-      )
+      logger.error('Invalid username parameter', {
+        context: 'followUser',
+        username
+      })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -2152,12 +2112,11 @@ export async function followUser(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Follow user request failed', {
+      logger.error('Follow user request failed', {
         url,
         method: 'PUT',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'followUser',
         username
@@ -2169,7 +2128,8 @@ export async function followUser(
     logger.debug('Followed user successfully', {username})
     return {success: true}
   } catch (error) {
-    logger.error('Error following user', error, {
+    logger.error('Error following user', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'followUser',
       username
     })
@@ -2197,14 +2157,10 @@ export async function unfollowUser(
 
   try {
     if (!isValidUsername(username)) {
-      logger.error(
-        'Invalid username parameter',
-        new Error('Validation failed'),
-        {
-          context: 'unfollowUser',
-          username
-        }
-      )
+      logger.error('Invalid username parameter', {
+        context: 'unfollowUser',
+        username
+      })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -2224,12 +2180,11 @@ export async function unfollowUser(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Unfollow user request failed', {
+      logger.error('Unfollow user request failed', {
         url,
         method: 'DELETE',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'unfollowUser',
         username
@@ -2241,7 +2196,8 @@ export async function unfollowUser(
     logger.debug('Unfollowed user successfully', {username})
     return {success: true}
   } catch (error) {
-    logger.error('Error unfollowing user', error, {
+    logger.error('Error unfollowing user', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'unfollowUser',
       username
     })
@@ -2277,7 +2233,7 @@ export async function createMultireddit(
     const cleanDisplayName = displayName.trim()
 
     if (!MULTI_NAME_PATTERN.test(cleanName)) {
-      logger.error('Invalid multireddit name', new Error('Validation failed'), {
+      logger.error('Invalid multireddit name', {
         context: 'createMultireddit',
         name: cleanName
       })
@@ -2285,11 +2241,9 @@ export async function createMultireddit(
     }
 
     if (!cleanDisplayName || cleanDisplayName.length > 50) {
-      logger.error(
-        'Invalid multireddit display name',
-        new Error('Validation failed'),
-        {context: 'createMultireddit'}
-      )
+      logger.error('Invalid multireddit display name', {
+        context: 'createMultireddit'
+      })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -2320,12 +2274,11 @@ export async function createMultireddit(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Create multireddit request failed', {
+      logger.error('Create multireddit request failed', {
         url,
         method: 'POST',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'createMultireddit',
         name: cleanName
@@ -2340,7 +2293,8 @@ export async function createMultireddit(
     logger.debug('Created multireddit successfully', {name: cleanName, path})
     return {success: true, path}
   } catch (error) {
-    logger.error('Error creating multireddit', error, {
+    logger.error('Error creating multireddit', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'createMultireddit'
     })
     return {success: false, error: GENERIC_ACTION_ERROR}
@@ -2367,7 +2321,7 @@ export async function deleteMultireddit(
   try {
     const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
-      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+      logger.error('Invalid multireddit path', {
         context: 'deleteMultireddit',
         multiPath
       })
@@ -2387,12 +2341,11 @@ export async function deleteMultireddit(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Delete multireddit request failed', {
+      logger.error('Delete multireddit request failed', {
         url,
         method: 'DELETE',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'deleteMultireddit',
         multiPath
@@ -2404,7 +2357,8 @@ export async function deleteMultireddit(
     logger.debug('Deleted multireddit successfully', {multiPath})
     return {success: true}
   } catch (error) {
-    logger.error('Error deleting multireddit', error, {
+    logger.error('Error deleting multireddit', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'deleteMultireddit',
       multiPath
     })
@@ -2434,17 +2388,15 @@ export async function updateMultiredditName(
   try {
     const cleanDisplayName = displayName.trim()
     if (!cleanDisplayName || cleanDisplayName.length > 50) {
-      logger.error(
-        'Invalid multireddit display name',
-        new Error('Validation failed'),
-        {context: 'updateMultiredditName'}
-      )
+      logger.error('Invalid multireddit display name', {
+        context: 'updateMultiredditName'
+      })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
-      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+      logger.error('Invalid multireddit path', {
         context: 'updateMultiredditName',
         multiPath
       })
@@ -2473,12 +2425,11 @@ export async function updateMultiredditName(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Update multireddit name request failed', {
+      logger.error('Update multireddit name request failed', {
         url,
         method: 'PUT',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'updateMultiredditName',
         multiPath
@@ -2493,7 +2444,8 @@ export async function updateMultiredditName(
     })
     return {success: true}
   } catch (error) {
-    logger.error('Error updating multireddit name', error, {
+    logger.error('Error updating multireddit name', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'updateMultiredditName',
       multiPath
     })
@@ -2523,7 +2475,7 @@ export async function addSubredditToMultireddit(
   try {
     const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
-      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+      logger.error('Invalid multireddit path', {
         context: 'addSubredditToMultireddit',
         multiPath
       })
@@ -2532,7 +2484,7 @@ export async function addSubredditToMultireddit(
 
     const cleanSubreddit = subredditName.trim().replace(/^r\//, '')
     if (!isValidSubredditName(cleanSubreddit)) {
-      logger.error('Invalid subreddit name', new Error('Validation failed'), {
+      logger.error('Invalid subreddit name', {
         context: 'addSubredditToMultireddit',
         subredditName: cleanSubreddit
       })
@@ -2561,12 +2513,11 @@ export async function addSubredditToMultireddit(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Add subreddit to multireddit request failed', {
+      logger.error('Add subreddit to multireddit request failed', {
         url,
         method: 'PUT',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'addSubredditToMultireddit',
         multiPath,
@@ -2582,7 +2533,8 @@ export async function addSubredditToMultireddit(
     })
     return {success: true}
   } catch (error) {
-    logger.error('Error adding subreddit to multireddit', error, {
+    logger.error('Error adding subreddit to multireddit', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'addSubredditToMultireddit',
       multiPath
     })
@@ -2612,7 +2564,7 @@ export async function removeSubredditFromMultireddit(
   try {
     const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
-      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+      logger.error('Invalid multireddit path', {
         context: 'removeSubredditFromMultireddit',
         multiPath
       })
@@ -2621,7 +2573,7 @@ export async function removeSubredditFromMultireddit(
 
     const cleanSubreddit = subredditName.trim().replace(/^r\//, '')
     if (!isValidSubredditName(cleanSubreddit)) {
-      logger.error('Invalid subreddit name', new Error('Validation failed'), {
+      logger.error('Invalid subreddit name', {
         context: 'removeSubredditFromMultireddit',
         subredditName: cleanSubreddit
       })
@@ -2641,12 +2593,11 @@ export async function removeSubredditFromMultireddit(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Remove subreddit from multireddit request failed', {
+      logger.error('Remove subreddit from multireddit request failed', {
         url,
         method: 'DELETE',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'removeSubredditFromMultireddit',
         multiPath,
@@ -2662,7 +2613,8 @@ export async function removeSubredditFromMultireddit(
     })
     return {success: true}
   } catch (error) {
-    logger.error('Error removing subreddit from multireddit', error, {
+    logger.error('Error removing subreddit from multireddit', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'removeSubredditFromMultireddit',
       multiPath
     })
@@ -2692,7 +2644,7 @@ export async function addUserToMultireddit(
   try {
     const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
-      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+      logger.error('Invalid multireddit path', {
         context: 'addUserToMultireddit',
         multiPath
       })
@@ -2701,7 +2653,7 @@ export async function addUserToMultireddit(
 
     const cleanUsername = username.trim().replace(/^u\//, '')
     if (!isValidUsername(cleanUsername)) {
-      logger.error('Invalid username', new Error('Validation failed'), {
+      logger.error('Invalid username', {
         context: 'addUserToMultireddit',
         username: cleanUsername
       })
@@ -2731,12 +2683,11 @@ export async function addUserToMultireddit(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Add user to multireddit request failed', {
+      logger.error('Add user to multireddit request failed', {
         url,
         method: 'PUT',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'addUserToMultireddit',
         multiPath,
@@ -2752,7 +2703,8 @@ export async function addUserToMultireddit(
     })
     return {success: true}
   } catch (error) {
-    logger.error('Error adding user to multireddit', error, {
+    logger.error('Error adding user to multireddit', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'addUserToMultireddit',
       multiPath
     })
@@ -2782,7 +2734,7 @@ export async function removeUserFromMultireddit(
   try {
     const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
     if (!isValidMultiredditPath(normalizedPath)) {
-      logger.error('Invalid multireddit path', new Error('Validation failed'), {
+      logger.error('Invalid multireddit path', {
         context: 'removeUserFromMultireddit',
         multiPath
       })
@@ -2791,7 +2743,7 @@ export async function removeUserFromMultireddit(
 
     const cleanUsername = username.trim().replace(/^u\//, '')
     if (!isValidUsername(cleanUsername)) {
-      logger.error('Invalid username', new Error('Validation failed'), {
+      logger.error('Invalid username', {
         context: 'removeUserFromMultireddit',
         username: cleanUsername
       })
@@ -2812,12 +2764,11 @@ export async function removeUserFromMultireddit(
 
     if (!response.ok) {
       const errorBody = await response.text()
-      logger.httpError('Remove user from multireddit request failed', {
+      logger.error('Remove user from multireddit request failed', {
         url,
         method: 'DELETE',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated: true,
         errorBody,
         context: 'removeUserFromMultireddit',
         multiPath,
@@ -2833,7 +2784,8 @@ export async function removeUserFromMultireddit(
     })
     return {success: true}
   } catch (error) {
-    logger.error('Error removing user from multireddit', error, {
+    logger.error('Error removing user from multireddit', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'removeUserFromMultireddit',
       multiPath
     })

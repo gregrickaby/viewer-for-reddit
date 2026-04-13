@@ -1,6 +1,18 @@
 import {NextRequest, NextResponse} from 'next/server'
-import {describe, expect, it, vi, beforeEach} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {proxy} from './proxy'
+
+// Mock Axiom logger
+vi.mock('@/lib/axiom/server', () => ({
+  logger: {
+    info: vi.fn(),
+    flush: vi.fn(() => Promise.resolve())
+  }
+}))
+
+vi.mock('@axiomhq/nextjs', () => ({
+  transformMiddlewareRequest: vi.fn(() => ({}))
+}))
 
 // Mock NextResponse.next()
 vi.mock('next/server', async () => {

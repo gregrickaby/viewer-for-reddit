@@ -1,9 +1,9 @@
 'use server'
 
 import {getSession, isSessionExpired} from '@/lib/auth/session'
+import {logger} from '@/lib/axiom/server'
 import {TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
-import {logger} from '@/lib/utils/logger'
 import {Reddit} from 'arctic'
 
 /**
@@ -52,11 +52,9 @@ export async function refreshAccessToken(): Promise<{
 }> {
   // If refresh already in progress, return existing promise
   if (refreshPromise) {
-    logger.debug(
-      'Refresh already in progress, returning existing promise',
-      undefined,
-      {context: 'refreshAccessToken'}
-    )
+    logger.debug('Refresh already in progress, returning existing promise', {
+      context: 'refreshAccessToken'
+    })
     return refreshPromise
   }
 
@@ -83,18 +81,18 @@ function extractRefreshToken(
   try {
     const freshToken = tokens.refreshToken()
     if (freshToken && freshToken !== currentRefreshToken) {
-      logger.info('Refresh token rotated by Reddit', undefined, {
+      logger.info('Refresh token rotated by Reddit', {
         context: 'refreshAccessToken'
       })
       return freshToken
     }
     if (freshToken) {
-      logger.debug('Reusing existing refresh token (no rotation)', undefined, {
+      logger.debug('Reusing existing refresh token (no rotation)', {
         context: 'refreshAccessToken'
       })
     }
   } catch {
-    logger.debug('No new refresh token provided, keeping existing', undefined, {
+    logger.debug('No new refresh token provided, keeping existing', {
       context: 'refreshAccessToken'
     })
   }
@@ -128,24 +126,21 @@ async function destroySessionOnFailure(originalError: unknown): Promise<void> {
   try {
     const session = await getSession()
     session.destroy()
-    logger.debug('Session destroyed after refresh failure', undefined, {
+    logger.debug('Session destroyed after refresh failure', {
       context: 'refreshAccessToken'
     })
   } catch (destroyError) {
-    logger.error(
-      'Failed to destroy session after refresh failure',
-      {
-        destroyError:
-          destroyError instanceof Error
-            ? destroyError.message
-            : String(destroyError),
-        originalError:
-          originalError instanceof Error
-            ? originalError.message
-            : String(originalError)
-      },
-      {context: 'refreshAccessToken'}
-    )
+    logger.error('Failed to destroy session after refresh failure', {
+      destroyError:
+        destroyError instanceof Error
+          ? destroyError.message
+          : String(destroyError),
+      originalError:
+        originalError instanceof Error
+          ? originalError.message
+          : String(originalError),
+      context: 'refreshAccessToken'
+    })
   }
 }
 
@@ -165,9 +160,7 @@ async function performRefresh(): Promise<{
     const session = await getSession()
 
     if (!session.refreshToken) {
-      logger.warn('No refresh token available', undefined, {
-        context: 'refreshAccessToken'
-      })
+      logger.warn('No refresh token available', {context: 'refreshAccessToken'})
       return {success: false, error: 'No refresh token available'}
     }
 
@@ -175,33 +168,26 @@ async function performRefresh(): Promise<{
     hasRefreshToken = true // NOSONAR - Used in catch block for diagnostics
     expiresAt = session.expiresAt // NOSONAR - Used in catch block for diagnostics
 
-    logger.debug('Refreshing access token', undefined, {
-      context: 'refreshAccessToken'
-    })
+    logger.debug('Refreshing access token', {context: 'refreshAccessToken'})
 
     const tokens = await getRedditClient().refreshAccessToken(
       session.refreshToken
     )
     await updateSessionWithTokens(session, tokens, session.refreshToken)
 
-    logger.info('Access token refreshed successfully', undefined, {
+    logger.info('Access token refreshed successfully', {
       context: 'refreshAccessToken'
     })
 
     return {success: true}
   } catch (error) {
-    logger.error(
-      'Token refresh failed',
-      {
-        errorType:
-          error instanceof Error ? error.constructor.name : typeof error,
-        errorMessage: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        hasRefreshToken,
-        refreshTokenAge: expiresAt ? Date.now() - expiresAt : 'unknown'
-      },
-      {context: 'refreshAccessToken'}
-    )
+    logger.error('Token refresh failed', {
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      hasRefreshToken,
+      refreshTokenAge: expiresAt ? Date.now() - expiresAt : 'unknown',
+      context: 'refreshAccessToken'
+    })
 
     await destroySessionOnFailure(error)
 
@@ -242,7 +228,7 @@ export async function getValidAccessToken(): Promise<string | null> {
     !session.expiresAt || session.expiresAt - Date.now() < TOKEN_REFRESH_BUFFER
 
   if (needsRefresh) {
-    logger.debug('Token expired or expiring soon, refreshing', undefined, {
+    logger.debug('Token expired or expiring soon, refreshing', {
       context: 'getValidAccessToken'
     })
 
@@ -284,7 +270,10 @@ export async function logout(): Promise<{success: boolean; error?: string}> {
 
     return {success: true}
   } catch (error) {
-    logger.error('Logout failed', error, {context: 'logout'})
+    logger.error('Logout failed', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'logout'
+    })
     return {
       success: false,
       error: 'Failed to logout. Please try again.'
@@ -353,7 +342,8 @@ export async function clearExpiredSession(): Promise<{
 
     return {success: true, wasExpired: false}
   } catch (error) {
-    logger.error('Failed to clear expired session', error, {
+    logger.error('Failed to clear expired session', {
+      error: error instanceof Error ? error.message : String(error),
       context: 'clearExpiredSession'
     })
     return {success: false, wasExpired: false}

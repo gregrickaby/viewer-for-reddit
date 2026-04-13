@@ -1,8 +1,8 @@
 'use client'
 
 import {fetchSavedItems} from '@/lib/actions/reddit'
+import {logger} from '@/lib/axiom/client'
 import {SavedItem} from '@/lib/types/reddit'
-import {logger} from '@/lib/utils/logger'
 import {useEffect, useRef, useState} from 'react'
 
 /**
@@ -120,7 +120,8 @@ export function useInfiniteSavedItems({
         setHasMore(false)
       }
     } catch (err) {
-      logger.error('Failed to load more saved items', err, {
+      logger.error('Failed to load more saved items', {
+        error: err instanceof Error ? err.message : String(err),
         context: 'useInfiniteSavedItems',
         username
       })

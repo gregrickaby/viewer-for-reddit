@@ -1,7 +1,7 @@
 'use client'
 
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {Container} from '@mantine/core'
 import {useEffect} from 'react'
 
@@ -20,8 +20,9 @@ export default function RouteError({
   reset: () => void
 }>) {
   useEffect(() => {
-    logger.error('Saved items page error', error, {
-      context: 'SavedItemsError',
+    logger.error('Saved items page error', {
+      error: error.message,
+      context: 'SavedItemsPageError',
       digest: error.digest
     })
   }, [error])

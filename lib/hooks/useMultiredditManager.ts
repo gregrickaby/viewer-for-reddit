@@ -7,7 +7,7 @@ import {
   removeSubredditFromMultireddit,
   updateMultiredditName
 } from '@/lib/actions/reddit'
-import {logger} from '@/lib/utils/logger'
+import {logger} from '@/lib/axiom/client'
 import {useOptimistic, useRef, useState, useTransition} from 'react'
 
 export interface ManagedMultireddit {
@@ -72,7 +72,8 @@ export function useMultiredditManager({
       } else {
         const msg = result.error ?? 'Failed to create multireddit'
         setError(msg)
-        logger.error('Failed to create multireddit', msg, {
+        logger.error('Failed to create multireddit', {
+          error: msg,
           context: 'useMultiredditManager',
           name
         })
@@ -93,7 +94,8 @@ export function useMultiredditManager({
       } else {
         const msg = result.error ?? 'Failed to delete multireddit'
         setError(msg)
-        logger.error('Failed to delete multireddit', msg, {
+        logger.error('Failed to delete multireddit', {
+          error: msg,
           context: 'useMultiredditManager',
           multiPath
         })
@@ -116,7 +118,8 @@ export function useMultiredditManager({
       } else {
         const msg = result.error ?? 'Failed to rename multireddit'
         setError(msg)
-        logger.error('Failed to rename multireddit', msg, {
+        logger.error('Failed to rename multireddit', {
+          error: msg,
           context: 'useMultiredditManager',
           multiPath
         })
@@ -141,7 +144,8 @@ export function useMultiredditManager({
       } else {
         const msg = result.error ?? 'Failed to add subreddit'
         setError(msg)
-        logger.error('Failed to add subreddit to multireddit', msg, {
+        logger.error('Failed to add subreddit to multireddit', {
+          error: msg,
           context: 'useMultiredditManager',
           multiPath,
           subredditName
@@ -170,7 +174,8 @@ export function useMultiredditManager({
       } else {
         const msg = result.error ?? 'Failed to remove subreddit'
         setError(msg)
-        logger.error('Failed to remove subreddit from multireddit', msg, {
+        logger.error('Failed to remove subreddit from multireddit', {
+          error: msg,
           context: 'useMultiredditManager',
           multiPath,
           subredditName

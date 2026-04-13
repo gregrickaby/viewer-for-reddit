@@ -1,8 +1,8 @@
 'use client'
 
 import {searchSubreddits} from '@/lib/actions/reddit'
+import {logger} from '@/lib/axiom/client'
 import type {SubredditItem} from '@/lib/types/reddit'
-import {logger} from '@/lib/utils/logger'
 import {useDebouncedValue} from '@mantine/hooks'
 import {useRouter} from 'next/navigation'
 import {useEffect, useRef, useState} from 'react'
@@ -143,7 +143,10 @@ export function useSearch(): UseSearchReturn {
           return
         }
         // Use logger instead of console.error for production-ready code
-        logger.error('Search error', error, {context: 'useSearch'})
+        logger.error('Search error', {
+          error: error instanceof Error ? error.message : String(error),
+          context: 'useSearch'
+        })
         setHasError(true)
         setErrorMessage('Network error. Please try again.')
         setResults([])
