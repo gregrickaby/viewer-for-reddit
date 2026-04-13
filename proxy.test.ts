@@ -313,4 +313,26 @@ describe('proxy middleware', () => {
       })
     })
   })
+
+  describe('logging behavior', () => {
+    it('skips logging for /api/healthcheck requests', async () => {
+      const {logger} = await import('@/lib/axiom/server')
+      const request = new NextRequest(
+        new URL('https://example.com/api/healthcheck')
+      )
+      proxy(request)
+
+      expect(logger.info).not.toHaveBeenCalled()
+      expect(logger.flush).not.toHaveBeenCalled()
+    })
+
+    it('logs non-healthcheck requests', async () => {
+      const {logger} = await import('@/lib/axiom/server')
+      const request = new NextRequest(new URL('https://example.com/r/popular'))
+      proxy(request)
+
+      expect(logger.info).toHaveBeenCalledWith('request', expect.anything())
+      expect(logger.flush).toHaveBeenCalled()
+    })
+  })
 })

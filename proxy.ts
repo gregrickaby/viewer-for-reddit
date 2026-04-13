@@ -23,8 +23,10 @@ import {NextRequest, NextResponse} from 'next/server'
  * @see https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#xrobotstag
  */
 export function proxy(request: NextRequest) {
-  logger.info('request', transformMiddlewareRequest(request))
-  void logger.flush()
+  if (!request.nextUrl.pathname.startsWith('/api/healthcheck')) {
+    logger.info('request', transformMiddlewareRequest(request))
+    void logger.flush()
+  }
 
   const {pathname} = request.nextUrl
 
