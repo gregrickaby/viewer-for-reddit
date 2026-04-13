@@ -1,6 +1,6 @@
 import {logger} from '@/lib/axiom/server'
 import {transformMiddlewareRequest} from '@axiomhq/nextjs'
-import {NextRequest, NextResponse} from 'next/server'
+import {type NextFetchEvent, NextRequest, NextResponse} from 'next/server'
 
 /**
  * Proxy to add security and SEO headers.
@@ -22,10 +22,15 @@ import {NextRequest, NextResponse} from 'next/server'
  *
  * @see https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#xrobotstag
  */
-export function proxy(request: NextRequest) {
+export function proxy(request: NextRequest, event?: NextFetchEvent) {
   if (!request.nextUrl.pathname.startsWith('/api/healthcheck')) {
-    logger.info('request', transformMiddlewareRequest(request))
-    void logger.flush()
+    logger.info(...transformMiddlewareRequest(request))
+    const flushPromise = logger.flush()
+    if (event) {
+      event.waitUntil(flushPromise)
+    } else {
+      void flushPromise
+    }
   }
 
   const {pathname} = request.nextUrl

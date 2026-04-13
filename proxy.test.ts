@@ -11,7 +11,10 @@ vi.mock('@/lib/axiom/server', () => ({
 }))
 
 vi.mock('@axiomhq/nextjs', () => ({
-  transformMiddlewareRequest: vi.fn(() => ({}))
+  transformMiddlewareRequest: vi.fn(() => [
+    'request',
+    {path: '/test', method: 'GET'}
+  ])
 }))
 
 // Mock NextResponse.next()
@@ -333,6 +336,16 @@ describe('proxy middleware', () => {
 
       expect(logger.info).toHaveBeenCalledWith('request', expect.anything())
       expect(logger.flush).toHaveBeenCalled()
+    })
+
+    it('uses waitUntil when NextFetchEvent is provided', async () => {
+      const {logger} = await import('@/lib/axiom/server')
+      const request = new NextRequest(new URL('https://example.com/r/popular'))
+      const mockEvent = {waitUntil: vi.fn()}
+      proxy(request, mockEvent as never)
+
+      expect(mockEvent.waitUntil).toHaveBeenCalled()
+      expect(logger.info).toHaveBeenCalled()
     })
   })
 })
