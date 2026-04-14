@@ -329,6 +329,15 @@ describe('proxy middleware', () => {
       expect(logger.flush).not.toHaveBeenCalled()
     })
 
+    it('skips logging for /api/axiom requests', async () => {
+      const {logger} = await import('@/lib/axiom/server')
+      const request = new NextRequest(new URL('https://example.com/api/axiom'))
+      proxy(request)
+
+      expect(logger.info).not.toHaveBeenCalled()
+      expect(logger.flush).not.toHaveBeenCalled()
+    })
+
     it('logs non-healthcheck requests', async () => {
       const {logger} = await import('@/lib/axiom/server')
       const request = new NextRequest(new URL('https://example.com/r/popular'))

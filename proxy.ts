@@ -23,7 +23,11 @@ import {type NextFetchEvent, NextRequest, NextResponse} from 'next/server'
  * @see https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#xrobotstag
  */
 export function proxy(request: NextRequest, event?: NextFetchEvent) {
-  if (!request.nextUrl.pathname.startsWith('/api/healthcheck')) {
+  const {pathname} = request.nextUrl
+  const isNoiseRoute =
+    pathname.startsWith('/api/healthcheck') || pathname.startsWith('/api/axiom')
+
+  if (!isNoiseRoute) {
     logger.info(...transformMiddlewareRequest(request))
     const flushPromise = logger.flush()
     if (event) {
@@ -32,8 +36,6 @@ export function proxy(request: NextRequest, event?: NextFetchEvent) {
       void flushPromise
     }
   }
-
-  const {pathname} = request.nextUrl
 
   // Check if path is a dynamic route that should not be indexed
   const shouldBlock =
