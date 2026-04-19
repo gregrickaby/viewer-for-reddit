@@ -1,14 +1,15 @@
-import {
-  searchSubredditsAndUsers,
-  toggleSubscription
-} from '@/lib/actions/reddit'
+import {searchSubredditsAndUsers} from '@/lib/actions/reddit/search'
+import {toggleSubscription} from '@/lib/actions/reddit/subreddits'
 import {render, screen, waitFor} from '@/test-utils'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {SubredditManager} from './SubredditManager'
 
-vi.mock('@/lib/actions/reddit', () => ({
-  toggleSubscription: vi.fn(async () => ({success: true})),
+vi.mock('@/lib/actions/reddit/subreddits', () => ({
+  toggleSubscription: vi.fn(async () => ({success: true}))
+}))
+
+vi.mock('@/lib/actions/reddit/search', () => ({
   searchSubredditsAndUsers: vi.fn(async () => ({success: true, data: []}))
 }))
 

@@ -3,12 +3,12 @@ import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import RouteScrollReset from '@/components/ui/RouteScrollReset/RouteScrollReset'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
+import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
+import {fetchUserSubscriptions} from '@/lib/actions/reddit/subreddits'
 import {
   fetchFollowedUsers,
-  fetchMultireddits,
-  fetchUserSubscriptions,
   getCurrentUserAvatar
-} from '@/lib/actions/reddit'
+} from '@/lib/actions/reddit/users'
 import {getSession} from '@/lib/auth/session'
 
 interface MainLayoutProps {

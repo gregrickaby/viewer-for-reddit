@@ -1,6 +1,6 @@
 'use client'
 
-import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit'
+import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit/posts'
 import {logger} from '@/lib/axiom/client'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {useEffect, useRef, useState} from 'react'

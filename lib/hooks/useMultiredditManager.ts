@@ -6,7 +6,7 @@ import {
   deleteMultireddit,
   removeSubredditFromMultireddit,
   updateMultiredditName
-} from '@/lib/actions/reddit'
+} from '@/lib/actions/reddit/multireddits'
 import {logger} from '@/lib/axiom/client'
 import {useOptimistic, useRef, useState, useTransition} from 'react'
 

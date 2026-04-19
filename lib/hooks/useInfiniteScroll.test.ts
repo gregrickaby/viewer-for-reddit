@@ -1,11 +1,11 @@
-import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit'
+import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit/posts'
 import type {RedditPost} from '@/lib/types/reddit'
 import {act, renderHook} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useInfiniteScroll} from './useInfiniteScroll'
 
 // Mock the fetchPosts Server Action
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/posts', () => ({
   fetchPosts: vi.fn(async () => ({posts: [], after: null})),
   fetchUserPosts: vi.fn(async () => ({posts: [], after: null}))
 }))

@@ -3,7 +3,7 @@
 import {
   addUserToMultireddit,
   removeUserFromMultireddit
-} from '@/lib/actions/reddit'
+} from '@/lib/actions/reddit/multireddits'
 import type {ManagedMultireddit} from '@/lib/hooks/useMultiredditManager'
 import {ActionIcon, Menu, Tooltip} from '@mantine/core'
 import {IconCheck, IconList} from '@tabler/icons-react'

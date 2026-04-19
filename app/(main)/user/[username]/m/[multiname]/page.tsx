@@ -1,5 +1,5 @@
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
-import {fetchPosts} from '@/lib/actions/reddit'
+import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Title} from '@mantine/core'

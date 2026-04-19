@@ -1,9 +1,7 @@
 import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
-import {
-  fetchMultireddits,
-  fetchUserSubscriptions,
-  getCurrentUserAvatar
-} from '@/lib/actions/reddit'
+import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
+import {fetchUserSubscriptions} from '@/lib/actions/reddit/subreddits'
+import {getCurrentUserAvatar} from '@/lib/actions/reddit/users'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Typography} from '@mantine/core'

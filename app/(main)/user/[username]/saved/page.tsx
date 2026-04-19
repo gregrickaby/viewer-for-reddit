@@ -1,5 +1,5 @@
 import {SavedItemsList} from '@/components/ui/SavedItemsList/SavedItemsList'
-import {fetchSavedItems} from '@/lib/actions/reddit'
+import {fetchSavedItems} from '@/lib/actions/reddit/users'
 import {getSession} from '@/lib/auth/session'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Text, Title} from '@mantine/core'

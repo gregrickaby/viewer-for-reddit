@@ -1,6 +1,6 @@
 'use client'
 
-import {fetchSavedItems} from '@/lib/actions/reddit'
+import {fetchSavedItems} from '@/lib/actions/reddit/users'
 import {logger} from '@/lib/axiom/client'
 import {SavedItem} from '@/lib/types/reddit'
 import {useEffect, useRef, useState} from 'react'

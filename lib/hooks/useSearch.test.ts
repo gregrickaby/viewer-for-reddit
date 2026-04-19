@@ -1,4 +1,4 @@
-import {searchSubreddits} from '@/lib/actions/reddit'
+import {searchSubreddits} from '@/lib/actions/reddit/search'
 import {logger} from '@/lib/axiom/client'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -13,7 +13,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 // Mock searchSubreddits action
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/search', () => ({
   searchSubreddits: vi.fn()
 }))
 

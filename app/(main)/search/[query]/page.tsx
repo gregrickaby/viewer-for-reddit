@@ -1,5 +1,5 @@
 import {PostList} from '@/components/ui/PostList/PostList'
-import {searchReddit} from '@/lib/actions/reddit'
+import {searchReddit} from '@/lib/actions/reddit/search'
 import {getSession} from '@/lib/auth/session'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Title} from '@mantine/core'

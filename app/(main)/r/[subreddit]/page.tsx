@@ -2,11 +2,9 @@ import {AddToMultiredditButton} from '@/components/ui/AddToMultiredditButton/Add
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubredditSearchBar} from '@/components/ui/SubredditSearchBar/SubredditSearchBar'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
-import {
-  fetchMultireddits,
-  fetchPosts,
-  fetchSubredditInfo
-} from '@/lib/actions/reddit'
+import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
+import {fetchPosts} from '@/lib/actions/reddit/posts'
+import {fetchSubredditInfo} from '@/lib/actions/reddit/subreddits'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'

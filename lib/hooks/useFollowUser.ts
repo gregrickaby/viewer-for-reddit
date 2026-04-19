@@ -1,6 +1,6 @@
 'use client'
 
-import {followUser, unfollowUser} from '@/lib/actions/reddit'
+import {followUser, unfollowUser} from '@/lib/actions/reddit/users'
 import {logger} from '@/lib/axiom/client'
 import {useOptimistic, useState, useTransition} from 'react'
 

@@ -2,8 +2,8 @@
  * Post not found page.
  * Shown when notFound() is called from a post detail page.
  */
-import {Anchor, Container, Stack, Text, Title} from '@mantine/core'
-import Link from 'next/link'
+import {AppLink} from '@/components/ui/AppLink/AppLink'
+import {Container, Stack, Text, Title} from '@mantine/core'
 
 export default function PostNotFound() {
   return (
@@ -11,9 +11,9 @@ export default function PostNotFound() {
       <Stack align="center" gap="xs">
         <Title order={1}>Post not found</Title>
         <Text c="dimmed">This post may have been deleted or removed.</Text>
-        <Anchor component={Link} href="/" fw={600}>
+        <AppLink href="/" style={{fontWeight: 600}}>
           Go Home
-        </Anchor>
+        </AppLink>
       </Stack>
     </Container>
   )

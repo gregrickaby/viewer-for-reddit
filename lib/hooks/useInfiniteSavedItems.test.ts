@@ -1,10 +1,10 @@
-import {fetchSavedItems} from '@/lib/actions/reddit'
+import {fetchSavedItems} from '@/lib/actions/reddit/users'
 import type {RedditComment, RedditPost, SavedItem} from '@/lib/types/reddit'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useInfiniteSavedItems} from './useInfiniteSavedItems'
 
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/users', () => ({
   fetchSavedItems: vi.fn(async () => ({
     items: [],
     after: null

@@ -1,10 +1,10 @@
-import {savePost} from '@/lib/actions/reddit'
+import {savePost} from '@/lib/actions/reddit/users'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useSavePost} from './useSavePost'
 
 // Mock the savePost action
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/users', () => ({
   savePost: vi.fn(async () => ({success: true}))
 }))
 

@@ -4,7 +4,7 @@ import {
   deleteMultireddit,
   removeSubredditFromMultireddit,
   updateMultiredditName
-} from '@/lib/actions/reddit'
+} from '@/lib/actions/reddit/multireddits'
 import {logger} from '@/lib/axiom/client'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -13,7 +13,7 @@ import {
   useMultiredditManager
 } from './useMultiredditManager'
 
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/multireddits', () => ({
   createMultireddit: vi.fn(async () => ({
     success: true,
     path: '/user/testuser/m/new_multi'

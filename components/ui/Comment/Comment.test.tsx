@@ -1,10 +1,10 @@
-import {votePost} from '@/lib/actions/reddit'
+import {votePost} from '@/lib/actions/reddit/users'
 import {RedditComment} from '@/lib/types/reddit'
 import {render, screen, user, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {Comment} from './Comment'
 
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/users', () => ({
   votePost: vi.fn(async () => ({success: true}))
 }))
 

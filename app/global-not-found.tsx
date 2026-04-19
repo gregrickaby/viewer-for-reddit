@@ -1,16 +1,9 @@
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
-import {
-  Anchor,
-  Card,
-  ColorSchemeScript,
-  Group,
-  Stack,
-  Text
-} from '@mantine/core'
+import {AppLink} from '@/components/ui/AppLink/AppLink'
+import {Card, ColorSchemeScript, Group, Stack, Text} from '@mantine/core'
 import '@mantine/core/styles.css'
 import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
-import Link from 'next/link'
 
 /**
  * Metadata for global 404 page.
@@ -61,9 +54,9 @@ export default function GlobalNotFound() {
                 </Text>
 
                 <Group>
-                  <Anchor component={Link} href="/" fw={600}>
+                  <AppLink href="/" style={{fontWeight: 600}}>
                     Go Home
-                  </Anchor>
+                  </AppLink>
                 </Group>
               </Stack>
             </Card>

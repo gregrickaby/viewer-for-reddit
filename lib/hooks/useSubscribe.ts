@@ -1,6 +1,6 @@
 'use client'
 
-import {toggleSubscription} from '@/lib/actions/reddit'
+import {toggleSubscription} from '@/lib/actions/reddit/subreddits'
 import {logger} from '@/lib/axiom/client'
 import {useOptimistic, useState, useTransition} from 'react'
 

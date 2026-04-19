@@ -1,6 +1,6 @@
 'use client'
 
-import {votePost} from '@/lib/actions/reddit'
+import {votePost} from '@/lib/actions/reddit/users'
 import {getInitialVoteState} from '@/lib/utils/reddit-helpers'
 import {useOptimistic, useState, useTransition} from 'react'
 

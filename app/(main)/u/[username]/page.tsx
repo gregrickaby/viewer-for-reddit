@@ -3,12 +3,9 @@ import {FollowButton} from '@/components/ui/FollowButton/FollowButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {UserCommentListWithTabs} from '@/components/ui/UserCommentListWithTabs/UserCommentListWithTabs'
 import {UserProfileTabs} from '@/components/ui/UserProfileTabs/UserProfileTabs'
-import {
-  fetchMultireddits,
-  fetchUserComments,
-  fetchUserInfo,
-  fetchUserPosts
-} from '@/lib/actions/reddit'
+import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
+import {fetchUserPosts} from '@/lib/actions/reddit/posts'
+import {fetchUserComments, fetchUserInfo} from '@/lib/actions/reddit/users'
 import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import {appConfig} from '@/lib/config/app.config'

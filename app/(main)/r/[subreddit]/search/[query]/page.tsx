@@ -1,5 +1,5 @@
 import {PostList} from '@/components/ui/PostList/PostList'
-import {searchSubreddit} from '@/lib/actions/reddit'
+import {searchSubreddit} from '@/lib/actions/reddit/search'
 import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'

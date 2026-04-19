@@ -1,6 +1,6 @@
 'use client'
 
-import {savePost} from '@/lib/actions/reddit'
+import {savePost} from '@/lib/actions/reddit/users'
 import {useOptimistic, useState, useTransition} from 'react'
 
 /**

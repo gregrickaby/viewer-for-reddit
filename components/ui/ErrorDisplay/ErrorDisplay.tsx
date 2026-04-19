@@ -1,10 +1,10 @@
-import {Anchor, Button, Card, Stack, Text} from '@mantine/core'
+import {AppLink} from '@/components/ui/AppLink/AppLink'
+import {Button, Card, Stack, Text} from '@mantine/core'
 import {
   IconAlertCircle,
   IconBrandReddit,
   IconRefresh
 } from '@tabler/icons-react'
-import Link from 'next/link'
 
 interface ErrorDisplayProps {
   isAuthenticated?: boolean
@@ -26,9 +26,12 @@ export function ErrorDisplay({
           This content was not found, set to private, Reddit is down, or you've
           reached Reddit's rate limit. If you continue to see this message,
           please see our{' '}
-          <Anchor component={Link} href="/about" c="blue" fw={500}>
+          <AppLink
+            href="/about"
+            style={{color: 'var(--mantine-color-blue-6)', fontWeight: 500}}
+          >
             FAQ's
-          </Anchor>
+          </AppLink>
           .
         </Text>
         <Text size="sm" c="dimmed" ta="center">

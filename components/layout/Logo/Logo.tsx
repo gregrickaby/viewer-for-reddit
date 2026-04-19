@@ -1,7 +1,7 @@
 import AppIcon from '@/app/icon.png'
-import {Anchor, Group, Text} from '@mantine/core'
+import {AppLink} from '@/components/ui/AppLink/AppLink'
+import {Group, Text} from '@mantine/core'
 import Image from 'next/image'
-import Link from 'next/link'
 
 /**
  * Application logo with icon and text.
@@ -20,7 +20,7 @@ import Link from 'next/link'
  */
 export function Logo() {
   return (
-    <Anchor component={Link} href="/" underline="never" c="inherit">
+    <AppLink href="/">
       <Group gap="xs" wrap="nowrap">
         <Image
           alt="Reddit Viewer Logo"
@@ -34,6 +34,6 @@ export function Logo() {
           Reddit Viewer
         </Text>
       </Group>
-    </Anchor>
+    </AppLink>
   )
 }

@@ -1,6 +1,6 @@
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
-import {fetchPost} from '@/lib/actions/reddit'
+import {fetchPost} from '@/lib/actions/reddit/posts'
 import {getSession} from '@/lib/auth/session'
 import {CommentSortOption} from '@/lib/types/reddit'
 import {generatePostMetadata} from '@/lib/utils/metadata-helpers'

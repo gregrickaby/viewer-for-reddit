@@ -1,9 +1,9 @@
-import {followUser, unfollowUser} from '@/lib/actions/reddit'
+import {followUser, unfollowUser} from '@/lib/actions/reddit/users'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useFollowUser} from './useFollowUser'
 
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/users', () => ({
   followUser: vi.fn(async () => ({success: true})),
   unfollowUser: vi.fn(async () => ({success: true}))
 }))

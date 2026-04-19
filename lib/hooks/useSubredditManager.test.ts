@@ -1,9 +1,9 @@
-import {toggleSubscription} from '@/lib/actions/reddit'
+import {toggleSubscription} from '@/lib/actions/reddit/subreddits'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useSubredditManager} from './useSubredditManager'
 
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/subreddits', () => ({
   toggleSubscription: vi.fn(async () => ({success: true}))
 }))
 

@@ -1,7 +1,7 @@
 import {
   addSubredditToMultireddit,
   removeSubredditFromMultireddit
-} from '@/lib/actions/reddit'
+} from '@/lib/actions/reddit/multireddits'
 import {render, screen, waitFor} from '@/test-utils'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -12,7 +12,7 @@ vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({refresh: mockRefresh}))
 }))
 
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/multireddits', () => ({
   addSubredditToMultireddit: vi.fn(async () => ({success: true})),
   removeSubredditFromMultireddit: vi.fn(async () => ({success: true}))
 }))

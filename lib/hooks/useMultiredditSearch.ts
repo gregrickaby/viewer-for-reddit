@@ -1,6 +1,6 @@
 'use client'
 
-import {searchSubredditsAndUsers} from '@/lib/actions/reddit'
+import {searchSubredditsAndUsers} from '@/lib/actions/reddit/search'
 import {logger} from '@/lib/axiom/client'
 import type {SearchAutocompleteItem} from '@/lib/types/reddit'
 import {useDebouncedValue} from '@mantine/hooks'

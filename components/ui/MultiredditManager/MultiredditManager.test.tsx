@@ -3,15 +3,15 @@ import {
   createMultireddit,
   deleteMultireddit,
   removeSubredditFromMultireddit,
-  searchSubredditsAndUsers,
   updateMultiredditName
-} from '@/lib/actions/reddit'
+} from '@/lib/actions/reddit/multireddits'
+import {searchSubredditsAndUsers} from '@/lib/actions/reddit/search'
 import {render, screen, waitFor} from '@/test-utils'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {MultiredditManager} from './MultiredditManager'
 
-vi.mock('@/lib/actions/reddit', () => ({
+vi.mock('@/lib/actions/reddit/multireddits', () => ({
   createMultireddit: vi.fn(async () => ({
     success: true,
     path: '/user/testuser/m/new_multi'
@@ -19,7 +19,10 @@ vi.mock('@/lib/actions/reddit', () => ({
   deleteMultireddit: vi.fn(async () => ({success: true})),
   updateMultiredditName: vi.fn(async () => ({success: true})),
   addSubredditToMultireddit: vi.fn(async () => ({success: true})),
-  removeSubredditFromMultireddit: vi.fn(async () => ({success: true})),
+  removeSubredditFromMultireddit: vi.fn(async () => ({success: true}))
+}))
+
+vi.mock('@/lib/actions/reddit/search', () => ({
   searchSubredditsAndUsers: vi.fn(async () => ({success: true, data: []}))
 }))
 
