@@ -7,10 +7,6 @@ const nextConfig: NextConfig = {
     globalNotFound: true,
     prefetchInlining: true,
     appNewScrollHandler: true,
-    lightningCssFeatures: {
-      include: ['light-dark', 'oklab-colors'],
-      exclude: ['nesting']
-    },
     optimizePackageImports: [
       '@mantine/carousel',
       '@mantine/core',
