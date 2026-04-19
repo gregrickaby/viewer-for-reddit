@@ -9,27 +9,34 @@ import {
   addUserToMultireddit,
   createMultireddit,
   deleteMultireddit,
-  fetchFollowedUsers,
   fetchMultireddits,
-  fetchPost,
-  fetchPosts,
-  fetchSavedItems,
-  fetchSubredditInfo,
-  fetchUserInfo,
-  fetchUserPosts,
-  fetchUserSubscriptions,
-  followUser,
   removeSubredditFromMultireddit,
   removeUserFromMultireddit,
-  savePost,
+  updateMultiredditName
+} from './reddit/multireddits'
+import {fetchPost, fetchPosts, fetchUserPosts} from './reddit/posts'
+import {
   searchReddit,
   searchSubreddit,
   searchSubreddits,
-  toggleSubscription,
+  searchSubredditsAndUsers
+} from './reddit/search'
+import {
+  fetchSubredditInfo,
+  fetchUserSubscriptions,
+  toggleSubscription
+} from './reddit/subreddits'
+import {
+  fetchFollowedUsers,
+  fetchSavedItems,
+  fetchUserComments,
+  fetchUserInfo,
+  followUser,
+  getCurrentUserAvatar,
+  savePost,
   unfollowUser,
-  updateMultiredditName,
   votePost
-} from './reddit'
+} from './reddit/users'
 
 // Mock rate-limit-state BEFORE imports
 vi.mock('@/lib/utils/rate-limit-state', () => ({
@@ -2154,6 +2161,305 @@ describe('reddit server actions', () => {
       )
 
       expect(result.success).toBe(false)
+    })
+  })
+
+  describe('getCurrentUserAvatar', () => {
+    it('returns null when not authenticated', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      const result = await getCurrentUserAvatar()
+
+      expect(result).toBeNull()
+    })
+
+    it('returns null when session has no username', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token', username: ''})
+      )
+
+      const result = await getCurrentUserAvatar()
+
+      expect(result).toBeNull()
+    })
+
+    it('returns avatar URL when user has icon_img', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/about.json', () => {
+          return HttpResponse.json({
+            data: {
+              name: 'testuser',
+              total_karma: 100,
+              created_utc: 1234567890,
+              icon_img: 'https://example.com/avatar.png'
+            }
+          })
+        })
+      )
+
+      const result = await getCurrentUserAvatar()
+
+      expect(result).toBe('https://example.com/avatar.png')
+    })
+
+    it('returns null when user has no icon_img', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/about.json', () => {
+          return HttpResponse.json({
+            data: {
+              name: 'testuser',
+              total_karma: 100,
+              created_utc: 1234567890,
+              icon_img: ''
+            }
+          })
+        })
+      )
+
+      const result = await getCurrentUserAvatar()
+
+      expect(result).toBeNull()
+    })
+
+    it('returns null when fetchUserInfo throws', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({
+          accessToken: 'mock-token',
+          username: 'testuser'
+        })
+      )
+
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/about.json', () => {
+          return new HttpResponse(null, {status: 500})
+        })
+      )
+
+      const result = await getCurrentUserAvatar()
+
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('fetchUserComments', () => {
+    it('fetches user comments with default sort', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/comments.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    kind: 't1',
+                    data: {
+                      id: 'comment1',
+                      body: 'Test comment',
+                      author: 'testuser',
+                      score: 10
+                    }
+                  }
+                ],
+                after: 't1_next'
+              }
+            })
+          }
+        )
+      )
+
+      const result = await fetchUserComments('testuser')
+
+      expect(result.comments).toHaveLength(1)
+      expect(result.after).toBe('t1_next')
+      expect(requestUrl).toContain('sort=new')
+    })
+
+    it('supports pagination via after cursor', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/comments.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {children: [], after: null}
+            })
+          }
+        )
+      )
+
+      await fetchUserComments('testuser', 'new', 't1_cursor')
+
+      expect(requestUrl).toContain('after=t1_cursor')
+    })
+
+    it('applies time filter for top sort', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/comments.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {children: [], after: null}
+            })
+          }
+        )
+      )
+
+      await fetchUserComments('testuser', 'top', undefined, 'week')
+
+      expect(requestUrl).toContain('t=week')
+    })
+
+    it('throws for invalid username', async () => {
+      await expect(fetchUserComments('invalid username!')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('throws on API error', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/comments.json',
+          () => new HttpResponse(null, {status: 500})
+        )
+      )
+
+      await expect(fetchUserComments('testuser')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+  })
+
+  describe('searchSubredditsAndUsers', () => {
+    it('returns empty data for short queries', async () => {
+      const result = await searchSubredditsAndUsers('a')
+
+      expect(result.success).toBe(true)
+      expect(result.data).toHaveLength(0)
+    })
+
+    it('returns empty data for empty query', async () => {
+      const result = await searchSubredditsAndUsers('')
+
+      expect(result.success).toBe(true)
+      expect(result.data).toHaveLength(0)
+    })
+
+    it('returns both subreddits and users', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => {
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    data: {
+                      display_name: 'programming',
+                      display_name_prefixed: 'r/programming',
+                      icon_img: '',
+                      community_icon: '',
+                      subscribers: 5000000,
+                      over18: false
+                    }
+                  },
+                  {
+                    data: {
+                      display_name: 'testuser',
+                      display_name_prefixed: 'u/testuser',
+                      icon_img: 'https://example.com/avatar.png',
+                      community_icon: '',
+                      subscribers: 0,
+                      over18: false
+                    }
+                  }
+                ]
+              }
+            })
+          }
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('test')
+
+      expect(result.success).toBe(true)
+      expect(result.data).toHaveLength(2)
+
+      const subreddit = result.data.find((item) => item.type === 'subreddit')
+      expect(subreddit?.name).toBe('programming')
+      expect(subreddit?.displayName).toBe('r/programming')
+
+      const user = result.data.find((item) => item.type === 'user')
+      expect(user?.name).toBe('testuser')
+      expect(user?.displayName).toBe('u/testuser')
+    })
+
+    it('returns rate limit error for authenticated user on 429', async () => {
+      mockGetSession.mockResolvedValue(
+        createMockSession({accessToken: 'mock-token'})
+      )
+
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 429})
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('test')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Reddit rate limit exceeded. Try again later.')
+    })
+
+    it('returns rate limit login prompt for unauthenticated user on 429', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 429})
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('test')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe(
+        'Reddit rate limit exceeded. Log in to continue.'
+      )
+    })
+
+    it('returns error on network failure', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 500})
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('test')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
   })
 })
