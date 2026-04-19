@@ -48,7 +48,10 @@ interface GlobalErrorProps {
  * // No manual usage required
  * ```
  */
-export default function GlobalError({error}: Readonly<GlobalErrorProps>) {
+export default function GlobalError({
+  error,
+  reset
+}: Readonly<GlobalErrorProps>) {
   useEffect(() => {
     logger.error('Global error boundary caught error', {
       error: error.message,
@@ -66,7 +69,7 @@ export default function GlobalError({error}: Readonly<GlobalErrorProps>) {
       <body>
         <ThemeProvider>
           <Center component="main" mih="100vh" p="md">
-            <ErrorDisplay />
+            <ErrorDisplay onReset={reset} />
           </Center>
         </ThemeProvider>
       </body>

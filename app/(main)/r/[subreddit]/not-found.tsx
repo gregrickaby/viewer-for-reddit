@@ -3,6 +3,7 @@
  * Shown when notFound() is called from a subreddit page.
  */
 import {Anchor, Container, Stack, Text, Title} from '@mantine/core'
+import Link from 'next/link'
 
 export default function SubredditNotFound() {
   return (
@@ -10,7 +11,7 @@ export default function SubredditNotFound() {
       <Stack align="center" gap="xs">
         <Title order={1}>Subreddit not found</Title>
         <Text c="dimmed">This subreddit doesn't exist or has been banned.</Text>
-        <Anchor href="/" fw={600}>
+        <Anchor component={Link} href="/" fw={600}>
           Go Home
         </Anchor>
       </Stack>

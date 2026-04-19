@@ -1,6 +1,6 @@
 import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
 import {
-  Button,
+  Anchor,
   Card,
   ColorSchemeScript,
   Group,
@@ -10,6 +10,7 @@ import {
 import '@mantine/core/styles.css'
 import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
+import Link from 'next/link'
 
 /**
  * Metadata for global 404 page.
@@ -60,9 +61,9 @@ export default function GlobalNotFound() {
                 </Text>
 
                 <Group>
-                  <Button component="a" href="/" variant="filled">
+                  <Anchor component={Link} href="/" fw={600}>
                     Go Home
-                  </Button>
+                  </Anchor>
                 </Group>
               </Stack>
             </Card>
