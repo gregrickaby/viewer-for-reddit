@@ -2,31 +2,18 @@
 
 import {votePost} from '@/lib/actions/reddit/users'
 import {getInitialVoteState} from '@/lib/utils/reddit-helpers'
-import {useOptimistic, useState, useTransition} from 'react'
+import {useOptimisticMutation} from './primitives/useOptimisticMutation'
 
-/**
- * Options for configuring the useVote hook.
- */
 interface UseVoteOptions {
-  /** Full Reddit thing name (e.g., 't3_abc123' for post, 't1_xyz789' for comment) */
   itemName: string
-  /** Initial vote state from Reddit API (true=upvoted, false=downvoted, null=no vote) */
   initialLikes: boolean | null | undefined
-  /** Initial score/karma count */
   initialScore: number
 }
 
-/**
- * Return type for useVote hook.
- */
 interface UseVoteReturn {
-  /** Current vote state: 1 (upvoted), 0 (no vote), -1 (downvoted) */
   voteState: 1 | 0 | -1 | null
-  /** Current score after optimistic updates */
   score: number
-  /** Whether a vote operation is in progress */
   isPending: boolean
-  /** Function to cast a vote (1 for upvote, -1 for downvote) */
   vote: (direction: 1 | -1) => void
 }
 
@@ -36,66 +23,44 @@ interface VoteData {
 }
 
 /**
- * Hook for handling Reddit voting with optimistic updates.
- * Implements race condition prevention and automatic rollback on failure.
+ * Derives the next vote state and score from the current committed state and
+ * the direction clicked. Clicking the same direction twice removes the vote.
  *
- * Features:
- * - Optimistic UI updates via useOptimistic (immediate feedback)
- * - Automatic rollback on API failure (no manual revert needed)
- * - Race condition prevention (ignores clicks while pending)
- * - Toggle behavior (clicking same direction removes vote)
+ * @param committed - Current committed vote data.
+ * @param direction - The vote direction clicked (1 = up, -1 = down).
+ * @returns Next vote data.
+ */
+function computeNextVoteState(
+  committed: VoteData,
+  direction: 1 | -1
+): VoteData {
+  const newVote = committed.voteState === direction ? 0 : direction
+  const newScore = committed.score + newVote - (committed.voteState ?? 0)
+  return {voteState: newVote, score: newScore}
+}
+
+/**
+ * Manages optimistic vote state for a Reddit post or comment.
  *
- * @param options - Configuration for the vote hook
- * @returns Vote state, score, pending status, and vote handler
- *
- * @example
- * ```typescript
- * const {voteState, score, isPending, vote} = useVote({
- *   itemName: 't3_abc123',
- *   initialLikes: null,
- *   initialScore: 100
- * })
- *
- * // Upvote
- * <button onClick={() => vote(1)} disabled={isPending}>
- *   ↑ {score}
- * </button>
- * ```
+ * @param options.itemName - The item fullname (e.g. `t3_abc123`).
+ * @param options.initialLikes - Reddit's likes value (true/false/null).
+ * @param options.initialScore - The current score.
+ * @returns `voteState`, `score`, `isPending`, and `vote`.
  */
 export function useVote({
   itemName,
   initialLikes,
   initialScore
 }: Readonly<UseVoteOptions>): UseVoteReturn {
-  const initialVote = getInitialVoteState(initialLikes)
-  const [voteData, setVoteData] = useState<VoteData>({
-    voteState: initialVote,
-    score: initialScore
-  })
-  const [optimisticData, setOptimisticData] = useOptimistic(voteData)
-  const [isPending, startTransition] = useTransition()
-
-  const vote = (direction: 1 | -1) => {
-    if (isPending) return
-
-    const currentVote = voteData.voteState
-    const currentScore = voteData.score
-    const newVote = currentVote === direction ? 0 : direction
-    const newScore = currentScore + newVote - (currentVote ?? 0)
-
-    startTransition(async () => {
-      setOptimisticData({voteState: newVote, score: newScore})
-      const result = await votePost(itemName, newVote)
-      if (result.success) {
-        setVoteData({voteState: newVote, score: newScore})
-      }
-    })
-  }
-
-  return {
-    voteState: optimisticData.voteState,
-    score: optimisticData.score,
+  const {
+    state,
     isPending,
-    vote
-  }
+    mutate: vote
+  } = useOptimisticMutation(
+    {voteState: getInitialVoteState(initialLikes), score: initialScore},
+    computeNextVoteState,
+    (next, _dir) => votePost(itemName, next.voteState ?? 0)
+  )
+
+  return {...state, isPending, vote}
 }

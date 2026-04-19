@@ -2,71 +2,49 @@
 
 import {followUser, unfollowUser} from '@/lib/actions/reddit/users'
 import {logger} from '@/lib/axiom/client'
-import {useOptimistic, useState, useTransition} from 'react'
+import {useOptimisticToggle} from './primitives/useOptimisticToggle'
 
 interface UseFollowUserOptions {
   username: string
   initialIsFollowing: boolean
 }
 
+interface UseFollowUserReturn {
+  isFollowing: boolean
+  isPending: boolean
+  toggleFollow: () => void
+}
+
 /**
- * Hook for managing user follow state with optimistic updates.
- * Handles follow/unfollow actions with automatic rollback on failure.
+ * Toggles follow/unfollow state for a Reddit user with optimistic updates.
  *
- * @param options - Configuration object
- * @param options.username - Reddit username to follow/unfollow
- * @param options.initialIsFollowing - Initial follow state from server
- * @returns Object containing follow state and toggle function
- *
- * @example
- * ```typescript
- * const {isFollowing, isPending, toggleFollow} = useFollowUser({
- *   username: 'spez',
- *   initialIsFollowing: false
- * })
- *
- * <Button onClick={toggleFollow} disabled={isPending}>
- *   {isFollowing ? 'Unfollow' : 'Follow'}
- * </Button>
- * ```
+ * @param options.username - The Reddit username.
+ * @param options.initialIsFollowing - Current follow state.
+ * @returns `isFollowing`, `isPending`, and `toggleFollow`.
  */
 export function useFollowUser({
   username,
   initialIsFollowing
-}: Readonly<UseFollowUserOptions>) {
-  const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
-  const [optimisticIsFollowing, setOptimisticIsFollowing] =
-    useOptimistic(isFollowing)
-  const [isPending, startTransition] = useTransition()
-
-  const toggleFollow = () => {
-    if (isPending) return
-
-    const newState = !isFollowing
-    const action = isFollowing ? 'unfollow' : 'follow'
-
-    startTransition(async () => {
-      setOptimisticIsFollowing(newState)
-      const result = isFollowing
-        ? await unfollowUser(username)
-        : await followUser(username)
-
-      if (result.success) {
-        setIsFollowing(newState)
-      } else {
-        logger.error('Failed to toggle follow', {
-          error: result.error,
-          context: 'useFollowUser',
-          username,
-          action
-        })
-      }
-    })
-  }
-
-  return {
-    isFollowing: optimisticIsFollowing,
+}: Readonly<UseFollowUserOptions>): UseFollowUserReturn {
+  const {
+    value: isFollowing,
     isPending,
-    toggleFollow
-  }
+    toggle: toggleFollow
+  } = useOptimisticToggle(initialIsFollowing, async (next) => {
+    const action = next ? 'follow' : 'unfollow'
+    const result = next
+      ? await followUser(username)
+      : await unfollowUser(username)
+    if (!result.success) {
+      logger.error('Failed to toggle follow', {
+        error: result.error,
+        context: 'useFollowUser',
+        username,
+        action
+      })
+    }
+    return result
+  })
+
+  return {isFollowing, isPending, toggleFollow}
 }
