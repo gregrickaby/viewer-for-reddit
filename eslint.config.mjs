@@ -56,6 +56,25 @@ export default defineConfig(
     }
   },
 
+  // Restrict direct import of private reddit action helpers outside lib/actions/
+  {
+    ignores: ['lib/actions/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/lib/actions/reddit/_helpers*'],
+              message:
+                'Do not import _helpers directly. Import from @/lib/actions/reddit instead.'
+            }
+          ]
+        }
+      ]
+    }
+  },
+
   /**
    * Apply testing-library and jest-dom rules to test files only
    *

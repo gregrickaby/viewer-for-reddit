@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
     globalNotFound: true,
-    useLightningcss: true,
     prefetchInlining: true,
     appNewScrollHandler: true,
     lightningCssFeatures: {
@@ -19,10 +18,7 @@ const nextConfig: NextConfig = {
       '@mantine/notifications',
       '@tabler/icons-react',
       'react-markdown'
-    ],
-    sri: {
-      algorithm: 'sha256'
-    }
+    ]
   },
   logging: {
     fetches: {

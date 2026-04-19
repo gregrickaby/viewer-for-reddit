@@ -2,81 +2,102 @@
 
 ## Tech Stack
 
-- **Next.js 16** - App Router, React Compiler
-- **React 19** - Server Components (default), Client Components ("use client")
-- **TypeScript 5** - Strict mode
-- **Mantine v9** - UI component library
-- **Arctic 3.x** - OAuth2 with Reddit
-- **iron-session 8.x** - Encrypted sessions
-- **Axiom** - Structured logging (`@axiomhq/nextjs`, `@axiomhq/js`, `@axiomhq/react`)
-- **Vitest v4** + **Testing Library** + **MSW v2** - Testing
-- **ESLint** + **Prettier** - Linting and formatting
-- **SonarQube for IDE** - Real-time static code analysis
-- **SonarQube Community Edition** - Static code analysis
+| Package                              | Purpose                                                                 |
+| ------------------------------------ | ----------------------------------------------------------------------- |
+| Next.js 16                           | App Router, React Compiler                                              |
+| React 19                             | Server Components (default), Client Components (`"use client"`)         |
+| TypeScript 5                         | Strict mode                                                             |
+| Mantine 9                            | UI components                                                           |
+| Arctic 3.x                           | OAuth2 with Reddit                                                      |
+| iron-session 8.x                     | Encrypted sessions                                                      |
+| Axiom                                | Structured logging (`@axiomhq/nextjs`, `@axiomhq/js`, `@axiomhq/react`) |
+| Vitest v4 + Testing Library + MSW v2 | Testing                                                                 |
+| ESLint + Prettier                    | Linting and formatting                                                  |
+| SonarQube                            | Static analysis (IDE plugin + Community Edition)                        |
 
-## Key Commands
+<!-- BEGIN:nextjs-agent-rules -->
+
+## Next.js: ALWAYS read docs before coding
+
+Before any Next.js work, find and read the relevant doc in `node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+
+<!-- END:nextjs-agent-rules -->
+
+## External Docs
+
+- **Mantine:** https://mantine.dev/llms.txt
+- **Axiom:** https://axiom.co/docs/llms.txt
+
+## Commands
 
 ```bash
-npm run validate      # Format + typecheck + lint (REQUIRED before completion)
+npm run validate      # Format + typecheck + lint — REQUIRED before completion
 npm test              # Run tests
-npm run test:coverage # Run tests with coverage report
+npm run test:coverage # Coverage report
 npm run build         # Production build
 npm run typegen       # Generate types from Reddit API
-npm run sonar         # Run SonarQube analysis (takes ~6 mins)
+npm run sonar         # SonarQube analysis (~6 min)
 ```
 
-## Documentation
+## Instructions
 
-For detailed guidelines on specific topics, refer to:
+Auto-applied by `applyTo` glob patterns:
 
-- [Reddit API Patterns](./.agents/instructions/reddit-api.instructions.md) - API endpoints, authentication, rate limiting
-- [Testing Standards](./.agents/instructions/testing-standards.instructions.md) - Vitest, Testing Library, MSW patterns
-- [Mantine](https://mantine.dev/llms.txt) - UI library patterns and best practices
+| File                                                                                          | Covers                                      |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [reddit-api.instructions.md](./.agents/instructions/reddit-api.instructions.md)               | Reddit API, auth, pagination, rate limiting |
+| [testing-standards.instructions.md](./.agents/instructions/testing-standards.instructions.md) | Vitest, Testing Library, MSW v2 patterns    |
+| [writing-style.instructions.md](./.agents/instructions/writing-style.instructions.md)         | Prose style, AI vocabulary to avoid         |
 
-These specialized instructions apply automatically when editing relevant files via `applyTo` patterns.
+## Skills
 
-## Core Patterns
+Load with the `skill` tool when the task matches:
 
-**Server Components by Default** - No `"use client"` needed. Only add for interactivity (hooks, events, browser APIs).
+| Skill                           | When to load                                                              |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `implement-github-issue`        | User pastes a GitHub issue URL or says "implement issue #N"               |
+| `improve-codebase-architecture` | Refactoring, testability, module consolidation                            |
+| `next-best-practices`           | File conventions, RSC boundaries, data patterns, metadata, error handling |
+| `next-cache-components`         | PPR, `use cache`, `cacheLife`, `cacheTag`                                 |
+| `update-instructions`           | After major feature additions or when instructions feel stale             |
+| `vercel-react-best-practices`   | React/Next.js performance, bundle optimization                            |
 
-**All API Calls in Server Actions** - `/lib/actions/reddit.ts` and `/lib/actions/auth.ts` use Next.js `fetch()` with `next: {revalidate}` for caching and automatic request deduplication.
+## Core Conventions
 
-**React 19 Compiler** - Automatically handles memoization. Never use `memo()`, `useCallback()`, or `useMemo()`.
+**Server Components by default** — only add `"use client"` for interactivity (hooks, events, browser APIs).
 
-**Critical Conventions**:
+**API calls in Server Actions** — `lib/actions/reddit/` (posts, users, subreddits, multireddits, search) and `lib/actions/auth.ts` use Next.js `fetch()` with `next: {revalidate}`.
 
-- Arctic OAuth tokens are **methods**: `tokens.accessToken()` NOT `.accessToken` property
-- Use `error.tsx` for route-level error boundaries (not manual `<ErrorBoundary>` in pages)
-- Use `loading.tsx` for route-level loading states (not manual `<Suspense>` in pages)
-- Prevent race conditions: `if (isPending) return` at start of all async handlers
-- Sanitize user HTML with `sanitize-html` via `sanitizeText()` before rendering
-- `dangerouslySetInnerHTML` is allowed only with sanitized input via `sanitizeText()`
-- Wrap Next.js `<Link>` with Mantine `<Anchor component={Link}>`
-- Props typed with `Readonly<>`, avoid `any`
-- Never use `NEXT_PUBLIC_` env prefix (all server-side only)
-- Never use ENV vars or functions in Client Components
-- Axiom server logger (`lib/axiom/server.ts`) is server-only — never import it in Client Components; use `lib/axiom/client.ts` on the client
-- Request logging and `X-Robots-Tag` headers are handled in `proxy.ts` (the Next.js middleware equivalent)
-- Always run `npm run validate` before completion
-- Always check SonarQube for IDE local analysis issues before completion
+**React 19 Compiler** — handles memoization automatically.
 
-## Always do
+**Axiom logging** — `lib/axiom/server.ts` is server-only; use `lib/axiom/client.ts` in Client Components.
 
-- Run `npm run validate` before declaring task complete
+**Middleware** — request logging and `X-Robots-Tag` headers live in `proxy.ts`.
 
-## Never Do
+## Rules
 
-- Access Arctic tokens as properties (use methods: `.accessToken()`, see [Reddit API Patterns](./.agents/instructions/reddit-api.instructions.md))
-- Use `NEXT_PUBLIC_` env prefix
-- Manually edit `/lib/types/reddit-api.ts`
-- Skip `npm run validate` before completion
-- Use 'any' type
-- Add superfluous comments or tests
-- Start dev server (user manages it)
-- Mock `global.fetch` in tests (use MSW v2, see [Testing Standards](./.agents/instructions/testing-standards.instructions.md))
-- Use `memo()`, `useCallback()`, or `useMemo()` (React Compiler handles optimization)
-- Use `useState` + `useTransition` for optimistic updates — use `useOptimistic` inside `startTransition` instead
+**Never:**
 
-⚠️ **Ask before**: Modifying authentication flow, changing API structure, adding dependencies, or committing changes
+- Use barrel files
+- Use `"any"` type or `NEXT_PUBLIC_` env prefix
+- Access Arctic tokens as properties — use methods: `tokens.accessToken()`
+- Manually edit `lib/types/reddit-api.ts`
+- Mock `global.fetch` in tests — use MSW v2
+- Use `memo()`, `useCallback()`, or `useMemo()` — React Compiler handles this
+- Use `useState` + `useTransition` for optimistic updates — use `useOptimistic` inside `startTransition`
+- Import `lib/axiom/server.ts` in Client Components
+- Start the dev server — user manages it
+- Skip `npm run validate` before declaring complete
 
-Suggest updates to documentation if you find incomplete or conflicting information.
+**Always:**
+
+- `"use server"` only on files that exclusively export async server action functions
+- Race condition guard: `if (isPending) return` at the start of async handlers
+- Sanitize user HTML: `sanitizeText()` before any `dangerouslySetInnerHTML`
+- Wrap Next.js `<Link>` with `<Anchor component={Link}>`
+- Type props with `Readonly<>`
+- Use `error.tsx` / `loading.tsx` for route-level boundaries, not manual wrappers
+- Run `npm run validate` and `npm run build` before declaring complete
+- Check SonarQube IDE analysis before declaring complete
+
+⚠️ **Ask before:** modifying auth flow, changing API structure, adding dependencies, or committing.
