@@ -140,9 +140,10 @@ GET / r / {subreddit} / {sort}.json
 **Example:**
 
 ```typescript
+const {headers, baseUrl} = await getHeaders()
 const response = await fetch(
-  `${REDDIT_API_URL}/r/popular/hot.json?limit=25&raw_json=1`,
-  {headers: getHeaders(), next: {revalidate: FIVE_MINUTES}}
+  `${baseUrl}/r/popular/hot.json?limit=25&raw_json=1`,
+  {headers, next: {revalidate: FIVE_MINUTES}}
 )
 ```
 
@@ -325,14 +326,10 @@ interface RedditError {
 
 **Always support unauthenticated users:**
 
-```typescript
-const session = await getSession()
-const headers = await getHeaders(!!session.accessToken)
+`getHeaders()` handles auth internally. It calls `getValidAccessToken()` and selects the correct base URL (`https://oauth.reddit.com` for authenticated requests, `https://www.reddit.com` for public). Always destructure both `headers` and `baseUrl` from its return value:
 
-// Use public API for unauthenticated requests
-const baseUrl = session.accessToken
-  ? REDDIT_API_URL // OAuth: https://oauth.reddit.com
-  : REDDIT_PUBLIC_API_URL // Public: https://www.reddit.com
+```typescript
+const {headers, baseUrl} = await getHeaders()
 
 const response = await fetch(`${baseUrl}/r/${subreddit}/hot.json`, {headers})
 ```

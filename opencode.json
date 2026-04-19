@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": "allow",
+    "edit": "allow",
+    "read": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "webfetch": "allow",
+    "todowrite": "allow",
+    "question": "allow"
+  },
+  "instructions": [".agents/instructions/*.md"],
+  "mcp": {
+    "next-devtools": {
+      "command": ["npx", "-y", "next-devtools-mcp@latest"],
+      "type": "local",
+      "enabled": true
+    }
+  }
+}

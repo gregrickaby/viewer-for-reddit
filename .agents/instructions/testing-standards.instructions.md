@@ -645,6 +645,18 @@ vi.mock('next/navigation', () => ({
 }))
 ```
 
+### Axiom Logging Mock
+
+`@axiomhq/nextjs` is aliased in `vitest.config.ts` to `./test-utils/mocks/axiomNextjsMock.ts`. No manual mock is needed — it is automatically applied for all tests. Do not add your own `vi.mock('@axiomhq/nextjs', ...)`.
+
+For server-side code that imports `lib/axiom/server.ts`, mock it at the module level:
+
+```typescript
+vi.mock('@/lib/axiom/server', () => ({
+  log: {info: vi.fn(), error: vi.fn(), warn: vi.fn()}
+}))
+```
+
 ### Mantine Hook Mocking
 
 For hooks that need reactive state updates, use mutable variables:
@@ -769,8 +781,8 @@ it('has no accessibility violations', async () => {
 ```bash
 npm test                    # Run all tests
 npm test useVote            # Run specific test file
-npm test:coverage           # Verify coverage (utilities 100%, hooks 100%, components 80%+)
-npm run validate            # Format + typecheck + lint + test
+npm run test:coverage       # Verify coverage (utilities 100%, hooks 100%, components 80%+)
+npm run validate            # Format + typecheck + lint
 ```
 
 You must run `npm run test` before declaring a task complete.
