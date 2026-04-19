@@ -48,8 +48,10 @@ async function PostDetail({
   subreddit: string
   postId: string
 }>) {
-  const {post} = await fetchPost(subreddit, postId)
-  const session = await getSession()
+  const [{post}, session] = await Promise.all([
+    fetchPost(subreddit, postId),
+    getSession()
+  ])
   const isAuthenticated = !!session.accessToken
 
   if (!post) {
@@ -75,8 +77,10 @@ async function CommentList({
   postId: string
   sort?: CommentSortOption
 }>) {
-  const {comments} = await fetchPost(subreddit, postId, sort)
-  const session = await getSession()
+  const [{comments}, session] = await Promise.all([
+    fetchPost(subreddit, postId, sort),
+    getSession()
+  ])
   const isAuthenticated = !!session.accessToken
 
   return (

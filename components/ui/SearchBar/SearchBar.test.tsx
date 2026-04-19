@@ -1,4 +1,4 @@
-import {useSearch} from '@/lib/hooks'
+import {useSearch} from '@/lib/hooks/useSearch'
 import {render, screen, user} from '@/test-utils'
 import {useCombobox} from '@mantine/core'
 import {useMediaQuery} from '@mantine/hooks'
@@ -23,13 +23,9 @@ vi.mock('@mantine/hooks', async () => {
 })
 
 // Mock only useSearch, let useSearchBar use real implementation with mocked Mantine hooks
-vi.mock('@/lib/hooks', async () => {
-  const actual = await vi.importActual('@/lib/hooks')
-  return {
-    ...actual,
-    useSearch: vi.fn()
-  }
-})
+vi.mock('@/lib/hooks/useSearch', () => ({
+  useSearch: vi.fn()
+}))
 
 const mockUseSearch = vi.mocked(useSearch)
 const mockUseCombobox = vi.mocked(useCombobox)

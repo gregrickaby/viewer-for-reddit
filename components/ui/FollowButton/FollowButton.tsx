@@ -1,6 +1,6 @@
 'use client'
 
-import {useFollowUser} from '@/lib/hooks'
+import {useFollowUser} from '@/lib/hooks/useFollowUser'
 import {Button} from '@mantine/core'
 import {IconUserCheck, IconUserPlus} from '@tabler/icons-react'
 

@@ -1,9 +1,9 @@
-import {useLogout} from '@/lib/hooks'
+import {useLogout} from '@/lib/hooks/useLogout'
 import {render, screen, user} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {UserMenu} from './UserMenu'
 
-vi.mock('@/lib/hooks', () => ({
+vi.mock('@/lib/hooks/useLogout', () => ({
   useLogout: vi.fn()
 }))
 

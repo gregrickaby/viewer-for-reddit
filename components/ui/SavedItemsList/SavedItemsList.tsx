@@ -1,6 +1,6 @@
 'use client'
 
-import {useInfiniteSavedItems} from '@/lib/hooks'
+import {useInfiniteSavedItems} from '@/lib/hooks/useInfiniteSavedItems'
 import type {SavedItem} from '@/lib/types/reddit'
 import {Card, Center, Container, Loader, Stack, Text} from '@mantine/core'
 import {Comment} from '../Comment/Comment'

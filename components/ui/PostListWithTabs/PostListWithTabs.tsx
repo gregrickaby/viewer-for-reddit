@@ -1,6 +1,6 @@
 'use client'
 
-import {useInfiniteScroll} from '@/lib/hooks'
+import {useInfiniteScroll} from '@/lib/hooks/useInfiniteScroll'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {
   Center,

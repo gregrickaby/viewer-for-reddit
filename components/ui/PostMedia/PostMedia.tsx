@@ -118,6 +118,8 @@ const ALLOWED_OEMBED_DOMAINS = [
   'streamable.com'
 ]
 
+const OEMBED_SRC_RE = /src="([^"]+)"/
+
 /**
  * Extract and validate the iframe src from oembed HTML.
  * The html field is HTML-encoded, so we decode entities before parsing.
@@ -130,7 +132,7 @@ function getOembedSrc(html: string): string | null {
     .replaceAll('&quot;', '"')
     .replaceAll('&#39;', "'")
 
-  const match = /src="([^"]+)"/.exec(decoded)
+  const match = OEMBED_SRC_RE.exec(decoded)
   if (!match) return null
 
   const src = match[1]

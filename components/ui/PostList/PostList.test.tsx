@@ -1,22 +1,28 @@
-import * as hooks from '@/lib/hooks'
+import {useInfiniteScroll} from '@/lib/hooks/useInfiniteScroll'
 import type {RedditPost} from '@/lib/types/reddit'
 import {render, screen} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock hooks before importing component
-vi.mock('@/lib/hooks', () => ({
-  useInfiniteScroll: vi.fn(),
+vi.mock('@/lib/hooks/useInfiniteScroll', () => ({
+  useInfiniteScroll: vi.fn()
+}))
+vi.mock('@/lib/hooks/useVote', () => ({
   useVote: vi.fn(() => ({
     voteState: 0 as 0 | 1 | -1 | null,
     score: 100,
     isPending: false,
     vote: vi.fn()
-  })),
+  }))
+}))
+vi.mock('@/lib/hooks/useSavePost', () => ({
   useSavePost: vi.fn(() => ({
     isSaved: false,
     isPending: false,
     toggleSave: vi.fn()
-  })),
+  }))
+}))
+vi.mock('@/lib/hooks/useSharePost', () => ({
   useSharePost: vi.fn(() => ({
     sharePost: vi.fn()
   }))
@@ -60,7 +66,7 @@ describe('PostList', () => {
 
   describe('rendering', () => {
     it('renders list of posts', () => {
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: [mockPost, mockPost2],
         hasMore: false,
         loading: false,
@@ -74,7 +80,7 @@ describe('PostList', () => {
     })
 
     it('renders empty list', () => {
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: [],
         hasMore: false,
         loading: false,
@@ -88,7 +94,7 @@ describe('PostList', () => {
     })
 
     it('passes isAuthenticated to PostCard', () => {
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: [mockPost],
         hasMore: false,
         loading: false,
@@ -105,7 +111,7 @@ describe('PostList', () => {
   describe('infinite scroll', () => {
     it('shows loader when more posts available', () => {
       const mockRef = {current: null}
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: [mockPost],
         hasMore: true,
         loading: false,
@@ -123,7 +129,7 @@ describe('PostList', () => {
     })
 
     it('shows no more posts message when list complete', () => {
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: [mockPost, mockPost2],
         hasMore: false,
         loading: false,
@@ -136,7 +142,7 @@ describe('PostList', () => {
     })
 
     it('does not show no more message for empty list', () => {
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: [],
         hasMore: false,
         loading: false,
@@ -150,7 +156,7 @@ describe('PostList', () => {
 
     it('attaches sentinel ref for infinite scroll', () => {
       const mockRef = {current: null}
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: [mockPost],
         hasMore: true,
         loading: false,
@@ -170,7 +176,7 @@ describe('PostList', () => {
 
   describe('hook integration', () => {
     it('passes initialPosts to useInfiniteScroll', () => {
-      const mockUseInfiniteScroll = vi.mocked(hooks.useInfiniteScroll)
+      const mockUseInfiniteScroll = vi.mocked(useInfiniteScroll)
       mockUseInfiniteScroll.mockReturnValue({
         posts: [mockPost],
         hasMore: false,
@@ -188,7 +194,7 @@ describe('PostList', () => {
     })
 
     it('passes initialAfter to useInfiniteScroll', () => {
-      const mockUseInfiniteScroll = vi.mocked(hooks.useInfiniteScroll)
+      const mockUseInfiniteScroll = vi.mocked(useInfiniteScroll)
       mockUseInfiniteScroll.mockReturnValue({
         posts: [mockPost],
         hasMore: false,
@@ -206,7 +212,7 @@ describe('PostList', () => {
     })
 
     it('disables infinite scroll when searchQuery is provided', () => {
-      const mockUseInfiniteScroll = vi.mocked(hooks.useInfiniteScroll)
+      const mockUseInfiniteScroll = vi.mocked(useInfiniteScroll)
       mockUseInfiniteScroll.mockReturnValue({
         posts: [mockPost],
         hasMore: false,
@@ -225,7 +231,7 @@ describe('PostList', () => {
     })
 
     it('disables infinite scroll when username is provided', () => {
-      const mockUseInfiniteScroll = vi.mocked(hooks.useInfiniteScroll)
+      const mockUseInfiniteScroll = vi.mocked(useInfiniteScroll)
       mockUseInfiniteScroll.mockReturnValue({
         posts: [mockPost],
         hasMore: false,
@@ -253,7 +259,7 @@ describe('PostList', () => {
         title: `Post ${i}`
       }))
 
-      vi.mocked(hooks.useInfiniteScroll).mockReturnValue({
+      vi.mocked(useInfiniteScroll).mockReturnValue({
         posts: manyPosts,
         hasMore: true,
         loading: false,

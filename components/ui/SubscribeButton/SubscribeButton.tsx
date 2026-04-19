@@ -1,6 +1,6 @@
 'use client'
 
-import {useSubscribe} from '@/lib/hooks'
+import {useSubscribe} from '@/lib/hooks/useSubscribe'
 import {Button} from '@mantine/core'
 import {IconCheck, IconPlus} from '@tabler/icons-react'
 

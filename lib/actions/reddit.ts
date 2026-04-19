@@ -358,11 +358,11 @@ export async function fetchPost(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
     const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
 
     // Validate URL is pointing to Reddit
@@ -462,11 +462,11 @@ export async function fetchSubredditInfo(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
     const url = new URL(`${baseUrl}/r/${subreddit}/about.json`)
     url.searchParams.set('raw_json', '1')
 
@@ -901,11 +901,11 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
     const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
 
     // Validate URL is pointing to Reddit
@@ -1046,11 +1046,11 @@ export async function fetchUserPosts(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
     const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
 
     // Validate URL is pointing to Reddit
@@ -1164,11 +1164,11 @@ export async function fetchUserComments(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
     const url = new URL(`${baseUrl}/user/${username}/comments.json`)
 
     // Validate URL is pointing to Reddit
@@ -1278,11 +1278,11 @@ export async function searchReddit(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
     const url = new URL(`${baseUrl}/search.json`)
 
     // Validate URL is pointing to Reddit
@@ -1402,11 +1402,11 @@ export async function searchSubreddit(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
     const url = new URL(`${baseUrl}/r/${subreddit}/search.json`)
 
     // Validate URL is pointing to Reddit
@@ -1524,11 +1524,11 @@ export async function searchSubreddits(query: string): Promise<{
   }
 
   try {
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    // Get headers and appropriate base URL (OAuth or public)
-    const {headers, baseUrl} = await getHeaders()
 
     const params = new URLSearchParams({
       query,
@@ -1655,10 +1655,11 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
   }
 
   try {
-    const session = await getSession()
+    const [session, {headers, baseUrl}] = await Promise.all([
+      getSession(),
+      getHeaders()
+    ])
     const isAuthenticated = !!session.accessToken
-
-    const {headers, baseUrl} = await getHeaders()
 
     const params = new URLSearchParams({
       query,

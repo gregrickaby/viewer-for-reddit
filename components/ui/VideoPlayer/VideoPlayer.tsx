@@ -1,6 +1,6 @@
 'use client'
 
-import {useVideoPlayer} from '@/lib/hooks'
+import {useVideoPlayer} from '@/lib/hooks/useVideoPlayer'
 import {getIsVertical} from '@/lib/utils/reddit-helpers'
 import clsx from 'clsx'
 import styles from './VideoPlayer.module.css'

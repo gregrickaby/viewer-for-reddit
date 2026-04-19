@@ -2,11 +2,9 @@
 
 import {MultiredditManager} from '@/components/ui/MultiredditManager/MultiredditManager'
 import {SubredditManager} from '@/components/ui/SubredditManager/SubredditManager'
-import {
-  useSubscriptionsFilterSort,
-  type ManagedMultireddit,
-  type ManagedSubscription
-} from '@/lib/hooks'
+import type {ManagedMultireddit} from '@/lib/hooks/useMultiredditManager'
+import type {ManagedSubscription} from '@/lib/hooks/useSubredditManager'
+import {useSubscriptionsFilterSort} from '@/lib/hooks/useSubscriptionsFilterSort'
 import {
   ActionIcon,
   Avatar,
@@ -86,12 +84,21 @@ interface SidebarProps {
  * />
  * ```
  */
+const EMPTY_SUBSCRIPTIONS: ManagedSubscription[] = []
+const EMPTY_MULTIREDDITS: ManagedMultireddit[] = []
+const EMPTY_FOLLOWING: Array<{
+  name: string
+  id: string
+  date: number
+  note?: string
+}> = []
+
 export function Sidebar({
   isAuthenticated,
   username,
-  subscriptions = [],
-  multireddits = [],
-  following = []
+  subscriptions = EMPTY_SUBSCRIPTIONS,
+  multireddits = EMPTY_MULTIREDDITS,
+  following = EMPTY_FOLLOWING
 }: Readonly<SidebarProps>) {
   const [navigationOpen, setNavigationOpen] = useState(true)
   const [subredditsOpen, setSubredditsOpen] = useState(true)

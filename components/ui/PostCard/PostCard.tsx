@@ -1,6 +1,7 @@
 'use client'
 
-import {useSavePost, useVote} from '@/lib/hooks'
+import {useSavePost} from '@/lib/hooks/useSavePost'
+import {useVote} from '@/lib/hooks/useVote'
 import {RedditPost} from '@/lib/types/reddit'
 import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {extractSlug} from '@/lib/utils/reddit-helpers'

@@ -1,6 +1,6 @@
 'use client'
 
-import {useInfiniteScroll} from '@/lib/hooks'
+import {useInfiniteScroll} from '@/lib/hooks/useInfiniteScroll'
 import {RedditPost} from '@/lib/types/reddit'
 import {Center, Loader, Stack, Text} from '@mantine/core'
 import {PostCard} from '../PostCard/PostCard'

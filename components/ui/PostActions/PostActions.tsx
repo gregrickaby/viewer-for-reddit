@@ -1,6 +1,6 @@
 'use client'
 
-import {useSharePost} from '@/lib/hooks'
+import {useSharePost} from '@/lib/hooks/useSharePost'
 import {formatNumber} from '@/lib/utils/formatters'
 import {getVoteColor} from '@/lib/utils/reddit-helpers'
 import {ActionIcon, Anchor, Group, Text} from '@mantine/core'

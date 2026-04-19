@@ -1,6 +1,6 @@
 'use client'
 
-import {useSwipeNavigation} from '@/lib/hooks'
+import {useSwipeNavigation} from '@/lib/hooks/useSwipeNavigation'
 import {usePathname} from 'next/navigation'
 
 /**

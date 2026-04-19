@@ -17,7 +17,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock useSwipeNavigation hook
 const mockUseSwipeNavigation = vi.fn()
-vi.mock('@/lib/hooks', () => ({
+vi.mock('@/lib/hooks/useSwipeNavigation', () => ({
   useSwipeNavigation: (options?: {enabled?: boolean}) =>
     mockUseSwipeNavigation(options)
 }))

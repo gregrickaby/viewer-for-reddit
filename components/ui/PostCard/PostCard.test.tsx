@@ -3,9 +3,15 @@ import {render, screen, user} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock hooks before importing component
-vi.mock('@/lib/hooks', () => ({
-  useVote: vi.fn(),
-  useSavePost: vi.fn(),
+vi.mock('@/lib/hooks/useVote', () => ({
+  useVote: vi.fn()
+}))
+
+vi.mock('@/lib/hooks/useSavePost', () => ({
+  useSavePost: vi.fn()
+}))
+
+vi.mock('@/lib/hooks/useSharePost', () => ({
   useSharePost: vi.fn(() => ({
     sharePost: vi.fn()
   }))
@@ -13,7 +19,8 @@ vi.mock('@/lib/hooks', () => ({
 
 // Import after mocks
 const {PostCard} = await import('./PostCard')
-const hooks = await import('@/lib/hooks')
+const {useVote} = await import('@/lib/hooks/useVote')
+const {useSavePost} = await import('@/lib/hooks/useSavePost')
 
 const mockPost: RedditPost = {
   id: 'test123',
@@ -55,8 +62,8 @@ const mockUseSavePost = {
 describe('PostCard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(hooks.useVote).mockReturnValue(mockUseVote)
-    vi.mocked(hooks.useSavePost).mockReturnValue(mockUseSavePost)
+    vi.mocked(useVote).mockReturnValue(mockUseVote)
+    vi.mocked(useSavePost).mockReturnValue(mockUseSavePost)
   })
 
   describe('analytics tracking', () => {
@@ -197,7 +204,7 @@ describe('PostCard', () => {
     })
 
     it('shows vote state from hook', () => {
-      vi.mocked(hooks.useVote).mockReturnValue({
+      vi.mocked(useVote).mockReturnValue({
         ...mockUseVote,
         voteState: 1,
         score: 101
@@ -220,7 +227,7 @@ describe('PostCard', () => {
     })
 
     it('shows saved state from hook', () => {
-      vi.mocked(hooks.useSavePost).mockReturnValue({
+      vi.mocked(useSavePost).mockReturnValue({
         ...mockUseSavePost,
         isSaved: true
       })
@@ -290,7 +297,7 @@ describe('PostCard', () => {
     })
 
     it('handles pending state from both hooks', () => {
-      vi.mocked(hooks.useVote).mockReturnValue({
+      vi.mocked(useVote).mockReturnValue({
         ...mockUseVote,
         isPending: true
       })

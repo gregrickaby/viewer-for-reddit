@@ -2,9 +2,9 @@
 
 import {
   type ManagedMultireddit,
-  useMultiredditManager,
-  useMultiredditSearch
-} from '@/lib/hooks'
+  useMultiredditManager
+} from '@/lib/hooks/useMultiredditManager'
+import {useMultiredditSearch} from '@/lib/hooks/useMultiredditSearch'
 import {formatNumber} from '@/lib/utils/formatters'
 import {
   Accordion,

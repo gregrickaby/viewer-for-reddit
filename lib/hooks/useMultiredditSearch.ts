@@ -36,21 +36,10 @@ export interface UseMultiredditSearchReturn {
 export function useMultiredditSearch(): UseMultiredditSearchReturn {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchAutocompleteItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const [hasError, setHasError] = useState(false)
   const [debouncedQuery] = useDebouncedValue(query.trim(), DEBOUNCE_DELAY)
   const abortControllerRef = useRef<AbortController | null>(null)
-
-  // Show loading immediately when query is long enough (before debounce fires)
-  useEffect(() => {
-    if (query.trim().length >= MIN_QUERY_LENGTH) {
-      setIsLoading(true)
-    } else {
-      setIsLoading(false)
-      setResults([])
-      setHasError(false)
-    }
-  }, [query])
 
   useEffect(() => {
     if (debouncedQuery.length < MIN_QUERY_LENGTH) return
@@ -63,7 +52,7 @@ export function useMultiredditSearch(): UseMultiredditSearchReturn {
     abortControllerRef.current = abortController
 
     const fetchResults = async () => {
-      setIsLoading(true)
+      setIsFetching(true)
       setHasError(false)
 
       try {
@@ -88,7 +77,7 @@ export function useMultiredditSearch(): UseMultiredditSearchReturn {
         setResults([])
       } finally {
         if (!abortController.signal.aborted) {
-          setIsLoading(false)
+          setIsFetching(false)
         }
       }
     }
@@ -104,8 +93,21 @@ export function useMultiredditSearch(): UseMultiredditSearchReturn {
     setQuery('')
     setResults([])
     setHasError(false)
-    setIsLoading(false)
+    setIsFetching(false)
   }
 
-  return {query, setQuery, results, isLoading, hasError, clearResults}
+  // Derive loading/error/results from query length and fetch state
+  const isSearching = query.trim().length >= MIN_QUERY_LENGTH
+  const isLoading =
+    isSearching && (query.trim() !== debouncedQuery || isFetching)
+  const displayResults = isSearching ? results : []
+
+  return {
+    query,
+    setQuery,
+    results: displayResults,
+    isLoading,
+    hasError: isSearching && hasError,
+    clearResults
+  }
 }

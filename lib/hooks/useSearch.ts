@@ -79,24 +79,12 @@ const MIN_QUERY_LENGTH = 2
 export function useSearch(): UseSearchReturn {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SubredditItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const [hasError, setHasError] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | undefined>()
   const [debouncedQuery] = useDebouncedValue(query.trim(), DEBOUNCE_DELAY)
   const router = useRouter()
   const abortControllerRef = useRef<AbortController | null>(null)
-
-  // Set loading state immediately when query is long enough (before debounce)
-  useEffect(() => {
-    if (query.trim().length >= MIN_QUERY_LENGTH) {
-      setIsLoading(true)
-    } else {
-      setIsLoading(false)
-      setResults([])
-      setHasError(false)
-      setErrorMessage(undefined)
-    }
-  }, [query])
 
   // Fetch subreddit suggestions from server action
   useEffect(() => {
@@ -116,7 +104,7 @@ export function useSearch(): UseSearchReturn {
     abortControllerRef.current = abortController
 
     const fetchResults = async () => {
-      setIsLoading(true)
+      setIsFetching(true)
       setHasError(false)
       setErrorMessage(undefined)
 
@@ -152,7 +140,7 @@ export function useSearch(): UseSearchReturn {
         setResults([])
       } finally {
         if (!abortController.signal.aborted) {
-          setIsLoading(false)
+          setIsFetching(false)
         }
       }
     }
@@ -165,10 +153,16 @@ export function useSearch(): UseSearchReturn {
     }
   }, [debouncedQuery])
 
-  // Group results by NSFW status
-  const communities = results.filter((item) => !item.over18)
-  const nsfw = results.filter((item) => item.over18)
+  // Derive loading/error/results from query length and fetch state
+  const isSearching = query.trim().length >= MIN_QUERY_LENGTH
+  const isLoading =
+    isSearching && (query.trim() !== debouncedQuery || isFetching)
+  const displayResults = isSearching ? results : []
+  const communities = displayResults.filter((item) => !item.over18)
+  const nsfw = displayResults.filter((item) => item.over18)
   const groupedResults: GroupedResults = {communities, nsfw}
+  const displayHasError = isSearching && hasError
+  const displayErrorMessage = displayHasError ? errorMessage : undefined
 
   // Handle selecting a subreddit from dropdown
   const handleOptionSelect = (value: string) => {
@@ -190,8 +184,8 @@ export function useSearch(): UseSearchReturn {
     setQuery,
     groupedResults,
     isLoading,
-    hasError,
-    errorMessage,
+    hasError: displayHasError,
+    errorMessage: displayErrorMessage,
     handleOptionSelect,
     handleSubmit
   }

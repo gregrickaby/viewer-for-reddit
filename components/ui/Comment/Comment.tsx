@@ -1,11 +1,9 @@
 'use client'
 
-import {
-  useCommentCollapse,
-  useSavePost,
-  useSharePost,
-  useVote
-} from '@/lib/hooks'
+import {useCommentCollapse} from '@/lib/hooks/useCommentCollapse'
+import {useSavePost} from '@/lib/hooks/useSavePost'
+import {useSharePost} from '@/lib/hooks/useSharePost'
+import {useVote} from '@/lib/hooks/useVote'
 import {RedditComment as RedditCommentType} from '@/lib/types/reddit'
 import {MAX_COMMENT_DEPTH} from '@/lib/utils/constants'
 import {

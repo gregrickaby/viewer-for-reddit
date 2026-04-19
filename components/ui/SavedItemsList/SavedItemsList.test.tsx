@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock hooks
-vi.mock('@/lib/hooks', () => ({
+vi.mock('@/lib/hooks/useInfiniteSavedItems', () => ({
   useInfiniteSavedItems: vi.fn(() => ({
     items: [],
     loading: false,

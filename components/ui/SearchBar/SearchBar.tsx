@@ -1,7 +1,8 @@
 'use client'
 
 import {formatNumber} from '@/lib/utils/formatters'
-import {useSearch, useSearchBar} from '@/lib/hooks'
+import {useSearch} from '@/lib/hooks/useSearch'
+import {useSearchBar} from '@/lib/hooks/useSearchBar'
 import {
   Avatar,
   Badge,

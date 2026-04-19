@@ -1,10 +1,10 @@
 'use client'
 
+import {useMultiredditSearch} from '@/lib/hooks/useMultiredditSearch'
 import {
   type ManagedSubscription,
-  useMultiredditSearch,
   useSubredditManager
-} from '@/lib/hooks'
+} from '@/lib/hooks/useSubredditManager'
 import {formatNumber} from '@/lib/utils/formatters'
 import {
   ActionIcon,
