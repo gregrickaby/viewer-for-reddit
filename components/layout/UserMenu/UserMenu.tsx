@@ -1,4 +1,5 @@
 'use client'
+
 import {useLogout} from '@/lib/hooks/useLogout'
 import {Anchor, Avatar, Button, Group} from '@mantine/core'
 import {IconBrandReddit, IconLogout} from '@tabler/icons-react'

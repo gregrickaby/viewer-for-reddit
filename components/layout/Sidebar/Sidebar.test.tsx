@@ -601,12 +601,12 @@ describe('Sidebar', () => {
 
       // Now starts open, first click collapses
       const collapseButton = screen.getByRole('button', {
-        name: /collapse multireddits/i
+        name: /collapse my multireddits/i
       })
       await user.click(collapseButton)
 
       expect(
-        screen.getByRole('button', {name: /expand multireddits/i})
+        screen.getByRole('button', {name: /expand my multireddits/i})
       ).toBeInTheDocument()
     })
 
@@ -614,7 +614,7 @@ describe('Sidebar', () => {
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
       expect(
-        screen.getByRole('button', {name: /collapse multireddits/i})
+        screen.getByRole('button', {name: /collapse my multireddits/i})
       ).toBeInTheDocument()
     })
 
@@ -624,13 +624,13 @@ describe('Sidebar', () => {
 
       // Click the entire header (not just icon) to collapse (starts open)
       const header = screen.getByRole('button', {
-        name: /collapse multireddits/i
+        name: /collapse my multireddits/i
       })
       await user.click(header)
 
       // Should be collapsed now
       expect(
-        screen.getByRole('button', {name: /expand multireddits/i})
+        screen.getByRole('button', {name: /expand my multireddits/i})
       ).toBeInTheDocument()
 
       // Click again to expand
@@ -638,7 +638,7 @@ describe('Sidebar', () => {
 
       // Should be expanded now
       expect(
-        screen.getByRole('button', {name: /collapse multireddits/i})
+        screen.getByRole('button', {name: /collapse my multireddits/i})
       ).toBeInTheDocument()
     })
 
@@ -647,7 +647,7 @@ describe('Sidebar', () => {
       render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
 
       let toggleButton = screen.getByRole('button', {
-        name: /collapse multireddits/i
+        name: /collapse my multireddits/i
       })
 
       toggleButton.focus()
@@ -655,12 +655,12 @@ describe('Sidebar', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', {name: /expand multireddits/i})
+          screen.getByRole('button', {name: /expand my multireddits/i})
         ).toBeInTheDocument()
       })
 
       toggleButton = screen.getByRole('button', {
-        name: /expand multireddits/i
+        name: /expand my multireddits/i
       })
 
       toggleButton.focus()
@@ -668,7 +668,7 @@ describe('Sidebar', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', {name: /collapse multireddits/i})
+          screen.getByRole('button', {name: /collapse my multireddits/i})
         ).toBeInTheDocument()
       })
     })
@@ -742,7 +742,7 @@ describe('Sidebar', () => {
 
       // Multireddits still open
       expect(
-        screen.getByRole('button', {name: /collapse multireddits/i})
+        screen.getByRole('button', {name: /collapse my multireddits/i})
       ).toBeInTheDocument()
     })
   })

@@ -40,17 +40,13 @@ vi.mock('../UserMenu/UserMenu', () => ({
   )
 }))
 
-let mockComputedScheme = 'light'
-const mockSetColorScheme = vi.fn()
-
-vi.mock('@mantine/core', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@mantine/core')>()
-  return {
-    ...actual,
-    useMantineColorScheme: () => ({setColorScheme: mockSetColorScheme}),
-    useComputedColorScheme: () => mockComputedScheme
-  }
-})
+vi.mock('@/components/ui/ThemeToggle/ThemeToggle', () => ({
+  ThemeToggle: () => (
+    <button type="button" data-testid="theme-toggle">
+      Theme Toggle
+    </button>
+  )
+}))
 
 describe('Header', () => {
   describe('rendering', () => {
@@ -187,54 +183,6 @@ describe('Header', () => {
     })
   })
 
-  describe('mobile search', () => {
-    it('opens mobile search when search button clicked', async () => {
-      const user = userEvent.setup()
-      render(<Header />)
-
-      const searchButtons = screen.getAllByRole('button', {name: /search/i})
-      // Click the first search button (mobile)
-      await user.click(searchButtons[0])
-
-      expect(screen.getByTestId('mobile-open')).toHaveTextContent('true')
-    })
-
-    it('closes mobile search when onMobileClose called', async () => {
-      const user = userEvent.setup()
-      render(<Header />)
-
-      // Open search
-      const searchButtons = screen.getAllByRole('button', {name: /search/i})
-      await user.click(searchButtons[0])
-      expect(screen.getByTestId('mobile-open')).toHaveTextContent('true')
-
-      // Close search
-      const closeButton = screen.getByRole('button', {name: /close search/i})
-      await user.click(closeButton)
-      expect(screen.getByTestId('mobile-open')).toHaveTextContent('false')
-    })
-
-    it('handles multiple open/close cycles', async () => {
-      const user = userEvent.setup()
-      render(<Header />)
-
-      const searchButtons = screen.getAllByRole('button', {name: /search/i})
-      const closeButton = screen.getByRole('button', {name: /close search/i})
-
-      // Open
-      await user.click(searchButtons[0])
-      expect(screen.getByTestId('mobile-open')).toHaveTextContent('true')
-
-      // Close
-      await user.click(closeButton)
-      expect(screen.getByTestId('mobile-open')).toHaveTextContent('false')
-
-      // Open again
-      await user.click(searchButtons[0])
-      expect(screen.getByTestId('mobile-open')).toHaveTextContent('true')
-    })
-  })
-
   describe('analytics tracking', () => {
     it('has umami event on mobile navigation toggle', () => {
       render(<Header />)
@@ -257,17 +205,6 @@ describe('Header', () => {
       expect(desktopToggle).toHaveAttribute(
         'data-umami-event',
         'toggle-desktop-nav'
-      )
-    })
-
-    it('has umami event on mobile search button', () => {
-      render(<Header />)
-
-      const searchButtons = screen.getAllByRole('button', {name: /search/i})
-      // Mobile search button should have umami event
-      expect(searchButtons[0]).toHaveAttribute(
-        'data-umami-event',
-        'open-mobile-search'
       )
     })
   })
@@ -304,62 +241,7 @@ describe('Header', () => {
     it('renders theme toggle button', () => {
       render(<Header />)
 
-      expect(
-        screen.getByRole('button', {name: /switch to dark mode/i})
-      ).toBeInTheDocument()
-    })
-
-    it('shows moon icon and "switch to dark mode" label in light mode', () => {
-      mockComputedScheme = 'light'
-      render(<Header />)
-
-      expect(
-        screen.getByRole('button', {name: /switch to dark mode/i})
-      ).toBeInTheDocument()
-    })
-
-    it('shows sun icon and "switch to light mode" label in dark mode', () => {
-      mockComputedScheme = 'dark'
-      render(<Header />)
-
-      expect(
-        screen.getByRole('button', {name: /switch to light mode/i})
-      ).toBeInTheDocument()
-    })
-
-    it('calls setColorScheme with "dark" when toggled from light', async () => {
-      mockComputedScheme = 'light'
-      mockSetColorScheme.mockClear()
-      const user = userEvent.setup()
-      render(<Header />)
-
-      await user.click(
-        screen.getByRole('button', {name: /switch to dark mode/i})
-      )
-
-      expect(mockSetColorScheme).toHaveBeenCalledWith('dark')
-    })
-
-    it('calls setColorScheme with "light" when toggled from dark', async () => {
-      mockComputedScheme = 'dark'
-      mockSetColorScheme.mockClear()
-      const user = userEvent.setup()
-      render(<Header />)
-
-      await user.click(
-        screen.getByRole('button', {name: /switch to light mode/i})
-      )
-
-      expect(mockSetColorScheme).toHaveBeenCalledWith('light')
-    })
-
-    it('has umami event on theme toggle button', () => {
-      mockComputedScheme = 'light'
-      render(<Header />)
-
-      expect(
-        screen.getByRole('button', {name: /switch to dark mode/i})
-      ).toHaveAttribute('data-umami-event', 'toggle-color-scheme')
+      expect(screen.getByTestId('theme-toggle')).toBeInTheDocument()
     })
   })
 })

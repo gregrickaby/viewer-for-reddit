@@ -1,8 +1,6 @@
 'use client'
 
-import {createTheme, MantineColorsTuple, MantineProvider} from '@mantine/core'
-import {Notifications} from '@mantine/notifications'
-import '@mantine/notifications/styles.css'
+import {createTheme, MantineColorsTuple} from '@mantine/core'
 
 /**
  * Reddit color scheme based on official branding.
@@ -36,7 +34,7 @@ const redditColorScheme: MantineColorsTuple = [
  *
  * @see https://mantine.dev/theming/theme-object/
  */
-const theme = createTheme({
+export const theme = createTheme({
   colors: {redditColorScheme},
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -50,14 +48,3 @@ const theme = createTheme({
     }
   }
 })
-
-export function ThemeProvider({
-  children
-}: Readonly<{children: React.ReactNode}>) {
-  return (
-    <MantineProvider theme={theme} defaultColorScheme="auto">
-      <Notifications position="bottom-right" />
-      {children}
-    </MantineProvider>
-  )
-}

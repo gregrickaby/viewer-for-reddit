@@ -1,4 +1,4 @@
-import {ThemeProvider} from '@/components/layout/ThemeProvider/ThemeProvider'
+import {theme} from '@/app/theme'
 import {Analytics} from '@/components/ui/Analytics/Analytics'
 import {WebVitals} from '@/lib/axiom/client'
 import {appConfig} from '@/lib/config/app.config'
@@ -8,8 +8,14 @@ import {
   isProduction,
   validateEnv
 } from '@/lib/utils/env'
-import {ColorSchemeScript} from '@mantine/core'
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps
+} from '@mantine/core'
 import '@mantine/core/styles.css'
+import {Notifications} from '@mantine/notifications'
+import '@mantine/notifications/styles.css'
 import type {Metadata, Viewport} from 'next'
 
 if (!isProduction()) {
@@ -79,15 +85,19 @@ export default function RootLayout({
   const analytics = getAnalyticsConfig()
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" {...mantineHtmlProps}>
       <head>
+        <WebVitals />
         <ColorSchemeScript defaultColorScheme="auto" />
         <meta name="color-scheme" content="light dark" />
       </head>
       <body>
-        <WebVitals />
-        <ThemeProvider>{children}</ThemeProvider>
-        <Analytics {...analytics} />
+        <MantineProvider theme={theme} defaultColorScheme="auto">
+          <WebVitals />
+          {children}
+          <Analytics {...analytics} />
+          <Notifications position="bottom-right" />
+        </MantineProvider>
       </body>
     </html>
   )

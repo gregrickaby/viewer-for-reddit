@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   experimental: {
     inlineCss: true,
-    globalNotFound: true,
     prefetchInlining: true,
     appNewScrollHandler: true,
     optimizePackageImports: [

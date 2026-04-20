@@ -1,6 +1,6 @@
 import AppIcon from '@/app/icon.png'
 import {AppLink} from '@/components/ui/AppLink/AppLink'
-import {Group, Text} from '@mantine/core'
+import {Group, Title} from '@mantine/core'
 import Image from 'next/image'
 
 /**
@@ -25,14 +25,14 @@ export function Logo() {
         <Image
           alt="Reddit Viewer Logo"
           height={32}
-          src={AppIcon}
-          width={32}
           priority
+          src={AppIcon}
           style={{display: 'block'}}
+          width={32}
         />
-        <Text size="xl" fw={700} visibleFrom="sm">
+        <Title order={1} size="h3" visibleFrom="sm">
           Reddit Viewer
-        </Text>
+        </Title>
       </Group>
     </AppLink>
   )
