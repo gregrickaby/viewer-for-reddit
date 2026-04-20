@@ -3,7 +3,8 @@
 import {fetchSavedItems} from '@/lib/actions/reddit/users'
 import {logger} from '@/lib/axiom/client'
 import {SavedItem} from '@/lib/types/reddit'
-import {useEffect, useRef, useState} from 'react'
+import {useState, type RefObject} from 'react'
+import {useLoadMoreOnIntersect} from './useLoadMoreOnIntersect'
 
 /**
  * Options for configuring the useInfiniteSavedItems hook.
@@ -29,15 +30,15 @@ interface UseInfiniteSavedItemsReturn {
   hasMore: boolean
   /** Error message if loading failed */
   error: string | null
-  /** Ref callback for sentinel element (attach to div at bottom of list) */
-  sentinelRef: (node: HTMLDivElement | null) => void
+  /** Ref to attach to the sentinel element at the bottom of the list */
+  sentinelRef: RefObject<HTMLDivElement | null>
   /** Remove an item from the list (for unsave callback) */
   removeItem: (itemId: string) => void
 }
 
 /**
  * Hook for implementing infinite scroll for saved items with IntersectionObserver.
- * Automatically loads more saved items when user scrolls near the bottom.
+ * Automatically loads more saved items when the user scrolls near the bottom.
  * Uses Server Actions for data fetching (maintains SSR benefits).
  *
  * Features:
@@ -79,38 +80,19 @@ export function useInfiniteSavedItems({
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(!!initialAfter)
   const [error, setError] = useState<string | null>(null)
-  const observerRef = useRef<IntersectionObserver | null>(null)
-
-  // Use refs to avoid closure issues in IntersectionObserver callback
-  const loadingRef = useRef(loading)
-  const hasMoreRef = useRef(hasMore)
-  const afterRef = useRef(after)
-
-  useEffect(() => {
-    loadingRef.current = loading
-  }, [loading])
-
-  useEffect(() => {
-    hasMoreRef.current = hasMore
-  }, [hasMore])
-
-  useEffect(() => {
-    afterRef.current = after
-  }, [after])
 
   const removeItem = (itemId: string) => {
     setItems((prev) => prev.filter((item) => item.data.id !== itemId))
   }
 
   const loadMore = async () => {
-    const currentAfter = afterRef.current
-    if (loading || !currentAfter || !hasMore) return
+    if (loading || !after || !hasMore) return
 
     setLoading(true)
     setError(null)
 
     try {
-      const result = await fetchSavedItems(username, currentAfter)
+      const result = await fetchSavedItems(username, after)
 
       if (result.items && result.items.length > 0) {
         setItems((prev) => [...prev, ...result.items])
@@ -134,35 +116,11 @@ export function useInfiniteSavedItems({
     }
   }
 
-  const sentinelRef = (node: HTMLDivElement | null) => {
-    if (loading) return
-
-    if (observerRef.current) {
-      observerRef.current.disconnect()
-    }
-
-    observerRef.current = new IntersectionObserver((entries) => {
-      if (
-        entries[0].isIntersecting &&
-        hasMoreRef.current &&
-        !loadingRef.current
-      ) {
-        loadMore()
-      }
-    })
-
-    if (node) {
-      observerRef.current.observe(node)
-    }
-  }
-
-  useEffect(() => {
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect()
-      }
-    }
-  }, [])
+  const sentinelRef = useLoadMoreOnIntersect({
+    hasMore,
+    isPending: loading,
+    loadMore
+  })
 
   return {
     items,

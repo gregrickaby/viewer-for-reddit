@@ -7,7 +7,7 @@ vi.mock('@/lib/hooks/useInfiniteSavedItems', () => ({
     loading: false,
     hasMore: false,
     error: null,
-    sentinelRef: vi.fn(),
+    sentinelRef: {current: null},
     removeItem: vi.fn()
   }))
 }))
@@ -99,7 +99,7 @@ describe('SavedItemsList', () => {
       loading: false,
       hasMore: false,
       error: null,
-      sentinelRef: vi.fn(),
+      sentinelRef: {current: null},
       removeItem: vi.fn()
     })
   })
@@ -125,7 +125,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -149,7 +149,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -174,7 +174,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -196,7 +196,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: true,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -218,7 +218,7 @@ describe('SavedItemsList', () => {
         loading: true,
         hasMore: true,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -242,7 +242,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: 'Network error',
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -267,7 +267,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -289,7 +289,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -311,7 +311,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -336,7 +336,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 
@@ -358,7 +358,7 @@ describe('SavedItemsList', () => {
         loading: false,
         hasMore: false,
         error: null,
-        sentinelRef: vi.fn(),
+        sentinelRef: {current: null},
         removeItem: vi.fn()
       })
 

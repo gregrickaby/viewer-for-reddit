@@ -3,7 +3,8 @@
 import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit/posts'
 import {logger} from '@/lib/axiom/client'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState, type RefObject} from 'react'
+import {useLoadMoreOnIntersect} from './useLoadMoreOnIntersect'
 
 /**
  * Options for configuring the useInfiniteScroll hook.
@@ -33,13 +34,13 @@ interface UseInfiniteScrollReturn {
   loading: boolean
   /** Whether more posts are available */
   hasMore: boolean
-  /** Ref callback for sentinel element (attach to div at bottom of list) */
-  sentinelRef: (node: HTMLDivElement | null) => void
+  /** Ref to attach to the sentinel element at the bottom of the list */
+  sentinelRef: RefObject<HTMLDivElement | null>
 }
 
 /**
  * Hook for implementing infinite scroll with IntersectionObserver.
- * Automatically loads more posts when user scrolls near the bottom.
+ * Automatically loads more posts when the user scrolls near the bottom.
  * Uses Server Actions for data fetching (maintains SSR benefits).
  *
  * Features:
@@ -50,25 +51,16 @@ interface UseInfiniteScrollReturn {
  * - Supports both subreddit and user profile posts
  *
  * @param options - Configuration for infinite scroll
- * @returns Posts array, loading state, and sentinel ref
+ * @returns Posts array, loading state, hasMore flag, and sentinel ref
  *
  * @example
  * ```typescript
- * // For subreddit posts
  * const {posts, loading, hasMore, sentinelRef} = useInfiniteScroll({
  *   initialPosts: serverPosts,
  *   initialAfter: 't3_abc123',
  *   subreddit: 'popular',
  *   sort: 'top',
  *   timeFilter: 'week'
- * })
- *
- * // For user profile posts
- * const {posts, loading, hasMore, sentinelRef} = useInfiniteScroll({
- *   initialPosts: userPosts,
- *   initialAfter: 't3_abc123',
- *   username: 'spez',
- *   sort: 'new'
  * })
  *
  * return (
@@ -91,7 +83,6 @@ export function useInfiniteScroll({
   const [after, setAfter] = useState<string | null>(initialAfter || null)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(!!initialAfter)
-  const observerRef = useRef<IntersectionObserver | null>(null)
 
   // Reset posts when initialPosts changes (e.g., tab change)
   useEffect(() => {
@@ -106,7 +97,6 @@ export function useInfiniteScroll({
     setLoading(true)
 
     try {
-      // Call appropriate Server Action based on context
       const result = username
         ? await fetchUserPosts(username, sort, after, timeFilter)
         : await fetchPosts(subreddit, sort, after, timeFilter)
@@ -133,31 +123,11 @@ export function useInfiniteScroll({
     }
   }
 
-  const sentinelRef = (node: HTMLDivElement | null) => {
-    if (loading) return
-
-    if (observerRef.current) {
-      observerRef.current.disconnect()
-    }
-
-    observerRef.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !loading) {
-        loadMore()
-      }
-    })
-
-    if (node) {
-      observerRef.current.observe(node)
-    }
-  }
-
-  useEffect(() => {
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect()
-      }
-    }
-  }, [])
+  const sentinelRef = useLoadMoreOnIntersect({
+    hasMore,
+    isPending: loading,
+    loadMore
+  })
 
   return {
     posts,

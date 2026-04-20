@@ -18,7 +18,10 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: './vitest.setup.ts',
+    setupFiles: [
+      './vitest.setup.ts',
+      './test-utils/intersectionObserverMock.ts'
+    ],
     environmentOptions: {
       jsdom: {
         url: 'http://localhost:3000'
