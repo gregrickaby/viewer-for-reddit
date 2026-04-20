@@ -11,7 +11,7 @@ import {
 } from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
-import {Comment} from '../Comment/Comment'
+import {Comment} from '@/components/ui/Comment/Comment'
 
 /**
  * Props for the CommentListWithTabs component.
@@ -28,22 +28,6 @@ interface CommentListWithTabsProps {
 /**
  * Display a list of Reddit comments with sort tabs.
  * Allows switching between Best, Top, New, Controversial, Old, and Q&A sorts.
- *
- * Features:
- * - Tabs for sort options (Best, Top, New, Controversial, Old, Q&A)
- * - Loading state during sort changes
- * - URL query parameter updates (?sort=best)
- * - No scroll on sort change (preserves position)
- * - Empty state for no comments
- *
- * @example
- * ```typescript
- * <CommentListWithTabs
- *   comments={redditComments}
- *   activeSort="best"
- *   isAuthenticated={true}
- * />
- * ```
  */
 export function CommentListWithTabs({
   comments,

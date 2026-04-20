@@ -1,29 +1,15 @@
-'use client'
-
 import Script from 'next/script'
 
 interface AnalyticsProps {
+  /** Whether analytics is enabled (controlled by server) */
   enabled: boolean
+  /** URL of the analytics script */
   scriptUrl?: string
+  /** Umami website ID */
   websiteId?: string
 }
 
-/**
- * Analytics script component (Umami).
- * Receives configuration from server component as props.
- *
- * Features:
- * - Production-only (controlled by server)
- * - Props-based configuration (no direct env var access)
- * - afterInteractive loading strategy
- *
- * @example
- * ```typescript
- * // In root layout (server component)
- * const analytics = getAnalyticsConfig()
- * <Analytics {...analytics} />
- * ```
- */
+/** Analytics script component (Umami). Receives configuration from a server component as props. */
 export function Analytics({
   enabled,
   scriptUrl,

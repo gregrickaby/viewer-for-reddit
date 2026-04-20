@@ -7,10 +7,13 @@ import {
 } from '@tabler/icons-react'
 
 interface ErrorDisplayProps {
+  /** Whether the current user is authenticated (shows login button when false) */
   isAuthenticated?: boolean
+  /** Optional reset callback; shows a "Try Again" button when provided */
   onReset?: () => void
 }
 
+/** Error state card with a message and optional sign-in or retry actions. */
 export function ErrorDisplay({
   isAuthenticated,
   onReset

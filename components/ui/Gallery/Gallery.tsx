@@ -17,24 +17,8 @@ interface GalleryProps {
 }
 
 /**
- * Display a carousel gallery of images from a Reddit gallery post.
- * Uses Mantine Carousel for swipeable image navigation.
- *
- * Features:
- * - Swipeable carousel navigation
- * - Built-in Mantine navigation controls
- * - Dot indicators for current slide
- * - Optional captions per image
- * - Image counter (e.g., "2 / 5")
- * - Lazy loading for performance
- *
- * @example
- * ```typescript
- * <Gallery
- *   items={galleryItems}
- *   title="My Photo Album"
- * />
- * ```
+ * Display a carousel of images from a Reddit gallery post.
+ * Uses Mantine Carousel for swipeable navigation; renders a single image directly when there is only one item.
  */
 export function Gallery({items, title}: Readonly<GalleryProps>) {
   // Return null if no items

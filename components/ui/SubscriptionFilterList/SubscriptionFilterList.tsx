@@ -21,15 +21,7 @@ interface SubscriptionFilterListProps {
   subscriptions: ManagedSubscription[]
 }
 
-/**
- * Filterable and sortable list of subreddit subscriptions.
- * Uses client-side filtering and sorting.
- *
- * @example
- * ```typescript
- * <SubscriptionFilterList subscriptions={userSubs} />
- * ```
- */
+/** Filterable and sortable list of subreddit subscriptions. Uses client-side filtering and sorting. */
 export function SubscriptionFilterList({
   subscriptions
 }: Readonly<SubscriptionFilterListProps>) {

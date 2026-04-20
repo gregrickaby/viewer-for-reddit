@@ -1,0 +1,120 @@
+/* Shell layout using CSS Grid.
+ * Replaces Mantine AppShell with a server-renderable layout.
+ *
+ * Grid areas:
+ *   header  header
+ *   sidebar main
+ *
+ * Uses Mantine CSS variables for consistent spacing and colors.
+ */
+
+.shell {
+  display: grid;
+  grid-template-areas:
+    'header header'
+    'sidebar main';
+  grid-template-columns: var(--shell-sidebar-width, 300px) 1fr;
+  grid-template-rows: 60px 1fr;
+  min-height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+
+.header {
+  grid-area: header;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 60px;
+  background-color: var(--mantine-color-body);
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+
+/* ── Sidebar ────────────────────────────────────────── */
+
+.sidebar {
+  grid-area: sidebar;
+  width: var(--shell-sidebar-width, 300px);
+  height: calc(100vh - 60px);
+  position: sticky;
+  top: 60px;
+  overflow-y: auto;
+  background-color: var(--mantine-color-body);
+  border-right: 1px solid var(--mantine-color-default-border);
+  padding: var(--mantine-spacing-md);
+  transition:
+    margin-left 200ms ease,
+    opacity 200ms ease;
+}
+
+.sidebar[data-hidden='true'] {
+  margin-left: calc(var(--shell-sidebar-width, 300px) * -1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Main content ───────────────────────────────────── */
+
+.main {
+  grid-area: main;
+  padding: var(--mantine-spacing-md);
+  min-width: 0;
+}
+
+/* ── Overlay (mobile backdrop) ──────────────────────── */
+
+.overlay {
+  display: none;
+}
+
+/* ── Mobile breakpoint (below Mantine sm = 48em) ────── */
+
+@media (max-width: 48em) {
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'header'
+      'main';
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    z-index: 300;
+    width: min(300px, 85vw);
+    margin-left: 0;
+    transform: translateX(-100%);
+    transition:
+      transform 200ms ease,
+      opacity 200ms ease;
+    opacity: 0;
+  }
+
+  .sidebar[data-hidden='false'] {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar[data-hidden='true'] {
+    margin-left: 0;
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    top: 60px;
+    z-index: 299;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .overlay[data-visible='true'] {
+    display: block;
+  }
+}

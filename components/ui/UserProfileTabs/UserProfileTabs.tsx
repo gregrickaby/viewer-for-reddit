@@ -6,9 +6,13 @@ import {useRouter} from 'next/navigation'
 import {ReactNode} from 'react'
 
 interface UserProfileTabsProps {
+  /** Reddit username (for URL construction) */
   username: string
+  /** Currently active tab value ("posts" or "comments") */
   activeTab: string
+  /** Content to render in the Posts tab panel */
   postsContent: ReactNode
+  /** Content to render in the Comments tab panel */
   commentsContent: ReactNode
 }
 

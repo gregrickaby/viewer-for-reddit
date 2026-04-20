@@ -30,25 +30,7 @@ interface UserCommentListWithTabsProps {
 
 /**
  * Display a list of user comments with sort tabs.
- * Allows switching between Hot, New, Top, and Controversial sorts.
- *
- * Features:
- * - Tabs for sort options (Hot, New, Top, Controversial)
- * - Optional time filter for Top/Controversial
- * - Loading state during sort changes
- * - URL query parameter updates (?tab=comments&sort=top)
- * - No scroll on sort change (preserves position)
- * - Empty state for no comments
- *
- * @example
- * ```typescript
- * <UserCommentListWithTabs
- *   comments={redditComments}
- *   activeSort="new"
- *   isAuthenticated={true}
- *   username="spez"
- * />
- * ```
+ * Allows switching between Hot, New, Top, and Controversial sorts with an optional time filter.
  */
 export function UserCommentListWithTabs({
   comments,

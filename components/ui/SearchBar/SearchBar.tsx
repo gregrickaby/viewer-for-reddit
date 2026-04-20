@@ -29,23 +29,7 @@ interface SearchBarProps {
 
 /**
  * Search bar with typeahead subreddit suggestions.
- * Uses Mantine Combobox for dropdown suggestions.
- *
- * Features:
- * - Typeahead search (min 2 characters)
- * - Grouped results (Communities and NSFW)
- * - Keyboard navigation (/, Enter, Escape)
- * - Loading and error states
- * - Subreddit avatars and member counts
- * - Press '/' to focus from anywhere
- *
- * @example
- * ```typescript
- * <SearchBar
- *   mobileOpen={false}
- *   onMobileClose={() => setOpen(false)}
- * />
- * ```
+ * Groups results into Communities and NSFW sections; renders inside a modal on mobile.
  */
 export function SearchBar({
   mobileOpen = false,

@@ -19,8 +19,8 @@ import {
 } from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
-import {PostCard} from '../PostCard/PostCard'
-import styles from '../PostList/PostList.module.css'
+import {PostCard} from '@/components/ui/PostCard/PostCard'
+import styles from '@/components/ui/PostList/PostList.module.css'
 
 /**
  * Props for the PostListWithTabs component.
@@ -44,35 +44,7 @@ interface PostListWithTabsProps {
 
 /**
  * Display a list of Reddit posts with sort tabs and infinite scroll.
- * Allows switching between Hot, New, Top, and Rising sorts.
- * Shows time filter options when Top or Controversial is selected.
- *
- * Features:
- * - Tabs for sort options (Hot, New, Top, Rising)
- * - Time filter (Hour, Day, Week, Month, Year, All) for Top/Controversial
- * - Infinite scroll for loading more posts
- * - Loading state during sort changes
- * - URL query parameter updates (?sort=hot&time=week)
- *
- * @example
- * ```typescript
- * <PostListWithTabs
- *   posts={serverPosts}
- *   after="t3_abc123"
- *   activeSort="top"
- *   activeTimeFilter="week"
- *   isAuthenticated={true}
- *   subreddit="popular"
- * />
- * // For user profiles
- * <PostListWithTabs
- *   posts={userPosts}
- *   after="t3_abc123"
- *   activeSort="new"
- *   isAuthenticated={true}
- *   username="spez"
- * />
- * ```
+ * Allows switching between Hot, New, Top, and Rising sorts, with a time filter for Top and Controversial.
  */
 export function PostListWithTabs({
   posts: initialPosts,

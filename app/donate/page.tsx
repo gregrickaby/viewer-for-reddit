@@ -1,4 +1,4 @@
-import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
+import {Shell} from '@/components/layout/Shell/Shell'
 import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
 import {fetchUserSubscriptions} from '@/lib/actions/reddit/subreddits'
 import {getCurrentUserAvatar} from '@/lib/actions/reddit/users'
@@ -58,7 +58,7 @@ export default async function DonatePage() {
   )
 
   return (
-    <AppLayout
+    <Shell
       isAuthenticated={isAuthenticated}
       username={session.username}
       avatarUrl={avatarUrl ?? undefined}
@@ -70,6 +70,6 @@ export default async function DonatePage() {
           <ReactMarkdown>{donateContent}</ReactMarkdown>
         </Typography>
       </Container>
-    </AppLayout>
+    </Shell>
   )
 }

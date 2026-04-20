@@ -45,16 +45,7 @@ interface SubredditManagerProps {
 
 /**
  * Drawer panel for managing subreddit subscriptions.
- * Allows searching for subreddits with autocomplete and joining/leaving them.
- *
- * @example
- * ```typescript
- * <SubredditManager
- *   opened={drawerOpen}
- *   onClose={closeDrawer}
- *   subscriptions={subscriptions}
- * />
- * ```
+ * Allows searching for subreddits with autocomplete and joining or leaving them.
  */
 export function SubredditManager({
   opened,

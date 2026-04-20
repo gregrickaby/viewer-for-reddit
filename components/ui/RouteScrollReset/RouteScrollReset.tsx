@@ -6,14 +6,8 @@ import {useEffect, useRef} from 'react'
 const SCROLL_STORAGE_PREFIX = 'scroll-position:'
 
 /**
- * Resets window scroll on pathname change.
- *
- * Behavior:
- * - Normal navigation: scroll to top
- * - Browser back/forward navigation (including swipe-back): restore prior scroll
- *
- * Note: intentionally keyed to pathname only so query-param
- * updates (like tab/sort changes) preserve current scroll position.
+ * Resets window scroll on pathname change. Restores the prior scroll position
+ * when navigating with the browser's back or forward buttons.
  */
 export default function RouteScrollReset() {
   const pathname = usePathname()

@@ -182,23 +182,6 @@ function renderActionButtons(
 /**
  * Display a Reddit comment with voting and nested replies.
  * Recursively renders child comments with proper indentation.
- *
- * Features:
- * - Optimistic voting with useVote hook
- * - HTML sanitization for comment body
- * - Distinguished user badges (mod, admin)
- * - Recursive rendering for nested replies
- * - Indentation based on depth
- * - Collapsible top-level comments with child replies
- *
- * @example
- * ```typescript
- * <Comment
- *   comment={redditComment}
- *   depth={0}
- *   isAuthenticated={true}
- * />
- * ```
  */
 export function Comment({
   comment,

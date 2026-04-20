@@ -11,16 +11,15 @@ import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
 
 interface AddToMultiredditButtonProps {
+  /** Current subreddit name (without the r/ prefix) */
   subredditName: string
+  /** User's multireddits list */
   multireddits: ManagedMultireddit[]
 }
 
 /**
  * Menu button for adding or removing the current subreddit from the user's multireddits.
  * Renders nothing when the user has no multireddits.
- *
- * @param subredditName - Current subreddit name (without 'r/' prefix)
- * @param multireddits - User's multireddits list
  */
 export function AddToMultiredditButton({
   subredditName,

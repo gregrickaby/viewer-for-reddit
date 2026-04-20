@@ -7,9 +7,9 @@ import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {extractSlug} from '@/lib/utils/reddit-helpers'
 import {Anchor, Card, Stack, Text} from '@mantine/core'
 import Link from 'next/link'
-import {PostActions} from '../PostActions/PostActions'
-import {PostHeader} from '../PostHeader/PostHeader'
-import {PostMedia} from '../PostMedia/PostMedia'
+import {PostActions} from '@/components/ui/PostActions/PostActions'
+import {PostHeader} from '@/components/ui/PostHeader/PostHeader'
+import {PostMedia} from '@/components/ui/PostMedia/PostMedia'
 import styles from './PostCard.module.css'
 
 /**
@@ -84,21 +84,6 @@ interface PostCardProps {
 /**
  * Display a Reddit post in card format.
  * Includes header, title, media, optional self-text, and action buttons.
- *
- * Features:
- * - Optimistic voting and saving with useVote/useSavePost hooks
- * - HTML sanitization for user-generated content
- * - Responsive media display (images, videos, galleries)
- * - Optimized by React 19 Compiler
- *
- * @example
- * ```typescript
- * <PostCard
- *   post={redditPost}
- *   isAuthenticated={true}
- *   showFullText={false}
- * />
- * ```
  */
 export function PostCard({
   post,

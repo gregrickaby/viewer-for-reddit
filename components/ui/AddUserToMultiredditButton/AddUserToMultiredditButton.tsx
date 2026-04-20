@@ -11,16 +11,15 @@ import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
 
 interface AddUserToMultiredditButtonProps {
+  /** Reddit username (without the u/ prefix) */
   username: string
+  /** Viewer's multireddits list */
   multireddits: ManagedMultireddit[]
 }
 
 /**
  * Menu button for adding or removing the current user from the viewer's custom feeds.
  * Renders nothing when the viewer has no custom feeds.
- *
- * @param username - Reddit username (without 'u/' prefix)
- * @param multireddits - Viewer's multireddits list
  */
 export function AddUserToMultiredditButton({
   username,

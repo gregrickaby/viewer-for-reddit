@@ -1,9 +1,10 @@
 import {SearchBar} from '@/components/ui/SearchBar/SearchBar'
 import {ThemeToggle} from '@/components/ui/ThemeToggle/ThemeToggle'
-import {ActionIcon, Box, Burger, Group} from '@mantine/core'
+import {ActionIcon, Box, Group} from '@mantine/core'
 import {IconSearch} from '@tabler/icons-react'
-import {Logo} from '../Logo/Logo'
-import {UserMenu} from '../UserMenu/UserMenu'
+import {Logo} from '@/components/layout/Logo/Logo'
+import {SidebarToggle} from '@/components/layout/Sidebar/SidebarToggle'
+import {UserMenu} from '@/components/layout/UserMenu/UserMenu'
 
 /**
  * Props for the Header component.
@@ -15,41 +16,13 @@ interface HeaderProps {
   username?: string
   /** Avatar URL for the authenticated user */
   avatarUrl?: string
-  /** Whether the mobile navigation drawer is open */
-  mobileOpened?: boolean
-  /** Callback to toggle mobile navigation drawer */
-  onToggleMobile?: () => void
-  /** Callback to toggle desktop navigation sidebar */
-  onToggleDesktop?: () => void
 }
 
-/**
- * Application header with navigation and search.
- * Displays logo, navigation toggles, search bar, and user menu.
- *
- * Features:
- * - Responsive layout (different burger menus for mobile/desktop)
- * - Mobile search overlay
- * - Logo linking to home
- * - User authentication state
- *
- * @example
- * ```typescript
- * <Header
- *   isAuthenticated={true}
- *   username="johndoe"
- *   onToggleMobile={handleToggleMobile}
- *   onToggleDesktop={handleToggleDesktop}
- * />
- * ```
- */
+/** Application header with navigation and search. Displays logo, navigation toggles, search bar, and user menu. */
 export function Header({
   isAuthenticated,
   username,
-  avatarUrl,
-  mobileOpened,
-  onToggleMobile,
-  onToggleDesktop
+  avatarUrl
 }: Readonly<HeaderProps>) {
   return (
     <Group
@@ -59,22 +32,7 @@ export function Header({
       gap="xs"
     >
       <Group gap="xs">
-        <Burger
-          opened={mobileOpened}
-          onClick={onToggleMobile}
-          hiddenFrom="sm"
-          size="sm"
-          aria-label="Toggle mobile navigation"
-          data-umami-event="toggle-mobile-nav"
-        />
-        <Burger
-          opened={false}
-          onClick={onToggleDesktop}
-          visibleFrom="sm"
-          size="sm"
-          aria-label="Toggle desktop navigation"
-          data-umami-event="toggle-desktop-nav"
-        />
+        <SidebarToggle />
         <Logo />
       </Group>
 

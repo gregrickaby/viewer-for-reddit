@@ -1,5 +1,3 @@
-'use client'
-
 import {RedditPost} from '@/lib/types/reddit'
 import {
   decodeImageUrl,
@@ -12,8 +10,8 @@ import {
 import {Anchor} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
-import {Gallery} from '../Gallery/Gallery'
-import {VideoPlayer} from '../VideoPlayer/VideoPlayer'
+import {Gallery} from '@/components/ui/Gallery/Gallery'
+import {VideoPlayer} from '@/components/ui/VideoPlayer/VideoPlayer'
 import styles from './PostMedia.module.css'
 
 /**
@@ -240,26 +238,8 @@ function renderImage(
 }
 
 /**
- * Display post media (images, videos, galleries) with appropriate rendering.
- * Handles multiple media types from Reddit's API.
- *
- * Supports:
- * - Image galleries (r/pics multi-image posts)
- * - Reddit-hosted videos (v.redd.it)
- * - Animated GIFs (rendered as videos)
- * - External videos
- * - Static images (with 640px preferred size)
- * - Thumbnails (fallback)
- *
- * Features:
- * - Aspect ratio calculation to prevent CLS
- * - Lazy loading with blur placeholders
- * - Proper external link handling (noopener, nofollow)
- *
- * @example
- * ```typescript
- * <PostMedia post={redditPost} />
- * ```
+ * Display post media (images, videos, or galleries) based on the Reddit API data.
+ * Handles galleries, Reddit-hosted video, animated GIFs, oembed embeds, and static images.
  */
 export function PostMedia({post, priority = false}: Readonly<PostMediaProps>) {
   // Render gallery if available

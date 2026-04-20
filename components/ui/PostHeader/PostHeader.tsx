@@ -11,15 +11,7 @@ interface PostHeaderProps {
   post: RedditPost
 }
 
-/**
- * Display post metadata header (subreddit, author, time, NSFW badge).
- * Shows at the top of PostCard components.
- *
- * @example
- * ```typescript
- * <PostHeader post={redditPost} />
- * ```
- */
+/** Display post metadata header (subreddit, author, time, NSFW badge). Shows at the top of PostCard. */
 export function PostHeader({post}: Readonly<PostHeaderProps>) {
   // Don't link to deleted/removed authors (Next.js treats brackets as dynamic routes)
   const isDeletedAuthor =

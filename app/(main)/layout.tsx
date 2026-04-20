@@ -1,4 +1,4 @@
-import {AppLayout} from '@/components/layout/AppLayout/AppLayout'
+import {Shell} from '@/components/layout/Shell/Shell'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import RouteScrollReset from '@/components/ui/RouteScrollReset/RouteScrollReset'
@@ -21,7 +21,7 @@ interface MainLayoutProps {
  * Handles:
  * - Authentication state
  * - User data (subscriptions, multireddits, following, avatar)
- * - AppLayout wrapper with sidebar navigation
+ * - Shell wrapper with sidebar navigation
  * - Utility buttons (Boss button, Back to top, Swipe navigation)
  *
  * Applied to: /, /r/[subreddit], /search/[query], /u/[username], /user/[username]/saved, /user/[username]/m/[multiname]
@@ -43,7 +43,7 @@ export default async function MainLayout({
 
   return (
     <>
-      <AppLayout
+      <Shell
         isAuthenticated={isAuthenticated}
         username={session.username}
         avatarUrl={avatarUrl ?? undefined}
@@ -52,7 +52,7 @@ export default async function MainLayout({
         following={following}
       >
         {children}
-      </AppLayout>
+      </Shell>
       <RouteScrollReset />
       <SwipeNavigation />
       <BossButton />

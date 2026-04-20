@@ -5,6 +5,7 @@ import {logger} from '@/lib/axiom/client'
 import {Component, type ReactNode} from 'react'
 
 interface ErrorBoundaryProps {
+  /** React subtree to render; replaced by ErrorDisplay when an error is caught */
   children: ReactNode
 }
 
@@ -12,6 +13,7 @@ interface ErrorBoundaryState {
   hasError: boolean
 }
 
+/** React error boundary that catches unhandled render errors and shows ErrorDisplay. */
 export class ErrorBoundary extends Component<
   Readonly<ErrorBoundaryProps>,
   ErrorBoundaryState

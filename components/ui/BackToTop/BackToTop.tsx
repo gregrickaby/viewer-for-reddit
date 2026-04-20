@@ -6,21 +6,7 @@ import {useWindowScroll} from '@mantine/hooks'
 import {IconChevronUp} from '@tabler/icons-react'
 import classes from './BackToTop.module.css'
 
-/**
- * "Back to Top" button that appears when scrolling down.
- * Provides quick navigation back to the top of the page.
- *
- * Features:
- * - Auto-shows after scrolling past 100px
- * - Smooth scroll to top on click
- * - Accessible with ARIA labels and VisuallyHidden text
- * - Fixed positioning in bottom-right corner
- *
- * @example
- * ```typescript
- * <BackToTop />
- * ```
- */
+/** "Back to Top" button that appears after the user scrolls past the scroll threshold. */
 export default function BackToTop() {
   const [scroll, scrollTo] = useWindowScroll()
   const buttonText = 'Go back to the top of the page'

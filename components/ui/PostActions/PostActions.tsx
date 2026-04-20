@@ -40,32 +40,8 @@ interface PostActionsProps {
 }
 
 /**
- * Action buttons for Reddit posts (vote, comment, save).
+ * Action buttons for a Reddit post: vote, comment, save, and share.
  * Displays vote score, comment count, and save status.
- *
- * Features:
- * - Upvote/downvote buttons with colored state
- * - Score display with color indication
- * - Comments link with count
- * - Save/unsave toggle button
- * - Disabled state for unauthenticated users
- * - Loading state during API calls
- * - Optimized by React 19 Compiler
- *
- * @example
- * ```typescript
- * <PostActions
- *   postUrl="/r/pics/comments/abc123/title"
- *   numComments={42}
- *   voteState={1}
- *   score={1234}
- *   isSaved={false}
- *   isPending={false}
- *   onVote={(dir) => handleVote(dir)}
- *   onToggleSave={handleToggleSave}
- *   isAuthenticated={true}
- * />
- * ```
  */
 export function PostActions({
   postUrl,

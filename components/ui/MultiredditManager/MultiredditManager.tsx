@@ -47,16 +47,7 @@ interface MultiredditManagerProps {
 
 /**
  * Drawer panel for managing user multireddits.
- * Allows creating, renaming, deleting multireddits and adding/removing subreddits.
- *
- * @example
- * ```typescript
- * <MultiredditManager
- *   opened={drawerOpen}
- *   onClose={closeDrawer}
- *   multireddits={multireddits}
- * />
- * ```
+ * Allows creating, renaming, and deleting multireddits and adding or removing subreddits.
  */
 export function MultiredditManager({
   opened,
@@ -198,11 +189,17 @@ export function MultiredditManager({
 // ─── MultiItem sub-component ────────────────────────────────────────────────
 
 interface MultiItemProps {
+  /** Multireddit data to display and manage */
   multi: ManagedMultireddit
+  /** Whether a server action is in progress */
   isPending: boolean
+  /** Callback to rename the multireddit */
   onRename: (name: string) => void
+  /** Callback to delete the multireddit */
   onDelete: () => void
+  /** Callback to add a subreddit to the multireddit */
   onAddSubreddit: (sub: string) => void
+  /** Callback to remove a subreddit from the multireddit */
   onRemoveSubreddit: (sub: string) => void
 }
 

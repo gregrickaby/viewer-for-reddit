@@ -1,19 +1,12 @@
 import {Card, Group, Skeleton, Stack} from '@mantine/core'
 
-/**
- * Skeleton loading placeholder for a single comment.
- * Mimics the structure of Comment component with optional indentation.
- *
- * @param depth - Nesting depth for indentation (default: 0)
- *
- * @example
- * ```typescript
- * <Suspense fallback={<CommentSkeleton depth={1} />}>
- *   <Comment comment={comment} depth={1} />
- * </Suspense>
- * ```
- */
-export function CommentSkeleton({depth = 0}: Readonly<{depth?: number}>) {
+/** Skeleton loading placeholder for a single comment. Mimics the Comment component structure with optional indentation. */
+export function CommentSkeleton({
+  depth = 0
+}: Readonly<{
+  /** Nesting depth for indentation */
+  depth?: number
+}>) {
   return (
     <div style={{marginLeft: depth * 20}}>
       <Card withBorder padding="md" radius="md" mb="sm">
@@ -35,20 +28,13 @@ export function CommentSkeleton({depth = 0}: Readonly<{depth?: number}>) {
   )
 }
 
-/**
- * Skeleton loading placeholder for a list of comments.
- * Renders multiple CommentSkeleton components with varying depths.
- *
- * @param count - Number of skeleton comments to render (default: 10)
- *
- * @example
- * ```typescript
- * <Suspense fallback={<CommentListSkeleton count={5} />}>
- *   <CommentList comments={comments} />
- * </Suspense>
- * ```
- */
-export function CommentListSkeleton({count = 10}: Readonly<{count?: number}>) {
+/** Skeleton loading placeholder for a list of comments with varying indentation depths. */
+export function CommentListSkeleton({
+  count = 10
+}: Readonly<{
+  /** Number of skeleton comments to render */
+  count?: number
+}>) {
   return (
     <Stack gap="xs">
       {Array.from({length: count}).map((_, index) => {

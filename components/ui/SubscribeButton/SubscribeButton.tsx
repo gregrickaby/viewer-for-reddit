@@ -5,16 +5,15 @@ import {Button} from '@mantine/core'
 import {IconCheck, IconPlus} from '@tabler/icons-react'
 
 interface SubscribeButtonProps {
+  /** Name of the subreddit (without the r/ prefix) */
   subredditName: string
+  /** Initial subscription state from the server */
   initialIsSubscribed: boolean
 }
 
 /**
- * Button component for subscribing/unsubscribing to a subreddit.
+ * Button for subscribing or unsubscribing to a subreddit.
  * Uses optimistic updates with automatic rollback on failure.
- *
- * @param subredditName - Name of the subreddit (without 'r/' prefix)
- * @param initialIsSubscribed - Initial subscription state from server
  */
 export function SubscribeButton({
   subredditName,

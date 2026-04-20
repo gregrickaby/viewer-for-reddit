@@ -1,39 +1,25 @@
 import {render, screen} from '@/test-utils'
-import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
-import {AppLayout} from './AppLayout'
+import {Shell} from './Shell'
 
-// Mock child components
+// Mock child components to isolate Shell tests.
 vi.mock('../Header/Header', () => ({
   Header: ({
     isAuthenticated,
-    username,
-    mobileOpened,
-    onToggleMobile,
-    onToggleDesktop
+    username
   }: {
     isAuthenticated?: boolean
     username?: string
-    mobileOpened?: boolean
-    onToggleMobile?: () => void
-    onToggleDesktop?: () => void
   }) => (
     <div data-testid="header">
       <div data-testid="is-authenticated">{String(isAuthenticated)}</div>
       <div data-testid="username">{username}</div>
-      <div data-testid="mobile-opened">{String(mobileOpened)}</div>
-      <button type="button" onClick={onToggleMobile}>
-        Toggle Mobile
-      </button>
-      <button type="button" onClick={onToggleDesktop}>
-        Toggle Desktop
-      </button>
     </div>
   )
 }))
 
-vi.mock('../Sidebar/Sidebar', () => ({
-  Sidebar: ({
+vi.mock('../Sidebar/SidebarPanel', () => ({
+  SidebarPanel: ({
     isAuthenticated,
     subscriptions,
     multireddits
@@ -48,7 +34,7 @@ vi.mock('../Sidebar/Sidebar', () => ({
       icon?: string
     }>
   }) => (
-    <div data-testid="sidebar">
+    <aside data-testid="sidebar-panel">
       <div data-testid="sidebar-authenticated">{String(isAuthenticated)}</div>
       {subscriptions && (
         <div data-testid="sidebar-subscriptions">
@@ -60,11 +46,17 @@ vi.mock('../Sidebar/Sidebar', () => ({
           {multireddits.length} multireddits
         </div>
       )}
-    </div>
+    </aside>
   )
 }))
 
-describe('AppLayout', () => {
+vi.mock('../Sidebar/SidebarContext', () => ({
+  SidebarProvider: ({children}: {children: React.ReactNode}) => (
+    <div data-testid="sidebar-provider">{children}</div>
+  )
+}))
+
+describe('Shell', () => {
   const mockSubscriptions = [
     {name: 'programming', displayName: 'r/programming', icon: 'icon1.png'},
     {name: 'javascript', displayName: 'r/javascript'}
@@ -82,46 +74,63 @@ describe('AppLayout', () => {
   describe('rendering', () => {
     it('renders children content', () => {
       render(
-        <AppLayout>
+        <Shell>
           <div>Test Content</div>
-        </AppLayout>
+        </Shell>
       )
 
       expect(screen.getByText('Test Content')).toBeInTheDocument()
     })
 
     it('renders Header component', () => {
-      render(<AppLayout>Content</AppLayout>)
+      render(<Shell>Content</Shell>)
 
       expect(screen.getByTestId('header')).toBeInTheDocument()
     })
 
-    it('renders Sidebar component', () => {
-      render(<AppLayout>Content</AppLayout>)
+    it('renders SidebarPanel component', () => {
+      render(<Shell>Content</Shell>)
 
-      expect(screen.getByTestId('sidebar')).toBeInTheDocument()
+      expect(screen.getByTestId('sidebar-panel')).toBeInTheDocument()
+    })
+
+    it('wraps content in SidebarProvider', () => {
+      render(<Shell>Content</Shell>)
+
+      expect(screen.getByTestId('sidebar-provider')).toBeInTheDocument()
+    })
+
+    it('renders semantic HTML elements', () => {
+      render(<Shell>Content</Shell>)
+
+      expect(
+        screen.getByRole('banner') // <header>
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('main') // <main>
+      ).toBeInTheDocument()
     })
   })
 
   describe('authentication', () => {
     it('passes isAuthenticated to Header', () => {
-      render(<AppLayout isAuthenticated>Content</AppLayout>)
+      render(<Shell isAuthenticated>Content</Shell>)
 
       expect(screen.getByTestId('is-authenticated')).toHaveTextContent('true')
     })
 
     it('passes username to Header', () => {
       render(
-        <AppLayout isAuthenticated username="testuser">
+        <Shell isAuthenticated username="testuser">
           Content
-        </AppLayout>
+        </Shell>
       )
 
       expect(screen.getByTestId('username')).toHaveTextContent('testuser')
     })
 
-    it('passes isAuthenticated to Sidebar', () => {
-      render(<AppLayout isAuthenticated>Content</AppLayout>)
+    it('passes isAuthenticated to SidebarPanel', () => {
+      render(<Shell isAuthenticated>Content</Shell>)
 
       expect(screen.getByTestId('sidebar-authenticated')).toHaveTextContent(
         'true'
@@ -129,7 +138,7 @@ describe('AppLayout', () => {
     })
 
     it('handles unauthenticated state', () => {
-      render(<AppLayout isAuthenticated={false}>Content</AppLayout>)
+      render(<Shell isAuthenticated={false}>Content</Shell>)
 
       expect(screen.getByTestId('is-authenticated')).toHaveTextContent('false')
       expect(screen.getByTestId('sidebar-authenticated')).toHaveTextContent(
@@ -139,8 +148,8 @@ describe('AppLayout', () => {
   })
 
   describe('subscriptions', () => {
-    it('passes subscriptions to Sidebar', () => {
-      render(<AppLayout subscriptions={mockSubscriptions}>Content</AppLayout>)
+    it('passes subscriptions to SidebarPanel', () => {
+      render(<Shell subscriptions={mockSubscriptions}>Content</Shell>)
 
       expect(screen.getByTestId('sidebar-subscriptions')).toHaveTextContent(
         '2 subscriptions'
@@ -148,7 +157,7 @@ describe('AppLayout', () => {
     })
 
     it('handles empty subscriptions array', () => {
-      render(<AppLayout subscriptions={[]}>Content</AppLayout>)
+      render(<Shell subscriptions={[]}>Content</Shell>)
 
       expect(screen.getByTestId('sidebar-subscriptions')).toHaveTextContent(
         '0 subscriptions'
@@ -156,7 +165,7 @@ describe('AppLayout', () => {
     })
 
     it('handles undefined subscriptions', () => {
-      render(<AppLayout>Content</AppLayout>)
+      render(<Shell>Content</Shell>)
 
       expect(
         screen.queryByTestId('sidebar-subscriptions')
@@ -165,8 +174,8 @@ describe('AppLayout', () => {
   })
 
   describe('multireddits', () => {
-    it('passes multireddits to Sidebar', () => {
-      render(<AppLayout multireddits={mockMultireddits}>Content</AppLayout>)
+    it('passes multireddits to SidebarPanel', () => {
+      render(<Shell multireddits={mockMultireddits}>Content</Shell>)
 
       expect(screen.getByTestId('sidebar-multireddits')).toHaveTextContent(
         '1 multireddits'
@@ -174,7 +183,7 @@ describe('AppLayout', () => {
     })
 
     it('handles empty multireddits array', () => {
-      render(<AppLayout multireddits={[]}>Content</AppLayout>)
+      render(<Shell multireddits={[]}>Content</Shell>)
 
       expect(screen.getByTestId('sidebar-multireddits')).toHaveTextContent(
         '0 multireddits'
@@ -182,7 +191,7 @@ describe('AppLayout', () => {
     })
 
     it('handles undefined multireddits', () => {
-      render(<AppLayout>Content</AppLayout>)
+      render(<Shell>Content</Shell>)
 
       expect(
         screen.queryByTestId('sidebar-multireddits')
@@ -190,37 +199,17 @@ describe('AppLayout', () => {
     })
   })
 
-  describe('mobile drawer state', () => {
-    it('starts with mobile drawer closed', () => {
-      render(<AppLayout>Content</AppLayout>)
-
-      expect(screen.getByTestId('mobile-opened')).toHaveTextContent('false')
-    })
-
-    it('toggles mobile drawer state when toggle button clicked', async () => {
-      const user = userEvent.setup()
-      render(<AppLayout>Content</AppLayout>)
-
-      expect(screen.getByTestId('mobile-opened')).toHaveTextContent('false')
-
-      const toggleButton = screen.getByRole('button', {name: /toggle mobile/i})
-      await user.click(toggleButton)
-
-      expect(screen.getByTestId('mobile-opened')).toHaveTextContent('true')
-    })
-  })
-
   describe('all props together', () => {
     it('passes all props correctly', () => {
       render(
-        <AppLayout
+        <Shell
           isAuthenticated
           username="testuser"
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}
         >
           <div>All Props Test</div>
-        </AppLayout>
+        </Shell>
       )
 
       expect(screen.getByText('All Props Test')).toBeInTheDocument()

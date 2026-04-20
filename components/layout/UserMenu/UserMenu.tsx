@@ -19,23 +19,7 @@ interface UserMenuProps {
 
 /**
  * User menu displaying authentication state and actions.
- * Shows username link and logout button when authenticated,
- * or login button when not authenticated.
- *
- * Features:
- * - Link to user profile (authenticated)
- * - Logout button with loading state
- * - Login button (unauthenticated)
- * - Race condition prevention
- * - Responsive layout (text hidden on mobile)
- *
- * @example
- * ```typescript
- * <UserMenu
- *   isAuthenticated={true}
- *   username="johndoe"
- * />
- * ```
+ * Shows username link and logout button when authenticated, or a login button when not.
  */
 export function UserMenu({
   isAuthenticated,

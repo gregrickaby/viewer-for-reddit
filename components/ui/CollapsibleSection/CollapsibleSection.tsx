@@ -23,25 +23,8 @@ interface CollapsibleSectionProps {
 }
 
 /**
- * A collapsible section with toggle button and optional settings.
+ * A collapsible section with toggle button and optional settings icon.
  * Supports both controlled (external state) and uncontrolled (internal state) modes.
- *
- * @example
- * ```typescript
- * // Uncontrolled (manages own state)
- * <CollapsibleSection title="My Section" defaultOpen>
- *   <div>Section content</div>
- * </CollapsibleSection>
- *
- * // Controlled (external state)
- * <CollapsibleSection
- *   title="My Section"
- *   isOpen={isOpen}
- *   onToggle={setIsOpen}
- * >
- *   <div>Section content</div>
- * </CollapsibleSection>
- * ```
  */
 export function CollapsibleSection({
   title,

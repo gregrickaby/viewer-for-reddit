@@ -3,8 +3,8 @@
 import {useInfiniteSavedItems} from '@/lib/hooks/useInfiniteSavedItems'
 import type {SavedItem} from '@/lib/types/reddit'
 import {Card, Center, Container, Loader, Stack, Text} from '@mantine/core'
-import {Comment} from '../Comment/Comment'
-import {PostCard} from '../PostCard/PostCard'
+import {Comment} from '@/components/ui/Comment/Comment'
+import {PostCard} from '@/components/ui/PostCard/PostCard'
 
 /**
  * Props for the SavedItemsList component.
@@ -21,25 +21,8 @@ interface SavedItemsListProps {
 }
 
 /**
- * Display saved items (posts and comments) with infinite scroll.
- * Client component for interactivity with optimistic updates.
- *
- * Features:
- * - Infinite scroll pagination
- * - Error handling and display
- * - Loading states
- * - NSFW blur filter
- * - Renders both posts and comments appropriately
- *
- * @example
- * ```typescript
- * <SavedItemsList
- *   initialItems={items}
- *   username="johndoe"
- *   initialAfter={after}
- *   isAuthenticated={true}
- * />
- * ```
+ * Display a user's saved posts and comments with infinite scroll.
+ * Renders posts as PostCard and comments as Comment within a context card.
  */
 export function SavedItemsList({
   initialItems,

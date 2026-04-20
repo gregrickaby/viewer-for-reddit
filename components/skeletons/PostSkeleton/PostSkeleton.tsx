@@ -1,16 +1,6 @@
 import {Card, Group, Skeleton, Stack} from '@mantine/core'
 
-/**
- * Skeleton loading placeholder for a single post card.
- * Mimics the structure of PostCard component.
- *
- * @example
- * ```typescript
- * <Suspense fallback={<PostSkeleton />}>
- *   <PostCard post={post} />
- * </Suspense>
- * ```
- */
+/** Skeleton loading placeholder for a single post card. Mimics the PostCard component structure. */
 export function PostSkeleton() {
   return (
     <Card withBorder padding="lg" radius="md">
@@ -31,20 +21,13 @@ export function PostSkeleton() {
   )
 }
 
-/**
- * Skeleton loading placeholder for a list of posts.
- * Renders multiple PostSkeleton components.
- *
- * @param count - Number of skeleton posts to render (default: 5)
- *
- * @example
- * ```typescript
- * <Suspense fallback={<PostListSkeleton count={10} />}>
- *   <PostList posts={posts} />
- * </Suspense>
- * ```
- */
-export function PostListSkeleton({count = 5}: Readonly<{count?: number}>) {
+/** Skeleton loading placeholder for a list of posts. */
+export function PostListSkeleton({
+  count = 5
+}: Readonly<{
+  /** Number of skeleton post cards to render */
+  count?: number
+}>) {
   const skeletonIds = Array.from({length: count}, () => crypto.randomUUID())
   return (
     <Stack gap="md">

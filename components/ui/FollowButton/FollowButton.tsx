@@ -5,16 +5,15 @@ import {Button} from '@mantine/core'
 import {IconUserCheck, IconUserPlus} from '@tabler/icons-react'
 
 interface FollowButtonProps {
+  /** Reddit username (without the u/ prefix) */
   username: string
+  /** Initial follow state from the server */
   initialIsFollowing: boolean
 }
 
 /**
- * Button component for following/unfollowing a Reddit user.
+ * Button for following or unfollowing a Reddit user.
  * Uses optimistic updates with automatic rollback on failure.
- *
- * @param username - Reddit username (without 'u/' prefix)
- * @param initialIsFollowing - Initial follow state from server
  */
 export function FollowButton({
   username,

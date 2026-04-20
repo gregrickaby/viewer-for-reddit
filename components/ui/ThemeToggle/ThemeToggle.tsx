@@ -8,20 +8,7 @@ import {
 import {IconMoon, IconSun} from '@tabler/icons-react'
 import styles from './ThemeToggle.module.css'
 
-/**
- * Toggle button for switching between light and dark color schemes.
- * Uses Mantine's color scheme hooks for state management.
- *
- * Features:
- * - Animated icon swap between sun and moon
- * - Accessible with aria-label
- * - Suppresses hydration warning for theme
- *
- * @example
- * ```typescript
- * <ThemeToggle />
- * ```
- */
+/** Toggle button for switching between light and dark color schemes. */
 export function ThemeToggle() {
   const {setColorScheme} = useMantineColorScheme()
   const computedColorScheme = useComputedColorScheme('light', {

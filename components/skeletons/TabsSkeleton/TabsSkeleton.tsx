@@ -1,21 +1,7 @@
 import {Group, Skeleton, Stack} from '@mantine/core'
-import {PostListSkeleton} from '../PostSkeleton/PostSkeleton'
+import {PostListSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 
-/**
- * Skeleton loading placeholder for tabbed post list.
- * Mimics the structure of PostListWithTabs component.
- *
- * Features:
- * - 4 tab button skeletons
- * - 3 post card skeletons below tabs
- *
- * @example
- * ```typescript
- * <Suspense fallback={<TabsSkeleton />}>
- *   <PostListWithTabs posts={posts} activeSort="hot" />
- * </Suspense>
- * ```
- */
+/** Skeleton loading placeholder for a tabbed post list. Mimics the PostListWithTabs component structure. */
 export function TabsSkeleton() {
   return (
     <Stack gap="md">

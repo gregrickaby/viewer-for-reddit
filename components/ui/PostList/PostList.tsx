@@ -3,7 +3,7 @@
 import {useInfiniteScroll} from '@/lib/hooks/useInfiniteScroll'
 import {RedditPost} from '@/lib/types/reddit'
 import {Center, Loader, Stack, Text} from '@mantine/core'
-import {PostCard} from '../PostCard/PostCard'
+import {PostCard} from '@/components/ui/PostCard/PostCard'
 import styles from './PostList.module.css'
 
 /**
@@ -29,25 +29,6 @@ interface PostListProps {
 /**
  * Display a list of Reddit posts with infinite scroll.
  * Automatically loads more posts when scrolling near the bottom.
- *
- * Features:
- * - Infinite scroll for subreddit/multireddit feeds
- * - Disabled infinite scroll for search/user pages
- * - Loading indicator at bottom
- * - "No more posts" message when exhausted
- *
- * Note: Infinite scroll currently only works for subreddit/multireddit feeds.
- * Search and user profile pages do not support infinite scroll yet.
- *
- * @example
- * ```typescript
- * <PostList
- *   initialPosts={serverPosts}
- *   initialAfter="t3_abc123"
- *   subreddit="popular"
- *   isAuthenticated={true}
- * />
- * ```
  */
 export function PostList({
   initialPosts,

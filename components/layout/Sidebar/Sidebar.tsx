@@ -42,31 +42,6 @@ interface SidebarProps {
   }>
 }
 
-/**
- * Navigation sidebar with feeds, subscriptions, and multireddits.
- * Adapts content based on authentication state.
- *
- * Features:
- * - Default feeds (Popular, All, About, Donate, GitHub)
- * - Saved items (posts and comments) (authenticated only)
- * - User subscriptions with search and infinite scroll (authenticated only)
- * - User multireddits (authenticated only, sorted alphabetically)
- * - Followed users (authenticated only, sorted alphabetically)
- * - Collapsible sections
- * - Searchable subscription list (unsorted to prevent jumping)
- * - Lazy loading for large subscription lists
- *
- * @example
- * ```typescript
- * <Sidebar
- *   isAuthenticated={true}
- *   username="testuser"
- *   subscriptions={userSubs}
- *   multireddits={userMultis}
- *   following={userFollowing}
- * />
- * ```
- */
 const EMPTY_SUBSCRIPTIONS: ManagedSubscription[] = []
 const EMPTY_MULTIREDDITS: ManagedMultireddit[] = []
 const EMPTY_FOLLOWING: Array<{
@@ -76,6 +51,7 @@ const EMPTY_FOLLOWING: Array<{
   note?: string
 }> = []
 
+/** Navigation sidebar with feeds, subscriptions, and multireddits. Adapts content based on authentication state. */
 export function Sidebar({
   isAuthenticated,
   username,

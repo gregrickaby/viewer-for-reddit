@@ -55,29 +55,8 @@ function isValidVideoUrl(url: string): boolean {
 }
 
 /**
- * Video player component with automatic pause on scroll.
- * Optimized for Reddit videos (v.redd.it) and animated GIFs.
- *
- * Features:
- * - URL validation (prevents XSS)
- * - HLS streaming support via hls.js (adaptive quality)
- * - Native HLS support for Safari
- * - Auto-pause when scrolled out of view (IntersectionObserver)
- * - Auto-pause other videos when one starts playing
- * - Shared IntersectionObserver for performance
- * - Vertical video detection and styling
- * - Download prevention via controlsList
- *
- * @example
- * ```typescript
- * <VideoPlayer
- *   src="https://v.redd.it/abc123/DASH_720.mp4"
- *   title="Funny cat video"
- *   type="mp4"
- *   width={1280}
- *   height={720}
- * />
- * ```
+ * Video player with automatic pause when scrolled out of view.
+ * Supports HLS streaming and MP4; validates URLs to prevent XSS.
  */
 export function VideoPlayer({
   src,

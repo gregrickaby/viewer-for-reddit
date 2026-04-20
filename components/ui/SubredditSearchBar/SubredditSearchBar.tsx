@@ -15,18 +15,7 @@ interface SubredditSearchBarProps {
 
 /**
  * Search bar for searching within a specific subreddit.
- * Allows users to search for posts within the current subreddit.
- *
- * Features:
- * - Search within current subreddit
- * - Clear button when input has text
- * - Loading state during navigation
- * - Keyboard navigation (Enter to search)
- *
- * @example
- * ```typescript
- * <SubredditSearchBar subreddit="programming" />
- * ```
+ * Navigates to the subreddit search route on submit.
  */
 export function SubredditSearchBar({
   subreddit

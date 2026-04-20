@@ -3,21 +3,7 @@ import {AppLink} from '@/components/ui/AppLink/AppLink'
 import {Group, Title} from '@mantine/core'
 import Image from 'next/image'
 
-/**
- * Application logo with icon and text.
- * Links to the home page (/).
- *
- * Features:
- * - App icon image (32x32px on mobile, 38x38px on desktop)
- * - Text hidden on mobile (visibleFrom="sm")
- * - Next.js Image optimization with priority loading
- * - No underline on hover
- *
- * @example
- * ```typescript
- * <Logo />
- * ```
- */
+/** Application logo with icon and text. */
 export function Logo() {
   return (
     <AppLink href="/">
