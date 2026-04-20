@@ -557,5 +557,31 @@ describe('auth actions', () => {
 
       expect(token).toBeNull()
     })
+
+    it('uses pre-resolved session when provided and skips getSession call', async () => {
+      const futureTime = Date.now() + 600000
+      const preResolved = {
+        accessToken: 'pre-resolved-token',
+        expiresAt: futureTime
+      } as any
+
+      const token = await getValidAccessToken(preResolved)
+
+      expect(token).toBe('pre-resolved-token')
+      expect(mockGetSession).not.toHaveBeenCalled()
+    })
+
+    it('falls back to calling getSession when no pre-resolved session is given', async () => {
+      const futureTime = Date.now() + 600000
+      mockGetSession.mockResolvedValueOnce({
+        accessToken: 'fallback-token',
+        expiresAt: futureTime
+      } as any)
+
+      const token = await getValidAccessToken()
+
+      expect(token).toBe('fallback-token')
+      expect(mockGetSession).toHaveBeenCalledTimes(1)
+    })
   })
 })

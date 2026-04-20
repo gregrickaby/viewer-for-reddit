@@ -1,6 +1,5 @@
 'use server'
 
-import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditAboutResponse,
@@ -41,11 +40,7 @@ export async function fetchSubredditInfo(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
     const url = new URL(`${baseUrl}/r/${subreddit}/about.json`)
     url.searchParams.set('raw_json', '1')
     validateRedditUrl(url.toString())
@@ -119,8 +114,8 @@ export async function fetchUserSubscriptions(): Promise<
   }>
 > {
   try {
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return []
     }
 
@@ -139,8 +134,6 @@ export async function fetchUserSubscriptions(): Promise<
       if (after) {
         url.searchParams.set('after', after)
       }
-
-      const {headers} = await getHeaders()
 
       const response = await fetch(url.toString(), {
         headers,
@@ -210,8 +203,8 @@ export async function toggleSubscription(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -225,7 +218,6 @@ export async function toggleSubscription(
     const url = `${REDDIT_API_URL}/api/subscribe`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {
       method: 'POST',
       headers: {

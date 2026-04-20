@@ -1,5 +1,6 @@
 import {getValidAccessToken} from '@/lib/actions/auth'
 import {logger} from '@/lib/axiom/server'
+import {getSession} from '@/lib/auth/session'
 import {REDDIT_API_URL, REDDIT_PUBLIC_API_URL} from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
 import {
@@ -139,23 +140,53 @@ export async function handleFetchError(
 }
 
 /**
- * Create HTTP headers for Reddit API requests.
- * Attempts to use OAuth token if available (better rate limits).
- * Falls back to unauthenticated requests if no token available.
+ * Enriched context returned by getHeaders().
+ * Callers that only need headers and baseUrl can ignore the extra fields.
  */
-export async function getHeaders(): Promise<{
+export interface RequestContext {
+  /** HTTP headers to pass to fetch(), including Authorization if authenticated. */
   headers: HeadersInit
+  /** Reddit API base URL — oauth.reddit.com when authenticated, www.reddit.com otherwise. */
   baseUrl: string
-}> {
+  /** True when a valid access token was found (after any needed refresh). */
+  isAuthenticated: boolean
+  /** Authenticated username, or null for anonymous sessions. */
+  username: string | null
+}
+
+/**
+ * Create HTTP headers for Reddit API requests and return enriched request context.
+ * Reads the session exactly once, passes it to getValidAccessToken to avoid a
+ * redundant iron-session decryption, and returns isAuthenticated + username so
+ * callers do not need to call getSession() independently.
+ *
+ * @returns Promise resolving to RequestContext with headers, baseUrl, isAuthenticated, and username
+ */
+export async function getHeaders(): Promise<RequestContext> {
+  const session = await getSession()
+
   const requestHeaders: HeadersInit = {
     'User-Agent': getEnvVar('USER_AGENT')
   }
 
-  const accessToken = await getValidAccessToken()
+  const accessToken = await getValidAccessToken(session)
+  const isAuthenticated = !!accessToken
+  const username = session.username || null
+
   if (accessToken) {
     requestHeaders.Authorization = `Bearer ${accessToken}`
-    return {headers: requestHeaders, baseUrl: REDDIT_API_URL}
+    return {
+      headers: requestHeaders,
+      baseUrl: REDDIT_API_URL,
+      isAuthenticated,
+      username
+    }
   }
 
-  return {headers: requestHeaders, baseUrl: REDDIT_PUBLIC_API_URL}
+  return {
+    headers: requestHeaders,
+    baseUrl: REDDIT_PUBLIC_API_URL,
+    isAuthenticated,
+    username
+  }
 }

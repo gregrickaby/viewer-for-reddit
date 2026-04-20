@@ -1,6 +1,5 @@
 'use server'
 
-import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import {CACHE_SUBSCRIPTIONS, REDDIT_API_URL} from '@/lib/utils/constants'
 import {
@@ -31,15 +30,13 @@ export async function fetchMultireddits(): Promise<
   }>
 > {
   try {
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return []
     }
 
     const url = `${REDDIT_API_URL}/api/multi/mine`
     validateRedditUrl(url)
-
-    const {headers} = await getHeaders()
 
     const response = await fetch(url, {
       headers,
@@ -120,15 +117,14 @@ export async function createMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/multi`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -194,15 +190,14 @@ export async function deleteMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {method: 'DELETE', headers})
 
     if (!response.ok) {
@@ -262,15 +257,14 @@ export async function updateMultiredditName(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -343,15 +337,14 @@ export async function addSubredditToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -425,15 +418,14 @@ export async function removeSubredditFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {method: 'DELETE', headers})
 
     if (!response.ok) {
@@ -498,8 +490,8 @@ export async function addUserToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -507,7 +499,6 @@ export async function addUserToMultireddit(
     const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -581,8 +572,8 @@ export async function removeUserFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -590,7 +581,6 @@ export async function removeUserFromMultireddit(
     const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {method: 'DELETE', headers})
 
     if (!response.ok) {

@@ -1,6 +1,5 @@
 'use server'
 
-import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditPostsResponse,
@@ -46,11 +45,7 @@ export async function searchReddit(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
     const url = new URL(`${baseUrl}/search.json`)
     validateRedditUrl(url.toString())
 
@@ -152,11 +147,7 @@ export async function searchSubreddit(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
     const url = new URL(`${baseUrl}/r/${subreddit}/search.json`)
     validateRedditUrl(url.toString())
 
@@ -258,11 +249,7 @@ export async function searchSubreddits(query: string): Promise<{
   }
 
   try {
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
 
     const params = new URLSearchParams({
       query,
@@ -378,11 +365,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
   }
 
   try {
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
 
     const params = new URLSearchParams({
       query,

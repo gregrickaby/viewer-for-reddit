@@ -1,6 +1,5 @@
 'use server'
 
-import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditPostsResponse,
@@ -145,11 +144,7 @@ export async function fetchPost(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
     const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
     validateRedditUrl(url)
 
@@ -241,11 +236,7 @@ export async function fetchUserPosts(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
     const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
     validateRedditUrl(url.toString())
 

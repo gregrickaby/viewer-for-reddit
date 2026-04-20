@@ -186,7 +186,9 @@ async function performRefresh(): Promise<{
 /**
  * Get valid access token, refreshing if necessary.
  * Automatically refreshes the token if it's expired or about to expire (within 5 minutes).
+ * Accepts an optional pre-resolved session to avoid redundant iron-session decryptions.
  *
+ * @param preResolvedSession - Already-resolved session to reuse; falls back to getSession() if omitted
  * @returns Promise resolving to access token or null if refresh fails
  *
  * @example
@@ -198,8 +200,10 @@ async function performRefresh(): Promise<{
  * }
  * ```
  */
-export async function getValidAccessToken(): Promise<string | null> {
-  const session = await getSession()
+export async function getValidAccessToken(
+  preResolvedSession?: Awaited<ReturnType<typeof getSession>>
+): Promise<string | null> {
+  const session = preResolvedSession ?? (await getSession())
 
   if (!session.accessToken) {
     return null

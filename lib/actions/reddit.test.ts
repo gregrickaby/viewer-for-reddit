@@ -47,7 +47,9 @@ vi.mock('@/lib/utils/rate-limit-state', () => ({
 
 // Mock getValidAccessToken BEFORE imports
 vi.mock('@/lib/actions/auth', () => ({
-  getValidAccessToken: vi.fn(async () => 'test-access-token')
+  getValidAccessToken: vi.fn(
+    async (session?: {accessToken?: string}) => session?.accessToken || null
+  )
 }))
 
 // Mock session module
@@ -95,7 +97,9 @@ function createMockSession(
 describe('reddit server actions', () => {
   beforeEach(() => {
     mockGetSession.mockClear()
-    mockGetSession.mockResolvedValue(createMockSession())
+    mockGetSession.mockResolvedValue(
+      createMockSession({accessToken: 'test-access-token'})
+    )
   })
 
   describe('fetchPosts', () => {
@@ -431,6 +435,8 @@ describe('reddit server actions', () => {
 
   describe('fetchUserSubscriptions', () => {
     it('returns empty result when not authenticated', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
       const result = await fetchUserSubscriptions()
 
       expect(result).toEqual([])
@@ -539,6 +545,8 @@ describe('reddit server actions', () => {
 
   describe('votePost', () => {
     it('returns error when not authenticated', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
       const result = await votePost('t3_test123', 1)
 
       expect(result.success).toBe(false)
@@ -581,6 +589,8 @@ describe('reddit server actions', () => {
 
   describe('savePost', () => {
     it('returns error when not authenticated', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
       const result = await savePost('t3_test123', true)
 
       expect(result.success).toBe(false)
@@ -1179,7 +1189,7 @@ describe('reddit server actions', () => {
 
       server.use(
         http.get(
-          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          'https://www.reddit.com/api/subreddit_autocomplete_v2.json',
           () => {
             return new HttpResponse(null, {status: 429})
           }
@@ -1220,6 +1230,8 @@ describe('reddit server actions', () => {
 
   describe('toggleSubscription', () => {
     it('requires authentication', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
       const result = await toggleSubscription('programming', 'sub')
 
       expect(result.success).toBe(false)
@@ -1265,6 +1277,8 @@ describe('reddit server actions', () => {
 
   describe('fetchSavedItems', () => {
     it('requires authentication', async () => {
+      mockGetSession.mockResolvedValue(createMockSession())
+
       await expect(fetchSavedItems('testuser')).rejects.toThrow(
         'Something went wrong.'
       )
@@ -2435,7 +2449,7 @@ describe('reddit server actions', () => {
 
       server.use(
         http.get(
-          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          'https://www.reddit.com/api/subreddit_autocomplete_v2.json',
           () => new HttpResponse(null, {status: 429})
         )
       )

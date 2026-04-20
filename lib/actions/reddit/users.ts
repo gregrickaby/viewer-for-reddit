@@ -1,6 +1,5 @@
 'use server'
 
-import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditPostsResponse,
@@ -47,11 +46,7 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
     const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
     validateRedditUrl(url)
 
@@ -131,12 +126,12 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
  */
 export async function getCurrentUserAvatar(): Promise<string | null> {
   try {
-    const session = await getSession()
-    if (!session.accessToken || !session.username) {
+    const {isAuthenticated, username} = await getHeaders()
+    if (!isAuthenticated || !username) {
       return null
     }
 
-    const userInfo = await fetchUserInfo(session.username)
+    const userInfo = await fetchUserInfo(username)
     return userInfo.icon_img || null
   } catch (error) {
     logger.error('Error fetching current user avatar', {
@@ -173,11 +168,7 @@ export async function fetchUserComments(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const [session, {headers, baseUrl}] = await Promise.all([
-      getSession(),
-      getHeaders()
-    ])
-    const isAuthenticated = !!session.accessToken
+    const {headers, baseUrl, isAuthenticated} = await getHeaders()
     const url = new URL(`${baseUrl}/user/${username}/comments.json`)
     validateRedditUrl(url.toString())
 
@@ -272,12 +263,11 @@ export async function fetchSavedItems(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers} = await getHeaders()
     const url = new URL(`${REDDIT_API_URL}/user/${username}/saved.json`)
     validateRedditUrl(url.toString())
 
@@ -378,13 +368,12 @@ export async function fetchFollowedUsers(): Promise<
   }>
 > {
   try {
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return []
     }
 
     const url = `${REDDIT_API_URL}/api/v1/me/friends`
-    const {headers} = await getHeaders()
     validateRedditUrl(url)
 
     const response = await fetch(url, {
@@ -455,15 +444,14 @@ export async function followUser(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/v1/me/friends/${encodeURIComponent(username)}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -519,15 +507,14 @@ export async function unfollowUser(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/v1/me/friends/${encodeURIComponent(username)}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const response = await fetch(url, {
       method: 'DELETE',
       headers
@@ -578,8 +565,8 @@ export async function savePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated, username} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
@@ -587,7 +574,6 @@ export async function savePost(
     const url = `${REDDIT_API_URL}/api/${endpoint}`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -615,8 +601,8 @@ export async function savePost(
 
     logger.debug('Save/unsave successful', {postName, save})
 
-    if (session.username) {
-      revalidatePath(`/user/${session.username}/saved`)
+    if (username) {
+      revalidatePath(`/user/${username}/saved`)
     }
 
     return {success: true}
@@ -647,15 +633,14 @@ export async function votePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const session = await getSession()
-    if (!session.accessToken) {
+    const {headers, isAuthenticated} = await getHeaders()
+    if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const url = `${REDDIT_API_URL}/api/vote`
     validateRedditUrl(url)
 
-    const {headers} = await getHeaders()
     const res = await fetch(url, {
       method: 'POST',
       headers: {
