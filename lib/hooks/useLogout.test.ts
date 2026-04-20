@@ -8,7 +8,7 @@ vi.mock('next/navigation', () => ({
   useRouter: vi.fn()
 }))
 
-vi.mock('@/lib/actions/auth', () => ({
+vi.mock('@/lib/actions/auth/auth', () => ({
   logout: vi.fn(async () => ({success: true}))
 }))
 

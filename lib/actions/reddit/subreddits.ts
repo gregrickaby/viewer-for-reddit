@@ -1,25 +1,20 @@
 'use server'
 
+import {getRedditContext} from '@/lib/auth/reddit-context'
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditAboutResponse,
   RedditSubreddit,
   RedditSubscriptionsResponse
 } from '@/lib/types/reddit'
-import {
-  CACHE_SUBREDDIT_INFO,
-  CACHE_SUBSCRIPTIONS,
-  REDDIT_API_URL
-} from '@/lib/utils/constants'
-import {RedditAPIError} from '@/lib/utils/errors'
+import {CACHE_SUBREDDIT_INFO, CACHE_SUBSCRIPTIONS} from '@/lib/utils/constants'
 import {isValidSubredditName} from '@/lib/utils/reddit-helpers'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
-  getHeaders,
-  getRequestMetadata,
-  validateRedditUrl
+  assertRedditUrl
 } from './_helpers'
+import {redditFetch} from './redditFetch'
 
 /**
  * Fetch information about a subreddit.
@@ -41,46 +36,18 @@ export async function fetchSubredditInfo(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
-    const url = new URL(`${baseUrl}/r/${subreddit}/about.json`)
-    url.searchParams.set('raw_json', '1')
-    validateRedditUrl(url.toString())
-
-    const response = await fetch(url.toString(), {
-      headers,
-      next: {
-        revalidate: CACHE_SUBREDDIT_INFO,
-        tags: ['subreddit', subreddit]
+    const data = await redditFetch<ApiSubredditAboutResponse>(
+      `/r/${subreddit}/about.json`,
+      {
+        cache: {
+          revalidate: CACHE_SUBREDDIT_INFO,
+          tags: ['subreddit', subreddit]
+        },
+        operation: 'fetchSubredditInfo',
+        resource: subreddit
       }
-    })
+    )
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      const requestMetadata = await getRequestMetadata()
-
-      logger.error('Failed to fetch subreddit info', {
-        url: url.toString(),
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        isAuthenticated,
-        errorBody,
-        context: 'fetchSubredditInfo',
-        subreddit,
-        ...requestMetadata
-      })
-
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'fetchSubredditInfo',
-        url.toString(),
-        'GET',
-        {subreddit},
-        response.status
-      )
-    }
-
-    const data: ApiSubredditAboutResponse = await response.json()
     const subredditData = data.data as RedditSubreddit
 
     logger.debug('Fetched subreddit info successfully', {
@@ -115,7 +82,7 @@ export async function fetchUserSubscriptions(): Promise<
   }>
 > {
   try {
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return []
     }
@@ -129,7 +96,7 @@ export async function fetchUserSubscriptions(): Promise<
     let after: string | null = null
 
     do {
-      const url = new URL(`${REDDIT_API_URL}/subreddits/mine/subscriber.json`)
+      const url = new URL(`${baseUrl}/subreddits/mine/subscriber.json`)
       url.searchParams.set('limit', '100')
       url.searchParams.set('raw_json', '1')
       if (after) {
@@ -199,7 +166,7 @@ export async function toggleSubscription(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
@@ -211,8 +178,8 @@ export async function toggleSubscription(
       sr_name: subredditName
     })
 
-    const url = `${REDDIT_API_URL}/api/subscribe`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/subscribe`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       method: 'POST',

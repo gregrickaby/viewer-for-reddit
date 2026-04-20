@@ -15,20 +15,42 @@ import {
   CACHE_USER_INFO,
   DEFAULT_POST_LIMIT
 } from '@/lib/utils/constants'
-import {RedditAPIError} from '@/lib/utils/errors'
 import {
-  buildFeedUrlPath,
+  isValidMultiredditPath,
   isValidPostId,
   isValidSubredditName,
   isValidUsername
 } from '@/lib/utils/reddit-helpers'
-import {
-  GENERIC_SERVER_ERROR,
-  getHeaders,
-  getRequestMetadata,
-  handleFetchError,
-  validateRedditUrl
-} from './_helpers'
+import {GENERIC_SERVER_ERROR} from './_helpers'
+import {redditFetch} from './redditFetch'
+
+/**
+ * Build the relative URL path for a subreddit feed, home feed, or multireddit.
+ * Validates the subreddit input to prevent SSRF and path traversal.
+ *
+ * @param subreddit - Subreddit name, 'home', empty string, or multireddit path
+ * @param sort - Feed sort order
+ * @returns Relative URL path starting with '/'
+ * @throws {Error} If subreddit name or multireddit path is invalid
+ */
+function buildFeedRelativePath(subreddit: string, sort: string): string {
+  if (subreddit === '' || subreddit === 'home') {
+    return `/${sort}.json`
+  }
+
+  if (subreddit.startsWith('user/')) {
+    if (!isValidMultiredditPath(subreddit)) {
+      throw new Error('Invalid multireddit path format')
+    }
+    return `/${subreddit}/${sort}.json`
+  }
+
+  if (!isValidSubredditName(subreddit)) {
+    throw new Error('Invalid subreddit name')
+  }
+
+  return `/r/${subreddit}/${sort}.json`
+}
 
 /**
  * Fetch posts from a subreddit, user home feed, or multireddit.
@@ -52,11 +74,9 @@ export async function fetchPosts(
   timeFilter?: TimeFilter
 ): Promise<{posts: RedditPost[]; after: string | null}> {
   try {
-    const {headers, baseUrl} = await getHeaders()
-
-    let urlPath: string
+    let path: string
     try {
-      urlPath = buildFeedUrlPath(baseUrl, subreddit, sort)
+      path = buildFeedRelativePath(subreddit, sort)
     } catch (error) {
       logger.error('Invalid subreddit parameter', {
         error: error instanceof Error ? error.message : String(error),
@@ -66,31 +86,23 @@ export async function fetchPosts(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const url = new URL(urlPath)
-    validateRedditUrl(url.toString())
-
+    const searchParams: Record<string, string> = {
+      limit: DEFAULT_POST_LIMIT.toString()
+    }
     if (after) {
-      url.searchParams.set('after', after)
+      searchParams.after = after
     }
     if (timeFilter && (sort === 'top' || sort === 'controversial')) {
-      url.searchParams.set('t', timeFilter)
+      searchParams.t = timeFilter
     }
-    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-    url.searchParams.set('raw_json', '1')
 
-    const response = await fetch(url.toString(), {
-      headers,
-      next: {
-        revalidate: CACHE_POSTS,
-        tags: ['posts', subreddit]
-      }
+    const data = await redditFetch<ApiSubredditPostsResponse>(path, {
+      searchParams,
+      cache: {revalidate: CACHE_POSTS, tags: ['posts', subreddit]},
+      operation: 'fetchPosts',
+      resource: subreddit
     })
 
-    if (!response.ok) {
-      await handleFetchError(response, url, 'fetchPosts', subreddit)
-    }
-
-    const data: ApiSubredditPostsResponse = await response.json()
     const posts = (data.data?.children?.map((child) => child.data) ??
       []) as RedditPost[]
     const afterCursor = data.data?.after ?? null
@@ -144,55 +156,20 @@ export async function fetchPost(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
-    const url = `${baseUrl}/r/${subreddit}/comments/${postId}.json?raw_json=1&sort=${sort}`
-    validateRedditUrl(url)
-
-    const response = await fetch(url, {
-      headers,
-      next: {
-        revalidate: CACHE_COMMENTS,
-        tags: ['post', postId]
-      }
+    const [postData, commentsData] = await redditFetch<
+      [ApiSubredditPostsResponse, ApiSubredditPostsResponse]
+    >(`/r/${subreddit}/comments/${postId}.json`, {
+      searchParams: {sort},
+      cache: {revalidate: CACHE_COMMENTS, tags: ['post', postId]},
+      operation: 'fetchPost',
+      resource: `${subreddit}/${postId}`
     })
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      const requestMetadata = await getRequestMetadata()
-
-      logger.error('Failed to fetch post', {
-        url,
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        isAuthenticated,
-        errorBody,
-        context: 'fetchPost',
-        postId,
-        subreddit,
-        ...requestMetadata
-      })
-
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'fetchPost',
-        url,
-        'GET',
-        {subreddit, postId},
-        response.status
-      )
-    }
-
-    const [postData, commentsData] = await response.json()
-    const post = postData.data.children[0]?.data as RedditPost
-    const comments = commentsData.data.children
-      .filter(
-        (child: {
-          kind: string
-          data: unknown
-        }): child is {kind: 't1'; data: RedditComment} => child.kind === 't1'
-      )
-      .map((child: {kind: 't1'; data: RedditComment}) => child.data)
+    const post = postData.data?.children?.[0]?.data as RedditPost
+    const rawComments = commentsData.data?.children ?? []
+    const comments = rawComments
+      .filter((child) => child.kind === 't1' && child.data !== undefined)
+      .map((child) => child.data as RedditComment)
 
     logger.debug('Fetched post successfully', {
       postId,
@@ -236,57 +213,27 @@ export async function fetchUserPosts(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
-    const url = new URL(`${baseUrl}/user/${username}/submitted.json`)
-    validateRedditUrl(url.toString())
-
-    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-    url.searchParams.set('raw_json', '1')
-    url.searchParams.set('sort', sort)
-
+    const searchParams: Record<string, string> = {
+      limit: DEFAULT_POST_LIMIT.toString(),
+      sort
+    }
     if (after) {
-      url.searchParams.set('after', after)
+      searchParams.after = after
     }
     if (timeFilter && (sort === 'top' || sort === 'controversial')) {
-      url.searchParams.set('t', timeFilter)
+      searchParams.t = timeFilter
     }
 
-    const response = await fetch(url.toString(), {
-      headers,
-      next: {
-        revalidate: CACHE_USER_INFO,
-        tags: ['user-posts', username]
+    const data = await redditFetch<ApiSubredditPostsResponse>(
+      `/user/${username}/submitted.json`,
+      {
+        searchParams,
+        cache: {revalidate: CACHE_USER_INFO, tags: ['user-posts', username]},
+        operation: 'fetchUserPosts',
+        resource: username
       }
-    })
+    )
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      const requestMetadata = await getRequestMetadata()
-
-      logger.error('Failed to fetch user posts', {
-        url: url.toString(),
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        isAuthenticated,
-        errorBody,
-        context: 'fetchUserPosts',
-        username,
-        sort,
-        ...requestMetadata
-      })
-
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'fetchUserPosts',
-        url.toString(),
-        'GET',
-        {username, sort},
-        response.status
-      )
-    }
-
-    const data: ApiSubredditPostsResponse = await response.json()
     const posts = (data.data?.children?.map((child) => child.data) ??
       []) as RedditPost[]
     const afterCursor = data.data?.after ?? null

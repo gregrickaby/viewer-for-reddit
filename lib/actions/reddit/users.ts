@@ -1,5 +1,6 @@
 'use server'
 
+import {getRedditContext} from '@/lib/auth/reddit-context'
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditPostsResponse,
@@ -16,19 +17,16 @@ import type {
 import {
   CACHE_SUBSCRIPTIONS,
   CACHE_USER_INFO,
-  DEFAULT_POST_LIMIT,
-  REDDIT_API_URL
+  DEFAULT_POST_LIMIT
 } from '@/lib/utils/constants'
-import {RedditAPIError} from '@/lib/utils/errors'
 import {isValidFullname, isValidUsername} from '@/lib/utils/reddit-helpers'
 import {revalidatePath} from 'next/cache'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
-  getHeaders,
-  getRequestMetadata,
-  validateRedditUrl
+  assertRedditUrl
 } from './_helpers'
+import {redditFetch} from './redditFetch'
 
 /**
  * Fetch Reddit user profile information.
@@ -48,59 +46,24 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
-    const url = `${baseUrl}/user/${username}/about.json?raw_json=1`
-    validateRedditUrl(url)
-
-    const response = await fetch(url, {
-      headers,
-      next: {
-        revalidate: CACHE_USER_INFO,
-        tags: ['user', username]
+    const data = await redditFetch<ApiUserProfileResponse>(
+      `/user/${username}/about.json`,
+      {
+        cache: {revalidate: CACHE_USER_INFO, tags: ['user', username]},
+        operation: 'fetchUserInfo',
+        resource: username
       }
-    })
+    )
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      const requestMetadata = await getRequestMetadata()
-
-      logger.error('Failed to fetch user info', {
-        url,
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        isAuthenticated,
-        errorBody,
-        context: 'fetchUserInfo',
-        username,
-        ...requestMetadata
-      })
-
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'fetchUserInfo',
-        url,
-        'GET',
-        {username},
-        response.status
-      )
-    }
-
-    const data: ApiUserProfileResponse = await response.json()
     if (!data.data) {
       logger.error('Invalid user data response', {
         data,
         context: 'fetchUserInfo',
         username
       })
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'fetchUserInfo',
-        url,
-        'GET',
-        {username, reason: 'invalid_response'}
-      )
+      throw new Error(GENERIC_SERVER_ERROR)
     }
+
     const userData = data.data as RedditUser
 
     logger.debug('Fetched user info successfully', {
@@ -128,7 +91,7 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
  */
 export async function getCurrentUserAvatar(): Promise<string | null> {
   try {
-    const {isAuthenticated, username} = await getHeaders()
+    const {isAuthenticated, username} = await getRedditContext()
     if (!isAuthenticated || !username) {
       return null
     }
@@ -170,57 +133,27 @@ export async function fetchUserComments(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
-    const url = new URL(`${baseUrl}/user/${username}/comments.json`)
-    validateRedditUrl(url.toString())
-
-    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-    url.searchParams.set('raw_json', '1')
-    url.searchParams.set('sort', sort)
-
+    const searchParams: Record<string, string> = {
+      limit: DEFAULT_POST_LIMIT.toString(),
+      sort
+    }
     if (after) {
-      url.searchParams.set('after', after)
+      searchParams.after = after
     }
     if (timeFilter && (sort === 'top' || sort === 'controversial')) {
-      url.searchParams.set('t', timeFilter)
+      searchParams.t = timeFilter
     }
 
-    const response = await fetch(url.toString(), {
-      headers,
-      next: {
-        revalidate: CACHE_USER_INFO,
-        tags: ['user-comments', username]
+    const data = await redditFetch<RedditListing<RedditComment>>(
+      `/user/${username}/comments.json`,
+      {
+        searchParams,
+        cache: {revalidate: CACHE_USER_INFO, tags: ['user-comments', username]},
+        operation: 'fetchUserComments',
+        resource: username
       }
-    })
+    )
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      const requestMetadata = await getRequestMetadata()
-
-      logger.error('Failed to fetch user comments', {
-        url: url.toString(),
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        isAuthenticated,
-        errorBody,
-        context: 'fetchUserComments',
-        username,
-        sort,
-        ...requestMetadata
-      })
-
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'fetchUserComments',
-        url.toString(),
-        'GET',
-        {username, sort},
-        response.status
-      )
-    }
-
-    const data = (await response.json()) as RedditListing<RedditComment>
     const comments = (data.data?.children?.map((child) => child.data) ??
       []) as RedditComment[]
     const afterCursor = data.data?.after ?? null
@@ -265,13 +198,13 @@ export async function fetchSavedItems(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const url = new URL(`${REDDIT_API_URL}/user/${username}/saved.json`)
-    validateRedditUrl(url.toString())
+    const url = new URL(`${baseUrl}/user/${username}/saved.json`)
+    assertRedditUrl(url.toString())
 
     url.searchParams.set('limit', '100')
     url.searchParams.set('raw_json', '1')
@@ -370,13 +303,13 @@ export async function fetchFollowedUsers(): Promise<
   }>
 > {
   try {
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return []
     }
 
-    const url = `${REDDIT_API_URL}/api/v1/me/friends`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/v1/me/friends`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       headers,
@@ -420,7 +353,7 @@ export async function fetchFollowedUsers(): Promise<
 
 /**
  * Follow a Reddit user.
- * Server Action — requires `subscribe` OAuth scope.
+ * Server Action -- requires `subscribe` OAuth scope.
  *
  * @param username - Reddit username to follow
  * @returns Promise resolving to success/error result
@@ -437,13 +370,13 @@ export async function followUser(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/v1/me/friends/${encodeURIComponent(username)}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/v1/me/friends/${encodeURIComponent(username)}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       method: 'PUT',
@@ -483,7 +416,7 @@ export async function followUser(
 
 /**
  * Unfollow a Reddit user.
- * Server Action — requires `subscribe` OAuth scope.
+ * Server Action -- requires `subscribe` OAuth scope.
  *
  * @param username - Reddit username to unfollow
  * @returns Promise resolving to success/error result
@@ -500,13 +433,13 @@ export async function unfollowUser(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/v1/me/friends/${encodeURIComponent(username)}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/v1/me/friends/${encodeURIComponent(username)}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       method: 'DELETE',
@@ -558,14 +491,15 @@ export async function savePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated, username} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated, username} =
+      await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const endpoint = save ? 'save' : 'unsave'
-    const url = `${REDDIT_API_URL}/api/${endpoint}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/${endpoint}`
+    assertRedditUrl(url)
 
     const res = await fetch(url, {
       method: 'POST',
@@ -626,13 +560,13 @@ export async function votePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/vote`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/vote`
+    assertRedditUrl(url)
 
     const res = await fetch(url, {
       method: 'POST',

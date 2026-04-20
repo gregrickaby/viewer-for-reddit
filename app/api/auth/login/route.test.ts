@@ -19,7 +19,7 @@ const mockUrl = new URL(
   `https://reddit.com/api/v1/authorize?state=${mockState}&scope=identity+read+vote+subscribe+mysubreddits+save+submit+edit+history&duration=permanent`
 )
 
-vi.mock('@/lib/reddit-auth', () => ({
+vi.mock('@/lib/utils/reddit-auth', () => ({
   createLoginUrl: vi.fn(async () => ({url: mockUrl, state: mockState}))
 }))
 

@@ -1,18 +1,9 @@
-import {getSession} from '@/lib/auth/session'
+import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
+import {persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
-import type {SessionData} from '@/lib/types/reddit'
 import {getEnvVar} from '@/lib/utils/env'
-import {exchangeCode} from '@/lib/utils/reddit-auth'
 import {NextRequest, NextResponse} from 'next/server'
 import {timingSafeEqual} from 'node:crypto'
-
-/**
- * Reddit user data from /api/v1/me endpoint.
- */
-interface RedditUserData {
-  name: string
-  id: string
-}
 
 /**
  * Resolves the host and protocol from request headers.
@@ -41,106 +32,17 @@ function resolveHostFromRequest(request: NextRequest): {
 }
 
 /**
- * Fetches authenticated user data from Reddit API.
- *
- * @param accessToken - OAuth access token
- * @returns User data (username, user ID)
- * @throws Error if Reddit API request fails
- */
-async function fetchUserData(accessToken: string): Promise<RedditUserData> {
-  const url = 'https://oauth.reddit.com/api/v1/me'
-  const userResponse = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'User-Agent': getEnvVar('USER_AGENT')
-    }
-  })
-
-  if (!userResponse.ok) {
-    const errorText = await userResponse.text()
-    logger.error('Failed to fetch Reddit user data', {
-      url,
-      method: 'GET',
-      status: userResponse.status,
-      statusText: userResponse.statusText,
-      errorBody: errorText,
-      context: 'fetchUserData'
-    })
-    throw new Error(`Reddit API responded with ${userResponse.status}`)
-  }
-
-  return userResponse.json()
-}
-
-/**
- * Validates OAuth code and fetches tokens and user data.
- *
- * @param code - OAuth authorization code from Reddit
- * @returns Session data with tokens, expiration, and user info
- * @throws Error if token validation or user data fetch fails
- */
-async function handleTokens(code: string): Promise<SessionData> {
-  const tokens = await exchangeCode(code)
-  const accessToken = tokens.accessToken()
-
-  let refreshToken = ''
-  try {
-    refreshToken = tokens.refreshToken() || ''
-  } catch {
-    logger.info('No refresh token provided by Reddit', {
-      context: 'handleTokens'
-    })
-  }
-
-  logger.debug('Tokens received', {
-    hasAccessToken: !!accessToken,
-    hasRefreshToken: !!refreshToken,
-    context: 'handleTokens'
-  })
-
-  const userData = await fetchUserData(accessToken)
-
-  logger.info('User authenticated', {
-    username: userData.name,
-    context: 'handleTokens'
-  })
-
-  return {
-    accessToken,
-    refreshToken,
-    expiresAt: tokens.accessTokenExpiresAt()?.getTime() || Date.now() + 3600000,
-    username: userData.name,
-    userId: userData.id
-  }
-}
-
-/**
  * GET handler for Reddit OAuth callback.
- * Validates OAuth state, exchanges code for tokens, stores session.
+ * Validates OAuth state, delegates to {@link processOAuthCallback} for
+ * token exchange and identity resolution, then persists the session.
  *
  * Security measures:
- * - CSRF protection via state parameter validation
+ * - CSRF protection via timing-safe state parameter comparison
  * - Redirect URI monitoring (logged for security review)
- * - Secure HTTP-only session cookies
- * - Error handling for various failure modes
- *
- * Flow:
- * 1. Validate state parameter (CSRF protection)
- * 2. Log redirect URI for monitoring (validation delegated to Reddit OAuth)
- * 3. Exchange authorization code for access/refresh tokens
- * 4. Fetch user data from Reddit API
- * 5. Store session data in encrypted cookie
- * 6. Redirect to homepage
+ * - Secure HTTP-only session cookies via iron-session
  *
  * @param request - Next.js request object
  * @returns Redirect to homepage on success, error response on failure
- *
- * @example
- * ```typescript
- * // Reddit redirects to /api/auth/callback/reddit?code=xxx&state=yyy
- * // Handler validates, exchanges code for tokens, saves session
- * // Redirects to homepage with authenticated session
- * ```
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const url = new URL(request.url)
@@ -210,21 +112,41 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const sessionData = await handleTokens(code)
+    const result = await processOAuthCallback(code)
 
-    const session = await getSession()
-    session.accessToken = sessionData.accessToken
-    session.refreshToken = sessionData.refreshToken
-    session.expiresAt = sessionData.expiresAt
-    session.username = sessionData.username
-    session.userId = sessionData.userId
-    await session.save()
+    if (!result.ok) {
+      logger.error('OAuth callback processing failed', {
+        reason: result.reason,
+        message: result.message,
+        context: 'OAuthCallback'
+      })
+
+      // Map failure reasons to HTTP status codes
+      if (result.message.includes('401')) {
+        return new NextResponse('Authentication expired', {status: 401})
+      }
+      if (result.message.includes('429') || result.message.includes('rate')) {
+        return new NextResponse('Rate limit exceeded', {status: 429})
+      }
+      if (
+        result.message.includes('503') ||
+        result.message.includes('unavailable')
+      ) {
+        return new NextResponse('Reddit API unavailable', {status: 503})
+      }
+
+      return new NextResponse(`Authentication failed: ${result.message}`, {
+        status: 500
+      })
+    }
+
+    await persistSession(result.sessionData)
 
     logger.info('OAuth authentication successful', {
-      username: sessionData.username,
-      userId: sessionData.userId,
-      hasRefreshToken: !!sessionData.refreshToken,
-      expiresIn: `${Math.round((sessionData.expiresAt - Date.now()) / 1000 / 60)}min`,
+      username: result.sessionData.username,
+      userId: result.sessionData.userId,
+      hasRefreshToken: !!result.sessionData.refreshToken,
+      expiresIn: `${Math.round((result.sessionData.expiresAt - Date.now()) / 1000 / 60)}min`,
       context: 'OAuthCallback'
     })
 
@@ -242,22 +164,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       context: 'OAuthCallback'
     })
 
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-
-    // Return specific status codes based on error type
-    if (errorMessage.includes('401') || errorMessage.includes('unauthorized')) {
-      return new NextResponse('Authentication expired', {status: 401})
-    }
-    if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
-      return new NextResponse('Rate limit exceeded', {status: 429})
-    }
-    if (errorMessage.includes('503') || errorMessage.includes('unavailable')) {
-      return new NextResponse('Reddit API unavailable', {status: 503})
-    }
-
-    return new NextResponse(`Authentication failed: ${errorMessage}`, {
-      status: 500
-    })
+    return new NextResponse(
+      `Authentication failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      {status: 500}
+    )
   }
 }

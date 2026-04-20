@@ -1,15 +1,16 @@
 'use server'
 
+import {getRedditContext} from '@/lib/auth/reddit-context'
 import {logger} from '@/lib/axiom/server'
 import type {RedditMultiredditResponse} from '@/lib/types/reddit'
-import {CACHE_SUBSCRIPTIONS, REDDIT_API_URL} from '@/lib/utils/constants'
+import {CACHE_SUBSCRIPTIONS} from '@/lib/utils/constants'
 import {
   isValidMultiredditPath,
   isValidSubredditName,
   isValidUsername
 } from '@/lib/utils/reddit-helpers'
 import {revalidatePath} from 'next/cache'
-import {GENERIC_ACTION_ERROR, getHeaders, validateRedditUrl} from './_helpers'
+import {GENERIC_ACTION_ERROR, assertRedditUrl} from './_helpers'
 
 // Validation regex for multireddit URL slugs (3-50 word chars)
 const MULTI_NAME_PATTERN = /^\w{3,50}$/
@@ -31,13 +32,13 @@ export async function fetchMultireddits(): Promise<
   }>
 > {
   try {
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return []
     }
 
-    const url = `${REDDIT_API_URL}/api/multi/mine`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi/mine`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       headers,
@@ -81,7 +82,7 @@ export async function fetchMultireddits(): Promise<
 
 /**
  * Create a new multireddit for the authenticated user.
- * Server Action — requires `mysubreddits` OAuth scope.
+ * Server Action -- requires `mysubreddits` OAuth scope.
  *
  * @param name - URL slug for the multireddit (3-50 word characters)
  * @param displayName - Human-readable display name (1-50 characters)
@@ -110,13 +111,13 @@ export async function createMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/multi`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       method: 'POST',
@@ -165,7 +166,7 @@ export async function createMultireddit(
 
 /**
  * Delete a multireddit owned by the authenticated user.
- * Server Action — requires `mysubreddits` OAuth scope.
+ * Server Action -- requires `mysubreddits` OAuth scope.
  *
  * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
  * @returns Promise resolving to success status and optional error
@@ -183,13 +184,13 @@ export async function deleteMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi/${normalizedPath}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {method: 'DELETE', headers})
 
@@ -222,7 +223,7 @@ export async function deleteMultireddit(
 
 /**
  * Update a multireddit's display name.
- * Server Action — requires `mysubreddits` OAuth scope.
+ * Server Action -- requires `mysubreddits` OAuth scope.
  *
  * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
  * @param displayName - New human-readable display name (1-50 characters)
@@ -250,13 +251,13 @@ export async function updateMultiredditName(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi/${normalizedPath}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       method: 'PUT',
@@ -301,7 +302,7 @@ export async function updateMultiredditName(
 
 /**
  * Add a subreddit to a multireddit.
- * Server Action — requires `mysubreddits` OAuth scope.
+ * Server Action -- requires `mysubreddits` OAuth scope.
  *
  * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
  * @param subredditName - Subreddit name to add (without 'r/' prefix)
@@ -330,13 +331,13 @@ export async function addSubredditToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       method: 'PUT',
@@ -382,7 +383,7 @@ export async function addSubredditToMultireddit(
 
 /**
  * Remove a subreddit from a multireddit.
- * Server Action — requires `mysubreddits` OAuth scope.
+ * Server Action -- requires `mysubreddits` OAuth scope.
  *
  * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
  * @param subredditName - Subreddit name to remove (without 'r/' prefix)
@@ -411,13 +412,13 @@ export async function removeSubredditFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {method: 'DELETE', headers})
 
@@ -454,7 +455,7 @@ export async function removeSubredditFromMultireddit(
 
 /**
  * Add a user to a multireddit via their user profile subreddit (u_username).
- * Server Action — requires `mysubreddits` OAuth scope.
+ * Server Action -- requires `mysubreddits` OAuth scope.
  *
  * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
  * @param username - Reddit username to add (without 'u/' prefix)
@@ -483,14 +484,14 @@ export async function addUserToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const userSubreddit = `u_${cleanUsername}`
-    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       method: 'PUT',
@@ -536,7 +537,7 @@ export async function addUserToMultireddit(
 
 /**
  * Remove a user from a multireddit via their user profile subreddit (u_username).
- * Server Action — requires `mysubreddits` OAuth scope.
+ * Server Action -- requires `mysubreddits` OAuth scope.
  *
  * @param multiPath - Multireddit path (e.g., '/user/username/m/multiname')
  * @param username - Reddit username to remove (without 'u/' prefix)
@@ -565,14 +566,14 @@ export async function removeUserFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
     if (!isAuthenticated) {
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     const userSubreddit = `u_${cleanUsername}`
-    const url = `${REDDIT_API_URL}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
-    validateRedditUrl(url)
+    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
+    assertRedditUrl(url)
 
     const response = await fetch(url, {method: 'DELETE', headers})
 

@@ -1,6 +1,5 @@
-import {http, HttpResponse, server} from '@/test-utils'
 import {NextRequest} from 'next/server'
-import {beforeEach, describe, expect, it, vi, type Mock} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock dependencies before imports
 vi.mock('@/lib/utils/env', () => ({
@@ -24,31 +23,24 @@ vi.mock('@/lib/axiom/server', () => ({
 }))
 
 vi.mock('@/lib/auth/session', () => ({
-  getSession: vi.fn(async () => ({
-    accessToken: undefined,
-    refreshToken: undefined,
-    expiresAt: undefined,
-    username: undefined,
-    userId: undefined,
-    save: vi.fn()
-  }))
+  persistSession: vi.fn(async () => {})
 }))
 
-let mockExchangeCode: Mock
-
-vi.mock('@/lib/reddit-auth', () => ({
-  exchangeCode: (...args: unknown[]) => mockExchangeCode(...args)
+vi.mock('@/lib/auth/processOAuthCallback', () => ({
+  processOAuthCallback: vi.fn()
 }))
 
 // Import after mocks
-import {getSession} from '@/lib/auth/session'
+import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
+import {persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import {getEnvVar} from '@/lib/utils/env'
 import {GET} from './route'
 
 const mockGetEnvVar = vi.mocked(getEnvVar)
 const mockLogger = vi.mocked(logger)
-const mockGetSession = vi.mocked(getSession)
+const mockProcessOAuthCallback = vi.mocked(processOAuthCallback)
+const mockPersistSession = vi.mocked(persistSession)
 
 describe('GET /api/auth/callback/reddit', () => {
   const validState = 'test-state-123'
@@ -56,14 +48,6 @@ describe('GET /api/auth/callback/reddit', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-
-    // Default token mock
-    const mockTokens = {
-      accessToken: vi.fn(() => 'test-access-token'),
-      refreshToken: vi.fn(() => 'test-refresh-token'),
-      accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
-    }
-    mockExchangeCode = vi.fn().mockResolvedValue(mockTokens)
 
     mockGetEnvVar.mockImplementation((key: string) => {
       if (key === 'REDDIT_REDIRECT_URI')
@@ -73,24 +57,20 @@ describe('GET /api/auth/callback/reddit', () => {
       return ''
     })
 
-    // Set up MSW handler for successful user data fetch
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.json({
-          name: 'testuser',
-          id: 't2_user123'
-        })
-      })
-    )
+    // Default: successful OAuth callback
+    mockProcessOAuthCallback.mockResolvedValue({
+      ok: true,
+      sessionData: {
+        accessToken: 'test-access-token',
+        refreshToken: 'test-refresh-token',
+        expiresAt: Date.now() + 3600000,
+        username: 'testuser',
+        userId: 't2_user123'
+      }
+    })
   })
 
   it('successfully completes OAuth flow', async () => {
-    const mockSave = vi.fn()
-    mockGetSession.mockResolvedValue({
-      accessToken: undefined,
-      save: mockSave
-    } as any)
-
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
@@ -108,20 +88,22 @@ describe('GET /api/auth/callback/reddit', () => {
     expect(response.status).toBe(307) // Redirect
     const location = response.headers.get('location')
     expect(location).toBe('https://example.com/')
-    expect(mockSave).toHaveBeenCalledTimes(1)
+    expect(mockPersistSession).toHaveBeenCalledTimes(1)
   })
 
   it('saves session data correctly', async () => {
-    const sessionData: any = {
-      accessToken: undefined,
-      refreshToken: undefined,
-      expiresAt: undefined,
-      username: undefined,
-      userId: undefined,
-      save: vi.fn()
+    const sessionData = {
+      accessToken: 'test-access-token',
+      refreshToken: 'test-refresh-token',
+      expiresAt: Date.now() + 3600000,
+      username: 'testuser',
+      userId: 't2_user123'
     }
 
-    mockGetSession.mockResolvedValue(sessionData)
+    mockProcessOAuthCallback.mockResolvedValue({
+      ok: true,
+      sessionData
+    })
 
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
@@ -136,18 +118,10 @@ describe('GET /api/auth/callback/reddit', () => {
 
     await GET(request)
 
-    expect(sessionData.accessToken).toBe('test-access-token')
-    expect(sessionData.refreshToken).toBe('test-refresh-token')
-    expect(sessionData.username).toBe('testuser')
-    expect(sessionData.userId).toBe('t2_user123')
-    expect(sessionData.save).toHaveBeenCalled()
+    expect(mockPersistSession).toHaveBeenCalledWith(sessionData)
   })
 
   it('deletes state cookie after successful auth', async () => {
-    mockGetSession.mockResolvedValue({
-      save: vi.fn()
-    } as any)
-
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
@@ -269,10 +243,6 @@ describe('GET /api/auth/callback/reddit', () => {
   })
 
   it('logs warning for mismatched redirect URI but continues', async () => {
-    mockGetSession.mockResolvedValue({
-      save: vi.fn()
-    } as any)
-
     const request = new NextRequest(
       `https://different.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
@@ -294,12 +264,12 @@ describe('GET /api/auth/callback/reddit', () => {
     )
   })
 
-  it('handles user data fetch failure', async () => {
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return new HttpResponse('Unauthorized', {status: 401})
-      })
-    )
+  it('handles user data fetch failure (401)', async () => {
+    mockProcessOAuthCallback.mockResolvedValue({
+      ok: false,
+      reason: 'identity_failed',
+      message: 'Reddit API responded with 401'
+    })
 
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
@@ -319,11 +289,11 @@ describe('GET /api/auth/callback/reddit', () => {
   })
 
   it('handles rate limit error (429)', async () => {
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return new HttpResponse('Rate limit exceeded', {status: 429})
-      })
-    )
+    mockProcessOAuthCallback.mockResolvedValue({
+      ok: false,
+      reason: 'identity_failed',
+      message: 'Reddit API responded with 429'
+    })
 
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
@@ -343,11 +313,11 @@ describe('GET /api/auth/callback/reddit', () => {
   })
 
   it('handles Reddit API unavailable (503)', async () => {
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return new HttpResponse('Service unavailable', {status: 503})
-      })
-    )
+    mockProcessOAuthCallback.mockResolvedValue({
+      ok: false,
+      reason: 'identity_failed',
+      message: 'Reddit API responded with 503'
+    })
 
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
@@ -367,11 +337,7 @@ describe('GET /api/auth/callback/reddit', () => {
   })
 
   it('handles generic authentication error', async () => {
-    server.use(
-      http.get('https://oauth.reddit.com/api/v1/me', () => {
-        return HttpResponse.error()
-      })
-    )
+    mockProcessOAuthCallback.mockRejectedValue(new Error('Unexpected failure'))
 
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
@@ -391,20 +357,16 @@ describe('GET /api/auth/callback/reddit', () => {
   })
 
   it('handles missing refresh token gracefully', async () => {
-    const mockTokens = {
-      accessToken: vi.fn(() => 'test-access-token'),
-      refreshToken: vi.fn(() => {
-        throw new Error('No refresh token')
-      }),
-      accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
-    }
-
-    mockExchangeCode.mockResolvedValue(mockTokens)
-
-    const sessionData: any = {
-      save: vi.fn()
-    }
-    mockGetSession.mockResolvedValue(sessionData)
+    mockProcessOAuthCallback.mockResolvedValue({
+      ok: true,
+      sessionData: {
+        accessToken: 'test-access-token',
+        refreshToken: '',
+        expiresAt: Date.now() + 3600000,
+        username: 'testuser',
+        userId: 't2_user123'
+      }
+    })
 
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
@@ -420,18 +382,12 @@ describe('GET /api/auth/callback/reddit', () => {
     const response = await GET(request)
 
     expect(response.status).toBe(307)
-    expect(sessionData.refreshToken).toBe('')
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      'No refresh token provided by Reddit',
-      expect.objectContaining({context: 'handleTokens'})
+    expect(mockPersistSession).toHaveBeenCalledWith(
+      expect.objectContaining({refreshToken: ''})
     )
   })
 
   it('logs authentication flow', async () => {
-    mockGetSession.mockResolvedValue({
-      save: vi.fn()
-    } as any)
-
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {
@@ -451,16 +407,12 @@ describe('GET /api/auth/callback/reddit', () => {
     )
 
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'User authenticated',
-      expect.objectContaining({username: 'testuser', context: 'handleTokens'})
+      'OAuth authentication successful',
+      expect.objectContaining({username: 'testuser', context: 'OAuthCallback'})
     )
   })
 
   it('handles missing host headers gracefully', async () => {
-    mockGetSession.mockResolvedValue({
-      save: vi.fn()
-    } as any)
-
     const request = new NextRequest(
       `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
       {

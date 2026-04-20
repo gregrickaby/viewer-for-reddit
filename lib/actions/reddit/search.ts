@@ -1,5 +1,6 @@
 'use server'
 
+import {getRedditContext} from '@/lib/auth/reddit-context'
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditPostsResponse,
@@ -14,15 +15,13 @@ import {
   DEFAULT_POST_LIMIT,
   ONE_MINUTE
 } from '@/lib/utils/constants'
-import {RedditAPIError} from '@/lib/utils/errors'
 import {isValidSubredditName} from '@/lib/utils/reddit-helpers'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
-  getHeaders,
-  getRequestMetadata,
-  validateRedditUrl
+  assertRedditUrl
 } from './_helpers'
+import {redditFetch} from './redditFetch'
 
 /**
  * Search Reddit for posts matching a query.
@@ -46,53 +45,25 @@ export async function searchReddit(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
-    const url = new URL(`${baseUrl}/search.json`)
-    validateRedditUrl(url.toString())
-
-    url.searchParams.set('q', query)
-    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-    url.searchParams.set('raw_json', '1')
-    url.searchParams.set('include_over_18', 'on')
+    const searchParams: Record<string, string> = {
+      q: query,
+      limit: DEFAULT_POST_LIMIT.toString(),
+      include_over_18: 'on'
+    }
     if (after) {
-      url.searchParams.set('after', after)
+      searchParams.after = after
     }
 
-    const response = await fetch(url.toString(), {
-      headers,
-      next: {
+    const data = await redditFetch<ApiSubredditPostsResponse>('/search.json', {
+      searchParams,
+      cache: {
         revalidate: CACHE_SEARCH,
         tags: ['search', query]
-      }
+      },
+      operation: 'searchReddit',
+      resource: query
     })
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      const requestMetadata = await getRequestMetadata()
-
-      logger.error('Search request failed', {
-        url: url.toString(),
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        isAuthenticated,
-        errorBody,
-        context: 'searchReddit',
-        query,
-        ...requestMetadata
-      })
-
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'searchReddit',
-        url.toString(),
-        'GET',
-        {query},
-        response.status
-      )
-    }
-
-    const data: ApiSubredditPostsResponse = await response.json()
     const posts = (data.data?.children?.map((child) => child.data) ??
       []) as RedditPost[]
     const afterCursor = data.data?.after ?? null
@@ -148,59 +119,33 @@ export async function searchSubreddit(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
-    const url = new URL(`${baseUrl}/r/${subreddit}/search.json`)
-    validateRedditUrl(url.toString())
-
-    url.searchParams.set('q', query)
-    url.searchParams.set('restrict_sr', 'true')
-    url.searchParams.set('limit', DEFAULT_POST_LIMIT.toString())
-    url.searchParams.set('raw_json', '1')
-    url.searchParams.set('include_over_18', 'on')
-    url.searchParams.set('sort', sort)
+    const searchParams: Record<string, string> = {
+      q: query,
+      restrict_sr: 'true',
+      limit: DEFAULT_POST_LIMIT.toString(),
+      include_over_18: 'on',
+      sort
+    }
     if (after) {
-      url.searchParams.set('after', after)
+      searchParams.after = after
     }
     if (time && (sort === 'top' || sort === 'relevance')) {
-      url.searchParams.set('t', time)
+      searchParams.t = time
     }
 
-    const response = await fetch(url.toString(), {
-      headers,
-      next: {
-        revalidate: CACHE_SEARCH,
-        tags: ['search', subreddit, query]
+    const data = await redditFetch<ApiSubredditPostsResponse>(
+      `/r/${subreddit}/search.json`,
+      {
+        searchParams,
+        cache: {
+          revalidate: CACHE_SEARCH,
+          tags: ['search', subreddit, query]
+        },
+        operation: 'searchSubreddit',
+        resource: subreddit
       }
-    })
+    )
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      const requestMetadata = await getRequestMetadata()
-
-      logger.error('Subreddit search request failed', {
-        url: url.toString(),
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        isAuthenticated,
-        errorBody,
-        context: 'searchSubreddit',
-        subreddit,
-        query,
-        ...requestMetadata
-      })
-
-      throw new RedditAPIError(
-        GENERIC_SERVER_ERROR,
-        'searchSubreddit',
-        url.toString(),
-        'GET',
-        {subreddit, query},
-        response.status
-      )
-    }
-
-    const data: ApiSubredditPostsResponse = await response.json()
     const posts = (data.data?.children?.map((child) => child.data) ??
       []) as RedditPost[]
     const afterCursor = data.data?.after ?? null
@@ -229,6 +174,9 @@ export async function searchSubreddit(
  * Returns empty array for queries < 2 characters.
  * Results cached for 60 seconds.
  *
+ * Uses manual fetch with {@link getRedditContext} (not {@link redditFetch})
+ * because the custom rate-limit error message depends on `isAuthenticated`.
+ *
  * @param query - Search query (minimum 2 characters)
  * @returns Promise resolving to success status, results array, and optional error
  */
@@ -250,7 +198,7 @@ export async function searchSubreddits(query: string): Promise<{
   }
 
   try {
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
 
     const params = new URLSearchParams({
       query,
@@ -262,7 +210,7 @@ export async function searchSubreddits(query: string): Promise<{
     })
 
     const url = `${baseUrl}/api/subreddit_autocomplete_v2.json?${params}`
-    validateRedditUrl(url)
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       headers,
@@ -332,6 +280,9 @@ export async function searchSubreddits(query: string): Promise<{
  * Returns both communities and user profiles, tagged with a `type` field.
  * Results cached for 60 seconds.
  *
+ * Uses manual fetch with {@link getRedditContext} (not {@link redditFetch})
+ * because the custom rate-limit error message depends on `isAuthenticated`.
+ *
  * @param query - Search query (minimum 2 characters)
  * @returns Promise resolving to success status, results array, and optional error
  */
@@ -353,7 +304,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
   }
 
   try {
-    const {headers, baseUrl, isAuthenticated} = await getHeaders()
+    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
 
     const params = new URLSearchParams({
       query,
@@ -365,7 +316,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
     })
 
     const url = `${baseUrl}/api/subreddit_autocomplete_v2.json?${params}`
-    validateRedditUrl(url)
+    assertRedditUrl(url)
 
     const response = await fetch(url, {
       headers,

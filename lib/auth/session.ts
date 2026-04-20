@@ -108,3 +108,31 @@ export async function isSessionExpired(): Promise<boolean> {
   const isExpired = session.expiresAt ? session.expiresAt <= Date.now() : true
   return hasToken && isExpired
 }
+
+/**
+ * Persist complete session data to the encrypted cookie.
+ * Used after OAuth callback to store tokens and user info,
+ * and by the reddit-context module after token refresh.
+ *
+ * @param data - Session data to persist (tokens, expiry, user info)
+ *
+ * @example
+ * ```typescript
+ * await persistSession({
+ *   accessToken: 'abc',
+ *   refreshToken: 'def',
+ *   expiresAt: Date.now() + 3600000,
+ *   username: 'johndoe',
+ *   userId: 't2_abc123'
+ * })
+ * ```
+ */
+export async function persistSession(data: SessionData): Promise<void> {
+  const session = await getSession()
+  session.accessToken = data.accessToken
+  session.refreshToken = data.refreshToken
+  session.expiresAt = data.expiresAt
+  session.username = data.username
+  session.userId = data.userId
+  await session.save()
+}
