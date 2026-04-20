@@ -1,3 +1,4 @@
+import type {RedditAutocompleteResponse} from '@/lib/types/reddit'
 import {http, HttpResponse} from 'msw'
 import {searchMock} from '../../mocks/search'
 
@@ -56,13 +57,12 @@ export const searchHandlers = [
       const query = url.searchParams.get('query')
 
       if (!query || query.length < 3) {
-        return HttpResponse.json({
+        return HttpResponse.json<RedditAutocompleteResponse>({
           kind: 'Listing',
           data: {
             after: null,
+            before: null,
             dist: 0,
-            modhash: '',
-            geo_filter: '',
             children: []
           }
         })
@@ -70,20 +70,18 @@ export const searchHandlers = [
 
       if (query === 'filter') {
         // Test case with results that need filtering
-        return HttpResponse.json({
+        return HttpResponse.json<RedditAutocompleteResponse>({
           kind: 'Listing',
           data: {
             after: null,
+            before: null,
             dist: 3,
-            modhash: '',
-            geo_filter: '',
             children: [
               {
                 kind: 't5',
                 data: {
                   display_name: 'validsubreddit',
                   display_name_prefixed: 'r/validsubreddit',
-                  public_description: 'Valid subreddit',
                   community_icon: '',
                   icon_img: '',
                   subscribers: 1000,
@@ -93,9 +91,8 @@ export const searchHandlers = [
               {
                 kind: 't5',
                 data: {
-                  display_name: null, // Missing name - should be filtered
-                  display_name_prefixed: null,
-                  public_description: 'Invalid subreddit',
+                  display_name: '', // Missing name — filtered by action
+                  display_name_prefixed: '',
                   community_icon: '',
                   icon_img: '',
                   subscribers: 500,
@@ -105,9 +102,8 @@ export const searchHandlers = [
               {
                 kind: 't5',
                 data: {
-                  display_name: '', // Empty name - should be filtered
+                  display_name: '', // Empty name — filtered by action
                   display_name_prefixed: '',
-                  public_description: 'Another invalid',
                   community_icon: '',
                   icon_img: '',
                   subscribers: 300,
@@ -121,20 +117,18 @@ export const searchHandlers = [
 
       if (query === 'nsfw') {
         // Test NSFW counting
-        return HttpResponse.json({
+        return HttpResponse.json<RedditAutocompleteResponse>({
           kind: 'Listing',
           data: {
             after: null,
+            before: null,
             dist: 3,
-            modhash: '',
-            geo_filter: '',
             children: [
               {
                 kind: 't5',
                 data: {
                   display_name: 'sfw1',
                   display_name_prefixed: 'r/sfw1',
-                  public_description: 'SFW subreddit 1',
                   community_icon: '',
                   icon_img: '',
                   subscribers: 1000,
@@ -146,7 +140,6 @@ export const searchHandlers = [
                 data: {
                   display_name: 'nsfw1',
                   display_name_prefixed: 'r/nsfw1',
-                  public_description: 'NSFW subreddit 1',
                   community_icon: '',
                   icon_img: '',
                   subscribers: 800,
@@ -158,7 +151,6 @@ export const searchHandlers = [
                 data: {
                   display_name: 'nsfw2',
                   display_name_prefixed: 'r/nsfw2',
-                  public_description: 'NSFW subreddit 2',
                   community_icon: '',
                   icon_img: '',
                   subscribers: 600,

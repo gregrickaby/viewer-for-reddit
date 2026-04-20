@@ -5,6 +5,8 @@ import type {
   ApiSubredditPostsResponse,
   ApiUserProfileResponse,
   RedditComment,
+  RedditFollowedUsersResponse,
+  RedditListing,
   RedditPost,
   RedditUser,
   SavedItem,
@@ -218,7 +220,7 @@ export async function fetchUserComments(
       )
     }
 
-    const data: ApiSubredditPostsResponse = await response.json()
+    const data = (await response.json()) as RedditListing<RedditComment>
     const comments = (data.data?.children?.map((child) => child.data) ??
       []) as RedditComment[]
     const afterCursor = data.data?.after ?? null
@@ -392,16 +394,7 @@ export async function fetchFollowedUsers(): Promise<
       return []
     }
 
-    const data: {
-      data?: {
-        children?: Array<{
-          name: string
-          id: string
-          date: number
-          note?: string
-        }>
-      }
-    } = await response.json()
+    const data = (await response.json()) as RedditFollowedUsersResponse
 
     const following =
       data.data?.children?.map((user) => ({

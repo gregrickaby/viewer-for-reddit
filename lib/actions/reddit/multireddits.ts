@@ -1,6 +1,7 @@
 'use server'
 
 import {logger} from '@/lib/axiom/server'
+import type {RedditMultiredditResponse} from '@/lib/types/reddit'
 import {CACHE_SUBSCRIPTIONS, REDDIT_API_URL} from '@/lib/utils/constants'
 import {
   isValidMultiredditPath,
@@ -54,15 +55,7 @@ export async function fetchMultireddits(): Promise<
       return []
     }
 
-    const data: Array<{
-      data: {
-        name: string
-        display_name: string
-        path: string
-        icon_url?: string
-        subreddits?: Array<{name: string}>
-      }
-    }> = await response.json()
+    const data = (await response.json()) as RedditMultiredditResponse
 
     const multireddits = data.map((multi) => ({
       name: multi.data.name,

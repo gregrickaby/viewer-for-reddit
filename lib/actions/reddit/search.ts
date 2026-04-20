@@ -3,6 +3,7 @@
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditPostsResponse,
+  RedditAutocompleteResponse,
   RedditPost,
   SearchAutocompleteItem,
   SubredditItem,
@@ -294,20 +295,7 @@ export async function searchSubreddits(query: string): Promise<{
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const data: {
-      data?: {
-        children?: Array<{
-          data?: {
-            display_name?: string
-            display_name_prefixed?: string
-            icon_img?: string
-            community_icon?: string
-            subscribers?: number
-            over18?: boolean
-          }
-        }>
-      }
-    } = await response.json()
+    const data = (await response.json()) as RedditAutocompleteResponse
 
     const children = data?.data?.children || []
 
@@ -410,20 +398,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const data: {
-      data?: {
-        children?: Array<{
-          data?: {
-            display_name?: string
-            display_name_prefixed?: string
-            icon_img?: string
-            community_icon?: string
-            subscribers?: number
-            over18?: boolean
-          }
-        }>
-      }
-    } = await response.json()
+    const data = (await response.json()) as RedditAutocompleteResponse
 
     const children = data?.data?.children || []
 

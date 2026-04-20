@@ -216,16 +216,119 @@ export interface RedditCommentListing {
   }
 }
 
+/**
+ * A single child item in a Reddit Listing envelope.
+ * Reddit wraps every paginated item in `{ kind, data }`.
+ *
+ * @template T - The data shape of the item
+ */
+export interface RedditListingChild<T> {
+  kind: string
+  data: T
+}
+
+/**
+ * The Reddit Listing envelope — used by all paginated endpoints.
+ * Provides cursor-based pagination via `after` and `before`.
+ *
+ * @template T - The per-item data shape
+ */
 export interface RedditListing<T> {
   kind: 'Listing'
   data: {
     after: string | null
     before: string | null
-    children: Array<{
-      kind: string
-      data: T
-    }>
+    children: Array<RedditListingChild<T>>
     dist: number
+  }
+}
+
+// ============================================================================
+// Leaf types and composed response types for endpoints not covered by codegen
+// ============================================================================
+
+/**
+ * Per-item data shape for the subreddits/mine/subscriber Listing endpoint.
+ * Each child's `data` field matches this interface.
+ */
+export interface RedditSubscriptionItem {
+  display_name: string
+  display_name_prefixed: string
+  icon_img: string
+  community_icon: string
+  subscribers: number
+}
+
+/**
+ * Full response type for GET subreddits/mine/subscriber.
+ * A standard Reddit Listing of subscription items.
+ */
+export type RedditSubscriptionsResponse = RedditListing<RedditSubscriptionItem>
+
+/**
+ * Per-item data shape for the /api/multi/mine endpoint.
+ * Each array element's `data` field matches this interface.
+ */
+export interface RedditMultiredditItem {
+  name: string
+  display_name: string
+  path: string
+  icon_url?: string
+  subreddits?: Array<{name: string}>
+}
+
+/**
+ * Full response type for GET /api/multi/mine.
+ * Reddit returns a raw array of wrapped items — not a Listing envelope.
+ * Each element has `{ kind: 'LabeledMulti', data: RedditMultiredditItem }`.
+ */
+export type RedditMultiredditResponse = Array<{
+  kind: string
+  data: RedditMultiredditItem
+}>
+
+/**
+ * Per-item data shape for the /api/subreddit_autocomplete_v2 Listing endpoint.
+ * Fields are optional because the API may omit them for some results.
+ */
+export interface RedditAutocompleteItem {
+  display_name?: string
+  display_name_prefixed?: string
+  icon_img?: string
+  community_icon?: string
+  subscribers?: number
+  over18?: boolean
+}
+
+/**
+ * Full response type for GET /api/subreddit_autocomplete_v2.
+ * The v2 endpoint returns a standard Reddit Listing.
+ */
+export type RedditAutocompleteResponse = RedditListing<RedditAutocompleteItem>
+
+/**
+ * Per-item data shape for children in the /api/v1/me/friends response.
+ * The friends (UserList) endpoint does not wrap children in `{ kind, data }`.
+ */
+export interface RedditFollowedUserItem {
+  name: string
+  id: string
+  date: number
+  note?: string
+}
+
+/**
+ * Full response type for GET /api/v1/me/friends.
+ * Reddit returns a UserList (not a Listing): children are flat objects,
+ * not wrapped in `{ kind, data }` as in the Listing protocol.
+ * All fields are optional to match the defensive access pattern in callers.
+ */
+export interface RedditFollowedUsersResponse {
+  kind?: string
+  data?: {
+    children?: RedditFollowedUserItem[]
+    after?: string | null
+    before?: string | null
   }
 }
 

@@ -3,7 +3,8 @@
 import {logger} from '@/lib/axiom/server'
 import type {
   ApiSubredditAboutResponse,
-  RedditSubreddit
+  RedditSubreddit,
+  RedditSubscriptionsResponse
 } from '@/lib/types/reddit'
 import {
   CACHE_SUBREDDIT_INFO,
@@ -151,18 +152,13 @@ export async function fetchUserSubscriptions(): Promise<
         break
       }
 
-      const data = await response.json()
-      const subscriptions = data.data.children.map(
-        (child: {data: Record<string, unknown>}) => ({
-          name: child.data.display_name as string,
-          displayName: child.data.display_name_prefixed as string,
-          icon:
-            (child.data.icon_img as string) ||
-            (child.data.community_icon as string) ||
-            '',
-          subscribers: (child.data.subscribers as number) || 0
-        })
-      )
+      const data = (await response.json()) as RedditSubscriptionsResponse
+      const subscriptions = data.data.children.map((child) => ({
+        name: child.data.display_name,
+        displayName: child.data.display_name_prefixed,
+        icon: child.data.icon_img || child.data.community_icon || '',
+        subscribers: child.data.subscribers || 0
+      }))
 
       allSubscriptions.push(...subscriptions)
       after = data.data?.after || null

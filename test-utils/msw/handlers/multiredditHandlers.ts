@@ -1,10 +1,12 @@
+import type {RedditMultiredditResponse} from '@/lib/types/reddit'
 import {http, HttpResponse} from 'msw'
 
 export const multiredditHandlers = [
   // Fetch user's multireddits
   http.get('https://oauth.reddit.com/api/multi/mine.json', () => {
-    return HttpResponse.json([
+    return HttpResponse.json<RedditMultiredditResponse>([
       {
+        kind: 'LabeledMulti',
         data: {
           name: 'tech',
           display_name: 'Tech News',
@@ -14,6 +16,7 @@ export const multiredditHandlers = [
         }
       },
       {
+        kind: 'LabeledMulti',
         data: {
           name: 'gaming',
           display_name: 'Gaming',
