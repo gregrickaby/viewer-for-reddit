@@ -1,3 +1,4 @@
+import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {getSession} from '@/lib/auth/session'
@@ -60,18 +61,27 @@ async function PostsContent({
   sort?: SortOption
   timeFilter?: TimeFilter
 }>) {
-  const {posts, after} = await fetchPosts(feedType, sort, undefined, timeFilter)
+  try {
+    const {posts, after} = await fetchPosts(
+      feedType,
+      sort,
+      undefined,
+      timeFilter
+    )
 
-  return (
-    <PostListWithTabs
-      posts={posts}
-      after={after}
-      activeSort={sort}
-      activeTimeFilter={timeFilter}
-      isAuthenticated={isAuthenticated}
-      subreddit={feedType}
-    />
-  )
+    return (
+      <PostListWithTabs
+        posts={posts}
+        after={after}
+        activeSort={sort}
+        activeTimeFilter={timeFilter}
+        isAuthenticated={isAuthenticated}
+        subreddit={feedType}
+      />
+    )
+  } catch {
+    return <ErrorDisplay isAuthenticated={isAuthenticated} />
+  }
 }
 
 /**

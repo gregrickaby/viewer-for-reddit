@@ -42,6 +42,7 @@ export function Header({
           color="gray"
           size="lg"
           hiddenFrom="sm"
+          aria-label="Search"
           data-umami-event="open-mobile-search"
         >
           <IconSearch aria-hidden="true" size={20} />

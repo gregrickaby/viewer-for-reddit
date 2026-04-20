@@ -36,9 +36,10 @@ const redditColorScheme: MantineColorsTuple = [
  */
 export const theme = createTheme({
   colors: {redditColorScheme},
+  primaryColor: 'redditColorScheme',
+  primaryShade: {light: 8, dark: 8}, // WCAG AA compliant contrast ratio for #ff4500
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  primaryColor: 'redditColorScheme',
   defaultRadius: 'md',
   components: {
     Anchor: {

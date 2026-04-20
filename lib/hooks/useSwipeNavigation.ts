@@ -50,13 +50,11 @@ export function useSwipeNavigation({
   const touchEndX = useRef<number>(0)
   const touchEndY = useRef<number>(0)
 
-  // Handle right swipe (back navigation)
-  const handleSwipeRight = () => {
-    router.back()
-  }
-
   useEffect(() => {
     if (!enabled) return
+
+    // Defined inside effect so it is stable and excluded from the dep array.
+    const handleSwipeRight = () => router.back()
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX.current = e.touches[0].clientX
@@ -100,10 +98,10 @@ export function useSwipeNavigation({
       touchEndY.current = 0
     }
 
-    // Add event listeners
+    // Add event listeners — all passive since none call preventDefault().
     document.addEventListener('touchstart', handleTouchStart, {passive: true})
     document.addEventListener('touchmove', handleTouchMove, {passive: true})
-    document.addEventListener('touchend', handleTouchEnd)
+    document.addEventListener('touchend', handleTouchEnd, {passive: true})
 
     // Cleanup
     return () => {
@@ -111,5 +109,5 @@ export function useSwipeNavigation({
       document.removeEventListener('touchmove', handleTouchMove)
       document.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [enabled, threshold, maxVerticalMovement, handleSwipeRight])
+  }, [enabled, threshold, maxVerticalMovement, router])
 }
