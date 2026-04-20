@@ -3,13 +3,6 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock dependencies before imports
 vi.mock('@/lib/utils/env', () => ({
-  getEnvVar: vi.fn((key: string) => {
-    if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
-    if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
-    if (key === 'REDDIT_REDIRECT_URI')
-      return 'https://example.com/api/auth/callback/reddit'
-    return ''
-  }),
   isProduction: vi.fn(() => false)
 }))
 
@@ -21,137 +14,129 @@ vi.mock('@/lib/axiom/server', () => ({
   }
 }))
 
-vi.mock('arctic', () => ({
-  Reddit: class Reddit {
-    createAuthorizationURL(state: string, scopes: string[]) {
-      if ((global as any).__testShouldThrow) {
-        throw new Error('Arctic initialization failed')
-      }
-      return new URL(
-        `https://reddit.com/api/v1/authorize?state=${state}&scope=${scopes.join(' ')}`
-      )
-    }
-  }
+const mockState = 'mock-state-abc123'
+const mockUrl = new URL(
+  `https://reddit.com/api/v1/authorize?state=${mockState}&scope=identity+read+vote+subscribe+mysubreddits+save+submit+edit+history&duration=permanent`
+)
+
+vi.mock('@/lib/reddit-auth', () => ({
+  createLoginUrl: vi.fn(async () => ({url: mockUrl, state: mockState}))
 }))
 
-// Mock crypto.randomUUID
-const mockUUID = 'test-uuid-12345'
-Object.defineProperty(global.crypto, 'randomUUID', {
-  writable: true,
-  value: vi.fn(() => mockUUID)
-})
-
 // Import after mocks
+import {createLoginUrl} from '@/lib/reddit-auth'
 import {logger} from '@/lib/axiom/server'
-import {getEnvVar, isProduction} from '@/lib/utils/env'
+import {isProduction} from '@/lib/utils/env'
 import {GET} from './route'
 
-const mockGetEnvVar = vi.mocked(getEnvVar)
+const mockCreateLoginUrl = vi.mocked(createLoginUrl)
 const mockIsProduction = vi.mocked(isProduction)
 const mockLogger = vi.mocked(logger)
 
 describe('GET /api/auth/login', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockGetEnvVar.mockImplementation((key: string) => {
-      if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
-      if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
-      if (key === 'REDDIT_REDIRECT_URI')
-        return 'https://example.com/api/auth/callback/reddit'
-      return ''
-    })
     mockIsProduction.mockReturnValue(false)
+    mockCreateLoginUrl.mockResolvedValue({url: mockUrl, state: mockState})
   })
 
-  it('creates authorization URL with correct state', async () => {
+  it('redirects to the URL returned by createLoginUrl', async () => {
     const response = await GET()
 
     expect(response).toBeInstanceOf(NextResponse)
-
-    // Check redirect URL contains state
-    const redirectUrl = response.headers.get('location')
-    expect(redirectUrl).toBeTruthy()
-    expect(redirectUrl).toContain(`state=${mockUUID}`)
+    const location = response.headers.get('location')
+    expect(location).toBe(mockUrl.toString())
   })
 
-  it('creates authorization URL with duration=permanent', async () => {
+  it('redirect URL contains duration=permanent', async () => {
     const response = await GET()
 
-    const redirectUrl = response.headers.get('location')
-    expect(redirectUrl).toBeTruthy()
-    expect(redirectUrl).toContain('duration=permanent')
+    const location = response.headers.get('location')
+    expect(location).toContain('duration=permanent')
   })
 
-  it('creates authorization URL with correct scopes', async () => {
+  it('redirect URL contains all required scopes', async () => {
     const response = await GET()
 
-    const redirectUrl = response.headers.get('location')
-    expect(redirectUrl).toBeTruthy()
-    const url = new URL(redirectUrl!)
+    const location = response.headers.get('location')
+    expect(location).toBeTruthy()
+    const url = new URL(location!)
+    const scopeParam = url.searchParams.get('scope') ?? ''
 
-    // Check that scope parameter includes expected scopes
-    const scopeParam = url.searchParams.get('scope')
-    expect(scopeParam).toContain('identity')
-    expect(scopeParam).toContain('read')
-    expect(scopeParam).toContain('vote')
-    expect(scopeParam).toContain('subscribe')
-    expect(scopeParam).toContain('mysubreddits')
-    expect(scopeParam).toContain('save')
-    expect(scopeParam).toContain('submit')
-    expect(scopeParam).toContain('edit')
-    expect(scopeParam).toContain('history')
+    for (const scope of [
+      'identity',
+      'read',
+      'vote',
+      'subscribe',
+      'mysubreddits',
+      'save',
+      'submit',
+      'edit',
+      'history'
+    ]) {
+      expect(scopeParam).toContain(scope)
+    }
   })
 
-  it('sets state cookie with correct options in development', async () => {
-    mockIsProduction.mockReturnValue(false)
-
+  it('sets state cookie from createLoginUrl result', async () => {
     const response = await GET()
 
     const cookies = response.cookies.getAll()
     const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
 
     expect(stateCookie).toBeDefined()
-    expect(stateCookie?.value).toBe(mockUUID)
+    expect(stateCookie?.value).toBe(mockState)
   })
 
-  it('sets state cookie with correct options in production', async () => {
+  it('sets state cookie without secure flag in development', async () => {
+    mockIsProduction.mockReturnValue(false)
+
+    const response = await GET()
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+    expect(stateCookie).toBeDefined()
+    expect(stateCookie?.value).toBe(mockState)
+  })
+
+  it('sets state cookie with secure flag in production', async () => {
     mockIsProduction.mockReturnValue(true)
 
     const response = await GET()
 
     const cookies = response.cookies.getAll()
     const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
-
     expect(stateCookie).toBeDefined()
-    expect(stateCookie?.value).toBe(mockUUID)
+    expect(stateCookie?.value).toBe(mockState)
   })
 
-  it('generates new UUID for each request', async () => {
-    const uuid1 = 'uuid-1'
-    const uuid2 = 'uuid-2'
+  it('uses a different state for each call to createLoginUrl', async () => {
+    const state1 = 'state-aaa'
+    const state2 = 'state-bbb'
+    const url1 = new URL(`https://reddit.com/authorize?state=${state1}`)
+    const url2 = new URL(`https://reddit.com/authorize?state=${state2}`)
 
-    ;(crypto.randomUUID as any).mockReturnValueOnce(uuid1)
+    mockCreateLoginUrl
+      .mockResolvedValueOnce({url: url1, state: state1})
+      .mockResolvedValueOnce({url: url2, state: state2})
+
     const response1 = await GET()
-
-    ;(crypto.randomUUID as any).mockReturnValueOnce(uuid2)
     const response2 = await GET()
 
-    const redirectUrl1 = response1.headers.get('location')
-    const redirectUrl2 = response2.headers.get('location')
+    const location1 = response1.headers.get('location')
+    const location2 = response2.headers.get('location')
 
-    expect(redirectUrl1).toBeTruthy()
-    expect(redirectUrl2).toBeTruthy()
-    expect(redirectUrl1).toContain(`state=${uuid1}`)
-    expect(redirectUrl2).toContain(`state=${uuid2}`)
+    expect(location1).toContain(state1)
+    expect(location2).toContain(state2)
+    expect(location1).not.toBe(location2)
   })
 
-  it('logs OAuth flow initiation and redirect', async () => {
+  it('logs OAuth flow initiation', async () => {
     await GET()
 
     expect(mockLogger.info).toHaveBeenCalledWith(
       'OAuth login initiated',
       expect.objectContaining({
-        scopes: expect.any(Array),
         state: expect.stringMatching(/^.{8}\.\.\.$/),
         context: 'OAuth'
       })
@@ -159,7 +144,9 @@ describe('GET /api/auth/login', () => {
   })
 
   it('handles errors gracefully', async () => {
-    ;(global as any).__testShouldThrow = true
+    mockCreateLoginUrl.mockRejectedValue(
+      new Error('Arctic initialization failed')
+    )
 
     const response = await GET()
 
@@ -172,8 +159,5 @@ describe('GET /api/auth/login', () => {
         error: expect.any(String)
       })
     )
-
-    // Cleanup
-    delete (global as any).__testShouldThrow
   })
 })

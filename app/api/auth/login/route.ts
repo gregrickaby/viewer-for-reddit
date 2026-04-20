@@ -1,17 +1,7 @@
+import {createLoginUrl} from '@/lib/reddit-auth'
 import {logger} from '@/lib/axiom/server'
-import {getEnvVar, isProduction} from '@/lib/utils/env'
-import {Reddit} from 'arctic'
+import {isProduction} from '@/lib/utils/env'
 import {NextResponse} from 'next/server'
-
-/**
- * Reddit OAuth client instance.
- * Configured with Reddit app credentials.
- */
-const reddit = new Reddit(
-  getEnvVar('REDDIT_CLIENT_ID'),
-  getEnvVar('REDDIT_CLIENT_SECRET'),
-  getEnvVar('REDDIT_REDIRECT_URI')
-)
 
 /**
  * GET handler for Reddit OAuth login.
@@ -34,33 +24,14 @@ const reddit = new Reddit(
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    const state = crypto.randomUUID()
-    const scopes = [
-      'identity',
-      'read',
-      'vote',
-      'subscribe',
-      'mysubreddits',
-      'save',
-      'submit',
-      'edit',
-      'history'
-    ]
+    const {url, state} = await createLoginUrl()
 
     logger.info('OAuth login initiated', {
-      scopes,
       state: `${state.substring(0, 8)}...`,
       context: 'OAuth'
     })
 
-    // Create authorization URL with duration=permanent for refresh tokens
-    const url = reddit.createAuthorizationURL(state, scopes)
-
-    // Add duration parameter manually (Arctic doesn't support this directly)
-    const authUrl = new URL(url)
-    authUrl.searchParams.set('duration', 'permanent')
-
-    const response = NextResponse.redirect(authUrl.toString())
+    const response = NextResponse.redirect(url.toString())
     response.cookies.set('reddit_oauth_state', state, {
       httpOnly: true,
       secure: isProduction(),

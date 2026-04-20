@@ -1,8 +1,8 @@
 import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
+import {exchangeCode} from '@/lib/reddit-auth'
 import type {SessionData} from '@/lib/types/reddit'
 import {getEnvVar} from '@/lib/utils/env'
-import {Reddit} from 'arctic'
 import {NextRequest, NextResponse} from 'next/server'
 import {timingSafeEqual} from 'node:crypto'
 
@@ -13,16 +13,6 @@ interface RedditUserData {
   name: string
   id: string
 }
-
-/**
- * Reddit OAuth client instance.
- * Configured with Reddit app credentials.
- */
-const reddit = new Reddit(
-  getEnvVar('REDDIT_CLIENT_ID'),
-  getEnvVar('REDDIT_CLIENT_SECRET'),
-  getEnvVar('REDDIT_REDIRECT_URI')
-)
 
 /**
  * Resolves the host and protocol from request headers.
@@ -90,7 +80,7 @@ async function fetchUserData(accessToken: string): Promise<RedditUserData> {
  * @throws Error if token validation or user data fetch fails
  */
 async function handleTokens(code: string): Promise<SessionData> {
-  const tokens = await reddit.validateAuthorizationCode(code)
+  const tokens = await exchangeCode(code)
   const accessToken = tokens.accessToken()
 
   let refreshToken = ''

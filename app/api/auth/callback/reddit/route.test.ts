@@ -1,12 +1,10 @@
 import {http, HttpResponse, server} from '@/test-utils'
 import {NextRequest} from 'next/server'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi, type Mock} from 'vitest'
 
 // Mock dependencies before imports
 vi.mock('@/lib/utils/env', () => ({
   getEnvVar: vi.fn((key: string) => {
-    if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
-    if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
     if (key === 'REDDIT_REDIRECT_URI')
       return 'https://example.com/api/auth/callback/reddit'
     if (key === 'USER_AGENT') return 'test-user-agent'
@@ -36,17 +34,10 @@ vi.mock('@/lib/auth/session', () => ({
   }))
 }))
 
-let mockValidateAuthorizationCode: any
+let mockExchangeCode: Mock
 
-vi.mock('arctic', () => ({
-  Reddit: class Reddit {
-    validateAuthorizationCode = (...args: any[]) => {
-      if (!mockValidateAuthorizationCode) {
-        throw new Error('mockValidateAuthorizationCode not initialized')
-      }
-      return mockValidateAuthorizationCode(...args)
-    }
-  }
+vi.mock('@/lib/reddit-auth', () => ({
+  exchangeCode: (...args: unknown[]) => mockExchangeCode(...args)
 }))
 
 // Import after mocks
@@ -66,17 +57,15 @@ describe('GET /api/auth/callback/reddit', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Initialize mockValidateAuthorizationCode
+    // Default token mock
     const mockTokens = {
       accessToken: vi.fn(() => 'test-access-token'),
       refreshToken: vi.fn(() => 'test-refresh-token'),
       accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
     }
-    mockValidateAuthorizationCode = vi.fn().mockResolvedValue(mockTokens)
+    mockExchangeCode = vi.fn().mockResolvedValue(mockTokens)
 
     mockGetEnvVar.mockImplementation((key: string) => {
-      if (key === 'REDDIT_CLIENT_ID') return 'test-client-id'
-      if (key === 'REDDIT_CLIENT_SECRET') return 'test-client-secret'
       if (key === 'REDDIT_REDIRECT_URI')
         return 'https://example.com/api/auth/callback/reddit'
       if (key === 'USER_AGENT') return 'test-user-agent'
@@ -175,7 +164,7 @@ describe('GET /api/auth/callback/reddit', () => {
     const cookies = response.cookies.getAll()
     const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
 
-    // Check that the cookie is being deleted (value is empty)
+    // Cookie is deleted (value is empty)
     expect(stateCookie?.value).toBe('')
   })
 
@@ -410,7 +399,7 @@ describe('GET /api/auth/callback/reddit', () => {
       accessTokenExpiresAt: vi.fn(() => new Date(Date.now() + 3600000))
     }
 
-    mockValidateAuthorizationCode.mockResolvedValue(mockTokens)
+    mockExchangeCode.mockResolvedValue(mockTokens)
 
     const sessionData: any = {
       save: vi.fn()

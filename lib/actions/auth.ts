@@ -2,27 +2,9 @@
 
 import {getSession, isSessionExpired} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
+import {refreshToken} from '@/lib/reddit-auth'
+import type {AuthTokens} from '@/lib/types/auth'
 import {TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'
-import {getEnvVar} from '@/lib/utils/env'
-import {Reddit} from 'arctic'
-
-/**
- * Reddit OAuth client instance for token refresh.
- */
-let reddit: Reddit | null = null
-
-/**
- * Get or create the Reddit OAuth client instance.
- * @returns Reddit OAuth client
- */
-function getRedditClient(): Reddit {
-  reddit ??= new Reddit(
-    getEnvVar('REDDIT_CLIENT_ID'),
-    getEnvVar('REDDIT_CLIENT_SECRET'),
-    getEnvVar('REDDIT_REDIRECT_URI')
-  )
-  return reddit
-}
 
 /**
  * Refresh lock to prevent concurrent refresh attempts.
@@ -68,14 +50,13 @@ export async function refreshAccessToken(): Promise<{
 
 /**
  * Extract and handle refresh token from OAuth response.
- * @param tokens - OAuth tokens from Arctic
+ *
+ * @param tokens - OAuth tokens returned by the refresh operation
  * @param currentRefreshToken - Current refresh token to compare against
  * @returns New refresh token (either rotated or existing)
  */
 function extractRefreshToken(
-  tokens: Awaited<
-    ReturnType<ReturnType<typeof getRedditClient>['refreshAccessToken']>
-  >,
+  tokens: AuthTokens,
   currentRefreshToken: string
 ): string {
   try {
@@ -101,15 +82,14 @@ function extractRefreshToken(
 
 /**
  * Update session with new OAuth tokens.
+ *
  * @param session - Current session to update
- * @param tokens - New OAuth tokens from Arctic
+ * @param tokens - New OAuth tokens from the refresh operation
  * @param currentRefreshToken - Current refresh token
  */
 async function updateSessionWithTokens(
   session: Awaited<ReturnType<typeof getSession>>,
-  tokens: Awaited<
-    ReturnType<ReturnType<typeof getRedditClient>['refreshAccessToken']>
-  >,
+  tokens: AuthTokens,
   currentRefreshToken: string
 ): Promise<void> {
   session.accessToken = tokens.accessToken()
@@ -121,6 +101,8 @@ async function updateSessionWithTokens(
 
 /**
  * Destroy session after refresh failure.
+ *
+ * @param originalError - The error that triggered the failure
  */
 async function destroySessionOnFailure(originalError: unknown): Promise<void> {
   try {
@@ -147,6 +129,8 @@ async function destroySessionOnFailure(originalError: unknown): Promise<void> {
 /**
  * Performs the actual token refresh operation.
  * Internal function called by refreshAccessToken with lock protection.
+ *
+ * @returns Promise resolving to success status and optional error message
  */
 async function performRefresh(): Promise<{
   success: boolean
@@ -170,9 +154,7 @@ async function performRefresh(): Promise<{
 
     logger.debug('Refreshing access token', {context: 'refreshAccessToken'})
 
-    const tokens = await getRedditClient().refreshAccessToken(
-      session.refreshToken
-    )
+    const tokens = await refreshToken(session.refreshToken)
     await updateSessionWithTokens(session, tokens, session.refreshToken)
 
     logger.info('Access token refreshed successfully', {
