@@ -24,9 +24,9 @@ vi.mock('@/lib/reddit-auth', () => ({
 }))
 
 // Import after mocks
-import {createLoginUrl} from '@/lib/reddit-auth'
 import {logger} from '@/lib/axiom/server'
 import {isProduction} from '@/lib/utils/env'
+import {createLoginUrl} from '@/lib/utils/reddit-auth'
 import {GET} from './route'
 
 const mockCreateLoginUrl = vi.mocked(createLoginUrl)

@@ -33,11 +33,11 @@ vi.mock('next/headers', () => ({
   }))
 }))
 
+import {getValidAccessToken} from '@/lib/actions/auth/auth'
 import {getSession} from '@/lib/auth/session'
-import {getValidAccessToken} from '@/lib/actions/auth'
-import {getHeaders, validateRedditUrl} from './_helpers'
-import type {IronSession} from 'iron-session'
 import type {SessionData} from '@/lib/types/reddit'
+import type {IronSession} from 'iron-session'
+import {getHeaders, validateRedditUrl} from './_helpers'
 
 const mockGetSession = vi.mocked(getSession)
 const mockGetValidAccessToken = vi.mocked(getValidAccessToken)

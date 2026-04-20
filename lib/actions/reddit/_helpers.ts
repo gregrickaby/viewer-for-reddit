@@ -1,6 +1,6 @@
-import {getValidAccessToken} from '@/lib/actions/auth'
-import {logger} from '@/lib/axiom/server'
+import {getValidAccessToken} from '@/lib/actions/auth/auth'
 import {getSession} from '@/lib/auth/session'
+import {logger} from '@/lib/axiom/server'
 import {REDDIT_API_URL, REDDIT_PUBLIC_API_URL} from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
 import {

@@ -35,7 +35,8 @@ import {
 // Import mocked modules
 const {getSession, isSessionExpired} = await import('@/lib/auth/session')
 const {logger} = await import('@/lib/axiom/server')
-const {refreshToken: mockableRefreshToken} = await import('@/lib/reddit-auth')
+const {refreshToken: mockableRefreshToken} =
+  await import('@/lib/utils/reddit-auth')
 
 const mockGetSession = vi.mocked(getSession)
 const mockIsSessionExpired = vi.mocked(isSessionExpired)

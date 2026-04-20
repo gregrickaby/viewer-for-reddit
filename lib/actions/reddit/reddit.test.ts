@@ -13,19 +13,19 @@ import {
   removeSubredditFromMultireddit,
   removeUserFromMultireddit,
   updateMultiredditName
-} from './reddit/multireddits'
-import {fetchPost, fetchPosts, fetchUserPosts} from './reddit/posts'
+} from './multireddits'
+import {fetchPost, fetchPosts, fetchUserPosts} from './posts'
 import {
   searchReddit,
   searchSubreddit,
   searchSubreddits,
   searchSubredditsAndUsers
-} from './reddit/search'
+} from './search'
 import {
   fetchSubredditInfo,
   fetchUserSubscriptions,
   toggleSubscription
-} from './reddit/subreddits'
+} from './subreddits'
 import {
   fetchFollowedUsers,
   fetchSavedItems,
@@ -36,7 +36,7 @@ import {
   savePost,
   unfollowUser,
   votePost
-} from './reddit/users'
+} from './users'
 
 // Mock rate-limit-state BEFORE imports
 vi.mock('@/lib/utils/rate-limit-state', () => ({

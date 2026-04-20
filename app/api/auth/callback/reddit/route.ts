@@ -1,8 +1,8 @@
 import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
-import {exchangeCode} from '@/lib/reddit-auth'
 import type {SessionData} from '@/lib/types/reddit'
 import {getEnvVar} from '@/lib/utils/env'
+import {exchangeCode} from '@/lib/utils/reddit-auth'
 import {NextRequest, NextResponse} from 'next/server'
 import {timingSafeEqual} from 'node:crypto'
 

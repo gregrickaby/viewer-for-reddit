@@ -2,9 +2,9 @@
 
 import {getSession, isSessionExpired} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
-import {refreshToken} from '@/lib/reddit-auth'
 import type {AuthTokens} from '@/lib/types/auth'
 import {TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'
+import {refreshToken} from '@/lib/utils/reddit-auth'
 
 /**
  * Refresh lock to prevent concurrent refresh attempts.

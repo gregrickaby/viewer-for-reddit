@@ -1,6 +1,6 @@
 'use client'
 
-import {logout} from '@/lib/actions/auth'
+import {logout} from '@/lib/actions/auth/auth'
 import {logger} from '@/lib/axiom/client'
 import {useRouter} from 'next/navigation'
 import {useState, useTransition} from 'react'

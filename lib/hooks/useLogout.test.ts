@@ -1,4 +1,4 @@
-import {logout} from '@/lib/actions/auth'
+import {logout} from '@/lib/actions/auth/auth'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {useRouter} from 'next/navigation'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
