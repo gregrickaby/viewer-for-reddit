@@ -1,35 +1,13 @@
 import {useSearch} from '@/lib/hooks/useSearch'
 import {render, screen, user} from '@/test-utils'
-import {useCombobox} from '@mantine/core'
-import {useMediaQuery} from '@mantine/hooks'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {SearchBar} from './SearchBar'
 
-// Mock Mantine hooks to control behavior
-vi.mock('@mantine/core', async () => {
-  const actual = await vi.importActual('@mantine/core')
-  return {
-    ...actual,
-    useCombobox: vi.fn()
-  }
-})
-
-vi.mock('@mantine/hooks', async () => {
-  const actual = await vi.importActual('@mantine/hooks')
-  return {
-    ...actual,
-    useMediaQuery: vi.fn()
-  }
-})
-
-// Mock only useSearch, let useSearchBar use real implementation with mocked Mantine hooks
 vi.mock('@/lib/hooks/useSearch', () => ({
   useSearch: vi.fn()
 }))
 
 const mockUseSearch = vi.mocked(useSearch)
-const mockUseCombobox = vi.mocked(useCombobox)
-const mockUseMediaQuery = vi.mocked(useMediaQuery)
 
 describe('SearchBar', () => {
   const mockHandleOptionSelect = vi.fn()
@@ -47,62 +25,32 @@ describe('SearchBar', () => {
     handleSubmit: mockHandleSubmit
   }
 
-  const mockCombobox = {
-    openDropdown: vi.fn(),
-    closeDropdown: vi.fn(),
-    resetSelectedOption: vi.fn(),
-    updateSelectedOptionIndex: vi.fn(),
-    selectFirstOption: vi.fn(),
-    getState: vi.fn(() => ({
-      listId: 'test-list-id',
-      descriptionId: 'test-description-id'
-    })),
-    // Zustand-like store methods that Combobox.Options expects
-    setListId: vi.fn((id: string) => {
-      mockCombobox.getState = vi.fn(() => ({
-        listId: id,
-        descriptionId: mockCombobox.getState().descriptionId
-      }))
-    }),
-    setDescriptionId: vi.fn((id: string) => {
-      mockCombobox.getState = vi.fn(() => ({
-        listId: mockCombobox.getState().listId,
-        descriptionId: id
-      }))
-    }),
-    subscribe: vi.fn(() => vi.fn()), // Zustand subscribe returns unsubscribe function
-    destroy: vi.fn()
-  }
-
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseSearch.mockReturnValue(defaultSearchState)
-    mockUseCombobox.mockReturnValue(mockCombobox as any)
-    mockUseMediaQuery.mockReturnValue(false) // Default to desktop
   })
 
   describe('rendering', () => {
-    it('renders search input', () => {
-      render(<SearchBar />)
-
-      const input = screen.getByRole('textbox', {
-        name: 'Search Reddit or subreddits'
-      })
-      expect(input).toBeInTheDocument()
-    })
-
-    it('shows placeholder text', () => {
-      render(<SearchBar />)
+    it('renders search input when spotlight is open', () => {
+      render(<SearchBar forceOpened />)
 
       expect(
-        screen.getByPlaceholderText('Search Reddit... (Press / to focus)')
+        screen.getByRole('textbox', {name: 'Search Reddit or subreddits'})
+      ).toBeInTheDocument()
+    })
+
+    it('shows correct placeholder', () => {
+      render(<SearchBar forceOpened />)
+
+      expect(
+        screen.getByPlaceholderText('Search Reddit...')
       ).toBeInTheDocument()
     })
   })
 
   describe('user input', () => {
     it('calls setQuery when user types', async () => {
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
       const input = screen.getByRole('textbox')
       await user.type(input, 'test')
@@ -110,34 +58,30 @@ describe('SearchBar', () => {
       expect(mockSetQuery).toHaveBeenCalled()
     })
 
-    it('updates input value', async () => {
-      mockUseSearch.mockReturnValue({
-        ...defaultSearchState,
-        query: 'reddit'
-      })
+    it('shows current query value in input', () => {
+      mockUseSearch.mockReturnValue({...defaultSearchState, query: 'reddit'})
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
-      const input = screen.getByRole('textbox')
-      expect(input).toHaveValue('reddit')
+      expect(screen.getByRole('textbox')).toHaveValue('reddit')
     })
   })
 
   describe('loading state', () => {
-    it('shows loader when searching', () => {
+    it('shows searching message while loading', () => {
       mockUseSearch.mockReturnValue({
         ...defaultSearchState,
         isLoading: true,
         query: 'test'
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
       expect(screen.getByText('Searching...')).toBeInTheDocument()
     })
 
-    it('does not show loader when not searching', () => {
-      render(<SearchBar />)
+    it('does not show searching message when not loading', () => {
+      render(<SearchBar forceOpened />)
 
       expect(screen.queryByText('Searching...')).not.toBeInTheDocument()
     })
@@ -152,7 +96,7 @@ describe('SearchBar', () => {
         query: 'test'
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
       expect(screen.getByText('Failed to load results')).toBeInTheDocument()
     })
@@ -165,7 +109,7 @@ describe('SearchBar', () => {
         query: 'test'
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
       expect(screen.getByText('Error loading results')).toBeInTheDocument()
     })
@@ -189,14 +133,13 @@ describe('SearchBar', () => {
         }
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
-      expect(screen.getByText('COMMUNITIES')).toBeInTheDocument()
       expect(screen.getByText('r/test')).toBeInTheDocument()
       expect(screen.getByText('1.0K members')).toBeInTheDocument()
     })
 
-    it('shows NSFW results separately', () => {
+    it('shows NSFW results with badge', () => {
       mockUseSearch.mockReturnValue({
         ...defaultSearchState,
         query: 'test',
@@ -213,10 +156,10 @@ describe('SearchBar', () => {
         }
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
-      expect(screen.getAllByText('NSFW').length).toBeGreaterThan(0)
       expect(screen.getByText('r/nsfw_test')).toBeInTheDocument()
+      expect(screen.getByText('NSFW')).toBeInTheDocument()
     })
 
     it('shows both community and NSFW sections', () => {
@@ -228,7 +171,7 @@ describe('SearchBar', () => {
             {
               name: 't5_test',
               displayName: 'r/test',
-              icon: 'https://example.com/icon.png',
+              icon: '',
               subscribers: 1000
             }
           ],
@@ -236,41 +179,41 @@ describe('SearchBar', () => {
             {
               name: 't5_nsfw',
               displayName: 'r/nsfw_test',
-              icon: 'https://example.com/icon.png',
+              icon: '',
               subscribers: 500
             }
           ]
         }
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
-      expect(screen.getByText('COMMUNITIES')).toBeInTheDocument()
-      expect(screen.getAllByText('NSFW').length).toBeGreaterThan(0)
+      expect(screen.getByText('r/test')).toBeInTheDocument()
+      expect(screen.getByText('r/nsfw_test')).toBeInTheDocument()
     })
 
-    it('shows no results message when query is long enough', () => {
+    it('shows no-results message for unmatched query', () => {
       mockUseSearch.mockReturnValue({
         ...defaultSearchState,
         query: 'nonexistent',
         groupedResults: {communities: [], nsfw: []}
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
       expect(
         screen.getByText('No subreddits found for "nonexistent"')
       ).toBeInTheDocument()
     })
 
-    it('does not show results for short queries', () => {
+    it('does not show no-results message for short queries', () => {
       mockUseSearch.mockReturnValue({
         ...defaultSearchState,
         query: 'a',
         groupedResults: {communities: [], nsfw: []}
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
       expect(
         screen.queryByText('No subreddits found for "a"')
@@ -279,7 +222,7 @@ describe('SearchBar', () => {
   })
 
   describe('result selection', () => {
-    it('calls handleOptionSelect when result is clicked', async () => {
+    it('calls handleOptionSelect when a result is clicked', async () => {
       mockUseSearch.mockReturnValue({
         ...defaultSearchState,
         query: 'test',
@@ -296,93 +239,37 @@ describe('SearchBar', () => {
         }
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
-      const result = screen.getByText('r/test')
-      await user.click(result)
+      await user.click(screen.getByText('r/test'))
 
       expect(mockHandleOptionSelect).toHaveBeenCalledWith('r/test')
     })
   })
 
   describe('edge cases', () => {
-    it('handles results without subscriber counts', () => {
+    it('does not show member count when subscribers is zero', () => {
       mockUseSearch.mockReturnValue({
         ...defaultSearchState,
         query: 'test',
         groupedResults: {
           communities: [
-            {
-              name: 't5_test',
-              displayName: 'r/test',
-              icon: '',
-              subscribers: 0
-            }
+            {name: 't5_test', displayName: 'r/test', icon: '', subscribers: 0}
           ],
           nsfw: []
         }
       })
 
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
       expect(screen.getByText('r/test')).toBeInTheDocument()
       expect(screen.queryByText(/members/)).not.toBeInTheDocument()
     })
 
-    it('handles results without icons', () => {
-      mockUseSearch.mockReturnValue({
-        ...defaultSearchState,
-        query: 'test',
-        groupedResults: {
-          communities: [
-            {
-              name: 't5_test',
-              displayName: 'r/test',
-              icon: '',
-              subscribers: 1000
-            }
-          ],
-          nsfw: []
-        }
-      })
-
-      render(<SearchBar />)
-
-      expect(screen.getByText('r/test')).toBeInTheDocument()
-    })
-
     it('handles empty query gracefully', () => {
-      render(<SearchBar />)
+      render(<SearchBar forceOpened />)
 
-      const input = screen.getByRole('textbox')
-      expect(input).toHaveValue('')
-    })
-  })
-
-  describe('mobile behavior', () => {
-    it('renders modal on mobile when mobileOpen is true', () => {
-      mockUseMediaQuery.mockReturnValue(true) // Mobile
-
-      render(<SearchBar mobileOpen onMobileClose={vi.fn()} />)
-
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    })
-
-    it('does not render modal on desktop', () => {
-      mockUseMediaQuery.mockReturnValue(false) // Desktop
-
-      render(<SearchBar mobileOpen onMobileClose={vi.fn()} />)
-
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    })
-
-    it('renders inline on desktop', () => {
-      mockUseMediaQuery.mockReturnValue(false) // Desktop
-
-      render(<SearchBar />)
-
-      const input = screen.getByRole('textbox')
-      expect(input).toBeInTheDocument()
+      expect(screen.getByRole('textbox')).toHaveValue('')
     })
   })
 })

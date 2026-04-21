@@ -42,6 +42,7 @@
     "@mantine/core": "^9.0.2",
     "@mantine/hooks": "^9.0.2",
     "@mantine/notifications": "^9.0.2",
+    "@mantine/spotlight": "^9.0.2",
     "@tabler/icons-react": "^3.41.1",
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",

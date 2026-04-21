@@ -1,40 +1,19 @@
 'use client'
 
-import {formatNumber} from '@/lib/utils/formatters'
 import {useSearch} from '@/lib/hooks/useSearch'
-import {useSearchBar} from '@/lib/hooks/useSearchBar'
-import {
-  Avatar,
-  Badge,
-  Combobox,
-  Divider,
-  Group,
-  InputBase,
-  Loader,
-  Modal,
-  Stack,
-  Text
-} from '@mantine/core'
+import {formatNumber} from '@/lib/utils/formatters'
+import {Avatar, Badge, Divider, Group, Loader, Stack, Text} from '@mantine/core'
+import {Spotlight} from '@mantine/spotlight'
 import {IconSearch} from '@tabler/icons-react'
 
 /**
- * Props for the SearchBar component.
- */
-interface SearchBarProps {
-  /** Whether mobile search overlay is open */
-  mobileOpen?: boolean
-  /** Callback to close mobile search overlay */
-  onMobileClose?: () => void
-}
-
-/**
- * Search bar with typeahead subreddit suggestions.
- * Groups results into Communities and NSFW sections; renders inside a modal on mobile.
+ * Subreddit search powered by Mantine Spotlight.
+ * Renders a command-palette overlay with live subreddit suggestions.
+ * Triggered by Cmd+K, / shortcut, or programmatically via spotlight.open().
  */
 export function SearchBar({
-  mobileOpen = false,
-  onMobileClose
-}: Readonly<SearchBarProps> = {}) {
+  forceOpened
+}: Readonly<{forceOpened?: boolean}> = {}) {
   const {
     query,
     setQuery,
@@ -46,184 +25,121 @@ export function SearchBar({
     handleSubmit
   } = useSearch()
 
-  const {inputRef, combobox, isMobile, handleSelect, handleKeyDown} =
-    useSearchBar({
-      query,
-      setQuery,
-      mobileOpen,
-      handleOptionSelect,
-      handleSubmit,
-      onMobileClose
-    })
-
   const {communities, nsfw} = groupedResults
   const hasResults = communities.length > 0 || nsfw.length > 0
-  const showDropdown = query.length >= 2 || isLoading
-  // Show "no results" when: query is long enough, not loading, no error, and no results
-  const shouldShowNoResults =
-    query.length >= 2 && !isLoading && !hasError && !hasResults
+  const showEmpty = query.length >= 2 && !isLoading && !hasError && !hasResults
 
-  const searchInput = (
-    <Combobox
-      onOptionSubmit={handleSelect}
-      position="bottom-start"
-      store={combobox}
-      withinPortal
+  const communityActions = communities.map((item) => (
+    <Spotlight.Action
+      key={item.name}
+      onClick={() => handleOptionSelect(item.displayName)}
     >
-      <Combobox.Target>
-        <InputBase
-          id="reddit-search-input"
-          ref={inputRef}
-          leftSection={<IconSearch size={16} />}
-          rightSection={isLoading ? <Loader size={16} /> : null}
-          value={query}
-          onChange={(event) => {
-            setQuery(event.currentTarget.value)
-            combobox.openDropdown()
-            combobox.updateSelectedOptionIndex()
-          }}
-          onKeyDown={handleKeyDown}
-          onClick={() => combobox.openDropdown()}
-          onFocus={() => combobox.openDropdown()}
-          onBlur={() => combobox.closeDropdown()}
-          placeholder={
-            isMobile ? 'Search...' : 'Search Reddit... (Press / to focus)'
-          }
-          aria-label="Search Reddit or subreddits"
-          aria-expanded={showDropdown}
-          aria-controls="search-dropdown"
-          aria-describedby={hasError ? 'search-error' : undefined}
-          w={isMobile ? '100%' : 300}
-          size={isMobile ? 'md' : 'sm'}
-          data-umami-event="search"
-        />
-      </Combobox.Target>
-
-      <Combobox.Dropdown
-        hidden={!showDropdown}
-        id="search-dropdown"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        <Combobox.Options>
-          {isLoading && (
-            <Combobox.Empty>
-              <Group justify="center" p="xs">
-                <Loader size="sm" />
-                <Text size="sm" c="dimmed">
-                  Searching...
-                </Text>
-              </Group>
-            </Combobox.Empty>
+      <Group wrap="nowrap" gap="sm">
+        <Avatar src={item.icon} size={28} radius="sm" alt={item.displayName} />
+        <Stack gap={0}>
+          <Text size="sm" fw={500}>
+            {item.displayName}
+          </Text>
+          {item.subscribers && item.subscribers > 0 && (
+            <Text size="xs" c="dimmed">
+              {formatNumber(item.subscribers)} members
+            </Text>
           )}
+        </Stack>
+      </Group>
+    </Spotlight.Action>
+  ))
 
-          {!isLoading && hasError && (
-            <Combobox.Empty>
-              <Text id="search-error" size="sm" c="red">
-                {errorMessage || 'Error loading results'}
-              </Text>
-            </Combobox.Empty>
+  const nsfwActions = nsfw.map((item) => (
+    <Spotlight.Action
+      key={item.name}
+      onClick={() => handleOptionSelect(item.displayName)}
+    >
+      <Group wrap="nowrap" gap="sm">
+        <Avatar src={item.icon} size={28} radius="sm" alt={item.displayName} />
+        <Stack gap={0}>
+          <Group gap="xs">
+            <Text size="sm" fw={500}>
+              {item.displayName}
+            </Text>
+            <Badge size="xs" color="red" variant="filled">
+              NSFW
+            </Badge>
+          </Group>
+          {item.subscribers && item.subscribers > 0 && (
+            <Text size="xs" c="dimmed">
+              {formatNumber(item.subscribers)} members
+            </Text>
           )}
+        </Stack>
+      </Group>
+    </Spotlight.Action>
+  ))
 
-          {shouldShowNoResults && (
-            <Combobox.Empty>
+  return (
+    <Spotlight.Root
+      query={query}
+      onQueryChange={setQuery}
+      onSpotlightClose={() => setQuery('')}
+      shortcut={['mod + K', '/']}
+      clearQueryOnClose
+      closeOnActionTrigger
+      zIndex={500}
+      forceOpened={forceOpened}
+    >
+      <Spotlight.Search
+        placeholder="Search Reddit..."
+        leftSection={<IconSearch size={18} aria-hidden="true" />}
+        rightSection={isLoading ? <Loader size={16} /> : null}
+        aria-label="Search Reddit or subreddits"
+        data-umami-event="search"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleSubmit()
+        }}
+      />
+
+      <Spotlight.ActionsList>
+        {isLoading && (
+          <Spotlight.Empty>
+            <Group justify="center" p="xs">
+              <Loader size="sm" />
               <Text size="sm" c="dimmed">
-                No subreddits found for "{query}"
+                Searching...
               </Text>
-            </Combobox.Empty>
-          )}
+            </Group>
+          </Spotlight.Empty>
+        )}
 
-          {!isLoading && !hasError && hasResults && (
-            <>
-              {communities.length > 0 && (
-                <>
-                  <Text size="xs" c="dimmed" px="sm" py={4} fw={600}>
-                    COMMUNITIES
-                  </Text>
-                  {communities.map((item) => (
-                    <Combobox.Option value={item.displayName} key={item.name}>
-                      <Group wrap="nowrap" gap="sm">
-                        <Avatar
-                          src={item.icon}
-                          size={24}
-                          radius="sm"
-                          alt={item.displayName}
-                        />
-                        <Stack gap={0}>
-                          <Text size="sm" fw={500}>
-                            {item.displayName}
-                          </Text>
-                          {item.subscribers && item.subscribers > 0 && (
-                            <Text size="xs" c="dimmed">
-                              {formatNumber(item.subscribers)} members
-                            </Text>
-                          )}
-                        </Stack>
-                      </Group>
-                    </Combobox.Option>
-                  ))}
-                </>
-              )}
+        {!isLoading && hasError && (
+          <Spotlight.Empty>
+            <Text size="sm" c="red">
+              {errorMessage || 'Error loading results'}
+            </Text>
+          </Spotlight.Empty>
+        )}
 
-              {communities.length > 0 && nsfw.length > 0 && <Divider my="xs" />}
+        {showEmpty && (
+          <Spotlight.Empty>No subreddits found for "{query}"</Spotlight.Empty>
+        )}
 
-              {nsfw.length > 0 && (
-                <>
-                  <Text size="xs" c="dimmed" px="sm" py={4} fw={600}>
-                    NSFW
-                  </Text>
-                  {nsfw.map((item) => (
-                    <Combobox.Option value={item.displayName} key={item.name}>
-                      <Group wrap="nowrap" gap="sm">
-                        <Avatar
-                          src={item.icon}
-                          size={24}
-                          radius="sm"
-                          alt={item.displayName}
-                        />
-                        <Stack gap={0}>
-                          <Group gap="xs">
-                            <Text size="sm" fw={500}>
-                              {item.displayName}
-                            </Text>
-                            <Badge size="xs" color="red" variant="filled">
-                              NSFW
-                            </Badge>
-                          </Group>
-                          {item.subscribers && item.subscribers > 0 && (
-                            <Text size="xs" c="dimmed">
-                              {formatNumber(item.subscribers)} members
-                            </Text>
-                          )}
-                        </Stack>
-                      </Group>
-                    </Combobox.Option>
-                  ))}
-                </>
-              )}
-            </>
-          )}
-        </Combobox.Options>
-      </Combobox.Dropdown>
-    </Combobox>
+        {!isLoading && !hasError && hasResults && (
+          <>
+            {communities.length > 0 && (
+              <Spotlight.ActionsGroup label="Communities">
+                {communityActions}
+              </Spotlight.ActionsGroup>
+            )}
+
+            {communities.length > 0 && nsfw.length > 0 && <Divider my="xs" />}
+
+            {nsfw.length > 0 && (
+              <Spotlight.ActionsGroup label="NSFW">
+                {nsfwActions}
+              </Spotlight.ActionsGroup>
+            )}
+          </>
+        )}
+      </Spotlight.ActionsList>
+    </Spotlight.Root>
   )
-
-  // On mobile, render inside a Modal
-  if (isMobile) {
-    return (
-      <Modal
-        opened={mobileOpen}
-        onClose={() => onMobileClose?.()}
-        withCloseButton={false}
-        size="xl"
-        padding="lg"
-        zIndex={100}
-      >
-        {searchInput}
-      </Modal>
-    )
-  }
-
-  // On desktop, render inline
-  return searchInput
 }

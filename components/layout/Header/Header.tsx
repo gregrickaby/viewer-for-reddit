@@ -1,10 +1,9 @@
-import {SearchBar} from '@/components/ui/SearchBar/SearchBar'
-import {ThemeToggle} from '@/components/ui/ThemeToggle/ThemeToggle'
-import {ActionIcon, Box, Group} from '@mantine/core'
-import {IconSearch} from '@tabler/icons-react'
+import {MobileSearch} from '@/components/layout/Header/MobileSearch'
 import {Logo} from '@/components/layout/Logo/Logo'
 import {SidebarToggle} from '@/components/layout/Sidebar/SidebarToggle'
 import {UserMenu} from '@/components/layout/UserMenu/UserMenu'
+import {ThemeToggle} from '@/components/ui/ThemeToggle/ThemeToggle'
+import {Group} from '@mantine/core'
 
 /**
  * Props for the Header component.
@@ -37,20 +36,7 @@ export function Header({
       </Group>
 
       <Group gap="xs">
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="lg"
-          hiddenFrom="sm"
-          aria-label="Search"
-          data-umami-event="open-mobile-search"
-        >
-          <IconSearch aria-hidden="true" size={20} />
-        </ActionIcon>
-
-        <Box visibleFrom="sm">
-          <SearchBar />
-        </Box>
+        <MobileSearch />
 
         <ThemeToggle />
 

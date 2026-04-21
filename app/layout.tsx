@@ -16,6 +16,7 @@ import {
 import '@mantine/core/styles.css'
 import {Notifications} from '@mantine/notifications'
 import '@mantine/notifications/styles.css'
+import '@mantine/spotlight/styles.css'
 import type {Metadata, Viewport} from 'next'
 
 if (!isProduction()) {

@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       '@mantine/core',
       '@mantine/hooks',
       '@mantine/notifications',
+      '@mantine/spotlight',
       '@tabler/icons-react',
       'react-markdown'
     ]
