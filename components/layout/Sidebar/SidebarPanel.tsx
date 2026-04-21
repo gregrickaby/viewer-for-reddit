@@ -2,7 +2,7 @@
 
 import {useMediaQuery} from '@mantine/hooks'
 import {usePathname} from 'next/navigation'
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import type {ManagedMultireddit} from '@/lib/hooks/useMultiredditManager'
 import type {ManagedSubscription} from '@/lib/hooks/useSubredditManager'
 import {Sidebar} from '@/components/layout/Sidebar/Sidebar'
@@ -38,6 +38,11 @@ export function SidebarPanel({
   const isMobile = useMediaQuery('(max-width: 48em)')
   const pathname = usePathname()
   const prevPathname = useRef(pathname)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Close mobile sidebar on route change.
   useEffect(() => {
@@ -47,13 +52,16 @@ export function SidebarPanel({
     }
   }, [pathname, closeMobile])
 
-  const hidden = isMobile ? !mobileOpen : !desktopOpen
+  // Before mount, leave data-hidden unset so CSS handles the initial state:
+  // mobile defaults to hidden (transform: translateX(-100%)), desktop to visible.
+  // This prevents a flash of the open sidebar on mobile during hydration.
+  const hidden = mounted ? (isMobile ? !mobileOpen : !desktopOpen) : undefined
 
   return (
     <>
       <aside
         className={styles.sidebar}
-        data-hidden={String(hidden)}
+        data-hidden={hidden !== undefined ? String(hidden) : undefined}
         aria-label="Sidebar navigation"
       >
         <Sidebar
@@ -68,7 +76,7 @@ export function SidebarPanel({
       {/* Mobile backdrop overlay */}
       <div
         className={styles.overlay}
-        data-visible={String(isMobile && mobileOpen)}
+        data-visible={String(mounted && isMobile && mobileOpen)}
         onClick={closeMobile}
         onKeyDown={(e) => {
           if (e.key === 'Escape') closeMobile()
