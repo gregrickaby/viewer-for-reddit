@@ -87,7 +87,7 @@ async function classifyAndThrowError(
     errorBody,
     rateLimitHeaders,
     redditUserAgent: getEnvVar('USER_AGENT'),
-    ...(requestMeta ?? {}),
+    ...requestMeta,
     context: operation,
     resource
   })

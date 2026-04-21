@@ -154,8 +154,7 @@ export async function fetchUserComments(
       }
     )
 
-    const comments = (data.data?.children?.map((child) => child.data) ??
-      []) as RedditComment[]
+    const comments = data.data?.children?.map((child) => child.data) ?? []
     const afterCursor = data.data?.after ?? null
 
     logger.debug('Fetched user comments successfully', {

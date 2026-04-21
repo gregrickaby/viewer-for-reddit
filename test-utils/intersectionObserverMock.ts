@@ -25,7 +25,7 @@ export const mockObserver = {
   }
 }
 
-global.IntersectionObserver = class {
+globalThis.IntersectionObserver = class {
   constructor(cb: IntersectionObserverCallback) {
     mockObserver._callback = cb
   }

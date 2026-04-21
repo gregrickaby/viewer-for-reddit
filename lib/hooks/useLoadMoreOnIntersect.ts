@@ -11,7 +11,7 @@ export interface UseLoadMoreOnIntersectOptions {
   /** Whether a load is currently in progress. */
   isPending: boolean
   /** Callback to invoke when the sentinel element intersects the viewport. */
-  loadMore: () => void
+  loadMore: () => void | Promise<void>
   /** IntersectionObserver threshold. Defaults to 0.1. */
   threshold?: number
 }

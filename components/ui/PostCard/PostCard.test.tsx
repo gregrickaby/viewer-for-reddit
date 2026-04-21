@@ -74,17 +74,16 @@ describe('PostCard', () => {
       expect(titleLink).toHaveAttribute('data-umami-event', 'post-title-click')
     })
 
-    it('has umami event on post text preview link', () => {
+    it('does not wrap html preview in an anchor (avoids nested-a hydration mismatch)', () => {
+      // Reddit selftext_html contains <a> tags; wrapping in <Anchor> would
+      // produce <a> inside <a>, which browsers restructure and causes a
+      // React hydration mismatch. The post title link already navigates.
       const {container} = render(<PostCard post={mockPost} />)
 
-      // Find the link containing the preview content
       // eslint-disable-next-line testing-library/no-container
       const previewDiv = container.querySelector('[class*="postBodyPreview"]')
-      const textLink = previewDiv?.closest('a')
-      expect(textLink).toHaveAttribute(
-        'data-umami-event',
-        'post-text-preview-click'
-      )
+      expect(previewDiv).toBeInTheDocument()
+      expect(previewDiv?.closest('a')).toBeNull()
     })
   })
 
@@ -179,17 +178,16 @@ describe('PostCard', () => {
       expect(screen.queryByText(/post body/)).not.toBeInTheDocument()
     })
 
-    it('links truncated text to post', () => {
+    it('renders truncated html preview without an anchor wrapper', () => {
+      // The HTML preview must not be wrapped in <a> because Reddit's
+      // selftext_html contains <a> tags, and nested anchors are invalid HTML.
+      // Navigation is handled by the post title link above the preview.
       const {container} = render(<PostCard post={mockPost} />)
 
-      // Find the link containing the preview content
       // eslint-disable-next-line testing-library/no-container
       const previewDiv = container.querySelector('[class*="postBodyPreview"]')
-      const textLink = previewDiv?.closest('a')
-      expect(textLink).toHaveAttribute(
-        'href',
-        '/r/test/comments/test123/test_post'
-      )
+      expect(previewDiv).toBeInTheDocument()
+      expect(previewDiv?.closest('a')).toBeNull()
     })
   })
 

@@ -1,5 +1,8 @@
 'use client'
 
+import {PostActions} from '@/components/ui/PostActions/PostActions'
+import {PostHeader} from '@/components/ui/PostHeader/PostHeader'
+import {PostMedia} from '@/components/ui/PostMedia/PostMedia'
 import {useSavePost} from '@/lib/hooks/useSavePost'
 import {useVote} from '@/lib/hooks/useVote'
 import {RedditPost} from '@/lib/types/reddit'
@@ -7,9 +10,6 @@ import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {extractSlug} from '@/lib/utils/reddit-helpers'
 import {Anchor, Card, Stack, Text} from '@mantine/core'
 import Link from 'next/link'
-import {PostActions} from '@/components/ui/PostActions/PostActions'
-import {PostHeader} from '@/components/ui/PostHeader/PostHeader'
-import {PostMedia} from '@/components/ui/PostMedia/PostMedia'
 import styles from './PostCard.module.css'
 
 /**
@@ -49,19 +49,10 @@ function renderSelfText(
   }
 
   return (
-    <Anchor
-      c="dimmed"
-      component={Link}
-      data-umami-event="post-text-preview-click"
-      href={postUrl}
-      scroll
-      underline="never"
-    >
-      <div
-        dangerouslySetInnerHTML={{__html: sanitizedHtml}}
-        className={styles.postBodyPreview}
-      />
-    </Anchor>
+    <div
+      dangerouslySetInnerHTML={{__html: sanitizedHtml}}
+      className={styles.postBodyPreview}
+    />
   )
 }
 

@@ -32,6 +32,22 @@ function resolveHostFromRequest(request: NextRequest): {
 }
 
 /**
+ * Maps an OAuth failure message to the appropriate HTTP error response.
+ */
+function oauthFailureResponse(message: string): NextResponse {
+  if (message.includes('401')) {
+    return new NextResponse('Authentication expired', {status: 401})
+  }
+  if (message.includes('429') || message.includes('rate')) {
+    return new NextResponse('Rate limit exceeded', {status: 429})
+  }
+  if (message.includes('503') || message.includes('unavailable')) {
+    return new NextResponse('Reddit API unavailable', {status: 503})
+  }
+  return new NextResponse(`Authentication failed: ${message}`, {status: 500})
+}
+
+/**
  * GET handler for Reddit OAuth callback.
  * Validates OAuth state, delegates to {@link processOAuthCallback} for
  * token exchange and identity resolution, then persists the session.
@@ -122,22 +138,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
 
       // Map failure reasons to HTTP status codes
-      if (result.message.includes('401')) {
-        return new NextResponse('Authentication expired', {status: 401})
-      }
-      if (result.message.includes('429') || result.message.includes('rate')) {
-        return new NextResponse('Rate limit exceeded', {status: 429})
-      }
-      if (
-        result.message.includes('503') ||
-        result.message.includes('unavailable')
-      ) {
-        return new NextResponse('Reddit API unavailable', {status: 503})
-      }
-
-      return new NextResponse(`Authentication failed: ${result.message}`, {
-        status: 500
-      })
+      return oauthFailureResponse(result.message)
     }
 
     await persistSession(result.sessionData)

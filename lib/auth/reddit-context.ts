@@ -308,11 +308,9 @@ export async function getRedditContext(): Promise<RedditContext> {
   }
 
   // Coalesce concurrent refresh attempts
-  if (!inflightRefresh) {
-    inflightRefresh = performRefresh(snapshot, adapters).finally(() => {
-      inflightRefresh = null
-    })
-  }
+  inflightRefresh ??= performRefresh(snapshot, adapters).finally(() => {
+    inflightRefresh = null
+  })
 
   const newAccessToken = await inflightRefresh
 
