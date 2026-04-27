@@ -38,7 +38,7 @@
     "@axiomhq/logging": "^0.2.0",
     "@axiomhq/nextjs": "^0.2.0",
     "@axiomhq/react": "^0.2.0",
-    "@mantine/carousel": "^9.1.0",
+    "@mantine/carousel": "^9.1.1",
     "@mantine/core": "^9.1.0",
     "@mantine/hooks": "^9.1.0",
     "@mantine/notifications": "^9.1.0",
