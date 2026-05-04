@@ -78,7 +78,7 @@
     "eslint-plugin-testing-library": "^7.16.2",
     "jest-axe": "^10.0.0",
     "jsdom": "^29.1.1",
-    "msw": "^2.14.2",
+    "msw": "^2.14.3",
     "openapi-typescript": "^7.13.0",
     "postcss": "^8.5.12",
     "postcss-preset-mantine": "^1.18.0",
