@@ -36,7 +36,6 @@ describe('UserMenu', () => {
       })
       expect(avatarLink).toBeInTheDocument()
       expect(avatarLink).toHaveAttribute('href', '/u/testuser')
-      expect(avatarLink).toHaveAttribute('data-umami-event', 'nav-user-avatar')
     })
 
     it('does not render avatar when no avatar URL provided', () => {
@@ -109,41 +108,6 @@ describe('UserMenu', () => {
       render(<UserMenu isAuthenticated={false} />)
 
       expect(screen.queryByRole('link', {name: /u\//})).not.toBeInTheDocument()
-    })
-  })
-
-  describe('analytics tracking', () => {
-    it('has umami event on avatar link', () => {
-      render(
-        <UserMenu
-          isAuthenticated
-          username="testuser"
-          avatarUrl="https://example.com/avatar.jpg"
-        />
-      )
-
-      const avatarLink = screen.getByRole('link', {
-        name: "Go to testuser's profile"
-      })
-      expect(avatarLink).toHaveAttribute('data-umami-event', 'nav-user-avatar')
-    })
-
-    it('has umami event on logout buttons', () => {
-      render(<UserMenu isAuthenticated username="testuser" />)
-
-      const logoutButtons = screen.getAllByRole('button', {name: 'Logout'})
-      logoutButtons.forEach((button) => {
-        expect(button).toHaveAttribute('data-umami-event', 'logout-button')
-      })
-    })
-
-    it('has umami event on login button', () => {
-      render(<UserMenu isAuthenticated={false} />)
-
-      const loginButton = screen.getByRole('link', {
-        name: 'Sign in with Reddit'
-      })
-      expect(loginButton).toHaveAttribute('data-umami-event', 'login-button')
     })
   })
 

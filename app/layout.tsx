@@ -1,13 +1,7 @@
 import {theme} from '@/app/theme'
-import {Analytics} from '@/components/ui/Analytics/Analytics'
 import {WebVitals} from '@/lib/axiom/client'
 import {appConfig} from '@/lib/config/app.config'
-import {
-  getAnalyticsConfig,
-  getOptionalEnvVar,
-  isProduction,
-  validateEnv
-} from '@/lib/utils/env'
+import {getOptionalEnvVar, isProduction, validateEnv} from '@/lib/utils/env'
 import {
   ColorSchemeScript,
   MantineProvider,
@@ -72,7 +66,6 @@ export const viewport: Viewport = {
  * Features:
  * - Mantine theme provider with color scheme support
  * - Global error boundary
- * - Analytics (production only)
  * - Color scheme script for preventing flash
  * - Environment validation (development only)
  *
@@ -83,8 +76,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const analytics = getAnalyticsConfig()
-
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
@@ -96,7 +87,6 @@ export default function RootLayout({
         <MantineProvider theme={theme} defaultColorScheme="auto">
           <WebVitals />
           {children}
-          <Analytics {...analytics} />
           <Notifications position="bottom-right" />
         </MantineProvider>
       </body>

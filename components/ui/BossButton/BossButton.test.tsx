@@ -90,21 +90,6 @@ describe('BossButton', () => {
     })
   })
 
-  describe('analytics tracking', () => {
-    it('has umami event attribute', () => {
-      mockUseBossButton.mockReturnValue({
-        shouldShow: true,
-        redirectUrl: 'https://duckduckgo.com/',
-        buttonText: 'Quick Exit'
-      })
-
-      render(<BossButton />)
-
-      const link = screen.getByRole('link', {name: 'Quick Exit'})
-      expect(link).toHaveAttribute('data-umami-event', 'boss-button')
-    })
-  })
-
   describe('accessibility', () => {
     it('has correct aria-label', () => {
       mockUseBossButton.mockReturnValue({

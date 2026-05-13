@@ -1,6 +1,5 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
-  getAnalyticsConfig,
   getEnvVar,
   getOptionalEnvVar,
   isDevelopment,
@@ -198,76 +197,6 @@ describe('env', () => {
       ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
 
       expect(isTest()).toBe(false)
-    })
-  })
-
-  describe('getAnalyticsConfig', () => {
-    it('returns enabled config in production with all variables set', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-      process.env.ENABLE_ANALYTICS = 'true'
-      process.env.ANALYTICS_ID = 'test-id'
-      process.env.ANALYTICS_SCRIPT_URL = 'https://example.com/script.js'
-
-      const config = getAnalyticsConfig()
-
-      expect(config.enabled).toBe(true)
-      expect(config.scriptUrl).toBe('https://example.com/script.js')
-      expect(config.websiteId).toBe('test-id')
-    })
-
-    it('returns enabled config in development when all variables set', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
-      delete process.env.ENABLE_ANALYTICS // Should default to enabled
-      process.env.ANALYTICS_ID = 'test-id'
-      process.env.ANALYTICS_SCRIPT_URL = 'https://example.com/script.js'
-
-      const config = getAnalyticsConfig()
-
-      expect(config.enabled).toBe(true)
-      expect(config.scriptUrl).toBe('https://example.com/script.js')
-      expect(config.websiteId).toBe('test-id')
-    })
-
-    it('returns disabled config when ENABLE_ANALYTICS is false', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-      process.env.ENABLE_ANALYTICS = 'false'
-      process.env.ANALYTICS_ID = 'test-id'
-      process.env.ANALYTICS_SCRIPT_URL = 'https://example.com/script.js'
-
-      const config = getAnalyticsConfig()
-
-      expect(config.enabled).toBe(false)
-    })
-
-    it('returns disabled config when ANALYTICS_ID is missing', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-      delete process.env.ANALYTICS_ID
-      process.env.ANALYTICS_SCRIPT_URL = 'https://example.com/script.js'
-
-      const config = getAnalyticsConfig()
-
-      expect(config.enabled).toBe(false)
-    })
-
-    it('returns disabled config when ANALYTICS_SCRIPT_URL is missing', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-      process.env.ANALYTICS_ID = 'test-id'
-      delete process.env.ANALYTICS_SCRIPT_URL
-
-      const config = getAnalyticsConfig()
-
-      expect(config.enabled).toBe(false)
-    })
-
-    it('returns enabled config when ENABLE_ANALYTICS is not set', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-      delete process.env.ENABLE_ANALYTICS
-      process.env.ANALYTICS_ID = 'test-id'
-      process.env.ANALYTICS_SCRIPT_URL = 'https://example.com/script.js'
-
-      const config = getAnalyticsConfig()
-
-      expect(config.enabled).toBe(true)
     })
   })
 })

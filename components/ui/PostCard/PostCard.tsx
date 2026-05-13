@@ -25,7 +25,6 @@ function renderSelfText(
       <Anchor
         c="dimmed"
         component={Link}
-        data-umami-event="post-text-preview-click"
         href={postUrl}
         scroll
         underline="never"
@@ -117,7 +116,6 @@ export function PostCard({
         <Anchor
           c="inherit"
           component={Link}
-          data-umami-event="post-title-click"
           href={postUrl}
           scroll
           underline="never"

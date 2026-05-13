@@ -69,7 +69,6 @@ export function SubredditSearchBar({
           </Group>
         }
         aria-label={`Search within r/${subreddit}`}
-        data-umami-event="subreddit-search"
       />
     </form>
   )

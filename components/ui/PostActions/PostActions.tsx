@@ -78,7 +78,6 @@ export function PostActions({
           loading={isPending}
           disabled={!isAuthenticated}
           style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
-          data-umami-event="upvote"
         >
           <IconArrowUp aria-hidden="true" size={18} />
         </ActionIcon>
@@ -93,7 +92,6 @@ export function PostActions({
           loading={isPending}
           disabled={!isAuthenticated}
           style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
-          data-umami-event="downvote"
         >
           <IconArrowDown aria-hidden="true" size={18} />
         </ActionIcon>
@@ -104,7 +102,6 @@ export function PostActions({
         href={`${postUrl}#comments`}
         underline="never"
         c="inherit"
-        data-umami-event="view-comments"
       >
         <Group gap={2}>
           <ActionIcon variant="subtle" color="gray" aria-label="View comments">
@@ -121,7 +118,6 @@ export function PostActions({
         onClick={handleSave}
         disabled={!isAuthenticated || isPending}
         style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
-        data-umami-event={isSaved ? 'unsave-post' : 'save-post'}
       >
         {isSaved ? (
           <IconBookmarkFilled aria-hidden="true" size={18} />
@@ -135,7 +131,6 @@ export function PostActions({
         color="gray"
         aria-label="Share post"
         onClick={handleShare}
-        data-umami-event="share-post"
       >
         <IconShare aria-hidden="true" size={18} />
       </ActionIcon>

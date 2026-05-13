@@ -105,7 +105,6 @@ export default async function SubredditSearchPage({
               td="none"
               c="dimmed"
               fz="sm"
-              data-umami-event="back-to-subreddit"
             >
               <Group gap={4}>
                 <IconArrowLeft size={14} />

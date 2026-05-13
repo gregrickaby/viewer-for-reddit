@@ -92,7 +92,6 @@ export function SearchBar({
         leftSection={<IconSearch size={18} aria-hidden="true" />}
         rightSection={isLoading ? <Loader size={16} /> : null}
         aria-label="Search Reddit or subreddits"
-        data-umami-event="search"
         onKeyDown={(e) => {
           if (e.key === 'Enter') handleSubmit()
         }}

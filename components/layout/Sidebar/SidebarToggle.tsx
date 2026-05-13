@@ -15,7 +15,6 @@ export function SidebarToggle() {
         hiddenFrom="sm"
         size="sm"
         aria-label="Toggle mobile navigation"
-        data-umami-event="toggle-mobile-nav"
       />
       <Burger
         opened={false}
@@ -23,7 +22,6 @@ export function SidebarToggle() {
         visibleFrom="sm"
         size="sm"
         aria-label="Toggle desktop navigation"
-        data-umami-event="toggle-desktop-nav"
       />
     </>
   )

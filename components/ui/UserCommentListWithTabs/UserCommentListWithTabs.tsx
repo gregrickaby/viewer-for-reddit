@@ -83,7 +83,6 @@ export function UserCommentListWithTabs({
             leftSection={<IconFlame aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('hot')}
             disabled={isPending}
-            data-umami-event="sort-user-comments-hot"
           >
             Hot
           </Tabs.Tab>
@@ -92,7 +91,6 @@ export function UserCommentListWithTabs({
             leftSection={<IconClock aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('new')}
             disabled={isPending}
-            data-umami-event="sort-user-comments-new"
           >
             New
           </Tabs.Tab>
@@ -101,7 +99,6 @@ export function UserCommentListWithTabs({
             leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('top')}
             disabled={isPending}
-            data-umami-event="sort-user-comments-top"
           >
             Top
           </Tabs.Tab>
@@ -110,7 +107,6 @@ export function UserCommentListWithTabs({
             leftSection={<IconRocket aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('controversial')}
             disabled={isPending}
-            data-umami-event="sort-user-comments-controversial"
           >
             Controversial
           </Tabs.Tab>
@@ -127,7 +123,6 @@ export function UserCommentListWithTabs({
               value="hour"
               onClick={() => handleTimeFilterChange('hour')}
               disabled={isPending}
-              data-umami-event="filter-user-comments-hour"
             >
               Hour
             </Tabs.Tab>
@@ -135,7 +130,6 @@ export function UserCommentListWithTabs({
               value="day"
               onClick={() => handleTimeFilterChange('day')}
               disabled={isPending}
-              data-umami-event="filter-user-comments-day"
             >
               Today
             </Tabs.Tab>
@@ -143,7 +137,6 @@ export function UserCommentListWithTabs({
               value="week"
               onClick={() => handleTimeFilterChange('week')}
               disabled={isPending}
-              data-umami-event="filter-user-comments-week"
             >
               Week
             </Tabs.Tab>
@@ -151,7 +144,6 @@ export function UserCommentListWithTabs({
               value="month"
               onClick={() => handleTimeFilterChange('month')}
               disabled={isPending}
-              data-umami-event="filter-user-comments-month"
             >
               Month
             </Tabs.Tab>
@@ -159,7 +151,6 @@ export function UserCommentListWithTabs({
               value="year"
               onClick={() => handleTimeFilterChange('year')}
               disabled={isPending}
-              data-umami-event="filter-user-comments-year"
             >
               Year
             </Tabs.Tab>
@@ -167,7 +158,6 @@ export function UserCommentListWithTabs({
               value="all"
               onClick={() => handleTimeFilterChange('all')}
               disabled={isPending}
-              data-umami-event="filter-user-comments-all"
             >
               All Time
             </Tabs.Tab>

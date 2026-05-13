@@ -145,11 +145,4 @@ describe('SubredditSearchBar', () => {
     // test the exact pending state, but we verify the navigation happens
     expect(mockPush).toHaveBeenCalledWith('/r/programming/search/test')
   })
-
-  it('has data-umami-event attribute', () => {
-    render(<SubredditSearchBar subreddit="programming" />)
-
-    const input = screen.getByPlaceholderText('Search r/programming...')
-    expect(input).toHaveAttribute('data-umami-event', 'subreddit-search')
-  })
 })

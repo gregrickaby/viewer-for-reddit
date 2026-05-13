@@ -336,23 +336,22 @@ describe('Sidebar with collapsed sections', () => {
     ).toBeInTheDocument()
   })
 
-  it('tests content inside collapsed section', async () => {
-    const user = userEvent.setup()
-    render(<Sidebar isAuthenticated subscriptions={mockData} />)
+    it('tests content inside collapsed section', async () => {
+      const user = userEvent.setup()
+      render(<Sidebar isAuthenticated subscriptions={mockData} />)
 
-    // CRITICAL: Must expand before checking content
-    const expandButton = screen.getByRole('button', {
-      name: /expand my subreddits/i
+      // CRITICAL: Must expand before checking content
+      const expandButton = screen.getByRole('button', {
+        name: /expand my subreddits/i
+      })
+      await user.click(expandButton)
+
+      // Wait for animation
+      const link = await screen.findByRole('link', {name: /r\/programming/i})
+
+      // Now you can test the content
+      expect(link).toHaveAttribute('href', '/r/programming')
     })
-    await user.click(expandButton)
-
-    // Wait for animation
-    const link = await screen.findByRole('link', {name: /r\/programming/i})
-
-    // Now you can test the content
-    expect(link).toHaveAttribute('href', '/r/programming')
-    expect(link).toHaveAttribute('data-umami-event', 'nav-subreddit')
-  })
 
   it('handles multiple collapsible sections independently', async () => {
     const user = userEvent.setup()

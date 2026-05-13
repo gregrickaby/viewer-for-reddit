@@ -111,7 +111,6 @@ export function PostListWithTabs({
             value="hot"
             leftSection={<IconFlame aria-hidden="true" size={16} />}
             disabled={isPending}
-            data-umami-event="sort-posts-hot"
           >
             Hot
           </Tabs.Tab>
@@ -119,7 +118,6 @@ export function PostListWithTabs({
             value="new"
             leftSection={<IconClock aria-hidden="true" size={16} />}
             disabled={isPending}
-            data-umami-event="sort-posts-new"
           >
             New
           </Tabs.Tab>
@@ -127,7 +125,6 @@ export function PostListWithTabs({
             value="top"
             leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
             disabled={isPending}
-            data-umami-event="sort-posts-top"
           >
             Top
           </Tabs.Tab>
@@ -135,7 +132,6 @@ export function PostListWithTabs({
             value="rising"
             leftSection={<IconRocket aria-hidden="true" size={16} />}
             disabled={isPending}
-            data-umami-event="sort-posts-rising"
           >
             Rising
           </Tabs.Tab>
@@ -153,7 +149,6 @@ export function PostListWithTabs({
             data={timeFilterOptions}
             size="xs"
             disabled={isPending}
-            data-umami-event="filter-posts-time"
           />
         </Group>
       )}

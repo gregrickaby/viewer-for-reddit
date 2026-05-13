@@ -54,7 +54,6 @@ export function CommentListWithTabs({
             leftSection={<IconStar aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('best')}
             disabled={isPending}
-            data-umami-event="sort-comments-best"
           >
             Best
           </Tabs.Tab>
@@ -63,7 +62,6 @@ export function CommentListWithTabs({
             leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('top')}
             disabled={isPending}
-            data-umami-event="sort-comments-top"
           >
             Top
           </Tabs.Tab>
@@ -72,7 +70,6 @@ export function CommentListWithTabs({
             leftSection={<IconClock aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('new')}
             disabled={isPending}
-            data-umami-event="sort-comments-new"
           >
             New
           </Tabs.Tab>
@@ -81,7 +78,6 @@ export function CommentListWithTabs({
             leftSection={<IconFlame aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('controversial')}
             disabled={isPending}
-            data-umami-event="sort-comments-controversial"
           >
             Controversial
           </Tabs.Tab>
@@ -90,7 +86,6 @@ export function CommentListWithTabs({
             leftSection={<IconClock aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('old')}
             disabled={isPending}
-            data-umami-event="sort-comments-old"
           >
             Old
           </Tabs.Tab>
@@ -99,7 +94,6 @@ export function CommentListWithTabs({
             leftSection={<IconMessageQuestion aria-hidden="true" size={16} />}
             onClick={() => handleSortChange('qa')}
             disabled={isPending}
-            data-umami-event="sort-comments-qa"
           >
             Q&A
           </Tabs.Tab>

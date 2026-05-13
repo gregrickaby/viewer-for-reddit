@@ -27,7 +27,6 @@ export function FollowButton({
   return (
     <Button
       color={isFollowing ? 'gray' : 'blue'}
-      data-umami-event={`${isFollowing ? 'unfollow-user-click' : 'follow-user-click'}`}
       disabled={isPending}
       onClick={toggleFollow}
       variant={isFollowing ? 'light' : 'filled'}

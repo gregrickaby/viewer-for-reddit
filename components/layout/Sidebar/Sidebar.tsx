@@ -91,14 +91,12 @@ export function Sidebar({
                 href="/"
                 label={isAuthenticated ? 'Home' : 'Popular'}
                 leftSection={<IconFlame size={16} />}
-                data-umami-event={isAuthenticated ? 'nav-home' : 'nav-popular'}
               />
               <NavLink
                 component={Link}
                 href="/r/all"
                 label="All"
                 leftSection={<IconTrendingUp size={16} />}
-                data-umami-event="nav-all"
               />
               {isAuthenticated && username && (
                 <NavLink
@@ -106,7 +104,6 @@ export function Sidebar({
                   href={`/user/${username}/saved`}
                   label="Saved"
                   leftSection={<IconBookmark size={16} />}
-                  data-umami-event="nav-saved"
                 />
               )}
               <NavLink
@@ -114,14 +111,12 @@ export function Sidebar({
                 href="/about"
                 label="About"
                 leftSection={<IconInfoCircle size={16} />}
-                data-umami-event="nav-about"
               />
               <NavLink
                 component={Link}
                 href="/donate"
                 label="Donate"
                 leftSection={<IconHeart size={16} />}
-                data-umami-event="nav-donate"
               />
               <NavLink
                 component="a"
@@ -131,7 +126,6 @@ export function Sidebar({
                 rightSection={<IconExternalLink size={14} />}
                 target="_blank"
                 rel="noopener noreferrer"
-                data-umami-event="nav-github"
               />
             </Stack>
           </CollapsibleSection>
@@ -165,7 +159,6 @@ export function Sidebar({
                           </Avatar>
                         )
                       }
-                      data-umami-event="nav-multireddit"
                     />
                   ))}
                 </Stack>
@@ -189,7 +182,6 @@ export function Sidebar({
                       label={user.name}
                       description={user.note}
                       leftSection={<IconUser size={16} />}
-                      data-umami-event="nav-following"
                     />
                   ))}
                 </Stack>

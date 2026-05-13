@@ -79,7 +79,6 @@ export function SubscriptionFilterList({
                   <IconMessage size={16} />
                 )
               }
-              data-umami-event="nav-subreddit"
             />
           ))}
         </Stack>

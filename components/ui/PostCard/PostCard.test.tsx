@@ -67,13 +67,6 @@ describe('PostCard', () => {
   })
 
   describe('analytics tracking', () => {
-    it('has umami event on post title link', () => {
-      render(<PostCard post={mockPost} />)
-
-      const titleLink = screen.getByText('Test Post Title').closest('a')
-      expect(titleLink).toHaveAttribute('data-umami-event', 'post-title-click')
-    })
-
     it('does not wrap html preview in an anchor (avoids nested-a hydration mismatch)', () => {
       // Reddit selftext_html contains <a> tags; wrapping in <Anchor> would
       // produce <a> inside <a>, which browsers restructure and causes a

@@ -30,7 +30,6 @@ export function ThemeToggle() {
           ? 'Switch to light mode'
           : 'Switch to dark mode'
       }
-      data-umami-event="toggle-color-scheme"
       suppressHydrationWarning
     >
       <IconSun className={styles.sun} aria-hidden="true" size={20} />

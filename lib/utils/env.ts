@@ -89,30 +89,3 @@ export function isDevelopment(): boolean {
 export function isTest(): boolean {
   return process.env.NODE_ENV === 'test'
 }
-
-/**
- * Analytics configuration
- */
-interface AnalyticsConfig {
-  enabled: boolean
-  scriptUrl?: string
-  websiteId?: string
-}
-
-/**
- * Gets the analytics configuration
- */
-export function getAnalyticsConfig(): AnalyticsConfig {
-  const enabled =
-    process.env.ENABLE_ANALYTICS !== 'false' &&
-    !!process.env.ANALYTICS_ID &&
-    !!process.env.ANALYTICS_SCRIPT_URL
-
-  return {
-    enabled,
-    ...(enabled && {
-      scriptUrl: process.env.ANALYTICS_SCRIPT_URL,
-      websiteId: process.env.ANALYTICS_ID
-    })
-  }
-}

@@ -46,7 +46,6 @@ export function ErrorDisplay({
             aria-label="Sign in with Reddit"
             color="red"
             component="a"
-            data-umami-event="login-button-error-display"
             href="/api/auth/login"
             leftSection={<IconBrandReddit size={16} />}
             maw={200}
@@ -60,7 +59,6 @@ export function ErrorDisplay({
           <Button
             aria-label="Try again"
             color="blue"
-            data-umami-event="error-reset-button"
             leftSection={<IconRefresh size={16} />}
             maw={200}
             onClick={onReset}

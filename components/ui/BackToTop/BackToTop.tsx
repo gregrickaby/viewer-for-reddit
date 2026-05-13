@@ -22,7 +22,6 @@ export default function BackToTop() {
       color="gray"
       onClick={() => scrollTo({y: 0})}
       title={buttonText}
-      data-umami-event="back-to-top"
     >
       <IconChevronUp aria-hidden="true" size={16} />
       <VisuallyHidden>{buttonText}</VisuallyHidden>

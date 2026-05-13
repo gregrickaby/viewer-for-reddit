@@ -106,7 +106,6 @@ function renderVoteActions(
         }
         aria-label={`${voteState === 1 ? 'Upvoted' : 'Upvote'} comment (${score} points)`}
         aria-disabled={!isAuthenticated}
-        data-umami-event="comment-upvote"
       >
         <IconArrowUp aria-hidden="true" size={14} />
       </ActionIcon>
@@ -125,7 +124,6 @@ function renderVoteActions(
         }
         aria-label={`${voteState === -1 ? 'Downvoted' : 'Downvote'} comment (${score} points)`}
         aria-disabled={!isAuthenticated}
-        data-umami-event="comment-downvote"
       >
         <IconArrowDown aria-hidden="true" size={14} />
       </ActionIcon>
@@ -157,7 +155,6 @@ function renderActionButtons(
         }
         aria-label={isSaved ? 'Unsave comment' : 'Save comment'}
         aria-disabled={!isAuthenticated}
-        data-umami-event={isSaved ? 'comment-unsave' : 'comment-save'}
       >
         {isSaved ? (
           <IconBookmarkFilled aria-hidden="true" size={14} />
@@ -171,7 +168,6 @@ function renderActionButtons(
         color="gray"
         onClick={handleShare}
         aria-label="Share comment"
-        data-umami-event="comment-share"
       >
         <IconShare aria-hidden="true" size={14} />
       </ActionIcon>
@@ -245,9 +241,6 @@ export function Comment({
                 onClick={toggleCollapse}
                 aria-label={isCollapsed ? 'Expand comment' : 'Collapse comment'}
                 aria-expanded={!isCollapsed}
-                data-umami-event={
-                  isCollapsed ? 'comment-expand' : 'comment-collapse'
-                }
               >
                 {isCollapsed ? (
                   <IconChevronDown aria-hidden="true" size={16} />

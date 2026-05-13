@@ -27,7 +27,6 @@ export default function SubredditSearchError({
         <Button
           aria-label="Try again"
           color="blue"
-          data-umami-event="search-error-reset"
           leftSection={<IconRefresh size={16} />}
           maw={200}
           onClick={reset}

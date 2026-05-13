@@ -55,7 +55,6 @@ describe('Sidebar', () => {
       const link = screen.getByRole('link', {name: /popular/i})
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/')
-      expect(link).toHaveAttribute('data-umami-event', 'nav-popular')
     })
 
     it('renders Home link when authenticated', () => {
@@ -64,7 +63,6 @@ describe('Sidebar', () => {
       const link = screen.getByRole('link', {name: /home/i})
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/')
-      expect(link).toHaveAttribute('data-umami-event', 'nav-home')
     })
 
     it('renders All link', () => {
@@ -205,13 +203,6 @@ describe('Sidebar', () => {
       const link = screen.getByRole('link', {name: /saved/i})
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/user/testuser/saved')
-    })
-
-    it('has analytics event on Saved link', () => {
-      render(<Sidebar isAuthenticated username="testuser" />)
-
-      const link = screen.getByRole('link', {name: /saved/i})
-      expect(link).toHaveAttribute('data-umami-event', 'nav-saved')
     })
 
     it('renders Saved link in correct position (after All)', () => {
@@ -744,38 +735,6 @@ describe('Sidebar', () => {
       expect(
         screen.getByRole('button', {name: /collapse my multireddits/i})
       ).toBeInTheDocument()
-    })
-  })
-
-  describe('analytics tracking', () => {
-    it('has analytics event on Popular link when not authenticated', () => {
-      render(<Sidebar />)
-
-      const link = screen.getByRole('link', {name: /popular/i})
-      expect(link).toHaveAttribute('data-umami-event', 'nav-popular')
-    })
-
-    it('has analytics event on Home link when authenticated', () => {
-      render(<Sidebar isAuthenticated />)
-
-      const link = screen.getByRole('link', {name: /home/i})
-      expect(link).toHaveAttribute('data-umami-event', 'nav-home')
-    })
-
-    it('has analytics event on subscription links', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
-
-      // Section is now expanded by default
-      const link = await screen.findByRole('link', {name: /r\/programming/i})
-      expect(link).toHaveAttribute('data-umami-event', 'nav-subreddit')
-    })
-
-    it('has analytics event on multireddit links', async () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
-
-      // Section is now open by default
-      const link = await screen.findByRole('link', {name: /tech news/i})
-      expect(link).toHaveAttribute('data-umami-event', 'nav-multireddit')
     })
   })
 })

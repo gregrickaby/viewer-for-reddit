@@ -36,7 +36,6 @@ export function UserMenu({
             component={Link}
             href={`/u/${username}`}
             aria-label={`Go to ${username}'s profile`}
-            data-umami-event="nav-user-avatar"
           >
             <Avatar
               src={avatarUrl}
@@ -55,7 +54,6 @@ export function UserMenu({
           hiddenFrom="sm"
           px="xs"
           size="sm"
-          data-umami-event="logout-button"
         />
         <Button
           variant="subtle"
@@ -65,7 +63,6 @@ export function UserMenu({
           aria-label="Logout"
           visibleFrom="sm"
           size="sm"
-          data-umami-event="logout-button"
         >
           Logout
         </Button>
@@ -77,7 +74,6 @@ export function UserMenu({
     <Button
       aria-label="Sign in with Reddit"
       component="a"
-      data-umami-event="login-button"
       href="/api/auth/login"
       leftSection={<IconBrandReddit size={16} />}
       size="sm"

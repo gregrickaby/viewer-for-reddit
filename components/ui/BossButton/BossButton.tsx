@@ -21,7 +21,6 @@ export default function BossButton() {
         color="gray"
         component="a"
         href={redirectUrl}
-        data-umami-event="boss-button"
       >
         <IconDoorExit aria-hidden="true" size={24} />
         <VisuallyHidden>{buttonText}</VisuallyHidden>

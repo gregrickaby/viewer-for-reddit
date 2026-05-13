@@ -20,7 +20,6 @@ export function MobileSearch() {
         size="lg"
         hiddenFrom="sm"
         aria-label="Search"
-        data-umami-event="open-mobile-search"
         onClick={spotlight.open}
       >
         <IconSearch aria-hidden="true" size={20} />
@@ -31,7 +30,6 @@ export function MobileSearch() {
         visibleFrom="sm"
         onClick={spotlight.open}
         aria-label="Open search"
-        data-umami-event="open-desktop-search"
         style={{
           display: 'flex',
           alignItems: 'center',
