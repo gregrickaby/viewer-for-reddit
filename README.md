@@ -1,61 +1,43 @@
 # About Viewer for Reddit
 
-**Viewer for Reddit** is a clean, distraction-free way to browse Reddit.
+**Viewer for Reddit** is a clean way to browse Reddit without ads or algorithmic tricks.
 
-New here? **[Start browsing now →](https://reddit-viewer.com)**
+**[Start browsing →](https://reddit-viewer.com)**
 
 ## How It Works
 
-- **Browse instantly** - No sign-in required. Start exploring right away.
-- **Your communities** - Add favorite subreddits to your homepage for quick access.
-- **Vote & comment** - Sign in with your Reddit account to participate.
-- **Distraction-free** - No ads, no clickbait, no endless scrolling tricks.
-- **Privacy first** - Your password never touches our servers. Anonymous analytics only.
-- **Works everywhere** - Fast, clean interface on desktop, tablet, or phone.
-- **Boss button** - Discreetly close Reddit by pressing `esc` or with one click (no judgment!).
+- **Sign in with your Reddit account** using OAuth2. Your password stays with Reddit, not here.
+- **Add subreddits to your homepage** for quick access to communities you follow.
+- **Vote and comment** after signing in.
+- **No ads, no clickbait, no infinite scroll mechanics.**
+- **Works on desktop, tablet, and phone.**
+- **Press `esc` to close** (useful when your boss walks by).
 
 ## Frequently Asked Questions
 
-### Why am I seeing "Rate limit exceeded" errors?
+### Why do I have to sign in?
 
-Reddit has aggressive rate limits on their API-among the strictest in the industry. When you see this message, it means Reddit's servers are temporarily blocking requests. Here's what you need to know:
-
-- **It's not you, it's Reddit** - These limits apply to all third-party apps, not just ours
-- **Wait it out** - Rate limits typically reset within a few minutes
-- **Peak times are worse** - You might experience more errors during high-traffic periods
-- **Authenticated helps** - Signing in with your Reddit account will eliminate rate limits
-
-We've implemented smart caching and request optimization to minimize these errors, but Reddit's limits are ultimately out of our control.
+Recently, Reddit restricted free API access, so third-party apps now require authentication. All Reddit clients face this. We cache what we can and optimize where possible, but login is now mandatory.
 
 ### Is my data safe?
 
-Yes. We use Reddit's [official OAuth2 system](https://www.reddit.com/r/redditdev/wiki/oauth2/), which means your password never touches our servers. We only store temporary access tokens that expire and get deleted when you sign out. No personal information is collected or sold.
+Yes. We use Reddit's official OAuth2 system, so your password never reaches our servers. We store temporary access tokens that expire and delete when you sign out. We don't collect or sell personal data.
 
-### Do I need a Reddit account to use this?
+### Do I need a Reddit account?
 
-Nope! You can browse posts, search communities, and explore Reddit without signing in. You only need an account if you want to vote, comment, save posts, access your personalized feed or are being rate limited by Reddit.
+Yes, due to Reddit's rate limits.
 
-## The Story Behind It
+## About This Project
 
-I'm [Greg Rickaby](https://gregrickaby.com), a software engineer who's been around the internet for over 20 years. I built Viewer for Reddit because I wanted a cleaner, simpler way to browse Reddit and I thought others might too.
+I'm [Greg Rickaby](https://gregrickaby.com), a software engineer. I built this in 2020 to learn TypeScript and wanted a simpler way to browse Reddit. It's now used by thousands of people. I use it daily and maintain it actively.
 
-This side project started in 2020 as a fun way for me to learn TypeScript. It's grown into something with thousands of users, and I'm really proud of it. I use it every day and I'm always looking for ways to make it better.
+The codebase is [open source](https://github.com/gregrickaby/viewer-for-reddit) and built with Next.js, React, and TypeScript. If you want to contribute, the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) explains how.
 
-## Tech & Open Source
+## Report Issues or Suggest Ideas
 
-This is an open-source project built with modern web technologies (Next.js, React, TypeScript). The code is carefully organized, well-tested, and designed to be maintainable and scalable.
-
-If you're a developer interested in contributing, the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) has everything you need to get started. We follow enterprise-grade development practices with comprehensive testing and code quality standards.
-
-## Support & Feedback
-
-- **Found a bug?** [Let me know](https://github.com/gregrickaby/viewer-for-reddit/issues)
-- **Have an idea?** [Share it](https://github.com/gregrickaby/viewer-for-reddit/issues)
-- **Like the project?**
-  - ☕ [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby)
-  - 💸 [Venmo](https://venmo.com/u/GregRickaby)
-  - 💳 [PayPal](https://www.paypal.com/paypalme/GregRickaby)
+- [GitHub Issues](https://github.com/gregrickaby/viewer-for-reddit/issues)
+- Support the project: [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby), [Venmo](https://venmo.com/u/GregRickaby), [PayPal](https://www.paypal.com/paypalme/GregRickaby)
 
 ---
 
-_Viewer for Reddit is an independent side project and is not affiliated with, endorsed by, or sponsored by Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc., used in accordance with their [brand guidelines](https://redditinc.com/brand). The app developer and contributors endeavor to comply with Reddit's [API terms](https://redditinc.com/policies/data-api-terms), [Developer Platform policies](https://support.reddithelp.com/hc/en-us/articles/14945211791892-Developer-Platform-Accessing-Reddit-Data) and [API documentation](https://www.reddit.com/dev/api/)._
+_Viewer for Reddit is an independent project not affiliated with Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc. See Reddit's [brand guidelines](https://redditinc.com/brand), [API terms](https://redditinc.com/policies/data-api-terms), [developer policies](https://support.reddithelp.com/hc/en-us/articles/14945211791892-Developer-Platform-Accessing-Reddit-Data), and [API documentation](https://www.reddit.com/dev/api/)._

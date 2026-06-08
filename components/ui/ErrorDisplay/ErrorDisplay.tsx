@@ -23,12 +23,11 @@ export function ErrorDisplay({
       <Stack align="center" gap="md">
         <IconAlertCircle size={48} color="var(--mantine-color-red-6)" />
         <Text size="xl" fw={600}>
-          Something went wrong
+          Sign in to use this website
         </Text>
         <Text size="sm" c="dimmed" ta="center">
-          This content was not found, set to private, Reddit is down, or you've
-          reached Reddit's rate limit. If you continue to see this message,
-          please see our{' '}
+          Reddit's free API access has been limited. Please sign in to continue
+          browsing. If you continue to see this message, please see our{' '}
           <AppLink
             href="/about"
             style={{color: 'var(--mantine-color-blue-6)', fontWeight: 500}}
@@ -36,9 +35,6 @@ export function ErrorDisplay({
             FAQ's
           </AppLink>
           .
-        </Text>
-        <Text size="sm" c="dimmed" ta="center">
-          Sign in to remove rate limits or try again later.
         </Text>
 
         {!isAuthenticated && (

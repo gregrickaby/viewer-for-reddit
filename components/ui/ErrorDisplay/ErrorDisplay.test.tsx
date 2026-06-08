@@ -6,9 +6,9 @@ describe('ErrorDisplay', () => {
   it('renders error message by default (no auth prop)', () => {
     render(<ErrorDisplay />)
 
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+    expect(screen.getByText('Sign in to use this website')).toBeInTheDocument()
     expect(
-      screen.getByText(/sign in to remove rate limits or try again later/i)
+      screen.getByText(/reddit's free api access has been limited/i)
     ).toBeInTheDocument()
 
     const loginButton = screen.getByRole('link', {name: /sign in with reddit/i})
@@ -27,7 +27,7 @@ describe('ErrorDisplay', () => {
   it('hides login button when user is authenticated', () => {
     render(<ErrorDisplay isAuthenticated />)
 
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+    expect(screen.getByText('Sign in to use this website')).toBeInTheDocument()
     expect(
       screen.queryByRole('link', {name: /sign in with reddit/i})
     ).not.toBeInTheDocument()
