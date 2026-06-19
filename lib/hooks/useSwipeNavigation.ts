@@ -49,6 +49,7 @@ export function useSwipeNavigation({
   const touchStartY = useRef<number>(0)
   const touchEndX = useRef<number>(0)
   const touchEndY = useRef<number>(0)
+  const touchTarget = useRef<EventTarget | null>(null)
 
   useEffect(() => {
     if (!enabled) return
@@ -59,6 +60,7 @@ export function useSwipeNavigation({
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX.current = e.touches[0].clientX
       touchStartY.current = e.touches[0].clientY
+      touchTarget.current = e.target
     }
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -67,6 +69,16 @@ export function useSwipeNavigation({
     }
 
     const handleTouchEnd = () => {
+      // Skip navigation if the touch originated on a video element
+      // (e.g., user is scrubbing through video playback)
+      if (
+        touchTarget.current instanceof HTMLElement &&
+        touchTarget.current.closest('video')
+      ) {
+        resetTouchState()
+        return
+      }
+
       const swipe = detectSwipe(
         touchStartX.current,
         touchStartY.current,
@@ -96,6 +108,7 @@ export function useSwipeNavigation({
       touchStartY.current = 0
       touchEndX.current = 0
       touchEndY.current = 0
+      touchTarget.current = null
     }
 
     // Add event listeners — all passive since none call preventDefault().

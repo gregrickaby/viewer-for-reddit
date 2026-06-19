@@ -6,6 +6,7 @@
   max-height: 60vh;
   border-radius: 8px;
   overflow: hidden;
+  touch-action: pan-y pinch-zoom;
 }
 
 .video {

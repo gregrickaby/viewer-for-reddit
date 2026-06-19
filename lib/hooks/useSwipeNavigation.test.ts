@@ -295,6 +295,100 @@ describe('useSwipeNavigation', () => {
     })
   })
 
+  describe('video interaction', () => {
+    /**
+     * Fires a touchstart event on a specific target element (bubbles to document).
+     */
+    function fireTouchStartOnTarget(
+      target: EventTarget,
+      x: number,
+      y: number
+    ): void {
+      const touch = new Touch({
+        identifier: 1,
+        target,
+        clientX: x,
+        clientY: y
+      })
+      target.dispatchEvent(
+        new TouchEvent('touchstart', {
+          touches: [touch],
+          changedTouches: [touch],
+          bubbles: true
+        })
+      )
+    }
+
+    /**
+     * Performs a right swipe gesture starting on a specific target element.
+     */
+    function swipeRightFromTarget(
+      target: EventTarget,
+      startX = 50,
+      startY = 200,
+      distance = 150
+    ): void {
+      fireTouchStartOnTarget(target, startX, startY)
+      fireTouchMove(startX + distance, startY)
+      fireTouchEnd()
+    }
+
+    it('does not navigate when touch starts on a video element', () => {
+      renderHook(() => useSwipeNavigation())
+
+      const video = document.createElement('video')
+      document.body.appendChild(video)
+
+      swipeRightFromTarget(video)
+
+      expect(mockBack).not.toHaveBeenCalled()
+      document.body.removeChild(video)
+    })
+
+    it('does not navigate when touch starts on a child of a video element', () => {
+      renderHook(() => useSwipeNavigation())
+
+      const video = document.createElement('video')
+      const source = document.createElement('source')
+      video.appendChild(source)
+      document.body.appendChild(video)
+
+      swipeRightFromTarget(source)
+
+      expect(mockBack).not.toHaveBeenCalled()
+      document.body.removeChild(video)
+    })
+
+    it('still navigates when touch starts outside a video element', () => {
+      renderHook(() => useSwipeNavigation())
+
+      const div = document.createElement('div')
+      document.body.appendChild(div)
+
+      swipeRightFromTarget(div)
+
+      expect(mockBack).toHaveBeenCalledTimes(1)
+      document.body.removeChild(div)
+    })
+
+    it('resets touch state after video interaction so next swipe works', () => {
+      renderHook(() => useSwipeNavigation())
+
+      const video = document.createElement('video')
+      document.body.appendChild(video)
+
+      // Swipe on video — should not navigate
+      swipeRightFromTarget(video)
+      expect(mockBack).not.toHaveBeenCalled()
+
+      // Swipe on body — should navigate
+      swipeRight()
+      expect(mockBack).toHaveBeenCalledTimes(1)
+
+      document.body.removeChild(video)
+    })
+  })
+
   describe('multiple swipes', () => {
     it('calls router.back() for each valid right swipe', () => {
       renderHook(() => useSwipeNavigation())
