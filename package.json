@@ -40,7 +40,7 @@
     "@axiomhq/react": "^0.2.2",
     "@mantine/carousel": "^9.3.2",
     "@mantine/core": "^9.3.2",
-    "@mantine/hooks": "^9.3.2",
+    "@mantine/hooks": "^9.4.0",
     "@mantine/notifications": "^9.3.2",
     "@mantine/spotlight": "^9.3.2",
     "@tabler/icons-react": "^3.44.0",
