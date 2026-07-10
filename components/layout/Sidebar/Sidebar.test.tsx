@@ -49,10 +49,10 @@ describe('Sidebar', () => {
       ).toBeInTheDocument()
     })
 
-    it('renders Popular link when not authenticated', () => {
+    it('renders Home link when not authenticated', () => {
       render(<Sidebar />)
 
-      const link = screen.getByRole('link', {name: /popular/i})
+      const link = screen.getByRole('link', {name: /home/i})
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/')
     })
@@ -65,12 +65,27 @@ describe('Sidebar', () => {
       expect(link).toHaveAttribute('href', '/')
     })
 
-    it('renders All link', () => {
+    it('does not show Popular or All when not authenticated', () => {
       render(<Sidebar />)
 
-      const link = screen.getByRole('link', {name: /^all$/i})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/r/all')
+      expect(
+        screen.queryByRole('link', {name: /popular/i})
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {name: /^all$/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders Popular and All links when authenticated', () => {
+      render(<Sidebar isAuthenticated />)
+
+      const popular = screen.getByRole('link', {name: /popular/i})
+      expect(popular).toBeInTheDocument()
+      expect(popular).toHaveAttribute('href', '/r/popular')
+
+      const all = screen.getByRole('link', {name: /^all$/i})
+      expect(all).toBeInTheDocument()
+      expect(all).toHaveAttribute('href', '/r/all')
     })
 
     it('renders About link', () => {
@@ -116,7 +131,7 @@ describe('Sidebar', () => {
       expect(
         screen.getByRole('button', {name: /collapse navigation/i})
       ).toBeInTheDocument()
-      expect(screen.getByRole('link', {name: /popular/i})).toBeInTheDocument()
+      expect(screen.getByRole('link', {name: /home/i})).toBeInTheDocument()
 
       // Click to collapse
       const collapseButton = screen.getByRole('button', {
@@ -143,7 +158,7 @@ describe('Sidebar', () => {
           screen.getByRole('button', {name: /collapse navigation/i})
         ).toBeInTheDocument()
       })
-      expect(screen.getByRole('link', {name: /popular/i})).toBeInTheDocument()
+      expect(screen.getByRole('link', {name: /home/i})).toBeInTheDocument()
     })
 
     it('toggles Navigation by keyboard', async () => {
@@ -205,16 +220,17 @@ describe('Sidebar', () => {
       expect(link).toHaveAttribute('href', '/user/testuser/saved')
     })
 
-    it('renders Saved link in correct position (after All)', () => {
+    it('renders Saved link in correct position', () => {
       render(<Sidebar isAuthenticated username="testuser" />)
 
       const allLinks = screen.getAllByRole('link')
-      const navLinks = allLinks.slice(0, 6) // First 6 links are navigation
+      const navLinks = allLinks.slice(0, 7) // First 7 links are navigation
 
       expect(navLinks[0]).toHaveTextContent('Home')
-      expect(navLinks[1]).toHaveTextContent('All')
-      expect(navLinks[2]).toHaveTextContent('Saved')
-      expect(navLinks[3]).toHaveTextContent('About')
+      expect(navLinks[1]).toHaveTextContent('Popular')
+      expect(navLinks[2]).toHaveTextContent('All')
+      expect(navLinks[3]).toHaveTextContent('Saved')
+      expect(navLinks[4]).toHaveTextContent('About')
     })
   })
 
@@ -321,7 +337,11 @@ describe('Sidebar', () => {
         const links = screen.getAllByRole('link')
         const subscriptionLinks = links.filter((link) => {
           const href = link.getAttribute('href')
-          return href?.startsWith('/r/') && href !== '/r/all'
+          return (
+            href?.startsWith('/r/') &&
+            href !== '/r/all' &&
+            href !== '/r/popular'
+          )
         })
         expect(subscriptionLinks.length).toBeGreaterThan(0)
       })
@@ -329,7 +349,9 @@ describe('Sidebar', () => {
       const links = screen.getAllByRole('link')
       const subscriptionLinks = links.filter((link) => {
         const href = link.getAttribute('href')
-        return href?.startsWith('/r/') && href !== '/r/all'
+        return (
+          href?.startsWith('/r/') && href !== '/r/all' && href !== '/r/popular'
+        )
       })
 
       // Should maintain original order: programming, javascript, typescript

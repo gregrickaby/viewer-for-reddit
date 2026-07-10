@@ -89,15 +89,25 @@ export function Sidebar({
               <NavLink
                 component={Link}
                 href="/"
-                label={isAuthenticated ? 'Home' : 'Popular'}
+                label="Home"
                 leftSection={<IconFlame size={16} />}
               />
-              <NavLink
-                component={Link}
-                href="/r/all"
-                label="All"
-                leftSection={<IconTrendingUp size={16} />}
-              />
+              {isAuthenticated && (
+                <>
+                  <NavLink
+                    component={Link}
+                    href="/r/popular"
+                    label="Popular"
+                    leftSection={<IconTrendingUp size={16} />}
+                  />
+                  <NavLink
+                    component={Link}
+                    href="/r/all"
+                    label="All"
+                    leftSection={<IconTrendingUp size={16} />}
+                  />
+                </>
+              )}
               {isAuthenticated && username && (
                 <NavLink
                   component={Link}
