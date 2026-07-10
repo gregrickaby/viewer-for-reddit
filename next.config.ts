@@ -14,7 +14,10 @@ const nextConfig: NextConfig = {
       '@mantine/spotlight',
       '@tabler/icons-react',
       'react-markdown'
-    ]
+    ],
+    sri: {
+      algorithm: 'sha256'
+    }
   },
   logging: {
     fetches: {
