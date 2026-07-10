@@ -394,12 +394,7 @@ export interface RedditFollowing {
 
 export type SortOption = 'hot' | 'new' | 'top' | 'rising' | 'controversial'
 export type CommentSortOption =
-  | 'best'
-  | 'top'
-  | 'new'
-  | 'controversial'
-  | 'old'
-  | 'qa'
+  'best' | 'top' | 'new' | 'controversial' | 'old' | 'qa'
 export type TimeFilter = 'hour' | 'day' | 'week' | 'month' | 'year' | 'all'
 
 export interface SessionData {
