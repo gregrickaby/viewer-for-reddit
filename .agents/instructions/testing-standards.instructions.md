@@ -773,6 +773,36 @@ it('has no accessibility violations', async () => {
 - [ ] Use `waitFor()` for async, `act()` for state updates
 - [ ] Test accessibility with jest-axe on interactive components
 
+## Test Setup (vitest.setup.ts)
+
+The test environment is configured in `vitest.setup.ts` which runs before all tests:
+
+- **MSW server** — starts with `onUnhandledRequest: 'warn'`, resets handlers after each test, closes after all tests
+- **DOM shims** — installed/removed around tests for proper browser API simulation
+- **Browser mocks** — `IntersectionObserver`, `MutationObserver`, `ResizeObserver` via `test-utils/mocks/browserMocks.ts`
+- **Next.js mocks** — `next/image` (returns plain `<img>`), `next/cache` (`revalidatePath`/`revalidateTag` stubbed)
+- **Environment variables** — stubbed via `vi.stubEnv()`: `APP_URL`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `SESSION_SECRET`, `USER_AGENT`
+- **URL polyfill** — `URLSearchParams` polyfilled for Node environment
+- **Console suppression** — `console.error`, `console.warn`, `console.info` mocked to silence output
+- **jest-axe** — `toHaveNoViolations` matcher registered globally
+
+**Do not** add your own `vi.mock('next/image', ...)` or `vi.mock('next/cache', ...)` — they are already mocked globally.
+
+## Coverage Exclusions
+
+Coverage is configured in `vitest.config.ts` and excludes:
+
+- Config files (`*.config.*`)
+- Type definitions (`*.d.ts`)
+- Test files (`*.{spec,test}.*`)
+- App route files (`page`, `layout`, `manifest`, `robots`, `sitemap`, `global-not-found`, `global-error`, `not-found`, `loading`, `error`)
+- `scripts/`
+- `skeletons/`
+- `test-utils/`
+- `types/`
+
+This means route-level files and utility types are not measured toward coverage thresholds.
+
 ## File Placement & Commands
 
 **Placement**: Test files next to source files with `.test.ts` or `.test.tsx` extension

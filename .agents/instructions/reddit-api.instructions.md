@@ -140,10 +140,16 @@ GET / r / {subreddit} / {sort}.json
 **Example:**
 
 ```typescript
-const {headers, baseUrl} = await getHeaders()
-const response = await fetch(
-  `${baseUrl}/r/popular/hot.json?limit=25&raw_json=1`,
-  {headers, next: {revalidate: FIVE_MINUTES}}
+import {redditFetch} from '@/lib/actions/reddit/redditFetch'
+import type {RedditPost} from '@/lib/types/reddit'
+
+const data = await redditFetch<RedditListing<RedditPost>>(
+  '/r/popular/hot.json',
+  {
+    operation: 'fetchPosts',
+    resource: 'popular',
+    cache: {revalidate: 300}
+  }
 )
 ```
 
@@ -326,13 +332,49 @@ interface RedditError {
 
 **Always support unauthenticated users:**
 
-`getHeaders()` handles auth internally. It calls `getValidAccessToken()` and selects the correct base URL (`https://oauth.reddit.com` for authenticated requests, `https://www.reddit.com` for public). Always destructure both `headers` and `baseUrl` from its return value:
+`getRedditContext()` resolves the auth pipeline (session read, token refresh, header construction). It returns `{headers, baseUrl, isAuthenticated, username}`. Use it in all server actions:
 
 ```typescript
-const {headers, baseUrl} = await getHeaders()
+import {getRedditContext} from '@/lib/auth/reddit-context'
 
-const response = await fetch(`${baseUrl}/r/${subreddit}/hot.json`, {headers})
+const context = await getRedditContext()
+// context.baseUrl is oauth.reddit.com when authenticated, www.reddit.com otherwise
+// context.headers includes Authorization when authenticated
 ```
+
+### redditFetch<T>()
+
+**Standard pattern for all Reddit API calls.** Handles auth, SSRF protection, error classification, raw_json=1 for GET requests, and structured logging.
+
+```typescript
+import {redditFetch} from '@/lib/actions/reddit/redditFetch'
+import type {RedditPost} from '@/lib/types/reddit'
+
+// GET request (raw_json=1 added automatically)
+const data = await redditFetch<RedditListing<RedditPost>>(
+  '/r/popular/hot.json',
+  {
+    operation: 'fetchPosts',
+    resource: 'popular',
+    cache: {revalidate: 300}
+  }
+)
+
+// POST request
+await redditFetch('/api/vote', {
+  method: 'POST',
+  operation: 'votePost',
+  resource: postId,
+  searchParams: {id: postId, dir: '1'}
+})
+```
+
+**Error classification** (thrown automatically):
+
+- 401/403 → `AuthenticationError`
+- 404 → `NotFoundError`
+- 429 → `RateLimitError` (includes retryAfter)
+- Other → `RedditAPIError`
 
 ## Data Transformation
 

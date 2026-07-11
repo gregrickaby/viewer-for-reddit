@@ -1,6 +1,46 @@
 import {execSync} from 'node:child_process'
+import crypto from 'node:crypto'
 import fs from 'node:fs'
+import https from 'node:https'
 import path from 'node:path'
+import {Reddit} from 'arctic'
+
+const OAUTH_BASE_URL = 'https://oauth.reddit.com'
+const SCOPES = ['identity', 'read', 'mysubreddits']
+
+function generateSelfSignedCert(): {key: string; cert: string} {
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'codegen-'))
+  const keyPath = path.join(dir, 'key.pem')
+  const certPath = path.join(dir, 'cert.pem')
+
+  execSync(
+    `openssl req -x509 -newkey rsa:2048 -keyout ${keyPath} -out ${certPath} -days 1 -nodes -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost"`,
+    {stdio: 'ignore'}
+  )
+
+  const key = fs.readFileSync(keyPath, 'utf8')
+  const cert = fs.readFileSync(certPath, 'utf8')
+  fs.rmSync(dir, {recursive: true})
+
+  return {key, cert}
+}
+
+// Load .env.local for standalone scripts (Next.js handles this automatically in the app)
+const envPath = path.join(process.cwd(), '.env.local')
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8')
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eqIndex = trimmed.indexOf('=')
+    if (eqIndex === -1) continue
+    const key = trimmed.slice(0, eqIndex).trim()
+    const value = trimmed.slice(eqIndex + 1).trim()
+    if (!process.env[key]) {
+      process.env[key] = value
+    }
+  }
+}
 
 interface EndpointConfig {
   path: string
@@ -15,6 +55,114 @@ interface EndpointConfig {
     schema: {type: string; enum?: string[]}
   }>
   sampleUrls: string[]
+}
+
+async function getAccessToken(): Promise<string> {
+  const clientId = process.env.REDDIT_CLIENT_ID
+  const clientSecret = process.env.REDDIT_CLIENT_SECRET
+  const redirectUri = process.env.REDDIT_REDIRECT_URI
+
+  if (!clientId || !clientSecret || !redirectUri) {
+    throw new Error(
+      'Missing REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, or REDDIT_REDIRECT_URI in .env.local'
+    )
+  }
+
+  const redirectUrl = new URL(redirectUri)
+  const port = Number(redirectUrl.port) || 3000
+
+  const reddit = new Reddit(clientId, clientSecret, redirectUri)
+  const state = crypto.randomUUID()
+  const authUrl = reddit.createAuthorizationURL(state, SCOPES)
+
+  console.log('\n📋 Open this URL in your browser to log in:\n')
+  console.log(`   ${authUrl.toString()}\n`)
+
+  // Open browser automatically
+  const open =
+    process.platform === 'darwin'
+      ? 'open'
+      : process.platform === 'win32'
+        ? 'start'
+        : 'xdg-open'
+  try {
+    execSync(`${open} "${authUrl.toString()}"`, {stdio: 'ignore'})
+  } catch {
+    // Browser may not be available in all environments
+  }
+
+  return new Promise<string>((resolve, reject) => {
+    const {key, cert} = generateSelfSignedCert()
+    const server = https.createServer({key, cert}, async (req, res) => {
+      try {
+        const url = new URL(req.url!, `http://localhost:${port}`)
+
+        if (url.pathname !== '/api/auth/callback/reddit') {
+          res.writeHead(404)
+          res.end('Not found')
+          return
+        }
+
+        const code = url.searchParams.get('code')
+        const error = url.searchParams.get('error')
+
+        if (error) {
+          res.writeHead(400, {'Content-Type': 'text/html'})
+          res.end(
+            `<h1>Authorization failed: ${error}</h1><p>You can close this tab.</p>`
+          )
+          server.close()
+          reject(new Error(`Reddit authorization failed: ${error}`))
+          return
+        }
+
+        if (!code) {
+          res.writeHead(400, {'Content-Type': 'text/html'})
+          res.end('<h1>No code received</h1><p>You can close this tab.</p>')
+          server.close()
+          reject(new Error('No authorization code received'))
+          return
+        }
+
+        const tokens = await reddit.validateAuthorizationCode(code)
+        const accessToken = tokens.accessToken()
+
+        res.writeHead(200, {'Content-Type': 'text/html'})
+        res.end(
+          '<h1>✓ Authorized!</h1><p>You can close this tab. Codegen will continue in the terminal.</p>'
+        )
+
+        server.close()
+        resolve(accessToken)
+      } catch (err) {
+        res.writeHead(500, {'Content-Type': 'text/html'})
+        res.end(
+          '<h1>Token exchange failed</h1><p>Check the terminal for details.</p>'
+        )
+        server.close()
+        reject(err)
+      }
+    })
+
+    server.listen(port, () => {
+      console.log(`⏳ Waiting for login on http://localhost:${port}...\n`)
+    })
+
+    // Timeout after 5 minutes
+    setTimeout(
+      () => {
+        server.close()
+        reject(new Error('Login timed out after 5 minutes'))
+      },
+      5 * 60 * 1000
+    )
+  })
+}
+
+function toOAuthUrl(wwwUrl: string): string {
+  const url = new URL(wwwUrl.replace('https://www.reddit.com', OAUTH_BASE_URL))
+  url.searchParams.set('raw_json', '1')
+  return url.toString()
 }
 
 const redditEndpoints: EndpointConfig[] = [
@@ -149,7 +297,7 @@ class OpenAPIGenerator {
   private schemas: Record<string, JSONSchema> = {}
   private responses: Record<string, unknown> = {}
 
-  async fetchSampleData(): Promise<void> {
+  async fetchSampleData(accessToken: string): Promise<void> {
     console.log('🔍 Fetching sample data from Reddit API...\n')
 
     for (const endpoint of redditEndpoints) {
@@ -162,19 +310,27 @@ class OpenAPIGenerator {
         endpoint.operationId === 'getPostComments' &&
         sampleUrls.length === 0
       ) {
-        sampleUrls = await this.fetchPostUrls()
+        sampleUrls = await this.fetchPostUrls(accessToken)
       }
 
       for (const url of sampleUrls) {
         try {
-          const response = await fetch(url, {
+          const oauthUrl = toOAuthUrl(url)
+          const response = await fetch(oauthUrl, {
             headers: {
+              Authorization: `Bearer ${accessToken}`,
               'User-Agent': 'OpenAPI-Generator/1.0.0'
             }
           })
 
           if (!response.ok) {
-            console.warn(`⚠️  Failed to fetch ${url}: ${response.status}`)
+            const errorBody = await response.text()
+            console.warn(
+              `⚠️  Failed to fetch ${oauthUrl}: ${response.status} ${response.statusText}`
+            )
+            if (response.status === 403) {
+              console.warn(`    Response: ${errorBody.slice(0, 200)}`)
+            }
             continue
           }
 
@@ -186,7 +342,7 @@ class OpenAPIGenerator {
           }
           ;(this.responses[endpoint.operationId] as unknown[]).push(data)
 
-          console.log(`✓ Fetched sample from ${url}`)
+          console.log(`✓ Fetched sample from ${oauthUrl}`)
 
           // Rate limit to respect Reddit API
           // Math.random() is safe here - only used for delay jitter, not security
@@ -202,20 +358,19 @@ class OpenAPIGenerator {
     console.log('\n✅ Sample data collection complete\n')
   }
 
-  private async fetchPostUrls(): Promise<string[]> {
+  private async fetchPostUrls(accessToken: string): Promise<string[]> {
     const urls: string[] = []
     const subreddits = ['AskReddit', 'programming', 'technology']
 
     for (const subreddit of subreddits) {
       try {
-        const response = await fetch(
-          `https://www.reddit.com/r/${subreddit}/hot.json?limit=2`,
-          {
-            headers: {
-              'User-Agent': 'OpenAPI-Generator/1.0.0'
-            }
+        const apiUrl = `https://oauth.reddit.com/r/${subreddit}/hot.json?limit=2`
+        const response = await fetch(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'User-Agent': 'OpenAPI-Generator/1.0.0'
           }
-        )
+        })
 
         if (response.ok) {
           const data = await response.json()
@@ -351,7 +506,7 @@ class OpenAPIGenerator {
       },
       servers: [
         {
-          url: 'https://www.reddit.com',
+          url: OAUTH_BASE_URL,
           description: 'Reddit API server'
         }
       ],
@@ -453,8 +608,13 @@ if (require.main === module) {
     const generator = new OpenAPIGenerator()
 
     try {
+      // Authenticate with Reddit (opens browser for OAuth login)
+      console.log('🔑 Authenticating with Reddit...\n')
+      const accessToken = await getAccessToken()
+      console.log('✓ Access token obtained\n')
+
       // Fetch sample data
-      await generator.fetchSampleData()
+      await generator.fetchSampleData(accessToken)
 
       // Generate schemas from responses
       generator.generateSchemas()
