@@ -15,6 +15,10 @@
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
     "build": "next build",
+    "codegen": "npm run codegen:fetch && npm run codegen:validate",
+    "codegen:fetch": "tsx scripts/generate-openapi.ts",
+    "codegen:types": "openapi-typescript scripts/reddit-openapi.json --output lib/types/reddit-api.ts",
+    "codegen:validate": "redocly lint scripts/reddit-openapi.json",
     "dev": "rimraf .next && next dev --experimental-https",
     "format": "prettier '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --cache --write",
     "format:check": "prettier '**/*.{mjs,cjs,js,jsx,ts,tsx,md,css,json,yml,yaml}' --ignore-path .prettierignore --check",
@@ -26,10 +30,6 @@
     "test:ui": "vitest --ui",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "typegen": "npm run typegen:fetch && npm run typegen:validate",
-    "typegen:fetch": "tsx scripts/generate-openapi.ts",
-    "typegen:types": "openapi-typescript scripts/reddit-openapi.json --output lib/types/reddit-api.ts",
-    "typegen:validate": "redocly lint scripts/reddit-openapi.json",
     "validate": "npm run format && npm run typecheck && npm run lint",
     "validate:ci": "npm run format:check && npm run typecheck && npm run lint && npm run test:coverage"
   },

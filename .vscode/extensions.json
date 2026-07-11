@@ -3,7 +3,6 @@
     "EditorConfig.EditorConfig",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "sonarsource.sonarlint-vscode",
-    "GitHub.copilot-chat"
+    "sonarsource.sonarlint-vscode"
   ]
 }
