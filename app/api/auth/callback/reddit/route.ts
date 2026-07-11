@@ -152,8 +152,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     })
 
     // Build redirect URL using proper host (handles reverse proxies)
+    // Appending # prevents the OAuth provider from injecting #_=_
     const {protocol, host} = resolveHostFromRequest(request)
-    const redirectUrl = new URL('/', `${protocol}://${host}`)
+    const redirectUrl = new URL('/#', `${protocol}://${host}`)
 
     const response = NextResponse.redirect(redirectUrl)
     response.cookies.delete('reddit_oauth_state')
