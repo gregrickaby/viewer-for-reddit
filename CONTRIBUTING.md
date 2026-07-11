@@ -310,16 +310,21 @@ The app supports OAuth across:
 
 **Why?** Automatically generates TypeScript types from live Reddit API responses instead of manually maintaining types.
 
+**Prerequisites:**
+
+1. Set `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, and `REDDIT_REDIRECT_URI` in `.env.local`
+2. Ensure the redirect URI is registered in your Reddit app settings (https://www.reddit.com/prefs/apps)
+
 **Quick Usage:**
 
 ```bash
 # Generate everything (fetch + validate)
-npm run typegen
+npm run codegen
 
 # Or step by step:
-npm run typegen:fetch     # Fetch samples from Reddit API
-npm run typegen:types     # Generate TypeScript types from OpenAPI
-npm run typegen:validate  # Validate OpenAPI spec with Redocly
+npm run codegen:fetch     # Fetch samples from Reddit API (opens browser for login)
+npm run codegen:types     # Generate TypeScript types from OpenAPI
+npm run codegen:validate  # Validate OpenAPI spec with Redocly
 ```
 
 **What It Does:**

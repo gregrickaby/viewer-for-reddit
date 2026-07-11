@@ -2,18 +2,18 @@
 
 ## Tech Stack
 
-| Package                              | Purpose                                                                 |
-| ------------------------------------ | ----------------------------------------------------------------------- |
-| Next.js 16                           | App Router, React Compiler                                              |
-| React 19                             | Server Components (default), Client Components (`"use client"`)         |
-| TypeScript 5                         | Strict mode                                                             |
-| Mantine 9                            | UI components                                                           |
-| Arctic 3.x                           | OAuth2 with Reddit                                                      |
-| iron-session 8.x                     | Encrypted sessions                                                      |
-| Axiom                                | Structured logging (`@axiomhq/nextjs`, `@axiomhq/js`, `@axiomhq/react`) |
-| Vitest v4 + Testing Library + MSW v2 | Testing                                                                 |
-| ESLint + Prettier                    | Linting and formatting                                                  |
-| SonarQube                            | Static analysis (IDE plugin + Community Edition)                        |
+| Package                              | Purpose                                                                      |
+| ------------------------------------ | ---------------------------------------------------------------------------- |
+| Next.js 16                           | App Router, React Compiler                                                   |
+| React 19                             | Server Components (default), Client Components (`"use client"`)              |
+| TypeScript 5                         | Strict mode                                                                  |
+| Mantine 9                            | UI components                                                                |
+| Arctic 3.x                           | OAuth2 with Reddit                                                           |
+| iron-session 8.x                     | Encrypted sessions                                                           |
+| Axiom                                | Structured logging (`@axiomhq/logging`, `@axiomhq/nextjs`, `@axiomhq/react`) |
+| Vitest v4 + Testing Library + MSW v2 | Testing                                                                      |
+| ESLint + Prettier                    | Linting and formatting                                                       |
+| SonarQube                            | Static analysis (IDE plugin + Community Edition)                             |
 
 # This is NOT the Next.js you know
 
@@ -21,6 +21,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## External Docs
 
+- **Reddit for Developers** https://developers.reddit.com/docs/llms.txt
 - **Mantine:** https://mantine.dev/llms.txt
 - **Axiom:** https://axiom.co/docs/llms.txt
 
@@ -30,14 +31,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 npm run validate      # Format + typecheck + lint — REQUIRED before completion
 npm test              # Run tests
 npm run test:coverage # Coverage report
+npm run test:watch    # Run tests in watch mode
+npm run test:ui       # Run tests with Vitest UI
 npm run build         # Production build
-npm run typegen       # Generate types from Reddit API
+npm run codegen       # Generate types from Reddit API (requires script app auth)
 npm run sonar         # SonarQube analysis (~6 min)
 ```
 
 ## Instructions
 
-Auto-applied by `applyTo` glob patterns:
+Instructions:
+
+- Do NOT preemptively load all references - use lazy loading based on actual need
+- When loaded, treat content as mandatory instructions that override defaults
+- Follow references recursively when needed
 
 | File                                                                                          | Covers                                      |
 | --------------------------------------------------------------------------------------------- | ------------------------------------------- |
@@ -62,19 +69,29 @@ Load with the `skill` tool when the task matches:
 
 **Server Components by default** — only add `"use client"` for interactivity (hooks, events, browser APIs).
 
-**API calls in Server Actions** — `lib/actions/reddit/` (posts, users, subreddits, multireddits, search) and `lib/actions/auth.ts` use Next.js `fetch()` with `next: {revalidate}`.
+**API calls in Server Actions** — `lib/actions/reddit/` (posts, users, subreddits, multireddits, search) and `lib/actions/auth/auth.ts` use `redditFetch<T>()` with `next: {revalidate}`.
 
 **React 19 Compiler** — handles memoization automatically.
 
 **Axiom logging** — `lib/axiom/server.ts` is server-only; use `lib/axiom/client.ts` in Client Components.
 
-**Middleware** — request logging and `X-Robots-Tag` headers live in `proxy.ts`.
+**Error tracking** — `instrumentation.ts` wires Axiom's `createOnRequestError` for server-side error logging.
+
+**Route group** — `(shell)` wraps all browsable pages with a shared layout (sidebar, header). Pages outside `(shell)` (about, donate) are standalone.
+
+**Hooks architecture** — `lib/hooks/` contains feature hooks and reusable primitives (`useOptimisticToggle`, `useOptimisticMutation`). All hooks are client-only.
+
+**Custom errors** — `lib/utils/errors.ts` defines `AppError`, `RedditAPIError`, `AuthenticationError`, `RateLimitError`, `NotFoundError`. Use these, not raw `Error`.
+
+**Test utilities** — `test-utils/` provides custom `render`, `renderHook`, pre-configured `user`, MSW `server`, and handler mocks. Import from `@/test-utils`, not directly from Testing Library.
+
+**Middleware** — `proxy.ts` (with `proxy.test.ts`) handles request logging and `X-Robots-Tag` headers.
 
 ## Rules
 
 **Never:**
 
-- Use barrel files
+- Use barrel files (`lib/hooks/index.ts` is an exception that should be migrated to direct imports)
 - Use `"any"` type or `NEXT_PUBLIC_` env prefix
 - Access Arctic tokens as properties — use methods: `tokens.accessToken()`
 - Manually edit `lib/types/reddit-api.ts`
