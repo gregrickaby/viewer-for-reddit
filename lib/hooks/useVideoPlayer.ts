@@ -55,13 +55,20 @@ export function useVideoPlayer({
 
     let hls: Hls | null = null
 
-    // Initialize HLS.js for HLS streams (if browser doesn't support it natively)
+    // Initialize HLS.js for HLS streams
+    // Chrome 141+ reports canPlayType('application/vnd.apple.mpegurl') as "maybe"
+    // but its native HLS player is buggy and fails silently.
+    // Always prefer HLS.js when MediaSource is available; only use native in Safari.
     if (type === 'hls') {
-      if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Native HLS support (Safari)
+      const isSafari =
+        /safari/i.test(navigator.userAgent) &&
+        !/chrome|chromium|android/i.test(navigator.userAgent)
+
+      if (isSafari && video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Safari: use native HLS (hardware-accelerated, most reliable)
         video.src = src
       } else if (Hls.isSupported()) {
-        // Use HLS.js for browsers that don't support HLS natively
+        // Chrome, Firefox, Edge: use HLS.js via MediaSource Extensions
         hls = new Hls({
           enableWorker: true,
           lowLatencyMode: false,

@@ -68,8 +68,15 @@ describe('useVideoPlayer', () => {
   })
 
   describe('HLS streaming', () => {
-    it('initializes HLS.js for HLS streams when supported', () => {
+    it('initializes HLS.js for HLS streams in Chrome', () => {
       const mockInstance = getMockInstance()
+      const originalUA = navigator.userAgent
+      Object.defineProperty(navigator, 'userAgent', {
+        value:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',
+        writable: true,
+        configurable: true
+      })
 
       render(<TestVideoPlayer src="https://v.redd.it/test.m3u8" type="hls" />)
 
@@ -78,6 +85,47 @@ describe('useVideoPlayer', () => {
         'https://v.redd.it/test.m3u8'
       )
       expect(mockInstance.attachMedia).toHaveBeenCalled()
+
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUA,
+        writable: true,
+        configurable: true
+      })
+    })
+
+    it('uses native HLS in Safari instead of HLS.js', () => {
+      const mockInstance = getMockInstance()
+      const originalUA = navigator.userAgent
+      Object.defineProperty(navigator, 'userAgent', {
+        value:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+        writable: true,
+        configurable: true
+      })
+
+      // Mock Safari's native HLS support
+      const canPlayTypeSpy = vi.fn().mockReturnValue('probably')
+      Object.defineProperty(HTMLVideoElement.prototype, 'canPlayType', {
+        value: canPlayTypeSpy,
+        writable: true,
+        configurable: true
+      })
+
+      render(<TestVideoPlayer src="https://v.redd.it/test.m3u8" type="hls" />)
+
+      // Should NOT use HLS.js in Safari
+      expect(mockInstance.loadSource).not.toHaveBeenCalled()
+      expect(mockInstance.attachMedia).not.toHaveBeenCalled()
+
+      // Should use native video.src
+      const video = screen.getByLabelText('Test Video')
+      expect(video).toHaveAttribute('src', 'https://v.redd.it/test.m3u8')
+
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUA,
+        writable: true,
+        configurable: true
+      })
     })
 
     it('does not initialize HLS for mp4 videos', () => {
