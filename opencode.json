@@ -16,6 +16,11 @@
       "command": ["npx", "-y", "next-devtools-mcp@latest"],
       "type": "local",
       "enabled": true
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "@playwright/mcp@latest"],
+      "enabled": true
     }
   }
 }
