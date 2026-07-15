@@ -38,6 +38,20 @@ import Link from 'next/link'
 import styles from './Comment.module.css'
 
 /**
+ * Convert a Reddit permalink to an internal app route.
+ * Reddit format: /r/subreddit/comments/postid/slug/commentid/comment_name/
+ * App format: /r/subreddit/comments/postid/slug/commentid
+ */
+function getCommentPermalink(permalink: string): string {
+  const parts = permalink.split('/').filter(Boolean)
+  // parts: ['r', 'subreddit', 'comments', 'postid', 'slug', 'commentid', 'comment_name']
+  if (parts.length >= 6) {
+    return `/${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}/${parts[4]}/${parts[5]}`
+  }
+  return permalink
+}
+
+/**
  * Props for the Comment component.
  */
 interface CommentProps {
@@ -305,7 +319,7 @@ export function Comment({
         {depth >= MAX_COMMENT_DEPTH ? (
           <Anchor
             component={Link}
-            href={comment.permalink}
+            href={getCommentPermalink(comment.permalink)}
             c="blue"
             fz="sm"
             ml={20}

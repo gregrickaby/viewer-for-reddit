@@ -90,7 +90,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'; " +
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; " +
               "style-src 'self' 'unsafe-inline'; " +
-              "img-src 'self' data: https://*.redd.it https://*.redditstatic.com https://*.redditmedia.com https://external-preview.redd.it; " +
+              "img-src 'self' data: https://*.redd.it https://*.redditstatic.com https://*.redditmedia.com https://external-preview.redd.it https://media.giphy.com https://i.giphy.com; " +
               "media-src 'self' blob: https://*.redd.it https://v.redd.it https://*.reddit.com; " +
               "connect-src 'self' https://oauth.reddit.com https://www.reddit.com https://v.redd.it https://*.redd.it https://static.cloudflareinsights.com; " +
               "font-src 'self' data:; " +

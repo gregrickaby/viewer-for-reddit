@@ -54,6 +54,39 @@ export function decodeHtmlEntities(html: string): string {
 }
 
 /**
+ * Convert giphy.com links to direct GIF image URLs.
+ * Converts <a href="https://giphy.com/gifs/slug-id">... to point to media.giphy.com/media/{id}/giphy.gif
+ * Then the existing convertImageLinksToImages() will turn them into <img> tags.
+ */
+export function convertGiphyLinksToImages(html: string): string {
+  // Match <a> tags linking to giphy.com/gifs/... URLs
+  // Captures the last path segment as the giphy media ID
+  const giphyLinkRegex =
+    /<a[^>]+href="https?:\/\/(?:www\.)?giphy\.com\/gifs\/([^"/?#]+)"[^>]*>[^<]*<\/a>/gi
+
+  let processed = html.replaceAll(giphyLinkRegex, (_match, mediaId: string) => {
+    const gifUrl = `https://media.giphy.com/media/${mediaId}/giphy.gif`
+    return `<img src="${gifUrl}" alt="GIF" />`
+  })
+
+  // Also handle links wrapping direct media.giphy.com URLs
+  const mediaGiphyRegex =
+    /<a[^>]+href="(https?:\/\/media\.giphy\.com\/media\/[^"]+)"[^>]*>[^<]*<\/a>/gi
+
+  processed = processed.replaceAll(mediaGiphyRegex, (_match, url: string) => {
+    return `<img src="${url}" alt="GIF" />`
+  })
+
+  // Also handle i.giphy.com direct links
+  const iGiphyRegex =
+    /<a[^>]+href="(https?:\/\/i\.giphy\.com\/[^"]+)"[^>]*>[^<]*<\/a>/gi
+
+  return processed.replaceAll(iGiphyRegex, (_match, url: string) => {
+    return `<img src="${url}" alt="GIF" />`
+  })
+}
+
+/**
  * Convert image URLs in links to actual img tags
  * @param html - HTML string potentially containing image links
  * @returns HTML with image links converted to img tags
@@ -88,8 +121,9 @@ export function convertImageLinksToImages(html: string): string {
  * @returns Sanitized HTML string
  */
 export function sanitizeText(html: string): string {
-  // First convert image links to img tags
-  const processedHtml = convertImageLinksToImages(html || '')
+  // First convert giphy links to direct GIF URLs, then convert image links to img tags
+  const giphyHtml = convertGiphyLinksToImages(html || '')
+  const processedHtml = convertImageLinksToImages(giphyHtml)
 
   return sanitizeHtml(processedHtml, {
     allowedTags: [
