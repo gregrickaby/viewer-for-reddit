@@ -131,12 +131,14 @@ export async function fetchPosts(
  * @param subreddit - Subreddit name
  * @param postId - Reddit post ID (without 't3_' prefix)
  * @param sort - Comment sort option (best, top, new, controversial, old, qa)
+ * @param commentId - Optional comment ID to focus on a specific comment thread
  * @returns Promise resolving to post and comments array
  */
 export async function fetchPost(
   subreddit: string,
   postId: string,
-  sort: CommentSortOption = 'best'
+  sort: CommentSortOption = 'best',
+  commentId?: string
 ): Promise<{post: RedditPost; comments: RedditComment[]}> {
   try {
     if (
@@ -156,10 +158,16 @@ export async function fetchPost(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
+    const searchParams: Record<string, string> = {sort}
+    if (commentId) {
+      searchParams.comment = commentId
+      searchParams.context = '8'
+    }
+
     const [postData, commentsData] = await redditFetch<
       [ApiSubredditPostsResponse, ApiSubredditPostsResponse]
     >(`/r/${subreddit}/comments/${postId}.json`, {
-      searchParams: {sort},
+      searchParams,
       cache: {revalidate: CACHE_COMMENTS, tags: ['post', postId]},
       operation: 'fetchPost',
       resource: `${subreddit}/${postId}`
