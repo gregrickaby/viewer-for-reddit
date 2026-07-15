@@ -87,7 +87,7 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307) // Redirect
     const location = response.headers.get('location')
-    expect(location).toBe('https://example.com/')
+    expect(location).toBe('https://example.com/#')
     expect(mockPersistSession).toHaveBeenCalledTimes(1)
   })
 
@@ -428,7 +428,7 @@ describe('GET /api/auth/callback/reddit', () => {
     // Should not crash, should use fallback host from request URL
     expect(response.status).toBe(307)
     const location = response.headers.get('location')
-    expect(location).toBe('https://example.com/')
+    expect(location).toBe('https://example.com/#')
 
     // Should log warning about missing headers
     expect(mockLogger.warn).toHaveBeenCalledWith(
