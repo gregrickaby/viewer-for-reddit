@@ -1,9 +1,9 @@
+import AppIcon from '@/app/icon.png'
 import {AppLink} from '@/components/ui/AppLink/AppLink'
 import {appConfig} from '@/lib/config/app.config'
 import {Button, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import {IconBrandReddit} from '@tabler/icons-react'
 import Image from 'next/image'
-import AppIcon from '@/app/icon.png'
 
 /** Landing page for unauthenticated users. Explains why login is required. */
 export function LandingPage() {
@@ -28,9 +28,16 @@ export function LandingPage() {
           </Text>
 
           <Text ta="center" maw={440}>
-            Reddit requires authentication to access their API. Sign in with
-            your Reddit account to browse posts, save favorites, and customize
-            your feed.
+            Reddit requires authentication to access content. Sign in to browse
+            posts, save favorites, and customize your feed. Don't have an
+            account?{' '}
+            <AppLink
+              href="https://www.reddit.com/register/"
+              style={{textDecoration: 'underline'}}
+            >
+              Sign up now
+            </AppLink>
+            .
           </Text>
 
           <Group gap="md" mt="md">
