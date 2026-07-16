@@ -102,7 +102,11 @@ export function useInfiniteScroll({
         : await fetchPosts(subreddit, sort, after, timeFilter)
 
       if (result.posts && result.posts.length > 0) {
-        setPosts((prev) => [...prev, ...result.posts])
+        setPosts((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id))
+          const newPosts = result.posts.filter((p) => !existingIds.has(p.id))
+          return [...prev, ...newPosts]
+        })
         setAfter(result.after)
         setHasMore(!!result.after)
       } else {

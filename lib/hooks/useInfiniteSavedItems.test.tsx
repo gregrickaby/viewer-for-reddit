@@ -304,6 +304,71 @@ describe('useInfiniteSavedItems', () => {
       expect(getResult().loading).toBe(false)
     })
 
+    it('deduplicates items with existing IDs', async () => {
+      const duplicateItem: SavedItem = {
+        type: 'post',
+        data: {...mockPost, id: 'saved1'}
+      }
+      const newItem: SavedItem = {
+        type: 'post',
+        data: {...mockPost, id: 'saved3', title: 'Third saved post'}
+      }
+
+      mockFetchSavedItems.mockResolvedValueOnce({
+        items: [duplicateItem, newItem],
+        after: null
+      })
+
+      const {getResult} = renderWithSentinel({
+        initialItems: mockItems,
+        initialAfter: 't3_cursor',
+        username: 'testuser'
+      })
+
+      await act(async () => {
+        mockObserver._trigger(true)
+      })
+
+      await waitFor(() => {
+        expect(getResult().items).toHaveLength(3)
+        expect(getResult().items.map((i) => i.data.id)).toEqual([
+          'saved1',
+          'comment1',
+          'saved3'
+        ])
+      })
+    })
+
+    it('stops loading when all returned items are duplicates', async () => {
+      const duplicateItem: SavedItem = {
+        type: 'post',
+        data: {...mockPost, id: 'saved1'}
+      }
+
+      mockFetchSavedItems.mockResolvedValueOnce({
+        items: [duplicateItem],
+        after: null
+      })
+
+      const {getResult} = renderWithSentinel({
+        initialItems: mockItems,
+        initialAfter: 't3_cursor',
+        username: 'testuser'
+      })
+
+      await act(async () => {
+        mockObserver._trigger(true)
+      })
+
+      await waitFor(() => {
+        expect(getResult().items).toHaveLength(2)
+        expect(getResult().items.map((i) => i.data.id)).toEqual([
+          'saved1',
+          'comment1'
+        ])
+      })
+    })
+
     it('sets hasMore to false when no more items', async () => {
       mockFetchSavedItems.mockResolvedValueOnce({
         items: [],

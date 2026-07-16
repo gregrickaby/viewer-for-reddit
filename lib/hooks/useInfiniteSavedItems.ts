@@ -95,7 +95,13 @@ export function useInfiniteSavedItems({
       const result = await fetchSavedItems(username, after)
 
       if (result.items && result.items.length > 0) {
-        setItems((prev) => [...prev, ...result.items])
+        setItems((prev) => {
+          const existingIds = new Set(prev.map((item) => item.data.id))
+          const newItems = result.items.filter(
+            (item) => !existingIds.has(item.data.id)
+          )
+          return [...prev, ...newItems]
+        })
         setAfter(result.after)
         setHasMore(!!result.after)
       } else {

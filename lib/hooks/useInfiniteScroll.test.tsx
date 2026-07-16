@@ -231,6 +231,52 @@ describe('useInfiniteScroll', () => {
     })
   })
 
+  it('deduplicates posts with existing IDs', async () => {
+    mockFetchPosts.mockResolvedValueOnce({
+      posts: [mockPosts[0], {...mockPosts[0], id: 'post2'} as RedditPost],
+      after: 't3_after2'
+    })
+
+    const {getResult} = renderWithSentinel({
+      initialPosts: mockPosts,
+      initialAfter: 't3_after1',
+      subreddit: 'test'
+    })
+
+    await act(async () => {
+      mockObserver._trigger(true)
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+
+    await waitFor(() => {
+      expect(getResult().posts).toHaveLength(2)
+      expect(getResult().posts.map((p) => p.id)).toEqual(['post1', 'post2'])
+    })
+  })
+
+  it('stops loading when all returned posts are duplicates', async () => {
+    mockFetchPosts.mockResolvedValueOnce({
+      posts: [mockPosts[0]],
+      after: 't3_after2'
+    })
+
+    const {getResult} = renderWithSentinel({
+      initialPosts: mockPosts,
+      initialAfter: 't3_after1',
+      subreddit: 'test'
+    })
+
+    await act(async () => {
+      mockObserver._trigger(true)
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+
+    await waitFor(() => {
+      expect(getResult().posts).toHaveLength(1)
+      expect(getResult().posts[0].id).toBe('post1')
+    })
+  })
+
   it('sets hasMore to false when API returns no posts', async () => {
     mockFetchPosts.mockResolvedValueOnce({posts: [], after: null})
 
