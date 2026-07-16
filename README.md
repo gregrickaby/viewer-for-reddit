@@ -29,7 +29,7 @@ Yes, due to Reddit's API restrictions and rate limits. [Register for a free acco
 
 I'm [Greg Rickaby](https://gregrickaby.com), a software engineer. I built this in 2020 to learn TypeScript and wanted a simpler way to browse Reddit. It's now used by thousands of people. I use it daily and maintain it actively.
 
-The codebase is [open source](https://github.com/gregrickaby/viewer-for-reddit) and built with Next.js, React, and TypeScript. If you want to contribute, the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) explains how.
+The codebase is [open source](https://github.com/gregrickaby/viewer-for-reddit) and built with Next.js and is fully tested. If you want to contribute, the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) explains how.
 
 ## Report Issues or Suggest Ideas
 
