@@ -330,52 +330,13 @@ describe('search server actions', () => {
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
-    it('returns unauthorized error on 401', async () => {
-      server.use(
-        http.get(
-          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
-          () => new HttpResponse(null, {status: 401})
-        )
-      )
-
-      const result = await searchSubreddits('tech')
-
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('You must be logged in to search.')
-    })
-
-    it('returns unauthorized error on 403', async () => {
-      server.use(
-        http.get(
-          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
-          () => new HttpResponse(null, {status: 403})
-        )
-      )
-
-      const result = await searchSubreddits('tech')
-
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('You must be logged in to search.')
-    })
-
-    it('handles 429 rate limit for non-authenticated users with login prompt', async () => {
+    it('returns unauthorized error for unauthenticated users', async () => {
       mockGetRedditContext.mockResolvedValue(createAnonContext())
 
-      server.use(
-        http.get(
-          'https://www.reddit.com/api/subreddit_autocomplete_v2.json',
-          () => {
-            return new HttpResponse(null, {status: 429})
-          }
-        )
-      )
-
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe(
-        'Reddit rate limit exceeded. Log in to continue.'
-      )
+      expect(result.error).toBe('You must be logged in to search.')
     })
 
     it('handles 429 rate limit for authenticated users', async () => {
@@ -473,24 +434,6 @@ describe('search server actions', () => {
       expect(result.error).toBe('Reddit rate limit exceeded. Try again later.')
     })
 
-    it('returns rate limit login prompt for unauthenticated user on 429', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
-
-      server.use(
-        http.get(
-          'https://www.reddit.com/api/subreddit_autocomplete_v2.json',
-          () => new HttpResponse(null, {status: 429})
-        )
-      )
-
-      const result = await searchSubredditsAndUsers('test')
-
-      expect(result.success).toBe(false)
-      expect(result.error).toBe(
-        'Reddit rate limit exceeded. Log in to continue.'
-      )
-    })
-
     it('returns error on network failure', async () => {
       server.use(
         http.get(
@@ -505,27 +448,8 @@ describe('search server actions', () => {
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
-    it('returns unauthorized error on 401', async () => {
-      server.use(
-        http.get(
-          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
-          () => new HttpResponse(null, {status: 401})
-        )
-      )
-
-      const result = await searchSubredditsAndUsers('test')
-
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('You must be logged in to search.')
-    })
-
-    it('returns unauthorized error on 403', async () => {
-      server.use(
-        http.get(
-          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
-          () => new HttpResponse(null, {status: 403})
-        )
-      )
+    it('returns unauthorized error for unauthenticated users', async () => {
+      mockGetRedditContext.mockResolvedValue(createAnonContext())
 
       const result = await searchSubredditsAndUsers('test')
 

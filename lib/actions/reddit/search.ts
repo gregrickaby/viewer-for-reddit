@@ -201,6 +201,10 @@ export async function searchSubreddits(query: string): Promise<{
   try {
     const {headers, baseUrl, isAuthenticated} = await getRedditContext()
 
+    if (!isAuthenticated) {
+      return {success: false, data: [], error: UNAUTHORIZED_ERROR}
+    }
+
     const params = new URLSearchParams({
       query,
       raw_json: '1',
@@ -234,15 +238,12 @@ export async function searchSubreddits(query: string): Promise<{
         query
       })
 
-      if (response.status === 401 || response.status === 403) {
-        return {success: false, data: [], error: UNAUTHORIZED_ERROR}
-      }
-
       if (response.status === 429) {
-        const rateLimitMessage = isAuthenticated
-          ? 'Reddit rate limit exceeded. Try again later.'
-          : 'Reddit rate limit exceeded. Log in to continue.'
-        return {success: false, data: [], error: rateLimitMessage}
+        return {
+          success: false,
+          data: [],
+          error: 'Reddit rate limit exceeded. Try again later.'
+        }
       }
 
       throw new Error(GENERIC_SERVER_ERROR)
@@ -311,6 +312,10 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
   try {
     const {headers, baseUrl, isAuthenticated} = await getRedditContext()
 
+    if (!isAuthenticated) {
+      return {success: false, data: [], error: UNAUTHORIZED_ERROR}
+    }
+
     const params = new URLSearchParams({
       query,
       raw_json: '1',
@@ -344,15 +349,12 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
         query
       })
 
-      if (response.status === 401 || response.status === 403) {
-        return {success: false, data: [], error: UNAUTHORIZED_ERROR}
-      }
-
       if (response.status === 429) {
-        const rateLimitMessage = isAuthenticated
-          ? 'Reddit rate limit exceeded. Try again later.'
-          : 'Reddit rate limit exceeded. Log in to continue.'
-        return {success: false, data: [], error: rateLimitMessage}
+        return {
+          success: false,
+          data: [],
+          error: 'Reddit rate limit exceeded. Try again later.'
+        }
       }
 
       throw new Error(GENERIC_SERVER_ERROR)
