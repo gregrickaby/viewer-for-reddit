@@ -3,6 +3,7 @@ import {headers} from 'next/headers'
 
 export const GENERIC_SERVER_ERROR = 'Something went wrong.'
 export const GENERIC_ACTION_ERROR = 'Something went wrong. Please try again.'
+export const UNAUTHORIZED_ERROR = 'You must be logged in to search.'
 
 // Allowed domains for SSRF prevention
 const ALLOWED_REDDIT_DOMAINS = new Set([

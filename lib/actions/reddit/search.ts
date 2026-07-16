@@ -19,6 +19,7 @@ import {isValidSubredditName} from '@/lib/utils/reddit-helpers'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
+  UNAUTHORIZED_ERROR,
   assertRedditUrl
 } from './_helpers'
 import {redditFetch} from './redditFetch'
@@ -233,6 +234,10 @@ export async function searchSubreddits(query: string): Promise<{
         query
       })
 
+      if (response.status === 401 || response.status === 403) {
+        return {success: false, data: [], error: UNAUTHORIZED_ERROR}
+      }
+
       if (response.status === 429) {
         const rateLimitMessage = isAuthenticated
           ? 'Reddit rate limit exceeded. Try again later.'
@@ -338,6 +343,10 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
         context: 'searchSubredditsAndUsers',
         query
       })
+
+      if (response.status === 401 || response.status === 403) {
+        return {success: false, data: [], error: UNAUTHORIZED_ERROR}
+      }
 
       if (response.status === 429) {
         const rateLimitMessage = isAuthenticated

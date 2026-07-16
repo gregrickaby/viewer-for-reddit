@@ -330,6 +330,34 @@ describe('search server actions', () => {
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
+    it('returns unauthorized error on 401', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 401})
+        )
+      )
+
+      const result = await searchSubreddits('tech')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('You must be logged in to search.')
+    })
+
+    it('returns unauthorized error on 403', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 403})
+        )
+      )
+
+      const result = await searchSubreddits('tech')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('You must be logged in to search.')
+    })
+
     it('handles 429 rate limit for non-authenticated users with login prompt', async () => {
       mockGetRedditContext.mockResolvedValue(createAnonContext())
 
@@ -475,6 +503,34 @@ describe('search server actions', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
+    it('returns unauthorized error on 401', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 401})
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('test')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('You must be logged in to search.')
+    })
+
+    it('returns unauthorized error on 403', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 403})
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('test')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('You must be logged in to search.')
     })
   })
 })
