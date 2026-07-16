@@ -7,17 +7,15 @@
 ## How It Works
 
 - **Sign in with your Reddit account** using OAuth2. Your password stays with Reddit, not here.
-- **Add subreddits to your homepage** for quick access to communities you follow.
 - **Vote and comment** after signing in.
-- **No ads, no clickbait, no infinite scroll mechanics.**
-- **Works on desktop, tablet, and phone.**
 - **Press `esc` to close** (useful when your boss walks by).
+- **Works on desktop, tablet, and phone.**
 
 ## Frequently Asked Questions
 
 ### Why do I have to sign in?
 
-Recently, Reddit restricted free API access, so third-party apps now require authentication. All Reddit clients face this. We cache what we can and optimize where possible, but login is now mandatory.
+Reddit has restricted free API access, so third-party apps now require authentication. All Reddit clients face this. We cache what we can and optimize where possible, but login is now mandatory.
 
 ### Is my data safe?
 
@@ -25,7 +23,7 @@ Yes. We use Reddit's official OAuth2 system, so your password never reaches our 
 
 ### Do I need a Reddit account?
 
-Yes, due to Reddit's rate limits.
+Yes, due to Reddit's API restrictions and rate limits. [Register for a free account](https://www.reddit.com/register/).
 
 ## About This Project
 
