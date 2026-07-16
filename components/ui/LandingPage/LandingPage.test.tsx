@@ -16,7 +16,7 @@ describe('LandingPage', () => {
     render(<LandingPage />)
 
     expect(
-      screen.getByText(/the best way to lurk on reddit/i)
+      screen.getByText(/A different way to surf Reddit/i)
     ).toBeInTheDocument()
   })
 

@@ -9,9 +9,9 @@ export const appConfig = {
   // Site metadata
   site: {
     name: 'Reddit Viewer',
-    description: 'The best way to lurk on Reddit',
+    description: 'A different way to surf Reddit',
     metaDescription:
-      'The best way to lurk on Reddit - browse images, videos, gifs, and posts without targeted ads or algorithms.',
+      'A different way to surf Reddit - browse images, videos, gifs, and posts without targeted ads or algorithms.',
     baseUrl: getEnvVar('BASE_URL')
   },
 
