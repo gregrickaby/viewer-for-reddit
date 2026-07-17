@@ -75,4 +75,28 @@ describe('UserMenu', () => {
       expect(logoutButton).toHaveAttribute('data-loading', 'true')
     })
   })
+
+  describe('unauthenticated state', () => {
+    it('renders login button when not authenticated', () => {
+      render(<UserMenu />)
+
+      const loginLinks = screen.getAllByRole('link', {name: 'Login'})
+      expect(loginLinks.length).toBeGreaterThan(0)
+    })
+
+    it('links login button to auth route', () => {
+      render(<UserMenu />)
+
+      const loginLink = screen.getAllByRole('link', {name: 'Login'})[0]
+      expect(loginLink).toHaveAttribute('href', '/api/auth/login')
+    })
+
+    it('does not render logout button when not authenticated', () => {
+      render(<UserMenu />)
+
+      expect(
+        screen.queryByRole('button', {name: 'Logout'})
+      ).not.toBeInTheDocument()
+    })
+  })
 })

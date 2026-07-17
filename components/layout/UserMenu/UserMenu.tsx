@@ -2,7 +2,7 @@
 
 import {useLogout} from '@/lib/hooks/useLogout'
 import {Anchor, Avatar, Button, Group} from '@mantine/core'
-import {IconLogout} from '@tabler/icons-react'
+import {IconLogin, IconLogout} from '@tabler/icons-react'
 import Link from 'next/link'
 
 /**
@@ -17,10 +17,38 @@ interface UserMenuProps {
 
 /**
  * User menu displaying authentication state and actions.
- * Always shows the authenticated UI (avatar + logout).
+ * Shows login button when unauthenticated, avatar + logout when authenticated.
  */
 export function UserMenu({username, avatarUrl}: Readonly<UserMenuProps>) {
   const {isLoggingOut, handleLogout} = useLogout()
+
+  if (!username) {
+    return (
+      <Group gap="xs" wrap="nowrap">
+        <Button
+          component="a"
+          href="/api/auth/login"
+          variant="subtle"
+          leftSection={<IconLogin size={16} />}
+          aria-label="Login"
+          hiddenFrom="sm"
+          px="xs"
+          size="sm"
+        />
+        <Button
+          component="a"
+          href="/api/auth/login"
+          variant="subtle"
+          leftSection={<IconLogin size={16} />}
+          aria-label="Login"
+          visibleFrom="sm"
+          size="sm"
+        >
+          Login
+        </Button>
+      </Group>
+    )
+  }
 
   return (
     <Group gap="xs" wrap="nowrap">
