@@ -1,10 +1,3 @@
-// Mock rate-limit-state BEFORE imports
-vi.mock('@/lib/utils/rate-limit-state', () => ({
-  recordRateLimit: vi.fn(),
-  resetRateLimit: vi.fn(),
-  waitForRateLimit: vi.fn(async () => {})
-}))
-
 // Mock reddit-context BEFORE imports
 vi.mock('@/lib/auth/reddit-context', () => ({
   getRedditContext: vi.fn()
@@ -43,7 +36,6 @@ function createAuthContext(username = 'testuser'): RedditContext {
       Authorization: 'Bearer mock-token'
     },
     baseUrl: 'https://oauth.reddit.com',
-    isAuthenticated: true,
     username
   }
 }
@@ -114,9 +106,6 @@ describe('posts server actions', () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
           return new HttpResponse(null, {status: 404})
-        }),
-        http.get('https://www.reddit.com/r/:subreddit/:sort.json', () => {
-          return new HttpResponse(null, {status: 404})
         })
       )
 
@@ -128,9 +117,6 @@ describe('posts server actions', () => {
     it('handles 429 rate limit', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
-          return new HttpResponse(null, {status: 429})
-        }),
-        http.get('https://www.reddit.com/r/:subreddit/:sort.json', () => {
           return new HttpResponse(null, {status: 429})
         })
       )
@@ -291,12 +277,6 @@ describe('posts server actions', () => {
           () => {
             return new HttpResponse(null, {status: 404})
           }
-        ),
-        http.get(
-          'https://www.reddit.com/r/:subreddit/comments/:postId.json',
-          () => {
-            return new HttpResponse(null, {status: 404})
-          }
         )
       )
 
@@ -312,27 +292,6 @@ describe('posts server actions', () => {
       server.use(
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
-          ({request}) => {
-            requestUrl = request.url
-            return HttpResponse.json({
-              data: {
-                children: [
-                  {
-                    kind: 't3',
-                    data: {
-                      id: 'post1',
-                      title: 'Test Post',
-                      author: 'testuser'
-                    }
-                  }
-                ],
-                after: 't3_after'
-              }
-            })
-          }
-        ),
-        http.get(
-          'https://www.reddit.com/user/:username/submitted.json',
           ({request}) => {
             requestUrl = request.url
             return HttpResponse.json({
@@ -387,10 +346,6 @@ describe('posts server actions', () => {
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
           handler
-        ),
-        http.get(
-          'https://www.reddit.com/user/:username/submitted.json',
-          handler
         )
       )
 
@@ -425,10 +380,6 @@ describe('posts server actions', () => {
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
           handler
-        ),
-        http.get(
-          'https://www.reddit.com/user/:username/submitted.json',
-          handler
         )
       )
 
@@ -462,10 +413,6 @@ describe('posts server actions', () => {
       server.use(
         http.get(
           'https://oauth.reddit.com/user/:username/submitted.json',
-          handler
-        ),
-        http.get(
-          'https://www.reddit.com/user/:username/submitted.json',
           handler
         )
       )

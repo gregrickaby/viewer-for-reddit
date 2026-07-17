@@ -19,12 +19,6 @@ describe('assertRedditUrl', () => {
     ).not.toThrow()
   })
 
-  it('accepts www.reddit.com URLs', () => {
-    expect(() =>
-      assertRedditUrl('https://www.reddit.com/r/popular/hot.json')
-    ).not.toThrow()
-  })
-
   it('accepts reddit.com URLs', () => {
     expect(() =>
       assertRedditUrl('https://reddit.com/r/popular/hot.json')

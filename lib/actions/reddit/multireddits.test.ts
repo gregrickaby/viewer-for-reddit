@@ -1,10 +1,3 @@
-// Mock rate-limit-state BEFORE imports
-vi.mock('@/lib/utils/rate-limit-state', () => ({
-  recordRateLimit: vi.fn(),
-  resetRateLimit: vi.fn(),
-  waitForRateLimit: vi.fn(async () => {})
-}))
-
 // Mock reddit-context BEFORE imports
 vi.mock('@/lib/auth/reddit-context', () => ({
   getRedditContext: vi.fn()
@@ -53,19 +46,7 @@ function createAuthContext(username = 'testuser'): RedditContext {
       Authorization: 'Bearer mock-token'
     },
     baseUrl: 'https://oauth.reddit.com',
-    isAuthenticated: true,
     username
-  }
-}
-
-function createAnonContext(): RedditContext {
-  return {
-    headers: {
-      'User-Agent': 'test-user-agent'
-    },
-    baseUrl: 'https://www.reddit.com',
-    isAuthenticated: false,
-    username: null
   }
 }
 
@@ -77,7 +58,7 @@ describe('multireddits server actions', () => {
 
   describe('fetchMultireddits', () => {
     it('returns empty array when not authenticated', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const multis = await fetchMultireddits()
 
@@ -109,7 +90,7 @@ describe('multireddits server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await createMultireddit('my_multi', 'My Multi')
 
@@ -163,7 +144,7 @@ describe('multireddits server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await deleteMultireddit('/user/testuser/m/tech')
 
@@ -209,7 +190,7 @@ describe('multireddits server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await updateMultiredditName(
         '/user/testuser/m/tech',
@@ -270,7 +251,7 @@ describe('multireddits server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await addSubredditToMultireddit(
         '/user/testuser/m/tech',
@@ -325,7 +306,7 @@ describe('multireddits server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await removeSubredditFromMultireddit(
         '/user/testuser/m/tech',
@@ -396,7 +377,7 @@ describe('multireddits server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await addUserToMultireddit(
         '/user/testuser/m/tech',
@@ -467,7 +448,7 @@ describe('multireddits server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await removeUserFromMultireddit(
         '/user/testuser/m/tech',

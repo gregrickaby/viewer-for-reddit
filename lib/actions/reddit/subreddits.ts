@@ -68,7 +68,7 @@ export async function fetchSubredditInfo(
 /**
  * Fetch ALL authenticated user's subreddit subscriptions.
  * Server Action with Next.js fetch caching.
- * Results cached for 10 minutes. Returns empty array for unauthenticated users.
+ * Results cached for 10 minutes. Returns empty array when not authenticated.
  * Automatically fetches all pages to return complete subscription list.
  *
  * @returns Promise resolving to complete subscriptions array
@@ -82,10 +82,7 @@ export async function fetchUserSubscriptions(): Promise<
   }>
 > {
   try {
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return []
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const allSubscriptions: Array<{
       name: string
@@ -166,10 +163,7 @@ export async function toggleSubscription(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     logger.debug('Toggling subscription', {subreddit: subredditName, action})
 

@@ -26,29 +26,6 @@ export const searchHandlers = [
     })
   }),
 
-  // Search Reddit (public endpoint - anonymous)
-  http.get('https://www.reddit.com/search.json', ({request}) => {
-    const url = new URL(request.url)
-    const q = url.searchParams.get('q')
-    const after = url.searchParams.get('after')
-
-    return HttpResponse.json({
-      data: {
-        children: [
-          {
-            data: {
-              id: 'search1',
-              title: `Search result for "${q}"`,
-              author: 'testuser',
-              score: 50
-            }
-          }
-        ],
-        after: after ? null : 't3_search_next'
-      }
-    })
-  }),
-
   // Subreddit autocomplete (OAuth endpoint - authenticated)
   http.get(
     'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',

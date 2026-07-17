@@ -11,11 +11,7 @@ import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/axiom/server'
 import type {AuthTokens} from '@/lib/types/auth'
 import type {SessionData} from '@/lib/types/reddit'
-import {
-  REDDIT_API_URL,
-  REDDIT_PUBLIC_API_URL,
-  TOKEN_REFRESH_BUFFER
-} from '@/lib/utils/constants'
+import {REDDIT_API_URL, TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
 import {refreshToken as refreshTokenViaArctic} from '@/lib/utils/reddit-auth'
 
@@ -28,13 +24,11 @@ import {refreshToken as refreshTokenViaArctic} from '@/lib/utils/reddit-auth'
  * Contains everything a caller needs: HTTP headers, base URL, and auth status.
  */
 export interface RedditContext {
-  /** HTTP headers including Authorization when authenticated. */
+  /** HTTP headers including Authorization. */
   headers: HeadersInit
-  /** oauth.reddit.com when authenticated, www.reddit.com otherwise. */
+  /** oauth.reddit.com base URL for API calls. */
   baseUrl: string
-  /** True when a valid access token was resolved. */
-  isAuthenticated: boolean
-  /** Authenticated username, or null for anonymous requests. */
+  /** Reddit username, or null when username is unavailable. */
   username: string | null
 }
 
@@ -48,9 +42,9 @@ export interface SessionSnapshot {
   refreshToken: string | undefined
   /** Token expiration as Unix milliseconds, or undefined. */
   expiresAt: number | undefined
-  /** Reddit username, or undefined for anonymous sessions. */
+  /** Reddit username, or undefined when not available. */
   username: string | undefined
-  /** Reddit user ID, or undefined for anonymous sessions. */
+  /** Reddit user ID, or undefined when not available. */
   userId: string | undefined
 }
 
@@ -176,7 +170,6 @@ function authenticatedContext(
       Authorization: `Bearer ${accessToken}`
     },
     baseUrl: REDDIT_API_URL,
-    isAuthenticated: true,
     username
   }
 }
@@ -255,22 +248,6 @@ async function performRefresh(
 // ---------------------------------------------------------------------------
 
 /**
- * Build an anonymous {@link RedditContext} for unauthenticated requests.
- *
- * @returns Context configured for the public Reddit API
- */
-export function getAnonymousContext(): RedditContext {
-  return {
-    headers: {
-      'User-Agent': getEnvVar('USER_AGENT')
-    },
-    baseUrl: REDDIT_PUBLIC_API_URL,
-    isAuthenticated: false,
-    username: null
-  }
-}
-
-/**
  * Build a {@link RedditContext} from a raw access token string.
  * Used during the OAuth callback before a session exists.
  *
@@ -286,17 +263,17 @@ export function contextFromToken(accessToken: string): RedditContext {
  *
  * Reads the session, refreshes the access token if needed (coalescing
  * concurrent calls), and returns a fully-formed {@link RedditContext}.
- * Falls back to an anonymous context when no token is available or
- * when refresh fails.
+ * Throws when no valid session exists or when token refresh fails.
  *
  * @returns Promise resolving to the current RedditContext
+ * @throws Error when not authenticated or token refresh fails
  */
 export async function getRedditContext(): Promise<RedditContext> {
   const adapters = getAdapters()
   const snapshot = await adapters.readSession()
 
   if (!snapshot.accessToken) {
-    return getAnonymousContext()
+    throw new Error('Not authenticated')
   }
 
   const needsRefresh =
@@ -318,6 +295,5 @@ export async function getRedditContext(): Promise<RedditContext> {
     return authenticatedContext(newAccessToken, snapshot.username || null)
   }
 
-  // Refresh failed: fall back to anonymous
-  return getAnonymousContext()
+  throw new Error('Token refresh failed')
 }

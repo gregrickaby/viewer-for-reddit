@@ -8,7 +8,7 @@ import {MetadataRoute} from 'next'
  * Disallows crawling of ALL dynamic content to:
  * - Prevent excessive API usage from crawlers
  * - Avoid indexing duplicate Reddit content
- * - Prevent soft 404s from Reddit API rate limits
+ * - Prevent soft 404s from Reddit API errors
  * - Focus SEO on the main landing page
  *
  * IMPORTANT: Blocks entire /r/ path (not just specific comment pages)

@@ -1,10 +1,3 @@
-// Mock rate-limit-state BEFORE imports
-vi.mock('@/lib/utils/rate-limit-state', () => ({
-  recordRateLimit: vi.fn(),
-  resetRateLimit: vi.fn(),
-  waitForRateLimit: vi.fn(async () => {})
-}))
-
 // Mock reddit-context BEFORE imports
 vi.mock('@/lib/auth/reddit-context', () => ({
   getRedditContext: vi.fn()
@@ -47,19 +40,7 @@ function createAuthContext(username = 'testuser'): RedditContext {
       Authorization: 'Bearer mock-token'
     },
     baseUrl: 'https://oauth.reddit.com',
-    isAuthenticated: true,
     username
-  }
-}
-
-function createAnonContext(): RedditContext {
-  return {
-    headers: {
-      'User-Agent': 'test-user-agent'
-    },
-    baseUrl: 'https://www.reddit.com',
-    isAuthenticated: false,
-    username: null
   }
 }
 
@@ -73,14 +54,6 @@ describe('subreddits server actions', () => {
     it('fetches subreddit information', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/about.json', () => {
-          return HttpResponse.json({
-            data: {
-              display_name: 'aww',
-              subscribers: 37661216
-            }
-          })
-        }),
-        http.get('https://www.reddit.com/r/:subreddit/about.json', () => {
           return HttpResponse.json({
             data: {
               display_name: 'aww',
@@ -111,7 +84,7 @@ describe('subreddits server actions', () => {
 
   describe('fetchUserSubscriptions', () => {
     it('returns empty result when not authenticated', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await fetchUserSubscriptions()
 
@@ -195,7 +168,7 @@ describe('subreddits server actions', () => {
 
   describe('toggleSubscription', () => {
     it('requires authentication', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await toggleSubscription('programming', 'sub')
 

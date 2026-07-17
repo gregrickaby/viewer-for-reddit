@@ -4,7 +4,7 @@ import {NextResponse} from 'next/server'
  * Health check endpoint for container orchestration.
  *
  * This endpoint does NOT make any external API calls (especially to Reddit)
- * to avoid rate limiting issues during health checks.
+ * to avoid unnecessary API calls during health checks.
  *
  * @returns Simple status response indicating the app is running
  */

@@ -57,19 +57,7 @@ function createAuthContext(): RedditContext {
       Authorization: 'Bearer mock-token'
     },
     baseUrl: 'https://oauth.reddit.com',
-    isAuthenticated: true,
     username: 'testuser'
-  }
-}
-
-function createAnonContext(): RedditContext {
-  return {
-    headers: {
-      'User-Agent': 'test-user-agent'
-    },
-    baseUrl: 'https://www.reddit.com',
-    isAuthenticated: false,
-    username: null
   }
 }
 
@@ -91,25 +79,6 @@ describe('redditFetch', () => {
     it('prepends baseUrl to relative path', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/popular/hot.json', () => {
-          return HttpResponse.json({data: {children: []}})
-        })
-      )
-
-      const result = await redditFetch<{data: {children: unknown[]}}>(
-        '/r/popular/hot.json',
-        {
-          operation: 'fetchPosts'
-        }
-      )
-
-      expect(result.data.children).toEqual([])
-    })
-
-    it('uses public base URL for anonymous context', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
-
-      server.use(
-        http.get('https://www.reddit.com/r/popular/hot.json', () => {
           return HttpResponse.json({data: {children: []}})
         })
       )
@@ -287,7 +256,6 @@ describe('redditFetch', () => {
       mockGetRedditContext.mockResolvedValue({
         headers: {'User-Agent': 'test-user-agent'},
         baseUrl: 'https://evil.example.com',
-        isAuthenticated: false,
         username: null
       })
 

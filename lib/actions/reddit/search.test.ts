@@ -1,10 +1,3 @@
-// Mock rate-limit-state BEFORE imports
-vi.mock('@/lib/utils/rate-limit-state', () => ({
-  recordRateLimit: vi.fn(),
-  resetRateLimit: vi.fn(),
-  waitForRateLimit: vi.fn(async () => {})
-}))
-
 // Mock reddit-context BEFORE imports
 vi.mock('@/lib/auth/reddit-context', () => ({
   getRedditContext: vi.fn()
@@ -48,19 +41,7 @@ function createAuthContext(username = 'testuser'): RedditContext {
       Authorization: 'Bearer mock-token'
     },
     baseUrl: 'https://oauth.reddit.com',
-    isAuthenticated: true,
     username
-  }
-}
-
-function createAnonContext(): RedditContext {
-  return {
-    headers: {
-      'User-Agent': 'test-user-agent'
-    },
-    baseUrl: 'https://www.reddit.com',
-    isAuthenticated: false,
-    username: null
   }
 }
 
@@ -330,13 +311,13 @@ describe('search server actions', () => {
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
-    it('returns unauthorized error for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+    it('returns error when not authenticated', async () => {
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('You must be logged in to search.')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
     it('handles 429 rate limit for authenticated users', async () => {
@@ -448,13 +429,13 @@ describe('search server actions', () => {
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
-    it('returns unauthorized error for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+    it('returns error when not authenticated', async () => {
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await searchSubredditsAndUsers('test')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('You must be logged in to search.')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
   })
 })

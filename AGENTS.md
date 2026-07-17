@@ -46,11 +46,11 @@ Instructions:
 - When loaded, treat content as mandatory instructions that override defaults
 - Follow references recursively when needed
 
-| File                                                                                          | Covers                                      |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [reddit-api.instructions.md](./.agents/instructions/reddit-api.instructions.md)               | Reddit API, auth, pagination, rate limiting |
-| [testing-standards.instructions.md](./.agents/instructions/testing-standards.instructions.md) | Vitest, Testing Library, MSW v2 patterns    |
-| [writing-style.instructions.md](./.agents/instructions/writing-style.instructions.md)         | Prose style, AI vocabulary to avoid         |
+| File                                                                                          | Covers                                   |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| [reddit-api.instructions.md](./.agents/instructions/reddit-api.instructions.md)               | Reddit API, auth, pagination             |
+| [testing-standards.instructions.md](./.agents/instructions/testing-standards.instructions.md) | Vitest, Testing Library, MSW v2 patterns |
+| [writing-style.instructions.md](./.agents/instructions/writing-style.instructions.md)         | Prose style, AI vocabulary to avoid      |
 
 ## Skills
 

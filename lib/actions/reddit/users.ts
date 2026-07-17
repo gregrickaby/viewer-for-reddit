@@ -91,8 +91,8 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
  */
 export async function getCurrentUserAvatar(): Promise<string | null> {
   try {
-    const {isAuthenticated, username} = await getRedditContext()
-    if (!isAuthenticated || !username) {
+    const {username} = await getRedditContext()
+    if (!username) {
       return null
     }
 
@@ -197,10 +197,7 @@ export async function fetchSavedItems(
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      throw new Error(GENERIC_SERVER_ERROR)
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = new URL(`${baseUrl}/user/${username}/saved.json`)
     assertRedditUrl(url.toString())
@@ -289,7 +286,7 @@ export async function fetchSavedItems(
 /**
  * Fetch authenticated user's followed users (friends).
  * Server Action with Next.js fetch caching.
- * Results cached for 10 minutes. Returns empty array for unauthenticated users.
+ * Results cached for 10 minutes. Returns empty array when not authenticated.
  *
  * @returns Promise resolving to array of followed user objects
  */
@@ -302,10 +299,7 @@ export async function fetchFollowedUsers(): Promise<
   }>
 > {
   try {
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return []
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/v1/me/friends`
     assertRedditUrl(url)
@@ -369,10 +363,7 @@ export async function followUser(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/v1/me/friends/${encodeURIComponent(username)}`
     assertRedditUrl(url)
@@ -432,10 +423,7 @@ export async function unfollowUser(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/v1/me/friends/${encodeURIComponent(username)}`
     assertRedditUrl(url)
@@ -490,11 +478,7 @@ export async function savePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated, username} =
-      await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl, username} = await getRedditContext()
 
     const endpoint = save ? 'save' : 'unsave'
     const url = `${baseUrl}/api/${endpoint}`
@@ -559,10 +543,7 @@ export async function votePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/vote`
     assertRedditUrl(url)

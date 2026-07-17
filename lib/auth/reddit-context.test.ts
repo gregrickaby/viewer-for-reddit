@@ -24,7 +24,6 @@ import {
   type SessionSnapshot,
   configureRedditContext,
   contextFromToken,
-  getAnonymousContext,
   getRedditContext,
   resetRedditContext
 } from './reddit-context'
@@ -93,23 +92,6 @@ describe('reddit-context', () => {
   })
 
   // -------------------------------------------------------------------------
-  // getAnonymousContext
-  // -------------------------------------------------------------------------
-
-  describe('getAnonymousContext', () => {
-    it('returns unauthenticated context with public base URL', () => {
-      const ctx = getAnonymousContext()
-
-      expect(ctx.isAuthenticated).toBe(false)
-      expect(ctx.username).toBeNull()
-      expect(ctx.baseUrl).toBe('https://www.reddit.com')
-      expect(ctx.headers).toEqual({
-        'User-Agent': 'test-user-agent'
-      })
-    })
-  })
-
-  // -------------------------------------------------------------------------
   // contextFromToken
   // -------------------------------------------------------------------------
 
@@ -117,7 +99,6 @@ describe('reddit-context', () => {
     it('returns authenticated context with null username', () => {
       const ctx = contextFromToken('some-token')
 
-      expect(ctx.isAuthenticated).toBe(true)
       expect(ctx.username).toBeNull()
       expect(ctx.baseUrl).toBe('https://oauth.reddit.com')
       expect(ctx.headers).toEqual({
@@ -128,18 +109,15 @@ describe('reddit-context', () => {
   })
 
   // -------------------------------------------------------------------------
-  // getRedditContext — anonymous
+  // getRedditContext — no session
   // -------------------------------------------------------------------------
 
-  describe('getRedditContext — anonymous', () => {
-    it('returns anonymous context when session has no access token', async () => {
+  describe('getRedditContext — no session', () => {
+    it('throws when session has no access token', async () => {
       const adapters = createStubAdapters()
       configureRedditContext(adapters)
 
-      const ctx = await getRedditContext()
-
-      expect(ctx.isAuthenticated).toBe(false)
-      expect(ctx.baseUrl).toBe('https://www.reddit.com')
+      await expect(getRedditContext()).rejects.toThrow('Not authenticated')
       expect(adapters.readSession).toHaveBeenCalledOnce()
     })
   })
@@ -163,7 +141,6 @@ describe('reddit-context', () => {
 
       const ctx = await getRedditContext()
 
-      expect(ctx.isAuthenticated).toBe(true)
       expect(ctx.username).toBe('testuser')
       expect(ctx.baseUrl).toBe('https://oauth.reddit.com')
       expect(ctx.headers).toEqual({
@@ -195,7 +172,6 @@ describe('reddit-context', () => {
 
       const ctx = await getRedditContext()
 
-      expect(ctx.isAuthenticated).toBe(true)
       expect(ctx.headers).toEqual({
         'User-Agent': 'test-user-agent',
         Authorization: 'Bearer refreshed-access-token'
@@ -227,9 +203,8 @@ describe('reddit-context', () => {
       })
       configureRedditContext(adapters)
 
-      const ctx = await getRedditContext()
+      await getRedditContext()
 
-      expect(ctx.isAuthenticated).toBe(true)
       expect(adapters.refreshAccessToken).toHaveBeenCalledOnce()
     })
 
@@ -242,9 +217,8 @@ describe('reddit-context', () => {
       })
       configureRedditContext(adapters)
 
-      const ctx = await getRedditContext()
+      await getRedditContext()
 
-      expect(ctx.isAuthenticated).toBe(true)
       expect(adapters.refreshAccessToken).toHaveBeenCalledOnce()
     })
   })
@@ -254,7 +228,7 @@ describe('reddit-context', () => {
   // -------------------------------------------------------------------------
 
   describe('getRedditContext — refresh fails', () => {
-    it('falls back to anonymous context', async () => {
+    it('throws when refresh fails', async () => {
       const now = Date.now()
       const adapters = createStubAdapters({
         readSession: vi.fn(async () =>
@@ -267,14 +241,10 @@ describe('reddit-context', () => {
       })
       configureRedditContext(adapters)
 
-      const ctx = await getRedditContext()
-
-      expect(ctx.isAuthenticated).toBe(false)
-      expect(ctx.baseUrl).toBe('https://www.reddit.com')
-      expect(ctx.username).toBeNull()
+      await expect(getRedditContext()).rejects.toThrow('Token refresh failed')
     })
 
-    it('falls back to anonymous when no refresh token exists', async () => {
+    it('throws when no refresh token exists', async () => {
       const now = Date.now()
       const adapters = createStubAdapters({
         readSession: vi.fn(async () =>
@@ -287,9 +257,7 @@ describe('reddit-context', () => {
       })
       configureRedditContext(adapters)
 
-      const ctx = await getRedditContext()
-
-      expect(ctx.isAuthenticated).toBe(false)
+      await expect(getRedditContext()).rejects.toThrow('Token refresh failed')
       expect(adapters.refreshAccessToken).not.toHaveBeenCalled()
     })
   })
@@ -325,8 +293,8 @@ describe('reddit-context', () => {
       const [ctx1, ctx2] = await Promise.all([promise1, promise2])
 
       // Both should succeed
-      expect(ctx1.isAuthenticated).toBe(true)
-      expect(ctx2.isAuthenticated).toBe(true)
+      expect(ctx1.username).toBe('testuser')
+      expect(ctx2.username).toBe('testuser')
       expect(ctx1.headers).toEqual(ctx2.headers)
 
       // Only one refresh call
@@ -434,7 +402,9 @@ describe('reddit-context', () => {
     })
 
     it('clears custom adapters and inflight refresh on reset', async () => {
-      const readSession = vi.fn(async () => emptySnapshot())
+      const readSession = vi.fn(async () =>
+        authenticatedSnapshot({expiresAt: Date.now() + 3600000})
+      )
       configureRedditContext(createStubAdapters({readSession}))
 
       resetRedditContext()
@@ -443,7 +413,9 @@ describe('reddit-context', () => {
       // We cannot easily assert defaults without a real session, but we
       // can verify the custom adapter is no longer called by configuring
       // a new one.
-      const readSession2 = vi.fn(async () => emptySnapshot())
+      const readSession2 = vi.fn(async () =>
+        authenticatedSnapshot({expiresAt: Date.now() + 3600000})
+      )
       configureRedditContext(createStubAdapters({readSession: readSession2}))
 
       await getRedditContext()
@@ -473,7 +445,6 @@ describe('reddit-context', () => {
 
       const ctx = await getRedditContext()
 
-      expect(ctx.isAuthenticated).toBe(true)
       expect(ctx.username).toBeNull()
     })
 

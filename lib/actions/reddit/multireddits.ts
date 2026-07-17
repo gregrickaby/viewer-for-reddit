@@ -18,7 +18,7 @@ const MULTI_NAME_PATTERN = /^\w{3,50}$/
 /**
  * Fetch authenticated user's custom multireddits.
  * Server Action with Next.js fetch caching.
- * Results cached for 10 minutes. Returns empty array for unauthenticated users.
+ * Results cached for 10 minutes. Returns empty array when not authenticated.
  *
  * @returns Promise resolving to array of multireddit objects
  */
@@ -32,10 +32,7 @@ export async function fetchMultireddits(): Promise<
   }>
 > {
   try {
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return []
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/multi/mine`
     assertRedditUrl(url)
@@ -111,10 +108,7 @@ export async function createMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/multi`
     assertRedditUrl(url)
@@ -184,10 +178,7 @@ export async function deleteMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/multi/${normalizedPath}`
     assertRedditUrl(url)
@@ -251,10 +242,7 @@ export async function updateMultiredditName(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/multi/${normalizedPath}`
     assertRedditUrl(url)
@@ -331,10 +319,7 @@ export async function addSubredditToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
     assertRedditUrl(url)
@@ -412,10 +397,7 @@ export async function removeSubredditFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
     assertRedditUrl(url)
@@ -484,10 +466,7 @@ export async function addUserToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const userSubreddit = `u_${cleanUsername}`
     const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
@@ -566,10 +545,7 @@ export async function removeUserFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-    if (!isAuthenticated) {
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const userSubreddit = `u_${cleanUsername}`
     const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`

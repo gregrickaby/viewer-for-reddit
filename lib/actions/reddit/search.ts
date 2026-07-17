@@ -19,7 +19,6 @@ import {isValidSubredditName} from '@/lib/utils/reddit-helpers'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
-  UNAUTHORIZED_ERROR,
   assertRedditUrl
 } from './_helpers'
 import {redditFetch} from './redditFetch'
@@ -175,8 +174,7 @@ export async function searchSubreddit(
  * Returns empty array for queries < 2 characters.
  * Results cached for 60 seconds.
  *
- * Uses manual fetch with {@link getRedditContext} (not {@link redditFetch})
- * because the custom rate-limit error message depends on `isAuthenticated`.
+ * Uses manual fetch with {@link getRedditContext} (not {@link redditFetch}).
  *
  * @param query - Search query (minimum 2 characters)
  * @returns Promise resolving to success status, results array, and optional error
@@ -199,11 +197,7 @@ export async function searchSubreddits(query: string): Promise<{
   }
 
   try {
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-
-    if (!isAuthenticated) {
-      return {success: false, data: [], error: UNAUTHORIZED_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const params = new URLSearchParams({
       query,
@@ -232,7 +226,6 @@ export async function searchSubreddits(query: string): Promise<{
         method: 'GET',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated,
         errorBody,
         context: 'searchSubreddits',
         query
@@ -286,8 +279,7 @@ export async function searchSubreddits(query: string): Promise<{
  * Returns both communities and user profiles, tagged with a `type` field.
  * Results cached for 60 seconds.
  *
- * Uses manual fetch with {@link getRedditContext} (not {@link redditFetch})
- * because the custom rate-limit error message depends on `isAuthenticated`.
+ * Uses manual fetch with {@link getRedditContext} (not {@link redditFetch}).
  *
  * @param query - Search query (minimum 2 characters)
  * @returns Promise resolving to success status, results array, and optional error
@@ -310,11 +302,7 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
   }
 
   try {
-    const {headers, baseUrl, isAuthenticated} = await getRedditContext()
-
-    if (!isAuthenticated) {
-      return {success: false, data: [], error: UNAUTHORIZED_ERROR}
-    }
+    const {headers, baseUrl} = await getRedditContext()
 
     const params = new URLSearchParams({
       query,
@@ -343,7 +331,6 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
         method: 'GET',
         status: response.status,
         statusText: response.statusText,
-        isAuthenticated,
         errorBody,
         context: 'searchSubredditsAndUsers',
         query

@@ -1,10 +1,3 @@
-// Mock rate-limit-state BEFORE imports
-vi.mock('@/lib/utils/rate-limit-state', () => ({
-  recordRateLimit: vi.fn(),
-  resetRateLimit: vi.fn(),
-  waitForRateLimit: vi.fn(async () => {})
-}))
-
 // Mock reddit-context BEFORE imports
 vi.mock('@/lib/auth/reddit-context', () => ({
   getRedditContext: vi.fn()
@@ -53,19 +46,7 @@ function createAuthContext(username = 'testuser'): RedditContext {
       Authorization: 'Bearer mock-token'
     },
     baseUrl: 'https://oauth.reddit.com',
-    isAuthenticated: true,
     username
-  }
-}
-
-function createAnonContext(): RedditContext {
-  return {
-    headers: {
-      'User-Agent': 'test-user-agent'
-    },
-    baseUrl: 'https://www.reddit.com',
-    isAuthenticated: false,
-    username: null
   }
 }
 
@@ -77,7 +58,7 @@ describe('users server actions', () => {
 
   describe('votePost', () => {
     it('returns error when not authenticated', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await votePost('t3_test123', 1)
 
@@ -107,7 +88,7 @@ describe('users server actions', () => {
 
   describe('savePost', () => {
     it('returns error when not authenticated', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await savePost('t3_test123', true)
 
@@ -164,10 +145,10 @@ describe('users server actions', () => {
 
   describe('fetchSavedItems', () => {
     it('requires authentication', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       await expect(fetchSavedItems('testuser')).rejects.toThrow(
-        'Something went wrong.'
+        'Not authenticated'
       )
     })
 
@@ -338,7 +319,7 @@ describe('users server actions', () => {
     })
 
     it('returns empty array for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const following = await fetchFollowedUsers()
 
@@ -390,7 +371,7 @@ describe('users server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await followUser('testuser')
 
@@ -437,7 +418,7 @@ describe('users server actions', () => {
     })
 
     it('returns failure for unauthenticated users', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await unfollowUser('testuser')
 
@@ -470,7 +451,7 @@ describe('users server actions', () => {
 
   describe('getCurrentUserAvatar', () => {
     it('returns null when not authenticated', async () => {
-      mockGetRedditContext.mockResolvedValue(createAnonContext())
+      mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await getCurrentUserAvatar()
 

@@ -3,7 +3,7 @@
  */
 
 // Cache revalidation times (in seconds)
-// Increased to reduce Reddit API rate limiting
+// Cache revalidation times for Reddit API responses
 export const ONE_MINUTE = 60
 export const FIVE_MINUTES = 300
 export const TEN_MINUTES = 600
@@ -12,7 +12,7 @@ export const THIRTY_MINUTES = 1800
 export const ONE_HOUR = 3600
 
 // Default cache times by content type
-// Posts change frequently but we can tolerate slightly stale data during rate limits
+// Posts change frequently but we can tolerate slightly stale data
 export const CACHE_POSTS = FIFTEEN_MINUTES // Was FIVE_MINUTES
 export const CACHE_COMMENTS = TEN_MINUTES // Was FIVE_MINUTES
 export const CACHE_SUBREDDIT_INFO = ONE_HOUR // Unchanged
@@ -25,7 +25,6 @@ export const TOKEN_REFRESH_BUFFER = 5 * 60 * 1000 // 5 minutes before token expi
 
 // Reddit API configuration
 export const REDDIT_API_URL = 'https://oauth.reddit.com' // Authenticated requests
-export const REDDIT_PUBLIC_API_URL = 'https://www.reddit.com' // Unauthenticated requests
 
 // Pagination
 export const DEFAULT_POST_LIMIT = 25

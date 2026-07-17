@@ -92,7 +92,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'; " +
               "img-src 'self' data: https://*.redd.it https://*.redditstatic.com https://*.redditmedia.com https://external-preview.redd.it https://media.giphy.com https://i.giphy.com; " +
               "media-src 'self' blob: https://*.redd.it https://v.redd.it https://*.reddit.com; " +
-              "connect-src 'self' https://oauth.reddit.com https://www.reddit.com https://v.redd.it https://*.redd.it https://static.cloudflareinsights.com; " +
+              "connect-src 'self' https://oauth.reddit.com https://v.redd.it https://*.redd.it https://static.cloudflareinsights.com; " +
               "font-src 'self' data:; " +
               'frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://player.twitch.tv https://streamable.com; ' +
               "object-src 'none'; " +

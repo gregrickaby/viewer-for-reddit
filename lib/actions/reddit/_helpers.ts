@@ -6,11 +6,7 @@ export const GENERIC_ACTION_ERROR = 'Something went wrong. Please try again.'
 export const UNAUTHORIZED_ERROR = 'You must be logged in to search.'
 
 // Allowed domains for SSRF prevention
-const ALLOWED_REDDIT_DOMAINS = new Set([
-  'oauth.reddit.com',
-  'www.reddit.com',
-  'reddit.com'
-])
+const ALLOWED_REDDIT_DOMAINS = new Set(['oauth.reddit.com', 'reddit.com'])
 
 /**
  * Validate that a URL points to an allowed Reddit domain.
@@ -43,7 +39,7 @@ export function assertRedditUrl(url: string): void {
 
 /**
  * Capture incoming request metadata for debugging.
- * Helps identify which clients (e.g., Googlebot) are hitting rate limits.
+ * Helps identify which clients (e.g., Googlebot) are making requests.
  *
  * @returns Promise resolving to client user-agent, IP, and referer
  */

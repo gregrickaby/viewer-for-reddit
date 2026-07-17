@@ -757,8 +757,8 @@ describe('reddit-helpers', () => {
     describe('edge cases', () => {
       it('handles different base URLs', () => {
         expect(
-          buildFeedUrlPath('https://www.reddit.com', 'popular', 'hot')
-        ).toBe('https://www.reddit.com/r/popular/hot.json')
+          buildFeedUrlPath('https://oauth.reddit.com', 'popular', 'hot')
+        ).toBe('https://oauth.reddit.com/r/popular/hot.json')
       })
 
       it('handles base URL without trailing slash', () => {

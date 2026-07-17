@@ -176,10 +176,10 @@ describe('useSearch', () => {
     })
   })
 
-  it('shows rate limit error for non-authenticated users', async () => {
+  it('shows rate limit error', async () => {
     mockSearchSubreddits.mockResolvedValueOnce({
       success: false,
-      error: 'Reddit rate limit exceeded. Log in to continue.',
+      error: 'Reddit rate limit exceeded. Try again later.',
       data: []
     })
 
@@ -194,13 +194,13 @@ describe('useSearch', () => {
     await waitFor(() => {
       expect(result.current.hasError).toBe(true)
       expect(result.current.errorMessage).toBe(
-        'Reddit rate limit exceeded. Log in to continue.'
+        'Reddit rate limit exceeded. Try again later.'
       )
       expect(result.current.groupedResults.communities).toEqual([])
     })
   })
 
-  it('shows rate limit error for authenticated users', async () => {
+  it('shows rate limit error with retry message', async () => {
     mockSearchSubreddits.mockResolvedValueOnce({
       success: false,
       error: 'Reddit rate limit exceeded. Try again later.',

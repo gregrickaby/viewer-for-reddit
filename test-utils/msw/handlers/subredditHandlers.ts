@@ -14,15 +14,6 @@ export const subredditHandlers = [
     return HttpResponse.json(aboutMock)
   }),
 
-  // About subreddit (public - anonymous)
-  http.get('https://www.reddit.com/r/:slug/about.json', ({params}) => {
-    const {slug} = params
-    if (slug === 'notarealsubreddit') {
-      return new HttpResponse(null, {status: 404})
-    }
-    return HttpResponse.json(aboutMock)
-  }),
-
   // Popular subreddits (OAuth)
   http.get('https://oauth.reddit.com/subreddits/popular.json', ({request}) => {
     const url = new URL(request.url)

@@ -1,6 +1,6 @@
 ---
 name: Reddit API Patterns
-description: Comprehensive guide for interacting with the Reddit API. Covers authentication, pagination, endpoints, error handling, rate limiting, and data transformation patterns.
+description: Comprehensive guide for interacting with the Reddit API. Covers authentication, pagination, endpoints, error handling, and data transformation patterns.
 applyTo: lib/actions/**/*.ts, app/api/**, lib/types/reddit-api.ts, lib/types/reddit.ts
 ---
 
@@ -8,7 +8,7 @@ applyTo: lib/actions/**/*.ts, app/api/**, lib/types/reddit-api.ts, lib/types/red
 
 ## Core Concepts
 
-Public API is now 100 requests per minute. Authenticated endpoints have higher limits.
+All Reddit API requests require authentication.
 
 ### Fullnames (Thing IDs)
 
@@ -330,15 +330,15 @@ interface RedditError {
 
 ### Graceful Degradation
 
-**Always support unauthenticated users:**
+**Handle missing sessions gracefully:**
 
-`getRedditContext()` resolves the auth pipeline (session read, token refresh, header construction). It returns `{headers, baseUrl, isAuthenticated, username}`. Use it in all server actions:
+`getRedditContext()` resolves the auth pipeline (session read, token refresh, header construction). It returns `{headers, baseUrl, username}`. Use it in all server actions:
 
 ```typescript
 import {getRedditContext} from '@/lib/auth/reddit-context'
 
 const context = await getRedditContext()
-// context.baseUrl is oauth.reddit.com when authenticated, www.reddit.com otherwise
+// context.baseUrl is oauth.reddit.com when authenticated
 // context.headers includes Authorization when authenticated
 ```
 
@@ -425,7 +425,7 @@ const post: RedditPost = {
 2. **Cache aggressively** - Use Next.js `revalidate` option (300s = 5 min)
 3. **Use cursor pagination** - `after`/`before`, never page numbers
 4. **Check fullname prefixes** - Validate `t1_`, `t3_` etc. before operations
-5. **Graceful auth failure** - Always work for unauthenticated users when possible
+5. **Graceful auth failure** - Handle missing sessions gracefully, direct users to sign in
 6. **Respect rate limits** - Monitor `X-Ratelimit-*` headers
 7. **Transform API responses** - Map to simplified application types
 8. **Use Arctic token methods** - `tokens.accessToken()` NOT `tokens.accessToken`
