@@ -1,7 +1,7 @@
 {
   "name": "@gregrickaby/viewer-for-reddit",
   "private": true,
-  "description": "A different way to surf Reddit",
+  "description": "Surf Reddit without ads, analytics, and algorithms",
   "version": "9.0.0",
   "repository": {
     "type": "git",

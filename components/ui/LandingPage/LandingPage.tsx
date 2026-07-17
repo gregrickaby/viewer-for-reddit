@@ -28,9 +28,8 @@ export function LandingPage() {
           </Text>
 
           <Text ta="center" maw={440}>
-            Reddit requires authentication to access content. Sign in to browse
-            posts, save favorites, and customize your feed. Don't have an
-            account?{' '}
+            Reddit requires authentication to access content. Sign in to
+            continue. Don't have an account?{' '}
             <AppLink
               href="https://www.reddit.com/register/"
               style={{textDecoration: 'underline'}}

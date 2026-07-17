@@ -9,9 +9,9 @@ export const appConfig = {
   // Site metadata
   site: {
     name: 'Reddit Viewer',
-    description: 'A different way to surf Reddit',
+    description: 'Surf Reddit without ads, analytics, and algorithms',
     metaDescription:
-      'A different way to surf Reddit - browse images, videos, gifs, and posts without targeted ads or algorithms.',
+      'Reddit Viewer is a clean way to browse Reddit without ads, analytics, or algorithms. Sign in with your Reddit account to get started.',
     baseUrl: getEnvVar('BASE_URL')
   },
 
