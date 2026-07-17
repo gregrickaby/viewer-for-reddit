@@ -1,40 +1,39 @@
 # About Viewer for Reddit
 
-**Viewer for Reddit** is a clean way to browse Reddit without ads or algorithmic tricks.
+**Viewer for Reddit** is a clean way to browse Reddit without ads, analytics, or algorithms.
 
-**[Start browsing →](https://reddit-viewer.com)**
+**[Sign in to start browsing →](/api/auth/login)**
 
 ## How It Works
 
-- **Sign in with your Reddit account** using OAuth2. Your password stays with Reddit, not here.
-- **Vote and comment** after signing in.
+- **Sign in with your Reddit account.**
+- **See your feed, subs, multi-reddits, search, vote and event comment.**
 - **Press `esc` to close** (useful when your boss walks by).
 - **Works on desktop, tablet, and phone.**
 
 ## Frequently Asked Questions
 
+### How is this any different than reddit.com?
+
+There are no advertisements here! We also don't use "the algorithm®" to increase engagement and there's no tracking or analytics. You get to see your feed in chronological order.
+
 ### Why do I have to sign in?
 
-Reddit has restricted free API access, so third-party apps now require authentication. All Reddit clients face this. We cache what we can and optimize where possible, but login is now mandatory.
+Reddit has turned off unauthenticated access to their content APIs. Third-party apps (like this one) must ask you to sign in order to function at all. We cache what we can and optimize where possible, but a Reddit account is now mandatory. If you don't already have an account, please [register](https://www.reddit.com/register/).
 
 ### Is my data safe?
 
-Yes. We use Reddit's official OAuth2 system, so your password never reaches our servers. We store temporary access tokens that expire and delete when you sign out. We don't collect or sell personal data.
-
-### Do I need a Reddit account?
-
-Yes, due to Reddit's API restrictions and rate limits. [Register for a free account](https://www.reddit.com/register/).
+Yes. We use Reddit's [official OAuth2 flow](https://github.com/reddit-archive/reddit/wiki/oauth2), so your password never reaches our servers. We store temporary access tokens that expire and delete when you sign out. We don't collect or sell personal data.
 
 ## About This Project
 
-I'm [Greg Rickaby](https://gregrickaby.com), a software engineer. I built this in 2020 to learn TypeScript and wanted a simpler way to browse Reddit. It's now used by thousands of people. I use it daily and maintain it actively.
+I'm [Greg Rickaby](https://gregrickaby.com), a software engineer. I built this in 2020 to learn TypeScript and wanted a simpler way to browse Reddit. It's now used by thousands of people. I use it daily and maintain it actively. This fully tested codebase is [open source](https://github.com/gregrickaby/viewer-for-reddit) and built with [Next.js](https://nextjs.org/) and [Mantine](https://mantine.dev/).
 
-The codebase is [open source](https://github.com/gregrickaby/viewer-for-reddit) and built with Next.js and is fully tested. If you want to contribute, the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md) explains how.
+## Contributing
 
-## Report Issues or Suggest Ideas
-
-- [GitHub Issues](https://github.com/gregrickaby/viewer-for-reddit/issues)
-- Support the project: [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby), [Venmo](https://venmo.com/u/GregRickaby), [PayPal](https://www.paypal.com/paypalme/GregRickaby)
+- Submit bugs and suggestions via [GitHub Issues](https://github.com/gregrickaby/viewer-for-reddit/issues).
+- To contribute to the codwbase, see the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md).
+- Support the project: [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby), [Venmo](https://venmo.com/u/GregRickaby), [PayPal](https://www.paypal.com/paypalme/GregRickaby).
 
 ---
 
