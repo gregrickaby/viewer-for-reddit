@@ -9,7 +9,7 @@ import {
   fetchFollowedUsers,
   getCurrentUserAvatar
 } from '@/lib/actions/reddit/users'
-import {getSession} from '@/lib/auth/session'
+import {getSession, isAuthenticated} from '@/lib/auth/session'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -28,6 +28,20 @@ interface MainLayoutProps {
 export default async function MainLayout({
   children
 }: Readonly<MainLayoutProps>) {
+  const authenticated = await isAuthenticated()
+
+  if (!authenticated) {
+    return (
+      <>
+        <Shell>{children}</Shell>
+        <RouteScrollReset />
+        <SwipeNavigation />
+        <BossButton />
+        <BackToTop />
+      </>
+    )
+  }
+
   const session = await getSession()
 
   const [subscriptions, multireddits, following, avatarUrl] = await Promise.all(
