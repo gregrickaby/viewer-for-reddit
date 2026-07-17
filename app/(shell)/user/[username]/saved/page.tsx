@@ -1,8 +1,7 @@
 import {SavedItemsList} from '@/components/ui/SavedItemsList/SavedItemsList'
 import {fetchSavedItems} from '@/lib/actions/reddit/users'
-import {getSession} from '@/lib/auth/session'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {Container, Stack, Text, Title} from '@mantine/core'
+import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 
 interface PageProps {
@@ -31,76 +30,24 @@ export async function generateMetadata({
  * Saved items page for a user.
  * Server Component that fetches initial saved items and renders SavedItemsList.
  *
- * Features:
- * - Authentication required
- * - Server-side initial data fetch
- * - Client-side infinite scroll
- * - Error boundaries for graceful failure
- * - Loading skeleton
- * - App layout with sidebar navigation
- * - Boss button and back-to-top button
- * - Displays both saved posts and comments
- *
  * @example
  * URL: /user/johndoe/saved
  */
 export default async function SavedItemsPage({params}: Readonly<PageProps>) {
   const {username} = await params
 
-  // Check authentication and fetch data
-  const session = await getSession()
-  const isAuthenticated = !!session.accessToken
+  const {items, after} = await fetchSavedItems(username)
 
-  if (!isAuthenticated) {
-    return (
-      <Container size="lg">
-        <Stack align="center" gap="xs" py="xl">
-          <Title order={2}>Authentication Required</Title>
-          <Text c="dimmed">You must be logged in to view saved items.</Text>
-        </Stack>
-      </Container>
-    )
-  }
-
-  // Fetch initial items
-  try {
-    const {items, after} = await fetchSavedItems(username)
-
-    if (items.length === 0) {
-      return (
-        <Container size="lg">
-          <Title order={2} mb="md">
-            Saved
-          </Title>
-          <Text c="dimmed">No saved items yet.</Text>
-        </Container>
-      )
-    }
-
-    return (
-      <Container size="lg">
-        <Title order={2} mb="md">
-          Saved
-        </Title>
-        <SavedItemsList
-          initialItems={items}
-          username={username}
-          initialAfter={after}
-          isAuthenticated={isAuthenticated}
-        />
-      </Container>
-    )
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to load saved items'
-
-    return (
-      <Container size="lg">
-        <Stack align="center" gap="xs" py="xl">
-          <Title order={2}>Error</Title>
-          <Text c="dimmed">{errorMessage}</Text>
-        </Stack>
-      </Container>
-    )
-  }
+  return (
+    <Container size="lg">
+      <Title order={2} mb="md">
+        Saved
+      </Title>
+      <SavedItemsList
+        initialItems={items}
+        username={username}
+        initialAfter={after}
+      />
+    </Container>
+  )
 }

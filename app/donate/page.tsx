@@ -44,12 +44,11 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function DonatePage() {
   const session = await getSession()
-  const isAuthenticated = !!session.accessToken
 
   const [subscriptions, multireddits, avatarUrl] = await Promise.all([
-    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
-    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
-    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
+    fetchUserSubscriptions(),
+    fetchMultireddits(),
+    getCurrentUserAvatar()
   ])
 
   const donateContent = fs.readFileSync(
@@ -59,7 +58,6 @@ export default async function DonatePage() {
 
   return (
     <Shell
-      isAuthenticated={isAuthenticated}
       username={session.username}
       avatarUrl={avatarUrl ?? undefined}
       subscriptions={subscriptions}

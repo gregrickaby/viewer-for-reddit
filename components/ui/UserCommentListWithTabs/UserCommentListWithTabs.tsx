@@ -22,8 +22,6 @@ interface UserCommentListWithTabsProps {
   activeSort: SortOption
   /** Active time filter */
   activeTimeFilter?: TimeFilter
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
   /** Username for URL construction */
   username: string
 }
@@ -36,7 +34,6 @@ export function UserCommentListWithTabs({
   comments,
   activeSort,
   activeTimeFilter,
-  isAuthenticated = false,
   username
 }: Readonly<UserCommentListWithTabsProps>) {
   const router = useRouter()
@@ -194,11 +191,7 @@ export function UserCommentListWithTabs({
           <Title order={4}>No comments yet</Title>
         ) : (
           comments.map((comment) => (
-            <Comment
-              key={comment.id}
-              comment={comment}
-              isAuthenticated={isAuthenticated}
-            />
+            <Comment key={comment.id} comment={comment} />
           ))
         )}
       </Stack>

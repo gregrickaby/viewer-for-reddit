@@ -5,7 +5,6 @@ import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
 import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {fetchSubredditInfo} from '@/lib/actions/reddit/subreddits'
-import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
@@ -41,15 +40,13 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
  * Handles special feeds (all, popular) that don't have info.
  *
  * @param subreddit - Subreddit name
- * @param isAuthenticated - Whether user is logged in
+ * @param multireddits - User's multireddits
  */
 async function SubredditInfo({
   subreddit,
-  isAuthenticated,
   multireddits
 }: Readonly<{
   subreddit: string
-  isAuthenticated: boolean
   multireddits: Awaited<ReturnType<typeof fetchMultireddits>>
 }>) {
   // Special feeds like 'all' and 'popular' don't have subreddit info
@@ -86,20 +83,18 @@ async function SubredditInfo({
                   subscribers
                 </Text>
               </div>
-              {isAuthenticated && (
-                <Group gap="xs" wrap="nowrap">
-                  {multireddits.length > 0 && (
-                    <AddToMultiredditButton
-                      subredditName={info.display_name}
-                      multireddits={multireddits}
-                    />
-                  )}
-                  <SubscribeButton
+              <Group gap="xs" wrap="nowrap">
+                {multireddits.length > 0 && (
+                  <AddToMultiredditButton
                     subredditName={info.display_name}
-                    initialIsSubscribed={info.user_is_subscriber ?? false}
+                    multireddits={multireddits}
                   />
-                </Group>
-              )}
+                )}
+                <SubscribeButton
+                  subredditName={info.display_name}
+                  initialIsSubscribed={info.user_is_subscriber ?? false}
+                />
+              </Group>
             </Group>
           </Group>
           {info.public_description && (
@@ -128,18 +123,15 @@ async function SubredditInfo({
  * Fetches and displays posts with sort tabs and infinite scroll.
  *
  * @param subreddit - Subreddit name
- * @param isAuthenticated - Whether user is logged in
  * @param sort - Sort option (hot, new, top, rising, controversial)
  * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
 async function SubredditPosts({
   subreddit,
-  isAuthenticated,
   sort = 'hot',
   timeFilter
 }: Readonly<{
   subreddit: string
-  isAuthenticated: boolean
   sort?: SortOption
   timeFilter?: TimeFilter
 }>) {
@@ -160,7 +152,6 @@ async function SubredditPosts({
       after={after}
       activeSort={sort}
       activeTimeFilter={timeFilter}
-      isAuthenticated={isAuthenticated}
       subreddit={subreddit}
     />
   )
@@ -168,13 +159,6 @@ async function SubredditPosts({
 
 /**
  * Subreddit page - displays posts from a specific subreddit.
- *
- * Features:
- * - Subreddit info card (title, subscribers, description)
- * - Posts with sort tabs (hot, new, top, rising)
- * - Infinite scroll
- * - Error boundaries for info and posts separately
- * - Boss button and back-to-top button
  *
  * @param params - URL params (subreddit name)
  * @param searchParams - URL search params (sort option)
@@ -188,22 +172,15 @@ export default async function SubredditPage({
   const postSort = (sort as SortOption) || 'hot'
   const timeFilter = time as TimeFilter | undefined
 
-  const session = await getSession()
-  const isAuthenticated = !!session.accessToken
-  const multireddits = isAuthenticated ? await fetchMultireddits() : []
+  const multireddits = await fetchMultireddits()
 
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <SubredditInfo
-          subreddit={subreddit}
-          isAuthenticated={isAuthenticated}
-          multireddits={multireddits}
-        />
+        <SubredditInfo subreddit={subreddit} multireddits={multireddits} />
 
         <SubredditPosts
           subreddit={subreddit}
-          isAuthenticated={isAuthenticated}
           sort={postSort}
           timeFilter={timeFilter}
         />

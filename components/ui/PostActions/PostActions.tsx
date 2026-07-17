@@ -35,8 +35,6 @@ interface PostActionsProps {
   onVote: (direction: 1 | -1) => void
   /** Toggle save handler function */
   onToggleSave: () => void
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
 }
 
 /**
@@ -51,8 +49,7 @@ export function PostActions({
   isSaved,
   isPending,
   onVote,
-  onToggleSave,
-  isAuthenticated = false
+  onToggleSave
 }: Readonly<PostActionsProps>) {
   const {sharePost} = useSharePost()
 
@@ -74,10 +71,8 @@ export function PostActions({
           variant="subtle"
           color={voteState === 1 ? 'orange' : 'gray'}
           aria-label="Upvote"
-          onClick={() => isAuthenticated && onVote(1)}
+          onClick={() => onVote(1)}
           loading={isPending}
-          disabled={!isAuthenticated}
-          style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
         >
           <IconArrowUp aria-hidden="true" size={18} />
         </ActionIcon>
@@ -88,10 +83,8 @@ export function PostActions({
           variant="subtle"
           color={voteState === -1 ? 'blue' : 'gray'}
           aria-label="Downvote"
-          onClick={() => isAuthenticated && onVote(-1)}
+          onClick={() => onVote(-1)}
           loading={isPending}
-          disabled={!isAuthenticated}
-          style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
         >
           <IconArrowDown aria-hidden="true" size={18} />
         </ActionIcon>
@@ -116,8 +109,7 @@ export function PostActions({
         color={isSaved ? 'yellow' : 'gray'}
         aria-label={isSaved ? 'Unsave post' : 'Save post'}
         onClick={handleSave}
-        disabled={!isAuthenticated || isPending}
-        style={{cursor: isAuthenticated ? 'pointer' : 'not-allowed'}}
+        disabled={isPending}
       >
         {isSaved ? (
           <IconBookmarkFilled aria-hidden="true" size={18} />

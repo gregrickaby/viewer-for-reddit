@@ -49,7 +49,7 @@ describe('Sidebar', () => {
       ).toBeInTheDocument()
     })
 
-    it('renders Home link when not authenticated', () => {
+    it('renders Home link', () => {
       render(<Sidebar />)
 
       const link = screen.getByRole('link', {name: /home/i})
@@ -57,27 +57,8 @@ describe('Sidebar', () => {
       expect(link).toHaveAttribute('href', '/')
     })
 
-    it('renders Home link when authenticated', () => {
-      render(<Sidebar isAuthenticated />)
-
-      const link = screen.getByRole('link', {name: /home/i})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/')
-    })
-
-    it('does not show Popular or All when not authenticated', () => {
+    it('renders Popular and All links', () => {
       render(<Sidebar />)
-
-      expect(
-        screen.queryByRole('link', {name: /popular/i})
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', {name: /^all$/i})
-      ).not.toBeInTheDocument()
-    })
-
-    it('renders Popular and All links when authenticated', () => {
-      render(<Sidebar isAuthenticated />)
 
       const popular = screen.getByRole('link', {name: /popular/i})
       expect(popular).toBeInTheDocument()
@@ -196,24 +177,16 @@ describe('Sidebar', () => {
   })
 
   describe('saved link', () => {
-    it('does not show Saved link when not authenticated', () => {
-      render(<Sidebar isAuthenticated={false} />)
+    it('does not show Saved link when no username is provided', () => {
+      render(<Sidebar />)
 
       expect(
         screen.queryByRole('link', {name: /saved/i})
       ).not.toBeInTheDocument()
     })
 
-    it('does not show Saved link when authenticated but no username', () => {
-      render(<Sidebar isAuthenticated />)
-
-      expect(
-        screen.queryByRole('link', {name: /saved/i})
-      ).not.toBeInTheDocument()
-    })
-
-    it('shows Saved link when authenticated with username', () => {
-      render(<Sidebar isAuthenticated username="testuser" />)
+    it('shows Saved link when username is provided', () => {
+      render(<Sidebar username="testuser" />)
 
       const link = screen.getByRole('link', {name: /saved/i})
       expect(link).toBeInTheDocument()
@@ -221,7 +194,7 @@ describe('Sidebar', () => {
     })
 
     it('renders Saved link in correct position', () => {
-      render(<Sidebar isAuthenticated username="testuser" />)
+      render(<Sidebar username="testuser" />)
 
       const allLinks = screen.getAllByRole('link')
       const navLinks = allLinks.slice(0, 7) // First 7 links are navigation
@@ -234,34 +207,21 @@ describe('Sidebar', () => {
     })
   })
 
-  describe('subscriptions - unauthenticated', () => {
-    it('does not show subscriptions section when not authenticated', () => {
-      render(
-        <Sidebar isAuthenticated={false} subscriptions={mockSubscriptions} />
-      )
-
-      expect(screen.queryByText('My Subreddits')).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', {name: /r\/programming/i})
-      ).not.toBeInTheDocument()
-    })
-
-    it('does not show subscriptions when authenticated but list is empty', () => {
-      render(<Sidebar isAuthenticated subscriptions={[]} />)
+  describe('subscriptions', () => {
+    it('does not show subscriptions when list is empty', () => {
+      render(<Sidebar subscriptions={[]} />)
 
       expect(screen.queryByText('My Subreddits')).not.toBeInTheDocument()
     })
-  })
 
-  describe('subscriptions - authenticated', () => {
-    it('renders subscriptions section when authenticated', () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+    it('renders subscriptions section', () => {
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       expect(screen.getByText('My Subreddits')).toBeInTheDocument()
     })
 
     it('renders search input when subscriptions section is expanded', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is now expanded by default
       await waitFor(() => {
@@ -271,7 +231,7 @@ describe('Sidebar', () => {
     })
 
     it('renders sort select when subscriptions section is expanded', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // In Mantine v9, aria-label is placed on the listbox rather than the textbox.
       // Use getByDisplayValue to find the Select by its visible value instead.
@@ -285,7 +245,7 @@ describe('Sidebar', () => {
 
     it('filters subscriptions by search query', async () => {
       const user = userEvent.setup()
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is now expanded by default
       await waitFor(() => {
@@ -313,7 +273,7 @@ describe('Sidebar', () => {
     })
 
     it('renders all subscription links', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is now expanded by default
       await waitFor(() => {
@@ -330,7 +290,7 @@ describe('Sidebar', () => {
     })
 
     it('maintains subscription order (no sorting)', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is now expanded by default
       await waitFor(() => {
@@ -361,7 +321,7 @@ describe('Sidebar', () => {
     })
 
     it('has correct href for subscription links', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is now expanded by default
       const programmingLink = await screen.findByRole('link', {
@@ -371,7 +331,7 @@ describe('Sidebar', () => {
     })
 
     it('renders subreddit icon when available', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is expanded by default
       await waitFor(() => {
@@ -387,7 +347,7 @@ describe('Sidebar', () => {
     })
 
     it('renders fallback icon when subreddit has no icon', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is expanded by default
       await waitFor(() => {
@@ -401,7 +361,7 @@ describe('Sidebar', () => {
     })
 
     it('renders multiple icons correctly', async () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Section is expanded by default
       await waitFor(() => {
@@ -424,7 +384,7 @@ describe('Sidebar', () => {
 
     it('toggles subscriptions collapse when button clicked', async () => {
       const user = userEvent.setup()
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Now starts expanded, so first click should collapse
       const collapseButton = screen.getByRole('button', {
@@ -438,7 +398,7 @@ describe('Sidebar', () => {
     })
 
     it('shows subscriptions initially open', () => {
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       expect(
         screen.getByRole('button', {name: /collapse my subreddits/i})
@@ -447,7 +407,7 @@ describe('Sidebar', () => {
 
     it('can toggle collapse by clicking anywhere on the header', async () => {
       const user = userEvent.setup()
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       // Click the entire header (not just icon) to collapse (starts expanded)
       const header = screen.getByRole('button', {
@@ -471,7 +431,7 @@ describe('Sidebar', () => {
 
     it('toggles subscriptions by keyboard', async () => {
       const user = userEvent.setup()
-      render(<Sidebar isAuthenticated subscriptions={mockSubscriptions} />)
+      render(<Sidebar subscriptions={mockSubscriptions} />)
 
       let toggleButton = screen.getByRole('button', {
         name: /collapse my subreddits/i
@@ -501,28 +461,15 @@ describe('Sidebar', () => {
     })
   })
 
-  describe('multireddits - unauthenticated', () => {
-    it('does not show multireddits section when not authenticated', () => {
-      render(
-        <Sidebar isAuthenticated={false} multireddits={mockMultireddits} />
-      )
-
-      expect(screen.queryByText('Multireddits')).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', {name: /tech news/i})
-      ).not.toBeInTheDocument()
-    })
-
-    it('does not show multireddits when authenticated but list is empty', () => {
-      render(<Sidebar isAuthenticated multireddits={[]} />)
+  describe('multireddits', () => {
+    it('does not show multireddits when list is empty', () => {
+      render(<Sidebar multireddits={[]} />)
 
       expect(screen.queryByText('Multireddits')).not.toBeInTheDocument()
     })
-  })
 
-  describe('multireddits - authenticated', () => {
-    it('renders multireddits section when authenticated', async () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+    it('renders multireddits section', async () => {
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       expect(screen.getByText('My Multireddits')).toBeInTheDocument()
 
@@ -535,7 +482,7 @@ describe('Sidebar', () => {
     })
 
     it('renders all multireddit links', async () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       // Section is now open by default
       await waitFor(() => {
@@ -547,7 +494,7 @@ describe('Sidebar', () => {
     })
 
     it('sorts multireddits alphabetically', async () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       // Section is now open by default
       await waitFor(() => {
@@ -568,7 +515,7 @@ describe('Sidebar', () => {
     })
 
     it('has correct href for multireddit links', async () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       // Section is now open by default
       const techLink = await screen.findByRole('link', {name: /tech news/i})
@@ -576,7 +523,7 @@ describe('Sidebar', () => {
     })
 
     it('renders multireddit icon when available', async () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       // Section is open by default
       await waitFor(() => {
@@ -595,7 +542,7 @@ describe('Sidebar', () => {
     })
 
     it('renders fallback avatar with first letter when no icon', async () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       // Section is open by default
       await waitFor(() => {
@@ -610,7 +557,7 @@ describe('Sidebar', () => {
 
     it('toggles multireddits collapse when button clicked', async () => {
       const user = userEvent.setup()
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       // Now starts open, first click collapses
       const collapseButton = screen.getByRole('button', {
@@ -624,7 +571,7 @@ describe('Sidebar', () => {
     })
 
     it('shows multireddits initially open', () => {
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       expect(
         screen.getByRole('button', {name: /collapse my multireddits/i})
@@ -633,7 +580,7 @@ describe('Sidebar', () => {
 
     it('can toggle collapse by clicking anywhere on the header', async () => {
       const user = userEvent.setup()
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       // Click the entire header (not just icon) to collapse (starts open)
       const header = screen.getByRole('button', {
@@ -657,7 +604,7 @@ describe('Sidebar', () => {
 
     it('toggles multireddits by keyboard', async () => {
       const user = userEvent.setup()
-      render(<Sidebar isAuthenticated multireddits={mockMultireddits} />)
+      render(<Sidebar multireddits={mockMultireddits} />)
 
       let toggleButton = screen.getByRole('button', {
         name: /collapse my multireddits/i
@@ -687,11 +634,10 @@ describe('Sidebar', () => {
     })
   })
 
-  describe('authenticated with both subscriptions and multireddits', () => {
+  describe('with both subscriptions and multireddits', () => {
     it('renders both sections', async () => {
       render(
         <Sidebar
-          isAuthenticated
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}
         />
@@ -711,7 +657,6 @@ describe('Sidebar', () => {
     it('renders all links from both sections', async () => {
       render(
         <Sidebar
-          isAuthenticated
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}
         />
@@ -736,7 +681,6 @@ describe('Sidebar', () => {
       const user = userEvent.setup()
       render(
         <Sidebar
-          isAuthenticated
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}
         />

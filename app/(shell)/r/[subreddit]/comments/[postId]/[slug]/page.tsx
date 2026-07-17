@@ -1,7 +1,6 @@
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {fetchPost} from '@/lib/actions/reddit/posts'
-import {getSession} from '@/lib/auth/session'
 import {CommentSortOption} from '@/lib/types/reddit'
 import {generatePostMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Title} from '@mantine/core'
@@ -48,17 +47,13 @@ async function PostDetail({
   subreddit: string
   postId: string
 }>) {
-  const [{post}, session] = await Promise.all([
-    fetchPost(subreddit, postId),
-    getSession()
-  ])
-  const isAuthenticated = !!session.accessToken
+  const {post} = await fetchPost(subreddit, postId)
 
   if (!post) {
     notFound()
   }
 
-  return <PostCard post={post} isAuthenticated={isAuthenticated} showFullText />
+  return <PostCard post={post} showFullText />
 }
 
 /**
@@ -77,30 +72,13 @@ async function CommentList({
   postId: string
   sort?: CommentSortOption
 }>) {
-  const [{comments}, session] = await Promise.all([
-    fetchPost(subreddit, postId, sort),
-    getSession()
-  ])
-  const isAuthenticated = !!session.accessToken
+  const {comments} = await fetchPost(subreddit, postId, sort)
 
-  return (
-    <CommentListWithTabs
-      comments={comments}
-      activeSort={sort}
-      isAuthenticated={isAuthenticated}
-    />
-  )
+  return <CommentListWithTabs comments={comments} activeSort={sort} />
 }
 
 /**
  * Post page - displays a single post with comments.
- *
- * Features:
- * - Full post card with media and text
- * - Comments with sort tabs (best, top, new, controversial, old, qa)
- * - Nested comment rendering
- * - Vote and save buttons
- * - Boss button and back-to-top button
  *
  * @param params - URL params (subreddit, postId, slug)
  * @param searchParams - URL search params (comment sort option)

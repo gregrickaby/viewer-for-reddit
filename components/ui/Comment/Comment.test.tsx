@@ -58,8 +58,8 @@ describe('Comment', () => {
       expect(container).toHaveTextContent(/h ago/)
     })
 
-    it('renders vote buttons when authenticated', () => {
-      render(<Comment comment={mockComment} isAuthenticated />)
+    it('renders vote buttons', () => {
+      render(<Comment comment={mockComment} />)
 
       expect(
         screen.getByRole('button', {name: /Upvote comment/i})
@@ -95,7 +95,7 @@ describe('Comment', () => {
 
   describe('voting', () => {
     it('calls vote function when upvote button is clicked', async () => {
-      render(<Comment comment={mockComment} isAuthenticated />)
+      render(<Comment comment={mockComment} />)
 
       const upvoteButton = screen.getByRole('button', {name: /Upvote comment/i})
       await user.click(upvoteButton)
@@ -104,7 +104,7 @@ describe('Comment', () => {
     })
 
     it('calls vote function when downvote button is clicked', async () => {
-      render(<Comment comment={mockComment} isAuthenticated />)
+      render(<Comment comment={mockComment} />)
 
       const downvoteButton = screen.getByRole('button', {
         name: /Downvote comment/i
@@ -112,27 +112,6 @@ describe('Comment', () => {
       await user.click(downvoteButton)
 
       expect(mockVotePost).toHaveBeenCalledWith('t1_test123', -1)
-    })
-
-    it('does not call vote when not authenticated', async () => {
-      render(<Comment comment={mockComment} isAuthenticated={false} />)
-
-      const upvoteButton = screen.getByRole('button', {name: /Upvote comment/i})
-      await user.click(upvoteButton)
-
-      expect(mockVotePost).not.toHaveBeenCalled()
-    })
-
-    it('disables vote buttons when not authenticated', () => {
-      render(<Comment comment={mockComment} isAuthenticated={false} />)
-
-      const upvoteButton = screen.getByRole('button', {name: /Upvote comment/i})
-      const downvoteButton = screen.getByRole('button', {
-        name: /Downvote comment/i
-      })
-
-      expect(upvoteButton).toBeDisabled()
-      expect(downvoteButton).toBeDisabled()
     })
   })
 

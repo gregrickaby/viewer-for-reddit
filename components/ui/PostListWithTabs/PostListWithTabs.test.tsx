@@ -148,15 +148,6 @@ describe('PostListWithTabs', () => {
       expect(screen.getByText('Test Post 1')).toBeInTheDocument()
       expect(screen.getByText('Test Post 2')).toBeInTheDocument()
     })
-
-    it('passes isAuthenticated to PostCard', () => {
-      render(
-        <PostListWithTabs posts={[mockPost]} activeSort="hot" isAuthenticated />
-      )
-
-      // Check for vote buttons (only visible when authenticated)
-      expect(screen.getByRole('button', {name: /upvote/i})).toBeInTheDocument()
-    })
   })
 
   describe('edge cases', () => {

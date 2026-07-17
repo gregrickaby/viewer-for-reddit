@@ -1,6 +1,5 @@
 import {PostList} from '@/components/ui/PostList/PostList'
 import {searchSubreddit} from '@/lib/actions/reddit/search'
-import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {Anchor, Container, Group, Stack, Text, Title} from '@mantine/core'
@@ -35,16 +34,13 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
  *
  * @param subreddit - Subreddit to search within
  * @param query - URL-encoded search query
- * @param isAuthenticated - Whether user is logged in
  */
 async function SearchResults({
   subreddit,
-  query,
-  isAuthenticated
+  query
 }: Readonly<{
   subreddit: string
   query: string
-  isAuthenticated: boolean
 }>) {
   const decodedQuery = decodeURIComponent(query)
 
@@ -69,20 +65,12 @@ async function SearchResults({
       initialAfter={after}
       searchQuery={decodedQuery}
       searchSubreddit={subreddit}
-      isAuthenticated={isAuthenticated}
     />
   )
 }
 
 /**
  * Subreddit search page - displays search results within a specific subreddit.
- *
- * Features:
- * - Search within specific subreddit
- * - Results with PostList component
- * - Empty state for no results
- * - Back link to subreddit
- * - Boss button and back-to-top button
  *
  * @param params - URL params (subreddit name and search query)
  */
@@ -91,8 +79,6 @@ export default async function SubredditSearchPage({
 }: Readonly<PageProps>) {
   const {subreddit, query} = await params
   const decodedQuery = decodeURIComponent(query)
-  const session = await getSession()
-  const isAuthenticated = !!session.accessToken
 
   return (
     <Container size="lg">
@@ -120,11 +106,7 @@ export default async function SubredditSearchPage({
           </Text>
         </Stack>
 
-        <SearchResults
-          subreddit={subreddit}
-          query={query}
-          isAuthenticated={isAuthenticated}
-        />
+        <SearchResults subreddit={subreddit} query={query} />
       </Stack>
     </Container>
   )

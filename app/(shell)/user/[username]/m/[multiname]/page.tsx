@@ -1,6 +1,5 @@
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
-import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
@@ -45,20 +44,17 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
  *
  * @param username - Reddit username who owns the multireddit
  * @param multiname - Multireddit name
- * @param isAuthenticated - Whether user is logged in
  * @param sort - Sort option (hot, new, top, rising, controversial)
  * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
 async function MultiredditPosts({
   username,
   multiname,
-  isAuthenticated,
   sort = 'hot',
   timeFilter
 }: Readonly<{
   username: string
   multiname: string
-  isAuthenticated: boolean
   sort?: SortOption
   timeFilter?: TimeFilter
 }>) {
@@ -77,7 +73,6 @@ async function MultiredditPosts({
       after={after}
       activeSort={sort}
       activeTimeFilter={timeFilter}
-      isAuthenticated={isAuthenticated}
       subreddit={multiredditPath}
     />
   )
@@ -85,15 +80,6 @@ async function MultiredditPosts({
 
 /**
  * Multireddit page - displays posts from a user's custom multireddit.
- *
- * Multireddits are custom feeds combining multiple subreddits.
- * Users can create, edit, and manage multireddits on Reddit.
- *
- * Features:
- * - Posts from all subreddits in the multireddit
- * - Sort tabs (hot, new, top, rising)
- * - Infinite scroll
- * - Boss button and back-to-top button
  *
  * @param params - URL params (username, multireddit name)
  * @param searchParams - URL search params (sort option)
@@ -107,9 +93,6 @@ export default async function MultiredditPage({
   const postSort = (sort as SortOption) || 'hot'
   const timeFilter = time as TimeFilter | undefined
 
-  const session = await getSession()
-  const isAuthenticated = !!session.accessToken
-
   return (
     <Container size="lg">
       <Title order={2} mb="lg">
@@ -119,7 +102,6 @@ export default async function MultiredditPage({
       <MultiredditPosts
         username={username}
         multiname={multiname}
-        isAuthenticated={isAuthenticated}
         sort={postSort}
         timeFilter={timeFilter}
       />

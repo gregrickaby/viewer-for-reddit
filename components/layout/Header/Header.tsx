@@ -9,8 +9,6 @@ import {Group} from '@mantine/core'
  * Props for the Header component.
  */
 interface HeaderProps {
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
   /** Username of the authenticated user */
   username?: string
   /** Avatar URL for the authenticated user */
@@ -18,11 +16,7 @@ interface HeaderProps {
 }
 
 /** Application header with navigation and search. Displays logo, navigation toggles, search bar, and user menu. */
-export function Header({
-  isAuthenticated,
-  username,
-  avatarUrl
-}: Readonly<HeaderProps>) {
+export function Header({username, avatarUrl}: Readonly<HeaderProps>) {
   return (
     <Group
       h="100%"
@@ -40,11 +34,7 @@ export function Header({
 
         <ThemeToggle />
 
-        <UserMenu
-          isAuthenticated={isAuthenticated}
-          username={username}
-          avatarUrl={avatarUrl}
-        />
+        <UserMenu username={username} avatarUrl={avatarUrl} />
       </Group>
     </Group>
   )

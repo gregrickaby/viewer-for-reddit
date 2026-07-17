@@ -47,17 +47,15 @@ export default async function AboutPage() {
   const fileContent = fs.readFileSync(filePath, 'utf8')
 
   const session = await getSession()
-  const isAuthenticated = !!session.accessToken
 
   const [subscriptions, multireddits, avatarUrl] = await Promise.all([
-    isAuthenticated ? fetchUserSubscriptions() : Promise.resolve([]),
-    isAuthenticated ? fetchMultireddits() : Promise.resolve([]),
-    isAuthenticated ? getCurrentUserAvatar() : Promise.resolve(null)
+    fetchUserSubscriptions(),
+    fetchMultireddits(),
+    getCurrentUserAvatar()
   ])
 
   return (
     <Shell
-      isAuthenticated={isAuthenticated}
       username={session.username}
       avatarUrl={avatarUrl ?? undefined}
       subscriptions={subscriptions}

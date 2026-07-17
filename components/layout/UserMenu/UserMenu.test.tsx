@@ -25,7 +25,6 @@ describe('UserMenu', () => {
     it('renders clickable avatar when avatar URL is provided', () => {
       render(
         <UserMenu
-          isAuthenticated
           username="testuser"
           avatarUrl="https://example.com/avatar.jpg"
         />
@@ -39,7 +38,7 @@ describe('UserMenu', () => {
     })
 
     it('does not render avatar when no avatar URL provided', () => {
-      render(<UserMenu isAuthenticated username="testuser" />)
+      render(<UserMenu username="testuser" />)
 
       const avatarLink = screen.queryByRole('link', {
         name: "Go to testuser's profile"
@@ -48,14 +47,14 @@ describe('UserMenu', () => {
     })
 
     it('renders logout button when authenticated', () => {
-      render(<UserMenu isAuthenticated username="testuser" />)
+      render(<UserMenu username="testuser" />)
 
       const logoutButtons = screen.getAllByRole('button', {name: 'Logout'})
       expect(logoutButtons.length).toBeGreaterThan(0)
     })
 
     it('calls handleLogout when logout button clicked', async () => {
-      render(<UserMenu isAuthenticated username="testuser" />)
+      render(<UserMenu username="testuser" />)
 
       const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
       await user.click(logoutButton)
@@ -70,55 +69,10 @@ describe('UserMenu', () => {
         handleLogout: mockHandleLogout
       })
 
-      render(<UserMenu isAuthenticated username="testuser" />)
+      render(<UserMenu username="testuser" />)
 
       const logoutButton = screen.getAllByRole('button', {name: 'Logout'})[0]
       expect(logoutButton).toHaveAttribute('data-loading', 'true')
-    })
-  })
-
-  describe('unauthenticated state', () => {
-    it('renders login button when not authenticated', () => {
-      render(<UserMenu isAuthenticated={false} />)
-
-      const loginButton = screen.getByRole('link', {
-        name: 'Sign in with Reddit'
-      })
-      expect(loginButton).toBeInTheDocument()
-    })
-
-    it('login button has correct href', () => {
-      render(<UserMenu isAuthenticated={false} />)
-
-      const loginButton = screen.getByRole('link', {
-        name: 'Sign in with Reddit'
-      })
-      expect(loginButton).toHaveAttribute('href', '/api/auth/login')
-    })
-
-    it('does not render logout button when not authenticated', () => {
-      render(<UserMenu isAuthenticated={false} />)
-
-      expect(
-        screen.queryByRole('button', {name: 'Logout'})
-      ).not.toBeInTheDocument()
-    })
-
-    it('does not render username link when not authenticated', () => {
-      render(<UserMenu isAuthenticated={false} />)
-
-      expect(screen.queryByRole('link', {name: /u\//})).not.toBeInTheDocument()
-    })
-  })
-
-  describe('edge cases', () => {
-    it('renders when both isAuthenticated and username are undefined', () => {
-      render(<UserMenu />)
-
-      const loginButton = screen.getByRole('link', {
-        name: 'Sign in with Reddit'
-      })
-      expect(loginButton).toBeInTheDocument()
     })
   })
 })

@@ -1,29 +1,78 @@
+import {SessionData} from '@/lib/types/reddit'
+import {getIronSession, SessionOptions} from 'iron-session'
 import {logger} from '@/lib/axiom/server'
 import {transformMiddlewareRequest} from '@axiomhq/nextjs'
 import {type NextFetchEvent, NextRequest, NextResponse} from 'next/server'
 
+const SESSION_OPTIONS: SessionOptions = {
+  password: process.env.SESSION_SECRET!,
+  cookieName: 'reddit_viewer_session'
+}
+
 /**
- * Proxy to add security and SEO headers.
+ * Check if a path requires authentication.
+ * Public paths (about, donate, all API routes) do not require auth.
+ */
+function isPublicPath(pathname: string): boolean {
+  return (
+    pathname === '/' ||
+    pathname === '/about' ||
+    pathname === '/donate' ||
+    pathname.startsWith('/api/')
+  )
+}
+
+/**
+ * Get session from request cookies for middleware context.
+ * Parses the raw Cookie header into a format iron-session can consume.
+ * Only reads cookies (set is a no-op since we don't modify sessions in middleware).
+ */
+async function getSessionFromRequest(request: NextRequest) {
+  const cookieHeader = request.headers.get('cookie') || ''
+  const cookieEntries: Record<string, string> = {}
+  for (const part of cookieHeader.split(';')) {
+    const [key, ...rest] = part.trim().split('=')
+    if (key) {
+      cookieEntries[key] = rest.join('=')
+    }
+  }
+
+  const cookieStore = {
+    get: (name: string) =>
+      cookieEntries[name] !== undefined
+        ? {name, value: cookieEntries[name]}
+        : undefined,
+    set: () => {}
+  }
+
+  return getIronSession(cookieStore as never, SESSION_OPTIONS) as Promise<
+    ReturnType<typeof getIronSession<SessionData>>
+  >
+}
+
+/**
+ * Proxy to enforce authentication and add security/SEO headers.
  *
+ * Redirects unauthenticated users to /api/auth/login for protected routes.
  * Adds X-Robots-Tag headers to dynamic routes to prevent indexing.
- * This provides defense-in-depth alongside meta robots tags and robots.txt.
- *
- * Why X-Robots-Tag headers?
- * - HTTP headers are processed before HTML, making them more authoritative
- * - Prevents crawlers from even downloading the page content
- * - Reduces API calls when bots respect headers
- *
- * Routes blocked from indexing:
- * - /r/* - All subreddit pages
- * - /u/* - All user profile pages
- * - /user/* - Alternative user route
- * - /search/* - Search results
- * - /api/* - API routes
  *
  * @see https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#xrobotstag
  */
-export function proxy(request: NextRequest, event?: NextFetchEvent) {
+export async function proxy(
+  request: NextRequest,
+  event?: NextFetchEvent
+): Promise<NextResponse> {
   const {pathname} = request.nextUrl
+
+  // Auth enforcement: redirect unauthenticated users to login
+  if (!isPublicPath(pathname)) {
+    const session = await getSessionFromRequest(request)
+
+    if (!session.accessToken) {
+      return NextResponse.redirect(new URL('/api/auth/login', request.url))
+    }
+  }
+
   const isNoiseRoute =
     pathname.startsWith('/api/health') || pathname.startsWith('/api/axiom')
 
@@ -47,8 +96,6 @@ export function proxy(request: NextRequest, event?: NextFetchEvent) {
 
   if (shouldBlock) {
     const response = NextResponse.next()
-    // noindex: don't show in search results
-    // nofollow: don't follow links on this page (optional, but helps reduce crawl)
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
     return response
   }
@@ -59,17 +106,6 @@ export function proxy(request: NextRequest, event?: NextFetchEvent) {
 /**
  * Configure which routes the proxy runs on.
  * Using matcher for performance - only runs on specified paths.
- *
- * Matcher pattern for dynamic, non-static routes:
- * - Matches all request paths under `/`
- * - Excludes:
- *   - `_next/static` (Next.js static assets)
- *   - `_next/image` (Next.js image optimization endpoint)
- *   - `favicon.ico` (site favicon)
- *   - Public asset files with extensions: svg, png, jpg, jpeg, gif, webp
- *
- * The negative lookahead ensures these asset paths are skipped so the
- * proxy only runs for HTML/document routes where SEO headers matter.
  */
 export const config = {
   matcher: [

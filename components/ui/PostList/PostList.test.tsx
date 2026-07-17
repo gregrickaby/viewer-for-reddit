@@ -92,20 +92,6 @@ describe('PostList', () => {
       // No posts or "no more" message
       expect(screen.queryByText(/no more posts/i)).not.toBeInTheDocument()
     })
-
-    it('passes isAuthenticated to PostCard', () => {
-      vi.mocked(useInfiniteScroll).mockReturnValue({
-        posts: [mockPost],
-        hasMore: false,
-        loading: false,
-        sentinelRef: {current: null} as any
-      })
-
-      render(<PostList initialPosts={[mockPost]} isAuthenticated />)
-
-      // Check for vote buttons (only visible when authenticated)
-      expect(screen.getByRole('button', {name: /upvote/i})).toBeInTheDocument()
-    })
   })
 
   describe('infinite scroll', () => {

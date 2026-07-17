@@ -111,7 +111,6 @@ describe('SavedItemsList', () => {
           initialItems={mockItems}
           username="testuser"
           initialAfter={null}
-          isAuthenticated
         />
       )
 
@@ -134,7 +133,6 @@ describe('SavedItemsList', () => {
           initialItems={[{type: 'comment', data: mockComment}]}
           username="testuser"
           initialAfter={null}
-          isAuthenticated
         />
       )
 
@@ -158,7 +156,6 @@ describe('SavedItemsList', () => {
           initialItems={[]}
           username="testuser"
           initialAfter={null}
-          isAuthenticated
         />
       )
 
@@ -183,7 +180,6 @@ describe('SavedItemsList', () => {
           initialItems={mockItems}
           username="testuser"
           initialAfter={null}
-          isAuthenticated
         />
       )
 
@@ -205,7 +201,6 @@ describe('SavedItemsList', () => {
           initialItems={mockItems}
           username="testuser"
           initialAfter="t3_cursor"
-          isAuthenticated
         />
       )
 
@@ -227,7 +222,6 @@ describe('SavedItemsList', () => {
           initialItems={mockItems}
           username="testuser"
           initialAfter="t3_cursor"
-          isAuthenticated
         />
       )
 
@@ -251,7 +245,6 @@ describe('SavedItemsList', () => {
           initialItems={[]}
           username="testuser"
           initialAfter="t3_cursor"
-          isAuthenticated
         />
       )
 
@@ -276,7 +269,6 @@ describe('SavedItemsList', () => {
           initialItems={[{type: 'post', data: mockPost}]}
           username="testuser"
           initialAfter={null}
-          isAuthenticated
         />
       )
 
@@ -298,7 +290,6 @@ describe('SavedItemsList', () => {
           initialItems={[{type: 'comment', data: mockComment}]}
           username="testuser"
           initialAfter={null}
-          isAuthenticated
         />
       )
 
@@ -320,57 +311,10 @@ describe('SavedItemsList', () => {
           initialItems={mockItems}
           username="testuser"
           initialAfter={null}
-          isAuthenticated
         />
       )
 
       expect(screen.getAllByText('First saved post').length).toBeGreaterThan(0)
-      expect(screen.getByText('This is a saved comment')).toBeInTheDocument()
-    })
-  })
-
-  describe('authentication', () => {
-    it('passes isAuthenticated prop to child components', () => {
-      mockUseInfiniteSavedItems.mockReturnValue({
-        items: [{type: 'comment', data: mockComment}],
-        loading: false,
-        hasMore: false,
-        error: null,
-        sentinelRef: {current: null},
-        removeItem: vi.fn()
-      })
-
-      render(
-        <SavedItemsList
-          initialItems={[{type: 'comment', data: mockComment}]}
-          username="testuser"
-          initialAfter={null}
-          isAuthenticated
-        />
-      )
-
-      expect(screen.getByText('This is a saved comment')).toBeInTheDocument()
-    })
-
-    it('works with isAuthenticated false', () => {
-      mockUseInfiniteSavedItems.mockReturnValue({
-        items: [{type: 'comment', data: mockComment}],
-        loading: false,
-        hasMore: false,
-        error: null,
-        sentinelRef: {current: null},
-        removeItem: vi.fn()
-      })
-
-      render(
-        <SavedItemsList
-          initialItems={[{type: 'comment', data: mockComment}]}
-          username="testuser"
-          initialAfter={null}
-          isAuthenticated={false}
-        />
-      )
-
       expect(screen.getByText('This is a saved comment')).toBeInTheDocument()
     })
   })

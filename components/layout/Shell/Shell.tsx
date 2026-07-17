@@ -7,7 +7,6 @@ import styles from './Shell.module.css'
 
 interface ShellProps {
   children: React.ReactNode
-  isAuthenticated?: boolean
   username?: string
   avatarUrl?: string
   subscriptions?: ManagedSubscription[]
@@ -23,7 +22,6 @@ interface ShellProps {
 /** Server-rendered application shell with header, sidebar, and main content area. */
 export function Shell({
   children,
-  isAuthenticated,
   username,
   avatarUrl,
   subscriptions,
@@ -34,15 +32,10 @@ export function Shell({
     <SidebarProvider>
       <div className={styles.shell}>
         <header className={styles.header}>
-          <Header
-            isAuthenticated={isAuthenticated}
-            username={username}
-            avatarUrl={avatarUrl}
-          />
+          <Header username={username} avatarUrl={avatarUrl} />
         </header>
 
         <SidebarPanel
-          isAuthenticated={isAuthenticated}
           username={username}
           subscriptions={subscriptions}
           multireddits={multireddits}

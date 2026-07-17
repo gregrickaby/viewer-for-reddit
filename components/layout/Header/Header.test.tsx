@@ -25,15 +25,8 @@ vi.mock('@/components/ui/SearchBar/SearchBar', () => ({
 }))
 
 vi.mock('../UserMenu/UserMenu', () => ({
-  UserMenu: ({
-    isAuthenticated,
-    username
-  }: {
-    isAuthenticated?: boolean
-    username?: string
-  }) => (
+  UserMenu: ({username}: {username?: string}) => (
     <div data-testid="usermenu">
-      <div data-testid="usermenu-authenticated">{String(isAuthenticated)}</div>
       <div data-testid="usermenu-username">{username}</div>
     </div>
   )
@@ -90,32 +83,6 @@ describe('Header', () => {
     })
   })
 
-  describe('authentication', () => {
-    it('passes isAuthenticated to UserMenu', () => {
-      render(<Header isAuthenticated />)
-
-      expect(screen.getByTestId('usermenu-authenticated')).toHaveTextContent(
-        'true'
-      )
-    })
-
-    it('passes username to UserMenu', () => {
-      render(<Header isAuthenticated username="testuser" />)
-
-      expect(screen.getByTestId('usermenu-username')).toHaveTextContent(
-        'testuser'
-      )
-    })
-
-    it('handles unauthenticated state', () => {
-      render(<Header isAuthenticated={false} />)
-
-      expect(screen.getByTestId('usermenu-authenticated')).toHaveTextContent(
-        'false'
-      )
-    })
-  })
-
   describe('theme toggle', () => {
     it('renders theme toggle button', () => {
       render(<Header />)
@@ -126,7 +93,7 @@ describe('Header', () => {
 
   describe('all props together', () => {
     it('works with all props provided', () => {
-      render(<Header isAuthenticated username="testuser" />)
+      render(<Header username="testuser" />)
 
       expect(screen.getByTestId('logo')).toBeInTheDocument()
       expect(screen.getByTestId('usermenu-username')).toHaveTextContent(

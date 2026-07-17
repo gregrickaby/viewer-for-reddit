@@ -34,8 +34,6 @@ interface PostListWithTabsProps {
   activeSort: SortOption
   /** Active time filter for top/controversial sorts */
   activeTimeFilter?: TimeFilter
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
   /** Subreddit name (for infinite scroll) */
   subreddit?: string
   /** Username (for user profile infinite scroll) */
@@ -51,7 +49,6 @@ export function PostListWithTabs({
   after: initialAfter,
   activeSort,
   activeTimeFilter = 'week',
-  isAuthenticated = false,
   subreddit,
   username
 }: Readonly<PostListWithTabsProps>) {
@@ -183,11 +180,7 @@ export function PostListWithTabs({
         )}
 
         {posts.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            isAuthenticated={isAuthenticated}
-          />
+          <PostCard key={post.id} post={post} />
         ))}
 
         {hasMore && (

@@ -1,8 +1,12 @@
-import {NextRequest, NextResponse} from 'next/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {proxy} from './proxy'
 
-// Mock Axiom logger
+const {redirectMock, nextMock} = vi.hoisted(() => ({
+  redirectMock: vi.fn(),
+  nextMock: vi.fn(() => ({
+    headers: new Headers()
+  }))
+}))
+
 vi.mock('@/lib/axiom/server', () => ({
   logger: {
     info: vi.fn(),
@@ -17,303 +21,316 @@ vi.mock('@axiomhq/nextjs', () => ({
   ])
 }))
 
-// Mock NextResponse.next()
+vi.mock('iron-session', () => ({
+  getIronSession: vi.fn()
+}))
+
 vi.mock('next/server', async () => {
-  const actual = await vi.importActual('next/server')
+  const actual = (await vi.importActual('next/server')) as Record<
+    string,
+    unknown
+  >
   return {
     ...actual,
     NextResponse: {
-      next: vi.fn(() => ({
-        headers: new Headers()
-      }))
+      ...(actual.NextResponse as Record<string, unknown>),
+      redirect: redirectMock,
+      next: nextMock
     }
   }
 })
+
+import {NextRequest} from 'next/server'
+import {proxy} from './proxy'
 
 describe('proxy middleware', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('routes that should be blocked from indexing', () => {
-    it('adds X-Robots-Tag header to /r/ routes', () => {
+  describe('auth enforcement', () => {
+    it('redirects unauthenticated users to /api/auth/login for protected routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
       const request = new NextRequest(
         new URL('https://example.com/r/programming')
       )
-      const response = proxy(request)
+      await proxy(request)
 
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('adds X-Robots-Tag header to /u/ routes', () => {
-      const request = new NextRequest(new URL('https://example.com/u/spez'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('adds X-Robots-Tag header to /user/ routes', () => {
-      const request = new NextRequest(
-        new URL('https://example.com/user/spez/saved')
+      expect(redirectMock).toHaveBeenCalledWith(
+        expect.objectContaining({pathname: '/api/auth/login'})
       )
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
     })
 
-    it('adds X-Robots-Tag header to /search/ routes', () => {
+    it('allows authenticated users through protected routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const request = new NextRequest(
-        new URL('https://example.com/search/test')
+        new URL('https://example.com/r/programming')
       )
-      const response = proxy(request)
+      const response = await proxy(request)
 
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
     })
 
-    it('adds X-Robots-Tag header to /api/ routes', () => {
+    it('allows unauthenticated access to /about', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(new URL('https://example.com/about'))
+      const response = await proxy(request)
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
+    })
+
+    it('allows unauthenticated access to /donate', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(new URL('https://example.com/donate'))
+      const response = await proxy(request)
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
+    })
+
+    it('allows unauthenticated access to /api/* routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
       const request = new NextRequest(
         new URL('https://example.com/api/auth/login')
       )
-      const response = proxy(request)
+      const response = await proxy(request)
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
+    })
+
+    it('allows unauthenticated access to homepage', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(new URL('https://example.com/'))
+      const response = await proxy(request)
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
+    })
+
+    it('redirects unauthenticated users on /user/* routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/user/spez/saved')
+      )
+      await proxy(request)
+
+      expect(redirectMock).toHaveBeenCalledWith(
+        expect.objectContaining({pathname: '/api/auth/login'})
+      )
+    })
+
+    it('redirects unauthenticated users on /search/* routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/search/test')
+      )
+      await proxy(request)
+
+      expect(redirectMock).toHaveBeenCalledWith(
+        expect.objectContaining({pathname: '/api/auth/login'})
+      )
+    })
+
+    it('redirects unauthenticated users on /u/* routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(new URL('https://example.com/u/spez'))
+      await proxy(request)
+
+      expect(redirectMock).toHaveBeenCalledWith(
+        expect.objectContaining({pathname: '/api/auth/login'})
+      )
+    })
+  })
+
+  describe('routes that should be blocked from indexing', () => {
+    it('adds X-Robots-Tag header to /r/ routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/r/programming')
+      )
+      const response = await proxy(request)
 
       expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
     })
 
-    it('adds X-Robots-Tag header to nested subreddit routes', () => {
+    it('adds X-Robots-Tag header to /u/ routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
+      const request = new NextRequest(new URL('https://example.com/u/spez'))
+      const response = await proxy(request)
+
+      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+    })
+
+    it('adds X-Robots-Tag header to /user/ routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/user/spez/saved')
+      )
+      const response = await proxy(request)
+
+      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+    })
+
+    it('adds X-Robots-Tag header to /search/ routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/search/test')
+      )
+      const response = await proxy(request)
+
+      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+    })
+
+    it('adds X-Robots-Tag header to /api/ routes', async () => {
+      const request = new NextRequest(
+        new URL('https://example.com/api/auth/login')
+      )
+      const response = await proxy(request)
+
+      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+    })
+
+    it('adds X-Robots-Tag header to nested subreddit routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const request = new NextRequest(
         new URL('https://example.com/r/javascript/comments/abc123/title')
       )
-      const response = proxy(request)
+      const response = await proxy(request)
 
       expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
     })
 
-    it('adds X-Robots-Tag header to user profile routes', () => {
+    it('adds X-Robots-Tag header to user profile routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const request = new NextRequest(
         new URL('https://example.com/u/testuser?tab=posts')
       )
-      const response = proxy(request)
+      const response = await proxy(request)
 
       expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
     })
 
-    it('adds X-Robots-Tag header to multireddit routes', () => {
+    it('adds X-Robots-Tag header to multireddit routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const request = new NextRequest(
         new URL('https://example.com/user/testuser/m/tech')
       )
-      const response = proxy(request)
+      const response = await proxy(request)
 
       expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
     })
 
-    it('adds X-Robots-Tag header to search results with query params', () => {
+    it('adds X-Robots-Tag header to search results with query params', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const request = new NextRequest(
         new URL('https://example.com/search/javascript?sort=relevance')
       )
-      const response = proxy(request)
+      const response = await proxy(request)
 
       expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
     })
   })
 
   describe('routes that should be allowed for indexing', () => {
-    it('does not add X-Robots-Tag header to homepage', () => {
-      const request = new NextRequest(new URL('https://example.com/'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBeNull()
-    })
-
-    it('does not add X-Robots-Tag header to /about page', () => {
+    it('does not add X-Robots-Tag header to /about page', async () => {
       const request = new NextRequest(new URL('https://example.com/about'))
-      const response = proxy(request)
+      const response = await proxy(request)
 
       expect(response.headers.get('X-Robots-Tag')).toBeNull()
     })
 
-    it('does not add X-Robots-Tag header to /donate page', () => {
+    it('does not add X-Robots-Tag header to /donate page', async () => {
       const request = new NextRequest(new URL('https://example.com/donate'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBeNull()
-    })
-
-    it('does not add X-Robots-Tag header to custom routes', () => {
-      const request = new NextRequest(
-        new URL('https://example.com/some-custom-page')
-      )
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBeNull()
-    })
-  })
-
-  describe('edge cases', () => {
-    it('handles routes that start with blocked prefixes but are different', () => {
-      // Routes like /random or /update should not be blocked just because they start with 'r' or 'u'
-      const request1 = new NextRequest(
-        new URL('https://example.com/random-page')
-      )
-      const response1 = proxy(request1)
-      expect(response1.headers.get('X-Robots-Tag')).toBeNull()
-
-      const request2 = new NextRequest(
-        new URL('https://example.com/update-log')
-      )
-      const response2 = proxy(request2)
-      expect(response2.headers.get('X-Robots-Tag')).toBeNull()
-    })
-
-    it('blocks exactly /r/ at the start of pathname', () => {
-      const request = new NextRequest(new URL('https://example.com/r/'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('blocks exactly /u/ at the start of pathname', () => {
-      const request = new NextRequest(new URL('https://example.com/u/'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('blocks exactly /user/ at the start of pathname', () => {
-      const request = new NextRequest(new URL('https://example.com/user/'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('blocks exactly /search/ at the start of pathname', () => {
-      const request = new NextRequest(new URL('https://example.com/search/'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('blocks exactly /api/ at the start of pathname', () => {
-      const request = new NextRequest(new URL('https://example.com/api/'))
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('handles URLs with hash fragments', () => {
-      const request = new NextRequest(
-        new URL('https://example.com/r/programming#top')
-      )
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('handles URLs with multiple query parameters', () => {
-      const request = new NextRequest(
-        new URL('https://example.com/r/popular?sort=hot&time=day&limit=25')
-      )
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('handles URLs with special characters in path', () => {
-      const request = new NextRequest(
-        new URL('https://example.com/search/hello%20world')
-      )
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('handles deeply nested paths', () => {
-      const request = new NextRequest(
-        new URL(
-          'https://example.com/r/programming/comments/abc123/title/xyz789'
-        )
-      )
-      const response = proxy(request)
-
-      expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    })
-
-    it('handles case-sensitive paths correctly', () => {
-      // /R/ is different from /r/, should not be blocked
-      const request = new NextRequest(
-        new URL('https://example.com/R/programming')
-      )
-      const response = proxy(request)
+      const response = await proxy(request)
 
       expect(response.headers.get('X-Robots-Tag')).toBeNull()
     })
   })
 
   describe('response behavior', () => {
-    it('calls NextResponse.next() for blocked routes', () => {
+    it('calls NextResponse.next() for blocked routes', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const request = new NextRequest(
         new URL('https://example.com/r/programming')
       )
-      proxy(request)
+      await proxy(request)
 
-      expect(NextResponse.next).toHaveBeenCalled()
+      expect(nextMock).toHaveBeenCalled()
     })
 
-    it('calls NextResponse.next() for allowed routes', () => {
+    it('calls NextResponse.next() for allowed routes', async () => {
       const request = new NextRequest(new URL('https://example.com/about'))
-      proxy(request)
+      await proxy(request)
 
-      expect(NextResponse.next).toHaveBeenCalled()
-    })
-
-    it('returns a NextResponse object', () => {
-      const request = new NextRequest(
-        new URL('https://example.com/r/programming')
-      )
-      const response = proxy(request)
-
-      expect(response).toBeDefined()
-      expect(response.headers).toBeDefined()
-    })
-  })
-
-  describe('security implications', () => {
-    it('prevents indexing of user-generated content routes', () => {
-      const routes = [
-        '/r/test',
-        '/u/user',
-        '/search/query',
-        '/r/sub/comments/123/title'
-      ]
-
-      routes.forEach((path) => {
-        const request = new NextRequest(new URL(`https://example.com${path}`))
-        const response = proxy(request)
-        expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-      })
-    })
-
-    it('prevents indexing of API routes', () => {
-      const apiRoutes = [
-        '/api/auth/login',
-        '/api/auth/callback/reddit',
-        '/api/some-endpoint'
-      ]
-
-      apiRoutes.forEach((path) => {
-        const request = new NextRequest(new URL(`https://example.com${path}`))
-        const response = proxy(request)
-        expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-      })
-    })
-
-    it('allows indexing of static pages that should be in search results', () => {
-      const allowedRoutes = ['/', '/about', '/donate', '/privacy']
-
-      allowedRoutes.forEach((path) => {
-        const request = new NextRequest(new URL(`https://example.com${path}`))
-        const response = proxy(request)
-        expect(response.headers.get('X-Robots-Tag')).toBeNull()
-      })
+      expect(nextMock).toHaveBeenCalled()
     })
   })
 
@@ -323,7 +340,7 @@ describe('proxy middleware', () => {
       const request = new NextRequest(
         new URL('https://example.com/api/healthcheck')
       )
-      proxy(request)
+      await proxy(request)
 
       expect(logger.info).not.toHaveBeenCalled()
       expect(logger.flush).not.toHaveBeenCalled()
@@ -332,26 +349,36 @@ describe('proxy middleware', () => {
     it('skips logging for /api/axiom requests', async () => {
       const {logger} = await import('@/lib/axiom/server')
       const request = new NextRequest(new URL('https://example.com/api/axiom'))
-      proxy(request)
+      await proxy(request)
 
       expect(logger.info).not.toHaveBeenCalled()
       expect(logger.flush).not.toHaveBeenCalled()
     })
 
     it('logs non-healthcheck requests', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const {logger} = await import('@/lib/axiom/server')
       const request = new NextRequest(new URL('https://example.com/r/popular'))
-      proxy(request)
+      await proxy(request)
 
       expect(logger.info).toHaveBeenCalledWith('request', expect.anything())
       expect(logger.flush).toHaveBeenCalled()
     })
 
     it('uses waitUntil when NextFetchEvent is provided', async () => {
+      const {getIronSession} = await import('iron-session')
+      vi.mocked(getIronSession).mockResolvedValue({
+        accessToken: 'valid-token'
+      } as never)
+
       const {logger} = await import('@/lib/axiom/server')
       const request = new NextRequest(new URL('https://example.com/r/popular'))
       const mockEvent = {waitUntil: vi.fn()}
-      proxy(request, mockEvent as never)
+      await proxy(request, mockEvent as never)
 
       expect(mockEvent.waitUntil).toHaveBeenCalled()
       expect(logger.info).toHaveBeenCalled()

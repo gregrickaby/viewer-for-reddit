@@ -7,17 +7,12 @@ import {
 } from '@tabler/icons-react'
 
 interface ErrorDisplayProps {
-  /** Whether the current user is authenticated (shows login button when false) */
-  isAuthenticated?: boolean
   /** Optional reset callback; shows a "Try Again" button when provided */
   onReset?: () => void
 }
 
 /** Error state card with a message and optional sign-in or retry actions. */
-export function ErrorDisplay({
-  isAuthenticated,
-  onReset
-}: Readonly<ErrorDisplayProps>) {
+export function ErrorDisplay({onReset}: Readonly<ErrorDisplayProps>) {
   return (
     <Card withBorder padding="xl" radius="md" maw={600} mx="auto">
       <Stack align="center" gap="md">
@@ -37,19 +32,17 @@ export function ErrorDisplay({
           .
         </Text>
 
-        {!isAuthenticated && (
-          <Button
-            aria-label="Sign in with Reddit"
-            color="red"
-            component="a"
-            href="/api/auth/login"
-            leftSection={<IconBrandReddit size={16} />}
-            maw={200}
-            variant="filled"
-          >
-            Sign in with Reddit
-          </Button>
-        )}
+        <Button
+          aria-label="Sign in with Reddit"
+          color="red"
+          component="a"
+          href="/api/auth/login"
+          leftSection={<IconBrandReddit size={16} />}
+          maw={200}
+          variant="filled"
+        >
+          Sign in with Reddit
+        </Button>
 
         {onReset && (
           <Button

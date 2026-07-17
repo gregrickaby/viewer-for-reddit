@@ -61,8 +61,6 @@ function renderSelfText(
 interface PostCardProps {
   /** Reddit post data */
   post: RedditPost
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
   /** Whether to show the full post text (for single post view) */
   showFullText?: boolean
   /** Whether this is a priority post (for LCP optimization) */
@@ -77,7 +75,6 @@ interface PostCardProps {
  */
 export function PostCard({
   post,
-  isAuthenticated = false,
   showFullText = false,
   priority = false,
   onUnsave
@@ -138,7 +135,6 @@ export function PostCard({
           isPending={isPending}
           onVote={vote}
           onToggleSave={toggleSave}
-          isAuthenticated={isAuthenticated}
         />
       </Stack>
     </Card>

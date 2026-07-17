@@ -59,12 +59,10 @@ function formatDate(timestamp: number): string {
 
 async function UserProfile({
   username,
-  isAuthenticated,
   currentUsername,
   multireddits
 }: Readonly<{
   username: string
-  isAuthenticated: boolean
   currentUsername?: string
   multireddits: Awaited<ReturnType<typeof fetchMultireddits>>
 }>) {
@@ -81,7 +79,7 @@ async function UserProfile({
 
     const isOwnProfile =
       currentUsername?.toLowerCase() === username.toLowerCase()
-    const showFollowButton = isAuthenticated && !isOwnProfile
+    const showFollowButton = !isOwnProfile
 
     return (
       <Card withBorder padding="lg" radius="md">
@@ -142,18 +140,15 @@ async function UserProfile({
  * Fetches and displays all posts and comments from a user.
  *
  * @param username - Reddit username
- * @param isAuthenticated - Whether user is logged in
  * @param sort - Sort option (hot, new, top, rising)
  * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
 async function UserPosts({
   username,
-  isAuthenticated,
   sort = 'new',
   timeFilter
 }: Readonly<{
   username: string
-  isAuthenticated: boolean
   sort?: SortOption
   timeFilter?: TimeFilter
 }>) {
@@ -203,7 +198,6 @@ async function UserPosts({
       after={result.after}
       activeSort={sort}
       activeTimeFilter={timeFilter}
-      isAuthenticated={isAuthenticated}
       username={username}
     />
   )
@@ -214,18 +208,15 @@ async function UserPosts({
  * Fetches and displays all comments from a user.
  *
  * @param username - Reddit username
- * @param isAuthenticated - Whether user is logged in
  * @param sort - Sort option (hot, new, top, rising)
  * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
  */
 async function UserComments({
   username,
-  isAuthenticated,
   sort = 'new',
   timeFilter
 }: Readonly<{
   username: string
-  isAuthenticated: boolean
   sort?: SortOption
   timeFilter?: TimeFilter
 }>) {
@@ -277,7 +268,6 @@ async function UserComments({
       comments={result.comments}
       activeSort={sort}
       activeTimeFilter={timeFilter}
-      isAuthenticated={isAuthenticated}
       username={username}
     />
   )
@@ -285,14 +275,6 @@ async function UserComments({
 
 /**
  * User profile page - displays user info, posts, and comments in tabs.
- *
- * Features:
- * - User profile card (avatar, karma, cake day)
- * - Tabs for posts and comments
- * - User posts with sort tabs (hot, new, top, rising)
- * - User comments sorted by date
- * - Infinite scroll for loading more posts/comments
- * - Boss button and back-to-top button
  *
  * @param params - URL params (username)
  * @param searchParams - URL search params (tab, sort option)
@@ -308,18 +290,15 @@ export default async function UserPage({
   const timeFilter = time as TimeFilter | undefined
 
   const session = await getSession()
-  const isAuthenticated = !!session.accessToken
   const currentUsername = session.username
   const isOwnProfile = currentUsername?.toLowerCase() === username.toLowerCase()
-  const multireddits =
-    isAuthenticated && !isOwnProfile ? await fetchMultireddits() : []
+  const multireddits = !isOwnProfile ? await fetchMultireddits() : []
 
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
         <UserProfile
           username={username}
-          isAuthenticated={isAuthenticated}
           currentUsername={currentUsername}
           multireddits={multireddits}
         />
@@ -330,7 +309,6 @@ export default async function UserPage({
           postsContent={
             <UserPosts
               username={username}
-              isAuthenticated={isAuthenticated}
               sort={postSort}
               timeFilter={timeFilter}
             />
@@ -338,7 +316,6 @@ export default async function UserPage({
           commentsContent={
             <UserComments
               username={username}
-              isAuthenticated={isAuthenticated}
               sort={postSort}
               timeFilter={timeFilter}
             />

@@ -1,7 +1,7 @@
 import {LandingPage} from '@/components/ui/LandingPage/LandingPage'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
+import {isAuthenticated} from '@/lib/auth/session'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
-import {getSession} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
@@ -62,22 +62,21 @@ async function PostsContent({
       after={after}
       activeSort={sort}
       activeTimeFilter={timeFilter}
-      isAuthenticated
       subreddit="home"
     />
   )
 }
 
 /**
- * Homepage - displays landing page for guests or personalized feed for authenticated users.
+ * Homepage - shows landing page for unauthenticated users,
+ * personalized feed for authenticated users.
  *
  * @param searchParams - URL search params (sort option)
  */
 export default async function Home({searchParams}: Readonly<PageProps>) {
-  const session = await getSession()
-  const isAuthenticated = !!session.accessToken
+  const authenticated = await isAuthenticated()
 
-  if (!isAuthenticated) {
+  if (!authenticated) {
     return <LandingPage />
   }
 

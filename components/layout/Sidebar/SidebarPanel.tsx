@@ -10,7 +10,6 @@ import {usePathname} from 'next/navigation'
 import {useEffect, useRef, useState} from 'react'
 
 interface SidebarPanelProps {
-  isAuthenticated?: boolean
   username?: string
   subscriptions?: ManagedSubscription[]
   multireddits?: ManagedMultireddit[]
@@ -28,7 +27,6 @@ interface SidebarPanelProps {
  * route changes.
  */
 export function SidebarPanel({
-  isAuthenticated,
   username,
   subscriptions,
   multireddits,
@@ -66,7 +64,6 @@ export function SidebarPanel({
         aria-label="Sidebar navigation"
       >
         <Sidebar
-          isAuthenticated={isAuthenticated}
           username={username}
           subscriptions={subscriptions}
           multireddits={multireddits}

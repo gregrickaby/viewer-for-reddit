@@ -22,8 +22,6 @@ interface PostListProps {
   searchSubreddit?: string
   /** Username (disables infinite scroll) */
   username?: string
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
 }
 
 /**
@@ -36,8 +34,7 @@ export function PostList({
   subreddit,
   searchQuery,
   searchSubreddit,
-  username,
-  isAuthenticated = false
+  username
 }: Readonly<PostListProps>) {
   // Disable infinite scroll for search and user pages (not supported yet)
   const disableInfiniteScroll = !!(searchQuery || searchSubreddit || username)
@@ -51,12 +48,7 @@ export function PostList({
   return (
     <Stack gap="md" className={styles.container}>
       {posts.map((post, index) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          isAuthenticated={isAuthenticated}
-          priority={index < 2}
-        />
+        <PostCard key={post.id} post={post} priority={index < 2} />
       ))}
 
       {hasMore && (

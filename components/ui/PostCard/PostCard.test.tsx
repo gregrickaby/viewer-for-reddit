@@ -107,7 +107,7 @@ describe('PostCard', () => {
     })
 
     it('renders PostActions with correct props', () => {
-      render(<PostCard post={mockPost} isAuthenticated />)
+      render(<PostCard post={mockPost} />)
 
       // Check for PostActions buttons
       expect(screen.getByRole('button', {name: /upvote/i})).toBeInTheDocument()
@@ -186,7 +186,7 @@ describe('PostCard', () => {
 
   describe('voting', () => {
     it('passes vote handler to PostActions', async () => {
-      render(<PostCard post={mockPost} isAuthenticated />)
+      render(<PostCard post={mockPost} />)
 
       const upvoteButton = screen.getByRole('button', {name: /upvote/i})
       await user.click(upvoteButton)
@@ -201,7 +201,7 @@ describe('PostCard', () => {
         score: 101
       })
 
-      render(<PostCard post={mockPost} isAuthenticated />)
+      render(<PostCard post={mockPost} />)
 
       expect(screen.getByText('101')).toBeInTheDocument()
     })
@@ -209,7 +209,7 @@ describe('PostCard', () => {
 
   describe('saving', () => {
     it('passes save handler to PostActions', async () => {
-      render(<PostCard post={mockPost} isAuthenticated />)
+      render(<PostCard post={mockPost} />)
 
       const saveButton = screen.getByRole('button', {name: /save post/i})
       await user.click(saveButton)
@@ -223,21 +223,11 @@ describe('PostCard', () => {
         isSaved: true
       })
 
-      render(<PostCard post={mockPost} isAuthenticated />)
+      render(<PostCard post={mockPost} />)
 
       expect(
         screen.getByRole('button', {name: /unsave post/i})
       ).toBeInTheDocument()
-    })
-  })
-
-  describe('authentication', () => {
-    it('passes isAuthenticated to PostActions', () => {
-      render(<PostCard post={mockPost} isAuthenticated={false} />)
-
-      // Vote buttons should not have onClick when not authenticated
-      const upvoteButton = screen.getByRole('button', {name: /upvote/i})
-      expect(upvoteButton).toBeDisabled()
     })
   })
 
@@ -293,7 +283,7 @@ describe('PostCard', () => {
         isPending: true
       })
 
-      render(<PostCard post={mockPost} isAuthenticated />)
+      render(<PostCard post={mockPost} />)
 
       const upvoteButton = screen.getByRole('button', {name: /upvote/i})
       expect(upvoteButton).toBeDisabled()

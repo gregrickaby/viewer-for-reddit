@@ -14,8 +14,7 @@ describe('PostActions', () => {
     isSaved: false,
     isPending: false,
     onVote: mockOnVote,
-    onToggleSave: mockOnToggleSave,
-    isAuthenticated: true
+    onToggleSave: mockOnToggleSave
   }
 
   beforeEach(() => {
@@ -119,48 +118,6 @@ describe('PostActions', () => {
 
       const saveButton = screen.getByRole('button', {name: 'Save post'})
       expect(saveButton).toBeDisabled()
-    })
-  })
-
-  describe('authentication', () => {
-    it('disables vote buttons when not authenticated', () => {
-      render(<PostActions {...defaultProps} isAuthenticated={false} />)
-
-      const upvoteButton = screen.getByRole('button', {name: 'Upvote'})
-      const downvoteButton = screen.getByRole('button', {name: 'Downvote'})
-
-      expect(upvoteButton).toBeDisabled()
-      expect(downvoteButton).toBeDisabled()
-    })
-
-    it('disables save button when not authenticated', () => {
-      render(<PostActions {...defaultProps} isAuthenticated={false} />)
-
-      const saveButton = screen.getByRole('button', {name: 'Save post'})
-      expect(saveButton).toBeDisabled()
-    })
-
-    it('does not call onVote when not authenticated', async () => {
-      render(<PostActions {...defaultProps} isAuthenticated={false} />)
-
-      const upvoteButton = screen.getByRole('button', {name: 'Upvote'})
-      await user.click(upvoteButton)
-
-      expect(mockOnVote).not.toHaveBeenCalled()
-    })
-
-    it('does not call onToggleSave when not authenticated', async () => {
-      render(<PostActions {...defaultProps} isAuthenticated={false} />)
-
-      // Button is disabled, but verify the behavior
-      expect(mockOnToggleSave).not.toHaveBeenCalled()
-    })
-
-    it('shows not-allowed cursor when not authenticated', () => {
-      render(<PostActions {...defaultProps} isAuthenticated={false} />)
-
-      const upvoteButton = screen.getByRole('button', {name: 'Upvote'})
-      expect(upvoteButton).toHaveStyle({cursor: 'not-allowed'})
     })
   })
 

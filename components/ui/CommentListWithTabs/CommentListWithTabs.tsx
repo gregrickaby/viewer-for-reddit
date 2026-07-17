@@ -21,8 +21,6 @@ interface CommentListWithTabsProps {
   comments: RedditComment[]
   /** Active sort option */
   activeSort: CommentSortOption
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
 }
 
 /**
@@ -31,8 +29,7 @@ interface CommentListWithTabsProps {
  */
 export function CommentListWithTabs({
   comments,
-  activeSort,
-  isAuthenticated = false
+  activeSort
 }: Readonly<CommentListWithTabsProps>) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -129,11 +126,7 @@ export function CommentListWithTabs({
           <Title order={4}>No comments yet</Title>
         ) : (
           comments.map((comment) => (
-            <Comment
-              key={comment.id}
-              comment={comment}
-              isAuthenticated={isAuthenticated}
-            />
+            <Comment key={comment.id} comment={comment} />
           ))
         )}
       </Stack>

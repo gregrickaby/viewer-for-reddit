@@ -230,30 +230,4 @@ describe('UserCommentListWithTabs', () => {
       scroll: false
     })
   })
-
-  it('renders authenticated comments', () => {
-    render(
-      <UserCommentListWithTabs
-        comments={mockComments}
-        activeSort="new"
-        isAuthenticated
-        username="testuser"
-      />
-    )
-
-    expect(screen.getByText('This is a test comment')).toBeInTheDocument()
-  })
-
-  it('renders unauthenticated comments', () => {
-    render(
-      <UserCommentListWithTabs
-        comments={mockComments}
-        activeSort="new"
-        isAuthenticated={false}
-        username="testuser"
-      />
-    )
-
-    expect(screen.getByText('This is a test comment')).toBeInTheDocument()
-  })
 })

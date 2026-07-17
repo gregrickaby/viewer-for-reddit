@@ -25,8 +25,6 @@ import {useState} from 'react'
  * Props for the Sidebar component.
  */
 interface SidebarProps {
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
   /** Username for authenticated user (for saved items link) */
   username?: string
   /** User's subscribed subreddits */
@@ -51,9 +49,8 @@ const EMPTY_FOLLOWING: Array<{
   note?: string
 }> = []
 
-/** Navigation sidebar with feeds, subscriptions, and multireddits. Adapts content based on authentication state. */
+/** Navigation sidebar with feeds, subscriptions, and multireddits. Always shows authenticated content. */
 export function Sidebar({
-  isAuthenticated,
   username,
   subscriptions = EMPTY_SUBSCRIPTIONS,
   multireddits = EMPTY_MULTIREDDITS,
@@ -92,23 +89,19 @@ export function Sidebar({
                 label="Home"
                 leftSection={<IconFlame size={16} />}
               />
-              {isAuthenticated && (
-                <>
-                  <NavLink
-                    component={Link}
-                    href="/r/popular"
-                    label="Popular"
-                    leftSection={<IconTrendingUp size={16} />}
-                  />
-                  <NavLink
-                    component={Link}
-                    href="/r/all"
-                    label="All"
-                    leftSection={<IconTrendingUp size={16} />}
-                  />
-                </>
-              )}
-              {isAuthenticated && username && (
+              <NavLink
+                component={Link}
+                href="/r/popular"
+                label="Popular"
+                leftSection={<IconTrendingUp size={16} />}
+              />
+              <NavLink
+                component={Link}
+                href="/r/all"
+                label="All"
+                leftSection={<IconTrendingUp size={16} />}
+              />
+              {username && (
                 <NavLink
                   component={Link}
                   href={`/user/${username}/saved`}
@@ -140,7 +133,7 @@ export function Sidebar({
             </Stack>
           </CollapsibleSection>
 
-          {isAuthenticated && multireddits.length > 0 && (
+          {multireddits.length > 0 && (
             <CollapsibleSection
               title="My Multireddits"
               isOpen={multiredditsOpen}
@@ -176,7 +169,7 @@ export function Sidebar({
             </CollapsibleSection>
           )}
 
-          {isAuthenticated && following.length > 0 && (
+          {following.length > 0 && (
             <CollapsibleSection
               title="Following"
               isOpen={followingOpen}
@@ -199,7 +192,7 @@ export function Sidebar({
             </CollapsibleSection>
           )}
 
-          {isAuthenticated && subscriptions.length > 0 && (
+          {subscriptions.length > 0 && (
             <CollapsibleSection
               title="My Subreddits"
               isOpen={subredditsOpen}

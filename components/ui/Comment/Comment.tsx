@@ -59,8 +59,6 @@ interface CommentProps {
   comment: RedditCommentType
   /** Nesting depth (for indentation) */
   depth?: number
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
   /** Optional callback when item is unsaved (for saved items list) */
   onUnsave?: () => void
 }
@@ -102,7 +100,6 @@ function renderVoteActions(
   voteState: 1 | 0 | -1 | null,
   score: number,
   isPending: boolean,
-  isAuthenticated: boolean,
   vote: (direction: 1 | -1) => void,
   styles: {readonly [key: string]: string}
 ) {
@@ -112,14 +109,10 @@ function renderVoteActions(
         variant="subtle"
         size="sm"
         color={voteState === 1 ? 'orange' : 'gray'}
-        onClick={() => isAuthenticated && vote(1)}
+        onClick={() => vote(1)}
         loading={isPending}
-        disabled={!isAuthenticated}
-        className={
-          isAuthenticated ? styles.voteButton : styles.voteButtonDisabled
-        }
+        className={styles.voteButton}
         aria-label={`${voteState === 1 ? 'Upvoted' : 'Upvote'} comment (${score} points)`}
-        aria-disabled={!isAuthenticated}
       >
         <IconArrowUp aria-hidden="true" size={14} />
       </ActionIcon>
@@ -130,14 +123,10 @@ function renderVoteActions(
         variant="subtle"
         size="sm"
         color={voteState === -1 ? 'blue' : 'gray'}
-        onClick={() => isAuthenticated && vote(-1)}
+        onClick={() => vote(-1)}
         loading={isPending}
-        disabled={!isAuthenticated}
-        className={
-          isAuthenticated ? styles.voteButton : styles.voteButtonDisabled
-        }
+        className={styles.voteButton}
         aria-label={`${voteState === -1 ? 'Downvoted' : 'Downvote'} comment (${score} points)`}
-        aria-disabled={!isAuthenticated}
       >
         <IconArrowDown aria-hidden="true" size={14} />
       </ActionIcon>
@@ -151,7 +140,6 @@ function renderVoteActions(
 function renderActionButtons(
   isSaved: boolean,
   isPending: boolean,
-  isAuthenticated: boolean,
   handleSave: () => void,
   handleShare: () => void,
   styles: {readonly [key: string]: string}
@@ -163,12 +151,9 @@ function renderActionButtons(
         size="sm"
         color={isSaved ? 'yellow' : 'gray'}
         onClick={handleSave}
-        disabled={!isAuthenticated || isPending}
-        className={
-          isAuthenticated ? styles.voteButton : styles.voteButtonDisabled
-        }
+        disabled={isPending}
+        className={styles.voteButton}
         aria-label={isSaved ? 'Unsave comment' : 'Save comment'}
-        aria-disabled={!isAuthenticated}
       >
         {isSaved ? (
           <IconBookmarkFilled aria-hidden="true" size={14} />
@@ -196,7 +181,6 @@ function renderActionButtons(
 export function Comment({
   comment,
   depth = 0,
-  isAuthenticated = false,
   onUnsave
 }: Readonly<CommentProps>) {
   const {isCollapsed, toggleCollapse} = useCommentCollapse()
@@ -293,18 +277,10 @@ export function Comment({
               />
 
               <Group gap="sm">
-                {renderVoteActions(
-                  voteState,
-                  score,
-                  isPending,
-                  isAuthenticated,
-                  vote,
-                  styles
-                )}
+                {renderVoteActions(voteState, score, isPending, vote, styles)}
                 {renderActionButtons(
                   isSaved,
                   isPending,
-                  isAuthenticated,
                   handleSave,
                   handleShare,
                   styles
@@ -333,7 +309,6 @@ export function Comment({
               key={reply.data.id}
               comment={reply.data}
               depth={depth + 1}
-              isAuthenticated={isAuthenticated}
             />
           ))
         )}

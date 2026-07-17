@@ -4,15 +4,8 @@ import {Shell} from './Shell'
 
 // Mock child components to isolate Shell tests.
 vi.mock('../Header/Header', () => ({
-  Header: ({
-    isAuthenticated,
-    username
-  }: {
-    isAuthenticated?: boolean
-    username?: string
-  }) => (
+  Header: ({username}: {username?: string}) => (
     <div data-testid="header">
-      <div data-testid="is-authenticated">{String(isAuthenticated)}</div>
       <div data-testid="username">{username}</div>
     </div>
   )
@@ -20,11 +13,9 @@ vi.mock('../Header/Header', () => ({
 
 vi.mock('../Sidebar/SidebarPanel', () => ({
   SidebarPanel: ({
-    isAuthenticated,
     subscriptions,
     multireddits
   }: {
-    isAuthenticated?: boolean
     subscriptions?: Array<{name: string; displayName: string; icon?: string}>
     multireddits?: Array<{
       name: string
@@ -35,7 +26,6 @@ vi.mock('../Sidebar/SidebarPanel', () => ({
     }>
   }) => (
     <aside data-testid="sidebar-panel">
-      <div data-testid="sidebar-authenticated">{String(isAuthenticated)}</div>
       {subscriptions && (
         <div data-testid="sidebar-subscriptions">
           {subscriptions.length} subscriptions
@@ -112,41 +102,6 @@ describe('Shell', () => {
     })
   })
 
-  describe('authentication', () => {
-    it('passes isAuthenticated to Header', () => {
-      render(<Shell isAuthenticated>Content</Shell>)
-
-      expect(screen.getByTestId('is-authenticated')).toHaveTextContent('true')
-    })
-
-    it('passes username to Header', () => {
-      render(
-        <Shell isAuthenticated username="testuser">
-          Content
-        </Shell>
-      )
-
-      expect(screen.getByTestId('username')).toHaveTextContent('testuser')
-    })
-
-    it('passes isAuthenticated to SidebarPanel', () => {
-      render(<Shell isAuthenticated>Content</Shell>)
-
-      expect(screen.getByTestId('sidebar-authenticated')).toHaveTextContent(
-        'true'
-      )
-    })
-
-    it('handles unauthenticated state', () => {
-      render(<Shell isAuthenticated={false}>Content</Shell>)
-
-      expect(screen.getByTestId('is-authenticated')).toHaveTextContent('false')
-      expect(screen.getByTestId('sidebar-authenticated')).toHaveTextContent(
-        'false'
-      )
-    })
-  })
-
   describe('subscriptions', () => {
     it('passes subscriptions to SidebarPanel', () => {
       render(<Shell subscriptions={mockSubscriptions}>Content</Shell>)
@@ -203,7 +158,6 @@ describe('Shell', () => {
     it('passes all props correctly', () => {
       render(
         <Shell
-          isAuthenticated
           username="testuser"
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}

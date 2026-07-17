@@ -180,21 +180,6 @@ describe('CommentListWithTabs', () => {
       expect(screen.getByText('Test comment')).toBeInTheDocument()
       expect(screen.getByText('Second comment')).toBeInTheDocument()
     })
-
-    it('passes isAuthenticated to Comment', () => {
-      render(
-        <CommentListWithTabs
-          comments={[mockComment]}
-          activeSort="best"
-          isAuthenticated
-        />
-      )
-
-      // Check for vote buttons (only visible when authenticated)
-      expect(
-        screen.getByRole('button', {name: /upvote comment/i})
-      ).toBeInTheDocument()
-    })
   })
 
   describe('empty state', () => {

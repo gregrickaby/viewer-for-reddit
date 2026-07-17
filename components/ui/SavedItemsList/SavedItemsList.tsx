@@ -16,8 +16,6 @@ interface SavedItemsListProps {
   username: string
   /** Initial pagination cursor */
   initialAfter: string | null
-  /** Whether the current user is authenticated */
-  isAuthenticated?: boolean
 }
 
 /**
@@ -27,8 +25,7 @@ interface SavedItemsListProps {
 export function SavedItemsList({
   initialItems,
   username,
-  initialAfter,
-  isAuthenticated = false
+  initialAfter
 }: Readonly<SavedItemsListProps>) {
   const {items, loading, hasMore, error, sentinelRef, removeItem} =
     useInfiniteSavedItems({
@@ -59,7 +56,6 @@ export function SavedItemsList({
               <PostCard
                 key={`post-${item.data.id}-${index}`}
                 post={item.data}
-                isAuthenticated={isAuthenticated}
                 onUnsave={() => removeItem(item.data.id)}
               />
             )
@@ -81,7 +77,6 @@ export function SavedItemsList({
                 <Comment
                   comment={item.data}
                   depth={0}
-                  isAuthenticated={isAuthenticated}
                   onUnsave={() => removeItem(item.data.id)}
                 />
               </Stack>
