@@ -56,14 +56,30 @@ Instructions:
 
 Load with the `skill` tool when the task matches:
 
-| Skill                           | When to load                                                              |
-| ------------------------------- | ------------------------------------------------------------------------- |
-| `implement-github-issue`        | User pastes a GitHub issue URL or says "implement issue #N"               |
-| `improve-codebase-architecture` | Refactoring, testability, module consolidation                            |
-| `next-best-practices`           | File conventions, RSC boundaries, data patterns, metadata, error handling |
-| `next-cache-components`         | PPR, `use cache`, `cacheLife`, `cacheTag`                                 |
-| `update-instructions`           | After major feature additions or when instructions feel stale             |
-| `vercel-react-best-practices`   | React/Next.js performance, bundle optimization                            |
+| Skill                               | When to load                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| `implement-github-issue`            | User pastes a GitHub issue URL or says "implement issue #N"               |
+| `improve-codebase-architecture`     | Refactoring, testability, module consolidation                            |
+| `next-best-practices`               | File conventions, RSC boundaries, data patterns, metadata, error handling |
+| `next-cache-components-adoption`    | Turn on Cache Components in a Next.js app and resolve blocking routes     |
+| `next-cache-components-optimizer`   | Drive a Next.js route to instant navigation via agentic loop              |
+| `next-dev-loop`                     | Verify Next.js runtime behavior after editing app code                    |
+| `next-partial-prefetching-adoption` | Turn on Partial Prefetching in a Next.js app and work through insights    |
+| `update-instructions`               | After major feature additions or when instructions feel stale             |
+| `vercel-react-best-practices`       | React/Next.js performance, bundle optimization                            |
+
+**Axiom-specific skills (load when relevant):**
+
+| Skill                 | When to load                                                              |
+| --------------------- | ------------------------------------------------------------------------- |
+| `axiom-alerting`      | Create and manage Axiom monitors and notifiers via API                    |
+| `axiom-sre`           | Expert SRE investigator for incidents and debugging                       |
+| `building-dashboards` | Designs and builds Axiom dashboards via API                               |
+| `controlling-costs`   | Analyzes Axiom query patterns to find unused data, then builds dashboards |
+| `metrics-chart`       | Render Axiom metrics query results as line charts                         |
+| `query-metrics`       | Runs metrics queries against Axiom MetricsDB                              |
+| `spl-to-apl`          | Translates Splunk SPL queries to Axiom APL                                |
+| `writing-evals`       | Scaffolds evaluation suites for the Axiom AI SDK                          |
 
 ## Core Conventions
 
