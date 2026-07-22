@@ -31,30 +31,6 @@
       "skillPath": "skills/metrics-chart/SKILL.md",
       "computedHash": "73d4cbf4dfc2daaa27ee5f93ef2970b8474634b0383b2c3fb65d5691b26a2ab3"
     },
-    "next-cache-components-adoption": {
-      "source": "vercel/next.js",
-      "sourceType": "github",
-      "skillPath": "skills/next-cache-components-adoption/SKILL.md",
-      "computedHash": "3b755e6f21774dcd3fbf54736ed480c53d1c66e108c7a3f5e621f72ceee43ef8"
-    },
-    "next-cache-components-optimizer": {
-      "source": "vercel/next.js",
-      "sourceType": "github",
-      "skillPath": "skills/next-cache-components-optimizer/SKILL.md",
-      "computedHash": "2310ed428a6d4e8fcf00dd915cd394f5c2789167acd1a009759293fc248307e1"
-    },
-    "next-dev-loop": {
-      "source": "vercel/next.js",
-      "sourceType": "github",
-      "skillPath": "skills/next-dev-loop/SKILL.md",
-      "computedHash": "1fb1b47ed7186737df086aa198f86961f72691539f1c4507f60bbedf60a128be"
-    },
-    "next-partial-prefetching-adoption": {
-      "source": "vercel/next.js",
-      "sourceType": "github",
-      "skillPath": "skills/next-partial-prefetching-adoption/SKILL.md",
-      "computedHash": "205d9b85cc5ff13d791b1b4290fee41f61901d04fff54ede212c28d19622e2b4"
-    },
     "query-metrics": {
       "source": "axiomhq/skills",
       "sourceType": "github",
@@ -66,12 +42,6 @@
       "sourceType": "github",
       "skillPath": "skills/spl-to-apl/SKILL.md",
       "computedHash": "4bc60dd19ea863e38b3f0d40a9c03e20e90451727f098c659bd48405d5744f4d"
-    },
-    "vercel-react-best-practices": {
-      "source": "vercel-labs/agent-skills",
-      "sourceType": "github",
-      "skillPath": "skills/react-best-practices/SKILL.md",
-      "computedHash": "ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212"
     },
     "writing-evals": {
       "source": "axiomhq/skills",
