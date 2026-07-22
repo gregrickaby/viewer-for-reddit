@@ -1,25 +1,26 @@
 import eslint from '@eslint/js'
-import tseslint from 'typescript-eslint'
 import mantine from 'eslint-config-mantine'
-import testingLibrary from 'eslint-plugin-testing-library'
-import jestDom from 'eslint-plugin-jest-dom'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import jestDom from 'eslint-plugin-jest-dom'
+import testingLibrary from 'eslint-plugin-testing-library'
 import {defineConfig} from 'eslint/config'
+import tseslint from 'typescript-eslint'
 
 export default defineConfig(
   // Ignore patterns
   {
     ignores: [
-      '**/node_modules/',
+      '**/*.js',
+      '**/*.min.js',
+      '**/.*cache/',
       '**/.next/',
-      '**/dist/',
       '**/build/',
       '**/coverage/',
+      '**/dist/',
+      '**/node_modules/',
       '**/out/',
       '**/public/',
-      '**/*.min.js',
-      '**/*.js',
-      '**/.*cache/',
+      '.claude/**',
       'scripts/**'
     ]
   },

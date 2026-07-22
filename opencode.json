@@ -10,7 +10,7 @@
     "todowrite": "allow",
     "question": "allow"
   },
-  "instructions": [".agents/instructions/*.md"],
+  "instructions": [".claude/rules/*.md"],
   "mcp": {
     "next-devtools": {
       "command": ["npx", "-y", "next-devtools-mcp@latest"],
@@ -20,7 +20,12 @@
     "playwright": {
       "type": "local",
       "command": ["npx", "@playwright/mcp@latest"],
-      "enabled": true
+      "enabled": false
+    },
+    "axiom": {
+      "type": "local",
+      "command": ["npx", "-y", "mcp-remote", "https://mcp.axiom.co/mcp"],
+      "enabled": false
     }
   }
 }
