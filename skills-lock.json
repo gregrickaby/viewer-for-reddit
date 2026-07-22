@@ -19,11 +19,23 @@
       "skillPath": "skills/building-dashboards/SKILL.md",
       "computedHash": "84a130aab324297fe3fe1203b56743359732d4386dff6f0d065726d175b6e413"
     },
+    "caveman": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman/SKILL.md",
+      "computedHash": "d18cdf73a5f5c496d681a43a6846336b110223bdffa6817b8992529c57f1a815"
+    },
     "controlling-costs": {
       "source": "axiomhq/skills",
       "sourceType": "github",
       "skillPath": "skills/controlling-costs/SKILL.md",
       "computedHash": "73ed9a6417283ee4029a9e61d11ee3cc9ae64268d131150c4c0f4a71f87cd549"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf"
     },
     "metrics-chart": {
       "source": "axiomhq/skills",
@@ -42,6 +54,12 @@
       "sourceType": "github",
       "skillPath": "skills/spl-to-apl/SKILL.md",
       "computedHash": "4bc60dd19ea863e38b3f0d40a9c03e20e90451727f098c659bd48405d5744f4d"
+    },
+    "vercel-react-best-practices": {
+      "source": "RealBulbaBot/react-best-practices",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "52f6ac51eff2a952cfaabfdbcb295463cb0de8227bc3d9b7187acb03945361d1"
     },
     "writing-evals": {
       "source": "axiomhq/skills",
