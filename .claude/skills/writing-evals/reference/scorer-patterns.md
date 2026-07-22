@@ -9,14 +9,14 @@ Common scoring patterns for Axiom AI evaluations.
 **When:** Output must equal expected exactly.
 
 ```typescript
-import { Scorer } from 'axiom/ai/scorers';
+import {Scorer} from 'axiom/ai/scorers'
 
 const ExactMatch = Scorer(
   'exact-match',
-  ({ output, expected }: { output: string; expected: string }) => {
-    return output === expected;
-  },
-);
+  ({output, expected}: {output: string; expected: string}) => {
+    return output === expected
+  }
+)
 ```
 
 **Returns:** `true` (1.0) or `false` (0.0)
@@ -24,8 +24,9 @@ const ExactMatch = Scorer(
 **Use for:** Classification, category labels, yes/no answers.
 
 **Pitfall:** Case-sensitive. Normalize both sides if needed:
+
 ```typescript
-return output.toLowerCase().trim() === expected.toLowerCase().trim();
+return output.toLowerCase().trim() === expected.toLowerCase().trim()
 ```
 
 ---
@@ -35,29 +36,34 @@ return output.toLowerCase().trim() === expected.toLowerCase().trim();
 **When:** Running multiple trials and need aggregated scores.
 
 ```typescript
-import { Scorer } from 'axiom/ai/scorers';
-import { Mean } from 'axiom/ai/scorers/aggregations';
+import {Scorer} from 'axiom/ai/scorers'
+import {Mean} from 'axiom/ai/scorers/aggregations'
 
 const ExactMatchMean = Scorer(
   'exact-match-mean',
-  ({ output, expected }: { output: string; expected: string }) => {
-    return output === expected ? 1 : 0;
+  ({output, expected}: {output: string; expected: string}) => {
+    return output === expected ? 1 : 0
   },
-  { aggregation: Mean() },
-);
+  {aggregation: Mean()}
+)
 ```
 
 **Returns:** `1` or `0`, aggregated via Mean across trials.
 
 **Variants:**
+
 ```typescript
-import { PassHatK, PassAtK } from 'axiom/ai/scorers/aggregations';
+import {PassHatK, PassAtK} from 'axiom/ai/scorers/aggregations'
 
 // Pass if ALL trials match
-const ExactMatchAllPass = Scorer('exact-match-all', scorerFn, { aggregation: PassHatK() });
+const ExactMatchAllPass = Scorer('exact-match-all', scorerFn, {
+  aggregation: PassHatK()
+})
 
 // Pass if ANY trial matches
-const ExactMatchAnyPass = Scorer('exact-match-any', scorerFn, { aggregation: PassAtK() });
+const ExactMatchAnyPass = Scorer('exact-match-any', scorerFn, {
+  aggregation: PassAtK()
+})
 ```
 
 ---
@@ -69,21 +75,22 @@ const ExactMatchAnyPass = Scorer('exact-match-any', scorerFn, { aggregation: Pas
 ```typescript
 const ContainsKeyword = Scorer(
   'contains-keyword',
-  ({ output, expected }: { output: string; expected: string }) => {
-    return output.toLowerCase().includes(expected.toLowerCase());
-  },
-);
+  ({output, expected}: {output: string; expected: string}) => {
+    return output.toLowerCase().includes(expected.toLowerCase())
+  }
+)
 ```
 
 **Variant — multiple keywords:**
+
 ```typescript
 const ContainsAll = Scorer(
   'contains-all',
-  ({ output, expected }: { output: string; expected: string[] }) => {
-    const lower = output.toLowerCase();
-    return expected.every(kw => lower.includes(kw.toLowerCase()));
-  },
-);
+  ({output, expected}: {output: string; expected: string[]}) => {
+    const lower = output.toLowerCase()
+    return expected.every((kw) => lower.includes(kw.toLowerCase()))
+  }
+)
 ```
 
 ---
@@ -95,36 +102,38 @@ const ContainsAll = Scorer(
 ```typescript
 const StrictSetMatch = Scorer(
   'strict-set-match',
-  ({ output, expected }: { output: string[]; expected: string[] }) => {
-    if (expected.length !== output.length) return false;
-    const outputSet = new Set(output);
-    return expected.every(item => outputSet.has(item));
-  },
-);
+  ({output, expected}: {output: string[]; expected: string[]}) => {
+    if (expected.length !== output.length) return false
+    const outputSet = new Set(output)
+    return expected.every((item) => outputSet.has(item))
+  }
+)
 ```
 
 **Variant — subset match (at least these items):**
+
 ```typescript
 const SubsetMatch = Scorer(
   'subset-match',
-  ({ output, expected }: { output: string[]; expected: string[] }) => {
-    const outputSet = new Set(output);
-    return expected.every(item => outputSet.has(item));
-  },
-);
+  ({output, expected}: {output: string[]; expected: string[]}) => {
+    const outputSet = new Set(output)
+    return expected.every((item) => outputSet.has(item))
+  }
+)
 ```
 
 **Variant — with recall score:**
+
 ```typescript
 const RecallScore = Scorer(
   'recall',
-  ({ output, expected }: { output: string[]; expected: string[] }) => {
-    if (expected.length === 0) return output.length === 0 ? 1 : 0;
-    const outputSet = new Set(output);
-    const hits = expected.filter(item => outputSet.has(item)).length;
-    return hits / expected.length;
-  },
-);
+  ({output, expected}: {output: string[]; expected: string[]}) => {
+    if (expected.length === 0) return output.length === 0 ? 1 : 0
+    const outputSet = new Set(output)
+    const hits = expected.filter((item) => outputSet.has(item)).length
+    return hits / expected.length
+  }
+)
 ```
 
 ---
@@ -135,38 +144,59 @@ const RecallScore = Scorer(
 
 ```typescript
 type TicketInfo = {
-  intent: string;
-  product: string;
-  isComplete: boolean;
-  missingFields: string[];
-};
+  intent: string
+  product: string
+  isComplete: boolean
+  missingFields: string[]
+}
 
 const StructuredMatch = Scorer(
   'structured-match',
-  ({ output, expected }: { output: TicketInfo; expected: TicketInfo }) => {
+  ({output, expected}: {output: TicketInfo; expected: TicketInfo}) => {
     // Check each field, return metadata on failure
     if (expected.intent !== output.intent) {
-      return { score: false, metadata: { field: 'intent', expected: expected.intent, actual: output.intent } };
+      return {
+        score: false,
+        metadata: {
+          field: 'intent',
+          expected: expected.intent,
+          actual: output.intent
+        }
+      }
     }
     if (expected.product !== output.product) {
-      return { score: false, metadata: { field: 'product', expected: expected.product, actual: output.product } };
+      return {
+        score: false,
+        metadata: {
+          field: 'product',
+          expected: expected.product,
+          actual: output.product
+        }
+      }
     }
     if (expected.isComplete !== output.isComplete) {
-      return { score: false, metadata: { field: 'isComplete', expected: expected.isComplete, actual: output.isComplete } };
+      return {
+        score: false,
+        metadata: {
+          field: 'isComplete',
+          expected: expected.isComplete,
+          actual: output.isComplete
+        }
+      }
     }
 
-    const expectedMissing = new Set(expected.missingFields);
-    const actualMissing = new Set(output.missingFields);
-    const missing = expected.missingFields.filter(f => !actualMissing.has(f));
-    const extra = output.missingFields.filter(f => !expectedMissing.has(f));
+    const expectedMissing = new Set(expected.missingFields)
+    const actualMissing = new Set(output.missingFields)
+    const missing = expected.missingFields.filter((f) => !actualMissing.has(f))
+    const extra = output.missingFields.filter((f) => !expectedMissing.has(f))
 
     if (missing.length || extra.length) {
-      return { score: false, metadata: { field: 'missingFields', missing, extra } };
+      return {score: false, metadata: {field: 'missingFields', missing, extra}}
     }
 
-    return true;
-  },
-);
+    return true
+  }
+)
 ```
 
 **Key:** Return `{ score: false, metadata: { ... } }` to make failures debuggable.
@@ -179,35 +209,36 @@ const StructuredMatch = Scorer(
 
 ```typescript
 type AgentResult = {
-  text: string;
-  toolCalls?: Array<{ toolName: string; args: Record<string, any> }>;
-};
+  text: string
+  toolCalls?: Array<{toolName: string; args: Record<string, any>}>
+}
 
 const ToolUseMatch = Scorer(
   'tool-use-match',
-  ({ output, expected }: { output: AgentResult; expected: string[] }) => {
-    const actual = output.toolCalls?.map(tc => tc.toolName) || [];
-    const actualSet = new Set(actual);
+  ({output, expected}: {output: AgentResult; expected: string[]}) => {
+    const actual = output.toolCalls?.map((tc) => tc.toolName) || []
+    const actualSet = new Set(actual)
 
     // Expect NO tools
-    if (expected.length === 0 && actual.length > 0) return false;
+    if (expected.length === 0 && actual.length > 0) return false
 
     // Expect specific tools
-    return expected.every(tool => actualSet.has(tool));
-  },
-);
+    return expected.every((tool) => actualSet.has(tool))
+  }
+)
 ```
 
 **Variant — exact tool order:**
+
 ```typescript
 const ToolOrderMatch = Scorer(
   'tool-order-match',
-  ({ output, expected }: { output: AgentResult; expected: string[] }) => {
-    const actual = output.toolCalls?.map(tc => tc.toolName) || [];
-    if (actual.length !== expected.length) return false;
-    return actual.every((tool, i) => tool === expected[i]);
-  },
-);
+  ({output, expected}: {output: AgentResult; expected: string[]}) => {
+    const actual = output.toolCalls?.map((tc) => tc.toolName) || []
+    if (actual.length !== expected.length) return false
+    return actual.every((tool, i) => tool === expected[i])
+  }
+)
 ```
 
 ---
@@ -217,31 +248,25 @@ const ToolOrderMatch = Scorer(
 **When:** Checking output format (JSON, length, regex pattern).
 
 ```typescript
-const IsValidJSON = Scorer(
-  'is-valid-json',
-  ({ output }: { output: string }) => {
-    try {
-      JSON.parse(output);
-      return true;
-    } catch {
-      return false;
-    }
-  },
-);
+const IsValidJSON = Scorer('is-valid-json', ({output}: {output: string}) => {
+  try {
+    JSON.parse(output)
+    return true
+  } catch {
+    return false
+  }
+})
 
-const MaxLength = Scorer(
-  'max-length',
-  ({ output }: { output: string }) => {
-    return output.length <= 500;
-  },
-);
+const MaxLength = Scorer('max-length', ({output}: {output: string}) => {
+  return output.length <= 500
+})
 
 const MatchesPattern = Scorer(
   'matches-pattern',
-  ({ output, expected }: { output: string; expected: string }) => {
-    return new RegExp(expected).test(output);
-  },
-);
+  ({output, expected}: {output: string; expected: string}) => {
+    return new RegExp(expected).test(output)
+  }
+)
 ```
 
 ---
@@ -253,16 +278,14 @@ const MatchesPattern = Scorer(
 ```typescript
 Eval('my-eval', {
   capability: 'qa',
-  data: [
-    { input: 'What is 2+2?', expected: '4' },
-  ],
-  task: async ({ input }) => generateAnswer(input),
+  data: [{input: 'What is 2+2?', expected: '4'}],
+  task: async ({input}) => generateAnswer(input),
   scorers: [
-    ExactMatch,      // Is the answer correct?
-    MaxLength,       // Is it concise?
-    IsValidJSON,     // Is it valid format?
-  ],
-});
+    ExactMatch, // Is the answer correct?
+    MaxLength, // Is it concise?
+    IsValidJSON // Is it valid format?
+  ]
+})
 ```
 
 Each scorer runs independently. Results are reported per-scorer in the Axiom console.
@@ -276,18 +299,18 @@ Each scorer runs independently. Results are reported per-scorer in the Axiom con
 ```typescript
 const LLMJudge = Scorer(
   'llm-judge',
-  async ({ output, expected }: { output: string; expected: string }) => {
+  async ({output, expected}: {output: string; expected: string}) => {
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       prompt: `Rate how well this output matches the expected answer.
 Expected: ${expected}
 Actual: ${output}
-Return a number 0-1 where 1 is perfect match.`,
-    });
-    const score = parseFloat(result.text);
-    return isNaN(score) ? 0 : Math.max(0, Math.min(1, score));
-  },
-);
+Return a number 0-1 where 1 is perfect match.`
+    })
+    const score = parseFloat(result.text)
+    return isNaN(score) ? 0 : Math.max(0, Math.min(1, score))
+  }
+)
 ```
 
 **Pitfall:** Async scorers add latency and cost. Use sparingly, consider `sampling` in online evals.
@@ -303,25 +326,26 @@ npm install autoevals
 ```
 
 ```typescript
-import { Scorer } from 'axiom/ai/scorers';
-import { Levenshtein, Factuality } from 'autoevals';
+import {Scorer} from 'axiom/ai/scorers'
+import {Levenshtein, Factuality} from 'autoevals'
 
 const LevenshteinScorer = Scorer(
   'levenshtein',
-  ({ output, expected }: { output: string; expected: string }) => {
-    return Levenshtein({ output, expected });
-  },
-);
+  ({output, expected}: {output: string; expected: string}) => {
+    return Levenshtein({output, expected})
+  }
+)
 
 const FactualityScorer = Scorer(
   'factuality',
-  async ({ output, expected }: { output: string; expected: string }) => {
-    return await Factuality({ output, expected });
-  },
-);
+  async ({output, expected}: {output: string; expected: string}) => {
+    return await Factuality({output, expected})
+  }
+)
 ```
 
 Combine autoevals with custom scorers for thorough coverage:
+
 ```typescript
 scorers: [ExactMatch, LevenshteinScorer, FactualityScorer],
 ```

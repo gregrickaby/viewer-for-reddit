@@ -54,7 +54,7 @@ index=logs "connection timeout"
 
 ```spl
 # SPL
-index=logs 
+index=logs
 | stats count by status
 ```
 
@@ -77,10 +77,10 @@ index=logs
 # APL
 ['logs']
 | where _time between (ago(1h) .. now())
-| summarize 
-    count(), 
-    unique_users = dcount(user), 
-    avg_rt = avg(response_time) 
+| summarize
+    count(),
+    unique_users = dcount(user),
+    avg_rt = avg(response_time)
   by endpoint
 ```
 
@@ -148,7 +148,7 @@ index=logs
 # APL
 ['logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     p50 = percentile(response_time, 50),
     p95 = percentile(response_time, 95),
     p99 = percentile(response_time, 99)
@@ -168,7 +168,7 @@ index=logs
 # APL
 ['logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     errors = countif(status >= 500),
     total = count()
   by bin(_time, 5m)
@@ -304,7 +304,7 @@ index=logs
 ['logs']
 | where _time between (ago(1h) .. now())
 | join kind=inner (
-    ['users'] 
+    ['users']
     | project user_id, name, email
 ) on user_id
 | project _time, user_id, name, email, action
@@ -325,7 +325,7 @@ index=logs
 ['logs']
 | where _time between (ago(1h) .. now())
 | join kind=leftouter (
-    ['users'] 
+    ['users']
     | project user_id, tier
 ) on user_id
 | extend tier = coalesce(tier, "free")
@@ -341,8 +341,8 @@ index=logs [search index=errors earliest=-1h | fields user_id | format]
 
 ```apl
 # APL
-let error_users = ['errors'] 
-    | where _time between (ago(1h) .. now()) 
+let error_users = ['errors']
+    | where _time between (ago(1h) .. now())
     | distinct user_id;
 ['logs']
 | where _time between (ago(1h) .. now())
@@ -453,9 +453,9 @@ index=logs
 # APL
 ['logs']
 | where _time between (ago(1h) .. now())
-| summarize 
-    actions = make_list(action), 
-    unique_statuses = make_set(status) 
+| summarize
+    actions = make_list(action),
+    unique_statuses = make_set(status)
   by user_id
 ```
 
@@ -477,16 +477,16 @@ index=logs
 # APL
 ['logs']
 | where _time between (ago(6h) .. now())
-| summarize 
+| summarize
     start_time = min(_time),
     end_time = max(_time),
     event_count = count()
   by session_id, user_id
 | extend duration = end_time - start_time
 | where duration <= 30m
-| summarize 
-    avg_session_duration = avg(duration), 
-    session_count = count() 
+| summarize
+    avg_session_duration = avg(duration),
+    session_count = count()
   by user_id
 ```
 
@@ -550,10 +550,10 @@ index=logs response_time > 1000
 ['logs']
 | where _time between (ago(1h) .. now())
 | where response_time > 1000
-| summarize 
-    count(), 
-    avg_rt = avg(response_time), 
-    p95_rt = percentile(response_time, 95) 
+| summarize
+    count(),
+    avg_rt = avg(response_time),
+    p95_rt = percentile(response_time, 95)
   by endpoint
 | order by count_ desc
 ```
@@ -641,9 +641,9 @@ index=logs earliest=-24h
 ['logs']
 | where _time between (ago(24h) .. now())
 | parse uri with "/api/" version "/" endpoint
-| summarize 
-    count(), 
-    errors = countif(status >= 400) 
+| summarize
+    count(),
+    errors = countif(status >= 400)
   by version, endpoint
 | extend error_rate = round(toreal(errors) / count_ * 100, 2)
 | where count_ > 100

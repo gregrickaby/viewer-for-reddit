@@ -73,26 +73,26 @@ scripts/pyroscope-diff prod axiom-db -90m -60m -30m now
 
 ## Scripts
 
-| Script | Usage |
-|--------|-------|
-| `scripts/pyroscope-config` | Show available deployments |
-| `scripts/pyroscope-services <env>` | List services with profiling data |
-| `scripts/pyroscope-profiles <env>` | List available profile types |
-| `scripts/pyroscope-labels <env> [label] [--range]` | List label names or values |
-| `scripts/pyroscope-flamegraph <env> <service> [options]` | Get flame graph |
-| `scripts/pyroscope-diff <env> <service> [options] <times>` | Compare periods |
-| `scripts/pyroscope-query <env> <endpoint> [json]` | Raw API queries |
+| Script                                                     | Usage                             |
+| ---------------------------------------------------------- | --------------------------------- |
+| `scripts/pyroscope-config`                                 | Show available deployments        |
+| `scripts/pyroscope-services <env>`                         | List services with profiling data |
+| `scripts/pyroscope-profiles <env>`                         | List available profile types      |
+| `scripts/pyroscope-labels <env> [label] [--range]`         | List label names or values        |
+| `scripts/pyroscope-flamegraph <env> <service> [options]`   | Get flame graph                   |
+| `scripts/pyroscope-diff <env> <service> [options] <times>` | Compare periods                   |
+| `scripts/pyroscope-query <env> <endpoint> [json]`          | Raw API queries                   |
 
 ## Profile Types
 
-| ID | Use Case |
-|----|----------|
-| `process_cpu:cpu:nanoseconds:cpu:nanoseconds` | CPU hotspots, slow functions |
-| `memory:inuse_space:bytes:space:bytes` | Memory leaks, high memory usage |
-| `memory:alloc_space:bytes:space:bytes` | Allocation pressure, GC issues |
-| `goroutine:goroutine:count:goroutine:count` | Goroutine leaks, deadlocks |
-| `mutex:delay:nanoseconds:contentions:count` | Lock contention |
-| `block:delay:nanoseconds:contentions:count` | Blocking operations |
+| ID                                            | Use Case                        |
+| --------------------------------------------- | ------------------------------- |
+| `process_cpu:cpu:nanoseconds:cpu:nanoseconds` | CPU hotspots, slow functions    |
+| `memory:inuse_space:bytes:space:bytes`        | Memory leaks, high memory usage |
+| `memory:alloc_space:bytes:space:bytes`        | Allocation pressure, GC issues  |
+| `goroutine:goroutine:count:goroutine:count`   | Goroutine leaks, deadlocks      |
+| `mutex:delay:nanoseconds:contentions:count`   | Lock contention                 |
+| `block:delay:nanoseconds:contentions:count`   | Blocking operations             |
 
 ## Common Workflows
 
@@ -128,7 +128,7 @@ scripts/pyroscope-flamegraph prod axiom-db 30m goroutine:goroutine:count:gorouti
 # Mutex contention
 scripts/pyroscope-flamegraph prod axiom-db 10m mutex:delay:nanoseconds:contentions:count
 
-# Block contention  
+# Block contention
 scripts/pyroscope-flamegraph prod axiom-db 10m block:delay:nanoseconds:contentions:count
 ```
 
@@ -155,16 +155,16 @@ scripts/pyroscope-query prod SelectSeries '{
 
 All endpoints use gRPC-web via POST to `querier.v1.QuerierService/<Method>`:
 
-| Endpoint | Description |
-|----------|-------------|
-| `ProfileTypes` | List available profile types |
-| `LabelNames` | Get label names for filtering |
-| `LabelValues` | Get values for a specific label |
-| `Series` | Query series matching selectors |
-| `SelectMergeStacktraces` | Get merged flame graph |
-| `SelectSeries` | Get time series data |
-| `Diff` | Compare two time ranges |
-| `GetProfileStats` | Get ingestion statistics |
+| Endpoint                 | Description                     |
+| ------------------------ | ------------------------------- |
+| `ProfileTypes`           | List available profile types    |
+| `LabelNames`             | Get label names for filtering   |
+| `LabelValues`            | Get values for a specific label |
+| `Series`                 | Query series matching selectors |
+| `SelectMergeStacktraces` | Get merged flame graph          |
+| `SelectSeries`           | Get time series data            |
+| `Diff`                   | Compare two time ranges         |
+| `GetProfileStats`        | Get ingestion statistics        |
 
 ## Time Formats
 

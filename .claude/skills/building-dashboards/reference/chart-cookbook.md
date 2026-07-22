@@ -11,11 +11,12 @@ Detailed APL patterns for each chart type with real-world examples.
 Single-value panels for KPIs and current state.
 
 ### Error Rate (Percentage)
+
 ```apl
 ['http-logs']
 | where _time between (ago(5m) .. now())
 | where service == "api-gateway"
-| summarize 
+| summarize
     total = count(),
     errors = countif(status >= 500)
 | extend error_rate = round(100.0 * errors / total, 2)
@@ -23,6 +24,7 @@ Single-value panels for KPIs and current state.
 ```
 
 ### Current p95 Latency
+
 ```apl
 ['http-logs']
 | where _time between (ago(5m) .. now())
@@ -31,6 +33,7 @@ Single-value panels for KPIs and current state.
 ```
 
 ### Request Rate (per second)
+
 ```apl
 ['http-logs']
 | where _time between (ago(5m) .. now())
@@ -41,6 +44,7 @@ Single-value panels for KPIs and current state.
 ```
 
 ### Active Errors (count)
+
 ```apl
 ['http-logs']
 | where _time between (ago(5m) .. now())
@@ -49,10 +53,11 @@ Single-value panels for KPIs and current state.
 ```
 
 ### Comparison to Baseline
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     last_5m = countif(_time >= ago(5m) and status >= 500),
     prev_55m = countif(_time < ago(5m) and status >= 500)
 | extend change_pct = round(100.0 * (last_5m - prev_55m/11) / (prev_55m/11 + 0.001), 1)
@@ -66,6 +71,7 @@ Single-value panels for KPIs and current state.
 Time-based trends with proper binning.
 
 ### Traffic Over Time
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -74,11 +80,12 @@ Time-based trends with proper binning.
 ```
 
 ### Error Rate Over Time
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
 | where service == "api-gateway"
-| summarize 
+| summarize
     total = count(),
     errors = countif(status >= 500)
   by bin(_time, 1m)
@@ -87,11 +94,12 @@ Time-based trends with proper binning.
 ```
 
 ### Latency Percentiles Over Time
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
 | where service == "api-gateway"
-| summarize 
+| summarize
     p50 = percentile(duration_ms, 50),
     p95 = percentile(duration_ms, 95),
     p99 = percentile(duration_ms, 99)
@@ -99,6 +107,7 @@ Time-based trends with proper binning.
 ```
 
 ### Traffic by Status Class (Stacked)
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -112,6 +121,7 @@ Time-based trends with proper binning.
 ```
 
 ### Multi-Service Comparison
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -120,6 +130,7 @@ Time-based trends with proper binning.
 ```
 
 ### Rate of Change (Derivative)
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -137,6 +148,7 @@ Time-based trends with proper binning.
 Top-N breakdowns and detailed lists.
 
 ### Top 10 Failing Routes
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -147,6 +159,7 @@ Top-N breakdowns and detailed lists.
 ```
 
 ### Top Error Messages
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -157,10 +170,11 @@ Top-N breakdowns and detailed lists.
 ```
 
 ### Worst Pods by Error Rate
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     total = count(),
     errors = countif(status >= 500)
   by pod = ['kubernetes.pod.name']
@@ -171,10 +185,11 @@ Top-N breakdowns and detailed lists.
 ```
 
 ### Latency by Route
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     requests = count(),
     p50 = percentile(duration_ms, 50),
     p95 = percentile(duration_ms, 95),
@@ -185,6 +200,7 @@ Top-N breakdowns and detailed lists.
 ```
 
 ### Recent Errors with Details
+
 ```apl
 ['http-logs']
 | where _time between (ago(15m) .. now())
@@ -194,11 +210,12 @@ Top-N breakdowns and detailed lists.
 ```
 
 ### Customer Impact Summary
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
 | where status >= 500
-| summarize 
+| summarize
     errors = count(),
     affected_requests = dcount(trace_id)
   by customer_id
@@ -213,6 +230,7 @@ Top-N breakdowns and detailed lists.
 Share-of-total for low-cardinality dimensions only.
 
 ### Status Code Distribution
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -226,6 +244,7 @@ Share-of-total for low-cardinality dimensions only.
 ```
 
 ### Traffic by Region
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -234,6 +253,7 @@ Share-of-total for low-cardinality dimensions only.
 ```
 
 ### Error Types Distribution
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -249,6 +269,7 @@ Share-of-total for low-cardinality dimensions only.
 ```
 
 ### Request Method Mix
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -264,6 +285,7 @@ Share-of-total for low-cardinality dimensions only.
 Raw event inspection with focused fields.
 
 ### Recent Errors
+
 ```apl
 ['http-logs']
 | where _time between (ago(15m) .. now())
@@ -274,6 +296,7 @@ Raw event inspection with focused fields.
 ```
 
 ### Slow Requests
+
 ```apl
 ['http-logs']
 | where _time between (ago(15m) .. now())
@@ -284,6 +307,7 @@ Raw event inspection with focused fields.
 ```
 
 ### Authentication Failures
+
 ```apl
 ['auth-logs']
 | where _time between (ago(1h) .. now())
@@ -294,6 +318,7 @@ Raw event inspection with focused fields.
 ```
 
 ### Kubernetes Events
+
 ```apl
 ['k8s-events']
 | where _time between (ago(1h) .. now())
@@ -304,6 +329,7 @@ Raw event inspection with focused fields.
 ```
 
 ### Filtered by Trace ID
+
 ```apl
 ['http-logs']
 | where _time between (ago(24h) .. now())
@@ -319,6 +345,7 @@ Raw event inspection with focused fields.
 No APL needed—configure these fields for interactive filtering:
 
 ### Recommended Filter Fields
+
 - `service` — Which service to focus on
 - `environment` — prod/staging/dev
 - `region` — Geographic region
@@ -329,6 +356,7 @@ No APL needed—configure these fields for interactive filtering:
 - `kubernetes.pod.name` — Specific pod
 
 ### Configuration Tips
+
 - Place SmartFilter at top of dashboard
 - Include 3–5 most useful filter dimensions
 - Avoid high-cardinality fields as primary filters (trace_id, request_id)
@@ -351,6 +379,7 @@ Markdown panels for context and navigation. The chart object carries Markdown in
 The recipes below are the Markdown that goes inside `text`. JSON-escape the content (newlines as `\n`, quotes as `\"`) when embedding it as the chart's `text` value.
 
 ### Dashboard Header
+
 ```markdown
 # API Gateway - Oncall Dashboard
 
@@ -362,12 +391,15 @@ The recipes below are the Markdown that goes inside `text`. JSON-escape the cont
 ```
 
 ### Section Divider
+
 ```markdown
 ---
+
 ## Error Analysis
 ```
 
 ### Instructions
+
 ```markdown
 ### How to Use This Dashboard
 
@@ -384,6 +416,7 @@ The recipes below are the Markdown that goes inside `text`. JSON-escape the cont
 Visualize distributions and density patterns.
 
 ### Latency Distribution Over Time
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -391,6 +424,7 @@ Visualize distributions and density patterns.
 ```
 
 ### Response Size Distribution
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -398,6 +432,7 @@ Visualize distributions and density patterns.
 ```
 
 ### Request Rate by Hour of Day
+
 ```apl
 ['http-logs']
 | where _time between (ago(7d) .. now())
@@ -412,6 +447,7 @@ Visualize distributions and density patterns.
 Identify correlations between metrics.
 
 ### Latency vs Response Size
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -419,10 +455,11 @@ Identify correlations between metrics.
 ```
 
 ### Request Rate vs Error Rate by Route
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     requests = count(),
     error_rate = round(100.0 * countif(status >= 500) / count(), 2)
   by route
@@ -430,6 +467,7 @@ Identify correlations between metrics.
 ```
 
 ### CPU vs Memory by Pod
+
 ```apl
 ['metrics']
 | where _time between (ago(1h) .. now())
@@ -443,6 +481,7 @@ Identify correlations between metrics.
 Interactive filters for dashboard-wide filtering.
 
 ### Dynamic Country Filter Query
+
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
@@ -452,6 +491,7 @@ Interactive filters for dashboard-wide filtering.
 ```
 
 ### Panel Using Filters
+
 ```apl
 declare query_parameters (_country:string = "", _status:string = "");
 ['http-logs']
@@ -462,6 +502,7 @@ declare query_parameters (_country:string = "", _status:string = "");
 ```
 
 ### Dependent City Filter (depends on country)
+
 ```apl
 declare query_parameters (_country:string = "");
 ['http-logs']
@@ -474,7 +515,9 @@ declare query_parameters (_country:string = "");
 ```
 
 ### Dataset Selector Filter
+
 For multi-dataset dashboards, let users choose which dataset to view:
+
 ```apl
 declare query_parameters (_dataset:string = "http-logs");
 table(_dataset)

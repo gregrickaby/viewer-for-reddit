@@ -6,14 +6,15 @@ This is your working memory for investigations. Append freely, consolidate perio
 
 Memory is organized in two tiers, merged when reading:
 
-| Tier | Location | Scope | Sync |
-|------|----------|-------|------|
-| Personal | `~/.config/axiom-sre/memory/` | Just me | None |
-| Org | `~/.config/axiom-sre/memory/orgs/{org}/` | Team-wide | Git repo |
+| Tier     | Location                                 | Scope     | Sync     |
+| -------- | ---------------------------------------- | --------- | -------- |
+| Personal | `~/.config/axiom-sre/memory/`            | Just me   | None     |
+| Org      | `~/.config/axiom-sre/memory/orgs/{org}/` | Team-wide | Git repo |
 
 **Read order:** Both tiers merged, tagged by source. Conflicts: Personal > Org.
 
 **Write defaults:**
+
 - "remember this" → Personal
 - "save for the team" → Org (+ git commit)
 
@@ -60,15 +61,15 @@ Extended information, queries, evidence, etc.
 
 ### Metadata Fields
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| type | Yes | fact, query, incident, pattern, integration, note |
-| tags | Yes | Comma-separated, for retrieval |
-| status | No | active, stale, deprecated (optional lifecycle state) |
-| used | No | Count of times retrieved and helpful (default: 0) |
-| last_used | No | Date of last helpful retrieval |
-| pinned | No | If true, never auto-archive (default: false) |
-| schema_version | Yes | Currently: 1 |
+| Field          | Required | Description                                          |
+| -------------- | -------- | ---------------------------------------------------- |
+| type           | Yes      | fact, query, incident, pattern, integration, note    |
+| tags           | Yes      | Comma-separated, for retrieval                       |
+| status         | No       | active, stale, deprecated (optional lifecycle state) |
+| used           | No       | Count of times retrieved and helpful (default: 0)    |
+| last_used      | No       | Date of last helpful retrieval                       |
+| pinned         | No       | If true, never auto-archive (default: false)         |
+| schema_version | Yes      | Currently: 1                                         |
 
 ---
 
@@ -118,6 +119,7 @@ scripts/sleep
 ```
 
 This will:
+
 1. **Review** recent entries for promotion to KB
 2. **Dump** content for synthesis
 
@@ -132,24 +134,26 @@ This will:
 ## Tracking Effectiveness
 
 When a memory entry helps during an investigation:
+
 - Increment `used`
 - Update `last_used` to today
 
 When an entry is critical and should never be archived:
+
 - Set `pinned: true`
 
 ---
 
 ## Commands
 
-| Command | Purpose |
-|---------|---------|
-| `scripts/init` | Initialize memory + config |
-| `scripts/org-add` | Add an org for shared memory |
-| `scripts/mem-sync` | Pull org memory updates |
-| `scripts/mem-share` | Batch commit and push org changes (rarely needed — `mem-write --org` auto-shares) |
-| `scripts/sleep` | Consolidation pass |
-| `scripts/mem-doctor` | Health check |
+| Command              | Purpose                                                                           |
+| -------------------- | --------------------------------------------------------------------------------- |
+| `scripts/init`       | Initialize memory + config                                                        |
+| `scripts/org-add`    | Add an org for shared memory                                                      |
+| `scripts/mem-sync`   | Pull org memory updates                                                           |
+| `scripts/mem-share`  | Batch commit and push org changes (rarely needed — `mem-write --org` auto-shares) |
+| `scripts/sleep`      | Consolidation pass                                                                |
+| `scripts/mem-doctor` | Health check                                                                      |
 
 ---
 

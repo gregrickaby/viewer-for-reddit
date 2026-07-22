@@ -4,13 +4,13 @@
 
 Axiom has two query engines with distinct query languages and endpoints.
 
-| | EventDB | MetricsDB |
-|--|---------|-----------|
-| **Data** | Logs, traces, spans | OTel metrics (counters, gauges, histograms) |
-| **Datasets** | Standard datasets | `otel-metrics-v1` datasets |
-| **Query language** | APL | MPL |
-| **Query script** | `scripts/axiom-query` | `scripts/axiom-metrics-query` |
-| **API endpoint** | `POST /v1/datasets/_apl` | `POST /v1/query/_metrics` |
+|                      | EventDB                    | MetricsDB                                         |
+| -------------------- | -------------------------- | ------------------------------------------------- |
+| **Data**             | Logs, traces, spans        | OTel metrics (counters, gauges, histograms)       |
+| **Datasets**         | Standard datasets          | `otel-metrics-v1` datasets                        |
+| **Query language**   | APL                        | MPL                                               |
+| **Query script**     | `scripts/axiom-query`      | `scripts/axiom-metrics-query`                     |
+| **API endpoint**     | `POST /v1/datasets/_apl`   | `POST /v1/query/_metrics`                         |
 | **Time expressions** | `ago()`, `now()`, absolute | RFC3339 timestamps only — no relative expressions |
 
 EventDB is general-purpose event storage. MetricsDB is purpose-built for time-series metrics — optimized for aggregation, alignment, and high-cardinality tag queries on counter/gauge/histogram data.
@@ -41,13 +41,13 @@ The dataset and metric are specified as a single identifier separated by `:`, fo
 
 ### Key Operators
 
-| Operator | Purpose | Example |
-|----------|---------|---------|
-| `align` | Align data to time buckets | `align to 5m using avg` |
-| `group` | Group by tag values | `group by service.name` |
-| `filter` | Filter by tag values | `filter service.name == "api"` |
-| `map` | Transform values | `map value * 100` |
-| `bucket` | Histogram bucket operations | `bucket percentile(0.99)` |
+| Operator | Purpose                     | Example                        |
+| -------- | --------------------------- | ------------------------------ |
+| `align`  | Align data to time buckets  | `align to 5m using avg`        |
+| `group`  | Group by tag values         | `group by service.name`        |
+| `filter` | Filter by tag values        | `filter service.name == "api"` |
+| `map`    | Transform values            | `map value * 100`              |
+| `bucket` | Histogram bucket operations | `bucket percentile(0.99)`      |
 
 ### Time Constraint (CRITICAL)
 
@@ -147,18 +147,19 @@ Note: Metric and tag names depend on the OTel instrumentation. Use the discovery
 
 ## Error Handling
 
-| Code | Meaning | Action |
-|------|---------|--------|
-| 400 | Bad query syntax or invalid dataset | Check MPL syntax via `--spec` flag |
-| 401 | Missing or invalid authentication | Verify `AXIOM_TOKEN` is set and valid |
-| 403 | No permission to query this dataset | Check token scopes |
-| 404 | Dataset not found | Verify dataset name via `scripts/init` |
-| 429 | Rate limited | Back off and retry |
-| 500 | Internal server error | Report `x-axiom-trace-id` to backend team |
+| Code | Meaning                             | Action                                    |
+| ---- | ----------------------------------- | ----------------------------------------- |
+| 400  | Bad query syntax or invalid dataset | Check MPL syntax via `--spec` flag        |
+| 401  | Missing or invalid authentication   | Verify `AXIOM_TOKEN` is set and valid     |
+| 403  | No permission to query this dataset | Check token scopes                        |
+| 404  | Dataset not found                   | Verify dataset name via `scripts/init`    |
+| 429  | Rate limited                        | Back off and retry                        |
+| 500  | Internal server error               | Report `x-axiom-trace-id` to backend team |
 
 On **500 errors**: the query script captures the `x-axiom-trace-id` response header automatically. Report this trace ID — it is essential for backend debugging.
 
 On **400 errors**: the most common cause is invalid MPL syntax. Fetch the spec (`--spec`) and compare your query against it. Common mistakes:
+
 - Using relative time expressions (`ago()`, `now()`)
 - Missing `align` operator (most queries need one)
 - Wrong metric or tag names (use discovery endpoints to verify)

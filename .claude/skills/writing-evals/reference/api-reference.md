@@ -6,15 +6,15 @@ Exact type signatures for the Axiom AI SDK evaluation APIs.
 
 ## Import Paths
 
-| Import | Exports |
-|--------|---------|
-| `axiom/ai` | `createAppScope`, `initAxiomAI`, `withSpan`, `wrapAISDKModel`, `wrapTool`, `axiomAIMiddleware`, `RedactionPolicy` |
-| `axiom/ai/evals` | `Eval`, `EvalTask`, `EvalParams` |
-| `axiom/ai/scorers` | `Scorer` |
-| `axiom/ai/evals/online` | `onlineEval` |
-| `axiom/ai/scorers/aggregations` | `Mean`, `Median`, `PassAtK`, `PassHatK`, `AtLeastOneTrialPasses`, `AllTrialsPass` |
-| `axiom/ai/config` | `defineConfig` |
-| `axiom/ai/feedback` | `createFeedbackClient` |
+| Import                          | Exports                                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `axiom/ai`                      | `createAppScope`, `initAxiomAI`, `withSpan`, `wrapAISDKModel`, `wrapTool`, `axiomAIMiddleware`, `RedactionPolicy` |
+| `axiom/ai/evals`                | `Eval`, `EvalTask`, `EvalParams`                                                                                  |
+| `axiom/ai/scorers`              | `Scorer`                                                                                                          |
+| `axiom/ai/evals/online`         | `onlineEval`                                                                                                      |
+| `axiom/ai/scorers/aggregations` | `Mean`, `Median`, `PassAtK`, `PassHatK`, `AtLeastOneTrialPasses`, `AllTrialsPass`                                 |
+| `axiom/ai/config`               | `defineConfig`                                                                                                    |
+| `axiom/ai/feedback`             | `createFeedbackClient`                                                                                            |
 
 ---
 
@@ -24,10 +24,10 @@ Exact type signatures for the Axiom AI SDK evaluation APIs.
 function Eval<TInput, TExpected, TOutput>(
   name: string,
   params: EvalParams<TInput, TExpected, TOutput> & {
-    capability: string;
-    step?: string;
-  },
-): void;
+    capability: string
+    step?: string
+  }
+): void
 ```
 
 ### EvalParams
@@ -37,40 +37,43 @@ type EvalParams<TInput, TExpected, TOutput> = {
   data:
     | readonly CollectionRecord<TInput, TExpected>[]
     | Promise<readonly CollectionRecord<TInput, TExpected>[]>
-    | (() => readonly CollectionRecord<TInput, TExpected>[] | Promise<readonly CollectionRecord<TInput, TExpected>[]>);
-  capability: string;
-  step?: string;
-  task: EvalTask<TInput, TExpected, TOutput>;
-  scorers: ReadonlyArray<ScorerLike<TInput, TExpected, TOutput>>;
-  metadata?: Record<string, unknown>;
-  timeout?: number;
-  configFlags?: string[];
-  trials?: number;  // default: 1
-};
+    | (() =>
+        | readonly CollectionRecord<TInput, TExpected>[]
+        | Promise<readonly CollectionRecord<TInput, TExpected>[]>)
+  capability: string
+  step?: string
+  task: EvalTask<TInput, TExpected, TOutput>
+  scorers: ReadonlyArray<ScorerLike<TInput, TExpected, TOutput>>
+  metadata?: Record<string, unknown>
+  timeout?: number
+  configFlags?: string[]
+  trials?: number // default: 1
+}
 ```
 
 ### CollectionRecord
 
 ```typescript
 type CollectionRecord<TInput, TExpected> = {
-  input: TInput;
-  expected: TExpected;
-  metadata?: Record<string, unknown>;
-};
+  input: TInput
+  expected: TExpected
+  metadata?: Record<string, unknown>
+}
 ```
 
 ### EvalTask
 
 ```typescript
 type EvalTask<TInput, TExpected, TOutput> = (args: {
-  input: TInput;
-  expected: TExpected;
-}) => TOutput | Promise<TOutput> | AsyncIterable<TOutput>;
+  input: TInput
+  expected: TExpected
+}) => TOutput | Promise<TOutput> | AsyncIterable<TOutput>
 ```
 
 ### Name Validation
 
 Eval names and capability/step names are validated:
+
 - Must be non-empty strings
 - Used for telemetry span naming and Axiom console display
 
@@ -81,50 +84,50 @@ Eval names and capability/step names are validated:
 ```typescript
 function Scorer<TArgs extends Record<string, any>>(
   name: string,
-  fn: (args: TArgs) => number | boolean | Score | Promise<number | boolean | Score>,
-  options?: ScorerOptions,
-): Scorer;
+  fn: (
+    args: TArgs
+  ) => number | boolean | Score | Promise<number | boolean | Score>,
+  options?: ScorerOptions
+): Scorer
 ```
 
 ### Score
 
 ```typescript
 type Score = {
-  score: number | boolean | null;
-  metadata?: Record<string, any>;
-};
+  score: number | boolean | null
+  metadata?: Record<string, any>
+}
 ```
 
 ### ScorerOptions
 
 ```typescript
 type ScorerOptions = {
-  aggregation?: Aggregation;
-};
+  aggregation?: Aggregation
+}
 ```
 
 ### ScorerLike (what Eval accepts)
 
 ```typescript
-type ScorerLike<TInput, TExpected, TOutput> = (
-  args: {
-    input?: TInput;
-    expected?: TExpected;
-    output: TOutput;
-    trialIndex?: number;
-  },
-) => Score | Promise<Score>;
+type ScorerLike<TInput, TExpected, TOutput> = (args: {
+  input?: TInput
+  expected?: TExpected
+  output: TOutput
+  trialIndex?: number
+}) => Score | Promise<Score>
 ```
 
 ### ScoreWithName (result after execution)
 
 ```typescript
 type ScoreWithName = Score & {
-  name: string;
-  trials?: number[];
-  aggregation?: string;
-  threshold?: number;
-};
+  name: string
+  trials?: number[]
+  aggregation?: string
+  threshold?: number
+}
 ```
 
 ---
@@ -133,10 +136,10 @@ type ScoreWithName = Score & {
 
 ```typescript
 type Aggregation<T extends string = string> = {
-  type: T;
-  threshold?: number;
-  aggregate: (scores: number[]) => number;
-};
+  type: T
+  threshold?: number
+  aggregate: (scores: number[]) => number
+}
 ```
 
 ### Mean
@@ -174,21 +177,25 @@ const PassHatK = (opts?: { threshold?: number }): Aggregation<'pass^k'>
 ## createAppScope
 
 ```typescript
-function createAppScope<FlagSchema extends ZodObject<any>, FactSchema extends ZodObject<any> | undefined>(
-  config: { flagSchema: FlagSchema; factSchema?: FactSchema },
-): AppScope<FlagSchema, FactSchema>;
+function createAppScope<
+  FlagSchema extends ZodObject<any>,
+  FactSchema extends ZodObject<any> | undefined
+>(config: {
+  flagSchema: FlagSchema
+  factSchema?: FactSchema
+}): AppScope<FlagSchema, FactSchema>
 ```
 
 ### AppScope
 
 ```typescript
 interface AppScope<FS, SC> {
-  flag: (path: string) => any;          // dot-notation access, e.g. flag('myCapability.model')
-  fact: (name: string, value: any) => void;
-  overrideFlags: (partial: Record<string, any>) => void;
-  withFlags: <T>(overrides: Record<string, any>, fn: () => T) => T;
-  pickFlags: (...paths: string[]) => string[];
-  getAllDefaultFlags: () => Record<string, any>;
+  flag: (path: string) => any // dot-notation access, e.g. flag('myCapability.model')
+  fact: (name: string, value: any) => void
+  overrideFlags: (partial: Record<string, any>) => void
+  withFlags: <T>(overrides: Record<string, any>, fn: () => T) => T
+  pickFlags: (...paths: string[]) => string[]
+  getAllDefaultFlags: () => Record<string, any>
 }
 ```
 
@@ -209,7 +216,7 @@ interface AppScope<FS, SC> {
 ## defineConfig
 
 ```typescript
-function defineConfig(config: AxiomConfig): AxiomConfig;
+function defineConfig(config: AxiomConfig): AxiomConfig
 ```
 
 ### AxiomConfig
@@ -217,24 +224,24 @@ function defineConfig(config: AxiomConfig): AxiomConfig;
 ```typescript
 interface AxiomConfig {
   eval?: {
-    url?: string;
-    edgeUrl?: string;
-    token?: string;
-    dataset?: string;
-    orgId?: string;
-    flagSchema?: ZodObject<any> | null;
+    url?: string
+    edgeUrl?: string
+    token?: string
+    dataset?: string
+    orgId?: string
+    flagSchema?: ZodObject<any> | null
     instrumentation?: (options: {
-      url: string;
-      edgeUrl: string;
-      token: string;
-      dataset: string;
-      orgId?: string;
-    }) => { provider?: TracerProvider } | Promise<{ provider?: TracerProvider }>;
-    timeoutMs?: number;           // default: 60000
-    include?: string[];           // default: ['**/*.eval.{ts,js,mts,mjs,cts,cjs}']
-    exclude?: string[];           // default: ['**/node_modules/**', '**/dist/**', '**/build/**']
-  };
-  [key: `$${string}`]: Partial<AxiomConfig['eval']>;  // environment overrides
+      url: string
+      edgeUrl: string
+      token: string
+      dataset: string
+      orgId?: string
+    }) => {provider?: TracerProvider} | Promise<{provider?: TracerProvider}>
+    timeoutMs?: number // default: 60000
+    include?: string[] // default: ['**/*.eval.{ts,js,mts,mjs,cts,cjs}']
+    exclude?: string[] // default: ['**/node_modules/**', '**/dist/**', '**/build/**']
+  }
+  [key: `$${string}`]: Partial<AxiomConfig['eval']> // environment overrides
 }
 ```
 
@@ -245,35 +252,40 @@ interface AxiomConfig {
 ```typescript
 function onlineEval<TInput, TOutput>(
   meta: {
-    capability: string;
-    step?: string;
-    link?: SpanContext;
+    capability: string
+    step?: string
+    link?: SpanContext
   },
   options: {
-    input?: TInput;
-    output: TOutput;
-    scorers: readonly OnlineEvalScorerEntry[];
-  },
-): Promise<Partial<Record<string, ScorerResult>>>;
+    input?: TInput
+    output: TOutput
+    scorers: readonly OnlineEvalScorerEntry[]
+  }
+): Promise<Partial<Record<string, ScorerResult>>>
 
 type OnlineEvalScorerEntry =
-  | Scorer                                          // bare scorer, always runs
-  | { scorer: Scorer; sampling?: ScorerSampling }   // scorer with per-scorer sampling
-  | { name: string; score: Score; metadata?: Record<string, unknown>; error?: string };  // precomputed result
+  | Scorer // bare scorer, always runs
+  | {scorer: Scorer; sampling?: ScorerSampling} // scorer with per-scorer sampling
+  | {
+      name: string
+      score: Score
+      metadata?: Record<string, unknown>
+      error?: string
+    } // precomputed result
 
 type ScorerSampling =
-  | number                                          // 0.0–1.0 rate
-  | ((args: { input?: TInput; output: TOutput }) => boolean | Promise<boolean>);
+  | number // 0.0–1.0 rate
+  | ((args: {input?: TInput; output: TOutput}) => boolean | Promise<boolean>)
 ```
 
 ### ScorerResult
 
 ```typescript
 type ScorerResult = {
-  name: string;
-  score: Score;
-  error?: string;
-};
+  name: string
+  score: Score
+  error?: string
+}
 ```
 
 ---
@@ -283,22 +295,23 @@ type ScorerResult = {
 Tasks can return an `AsyncIterable` for evaluating streaming AI functions (e.g., `streamText()`):
 
 ```typescript
-import { streamText } from 'ai';
+import {streamText} from 'ai'
 
 Eval('stream-eval', {
   capability: 'qa',
-  data: [{ input: 'What is 2+2?', expected: '4' }],
-  task: async function* ({ input }) {
-    const result = streamText({ model: openai('gpt-4o-mini'), prompt: input });
+  data: [{input: 'What is 2+2?', expected: '4'}],
+  task: async function* ({input}) {
+    const result = streamText({model: openai('gpt-4o-mini'), prompt: input})
     for await (const chunk of result.textStream) {
-      yield chunk;
+      yield chunk
     }
   },
-  scorers: [ExactMatch],
-});
+  scorers: [ExactMatch]
+})
 ```
 
 **Concatenation rules:**
+
 - **String chunks** → joined together (`chunks.join('')`)
 - **Object chunks** → last chunk returned (streaming typically overwrites)
 - **Empty stream** → returns empty string

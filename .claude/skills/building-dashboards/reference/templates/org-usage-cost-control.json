@@ -424,10 +424,7 @@
       }
     }
   ],
-  "datasets": [
-    "axiom-audit",
-    "axiom-history"
-  ],
+  "datasets": ["axiom-audit", "axiom-history"],
   "description": "Usage monitoring dashboard for tracking ingest volume, query costs, burn rate projections, and waste identification. Filter by org to scope analysis.",
   "layout": [
     {

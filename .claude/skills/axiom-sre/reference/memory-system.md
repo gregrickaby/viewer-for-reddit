@@ -4,10 +4,10 @@ Three-tier memory with automatic merging. All tiers use identical structure.
 
 ## Tiers
 
-| Tier | Location | Scope | Sync |
-|------|----------|-------|------|
-| Personal | `~/.config/axiom-sre/memory/` | Just me | None |
-| Org | `~/.config/axiom-sre/memory/orgs/{org}/` | Team-wide | Git repo |
+| Tier     | Location                                 | Scope     | Sync     |
+| -------- | ---------------------------------------- | --------- | -------- |
+| Personal | `~/.config/axiom-sre/memory/`            | Just me   | None     |
+| Org      | `~/.config/axiom-sre/memory/orgs/{org}/` | Team-wide | Git repo |
 
 ## Reading Memory
 
@@ -24,6 +24,7 @@ done
 ```
 
 When displaying entries, tag by source tier so user knows origin:
+
 ```
 [org:axiom] Connection pool pattern: check for leaked connections...
 [personal] I prefer 5m time bins for latency analysis
@@ -46,11 +47,11 @@ scripts/mem-write --type pattern --tags "db,timeout" patterns "conn-pool" "Conne
 scripts/mem-write --org axiom patterns "timeout-pattern" "How to detect timeouts"
 ```
 
-| Trigger | Target | Example |
-|---------|--------|---------|
-| "remember this" | Personal | "Remember I prefer to DM @alice" |
-| "save for the team" | Org | "Save this pattern for the team" |
-| Auto-learning | Personal | Query worked → saved automatically |
+| Trigger             | Target   | Example                            |
+| ------------------- | -------- | ---------------------------------- |
+| "remember this"     | Personal | "Remember I prefer to DM @alice"   |
+| "save for the team" | Org      | "Save this pattern for the team"   |
+| Auto-learning       | Personal | Query worked → saved automatically |
 
 Org writes are automatically committed and pushed — no extra step needed.
 
@@ -108,12 +109,14 @@ Connection pool exhausted due to leaked connections.
 **You are always learning.** Every debugging session is an opportunity to get smarter.
 
 **Automatic learning (no user prompt needed):**
+
 - Query found root cause → record to `kb/queries.md`
 - New failure pattern discovered → record to `kb/patterns.md`
 - User corrects you → record what didn't work AND what did
 - Debugging session succeeds → summarize learnings to `kb/incidents.md`
 
 **User-triggered recording:**
+
 - "Remember this", "save this" → record immediately to Personal
 - "Save for the team" → record to Org + prompt to push
 
@@ -138,6 +141,7 @@ Connection pool exhausted. Found leak in payment handler.
 ## Consolidation (Sleep)
 
 Run after incidents or periodically:
+
 ```bash
 scripts/sleep                           # default full preset: clean + share + prompt
 scripts/sleep --org axiom               # same full preset, scoped to one org
@@ -145,12 +149,14 @@ scripts/sleep --org axiom --dry-run     # analyze + prompt only
 ```
 
 Deep sleep phases:
+
 - `N1 review` recent entries in the selected window.
 - `N2 analysis` entry counts, duplicate keys, and type drift.
 - `N3 apply` deterministic cleanup (keep newest duplicate, drop `Supersedes` targets, normalize `type` in incidents/patterns/queries).
 - `REM share` commit/push org repo changes.
 
 Safety defaults:
+
 - no mode flags => full preset.
 - `--dry-run` never modifies files and never pushes.
 

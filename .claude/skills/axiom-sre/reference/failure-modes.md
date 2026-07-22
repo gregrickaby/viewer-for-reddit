@@ -20,7 +20,7 @@ Common failure patterns with symptoms, detection queries, and root causes.
 **Check:** Connection pools, thread pools, file descriptors, memory
 
 ```apl
-['logs'] | where _time between (ago(1h) .. now()) 
+['logs'] | where _time between (ago(1h) .. now())
 | where message has_cs "timeout" or message has_cs "connection refused" or message has_cs "pool"
 | summarize count() by bin_auto(_time), service
 ```
@@ -32,6 +32,7 @@ Common failure patterns with symptoms, detection queries, and root causes.
 **Symptoms:** Latency spikes on specific nodes while others are fine; timeouts to specific IPs; CPU flatlined on subset of hosts; throughput drops while request volume constant
 
 **Detection:**
+
 ```apl
 // Check latency by individual host
 ['traces'] | where ['service.name'] == '<service>'
@@ -39,12 +40,14 @@ Common failure patterns with symptoms, detection queries, and root causes.
 ```
 
 **Investigation:**
+
 1. Identify which node(s) are saturated (latency by host)
 2. Find what's running on that node (trace by host)
 3. Look for expensive operations (duration, field counts, row counts)
 4. Check if routing (consistent hashing) is causing load imbalance
 
 **Common causes:**
+
 - Consistent hashing clustering hot keys on one node
 - Expensive operations (wide queries, large payloads) blocking capacity
 - Long-running operations that don't respect cancellation
@@ -57,6 +60,7 @@ Common failure patterns with symptoms, detection queries, and root causes.
 **Symptoms:** Operations running far longer than configured timeout; "context canceled" in logs but work continues; resources consumed after client gives up
 
 **Detection:**
+
 ```apl
 // Find operations running way past expected timeout
 ['traces'] | where ['service.name'] == '<service>'
@@ -67,6 +71,7 @@ Common failure patterns with symptoms, detection queries, and root causes.
 **Root cause:** Code path missing `ctx.Done()` checks — work continues even after caller cancels.
 
 **Fix pattern (Go):**
+
 ```go
 select {
 case <-ctx.Done():
@@ -86,8 +91,8 @@ Add `ctx.Done()` checks at channel receives and between major processing phases.
 **Detection:** Find which service's errors appeared first
 
 ```apl
-['logs'] | where _time between (ago(1h) .. now()) | where status >= 500 
-| summarize first_error = min(_time) by service 
+['logs'] | where _time between (ago(1h) .. now()) | where status >= 500
+| summarize first_error = min(_time) by service
 | order by first_error asc | take 5
 ```
 
@@ -99,7 +104,7 @@ Add `ctx.Done()` checks at channel receives and between major processing phases.
 **Detection:** Request rate spike after recovery
 
 ```apl
-['logs'] | where _time between (ago(1h) .. now()) 
+['logs'] | where _time between (ago(1h) .. now())
 | summarize count() by bin(_time, 10s) | order by _time asc
 ```
 

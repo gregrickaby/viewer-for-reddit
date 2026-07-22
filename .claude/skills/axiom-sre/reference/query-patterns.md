@@ -53,15 +53,15 @@ Ready-to-use APL queries for common investigation scenarios.
 
 ```apl
 // Error rate over time
-['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500 
+['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500
 | summarize count() by bin_auto(_time)
 
 // Errors by service and endpoint
-['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500 
+['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500
 | summarize count() by service, uri | top 20 by count_
 
 // Error messages (look for patterns)
-['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500 
+['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500
 | summarize count() by message | top 20 by count_
 ```
 
@@ -73,21 +73,21 @@ Ready-to-use APL queries for common investigation scenarios.
 | summarize p99=percentile(duration, 99) by ['resource.host.name'], bin(_time, 1m)
 
 // Percentiles over time (logs with duration_ms field)
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | summarize percentiles_array(duration_ms, 50, 95, 99) by bin_auto(_time)
 
 // Percentiles over time (traces with duration timespan field)
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | summarize percentiles_array(duration, 50, 95, 99) by bin_auto(_time)
 
 // What do slow requests have in common?
 // Use duration literals for timespan fields: duration > 1s
 // Use numeric comparison for ms fields: duration_ms > 1000
-['dataset'] | where _time between (ago(1h) .. now()) | where duration_ms > 1000 
+['dataset'] | where _time between (ago(1h) .. now()) | where duration_ms > 1000
 | summarize count() by uri, method | top 20 by count_
 
 // Latency distribution
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | summarize histogram(duration_ms, 100)
 ```
 
@@ -113,8 +113,8 @@ Ready-to-use APL queries for common investigation scenarios.
 
 ```apl
 // Which service failed first? (cascading failure detection)
-['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500 
-| summarize first_error = min(_time) by service 
+['dataset'] | where _time between (ago(1h) .. now()) | where status >= 500
+| summarize first_error = min(_time) by service
 | order by first_error asc | take 5
 
 // Compare error rates before/after a deploy
@@ -123,7 +123,7 @@ Ready-to-use APL queries for common investigation scenarios.
 | extend error_rate = toreal(errors) / total
 
 // Error rate by region
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | summarize error_rate = toreal(countif(status >= 500)) / count() by region
 ```
 
@@ -131,15 +131,15 @@ Ready-to-use APL queries for common investigation scenarios.
 
 ```apl
 // Request rate over time
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | summarize count() by bin(_time, 1m)
 
 // Traffic by endpoint
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | summarize count() by uri, method | top 20 by count_
 
 // Traffic spike detection
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | summarize count() by bin(_time, 10s) | order by _time asc
 ```
 
@@ -147,13 +147,13 @@ Ready-to-use APL queries for common investigation scenarios.
 
 ```apl
 // Follow a single request through the system
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | where request_id == "abc-123"
 | order by _time asc
 | project _time, service, message, status
 
 // Find related requests (same user, same session)
-['dataset'] | where _time between (ago(1h) .. now()) 
+['dataset'] | where _time between (ago(1h) .. now())
 | where user_id == "user-456"
 | order by _time asc
 | project _time, request_id, service, uri, status

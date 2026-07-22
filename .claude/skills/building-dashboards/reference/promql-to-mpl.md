@@ -15,13 +15,13 @@ Run `scripts/metrics/metrics-spec <deploy> <dataset>` before authoring — opera
 
 Before reaching for `metrics-info`, apply the deterministic Prometheus → OTel renaming rules. Most "missing metric" cases dissolve at this step.
 
-| PromQL form                                                    | OTel form                              |
-|:---------------------------------------------------------------|:---------------------------------------|
-| `<metric>_total` (counter)                                     | `<metric>` (counter-ness in metadata)  |
-| `<metric>_bucket` / `<metric>_sum` / `<metric>_count` (histogram derivatives) | `<metric>` (one Histogram metric) |
-| `<metric>_seconds`, `<metric>_bytes`, `<metric>_milliseconds`  | sometimes preserved; sometimes only in `unit` metadata |
+| PromQL form                                                                   | OTel form                                              |
+| :---------------------------------------------------------------------------- | :----------------------------------------------------- |
+| `<metric>_total` (counter)                                                    | `<metric>` (counter-ness in metadata)                  |
+| `<metric>_bucket` / `<metric>_sum` / `<metric>_count` (histogram derivatives) | `<metric>` (one Histogram metric)                      |
+| `<metric>_seconds`, `<metric>_bytes`, `<metric>_milliseconds`                 | sometimes preserved; sometimes only in `unit` metadata |
 
-**Label names are not deterministic.** Prometheus label names do not round-trip cleanly to OTel attribute names — the OTel→Prom direction (dots in OTel attributes become underscores in Prom) is convention, but the reverse is a guess. A Prom label like `job` is *not* a renamed OTel attribute; a Prom label like `service_name` *might* be the OTel attribute `service.name`, or it might just be a Prom label called `service_name`. Treat label-name resolution as reverse-tag-discovery work (see below), not as a deterministic renaming step.
+**Label names are not deterministic.** Prometheus label names do not round-trip cleanly to OTel attribute names — the OTel→Prom direction (dots in OTel attributes become underscores in Prom) is convention, but the reverse is a guess. A Prom label like `job` is _not_ a renamed OTel attribute; a Prom label like `service_name` _might_ be the OTel attribute `service.name`, or it might just be a Prom label called `service_name`. Treat label-name resolution as reverse-tag-discovery work (see below), not as a deterministic renaming step.
 
 Full rules and order of operations are in [grafana-migration.md § Name Mapping](./grafana-migration.md#name-mapping-promql--otel-ingest).
 
@@ -50,12 +50,12 @@ If `type` comes back `"mixed"`, the tag carries multiple types across rows. Use 
 
 **String-typed tag** (most labels — `service.name`, `path`, `container`, etc.):
 
-| PromQL matcher              | MPL `where` form                              |
-|:----------------------------|:----------------------------------------------|
-| `{label="value"}`           | `\| where label == "value"`                    |
-| `{label!="value"}`          | `\| where label != "value"`                    |
-| `{label=~"regex"}`          | `\| where label == #/regex/`                   |
-| `{label!~"regex"}`          | `\| where label != #/regex/`                   |
+| PromQL matcher     | MPL `where` form             |
+| :----------------- | :--------------------------- |
+| `{label="value"}`  | `\| where label == "value"`  |
+| `{label!="value"}` | `\| where label != "value"`  |
+| `{label=~"regex"}` | `\| where label == #/regex/` |
+| `{label!~"regex"}` | `\| where label != #/regex/` |
 
 MPL regex uses `#/…/` delimiters (no quotes). Forward slashes inside the pattern need escaping (`\/`).
 
@@ -63,12 +63,12 @@ MPL regex uses `#/…/` delimiters (no quotes). Forward slashes inside the patte
 
 PromQL stored the value as a string and used regex to match ranges (`code=~"5.."`). When the same tag is `int`-typed in MPL, **translate to a typed comparison** — it's faster, clearer, and matches the user's intent.
 
-| PromQL                       | MPL (when `code` is `int`)                  |
-|:-----------------------------|:--------------------------------------------|
-| `{code="500"}`               | `\| where code == 500`                       |
-| `{code=~"5.."}`              | `\| where code >= 500 and code < 600`        |
-| `{code!~"[1234].."}`         | `\| where code >= 500`                       |
-| `{code=~"500\|502\|503"}`    | `\| where code == 500 or code == 502 or code == 503` |
+| PromQL                    | MPL (when `code` is `int`)                           |
+| :------------------------ | :--------------------------------------------------- |
+| `{code="500"}`            | `\| where code == 500`                               |
+| `{code=~"5.."}`           | `\| where code >= 500 and code < 600`                |
+| `{code!~"[1234].."}`      | `\| where code >= 500`                               |
+| `{code=~"500\|502\|503"}` | `\| where code == 500 or code == 502 or code == 503` |
 
 **Bool-typed tag:** `{flag="true"}` → `| where flag == true`.
 
@@ -129,14 +129,14 @@ test:http_requests_total
 
 ### Other aggregations
 
-| PromQL                          | MPL                                                |
-|:--------------------------------|:---------------------------------------------------|
-| `sum(metric)`                   | `\| group using sum`                               |
-| `sum by (a, b) (metric)`        | `\| group by a, b using sum`                       |
+| PromQL                          | MPL                                                       |
+| :------------------------------ | :-------------------------------------------------------- |
+| `sum(metric)`                   | `\| group using sum`                                      |
+| `sum by (a, b) (metric)`        | `\| group by a, b using sum`                              |
 | `avg by (a) (rate(metric[5m]))` | `\| align to 5m using prom::rate \| group by a using avg` |
-| `max_over_time(metric[7d])`     | `\| group using max \| align to 7d using avg`      |
-| `min by (a) (metric)`           | `\| group by a using min`                          |
-| `count by (a) (metric)`         | `\| group by a using count`                        |
+| `max_over_time(metric[7d])`     | `\| group using max \| align to 7d using avg`             |
+| `min by (a) (metric)`           | `\| group by a using min`                                 |
+| `count by (a) (metric)`         | `\| group by a using count`                               |
 
 ### `by(...)` is mandatory to preserve
 
@@ -230,7 +230,7 @@ For naming a branch in `compute`, use the `as` keyword: `test:http_requests_tota
 
 ## Reverse-Tag Discovery for Missing Labels
 
-When a PromQL label name does not exist verbatim in the MPL dataset *after* applying OTel rename rules — e.g. PromQL has `{job="ingest-worker"}` but the dataset has no `job` tag — **do not drop the selector**. The selector was authored deliberately; the dataset just spells the dimension differently.
+When a PromQL label name does not exist verbatim in the MPL dataset _after_ applying OTel rename rules — e.g. PromQL has `{job="ingest-worker"}` but the dataset has no `job` tag — **do not drop the selector**. The selector was authored deliberately; the dataset just spells the dimension differently.
 
 ### Workflow
 
@@ -258,20 +258,20 @@ Cap reverse-search at **two candidates** before surfacing a question. If two rea
 
 ### What discovery does NOT do
 
-Discovery validates that the spec'd subset exists in the dataset. It **does not** invent a subset. If you find yourself running `metrics-info` to *decide* what the panel should filter on, stop — the source dashboard already wrote that down. (See also [grafana-migration.md § Common Migration Pitfalls](./grafana-migration.md#common-migration-pitfalls).)
+Discovery validates that the spec'd subset exists in the dataset. It **does not** invent a subset. If you find yourself running `metrics-info` to _decide_ what the panel should filter on, stop — the source dashboard already wrote that down. (See also [grafana-migration.md § Common Migration Pitfalls](./grafana-migration.md#common-migration-pitfalls).)
 
 ---
 
 ## Selector Values Absent from the Dataset Are Aliases — Cite the Source
 
-When a PromQL selector value isn't in `metrics-info … tags <label> values`, the value is a recording-rule alias defined elsewhere, not a literal to translate. The alias expands to a subset of the dataset's values — but that subset is defined *outside* the dashboard JSON.
+When a PromQL selector value isn't in `metrics-info … tags <label> values`, the value is a recording-rule alias defined elsewhere, not a literal to translate. The alias expands to a subset of the dataset's values — but that subset is defined _outside_ the dashboard JSON.
 
 Resolve by citing a **written source**:
 
 - the panel's `description` field (often enumerates the subset in prose), or
 - the upstream rule library file + line (e.g. `<rule-library>.<ext>:L<n>`).
 
-**Memory is not a source.** Agents recall the *shape* of rule definitions more confidently than the exact contents, and rule libraries change over time. No citation → defer the panel with a Note.
+**Memory is not a source.** Agents recall the _shape_ of rule definitions more confidently than the exact contents, and rule libraries change over time. No citation → defer the panel with a Note.
 
 Detection trigger: the value isn't in `metrics-info … tags <label> values`. From that point on, no prior-knowledge expansion is allowed.
 

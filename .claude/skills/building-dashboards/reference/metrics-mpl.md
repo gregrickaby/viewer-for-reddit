@@ -14,12 +14,12 @@ Reference for metrics-backed chart queries. Authoring through `chart-add --mpl '
 }
 ```
 
-| Field | Required | Notes |
-|---|---|---|
-| `query.apl` | Yes | The MPL pipeline. Same field name as APL queries. |
-| `query.metricsDataset` | Yes | The discriminator that flags MPL. Without it the backend treats `apl` as APL. |
-| `query.mpl` | — | Rejected on create. GET returns it on existing UI-authored charts; ignore. |
-| `query.metricsMetric`, `metricsFilter`, `metricsTransformations` | — | UI/editor metadata. Not needed for hand-authored or `chart-add` output. |
+| Field                                                            | Required | Notes                                                                         |
+| ---------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `query.apl`                                                      | Yes      | The MPL pipeline. Same field name as APL queries.                             |
+| `query.metricsDataset`                                           | Yes      | The discriminator that flags MPL. Without it the backend treats `apl` as APL. |
+| `query.mpl`                                                      | —        | Rejected on create. GET returns it on existing UI-authored charts; ignore.    |
+| `query.metricsMetric`, `metricsFilter`, `metricsTransformations` | —        | UI/editor metadata. Not needed for hand-authored or `chart-add` output.       |
 
 ## Authoring Checklist
 
@@ -31,19 +31,19 @@ Reference for metrics-backed chart queries. Authoring through `chart-add --mpl '
 6. Validate the pipeline with `scripts/metrics/mpl-validate-chart` (auto-injects the param for the validator only; rejects inline time ranges).
 7. Pass to `chart-add --mpl '<query>' --dataset <name>`.
 
-`find-metrics <value>` searches tag *values*, not metric names — only useful with a known entity name.
+`find-metrics <value>` searches tag _values_, not metric names — only useful with a known entity name.
 
 ## Choosing a Query Shape
 
 The `{type, temporality, unit}` block from `metrics-info` drives the pipeline:
 
-| `type` | `temporality` | Pipeline |
-|---|---|---|
-| `Gauge` | `null` | Align directly with `avg`/`min`/`max`/`sum`. No rate. |
-| `CounterMonotonic` | `Cumulative` | Convert to per-second rate (`align using prom::rate`), then aggregate. |
-| `CounterMonotonic` | `Delta` | Already per-interval. Sum/align directly. |
-| `CounterNonMonotonic` | either | Ambiguous (rate? delta? current value?). Ask the user. |
-| `Histogram` | either | Use `bucket … using interpolate_cumulative_histogram` (cumulative) or `interpolate_delta_histogram` (delta). Plain `align using avg` produces nonsense. |
+| `type`                | `temporality` | Pipeline                                                                                                                                                |
+| --------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Gauge`               | `null`        | Align directly with `avg`/`min`/`max`/`sum`. No rate.                                                                                                   |
+| `CounterMonotonic`    | `Cumulative`  | Convert to per-second rate (`align using prom::rate`), then aggregate.                                                                                  |
+| `CounterMonotonic`    | `Delta`       | Already per-interval. Sum/align directly.                                                                                                               |
+| `CounterNonMonotonic` | either        | Ambiguous (rate? delta? current value?). Ask the user.                                                                                                  |
+| `Histogram`           | either        | Use `bucket … using interpolate_cumulative_histogram` (cumulative) or `interpolate_delta_histogram` (delta). Plain `align using avg` produces nonsense. |
 
 `temporality: null` means "not applicable" (the norm for Gauges), not "missing data".
 
@@ -72,17 +72,17 @@ If a chart combines metrics with mismatched units in arithmetic, surface the uni
 
 `unit-for` recognises these UCUM/OTel codes; everything else falls through to `customUnits`:
 
-| Input | Axiom enum |
-|---|---|
-| `s`, `seconds`, `sec` | `TimeSec` |
-| `ms`, `milliseconds` | `TimeMS` |
-| `us`, `µs`, `microseconds` | `TimeUS` |
-| `ns`, `nanoseconds` | `TimeNS` |
-| `min`, `h`, `hour`, `d`, `day` | `TimeMin`/`TimeHour`/`TimeDay` |
-| `By`, `bytes`, `KBy`/`MBy`/`GBy` | `Byte`/`Kilobyte`/`Megabyte`/`Gigabyte` |
-| `By/s`, `bit/s` | `BytesSec`/`BitsSec` |
-| `%` | `Percent100` (+ `customUnits: "%"`) |
-| `USD`/`EUR`/`GBP`/`JPY`/`INR`/`CAD`/`AUD`/`CZK`/`PLN` | `Currency<XXX>` |
+| Input                                                 | Axiom enum                              |
+| ----------------------------------------------------- | --------------------------------------- |
+| `s`, `seconds`, `sec`                                 | `TimeSec`                               |
+| `ms`, `milliseconds`                                  | `TimeMS`                                |
+| `us`, `µs`, `microseconds`                            | `TimeUS`                                |
+| `ns`, `nanoseconds`                                   | `TimeNS`                                |
+| `min`, `h`, `hour`, `d`, `day`                        | `TimeMin`/`TimeHour`/`TimeDay`          |
+| `By`, `bytes`, `KBy`/`MBy`/`GBy`                      | `Byte`/`Kilobyte`/`Megabyte`/`Gigabyte` |
+| `By/s`, `bit/s`                                       | `BytesSec`/`BitsSec`                    |
+| `%`                                                   | `Percent100` (+ `customUnits: "%"`)     |
+| `USD`/`EUR`/`GBP`/`JPY`/`INR`/`CAD`/`AUD`/`CZK`/`PLN` | `Currency<XXX>`                         |
 
 Deliberately not auto-mapped (ambiguous): `m` (metres or minutes), `B` (Bel — bytes are `By`), `1` (OTel "dimensionless" — could be ratio or count), empty/null. These fall through to `customUnits` verbatim or `Auto`.
 

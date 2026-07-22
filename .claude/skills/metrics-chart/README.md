@@ -59,10 +59,10 @@ full reference and input schema.
 
 ## Scripts
 
-| Script                  | Purpose                                                |
-| ----------------------- | ------------------------------------------------------ |
-| `metrics_chart.py`      | Render a metrics v3 (or v2) response as a line chart   |
-| `test_metrics_chart.py` | Unit tests: `python3 -m unittest test_metrics_chart`   |
+| Script                  | Purpose                                              |
+| ----------------------- | ---------------------------------------------------- |
+| `metrics_chart.py`      | Render a metrics v3 (or v2) response as a line chart |
+| `test_metrics_chart.py` | Unit tests: `python3 -m unittest test_metrics_chart` |
 
 ## Related Skills
 

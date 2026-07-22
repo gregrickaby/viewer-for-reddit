@@ -24,9 +24,7 @@
             "apl": "['{{dataset}}'] | where service == '{{service}}' | distinct route | project key=route, value=route | sort by key asc",
             "queryOptions": {"quickRange": "1h"}
           },
-          "options": [
-            {"key": "All", "value": "", "default": true}
-          ]
+          "options": [{"key": "All", "value": "", "default": true}]
         },
         {
           "id": "status_filter",

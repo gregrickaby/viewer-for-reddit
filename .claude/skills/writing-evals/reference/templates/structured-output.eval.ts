@@ -1,25 +1,25 @@
-import { Eval } from 'axiom/ai/evals';
-import { Scorer } from 'axiom/ai/scorers';
+import {Eval} from 'axiom/ai/evals'
+import {Scorer} from 'axiom/ai/scorers'
 // import { pickFlags } from '@/app-scope';
 
 // TODO: import or define your result type
 type ResultType = {
-  field1: string;
-  field2: string;
-  isComplete: boolean;
-  missingFields: string[];
-};
+  field1: string
+  field2: string
+  isComplete: boolean
+  missingFields: string[]
+}
 
 const StructuredMatch = Scorer(
   'structured-match',
-  ({ output, expected }: { output: ResultType; expected: ResultType }) => {
+  ({output, expected}: {output: ResultType; expected: ResultType}) => {
     // Check simple fields
     for (const key of ['field1', 'field2'] as const) {
       if (expected[key] !== output[key]) {
         return {
           score: false,
-          metadata: { field: key, expected: expected[key], actual: output[key] },
-        };
+          metadata: {field: key, expected: expected[key], actual: output[key]}
+        }
       }
     }
 
@@ -27,26 +27,30 @@ const StructuredMatch = Scorer(
     if (expected.isComplete !== output.isComplete) {
       return {
         score: false,
-        metadata: { field: 'isComplete', expected: expected.isComplete, actual: output.isComplete },
-      };
+        metadata: {
+          field: 'isComplete',
+          expected: expected.isComplete,
+          actual: output.isComplete
+        }
+      }
     }
 
     // Check array field (set comparison)
-    const expectedSet = new Set(expected.missingFields);
-    const actualSet = new Set(output.missingFields);
-    const missing = expected.missingFields.filter(f => !actualSet.has(f));
-    const extra = output.missingFields.filter(f => !expectedSet.has(f));
+    const expectedSet = new Set(expected.missingFields)
+    const actualSet = new Set(output.missingFields)
+    const missing = expected.missingFields.filter((f) => !actualSet.has(f))
+    const extra = output.missingFields.filter((f) => !expectedSet.has(f))
 
     if (missing.length || extra.length) {
       return {
         score: false,
-        metadata: { field: 'missingFields', missing, extra },
-      };
+        metadata: {field: 'missingFields', missing, extra}
+      }
     }
 
-    return true;
-  },
-);
+    return true
+  }
+)
 
 Eval('{{capability}}-{{step}}', {
   capability: '{{capability}}',
@@ -61,9 +65,9 @@ Eval('{{capability}}-{{step}}', {
         field1: 'value1',
         field2: 'value2',
         isComplete: true,
-        missingFields: [],
+        missingFields: []
       },
-      metadata: { purpose: 'happy_path_complete' },
+      metadata: {purpose: 'happy_path_complete'}
     },
 
     // Partial information
@@ -73,9 +77,9 @@ Eval('{{capability}}-{{step}}', {
         field1: 'value1',
         field2: 'unknown',
         isComplete: false,
-        missingFields: ['field2'],
+        missingFields: ['field2']
       },
-      metadata: { purpose: 'partial_info' },
+      metadata: {purpose: 'partial_info'}
     },
 
     // Ambiguous
@@ -85,14 +89,14 @@ Eval('{{capability}}-{{step}}', {
         field1: 'unknown',
         field2: 'unknown',
         isComplete: false,
-        missingFields: ['field1', 'field2'],
+        missingFields: ['field1', 'field2']
       },
-      metadata: { purpose: 'ambiguous' },
-    },
+      metadata: {purpose: 'ambiguous'}
+    }
   ],
-  task: async ({ input }) => {
+  task: async ({input}) => {
     // return await extractInfo([{ role: 'user', content: input }]);
-    return { field1: '', field2: '', isComplete: false, missingFields: [] };
+    return {field1: '', field2: '', isComplete: false, missingFields: []}
   },
-  scorers: [StructuredMatch],
-});
+  scorers: [StructuredMatch]
+})

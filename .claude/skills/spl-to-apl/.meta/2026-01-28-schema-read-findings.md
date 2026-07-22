@@ -16,17 +16,17 @@ attempted to improve model's schema-read rate (calling readFile on reference/dat
 
 ## results
 
-| approach | schema-read | results-match | problem |
-|----------|-------------|---------------|---------|
-| no instruction (baseline) | 0% | 78% | doesn't learn types |
-| "REQUIRED" label | 33% | 78% | often ignored |
-| workflow example | 66% | 56% | best reads, worst output |
-| backtick readFile call | 11-22% | 55-78% | variable |
-| current (no backticks + output instruction) | 11% | 78% | stable but low reads |
+| approach                                    | schema-read | results-match | problem                  |
+| ------------------------------------------- | ----------- | ------------- | ------------------------ |
+| no instruction (baseline)                   | 0%          | 78%           | doesn't learn types      |
+| "REQUIRED" label                            | 33%         | 78%           | often ignored            |
+| workflow example                            | 66%         | 56%           | best reads, worst output |
+| backtick readFile call                      | 11-22%      | 55-78%        | variable                 |
+| current (no backticks + output instruction) | 11%         | 78%           | stable but low reads     |
 
 ## the core tension
 
-the skill needs to teach a *behavior* (check schema before translating) but can't embed the *data* (specific field types) because types vary by dataset.
+the skill needs to teach a _behavior_ (check schema before translating) but can't embed the _data_ (specific field types) because types vary by dataset.
 
 teaching behavior requires examples. examples get copied into output.
 
@@ -43,6 +43,7 @@ the skill uses backticks throughout for syntax examples:
 ```
 
 model sometimes copies these into APL:
+
 - "invalid input text `perc50`, `perc9..."
 - "invalid input text `sample-http-log..."
 
@@ -59,6 +60,7 @@ from [agent skill design principles](/Users/bdsqqq/commonplace/01_files/2026-01-
 ## what the 2 failing cases need
 
 both failures are type comparison errors:
+
 - `status >= 500` does string comparison when status is string type
 - fix requires `toint(status) >= 500`
 

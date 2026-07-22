@@ -20,28 +20,28 @@ description: Translates Splunk SPL queries to Axiom APL. Provides command mappin
 
 ## Core Command Mappings
 
-| SPL | APL | Notes |
-|-----|-----|-------|
-| `search index=...` | `['dataset']` | Dataset replaces index |
-| `search field=value` | `where field == "value"` | Explicit where |
-| `where` | `where` | Same |
-| `stats` | `summarize` | Different aggregation syntax |
-| `eval` | `extend` | Create/modify fields |
-| `table` / `fields` | `project` | Select columns |
-| `fields -` | `project-away` | Remove columns |
-| `rename x as y` | `project-rename y = x` | Rename |
-| `sort` / `sort -` | `order by ... asc/desc` | Sort |
-| `head N` | `take N` | Limit rows |
-| `top N field` | `summarize count() by field \| top N by count_` | Two-step |
-| `dedup field` | `summarize arg_max(_time, *) by field` | Keep latest |
-| `rex` | `parse` or `extract()` | Regex extraction |
-| `join` | `join` | **Preview feature** |
-| `append` | `union` | Combine datasets |
-| `mvexpand` | `mv-expand` | Expand arrays |
-| `timechart span=X` | `summarize ... by bin(_time, X)` | Manual binning |
-| `rare N field` | `summarize count() by field \| order by count_ asc \| take N` | Bottom N |
-| `spath` | `parse_json()` or `json['path']` | JSON access |
-| `transaction` | No direct equivalent | Use summarize + make_list |
+| SPL                  | APL                                                           | Notes                        |
+| -------------------- | ------------------------------------------------------------- | ---------------------------- |
+| `search index=...`   | `['dataset']`                                                 | Dataset replaces index       |
+| `search field=value` | `where field == "value"`                                      | Explicit where               |
+| `where`              | `where`                                                       | Same                         |
+| `stats`              | `summarize`                                                   | Different aggregation syntax |
+| `eval`               | `extend`                                                      | Create/modify fields         |
+| `table` / `fields`   | `project`                                                     | Select columns               |
+| `fields -`           | `project-away`                                                | Remove columns               |
+| `rename x as y`      | `project-rename y = x`                                        | Rename                       |
+| `sort` / `sort -`    | `order by ... asc/desc`                                       | Sort                         |
+| `head N`             | `take N`                                                      | Limit rows                   |
+| `top N field`        | `summarize count() by field \| top N by count_`               | Two-step                     |
+| `dedup field`        | `summarize arg_max(_time, *) by field`                        | Keep latest                  |
+| `rex`                | `parse` or `extract()`                                        | Regex extraction             |
+| `join`               | `join`                                                        | **Preview feature**          |
+| `append`             | `union`                                                       | Combine datasets             |
+| `mvexpand`           | `mv-expand`                                                   | Expand arrays                |
+| `timechart span=X`   | `summarize ... by bin(_time, X)`                              | Manual binning               |
+| `rare N field`       | `summarize count() by field \| order by count_ asc \| take N` | Bottom N                     |
+| `spath`              | `parse_json()` or `json['path']`                              | JSON access                  |
+| `transaction`        | No direct equivalent                                          | Use summarize + make_list    |
 
 Complete mappings: `reference/command-mapping.md`
 
@@ -53,23 +53,23 @@ Complete mappings: `reference/command-mapping.md`
 # SPL
 | stats count by status
 
-# APL  
+# APL
 | summarize count() by status
 ```
 
 ### Key function mappings
 
-| SPL | APL |
-|-----|-----|
-| `count` | `count()` |
-| `count(field)` | `countif(isnotnull(field))` |
-| `dc(field)` | `dcount(field)` |
-| `avg/sum/min/max` | Same |
-| `median(field)` | `percentile(field, 50)` |
-| `perc95(field)` | `percentile(field, 95)` |
-| `first/last` | `arg_min/arg_max(_time, field)` |
-| `list(field)` | `make_list(field)` |
-| `values(field)` | `make_set(field)` |
+| SPL               | APL                             |
+| ----------------- | ------------------------------- |
+| `count`           | `count()`                       |
+| `count(field)`    | `countif(isnotnull(field))`     |
+| `dc(field)`       | `dcount(field)`                 |
+| `avg/sum/min/max` | Same                            |
+| `median(field)`   | `percentile(field, 50)`         |
+| `perc95(field)`   | `percentile(field, 95)`         |
+| `first/last`      | `arg_min/arg_max(_time, field)` |
+| `list(field)`     | `make_list(field)`              |
+| `values(field)`   | `make_set(field)`               |
 
 ### Conditional count pattern
 
@@ -97,19 +97,19 @@ Complete function list: `reference/function-mapping.md`
 
 ### Key function mappings
 
-| SPL | APL | Notes |
-|-----|-----|-------|
-| `if(c, t, f)` | `iff(c, t, f)` | Double 'f' |
+| SPL               | APL                       | Notes            |
+| ----------------- | ------------------------- | ---------------- |
+| `if(c, t, f)`     | `iff(c, t, f)`            | Double 'f'       |
 | `case(c1,v1,...)` | `case(c1,v1,...,default)` | Requires default |
-| `len(str)` | `strlen(str)` | |
-| `lower/upper` | `tolower/toupper` | |
-| `substr` | `substring` | 0-indexed in APL |
-| `replace` | `replace_string` | |
-| `tonumber` | `toint/tolong/toreal` | Explicit types |
-| `match(s,r)` | `s matches regex "r"` | Operator |
-| `split(s, d)` | `split(s, d)` | Same |
-| `mvjoin(mv, d)` | `strcat_array(arr, d)` | Join array |
-| `mvcount(mv)` | `array_length(arr)` | Array length |
+| `len(str)`        | `strlen(str)`             |                  |
+| `lower/upper`     | `tolower/toupper`         |                  |
+| `substr`          | `substring`               | 0-indexed in APL |
+| `replace`         | `replace_string`          |                  |
+| `tonumber`        | `toint/tolong/toreal`     | Explicit types   |
+| `match(s,r)`      | `s matches regex "r"`     | Operator         |
+| `split(s, d)`     | `split(s, d)`             | Same             |
+| `mvjoin(mv, d)`   | `strcat_array(arr, d)`    | Join array       |
+| `mvcount(mv)`     | `array_length(arr)`       | Array length     |
 
 ### Case statement pattern
 
@@ -121,7 +121,7 @@ Complete function list: `reference/function-mapping.md`
     1==1, "ok"
   )
 
-# APL  
+# APL
 | extend level = case(
     status >= 500, "error",
     status >= 400, "warning",
@@ -142,7 +142,7 @@ Note: SPL's `1==1` catch-all becomes implicit default in APL.
 # APL - parse with regex
 | parse kind=regex message with @"user=(?P<username>\w+)"
 
-# APL - extract function  
+# APL - extract function
 | extend username = extract("user=(\\w+)", 1, message)
 ```
 
@@ -226,7 +226,7 @@ let error_users = ['errors'] | where _time between (ago(1h) .. now()) | distinct
 | transaction session_id maxspan=30m
 
 # APL (no direct equivalent — reconstruct with summarize)
-| summarize 
+| summarize
     start_time = min(_time),
     end_time = max(_time),
     events = make_list(pack("time", _time, "action", action)),
@@ -239,11 +239,11 @@ let error_users = ['errors'] | where _time between (ago(1h) .. now()) | distinct
 
 ## String Matching Performance
 
-| SPL | APL | Speed |
-|-----|-----|-------|
-| `field="value"` | `field == "value"` | **Fastest** |
-| `field="*value*"` | `field contains "value"` | Moderate |
-| `field="value*"` | `field startswith "value"` | Fast |
+| SPL                   | APL                         | Speed       |
+| --------------------- | --------------------------- | ----------- |
+| `field="value"`       | `field == "value"`          | **Fastest** |
+| `field="*value*"`     | `field contains "value"`    | Moderate    |
+| `field="value*"`      | `field startswith "value"`  | Fast        |
 | `match(field, regex)` | `field matches regex "..."` | **Slowest** |
 
 Prefer `has` over `contains` (word-boundary matching is faster). Use `_cs` variants for case-sensitive (faster).
@@ -253,7 +253,6 @@ Prefer `has` over `contains` (word-boundary matching is faster). Use `_cs` varia
 ## Reference
 
 - `reference/command-mapping.md` — complete command list
-- `reference/function-mapping.md` — complete function list  
+- `reference/function-mapping.md` — complete function list
 - `reference/examples.md` — full query translation examples
 - APL docs: https://axiom.co/docs/apl/introduction
-

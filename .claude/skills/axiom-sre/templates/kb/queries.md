@@ -20,7 +20,7 @@ Proven APL patterns and query learnings.
 ```apl
 ['http-logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     errors = countif(status >= 500),
     total = count(),
     error_rate = round(toreal(countif(status >= 500)) / count() * 100, 2)
@@ -54,7 +54,7 @@ First query for any incident - gives overview of which services are affected.
 ['http-logs']
 | where _time between (ago(1h) .. now())
 | where service == "SERVICE_NAME"
-| summarize 
+| summarize
     p50 = percentile(duration_ms, 50),
     p95 = percentile(duration_ms, 95),
     p99 = percentile(duration_ms, 99)
@@ -84,7 +84,7 @@ Investigating latency issues. Always check p99, not just average.
 // Slow
 | where message contains "error"
 
-// Fast  
+// Fast
 | where message has_cs "error"
 ```
 

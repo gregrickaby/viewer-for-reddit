@@ -33,6 +33,7 @@ scripts/setup
 ```
 
 This will:
+
 1. Create the memory system for storing patterns and learnings
 2. Guide you through creating `~/.axiom.toml` if it doesn't exist
 
@@ -67,18 +68,18 @@ scripts/setup
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `axiom-query` | Run APL queries against Axiom |
-| `axiom-api` | Make raw API calls |
-| `axiom-link` | Generate shareable query URLs |
-| `axiom-deployments` | List configured deployments |
-| `setup` | Initialize memory system |
-| `mem-write` | Write entries to memory KB |
-| `mem-sync` | Sync org memory from git |
-| `mem-digest` | Consolidate journal to KB |
-| `mem-doctor` | Health check all memory tiers |
-| `mem-share` | Push org memory changes |
+| Script              | Purpose                       |
+| ------------------- | ----------------------------- |
+| `axiom-query`       | Run APL queries against Axiom |
+| `axiom-api`         | Make raw API calls            |
+| `axiom-link`        | Generate shareable query URLs |
+| `axiom-deployments` | List configured deployments   |
+| `setup`             | Initialize memory system      |
+| `mem-write`         | Write entries to memory KB    |
+| `mem-sync`          | Sync org memory from git      |
+| `mem-digest`        | Consolidate journal to KB     |
+| `mem-doctor`        | Health check all memory tiers |
+| `mem-share`         | Push org memory changes       |
 
 ## Key Principles
 

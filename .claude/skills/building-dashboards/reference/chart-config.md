@@ -12,18 +12,18 @@ This file documents the options `chart-add` does **not** expose. Reach for it wh
 
 JSON-encoded string keyed by query column. Per-series options:
 
-| Option | Values | Effect |
-|--------|--------|--------|
-| `variant` | `line` (default), `area`, `bars` | Render mode |
-| `scaleDistr` | `linear` (default), `log` | Y-axis scale |
+| Option        | Values                                              | Effect                |
+| ------------- | --------------------------------------------------- | --------------------- |
+| `variant`     | `line` (default), `area`, `bars`                    | Render mode           |
+| `scaleDistr`  | `linear` (default), `log`                           | Y-axis scale          |
 | `displayNull` | `auto`, `null` (gaps), `span` (join), `zero` (fill) | Missing-data handling |
 
 **Deriving the column key** — `aggChartOpts` is keyed by a JSON-stringified column descriptor:
 
-| Query pattern | Key |
-|---|---|
-| `summarize count()` | `{"alias":"count_","op":"count"}` |
-| `summarize sum(field)` | `{"alias":"sum_field","op":"sum"}` |
+| Query pattern                            | Key                                                |
+| ---------------------------------------- | -------------------------------------------------- |
+| `summarize count()`                      | `{"alias":"count_","op":"count"}`                  |
+| `summarize sum(field)`                   | `{"alias":"sum_field","op":"sum"}`                 |
 | `summarize ['Name'] = sum(field) / 1000` | `{"alias":"Name","field":"field","op":"computed"}` |
 
 Any expression on the right-hand side (math, `round()`, etc.) makes it `op:"computed"` with the source `field`. Wildcard `"*"` is unreliable — always use the specific key. The `field` value is the bare source name (no brackets, no `properties.` prefix).
@@ -46,10 +46,10 @@ Simple example:
 
 Set in `query.queryOptions.timeSeriesView`:
 
-| Value | Effect |
-|---|---|
-| `charts` (default) | Chart only |
-| `resultsTable` | Summary totals only |
+| Value                  | Effect               |
+| ---------------------- | -------------------- |
+| `charts` (default)     | Chart only           |
+| `resultsTable`         | Summary totals only  |
 | `charts\|resultsTable` | Chart + totals below |
 
 ## LogStream / Table — `tableSettings`
@@ -75,25 +75,25 @@ Set in `query.queryOptions.timeSeriesView`:
 }
 ```
 
-| Field | Effect |
-|---|---|
-| `columns` | Column order and widths (`{name, width}` objects). |
-| `fontSize` | CSS string (e.g. `"12px"`). |
-| `highlightSeverity` | Color rows by log level. |
-| `showRaw` / `showEvent` / `showTimestamp` | Toggle built-in columns. |
-| `wrapLines` | Wrap long lines. |
-| `hideNulls` | Hide null cells. |
+| Field                                     | Effect                                             |
+| ----------------------------------------- | -------------------------------------------------- |
+| `columns`                                 | Column order and widths (`{name, width}` objects). |
+| `fontSize`                                | CSS string (e.g. `"12px"`).                        |
+| `highlightSeverity`                       | Color rows by log level.                           |
+| `showRaw` / `showEvent` / `showTimestamp` | Toggle built-in columns.                           |
+| `wrapLines`                               | Wrap long lines.                                   |
+| `hideNulls`                               | Hide null cells.                                   |
 
 ## Statistic — extra cosmetic options
 
 `chart-add` exposes `--unit` and `--show-chart`. The other Statistic fields:
 
-| Field | Values | Effect |
-|---|---|---|
-| `colorScheme` | Blue, Orange, Red, Purple, Teal, Yellow, Green, Pink, Grey, Brown | Color theme. |
-| `hideValue` | bool | Hide the main value (e.g. show only the sparkline). |
-| `invertTheme` | bool | Invert colors. |
-| `errorThreshold` / `warningThreshold` | `Above`, `AboveOrEqual`, `Below`, `BelowOrEqual`, `AboveOrBelow` | Comparison direction. The companion *value* field is not reachable through the create API on probed deployments — see `chart-add` header for the gap; set thresholds via the UI for now. |
+| Field                                 | Values                                                            | Effect                                                                                                                                                                                   |
+| ------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `colorScheme`                         | Blue, Orange, Red, Purple, Teal, Yellow, Green, Pink, Grey, Brown | Color theme.                                                                                                                                                                             |
+| `hideValue`                           | bool                                                              | Hide the main value (e.g. show only the sparkline).                                                                                                                                      |
+| `invertTheme`                         | bool                                                              | Invert colors.                                                                                                                                                                           |
+| `errorThreshold` / `warningThreshold` | `Above`, `AboveOrEqual`, `Below`, `BelowOrEqual`, `AboveOrBelow`  | Comparison direction. The companion _value_ field is not reachable through the create API on probed deployments — see `chart-add` header for the gap; set thresholds via the UI for now. |
 
 ## `unit` enum reference (Statistic only)
 
@@ -149,13 +149,13 @@ dashboard validation failed at [charts <index>]: Unrecognized key: "<field>"
 
 **Universally rejected** (every chart kind):
 
-| Field | Notes |
-|---|---|
-| `decimals` | GET returns it on UI-created charts; create rejects it. |
-| `description` (chart-level) | Rejected on every chart kind. The dashboard-level `description` (top-level, sibling of `name`) **is** accepted. |
-| `aggChartOpts` (chart-level) | Belongs at `query.queryOptions.aggChartOpts`, not at chart top level. Only `TimeSeries` consumes it. |
-| `options` | Rejected on every chart kind. Common contamination from Grafana text panels (`options.content`). Note `text` is top-level, not `options.text`. |
-| `overrideDashboardTimeRange`, `overrideDashboardCompareAgainst` | No API representation. Silently dropped on data charts, rejected on `Note` and `SmartFilter`, rejected at dashboard top level. |
+| Field                                                           | Notes                                                                                                                                          |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `decimals`                                                      | GET returns it on UI-created charts; create rejects it.                                                                                        |
+| `description` (chart-level)                                     | Rejected on every chart kind. The dashboard-level `description` (top-level, sibling of `name`) **is** accepted.                                |
+| `aggChartOpts` (chart-level)                                    | Belongs at `query.queryOptions.aggChartOpts`, not at chart top level. Only `TimeSeries` consumes it.                                           |
+| `options`                                                       | Rejected on every chart kind. Common contamination from Grafana text panels (`options.content`). Note `text` is top-level, not `options.text`. |
+| `overrideDashboardTimeRange`, `overrideDashboardCompareAgainst` | No API representation. Silently dropped on data charts, rejected on `Note` and `SmartFilter`, rejected at dashboard top level.                 |
 
 **Per-chart rejections:**
 

@@ -10,14 +10,16 @@ Dashboards, monitors, and waste identification for Axiom usage optimization.
 ## Before You Start
 
 1. Load required skills:
+
    ```
    skill: axiom-sre
    skill: building-dashboards
    ```
-   
+
    Building-dashboards provides: `dashboard-list`, `dashboard-get`, `dashboard-create`, `dashboard-update`, `dashboard-delete`
 
 2. Find the audit dataset. Try `axiom-audit` first:
+
    ```apl
    ['axiom-audit']
    | where _time > ago(1h)
@@ -28,9 +30,11 @@ Dashboards, monitors, and waste identification for Axiom usage optimization.
    - If found but no `usageCalculated` events → wrong dataset, ask user
 
 3. Verify `axiom-history` access (required for Phase 4):
+
    ```apl
    ['axiom-history'] | where _time > ago(1h) | take 1
    ```
+
    If not found, Phase 4 optimization will not work.
 
 4. Confirm with user:
@@ -41,6 +45,7 @@ Dashboards, monitors, and waste identification for Axiom usage optimization.
 5. Replace `<deployment>` and `<audit-dataset>` in all commands below.
 
 **Tips:**
+
 - Run any script with `-h` for full usage
 - Do NOT pipe script output to `head` or `tail` — causes SIGPIPE errors
 - Requires `jq` for JSON parsing
@@ -48,13 +53,13 @@ Dashboards, monitors, and waste identification for Axiom usage optimization.
 
 ## Which Phases to Run
 
-| User request | Run these phases |
-|--------------|------------------|
-| "reduce costs" / "find waste" | 0 → 1 → 4 |
-| "set up cost control" | 0 → 1 → 2 → 3 |
-| "deploy dashboard" | 0 → 2 |
-| "create monitors" | 0 → 3 |
-| "check for drift" | 0 only |
+| User request                  | Run these phases |
+| ----------------------------- | ---------------- |
+| "reduce costs" / "find waste" | 0 → 1 → 4        |
+| "set up cost control"         | 0 → 1 → 2 → 3    |
+| "deploy dashboard"            | 0 → 2            |
+| "create monitors"             | 0 → 3            |
+| "check for drift"             | 0 only           |
 
 ---
 
@@ -129,11 +134,11 @@ See `reference/monitor-strategy.md` for threshold derivation.
 
 Run `scripts/baseline-stats` if not already done. It outputs a prioritized list:
 
-| Priority | Meaning |
-|----------|---------|
-| P0⛔ | Top 3 by ingest OR >10% of total — MANDATORY |
-| P1 | Never queried — strong drop candidate |
-| P2 | Rarely queried (Work/GB < 100) — likely waste |
+| Priority | Meaning                                       |
+| -------- | --------------------------------------------- |
+| P0⛔     | Top 3 by ingest OR >10% of total — MANDATORY  |
+| P1       | Never queried — strong drop candidate         |
+| P2       | Rarely queried (Work/GB < 100) — likely waste |
 
 **Work/GB** = query cost (GB·ms) / ingest (GB). Lower = less value from data.
 
@@ -142,6 +147,7 @@ Run `scripts/baseline-stats` if not already done. It outputs a prioritized list:
 Work top-to-bottom. For each dataset:
 
 **Step 1: Column analysis**
+
 ```bash
 scripts/analyze-query-coverage -d <deployment> -D <dataset> -a <audit-dataset>
 ```
@@ -151,6 +157,7 @@ If 0 queries → recommend DROP, move to next.
 **Step 2: Field value analysis**
 
 Pick a field from suggested list (usually `app`, `service`, or `kubernetes.labels.app`):
+
 ```bash
 scripts/analyze-query-coverage -d <deployment> -D <dataset> -a <audit-dataset> -f <field>
 ```
@@ -193,40 +200,40 @@ dashboard-delete <deployment> <id>
 
 ### Audit Dataset Fields
 
-| Field | Description |
-|-------|-------------|
-| `action` | `usageCalculated` or `runAPLQueryCost` |
-| `properties.hourly_ingest_bytes` | Hourly ingest in bytes |
-| `properties.hourly_billable_query_gbms` | Hourly query cost |
-| `properties.dataset` | Dataset name |
-| `resource.id` | Org ID |
-| `actor.email` | User email |
+| Field                                   | Description                            |
+| --------------------------------------- | -------------------------------------- |
+| `action`                                | `usageCalculated` or `runAPLQueryCost` |
+| `properties.hourly_ingest_bytes`        | Hourly ingest in bytes                 |
+| `properties.hourly_billable_query_gbms` | Hourly query cost                      |
+| `properties.dataset`                    | Dataset name                           |
+| `resource.id`                           | Org ID                                 |
+| `actor.email`                           | User email                             |
 
 ### Common Fields for Value Analysis
 
-| Dataset type | Primary field | Alternatives |
-|--------------|---------------|--------------|
-| Kubernetes logs | `kubernetes.labels.app` | `kubernetes.namespace_name`, `kubernetes.container_name` |
-| Application logs | `app` or `service` | `level`, `logger`, `component` |
-| Infrastructure | `host` | `region`, `instance` |
-| Traces | `service.name` | `span.kind`, `http.route` |
+| Dataset type     | Primary field           | Alternatives                                             |
+| ---------------- | ----------------------- | -------------------------------------------------------- |
+| Kubernetes logs  | `kubernetes.labels.app` | `kubernetes.namespace_name`, `kubernetes.container_name` |
+| Application logs | `app` or `service`      | `level`, `logger`, `component`                           |
+| Infrastructure   | `host`                  | `region`, `instance`                                     |
+| Traces           | `service.name`          | `span.kind`, `http.route`                                |
 
 ### Units & Conversions
 
 - Scripts use **TB/day**
 - Dashboard filter uses **GB/month**
 
-| Contract | TB/day | GB/month |
-|----------|--------|----------|
-| 5 PB/month | 167 | 5,000,000 |
-| 10 PB/month | 333 | 10,000,000 |
-| 15 PB/month | 500 | 15,000,000 |
+| Contract    | TB/day | GB/month   |
+| ----------- | ------ | ---------- |
+| 5 PB/month  | 167    | 5,000,000  |
+| 10 PB/month | 333    | 10,000,000 |
+| 15 PB/month | 500    | 15,000,000 |
 
 ### Optimization Actions
 
-| Signal | Action |
-|--------|--------|
-| Work/GB = 0 | Drop or stop ingesting |
-| High-volume unqueried values | Sample or reduce log level |
+| Signal                              | Action                     |
+| ----------------------------------- | -------------------------- |
+| Work/GB = 0                         | Drop or stop ingesting     |
+| High-volume unqueried values        | Sample or reduce log level |
 | Empty values from system namespaces | Filter at ingest or accept |
-| WoW spike | Check recent deploys |
+| WoW spike                           | Check recent deploys       |

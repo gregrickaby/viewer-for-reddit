@@ -73,15 +73,15 @@ scripts/metrics-query prod \
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `setup` | Check requirements and config |
-| `datasets` | List datasets with edge deployment info |
-| `metrics-spec` | Fetch metrics query specification |
-| `metrics-query` | Execute a metrics query (auto-resolves edge deployment) |
-| `metrics-info` | Discover metrics, tags, and values (auto-resolves edge deployment) |
-| `resolve-url` | Resolve dataset to edge deployment URL |
-| `axiom-api` | Low-level authenticated API calls |
+| Script          | Purpose                                                            |
+| --------------- | ------------------------------------------------------------------ |
+| `setup`         | Check requirements and config                                      |
+| `datasets`      | List datasets with edge deployment info                            |
+| `metrics-spec`  | Fetch metrics query specification                                  |
+| `metrics-query` | Execute a metrics query (auto-resolves edge deployment)            |
+| `metrics-info`  | Discover metrics, tags, and values (auto-resolves edge deployment) |
+| `resolve-url`   | Resolve dataset to edge deployment URL                             |
+| `axiom-api`     | Low-level authenticated API calls                                  |
 
 ## Related Skills
 

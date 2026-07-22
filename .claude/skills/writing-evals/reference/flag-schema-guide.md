@@ -7,6 +7,7 @@ How to create and use typed flag schemas with `createAppScope()` for Axiom AI ev
 ## What Are Flags?
 
 Flags are **typed configuration variables** that you can override at runtime without changing code. They let you:
+
 - Compare models: `--flag.myCapability.model=gpt-4o-mini`
 - Tune parameters: `--flag.myCapability.temperature=0.5`
 - Toggle strategies: `--flag.myCapability.strategy=smart`
@@ -19,17 +20,19 @@ Flags are **typed configuration variables** that you can override at runtime wit
 
 ```typescript
 // src/app-scope.ts (or src/lib/app-scope.ts)
-import { createAppScope } from 'axiom/ai';
-import z from 'zod';
+import {createAppScope} from 'axiom/ai'
+import z from 'zod'
 
 export const flagSchema = z.object({
   myCapability: z.object({
-    model: z.enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07']).default('gpt-5-mini-2025-08-07'),
-    temperature: z.number().min(0).max(2).default(0.7),
-  }),
-});
+    model: z
+      .enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07'])
+      .default('gpt-5-mini-2025-08-07'),
+    temperature: z.number().min(0).max(2).default(0.7)
+  })
+})
 
-export const { flag, pickFlags } = createAppScope({ flagSchema });
+export const {flag, pickFlags} = createAppScope({flagSchema})
 ```
 
 ### Multi-Capability Pattern
@@ -38,17 +41,23 @@ export const { flag, pickFlags } = createAppScope({ flagSchema });
 export const flagSchema = z.object({
   supportAgent: z.object({
     categorizeMessage: z.object({
-      model: z.enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07']).default('gpt-5-mini-2025-08-07'),
+      model: z
+        .enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07'])
+        .default('gpt-5-mini-2025-08-07')
     }),
     retrieveFromKnowledgeBase: z.object({
-      model: z.enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07']).default('gpt-5-mini-2025-08-07'),
-      maxDocuments: z.number().default(1),
+      model: z
+        .enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07'])
+        .default('gpt-5-mini-2025-08-07'),
+      maxDocuments: z.number().default(1)
     }),
     extractTicketInfo: z.object({
-      model: z.enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07']).default('gpt-5-mini-2025-08-07'),
-    }),
-  }),
-});
+      model: z
+        .enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07'])
+        .default('gpt-5-mini-2025-08-07')
+    })
+  })
+})
 ```
 
 ---
@@ -61,13 +70,13 @@ export const flagSchema = z.object({
 // GOOD
 z.object({
   model: z.string().default('gpt-4o-mini'),
-  temperature: z.number().default(0.7),
+  temperature: z.number().default(0.7)
 })
 
 // BAD — will throw at runtime
 z.object({
-  model: z.string(),             // missing .default()
-  temperature: z.number(),       // missing .default()
+  model: z.string(), // missing .default()
+  temperature: z.number() // missing .default()
 })
 ```
 
@@ -91,7 +100,7 @@ Error: `[AxiomAI] Union types are not supported in flag schemas`
 // GOOD — all keys known
 z.object({
   endpointA: z.string().default('/api/a'),
-  endpointB: z.string().default('/api/b'),
+  endpointB: z.string().default('/api/b')
 })
 
 // BAD — dynamic keys
@@ -107,30 +116,32 @@ Error: `[AxiomAI] ZodRecord is not supported in flag schemas`
 ### Reading flags
 
 ```typescript
-import { flag } from '@/app-scope';
+import {flag} from '@/app-scope'
 
 // In your task function
-const model = flag('supportAgent.categorizeMessage.model');
+const model = flag('supportAgent.categorizeMessage.model')
 // Returns: 'gpt-5-mini-2025-08-07' (default) or CLI override
 ```
 
 ### Scoping flags with pickFlags
 
 `pickFlags` declares which flags an eval is allowed to access. This enables:
+
 - Detecting out-of-scope flag access (warnings in reporter)
 - Tracking which flags affect which evals
 
 ```typescript
-import { pickFlags } from '@/app-scope';
+import {pickFlags} from '@/app-scope'
 
 Eval('categorize-messages', {
   capability: 'support-agent',
-  configFlags: pickFlags('supportAgent.categorizeMessage'),
+  configFlags: pickFlags('supportAgent.categorizeMessage')
   // ...
-});
+})
 ```
 
 You can pick multiple paths:
+
 ```typescript
 configFlags: pickFlags('supportAgent.categorizeMessage', 'supportAgent.main'),
 ```
@@ -138,16 +149,16 @@ configFlags: pickFlags('supportAgent.categorizeMessage', 'supportAgent.main'),
 ### Overriding flags in code
 
 ```typescript
-import { withFlags, overrideFlags } from '@/app-scope';
+import {withFlags, overrideFlags} from '@/app-scope'
 
 // Temporary override (scoped to callback)
-withFlags({ 'supportAgent.categorizeMessage.model': 'gpt-4o-mini' }, () => {
+withFlags({'supportAgent.categorizeMessage.model': 'gpt-4o-mini'}, () => {
   // model is gpt-4o-mini here
-});
+})
 // model is back to default here
 
 // Global override (for current eval run)
-overrideFlags({ 'supportAgent.categorizeMessage.model': 'gpt-4o-mini' });
+overrideFlags({'supportAgent.categorizeMessage.model': 'gpt-4o-mini'})
 ```
 
 ---
@@ -186,15 +197,15 @@ The flag schema must be passed to `defineConfig` for CLI validation:
 
 ```typescript
 // axiom.config.ts
-import { defineConfig } from 'axiom/ai/config';
-import { flagSchema } from './src/app-scope';
+import {defineConfig} from 'axiom/ai/config'
+import {flagSchema} from './src/app-scope'
 
 export default defineConfig({
   eval: {
-    flagSchema,
+    flagSchema
     // ... other config
-  },
-});
+  }
+})
 ```
 
 This enables the CLI to validate `--flag.*` arguments against your schema before running evals.
@@ -204,31 +215,32 @@ This enables the CLI to validate `--flag.*` arguments against your schema before
 ## Using Flags in Task Functions
 
 ```typescript
-import { flag, pickFlags } from '@/app-scope';
-import { openai } from '@ai-sdk/openai';
-import { generateText } from 'ai';
+import {flag, pickFlags} from '@/app-scope'
+import {openai} from '@ai-sdk/openai'
+import {generateText} from 'ai'
 
-async function categorizeMessage(messages: Array<{ role: string; content: string }>) {
-  const model = flag('supportAgent.categorizeMessage.model');
-  
+async function categorizeMessage(
+  messages: Array<{role: string; content: string}>
+) {
+  const model = flag('supportAgent.categorizeMessage.model')
+
   const result = await generateText({
     model: openai(model),
     messages,
-    system: 'Categorize the message as: support, spam, complaint, wrong_company, unknown',
-  });
+    system:
+      'Categorize the message as: support, spam, complaint, wrong_company, unknown'
+  })
 
-  return result.text;
+  return result.text
 }
 
 Eval('categorize-messages', {
   capability: 'support-agent',
   configFlags: pickFlags('supportAgent.categorizeMessage'),
-  data: [
-    { input: 'My app is broken', expected: 'support' },
-  ],
-  task: async ({ input }) => categorizeMessage([{ role: 'user', content: input }]),
-  scorers: [ExactMatch],
-});
+  data: [{input: 'My app is broken', expected: 'support'}],
+  task: async ({input}) => categorizeMessage([{role: 'user', content: input}]),
+  scorers: [ExactMatch]
+})
 ```
 
 ---
@@ -238,20 +250,20 @@ Eval('categorize-messages', {
 Facts record non-flag metadata during eval runs:
 
 ```typescript
-import { createAppScope } from 'axiom/ai';
-import z from 'zod';
+import {createAppScope} from 'axiom/ai'
+import z from 'zod'
 
-const { flag, fact, pickFlags } = createAppScope({
-  flagSchema: z.object({ /* ... */ }),
+const {flag, fact, pickFlags} = createAppScope({
+  flagSchema: z.object({/* ... */}),
   factSchema: z.object({
     userAction: z.string(),
-    timing: z.number(),
-  }),
-});
+    timing: z.number()
+  })
+})
 
 // Record a fact during eval
-fact('userAction', 'clicked_button');
-fact('timing', 1250);
+fact('userAction', 'clicked_button')
+fact('timing', 1250)
 ```
 
 Facts are attached to spans for analysis but cannot be overridden via CLI.
@@ -261,31 +273,37 @@ Facts are attached to spans for analysis but cannot be overridden via CLI.
 ## Common Flag Schema Patterns
 
 ### Model Selection
+
 ```typescript
 model: z.enum(['gpt-4o-mini-2024-07-18', 'gpt-5-mini-2025-08-07', 'gpt-5-nano-2025-08-07']).default('gpt-5-nano-2025-08-07'),
 ```
 
 ### Temperature
+
 ```typescript
 temperature: z.number().min(0).max(2).default(0.7),
 ```
 
 ### Max Tokens
+
 ```typescript
 maxTokens: z.number().default(1000),
 ```
 
 ### Strategy Toggle
+
 ```typescript
 strategy: z.enum(['simple', 'chain-of-thought', 'react']).default('simple'),
 ```
 
 ### Boolean Feature Toggle
+
 ```typescript
 beThorough: z.boolean().default(false),
 ```
 
 ### Numeric Threshold
+
 ```typescript
 maxDocuments: z.number().default(1),
 confidenceThreshold: z.number().min(0).max(1).default(0.8),

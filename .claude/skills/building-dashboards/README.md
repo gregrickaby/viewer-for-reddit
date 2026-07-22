@@ -64,21 +64,22 @@ scripts/dashboard-delete <deployment> <id>
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `dashboard-create` | Deploy new dashboard |
-| `dashboard-validate` | Validate JSON structure |
-| `dashboard-list` | List all dashboards |
-| `dashboard-get` | Fetch dashboard JSON |
-| `dashboard-update` | Update existing dashboard |
-| `dashboard-chart-patch` | Patch one chart in an existing dashboard |
-| `dashboard-copy` | Clone a dashboard |
-| `dashboard-delete` | Delete with confirmation |
-| `dashboard-from-template` | Generate from template |
+| Script                    | Purpose                                  |
+| ------------------------- | ---------------------------------------- |
+| `dashboard-create`        | Deploy new dashboard                     |
+| `dashboard-validate`      | Validate JSON structure                  |
+| `dashboard-list`          | List all dashboards                      |
+| `dashboard-get`           | Fetch dashboard JSON                     |
+| `dashboard-update`        | Update existing dashboard                |
+| `dashboard-chart-patch`   | Patch one chart in an existing dashboard |
+| `dashboard-copy`          | Clone a dashboard                        |
+| `dashboard-delete`        | Delete with confirmation                 |
+| `dashboard-from-template` | Generate from template                   |
 
 ## Templates
 
 Pre-built templates in `reference/templates/`:
+
 - `service-overview.json` - Single service oncall dashboard
 - `service-overview-with-filters.json` - With SmartFilter dropdowns
 - `api-health.json` - HTTP API health dashboard

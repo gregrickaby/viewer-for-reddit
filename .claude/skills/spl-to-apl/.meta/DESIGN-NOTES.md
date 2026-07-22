@@ -5,6 +5,7 @@ Iterative findings from improving the skill's schema-read behavior.
 ## Problem Statement
 
 The skill translates SPL to APL. Some Axiom datasets store numeric-looking fields as strings (e.g., `status` in sample-http-logs). This causes silent failures:
+
 - `status >= 500` compiles and runs
 - But does string comparison, returning wrong results
 - Correct: `toint(status) >= 500`
@@ -53,16 +54,17 @@ Observation: Imperative "call X now" doesn't significantly improve compliance.
 
 ### Attempt 3: Example Workflow (Best Schema-Read)
 
-```markdown
+````markdown
 ### Example workflow
 
 \```
+
 1. User asks: translate `index=sample-http-logs | stats count(eval(status>=500))`
 2. Read schema → status is "string" not int
 3. Output: | summarize countif(toint(status) >= 500)
-           ^^^^^^^^^ cast required
-\```
-```
+   ^^^^^^^^^ cast required
+   \```
+````
 
 Result: **66% schema-read**, 55.56% results-match
 
@@ -107,6 +109,7 @@ This explains why passive "see reference/..." instructions don't work. The model
 ### "Examples are load-bearing for pattern-matching skills"
 
 The skill is pattern-matching (teaches HOW to translate). Examples drive behavior. But:
+
 - Example that maps exactly to eval case = overfitting
 - Example with copyable syntax = output pollution
 
@@ -116,11 +119,11 @@ Critical info should be at beginning or end. Schema instruction at top of skill 
 
 ## The Core Tension
 
-| Approach | Schema-Read | Results-Match | Problem |
-|----------|-------------|---------------|---------|
-| No instruction | 0% | 78% | Doesn't learn types |
-| Passive instruction | 11-33% | 78% | Often ignored |
-| Workflow example | 66% | 56% | Pollutes output |
+| Approach            | Schema-Read | Results-Match | Problem             |
+| ------------------- | ----------- | ------------- | ------------------- |
+| No instruction      | 0%          | 78%           | Doesn't learn types |
+| Passive instruction | 11-33%      | 78%           | Often ignored       |
+| Workflow example    | 66%         | 56%           | Pollutes output     |
 
 Workflow examples drive the behavior but introduce copyable artifacts that get included in APL output.
 
@@ -156,12 +159,14 @@ The skill uses backticks to show syntax in command mapping tables:
 ```
 
 Model sometimes copies these backticks into APL output:
+
 - Error: "invalid input text `perc50`, `perc9..."
 - Error: "invalid input text `sample-http-log..."
 
 This is distinct from the schema-read problem. Even without schema instruction backticks, the mapping table backticks can pollute output.
 
 **Possible fixes:**
+
 1. Remove all backticks from skill (loses syntax highlighting)
 2. Use different formatting (bold, italics)
 3. Add explicit "output only valid APL, no markdown" instruction
@@ -169,14 +174,14 @@ This is distinct from the schema-read problem. Even without schema instruction b
 
 ## Summary Table
 
-| Version | schema-read | results-match | Notes |
-|---------|-------------|---------------|-------|
-| Original baseline | 0% | 78% | No schema instruction |
-| "REQUIRED" section | 33% | 78% | Label helps slightly |
-| Workflow example | 66% | 56% | Best reads, worst output |
-| Backtick readFile | 11-22% | 55-78% | Variable, output pollution |
-| No backticks | 11% | 67-78% | Cleaner but lower reads |
-| + "Output: Valid APL only" | 11% | 78% | Output instruction helps edge cases |
+| Version                    | schema-read | results-match | Notes                               |
+| -------------------------- | ----------- | ------------- | ----------------------------------- |
+| Original baseline          | 0%          | 78%           | No schema instruction               |
+| "REQUIRED" section         | 33%         | 78%           | Label helps slightly                |
+| Workflow example           | 66%         | 56%           | Best reads, worst output            |
+| Backtick readFile          | 11-22%      | 55-78%        | Variable, output pollution          |
+| No backticks               | 11%         | 67-78%        | Cleaner but lower reads             |
+| + "Output: Valid APL only" | 11%         | 78%           | Output instruction helps edge cases |
 
 ## Next Steps
 

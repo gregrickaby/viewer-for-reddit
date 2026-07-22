@@ -393,9 +393,7 @@
   ],
   "createdAt": "2026-01-23T22:34:42.146Z",
   "createdBy": "tomas@axiom.co",
-  "datasets": [
-    "axiom-audit"
-  ],
+  "datasets": ["axiom-audit"],
   "description": "Usage monitoring dashboard for tracking ingest volume, query costs, burn rate projections, and waste identification. Filter by org to scope analysis.",
   "layout": [
     {

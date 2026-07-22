@@ -11,19 +11,21 @@ Comprehensive manual testing for all skill features. Run through each section to
 Before testing:
 
 1. Run setup (checks config):
+
    ```bash
    cd skills/building-dashboards
    ./scripts/setup
    ```
 
 2. Create `~/.axiom.toml` with your credentials (for deployment tests):
+
    ```toml
    [deployments.prod]
    url = "https://api.axiom.co"
    token = "xaat-your-token"
    org_id = "your-org-id"
    ```
-   
+
    This config is shared with axiom-sre.
 
 ---
@@ -33,10 +35,12 @@ Before testing:
 **Prompt:** "Help me build a dashboard"
 
 **Expected behavior:**
+
 - Skill should activate (look for building-dashboards patterns)
 - Agent should ask intake questions: audience, scope, datasets, signals
 
 **Validation:**
+
 - [ ] Skill activates on dashboard-related requests
 - [ ] Agent asks clarifying questions before designing
 
@@ -47,11 +51,13 @@ Before testing:
 **Prompt:** "I want to create an oncall dashboard for our API gateway service"
 
 **Expected behavior:**
+
 - Agent asks about datasets
 - Agent asks about key metrics (errors, latency, traffic)
 - Agent asks about drilldown dimensions
 
 **Validation:**
+
 - [ ] Agent identifies this as oncall use case
 - [ ] Agent requests dataset information
 - [ ] Agent proposes golden signals coverage
@@ -63,11 +69,13 @@ Before testing:
 **Prompt:** "Create a service overview dashboard for 'payment-api' using the 'http-logs' dataset"
 
 **Expected behavior:**
+
 - Agent uses `dashboard-from-template` or manually applies service-overview template
 - Replaces placeholders with provided values
 - Outputs valid dashboard JSON
 
 **Validation:**
+
 - [ ] Uses service-overview template
 - [ ] Replaces {{service}}, {{dataset}} correctly
 - [ ] Output is valid JSON
@@ -98,6 +106,7 @@ Before testing:
 **Expected:** LogStream
 
 **Validation:**
+
 - [ ] Correctly recommends TimeSeries for trends
 - [ ] Correctly recommends Statistic for single values
 - [ ] Correctly recommends Table for top-N lists
@@ -113,6 +122,7 @@ Test each chart type APL pattern against `sample-http-logs` in Axiom Playground.
 **Note:** These are **ad-hoc queries** for the Query tab, so they include explicit `_time` filters. Dashboard panel queries don't need time filters—they inherit from the UI picker.
 
 ### 5.1 Statistic - Error Rate
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -127,6 +137,7 @@ Test each chart type APL pattern against `sample-http-logs` in Axiom Playground.
 - [ ] Returns single numeric value
 
 ### 5.2 TimeSeries - Traffic Over Time
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -139,6 +150,7 @@ Test each chart type APL pattern against `sample-http-logs` in Axiom Playground.
 - [ ] Returns multiple rows with _time and count
 
 ### 5.3 TimeSeries - Latency Percentiles
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -151,6 +163,7 @@ Test each chart type APL pattern against `sample-http-logs` in Axiom Playground.
 - [ ] Chart shows p50, p95, p99 as overlaid lines (not stacked rows)
 
 ### 5.4 Table - Top Routes by Traffic
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -166,6 +179,7 @@ Test each chart type APL pattern against `sample-http-logs` in Axiom Playground.
 - [ ] Sorted by requests descending
 
 ### 5.5 Pie - Status Distribution
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -184,6 +198,7 @@ Test each chart type APL pattern against `sample-http-logs` in Axiom Playground.
 - [ ] Returns low cardinality (≤6 categories)
 
 ### 5.6 LogStream - Recent Requests
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(15m) .. now())
@@ -206,6 +221,7 @@ Verify metrics charts set BOTH `query.apl` (MPL pipeline) and `query.metricsData
 "Create a metrics TimeSeries chart for `otel-metrics:http.server.duration` filtered to `service.name=api` and `deployment.environment=prod`, with `align to 1m using avg`."
 
 **Expected chart query shape:**
+
 ```json
 {
   "query": {
@@ -216,6 +232,7 @@ Verify metrics charts set BOTH `query.apl` (MPL pipeline) and `query.metricsData
 ```
 
 **Validation:**
+
 - [ ] Agent sets `query.apl` to the MPL pipeline string (NOT `query.mpl`. "mpl" is incorrect).
 - [ ] Agent sets `query.metricsDataset` to the dataset name
 - [ ] Agent does NOT set `query.mpl` (rejected on create)
@@ -230,6 +247,7 @@ Verify metrics charts set BOTH `query.apl` (MPL pipeline) and `query.metricsData
 **Prompt:** "How should I layout a dashboard with 4 stats, 2 timeseries, 2 tables, and a logstream?"
 
 **Expected behavior:**
+
 - Agent recommends grid-based layout
 - Stats at top (row 0-1, w=6 each)
 - TimeSeries below (row 2-5, w=12 each)
@@ -237,6 +255,7 @@ Verify metrics charts set BOTH `query.apl` (MPL pipeline) and `query.metricsData
 - LogStream bottom (row 10+, w=12)
 
 **Validation:**
+
 - [ ] Recommends logical section ordering
 - [ ] Suggests appropriate widths/heights
 - [ ] Follows overview → drilldown → evidence pattern
@@ -246,6 +265,7 @@ Verify metrics charts set BOTH `query.apl` (MPL pipeline) and `query.metricsData
 ## Test 7: Script Execution
 
 ### 7.1 dashboard-new
+
 ```bash
 cd skills/building-dashboards
 ./scripts/dashboard-new "Test Dashboard" "synthetic_http" /tmp/test-new.json
@@ -259,6 +279,7 @@ cat /tmp/test-new.json | jq .
 - [ ] name, owner, dataset fields populated
 
 ### 7.2 dashboard-from-template
+
 ```bash
 ./scripts/dashboard-from-template service-overview "test-api" "synthetic_http" /tmp/test-template.json
 cat /tmp/test-template.json | jq .
@@ -271,6 +292,7 @@ cat /tmp/test-template.json | jq .
 - [ ] Charts and layout present
 
 ### 7.3 dashboard-validate
+
 ```bash
 ./scripts/dashboard-validate /tmp/test-template.json
 ```
@@ -282,6 +304,7 @@ cat /tmp/test-template.json | jq .
 - [ ] Exits 0 if valid
 
 ### 7.4 dashboard-validate with bad input
+
 ```bash
 echo '{"name": "bad"}' > /tmp/bad-dashboard.json
 ./scripts/dashboard-validate /tmp/bad-dashboard.json
@@ -293,6 +316,7 @@ echo '{"name": "bad"}' > /tmp/bad-dashboard.json
 - [ ] Exits non-zero
 
 ### 7.5 dashboard-list
+
 ```bash
 ./scripts/dashboard-list prod
 ```
@@ -303,16 +327,18 @@ echo '{"name": "bad"}' > /tmp/bad-dashboard.json
 - [ ] Output shows id<TAB>name format
 
 ### 7.6 dashboard-get
+
 ```bash
 ./scripts/dashboard-get prod <dashboard-id>
 ```
 
 **Expected:** Full dashboard JSON
 
-- [ ] Script runs without error  
+- [ ] Script runs without error
 - [ ] Output is valid JSON with charts, layout, etc.
 
 ### 7.7 axiom-api (low-level)
+
 ```bash
 ./scripts/axiom-api prod GET /dashboards | jq '.[0].uid'
 ```
@@ -327,13 +353,16 @@ echo '{"name": "bad"}' > /tmp/bad-dashboard.json
 ## Test 8: Splunk Migration
 
 **Prompt:** "Convert this Splunk dashboard panel to Axiom:
+
 ```spl
-index=http_logs status>=500 
+index=http_logs status>=500
 | timechart span=5m count by host
 ```
+
 "
 
 **Expected behavior:**
+
 - Agent recognizes SPL and suggests using spl-to-apl
 - Translates to APL with:
   - Explicit time filter
@@ -341,6 +370,7 @@ index=http_logs status>=500
 - Recommends TimeSeries chart type
 
 **Validation:**
+
 - [ ] Recognizes SPL syntax
 - [ ] Adds time filter
 - [ ] Correct summarize/bin pattern
@@ -353,11 +383,13 @@ index=http_logs status>=500
 **Prompt:** "I have a dataset called 'app-logs' but I don't know what fields are available. Help me design a dashboard for it."
 
 **Expected behavior:**
+
 - Agent suggests running getschema first
 - Provides query: `['app-logs'] | where _time between (ago(1h) .. now()) | getschema`
 - After schema discovery, proposes dashboard structure based on available fields
 
 **Validation:**
+
 - [ ] Recommends schema discovery first
 - [ ] Doesn't guess field names
 - [ ] Adapts recommendations to actual schema
@@ -369,11 +401,13 @@ index=http_logs status>=500
 **Prompt:** "I want to create a pie chart showing errors by user_id"
 
 **Expected behavior:**
+
 - Agent warns about high cardinality
 - Recommends Table instead of Pie
 - Suggests `top N` to limit rows
 
 **Validation:**
+
 - [ ] Warns about cardinality issues
 - [ ] Recommends Table over Pie for high cardinality
 - [ ] Suggests bounded query with top N
@@ -381,11 +415,13 @@ index=http_logs status>=500
 **Prompt:** "Create a dashboard with 20 panels"
 
 **Expected behavior:**
+
 - Agent warns about cognitive overload
 - Recommends 8-12 panels max
 - Suggests splitting into multiple dashboards
 
 **Validation:**
+
 - [ ] Warns about too many panels
 - [ ] Recommends focused dashboards
 
@@ -394,6 +430,7 @@ index=http_logs status>=500
 ## Test 11: End-to-End Dashboard Creation
 
 **Prompt:** "Create a complete oncall dashboard for 'sample-http-logs' with:
+
 - Error rate stat
 - p95 latency stat
 - Traffic over time
@@ -404,12 +441,14 @@ index=http_logs status>=500
 Output the complete dashboard JSON."
 
 **Expected behavior:**
+
 - Agent produces complete, valid dashboard JSON
 - All queries target sample-http-logs
 - All queries have time filters
 - Layout is logical (stats top, timeseries middle, table/logs bottom)
 
 **Validation:**
+
 - [ ] Complete JSON output
 - [ ] All 6 panels present
 - [ ] Queries syntactically correct
@@ -437,6 +476,7 @@ DASHBOARD_ID=$(./scripts/dashboard-create prod /tmp/deploy-test.json)
 ```
 
 **Validation:**
+
 - [ ] Dashboard created in Axiom
 - [ ] All panels render correctly
 - [ ] Queries execute without error
@@ -446,6 +486,7 @@ DASHBOARD_ID=$(./scripts/dashboard-create prod /tmp/deploy-test.json)
 ## Validation Checklist
 
 ### Core Features
+
 - [ ] Skill activates on dashboard requests
 - [ ] Intake workflow asks right questions
 - [ ] Template instantiation works
@@ -454,6 +495,7 @@ DASHBOARD_ID=$(./scripts/dashboard-create prod /tmp/deploy-test.json)
 - [ ] Layout recommendations sensible
 
 ### Scripts
+
 - [ ] dashboard-new works
 - [ ] dashboard-from-template works
 - [ ] dashboard-validate catches issues
@@ -463,11 +505,13 @@ DASHBOARD_ID=$(./scripts/dashboard-create prod /tmp/deploy-test.json)
 - [ ] axiom-api makes authenticated requests
 
 ### Integration
+
 - [ ] SPL migration triggers spl-to-apl patterns
 - [ ] Unknown schemas trigger discovery workflow
 - [ ] Best practices warnings fire correctly
 
 ### Quality
+
 - [ ] No hardcoded field names (uses placeholders)
 - [ ] Dashboard APL has NO time filters (inherits from UI picker)
 - [ ] Ad-hoc/exploration APL has explicit time filters

@@ -1,4 +1,4 @@
-import { defineConfig } from 'axiom/ai/config';
+import {defineConfig} from 'axiom/ai/config'
 // import { setupInstrumentation } from './src/instrumentation';
 // import { flagSchema } from './src/app-scope';
 
@@ -12,6 +12,6 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', '**/build/**'],
     // Uncomment to track token usage per eval run:
     // instrumentation: (env) => setupInstrumentation(env),
-    timeoutMs: 60_000,
-  },
-});
+    timeoutMs: 60_000
+  }
+})

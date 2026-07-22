@@ -42,7 +42,7 @@ export AXIOM_DATASET="your-dataset"
 ```
 
 ```typescript
-import { defineConfig } from 'axiom/ai/config';
+import {defineConfig} from 'axiom/ai/config'
 
 export default defineConfig({
   eval: {
@@ -50,9 +50,9 @@ export default defineConfig({
     token: process.env.AXIOM_TOKEN,
     dataset: process.env.AXIOM_DATASET,
     include: ['**/*.eval.{ts,js}'],
-    timeoutMs: 60_000,
-  },
-});
+    timeoutMs: 60_000
+  }
+})
 ```
 
 ## Usage
@@ -82,19 +82,20 @@ npx axiom eval -b BASELINE_ID
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `eval-init` | Initialize project (creates app-scope.ts + axiom.config.ts) |
-| `eval-scaffold` | Generate eval file from template |
-| `eval-validate` | Check eval file structure |
-| `eval-add-cases` | Analyze test case coverage gaps |
-| `eval-run` | Run evals (wraps `npx axiom eval`) |
-| `eval-list` | List cases without running |
-| `eval-results` | Query eval results from Axiom (requires sre skill) |
+| Script           | Purpose                                                     |
+| ---------------- | ----------------------------------------------------------- |
+| `eval-init`      | Initialize project (creates app-scope.ts + axiom.config.ts) |
+| `eval-scaffold`  | Generate eval file from template                            |
+| `eval-validate`  | Check eval file structure                                   |
+| `eval-add-cases` | Analyze test case coverage gaps                             |
+| `eval-run`       | Run evals (wraps `npx axiom eval`)                          |
+| `eval-list`      | List cases without running                                  |
+| `eval-results`   | Query eval results from Axiom (requires sre skill)          |
 
 ## Templates
 
 Pre-built templates in `reference/templates/`:
+
 - Minimal — simplest eval with exact match scorer
 - Classification — category classification with adversarial cases
 - Retrieval — RAG/retrieval with set matching

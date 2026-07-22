@@ -21,16 +21,16 @@ npx skills add axiomhq/skills -s spl-to-apl
 
 ## Quick Reference
 
-| SPL | APL |
-|-----|-----|
-| `index=logs` | `['logs']` |
-| `stats count by host` | `summarize count() by host` |
-| `eval x = y * 2` | `extend x = y * 2` |
-| `table field1, field2` | `project field1, field2` |
-| `timechart span=5m count` | `summarize count() by bin(_time, 5m)` |
-| `top 10 uri` | `summarize count() by uri \| top 10 by count_` |
-| `dedup user` | `summarize arg_max(_time, *) by user` |
-| `rex "user=(?<u>\\w+)"` | `extend u = extract("user=(\\w+)", 1, field)` |
+| SPL                       | APL                                            |
+| ------------------------- | ---------------------------------------------- |
+| `index=logs`              | `['logs']`                                     |
+| `stats count by host`     | `summarize count() by host`                    |
+| `eval x = y * 2`          | `extend x = y * 2`                             |
+| `table field1, field2`    | `project field1, field2`                       |
+| `timechart span=5m count` | `summarize count() by bin(_time, 5m)`          |
+| `top 10 uri`              | `summarize count() by uri \| top 10 by count_` |
+| `dedup user`              | `summarize arg_max(_time, *) by user`          |
+| `rex "user=(?<u>\\w+)"`   | `extend u = extract("user=(\\w+)", 1, field)`  |
 
 ## Key Differences
 

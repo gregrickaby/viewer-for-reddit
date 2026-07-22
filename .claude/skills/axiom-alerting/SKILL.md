@@ -13,24 +13,24 @@ Base URL: `https://api.axiom.co/v2/` with Bearer token auth from `.axiom.toml` (
 
 ### Monitors (`/v2/monitors`)
 
-| Operation | Method | Path |
-|-----------|--------|------|
-| List | GET | `/v2/monitors` |
-| Get | GET | `/v2/monitors/{id}` |
-| History | GET | `/v2/monitors/{id}/history` |
-| Create | POST | `/v2/monitors` |
-| Update | PUT | `/v2/monitors/{id}` |
-| Delete | DELETE | `/v2/monitors/{id}` |
+| Operation | Method | Path                        |
+| --------- | ------ | --------------------------- |
+| List      | GET    | `/v2/monitors`              |
+| Get       | GET    | `/v2/monitors/{id}`         |
+| History   | GET    | `/v2/monitors/{id}/history` |
+| Create    | POST   | `/v2/monitors`              |
+| Update    | PUT    | `/v2/monitors/{id}`         |
+| Delete    | DELETE | `/v2/monitors/{id}`         |
 
 ### Notifiers (`/v2/notifiers`)
 
-| Operation | Method | Path |
-|-----------|--------|------|
-| List | GET | `/v2/notifiers` |
-| Get | GET | `/v2/notifiers/{id}` |
-| Create | POST | `/v2/notifiers` |
-| Update | PUT | `/v2/notifiers/{id}` |
-| Delete | DELETE | `/v2/notifiers/{id}` |
+| Operation | Method | Path                 |
+| --------- | ------ | -------------------- |
+| List      | GET    | `/v2/notifiers`      |
+| Get       | GET    | `/v2/notifiers/{id}` |
+| Create    | POST   | `/v2/notifiers`      |
+| Update    | PUT    | `/v2/notifiers/{id}` |
+| Delete    | DELETE | `/v2/notifiers/{id}` |
 
 ## Prerequisites
 
@@ -47,9 +47,11 @@ org_id = "your-org-id"
 ## Scripts
 
 Core:
+
 - `scripts/axiom-api <deploy> <method> <path> [body]`
 
 Monitor scripts:
+
 - `scripts/monitor-list <deployment> [--json]`
 - `scripts/monitor-get <deployment> <id>`
 - `scripts/monitor-history <deployment> <id> <startTime> <endTime>`
@@ -58,6 +60,7 @@ Monitor scripts:
 - `scripts/monitor-delete <deployment> <id>`
 
 Notifier scripts:
+
 - `scripts/notifier-list <deployment> [--json]`
 - `scripts/notifier-get <deployment> <id>`
 - `scripts/notifier-create <deployment> <json-file>`
@@ -92,11 +95,13 @@ Notifier scripts:
 ## Monitor Types And Operators
 
 Monitor types:
+
 - `Threshold`
 - `MatchEvent`
 - `AnomalyDetection`
 
 Operators:
+
 - `Above`
 - `Below`
 - `AboveOrEqual`
@@ -106,6 +111,7 @@ Operators:
 ## Monitor Field Reference
 
 Core fields:
+
 - `name`: Human-readable monitor name.
 - `type`: `Threshold`, `MatchEvent`, or `AnomalyDetection`.
 - `aplQuery` / `mplQuery`: Query evaluated by the monitor.
@@ -115,6 +121,7 @@ Core fields:
 - `description`: Optional monitor description.
 
 Threshold and evaluation fields:
+
 - `operator`: Threshold comparison operator.
 - `threshold`: Numeric threshold value.
 - `rangeMinutes`: Query evaluation window in minutes.
@@ -124,6 +131,7 @@ Threshold and evaluation fields:
 - `triggerFromNRuns`: Total evaluation runs considered for N-of-M logic.
 
 Advanced behavior fields:
+
 - `resolvable`: Whether alerts can resolve automatically.
 - `notifyByGroup`: Notify per group key/value result.
 - `notifyEveryRun`: Notify on every positive evaluation.
@@ -131,6 +139,7 @@ Advanced behavior fields:
 - `secondDelay`: Delay (seconds) to tolerate late-arriving data.
 
 Type-specific fields:
+
 - `columnName`: Field used by some anomaly/value-anomaly monitors.
 
 ## Minimal Valid Monitor Examples
@@ -228,6 +237,7 @@ Custom webhook:
 ## Troubleshooting
 
 `401 Unauthorized`:
+
 - Cause: invalid or expired token.
 - Fix:
   - Verify token in `~/.axiom.toml`.
@@ -235,6 +245,7 @@ Custom webhook:
     - `scripts/notifier-list <deployment>`
 
 `403 Forbidden`:
+
 - Cause: token lacks required permissions.
 - Fix:
   - Create/assign token scopes for monitor/notifier management and dataset query access.
@@ -242,6 +253,7 @@ Custom webhook:
     - `scripts/monitor-list <deployment>`
 
 `404 Not Found` on get/update/delete:
+
 - Cause: wrong monitor/notifier ID or wrong deployment/org.
 - Fix:
   - Confirm deployment in `.axiom.toml`.
@@ -250,6 +262,7 @@ Custom webhook:
     - `scripts/notifier-list <deployment> --json`
 
 `400 Bad Request` on notifier create/update:
+
 - Cause: invalid notifier payload shape.
 - Fix:
   - Use one notifier channel inside `properties`.
@@ -258,6 +271,7 @@ Custom webhook:
     - `scripts/notifier-create <deployment> <json-file>`
 
 `400 Bad Request` on monitor create/update:
+
 - Cause: invalid monitor schema, operator/type mismatch, or invalid query fields.
 - Fix:
   - Validate required fields: `name`, `type`, query field, schedule, and `notifierIds`.
@@ -267,6 +281,7 @@ Custom webhook:
     - `scripts/monitor-update <deployment> <id> <json-file>`
 
 Monitor created but never alerts:
+
 - Cause: threshold too strict, wrong query window, or not enough positive runs.
 - Fix:
   - Inspect history over a known active period:
@@ -275,6 +290,7 @@ Monitor created but never alerts:
   - Tune `triggerAfterNPositiveResults`/`triggerFromNRuns`.
 
 Too many alerts (noisy monitor):
+
 - Cause: threshold too low or interval too short.
 - Fix:
   - Increase threshold.
@@ -282,6 +298,7 @@ Too many alerts (noisy monitor):
   - Increase `intervalMinutes` or narrow match conditions.
 
 Notifier exists but no delivery:
+
 - Cause: destination config invalid (URL/key/channel/email list), or destination-side rejection.
 - Fix:
   - Fetch notifier and verify destination fields:

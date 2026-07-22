@@ -23,11 +23,11 @@ If the user names a specific entity (service, host, …), `scripts/metrics-info 
 
 The `metrics-info` listing returns each metric's `{type, temporality, unit}`. Read these before composing — never assume a metric is a simple scalar.
 
-| Field | Values | Drives |
-|---|---|---|
-| `type` | `Gauge`, `CounterMonotonic`, `CounterNonMonotonic`, `Histogram` | Required pre-aggregation operators. |
-| `temporality` | `Cumulative`, `Delta`, `null` | Whether counter values are running totals or per-interval deltas. `null` is normal for Gauges. |
-| `unit` | UCUM string (`Cel`, `kW.h`, `s`, `%`, `[ppm]`, …) or `null` | Display unit; preserve when reporting results. |
+| Field         | Values                                                          | Drives                                                                                         |
+| ------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `type`        | `Gauge`, `CounterMonotonic`, `CounterNonMonotonic`, `Histogram` | Required pre-aggregation operators.                                                            |
+| `temporality` | `Cumulative`, `Delta`, `null`                                   | Whether counter values are running totals or per-interval deltas. `null` is normal for Gauges. |
+| `unit`        | UCUM string (`Cel`, `kW.h`, `s`, `%`, `[ppm]`, …) or `null`     | Display unit; preserve when reporting results.                                                 |
 
 Rules per type (consult `metrics-spec` for exact operator names — they evolve):
 
@@ -46,13 +46,13 @@ When surfacing numbers, attach the `unit` (treat `null` as unitless). If you com
 scripts/metrics-query [-w pixels] [--pixel-per-point n] <deploy> '<MPL>' <start> <end>
 ```
 
-| Parameter | Notes |
-|---|---|
-| `deploy` | Name from `~/.axiom.toml` (e.g. `prod`). |
-| `MPL` | Pipeline string. Dataset is parsed from the MPL itself. |
-| `start` / `end` | RFC3339 (`2025-01-01T00:00:00Z`) or relative (`now-1h`, `now`). |
-| `-w` / `--chart-width <px>` | Optional. Target chart width in pixels; lets the server resolve `$__interval`. |
-| `--pixel-per-point <n>` | Optional. Pixels per point (server default 10); with `-w` sets the bucket count. |
+| Parameter                   | Notes                                                                            |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| `deploy`                    | Name from `~/.axiom.toml` (e.g. `prod`).                                         |
+| `MPL`                       | Pipeline string. Dataset is parsed from the MPL itself.                          |
+| `start` / `end`             | RFC3339 (`2025-01-01T00:00:00Z`) or relative (`now-1h`, `now`).                  |
+| `-w` / `--chart-width <px>` | Optional. Target chart width in pixels; lets the server resolve `$__interval`.   |
+| `--pixel-per-point <n>`     | Optional. Pixels per point (server default 10); with `-w` sets the bucket count. |
 
 **Always single-quote the MPL string in the shell.** MPL is full of backticks; inside double quotes the shell executes them as command substitution, silently mangling the query (or running whatever the identifier names).
 
@@ -91,13 +91,13 @@ target chart width, then snaps it **up** to a nice resolution from the ladder
 `1s, 5s, 10s, 15s, 30s, 1m, 5m, 10m, 15m, 30m, 1h, 12h, 1d, 1w, 1M, 1Y`. It
 never drops below a metric's stored resolution.
 
-- **No declaration needed** — the server auto-registers `$__interval`; do *not*
+- **No declaration needed** — the server auto-registers `$__interval`; do _not_
   add `param $__interval: Duration;` (the edge forwards the query verbatim and
   the metrics service injects the parameter).
 - **Bucket count** ≈ `chart-width / pixel-per-point` (`pixel-per-point` default
   10). Omit `-w` and the server targets ~500 buckets.
 - Works anywhere a `Duration` is valid, e.g. `bucket to $__interval using
-  histogram(0.5, 0.95)`.
+histogram(0.5, 0.95)`.
 - Set `-w` to your render width (e.g. the `metrics-chart` skill's plot width)
   so one bucket ≈ one pixel column. The value is forwarded under the request
   body's `queryOptions` (`chart-width`, `pixel-per-point`).
@@ -123,7 +123,7 @@ Required parameters must be supplied; optional ones may be omitted. Resulting re
   "apl": "param $svc: string; …",
   "startTime": "now-1h",
   "endTime": "now",
-  "params": { "param__svc": "\"frontend\"", "param__window": "5m" }
+  "params": {"param__svc": "\"frontend\"", "param__window": "5m"}
 }
 ```
 
@@ -133,19 +133,19 @@ Literal syntax per type lives in `metrics-spec`.
 
 Time range defaults to the last 24h; override with `--start` / `--end`. Both accept RFC3339 (offsets allowed) or relative `now` / `now-<N><unit>` with `<unit>` in `s m h d w`, resolved to RFC3339 UTC client-side. This is **narrower** than `metrics-query`, which forwards times to the server unparsed and so also accepts forms like `now-1y`; in `metrics-info` anything outside `now` / `now-<N>[smhdw]` must already be RFC3339 or the request 400s.
 
-| Command | Returns |
-|---|---|
-| `metrics-info <d> <ds> metrics` | All metrics, keyed by name, with `{type, temporality, unit}`. |
-| `metrics-info <d> <ds> metrics --by-type` | Same listing grouped by `type` (client-side reshape). |
-| `metrics-info <d> <ds> metrics --type Gauge --type Histogram` | Filtered listing (repeatable, OR semantics; composes with `--by-type`). |
-| `metrics-info <d> <ds> metrics <metric> info` | Single metric's `{type, temporality, unit}`. Non-zero exit if absent. |
-| `metrics-info <d> <ds> metrics <metric> describe` | Bundle: metadata + all tags + tag values in one call (replaces 1+1+N round trips). Flags: `--no-values` (tag names only), `--values-limit N` (cap per-tag values; default 50, 0 = unlimited). |
-| `metrics-info <d> <ds> metrics <metric> tags` | Tags carried by a specific metric. |
-| `metrics-info <d> <ds> metrics <metric> tags <tag> values` | Tag values for that metric. |
-| `metrics-info <d> <ds> metrics <metric> tags <tag> type` | Probe whether the tag is `int`/`float`/`string`/`bool`. Returns `{type, present_types}`; `mixed` if multiple types coexist, `absent` if not present. |
-| `metrics-info <d> <ds> tags` | All tags in the dataset. |
-| `metrics-info <d> <ds> tags <tag> values` | All values for a tag (across metrics). |
-| `metrics-info <d> <ds> find-metrics "<value>"` | Metrics that carry the given tag *value* (not metric name). |
+| Command                                                       | Returns                                                                                                                                                                                       |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `metrics-info <d> <ds> metrics`                               | All metrics, keyed by name, with `{type, temporality, unit}`.                                                                                                                                 |
+| `metrics-info <d> <ds> metrics --by-type`                     | Same listing grouped by `type` (client-side reshape).                                                                                                                                         |
+| `metrics-info <d> <ds> metrics --type Gauge --type Histogram` | Filtered listing (repeatable, OR semantics; composes with `--by-type`).                                                                                                                       |
+| `metrics-info <d> <ds> metrics <metric> info`                 | Single metric's `{type, temporality, unit}`. Non-zero exit if absent.                                                                                                                         |
+| `metrics-info <d> <ds> metrics <metric> describe`             | Bundle: metadata + all tags + tag values in one call (replaces 1+1+N round trips). Flags: `--no-values` (tag names only), `--values-limit N` (cap per-tag values; default 50, 0 = unlimited). |
+| `metrics-info <d> <ds> metrics <metric> tags`                 | Tags carried by a specific metric.                                                                                                                                                            |
+| `metrics-info <d> <ds> metrics <metric> tags <tag> values`    | Tag values for that metric.                                                                                                                                                                   |
+| `metrics-info <d> <ds> metrics <metric> tags <tag> type`      | Probe whether the tag is `int`/`float`/`string`/`bool`. Returns `{type, present_types}`; `mixed` if multiple types coexist, `absent` if not present.                                          |
+| `metrics-info <d> <ds> tags`                                  | All tags in the dataset.                                                                                                                                                                      |
+| `metrics-info <d> <ds> tags <tag> values`                     | All values for a tag (across metrics).                                                                                                                                                        |
+| `metrics-info <d> <ds> find-metrics "<value>"`                | Metrics that carry the given tag _value_ (not metric name).                                                                                                                                   |
 
 ## Error Handling
 
@@ -157,14 +157,14 @@ HTTP errors return JSON with `code` and `message`; some include a `detail` objec
 
 Syntax errors (400) include an annotated source pointer listing the valid operators at the failure position — read it, it usually names the fix.
 
-| Code | Cause |
-|---|---|
-| 400 | Invalid query syntax or bad dataset name |
-| 401 | Missing/invalid auth |
-| 403 | No permission |
-| 404 | Dataset not found |
-| 429 | Rate limited — back off and retry; don't tight-loop |
-| 500 | Internal error |
+| Code | Cause                                               |
+| ---- | --------------------------------------------------- |
+| 400  | Invalid query syntax or bad dataset name            |
+| 401  | Missing/invalid auth                                |
+| 403  | No permission                                       |
+| 404  | Dataset not found                                   |
+| 429  | Rate limited — back off and retry; don't tight-loop |
+| 500  | Internal error                                      |
 
 Requests time out client-side after 120s (`AXIOM_MAX_TIME` to override; `AXIOM_CONNECT_TIMEOUT` for the 10s connect timeout).
 
@@ -172,14 +172,14 @@ On 500, re-run with `curl -v` to capture the `traceparent` / `x-axiom-trace-id` 
 
 ## Scripts
 
-| Script | Usage |
-|---|---|
-| `scripts/setup` | Check requirements and config. |
-| `scripts/datasets <deploy> [--kind <kind>]` | List datasets with edge deployment. |
-| `scripts/metrics-spec` | Fetch the MPL query spec. |
+| Script                                                                             | Usage                                                              |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `scripts/setup`                                                                    | Check requirements and config.                                     |
+| `scripts/datasets <deploy> [--kind <kind>]`                                        | List datasets with edge deployment.                                |
+| `scripts/metrics-spec`                                                             | Fetch the MPL query spec.                                          |
 | `scripts/metrics-query [-w px] [--pixel-per-point n] <deploy> <mpl> <start> <end>` | Execute a query; use `$__interval` + `-w` for adaptive resolution. |
-| `scripts/metrics-info <deploy> <dataset> ...` | Discover metrics, tags, values. |
-| `scripts/axiom-api <deploy> <method> <path> [body]` | Low-level API calls. |
-| `scripts/resolve-url <deploy> <dataset>` | Resolve to the edge deployment URL. |
+| `scripts/metrics-info <deploy> <dataset> ...`                                      | Discover metrics, tags, values.                                    |
+| `scripts/axiom-api <deploy> <method> <path> [body]`                                | Low-level API calls.                                               |
+| `scripts/resolve-url <deploy> <dataset>`                                           | Resolve to the edge deployment URL.                                |
 
 Run any script without arguments for full usage.

@@ -25,7 +25,7 @@ curl ... -H 'Accept: application/vnd.metrics.v3+json' | python3 scripts/metrics_
 python3 scripts/metrics_chart.py --format ascii response.json
 ```
 
-> **Aggregate first.** Charts are only readable with a *handful* of series.
+> **Aggregate first.** Charts are only readable with a _handful_ of series.
 > The cleanest result comes from a query that already groups/aggregates to a few
 > lines (e.g. `group by status` rather than per-`pod`). This skill's series
 > reduction (below) is a safety net for high-cardinality results, **not** a
@@ -44,7 +44,7 @@ python3 scripts/metrics_chart.py --format ascii response.json
   "series": [
     {
       "metric": "http_requests",
-      "tags": { "code": 200, "method": "GET", "path": "/" },
+      "tags": {"code": 200, "method": "GET", "path": "/"},
       "start": 1750753164,
       "resolution": 60,
       "data": [420.0, 42.0, 30.0, 9.0, 15.0, 18.0]
@@ -53,22 +53,22 @@ python3 scripts/metrics_chart.py --format ascii response.json
 }
 ```
 
-| Field                 | Meaning                                                                 |
-| --------------------- | ----------------------------------------------------------------------- |
-| `metadata.group_keys` | Tags the query grouped on → used to build legend labels.                |
-| `metadata.warnings`   | Shown as `⚠` captions under the chart.                                  |
-| `metadata.unit`       | Canonical y-axis unit (`ms`, `bytes`, …).                               |
-| `metadata.custom_unit`| Human y-axis label; preferred over `unit` when present.                 |
-| `series[].start`      | Unix **seconds** (UTC) of `data[0]`.                                    |
-| `series[].resolution` | **Seconds** per point; `x[i] = start + resolution*i` (uniform spacing). |
-| `series[].data`       | Y values; **`null` = gap** (the line breaks, it is not drawn as 0).     |
+| Field                  | Meaning                                                                 |
+| ---------------------- | ----------------------------------------------------------------------- |
+| `metadata.group_keys`  | Tags the query grouped on → used to build legend labels.                |
+| `metadata.warnings`    | Shown as `⚠` captions under the chart.                                  |
+| `metadata.unit`        | Canonical y-axis unit (`ms`, `bytes`, …).                               |
+| `metadata.custom_unit` | Human y-axis label; preferred over `unit` when present.                 |
+| `series[].start`       | Unix **seconds** (UTC) of `data[0]`.                                    |
+| `series[].resolution`  | **Seconds** per point; `x[i] = start + resolution*i` (uniform spacing). |
+| `series[].data`        | Y values; **`null` = gap** (the line breaks, it is not drawn as 0).     |
 
 The parser also accepts v2/v2a (same shape with an extra per-series `summary`,
 ignored) and the v0/v1 bare-array form, so you can feed older responses too.
 
 ## Behaviour
 
-- **Labels** come from `group_keys` values joined with ` | ` → `200 | GET`
+- **Labels** come from `group_keys` values joined with `|` → `200 | GET`
   (not `code=200,method=GET`). Without `group_keys`, falls back to `k=v` tags.
 - **Local time** axis by default; `--tz UTC` or `--tz Europe/Berlin` to override.
 - **Gaps**: `null` points break the line.
@@ -93,13 +93,13 @@ ignored) and the v0/v1 bare-array form, so you can feed older responses too.
 
 Force a specific backend with `--format`:
 
-| `--format` | Needs     | Output                                                        |
-| ---------- | --------- | ------------------------------------------------------------- |
-| `auto`     | —         | inline image, else a PNG file + display instruction when piped, else ASCII |
-| `ascii`    | nothing   | Unicode braille line chart; renders in any terminal/transcript/CI log. |
-| `png`      | gnuplot   | PNG; displayed inline (Kitty/iTerm2) or written to `--output`/temp. |
-| `svg`      | gnuplot   | SVG written to `--output` or a temp file (path printed).      |
-| `sixel`    | gnuplot   | sixel stream to stdout (terminals with sixel support).        |
+| `--format` | Needs   | Output                                                                     |
+| ---------- | ------- | -------------------------------------------------------------------------- |
+| `auto`     | —       | inline image, else a PNG file + display instruction when piped, else ASCII |
+| `ascii`    | nothing | Unicode braille line chart; renders in any terminal/transcript/CI log.     |
+| `png`      | gnuplot | PNG; displayed inline (Kitty/iTerm2) or written to `--output`/temp.        |
+| `svg`      | gnuplot | SVG written to `--output` or a temp file (path printed).                   |
+| `sixel`    | gnuplot | sixel stream to stdout (terminals with sixel support).                     |
 
 If an image format is requested but `gnuplot` is missing, it prints a note and
 falls back to ASCII — it never hard-fails.
@@ -123,17 +123,17 @@ Do not paste the PNG bytes or the ASCII into chat.
 
 ## Options
 
-| Flag                | Default | Meaning                                            |
-| ------------------- | ------- | -------------------------------------------------- |
-| `--format`          | `auto`  | `auto`/`ascii`/`png`/`svg`/`sixel`.                |
-| `--tz NAME`         | local   | IANA tz for the x-axis; `UTC` for UTC.             |
-| `--top N`           | `8`     | Max series after collapse; must be >= 1.           |
-| `--eps F`           | `0.02`  | Overlap threshold as a fraction of the y-range.    |
-| `--all`             | off     | Draw every series (disable collapse + top-N).      |
-| `--width` / `--height` | auto | Chart size (cells for ASCII, pixels for images).   |
-| `--title TEXT`      | —       | Chart title.                                       |
-| `--output PATH`     | —       | Write png/svg to PATH instead of a temp file.      |
-| `--color` / `--no-color` | auto | Force ANSI colour on/off (default: on when a TTY). |
+| Flag                     | Default | Meaning                                            |
+| ------------------------ | ------- | -------------------------------------------------- |
+| `--format`               | `auto`  | `auto`/`ascii`/`png`/`svg`/`sixel`.                |
+| `--tz NAME`              | local   | IANA tz for the x-axis; `UTC` for UTC.             |
+| `--top N`                | `8`     | Max series after collapse; must be >= 1.           |
+| `--eps F`                | `0.02`  | Overlap threshold as a fraction of the y-range.    |
+| `--all`                  | off     | Draw every series (disable collapse + top-N).      |
+| `--width` / `--height`   | auto    | Chart size (cells for ASCII, pixels for images).   |
+| `--title TEXT`           | —       | Chart title.                                       |
+| `--output PATH`          | —       | Write png/svg to PATH instead of a temp file.      |
+| `--color` / `--no-color` | auto    | Force ANSI colour on/off (default: on when a TTY). |
 
 ## Dependencies
 

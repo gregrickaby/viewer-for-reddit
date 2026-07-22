@@ -2,7 +2,7 @@
 
 Guide for converting Grafana dashboards (Prometheus-backed) to Axiom dashboards on a metrics dataset.
 
-> **Headline rule.** A Grafana panel's spec is the **union of five fields**. No single field is the whole spec. Pull them together in your *first* projection and use their conjunction when authoring the MPL equivalent. The most common failure mode in this migration is reading one field and silently ignoring another — the resulting dashboard filters or groups on a different subset than the original, however honestly it claims to "match".
+> **Headline rule.** A Grafana panel's spec is the **union of five fields**. No single field is the whole spec. Pull them together in your _first_ projection and use their conjunction when authoring the MPL equivalent. The most common failure mode in this migration is reading one field and silently ignoring another — the resulting dashboard filters or groups on a different subset than the original, however honestly it claims to "match".
 
 ---
 
@@ -24,13 +24,13 @@ Guide for converting Grafana dashboards (Prometheus-backed) to Axiom dashboards 
 
 A Grafana panel carries spec information across multiple top-level fields. Each one carries something the others do not:
 
-| Field                              | What it carries                                                                                              |
-|:-----------------------------------|:-------------------------------------------------------------------------------------------------------------|
-| `targets[*].expr`                  | The PromQL — selectors (`{label="x"}`), groupings (`by(label, …)`), aggregations, math.                      |
-| `targets[*].legendFormat`          | Per-series labelling. `{{ resource }}` reveals "this panel groups by `resource`" even when the PromQL hides it. |
-| `fieldConfig.defaults.unit`        | Display unit (Grafana enum — `s`, `bytes`, `percentunit`, etc.). Maps to Axiom `unit`/`customUnits`.          |
-| `title`                            | Human-facing label. Often names the quantity ("p95 read request latency") that the PromQL implements.        |
-| `description`                      | **Narrative constraints.** Often enumerates subsets, references, or intent in prose that does not appear verbatim in `expr` (e.g. "failed checkout attempts in the EU region over the last 24h, grouped by payment provider"). |
+| Field                       | What it carries                                                                                                                                                                                                                |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `targets[*].expr`           | The PromQL — selectors (`{label="x"}`), groupings (`by(label, …)`), aggregations, math.                                                                                                                                        |
+| `targets[*].legendFormat`   | Per-series labelling. `{{ resource }}` reveals "this panel groups by `resource`" even when the PromQL hides it.                                                                                                                |
+| `fieldConfig.defaults.unit` | Display unit (Grafana enum — `s`, `bytes`, `percentunit`, etc.). Maps to Axiom `unit`/`customUnits`.                                                                                                                           |
+| `title`                     | Human-facing label. Often names the quantity ("p95 read request latency") that the PromQL implements.                                                                                                                          |
+| `description`               | **Narrative constraints.** Often enumerates subsets, references, or intent in prose that does not appear verbatim in `expr` (e.g. "failed checkout attempts in the EU region over the last 24h, grouped by payment provider"). |
 
 ### `jq` projection
 
@@ -75,14 +75,14 @@ The five fields together **are** the spec. Author the MPL from their conjunction
 
 ## Reconciling description and expr
 
-When `description` and `expr` *appear* to disagree on what the panel measures, both were deliberate authoring choices. The rule:
+When `description` and `expr` _appear_ to disagree on what the panel measures, both were deliberate authoring choices. The rule:
 
-| Situation                                                        | Resolution                                                                                                       |
-|:-----------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------|
-| `description` enumerates a *narrower* subset than `expr` filters | **Prose wins.** The narrower constraint was intentional; the `expr` may have been left broader for tooling reasons. |
-| `description` enumerates a *broader* concept than `expr` filters | **`expr` wins.** Concrete machinery beats aspirational prose; the panel was deployed in the narrower form.        |
+| Situation                                                        | Resolution                                                                                                                  |
+| :--------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `description` enumerates a _narrower_ subset than `expr` filters | **Prose wins.** The narrower constraint was intentional; the `expr` may have been left broader for tooling reasons.         |
+| `description` enumerates a _broader_ concept than `expr` filters | **`expr` wins.** Concrete machinery beats aspirational prose; the panel was deployed in the narrower form.                  |
 | `description` is missing or empty                                | Use `expr` + `legendFormat` alone. **Do not widen the subset via discovery to fill the gap.** Absence is not authorization. |
-| `description` and `expr` agree                                   | The conjunction is the spec. Translate both.                                                                     |
+| `description` and `expr` agree                                   | The conjunction is the spec. Translate both.                                                                                |
 
 Rule of thumb when both are present and disagree: **the more-restrictive constraint wins**. Both fields were authored deliberately; the prose constraint was put there for a reason.
 
@@ -90,19 +90,19 @@ Rule of thumb when both are present and disagree: **the more-restrictive constra
 
 ## Visualization Type Mapping
 
-| Grafana panel type | Axiom chart type      | Notes                                                                                              |
-|:-------------------|:----------------------|:---------------------------------------------------------------------------------------------------|
-| `timeseries`       | TimeSeries            | Direct mapping. Preserve grouping dimensions in MPL `group by`.                                    |
-| `stat`             | Statistic             | Requires `customUnits`, not `unit` (the create API rejects `unit` on Statistic). See `chart-config.md`. |
-| `gauge`            | Statistic             | Map thresholds to `warningThreshold` / `errorThreshold`. Statistic does not draw a dial; the value + threshold colour is the equivalent signal. |
-| `bargauge`         | Statistic or Table    | Single value → Statistic. Multi-row → Table sorted by the value column.                            |
-| `table`            | Table                 | Direct. Preserve column projections.                                                               |
-| `heatmap`          | Heatmap               | Histograms map to `summarize histogram(...) by bin_auto(_time)` on APL datasets; for OTel histogram metrics, see `metrics-mpl.md`. |
-| `piechart`         | Pie                   | Pie is for ≤6 slices — refuse to translate a pie of unbounded cardinality, switch to Table.        |
-| `text`             | Note                  | `chart-add --type Note --text "<md>"` handles the shape (top-level `text`, no `options{}` wrapper). Strip Grafana's chart-level `description` — universally rejected. |
-| `logs`             | LogStream             | Only when the source data is logs (events dataset), not a metrics dataset.                         |
-| `barchart`, `histogram` | TimeSeries (variant `bars`) or Table | Choose by whether the x-axis is `_time` (TimeSeries with bar variant) or a category (Table). |
-| `row`              | (none — recurse)      | A row groups child panels; project its `panels` array.                                             |
+| Grafana panel type      | Axiom chart type                     | Notes                                                                                                                                                                 |
+| :---------------------- | :----------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `timeseries`            | TimeSeries                           | Direct mapping. Preserve grouping dimensions in MPL `group by`.                                                                                                       |
+| `stat`                  | Statistic                            | Requires `customUnits`, not `unit` (the create API rejects `unit` on Statistic). See `chart-config.md`.                                                               |
+| `gauge`                 | Statistic                            | Map thresholds to `warningThreshold` / `errorThreshold`. Statistic does not draw a dial; the value + threshold colour is the equivalent signal.                       |
+| `bargauge`              | Statistic or Table                   | Single value → Statistic. Multi-row → Table sorted by the value column.                                                                                               |
+| `table`                 | Table                                | Direct. Preserve column projections.                                                                                                                                  |
+| `heatmap`               | Heatmap                              | Histograms map to `summarize histogram(...) by bin_auto(_time)` on APL datasets; for OTel histogram metrics, see `metrics-mpl.md`.                                    |
+| `piechart`              | Pie                                  | Pie is for ≤6 slices — refuse to translate a pie of unbounded cardinality, switch to Table.                                                                           |
+| `text`                  | Note                                 | `chart-add --type Note --text "<md>"` handles the shape (top-level `text`, no `options{}` wrapper). Strip Grafana's chart-level `description` — universally rejected. |
+| `logs`                  | LogStream                            | Only when the source data is logs (events dataset), not a metrics dataset.                                                                                            |
+| `barchart`, `histogram` | TimeSeries (variant `bars`) or Table | Choose by whether the x-axis is `_time` (TimeSeries with bar variant) or a category (Table).                                                                          |
+| `row`                   | (none — recurse)                     | A row groups child panels; project its `panels` array.                                                                                                                |
 
 ---
 
@@ -112,17 +112,17 @@ Grafana and Axiom dashboard wrappers use different field names, types, and value
 
 The canonical move is to start from [`reference/templates/blank.json`](./templates/blank.json) and only translate the Grafana fields you actually want to preserve.
 
-| Grafana field | Axiom field | Translation |
-|:---|:---|:---|
-| `title` | `name` | Direct copy. |
-| `description` (dashboard-level) | `description` (dashboard-level) | Direct copy. Chart-level `description` is rejected on every chart kind — see [chart-config.md § Fields Rejected on Create](./chart-config.md#fields-rejected-on-create). |
-| `refresh` (string, e.g. `"10s"`, `"5m"`) | `refreshTime` (integer seconds) | Convert: `"10s"` → `10`, `"30s"` → `30`, `"1m"` → `60`, `"5m"` → `300`. Sending the string form fails with `unmarshal dashboard document: json: cannot unmarshal string into Go struct field Dashboard.refreshTime of type int64`. Default in `blank.json` is `60`. |
-| `schemaVersion` (integer, often `0` or Grafana's current version like `39`) | `schemaVersion` | Always set to `2` — the Axiom dashboard schema is unrelated to Grafana's. `schemaVersion: 0` triggers a `dashboard-validate --strict` failure. |
-| `time.from`, `time.to` (e.g. `"now-6h"`, `"now"`) | `timeWindowStart`, `timeWindowEnd` | Prefix with `qr-`: `"now-6h"` → `"qr-now-6h"`, `"now"` → `"qr-now"`. The bare `"now"` form fails with `[timeWindowStart]: expected string, received null` if omitted. Defaults in `blank.json`: `"qr-now-1h"` / `"qr-now"`. |
-| `panels` (array of panel specs) | `charts` (array) + `layout` (array) | Per-panel translation, plus a separate layout array. Grafana's `gridPos` becomes layout entries with `i`, `x`, `y`, `w`, `h`. |
-| `templating.list` (variables) | SmartFilter chart (separate kind) | Not a direct field copy. See `reference/smartfilter.md` if the source uses dashboard variables. |
-| `tags`, `uid`, `id`, `version`, `iteration`, `weekStart`, `style`, `editable`, `graphTooltip`, `liveNow`, `timezone`, `fiscalYearStartMonth`, `annotations`, `links` | — | Drop. No Axiom equivalent. (Annotations on individual charts use a different mechanism — see [chart-config.md § Annotations](./chart-config.md#annotations).) |
-| `datasource` (per-panel or default) | `datasets` (top-level array) + `query.metricsDataset` (per-chart) | Resolve the Prometheus datasource name to the Axiom metrics dataset hosting the OTel-ingested data; populate the dataset name in both places. |
+| Grafana field                                                                                                                                                        | Axiom field                                                       | Translation                                                                                                                                                                                                                                                         |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `title`                                                                                                                                                              | `name`                                                            | Direct copy.                                                                                                                                                                                                                                                        |
+| `description` (dashboard-level)                                                                                                                                      | `description` (dashboard-level)                                   | Direct copy. Chart-level `description` is rejected on every chart kind — see [chart-config.md § Fields Rejected on Create](./chart-config.md#fields-rejected-on-create).                                                                                            |
+| `refresh` (string, e.g. `"10s"`, `"5m"`)                                                                                                                             | `refreshTime` (integer seconds)                                   | Convert: `"10s"` → `10`, `"30s"` → `30`, `"1m"` → `60`, `"5m"` → `300`. Sending the string form fails with `unmarshal dashboard document: json: cannot unmarshal string into Go struct field Dashboard.refreshTime of type int64`. Default in `blank.json` is `60`. |
+| `schemaVersion` (integer, often `0` or Grafana's current version like `39`)                                                                                          | `schemaVersion`                                                   | Always set to `2` — the Axiom dashboard schema is unrelated to Grafana's. `schemaVersion: 0` triggers a `dashboard-validate --strict` failure.                                                                                                                      |
+| `time.from`, `time.to` (e.g. `"now-6h"`, `"now"`)                                                                                                                    | `timeWindowStart`, `timeWindowEnd`                                | Prefix with `qr-`: `"now-6h"` → `"qr-now-6h"`, `"now"` → `"qr-now"`. The bare `"now"` form fails with `[timeWindowStart]: expected string, received null` if omitted. Defaults in `blank.json`: `"qr-now-1h"` / `"qr-now"`.                                         |
+| `panels` (array of panel specs)                                                                                                                                      | `charts` (array) + `layout` (array)                               | Per-panel translation, plus a separate layout array. Grafana's `gridPos` becomes layout entries with `i`, `x`, `y`, `w`, `h`.                                                                                                                                       |
+| `templating.list` (variables)                                                                                                                                        | SmartFilter chart (separate kind)                                 | Not a direct field copy. See `reference/smartfilter.md` if the source uses dashboard variables.                                                                                                                                                                     |
+| `tags`, `uid`, `id`, `version`, `iteration`, `weekStart`, `style`, `editable`, `graphTooltip`, `liveNow`, `timezone`, `fiscalYearStartMonth`, `annotations`, `links` | —                                                                 | Drop. No Axiom equivalent. (Annotations on individual charts use a different mechanism — see [chart-config.md § Annotations](./chart-config.md#annotations).)                                                                                                       |
+| `datasource` (per-panel or default)                                                                                                                                  | `datasets` (top-level array) + `query.metricsDataset` (per-chart) | Resolve the Prometheus datasource name to the Axiom metrics dataset hosting the OTel-ingested data; populate the dataset name in both places.                                                                                                                       |
 
 The `owner` field has no Grafana equivalent — set it to `"X-AXIOM-EVERYONE"` (or a specific org/user/team identifier) as the blank skeleton does.
 
@@ -136,7 +136,7 @@ Full rules: [reference/promql-to-mpl.md](./promql-to-mpl.md). Headline guarantee
 - **Every PromQL `by(label1, label2)` dimension becomes an MPL `group by`.** Drop one and the chart shape changes.
 - **Aggregations** (`rate()`, `sum()`, `histogram_quantile()`) translate to MPL operators — consult `scripts/metrics/metrics-spec` for the operator names per metric type before authoring. The `promql-to-mpl.md` doc covers the common operator mappings (rate → `align using prom::rate`, histogram_quantile → `bucket … using interpolate_*_histogram`, etc.).
 
-**Discovery is a validator, not a generator.** Discovery (`metrics-info`, `metrics-query`) confirms that the subset described by `expr`+`description` exists in the dataset. It does not invent a subset for you. If you find yourself running discovery to *decide* what the panel should filter on, stop — the source dashboard already wrote that down.
+**Discovery is a validator, not a generator.** Discovery (`metrics-info`, `metrics-query`) confirms that the subset described by `expr`+`description` exists in the dataset. It does not invent a subset for you. If you find yourself running discovery to _decide_ what the panel should filter on, stop — the source dashboard already wrote that down.
 
 ---
 
@@ -148,13 +148,13 @@ When a metric or label name from `expr` does not appear verbatim in the Axiom da
 
 These rules are stable; the canonical reference (the OpenTelemetry specification's "Prometheus and OpenMetrics Compatibility" page) carries the full table and any newer additions.
 
-| PromQL form                                       | OTel form (post-ingest)                                  | Notes                                                                                                                            |
-|:--------------------------------------------------|:---------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------|
-| `<metric>_total`                                  | `<metric>` (counter type)                                | The `_total` suffix is dropped on OTel ingest; counter-ness is carried as metric metadata, not as a name suffix.                 |
-| `<metric>_bucket`, `<metric>_sum`, `<metric>_count` | `<metric>` (Histogram type)                              | A Prometheus histogram's three derived series collapse into one OTel `Histogram` metric. Use the Histogram-type MPL operators.   |
+| PromQL form                                                   | OTel form (post-ingest)                               | Notes                                                                                                                            |
+| :------------------------------------------------------------ | :---------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------- |
+| `<metric>_total`                                              | `<metric>` (counter type)                             | The `_total` suffix is dropped on OTel ingest; counter-ness is carried as metric metadata, not as a name suffix.                 |
+| `<metric>_bucket`, `<metric>_sum`, `<metric>_count`           | `<metric>` (Histogram type)                           | A Prometheus histogram's three derived series collapse into one OTel `Histogram` metric. Use the Histogram-type MPL operators.   |
 | `<metric>_seconds`, `<metric>_bytes`, `<metric>_milliseconds` | Often unchanged; sometimes carried in `unit` metadata | Unit suffixes are sometimes preserved in the metric name and sometimes only in the metric's `unit` metadata. Validate both ways. |
 
-These metric-name rules are stable. **Label names are different.** The OTel→Prom direction (OTel attribute `foo.bar` exposed as Prom label `foo_bar`) is convention, but the reverse is not safe to assume. A Prom label like `job` is *not* a renamed OTel attribute. A Prom label like `service_name` *might* be the OTel attribute `service.name`, or it might just be a Prom label called `service_name`. Resolve label names through reverse-tag discovery (next section), not through assumed renaming. When you do try a dotted form (`service.name`) as a candidate, back-tick it in MPL: `` `service.name` ``.
+These metric-name rules are stable. **Label names are different.** The OTel→Prom direction (OTel attribute `foo.bar` exposed as Prom label `foo_bar`) is convention, but the reverse is not safe to assume. A Prom label like `job` is _not_ a renamed OTel attribute. A Prom label like `service_name` _might_ be the OTel attribute `service.name`, or it might just be a Prom label called `service_name`. Resolve label names through reverse-tag discovery (next section), not through assumed renaming. When you do try a dotted form (`service.name`) as a candidate, back-tick it in MPL: `` `service.name` ``.
 
 ### Order of operations
 
@@ -170,7 +170,7 @@ Find the live OpenTelemetry specification's "Prometheus and OpenMetrics Compatib
 
 ## Reverse-Tag Discovery for Missing Labels
 
-When a PromQL label name does not exist verbatim in the MPL dataset *after* applying the OTel rename rules — for example, PromQL has `{job="ingest-worker"}` but the dataset has no `job` tag — **do not drop the selector**. Reverse-search:
+When a PromQL label name does not exist verbatim in the MPL dataset _after_ applying the OTel rename rules — for example, PromQL has `{job="ingest-worker"}` but the dataset has no `job` tag — **do not drop the selector**. Reverse-search:
 
 1. **List all tags in the dataset:**
    ```bash
@@ -190,21 +190,27 @@ When a PromQL label name does not exist verbatim in the MPL dataset *after* appl
 ## Common Migration Pitfalls
 
 ### Pulling `expr` but ignoring `description` (or vice versa)
+
 The most common failure. The fields are complementary. `expr` is machine-readable; `description` carries narrative constraints. **Fix:** always project all five fields before authoring.
 
 ### Using discovery to invent the subset
+
 Symptom: agent runs `metrics-info`, picks metrics that "look right", ships those. That's invention, not translation. **Fix:** discovery confirms the spec'd subset exists; it doesn't generate it.
 
 ### Hand-rolling rename guesses
+
 Symptom: `http_requests_total` not found → tries `http_requests`, `http_request_count`, … **Fix:** apply OTel rename rules deterministically (drop `_total`), validate once with `metrics-info`, escalate.
 
 ### Multi-target panels translated as one
+
 Symptom: a panel with `total` + `errors` targets becomes a single MPL pipeline. **Fix:** iterate `targets[]`; translate every entry. Combine in MPL or split into two panels if Grafana used transforms.
 
 ### Substituting a different quantity when blocked
+
 Symptom: ratio can't be computed → agent ships a related quantity Y labelled "Y replaces X". Never acceptable. **Fix:** defer the panel with a Note documenting the blocker. See [SKILL.md § Compute or Defer](../SKILL.md#compute-or-defer).
 
 ### Translating from the live Grafana UI instead of the export
+
 Symptom: agent screen-scrapes the rendered chart. **Fix:** always work from the exported JSON — UI text is generated from `title` + `legendFormat` and obscures parts of the spec.
 
 ---

@@ -108,32 +108,32 @@ scripts/grafana-query prod prometheus 'up{namespace="cloud-prod"} == 0'
 
 ## Scripts
 
-| Script | Usage |
-|--------|-------|
-| `scripts/grafana-config` | Show available deployments |
-| `scripts/grafana-datasources <env>` | List available datasources |
-| `scripts/grafana-query <env> <datasource> <query> [options]` | Query a datasource |
-| `scripts/grafana-alerts <env> [state]` | List alerts |
-| `scripts/grafana-dashboards <env> [search]` | Search dashboards |
-| `scripts/grafana-api <env> <endpoint>` | Raw API calls |
+| Script                                                       | Usage                      |
+| ------------------------------------------------------------ | -------------------------- |
+| `scripts/grafana-config`                                     | Show available deployments |
+| `scripts/grafana-datasources <env>`                          | List available datasources |
+| `scripts/grafana-query <env> <datasource> <query> [options]` | Query a datasource         |
+| `scripts/grafana-alerts <env> [state]`                       | List alerts                |
+| `scripts/grafana-dashboards <env> [search]`                  | Search dashboards          |
+| `scripts/grafana-api <env> <endpoint>`                       | Raw API calls              |
 
 ## SRE Methodologies
 
 ### RED Method (Services)
 
-| Signal | PromQL Pattern |
-|:-------|:---------------|
-| **Rate** | `sum(rate(http_requests_total[5m])) by (service)` |
-| **Errors** | `sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))` |
+| Signal       | PromQL Pattern                                                                                   |
+| :----------- | :----------------------------------------------------------------------------------------------- |
+| **Rate**     | `sum(rate(http_requests_total[5m])) by (service)`                                                |
+| **Errors**   | `sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))`         |
 | **Duration** | `histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))` |
 
 ### USE Method (Resources)
 
-| Signal | PromQL Pattern |
-|:-------|:---------------|
+| Signal          | PromQL Pattern                                        |
+| :-------------- | :---------------------------------------------------- |
 | **Utilization** | `1 - (rate(node_cpu_seconds_total{mode="idle"}[5m]))` |
-| **Saturation** | `node_load1` or `node_memory_MemAvailable_bytes` |
-| **Errors** | `rate(node_network_receive_errs_total[5m])` |
+| **Saturation**  | `node_load1` or `node_memory_MemAvailable_bytes`      |
+| **Errors**      | `rate(node_network_receive_errs_total[5m])`           |
 
 ## Common PromQL Patterns
 
@@ -193,13 +193,13 @@ scripts/grafana-api prod 'api/datasources/proxy/uid/prometheus/api/v1/label/job/
 
 Common endpoints via `scripts/grafana-api`:
 
-| Endpoint | Description |
-|----------|-------------|
-| `api/datasources` | List all datasources |
-| `api/alerts` | Get alert rules |
-| `api/alertmanager/grafana/api/v2/alerts` | Get firing alerts |
-| `api/search?type=dash-db` | Search dashboards |
-| `api/datasources/proxy/uid/<uid>/*` | Proxy to datasource |
+| Endpoint                                 | Description          |
+| ---------------------------------------- | -------------------- |
+| `api/datasources`                        | List all datasources |
+| `api/alerts`                             | Get alert rules      |
+| `api/alertmanager/grafana/api/v2/alerts` | Get firing alerts    |
+| `api/search?type=dash-db`                | Search dashboards    |
+| `api/datasources/proxy/uid/<uid>/*`      | Proxy to datasource  |
 
 ## Authentication
 

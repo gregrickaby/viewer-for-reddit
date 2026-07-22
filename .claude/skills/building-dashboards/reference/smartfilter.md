@@ -1,6 +1,7 @@
 # SmartFilter (Filter Bar) Configuration
 
 SmartFilter is a **chart type** that creates dropdown/search filters. It requires TWO parts:
+
 1. A `SmartFilter` chart in the `charts` array with filter definitions
 2. `declare query_parameters` in each panel query that should respond to filters
 
@@ -23,9 +24,7 @@ SmartFilter is a **chart type** that creates dropdown/search filters. It require
         "apl": "['logs'] | distinct ['geo.country'] | project key=['geo.country'], value=['geo.country'] | sort by key asc",
         "queryOptions": {"quickRange": "1h"}
       },
-      "options": [
-        {"key": "All", "value": "", "default": true}
-      ]
+      "options": [{"key": "All", "value": "", "default": true}]
     }
   ]
 }
@@ -38,6 +37,7 @@ SmartFilter is a **chart type** that creates dropdown/search filters. It require
 Populates options from an APL query.
 
 **Requirements:**
+
 - `apl.apl`: Query returning `key` and `value` columns
 - `apl.queryOptions.quickRange`: Time range for the query (e.g., `"1h"`, `"7d"`)
 - `options`: Must include at least `[{"key": "All", "value": "", "default": true}]`

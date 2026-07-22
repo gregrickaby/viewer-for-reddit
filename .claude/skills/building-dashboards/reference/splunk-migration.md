@@ -19,18 +19,18 @@ Guide for converting Splunk dashboards to Axiom dashboards.
 
 ## Visualization Type Mapping
 
-| Splunk Visualization | Axiom Chart Type | Notes |
-|---------------------|------------------|-------|
-| Single Value | Statistic | Direct mapping |
-| Line Chart | TimeSeries | Ensure `bin(_time, ...)` |
-| Area Chart | TimeSeries | Same as line |
-| Column Chart | TimeSeries | Axiom renders as bars |
-| Bar Chart (horizontal) | Table | No horizontal bar; use table |
-| Pie Chart | Pie | Limit to ≤6 categories |
-| Table | Table | Direct mapping |
-| Events List | LogStream | Add `take N` and `project-keep` |
-| Choropleth Map | Table | No map support; use table |
-| Scatter Plot | Table | No scatter; use table with dimensions |
+| Splunk Visualization   | Axiom Chart Type | Notes                                 |
+| ---------------------- | ---------------- | ------------------------------------- |
+| Single Value           | Statistic        | Direct mapping                        |
+| Line Chart             | TimeSeries       | Ensure `bin(_time, ...)`              |
+| Area Chart             | TimeSeries       | Same as line                          |
+| Column Chart           | TimeSeries       | Axiom renders as bars                 |
+| Bar Chart (horizontal) | Table            | No horizontal bar; use table          |
+| Pie Chart              | Pie              | Limit to ≤6 categories                |
+| Table                  | Table            | Direct mapping                        |
+| Events List            | LogStream        | Add `take N` and `project-keep`       |
+| Choropleth Map         | Table            | No map support; use table             |
+| Scatter Plot           | Table            | No scatter; use table with dimensions |
 
 ---
 
@@ -41,12 +41,14 @@ Guide for converting Splunk dashboards to Axiom dashboards.
 ### Single Value → Statistic
 
 **Splunk:**
+
 ```spl
 index=web status>=500
 | stats count as errors
 ```
 
 **Axiom (dashboard panel):**
+
 ```apl
 ['web-logs']
 | where status >= 500
@@ -56,12 +58,14 @@ index=web status>=500
 ### Timechart → TimeSeries
 
 **Splunk:**
+
 ```spl
 index=web
 | timechart span=5m count by status
 ```
 
 **Axiom (dashboard panel):**
+
 ```apl
 ['web-logs']
 | summarize count() by bin_auto(_time), status
@@ -70,6 +74,7 @@ index=web
 ### Stats Table → Table
 
 **Splunk:**
+
 ```spl
 index=web status>=500
 | stats count by uri
@@ -78,6 +83,7 @@ index=web status>=500
 ```
 
 **Axiom (dashboard panel):**
+
 ```apl
 ['web-logs']
 | where status >= 500
@@ -89,12 +95,14 @@ index=web status>=500
 ### Top Command → Table
 
 **Splunk:**
+
 ```spl
 index=web
 | top limit=10 user_agent
 ```
 
 **Axiom (dashboard panel):**
+
 ```apl
 ['web-logs']
 | summarize count() by user_agent
@@ -105,12 +113,14 @@ index=web
 ### Events Search → LogStream
 
 **Splunk:**
+
 ```spl
 index=web status>=500
 | table _time, uri, status, error_message
 ```
 
 **Axiom (dashboard panel):**
+
 ```apl
 ['web-logs']
 | where status >= 500
@@ -122,6 +132,7 @@ index=web status>=500
 ### Chart with Eval → TimeSeries
 
 **Splunk:**
+
 ```spl
 index=web
 | timechart span=5m count as total, count(eval(status>=500)) as errors
@@ -129,9 +140,10 @@ index=web
 ```
 
 **Axiom (dashboard panel):**
+
 ```apl
 ['web-logs']
-| summarize 
+| summarize
     total = count(),
     errors = countif(status >= 500)
   by bin_auto(_time)
@@ -147,15 +159,15 @@ Splunk dashboards use time pickers. Axiom dashboards also have a time picker tha
 
 For **ad-hoc testing** in the Query tab, use these time filters:
 
-| Splunk Time Picker | Axiom APL (for Query tab testing) |
-|-------------------|-----------------------------------|
-| Last 15 minutes | `where _time between (ago(15m) .. now())` |
-| Last 60 minutes | `where _time between (ago(1h) .. now())` |
-| Last 4 hours | `where _time between (ago(4h) .. now())` |
-| Last 24 hours | `where _time between (ago(24h) .. now())` |
-| Last 7 days | `where _time between (ago(7d) .. now())` |
-| Today | `where _time between (startofday(now()) .. now())` |
-| Yesterday | `where _time between (startofday(ago(1d)) .. startofday(now()))` |
+| Splunk Time Picker | Axiom APL (for Query tab testing)                                |
+| ------------------ | ---------------------------------------------------------------- |
+| Last 15 minutes    | `where _time between (ago(15m) .. now())`                        |
+| Last 60 minutes    | `where _time between (ago(1h) .. now())`                         |
+| Last 4 hours       | `where _time between (ago(4h) .. now())`                         |
+| Last 24 hours      | `where _time between (ago(24h) .. now())`                        |
+| Last 7 days        | `where _time between (ago(7d) .. now())`                         |
+| Today              | `where _time between (startofday(now()) .. now())`               |
+| Yesterday          | `where _time between (startofday(ago(1d)) .. startofday(now()))` |
 
 **Remember:** Remove time filters when placing queries in dashboard panels.
 
@@ -165,8 +177,8 @@ For **ad-hoc testing** in the Query tab, use these time filters:
 
 Splunk `timechart span=` maps to Axiom `bin(_time, ...)`.
 
-| Splunk | Axiom |
-|--------|-------|
+| Splunk    | Axiom            |
+| --------- | ---------------- |
 | `span=1m` | `bin(_time, 1m)` |
 | `span=5m` | `bin(_time, 5m)` |
 | `span=1h` | `bin(_time, 1h)` |
@@ -180,15 +192,16 @@ Or use `bin_auto(_time)` for automatic sizing based on time range.
 
 Splunk and Axiom may have different field names for the same data.
 
-| Concept | Splunk (common) | Axiom (common) |
-|---------|-----------------|----------------|
-| Timestamp | `_time` | `_time` |
-| Raw event | `_raw` | `_raw` or structured fields |
-| Source | `source` | `_source` or custom |
-| Host | `host` | `host` or `['kubernetes.node.name']` |
-| Index | `index` | N/A (use dataset) |
+| Concept   | Splunk (common) | Axiom (common)                       |
+| --------- | --------------- | ------------------------------------ |
+| Timestamp | `_time`         | `_time`                              |
+| Raw event | `_raw`          | `_raw` or structured fields          |
+| Source    | `source`        | `_source` or custom                  |
+| Host      | `host`          | `host` or `['kubernetes.node.name']` |
+| Index     | `index`         | N/A (use dataset)                    |
 
 **Tip:** Run `getschema` on your Axiom dataset to discover actual field names:
+
 ```apl
 ['your-dataset'] | where _time between (ago(1h) .. now()) | getschema
 ```
@@ -197,32 +210,36 @@ Splunk and Axiom may have different field names for the same data.
 
 ## Features Without Direct Equivalents
 
-| Splunk Feature | Axiom Approach |
-|----------------|----------------|
-| `transaction` | Use `summarize` with `make_list()` grouped by session/trace |
-| `streamstats` | No direct equivalent; approximate with window functions |
-| `eventstats` | Use subquery + join |
-| Drilldown actions | Use SmartFilter for interactive filtering |
-| Trellis layout | Create separate panels per dimension |
-| Real-time search | Use short time window + fast refresh |
+| Splunk Feature    | Axiom Approach                                              |
+| ----------------- | ----------------------------------------------------------- |
+| `transaction`     | Use `summarize` with `make_list()` grouped by session/trace |
+| `streamstats`     | No direct equivalent; approximate with window functions     |
+| `eventstats`      | Use subquery + join                                         |
+| Drilldown actions | Use SmartFilter for interactive filtering                   |
+| Trellis layout    | Create separate panels per dimension                        |
+| Real-time search  | Use short time window + fast refresh                        |
 
 ---
 
 ## Common Migration Pitfalls
 
 ### Unbounded Results
+
 **Problem:** Splunk implicitly limits; Axiom may return all rows.
 **Fix:** Add `| top N by ...` or `| take N` for tables/logs.
 
 ### Case Sensitivity
+
 **Problem:** Splunk search is case-insensitive by default.
 **Fix:** Use `has` (case-insensitive) or `tolower()` for matching.
 
 ### Field Escaping
+
 **Problem:** Splunk uses bare field names; Axiom needs brackets for dots.
 **Fix:** `field.name` → `['field.name']`
 
 ### Different Aggregation Names
+
 **Problem:** Function names differ between SPL and APL.
 **Fix:** Consult `spl-to-apl` skill for complete mapping.
 

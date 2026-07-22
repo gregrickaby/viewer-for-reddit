@@ -61,10 +61,10 @@ scripts/create-monitors -d <deployment> -a <audit-dataset> -c <contract> [-n <no
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
+| Script                   | Purpose                              |
+| ------------------------ | ------------------------------------ |
 | `analyze-query-coverage` | Find unused columns and field values |
-| `deploy-dashboard` | Deploy cost control dashboard |
-| `list-notifiers` | List available notifiers for alerts |
-| `create-monitors` | Create 3 cost control monitors |
-| `baseline-stats` | Get 30-day usage statistics |
+| `deploy-dashboard`       | Deploy cost control dashboard        |
+| `list-notifiers`         | List available notifiers for alerts  |
+| `create-monitors`        | Create 3 cost control monitors       |
+| `baseline-stats`         | Get 30-day usage statistics          |

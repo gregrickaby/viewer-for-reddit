@@ -5,12 +5,15 @@ Test the skill by translating these SPL queries to APL and running in [Axiom Pla
 ## Test Cases for sample-http-logs
 
 ### 1. Basic count by status
+
 **SPL:**
+
 ```spl
 index=sample-http-logs | stats count by status
 ```
 
 **Expected APL:**
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -18,12 +21,15 @@ index=sample-http-logs | stats count by status
 ```
 
 ### 2. Top 10 URIs
+
 **SPL:**
+
 ```spl
 index=sample-http-logs | top limit=10 uri
 ```
 
 **Expected APL:**
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -32,12 +38,15 @@ index=sample-http-logs | top limit=10 uri
 ```
 
 ### 3. Error rate over time
+
 **SPL:**
+
 ```spl
 index=sample-http-logs | timechart span=5m count(eval(status>=500)) as errors, count as total | eval error_rate=errors/total*100
 ```
 
 **Expected APL:**
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -48,16 +57,19 @@ index=sample-http-logs | timechart span=5m count(eval(status>=500)) as errors, c
 > **Note:** The `status` field in sample-http-logs is a string, so `toint()` is needed for numeric comparison.
 
 ### 4. Request duration percentiles
+
 **SPL:**
+
 ```spl
 index=sample-http-logs | stats perc50(req_duration_ms) as p50, perc95(req_duration_ms) as p95, perc99(req_duration_ms) as p99 by method
 ```
 
 **Expected APL:**
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     p50 = percentile(req_duration_ms, 50),
     p95 = percentile(req_duration_ms, 95),
     p99 = percentile(req_duration_ms, 99)
@@ -65,12 +77,15 @@ index=sample-http-logs | stats perc50(req_duration_ms) as p50, perc95(req_durati
 ```
 
 ### 5. Geo distribution
+
 **SPL:**
+
 ```spl
 index=sample-http-logs | iplocation clientip | stats count by Country, City | sort - count | head 20
 ```
 
 **Expected APL:**
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -82,12 +97,15 @@ index=sample-http-logs | iplocation clientip | stats count by Country, City | so
 > **Note:** The sample-http-logs dataset already has pre-computed `geo.country` and `geo.city` fields. If your dataset has a raw IP field, use `geo_info_from_ip_address(clientip)` to look up the geo data.
 
 ### 6. Unique users per endpoint
+
 **SPL:**
+
 ```spl
 index=sample-http-logs | stats dc(id) as unique_users, count as requests by uri | sort - unique_users
 ```
 
 **Expected APL:**
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -96,12 +114,15 @@ index=sample-http-logs | stats dc(id) as unique_users, count as requests by uri 
 ```
 
 ### 7. Conditional field creation
+
 **SPL:**
+
 ```spl
 index=sample-http-logs | eval severity=if(status>=500, "error", if(status>=400, "warning", "ok")) | stats count by severity
 ```
 
 **Expected APL:**
+
 ```apl
 ['sample-http-logs']
 | where _time between (ago(1h) .. now())
@@ -118,28 +139,34 @@ index=sample-http-logs | eval severity=if(status>=500, "error", if(status>=400, 
 ## Test Cases for otel-demo-traces
 
 ### 8. Span duration by service
+
 **SPL:**
+
 ```spl
 index=otel-demo-traces | stats avg(duration) as avg_duration, perc95(duration) as p95_duration by service.name
 ```
 
 **Expected APL:**
+
 ```apl
 ['otel-demo-traces']
 | where _time between (ago(1h) .. now())
-| summarize 
+| summarize
     avg_duration = avg(duration),
     p95_duration = percentile(duration, 95)
   by ['service.name']
 ```
 
 ### 9. Error spans over time
+
 **SPL:**
+
 ```spl
 index=otel-demo-traces status_code="ERROR" | timechart span=1m count by service.name
 ```
 
 **Expected APL:**
+
 ```apl
 ['otel-demo-traces']
 | where _time between (ago(1h) .. now())

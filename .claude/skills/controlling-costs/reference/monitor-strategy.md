@@ -11,11 +11,11 @@
 
 ## The 3 Monitors
 
-| # | Monitor | Type | Reactivity | Purpose |
-|---|---------|------|------------|---------|
-| 1 | Total Ingest Guard | Threshold + Trend | 2 hours | Catches overspend (>1.2x contract) OR gradual growth (>15% week-over-week) |
-| 2 | Per-Dataset Spike | Robust Z-Score | 2+ hours | Attribution: "which dataset's ingest changed" |
-| 3 | Query Cost Spike | Hardened Z-Score (30d baseline, 5d gap) | 4+ hours | Attribution: "which dataset's query cost changed" |
+| #   | Monitor            | Type                                    | Reactivity | Purpose                                                                    |
+| --- | ------------------ | --------------------------------------- | ---------- | -------------------------------------------------------------------------- |
+| 1   | Total Ingest Guard | Threshold + Trend                       | 2 hours    | Catches overspend (>1.2x contract) OR gradual growth (>15% week-over-week) |
+| 2   | Per-Dataset Spike  | Robust Z-Score                          | 2+ hours   | Attribution: "which dataset's ingest changed"                              |
+| 3   | Query Cost Spike   | Hardened Z-Score (30d baseline, 5d gap) | 4+ hours   | Attribution: "which dataset's query cost changed"                          |
 
 ## Monitor Details
 
@@ -29,6 +29,7 @@
 - **Trigger after:** 2 consecutive runs
 
 **Purpose:** Catches two scenarios in one monitor:
+
 1. **Overspend:** Today's ingest > 1.2x contract (absolute ceiling)
 2. **Gradual growth:** 7-day average > 23-day baseline by 15%+ (catches organic creep)
 
@@ -39,7 +40,7 @@
 | where _time >= ago(30d) and action == "usageCalculated"
 | extend bytes = toreal(['properties.hourly_ingest_bytes'])
 | summarize daily_bytes = sum(bytes) by day = bin(_time, 1d)
-| summarize 
+| summarize
     today = sumif(daily_bytes, day >= ago(24h)),
     recent_7d = avgif(daily_bytes, day >= ago(7d)),
     baseline_23d = avgif(daily_bytes, day < ago(7d)),
@@ -53,13 +54,13 @@
 
 **Key design decisions:**
 
-| Component | Choice | Rationale |
-|-----------|--------|-----------|
-| Over-contract multiplier | 1.2x | Early warning, not emergency-only |
-| Growth threshold | 15% | Catches meaningful growth, not noise |
-| Baseline requirement | 14+ days | Ensures stable baseline for growth calculation |
-| Division guard | `isfinite() and > 0` | Prevents division by zero on new orgs |
-| Sustained condition | `triggerFromNRuns: 2` | Reduces transient false positives |
+| Component                | Choice                | Rationale                                      |
+| ------------------------ | --------------------- | ---------------------------------------------- |
+| Over-contract multiplier | 1.2x                  | Early warning, not emergency-only              |
+| Growth threshold         | 15%                   | Catches meaningful growth, not noise           |
+| Baseline requirement     | 14+ days              | Ensures stable baseline for growth calculation |
+| Division guard           | `isfinite() and > 0`  | Prevents division by zero on new orgs          |
+| Sustained condition      | `triggerFromNRuns: 2` | Reduces transient false positives              |
 
 ### 2. Per-Dataset Spike Detection (Robust Z-Score)
 
@@ -70,9 +71,10 @@
 - **Range:** 7 days (10080 minutes)
 - **Trigger after:** 1 run (persistence built into query)
 
-Purpose: Statistical attribution - identifies *which* dataset's ingest pattern changed significantly. Uses robust statistics to avoid false positives on high-variance datasets.
+Purpose: Statistical attribution - identifies _which_ dataset's ingest pattern changed significantly. Uses robust statistics to avoid false positives on high-variance datasets.
 
 **Why not Spotlight?** Spotlight produces false positives on naturally high-variance datasets (e.g., k8s-events). The robust z-score approach handles this by:
+
 - Log-transforming bytes to tame heavy tails
 - Using IQR-based sigma (resistant to outliers) instead of stdev
 - Requiring dual gate: z > 3 AND bytes > p99
@@ -108,7 +110,7 @@ Purpose: Detect changes in query cost patterns (different cost driver than inges
 | extend is_baseline = _time < ago(5d)
 | summarize hourly_gbms = sum(gbms) by bucket = bin(_time, 1h), dataset, is_current, is_baseline
 | extend hourly_y = log(hourly_gbms + 1)
-| summarize 
+| summarize
     current_hours = countif(is_current),
     baseline_hours = countif(is_baseline),
     baseline_y_p50 = percentileif(hourly_y, 50, is_baseline),
@@ -133,7 +135,7 @@ Purpose: Detect changes in query cost patterns (different cost driver than inges
 
 **Why the 5d exclusion gap?** If an automated service starts hammering queries without time filters (e.g., scanning 156B rows per query, 255K queries/day), that sustained spike poisons a 15d baseline within 2-3 days — the "new normal" absorbs the anomaly. The 5d gap ensures the baseline never includes recent sustained anomalies.
 
-**Why persistence-based gating (median + p25)?** A single outlier hour can produce `max_z > 3` but a `median_z < 1`. By requiring the 25th percentile of the current window to also be anomalous (`p25_z > 2.5`), we ensure the *entire* window is elevated, not just a transient spike.
+**Why persistence-based gating (median + p25)?** A single outlier hour can produce `max_z > 3` but a `median_z < 1`. By requiring the 25th percentile of the current window to also be anomalous (`p25_z > 2.5`), we ensure the _entire_ window is elevated, not just a transient spike.
 
 ## Units
 
@@ -172,7 +174,7 @@ All thresholds are specified in **bytes**. Human-readable output auto-formats to
 | extend is_baseline = _time < ago(1h)
 | summarize hourly_bytes = sum(bytes) by bucket = bin(_time, 1h), dataset, is_current, is_baseline
 | extend hourly_y = log(hourly_bytes + 1)
-| summarize 
+| summarize
     current_hours = countif(is_current),
     baseline_hours = countif(is_baseline),
     baseline_y_p25 = percentileif(hourly_y, 25, is_baseline),
@@ -200,32 +202,32 @@ The **ingest** spike detection uses the query above. The **query cost** spike de
 
 ### Key Design Decisions
 
-| Component | Choice | Rationale |
-|-----------|--------|-----------|
-| Log transform | `log(bytes + 1)` | Compresses heavy-tailed distributions; 10x spike → ~2.3 log units |
-| Sum first, then log | `sum() → log()` | Correct order; avoids bias if multiple records per hour |
-| Sigma estimation | `IQR / 1.349` | IQR is robust to outliers; 1.349 converts to sigma-equivalent for normal distributions |
-| Minimum sigma | `max_of(..., 0.1)` | Prevents division-by-zero on constant datasets |
-| Query approach | Single-pass | More efficient and reliable than complex joins; uses conditional aggregation |
-| Current window | `ago(4h)` | Short window avoids re-alerting on old spikes |
-| Baseline period | 15d (excl. last 1h) | Longer baseline captures weekly patterns; excludes recent data to avoid self-contamination |
-| Conditional aggs | `countif`, `percentileif`, `maxif` | Compute baseline and current stats in one pass without joins |
-| Baseline guard | `baseline_hours >= 72` | Ensures enough data points for stable percentiles |
-| Z-score threshold | `> 3` | Standard anomaly threshold (~0.1% false positive rate for normal data) |
-| Relative gate | `> p99_bytes` | Spike must exceed dataset's own p99 (relative materiality) |
-| Excess gate | `excess_bytes > 0` | Spike must be above baseline median |
-| Persistence filter | `spike_hours >= 2` | Filters transient noise; catches sustained anomalies |
-| Rank-based filter | `top 10 by max_excess_bytes` | Only alert on top 10 datasets by cost impact (scale-free) |
-| isfinite guard | `isfinite(bytes)` | Filters invalid/null values before log transform |
+| Component           | Choice                             | Rationale                                                                                  |
+| ------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| Log transform       | `log(bytes + 1)`                   | Compresses heavy-tailed distributions; 10x spike → ~2.3 log units                          |
+| Sum first, then log | `sum() → log()`                    | Correct order; avoids bias if multiple records per hour                                    |
+| Sigma estimation    | `IQR / 1.349`                      | IQR is robust to outliers; 1.349 converts to sigma-equivalent for normal distributions     |
+| Minimum sigma       | `max_of(..., 0.1)`                 | Prevents division-by-zero on constant datasets                                             |
+| Query approach      | Single-pass                        | More efficient and reliable than complex joins; uses conditional aggregation               |
+| Current window      | `ago(4h)`                          | Short window avoids re-alerting on old spikes                                              |
+| Baseline period     | 15d (excl. last 1h)                | Longer baseline captures weekly patterns; excludes recent data to avoid self-contamination |
+| Conditional aggs    | `countif`, `percentileif`, `maxif` | Compute baseline and current stats in one pass without joins                               |
+| Baseline guard      | `baseline_hours >= 72`             | Ensures enough data points for stable percentiles                                          |
+| Z-score threshold   | `> 3`                              | Standard anomaly threshold (~0.1% false positive rate for normal data)                     |
+| Relative gate       | `> p99_bytes`                      | Spike must exceed dataset's own p99 (relative materiality)                                 |
+| Excess gate         | `excess_bytes > 0`                 | Spike must be above baseline median                                                        |
+| Persistence filter  | `spike_hours >= 2`                 | Filters transient noise; catches sustained anomalies                                       |
+| Rank-based filter   | `top 10 by max_excess_bytes`       | Only alert on top 10 datasets by cost impact (scale-free)                                  |
+| isfinite guard      | `isfinite(bytes)`                  | Filters invalid/null values before log transform                                           |
 
 ### Why This Works Better Than Spotlight
 
-| Scenario | Spotlight | Robust Z-Score |
-|----------|-----------|----------------|
+| Scenario                           | Spotlight                                | Robust Z-Score                  |
+| ---------------------------------- | ---------------------------------------- | ------------------------------- |
 | High-variance dataset (k8s-events) | False positive (low p-value, high delta) | Correctly filtered (z=2.48 < 3) |
-| Genuine 10x spike | True positive | True positive (z=8.06 > 3) |
-| Gradual increase over weeks | May miss (adapts baseline) | May miss (same limitation) |
-| Transient 1-hour spike | False positive possible | Filtered (requires 2+ hours) |
+| Genuine 10x spike                  | True positive                            | True positive (z=8.06 > 3)      |
+| Gradual increase over weeks        | May miss (adapts baseline)               | May miss (same limitation)      |
+| Transient 1-hour spike             | False positive possible                  | Filtered (requires 2+ hours)    |
 
 ### Monitor Configuration
 
@@ -240,7 +242,8 @@ When using this query as a threshold monitor:
 ### Seasonality Handling
 
 The IQR implicitly handles regular seasonality because:
-- IQR measures the *spread* of normal values (25th to 75th percentile)
+
+- IQR measures the _spread_ of normal values (25th to 75th percentile)
 - Weekly/daily patterns create a wider IQR, which means a higher sigma
 - Higher sigma = higher threshold for anomaly detection
 - This automatically adjusts sensitivity for high-variance vs stable datasets
@@ -249,9 +252,9 @@ The IQR implicitly handles regular seasonality because:
 
 Recommended routing:
 
-| Monitor | Severity | Channel |
-|---------|----------|---------|
-| Budget Guardrail | Critical | PagerDuty + Slack |
-| Per-Dataset Spike | Warning | Slack |
-| Query Cost Spike | Warning | Slack |
-| Reduction Glidepath | Info | Slack (ops channel) |
+| Monitor             | Severity | Channel             |
+| ------------------- | -------- | ------------------- |
+| Budget Guardrail    | Critical | PagerDuty + Slack   |
+| Per-Dataset Spike   | Warning  | Slack               |
+| Query Cost Spike    | Warning  | Slack               |
+| Reduction Glidepath | Info     | Slack (ops channel) |
