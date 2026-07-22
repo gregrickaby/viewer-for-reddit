@@ -18,6 +18,9 @@ function isPublicPath(pathname: string): boolean {
     pathname === '/' ||
     pathname === '/about' ||
     pathname === '/donate' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt' ||
+    pathname === '/favicon.ico' ||
     pathname.startsWith('/api/')
   )
 }
@@ -109,6 +112,6 @@ export async function proxy(
  */
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
+    '/((?!_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
   ]
 }

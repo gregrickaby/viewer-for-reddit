@@ -130,6 +130,46 @@ describe('proxy middleware', () => {
       expect(response).toBeDefined()
     })
 
+    it('allows unauthenticated access to /sitemap.xml', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/sitemap.xml')
+      )
+      const response = await proxy(request)
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
+    })
+
+    it('allows unauthenticated access to /robots.txt', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(new URL('https://example.com/robots.txt'))
+      const response = await proxy(request)
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
+    })
+
+    it('allows unauthenticated access to /favicon.ico', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/favicon.ico')
+      )
+      const response = await proxy(request)
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(response).toBeDefined()
+    })
+
     it('redirects unauthenticated users on /user/* routes', async () => {
       const {getIronSession} = await import('iron-session')
       const mockGetIronSession = vi.mocked(getIronSession)
