@@ -30,6 +30,7 @@ export const metadata: Metadata = {
     description: appConfig.site.metaDescription,
     url: appConfig.site.baseUrl,
     type: 'website',
+    siteName: appConfig.site.name,
     images: [
       {
         url: '/social-share.webp',
@@ -38,6 +39,15 @@ export const metadata: Metadata = {
         alt: appConfig.site.name
       }
     ]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: appConfig.site.name,
+    description: appConfig.site.metaDescription,
+    images: ['/social-share.webp']
+  },
+  other: {
+    'application-name': appConfig.site.name
   }
 }
 

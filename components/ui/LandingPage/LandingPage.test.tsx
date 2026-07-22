@@ -12,20 +12,25 @@ describe('LandingPage', () => {
     )
   })
 
-  it('renders the tagline', () => {
+  it('renders the meta description', () => {
     render(<LandingPage />)
 
     expect(
-      screen.getByText(/Surf Reddit without ads, analytics, and algorithms/i)
+      screen.getByText(
+        /Reddit Viewer is a clean way to browse Reddit without ads, analytics, or algorithms/i
+      )
     ).toBeInTheDocument()
   })
 
-  it('explains why login is required', () => {
+  it('renders features section', () => {
     render(<LandingPage />)
 
     expect(
-      screen.getByText(/reddit requires authentication/i)
+      screen.getByRole('heading', {level: 2, name: /why reddit viewer/i})
     ).toBeInTheDocument()
+    expect(screen.getByText(/No Ads/i)).toBeInTheDocument()
+    expect(screen.getByText(/No Tracking/i)).toBeInTheDocument()
+    expect(screen.getByText(/No Algorithms/i)).toBeInTheDocument()
   })
 
   it('renders sign in button linking to login route', () => {
@@ -42,6 +47,14 @@ describe('LandingPage', () => {
     const link = screen.getByRole('link', {name: /learn more/i})
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', '/about')
+  })
+
+  it('renders structured data script', () => {
+    render(<LandingPage />)
+
+    const script = screen.getByTestId('landing-page-schema')
+    expect(script).toBeInTheDocument()
+    expect(script).toHaveAttribute('type', 'application/ld+json')
   })
 
   it('has no accessibility violations', async () => {
