@@ -2,6 +2,10 @@ import type {NextConfig} from 'next'
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  // Coolify sets SOURCE_COMMIT at build time. Mismatched deploymentId
+  // forces a hard navigation instead of a broken client-side one during
+  // rolling deploys. https://nextjs.org/docs/app/guides/self-hosting#version-skew
+  deploymentId: process.env.SOURCE_COMMIT,
   // Exposed to the browser bundle without the NEXT_PUBLIC_ prefix (project convention).
   env: {
     DD_APPLICATION_ID: process.env.DD_APPLICATION_ID,
