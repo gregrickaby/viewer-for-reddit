@@ -70,7 +70,7 @@
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.5",
     "eslint-config-mantine": "^4.0.3",
     "eslint-config-next": "^16.2.11",
     "eslint-config-prettier": "^10.1.8",
