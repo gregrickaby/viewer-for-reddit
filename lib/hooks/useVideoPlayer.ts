@@ -1,12 +1,115 @@
-import Hls from 'hls.js'
+'use client'
+
+import {logger} from '@/lib/datadog/client'
+import videojs from 'video.js'
+import type Player from 'video.js/dist/types/player'
 import {useEffect, useRef} from 'react'
 
 /**
- * Shared IntersectionObserver instance for all videos (performance optimization).
- * Uses a single observer to monitor all video elements and pause them when scrolled out of view.
+ * Max players attached (i.e. actively buffering/decoding) at once. Feeds with
+ * many videos would otherwise accumulate an unbounded number of live players
+ * over a long scroll session; once this cap is hit, the oldest off-screen
+ * player is disposed to make room and reverts to its poster placeholder.
  */
-let sharedObserver: IntersectionObserver | null = null
-const videoCallbacks = new Map<HTMLVideoElement, () => void>()
+export const MAX_ACTIVE_PLAYERS = 6
+
+/**
+ * How far outside the viewport a video starts loading, so it's ready by the
+ * time the user actually scrolls to it.
+ */
+const ATTACH_ROOT_MARGIN = '600px 0px'
+
+/**
+ * Fires once per container when it nears the viewport, to lazily create its
+ * player. Shared across all videos (one observer, not one per instance).
+ */
+let attachObserver: IntersectionObserver | null = null
+const attachCallbacks = new Map<Element, () => void>()
+
+function getAttachObserver(): IntersectionObserver {
+  attachObserver ??= new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return
+        attachCallbacks.get(entry.target)?.()
+      })
+    },
+    {rootMargin: ATTACH_ROOT_MARGIN}
+  )
+  return attachObserver
+}
+
+function observeForAttach(container: Element, attach: () => void) {
+  attachCallbacks.set(container, attach)
+  getAttachObserver().observe(container)
+}
+
+function unobserveForAttach(container: Element) {
+  attachCallbacks.delete(container)
+  attachObserver?.unobserve(container)
+  if (attachCallbacks.size === 0) {
+    attachObserver?.disconnect()
+    attachObserver = null
+  }
+}
+
+/**
+ * Tracks visibility (for pause-on-scroll-away and eviction candidacy) for
+ * every currently-attached player. Shared across all videos.
+ */
+let visibilityObserver: IntersectionObserver | null = null
+const visibilityCallbacks = new Map<
+  Element,
+  (entry: IntersectionObserverEntry) => void
+>()
+
+function getVisibilityObserver(): IntersectionObserver {
+  visibilityObserver ??= new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        visibilityCallbacks.get(entry.target)?.(entry)
+      })
+    },
+    {threshold: 0.25}
+  )
+  return visibilityObserver
+}
+
+function observeForVisibility(
+  videoElement: Element,
+  onChange: (entry: IntersectionObserverEntry) => void
+) {
+  visibilityCallbacks.set(videoElement, onChange)
+  getVisibilityObserver().observe(videoElement)
+}
+
+function unobserveForVisibility(videoElement: Element) {
+  visibilityCallbacks.delete(videoElement)
+  visibilityObserver?.unobserve(videoElement)
+  if (visibilityCallbacks.size === 0) {
+    visibilityObserver?.disconnect()
+    visibilityObserver = null
+  }
+}
+
+/** Registry of attached players, used to pause others on play and to pick an eviction candidate. */
+interface ActivePlayerEntry {
+  visible: boolean
+  detach: () => void
+}
+const activePlayers = new Map<Player, ActivePlayerEntry>()
+
+function evictOneIfNeeded() {
+  if (activePlayers.size < MAX_ACTIVE_PLAYERS) return
+  for (const [, entry] of activePlayers) {
+    if (!entry.visible) {
+      entry.detach()
+      return
+    }
+  }
+  // All attached players are currently visible - over the cap, but nothing
+  // safe to evict. Leave it be rather than yanking something on screen.
+}
 
 /**
  * Options for the useVideoPlayer hook.
@@ -16,121 +119,164 @@ export interface UseVideoPlayerOptions {
   src: string
   /** Video type (HLS stream or MP4) */
   type?: 'hls' | 'mp4'
+  /** Poster image URL (preview/thumbnail) */
+  poster?: string
 }
 
 /**
- * Custom hook for video player functionality.
- * Handles HLS streaming, auto-pause on scroll, and pausing other videos.
+ * Custom hook for video player functionality, backed by video.js.
+ *
+ * video.js bundles its own HLS implementation (VHS, `@videojs/http-streaming`)
+ * so no separate hls.js dependency or Safari/native branching is needed - VHS
+ * falls back to native HLS automatically where the browser supports it.
  *
  * Features:
- * - HLS streaming support via hls.js (adaptive quality)
- * - Native HLS support for Safari
+ * - HLS and MP4 playback via video.js (adaptive quality, built-in error recovery)
+ * - Lazy player creation: nothing loads until the container nears the viewport
+ * - A capped number of concurrently-attached players, LRU-evicted by visibility
  * - Auto-pause when scrolled out of view (IntersectionObserver)
  * - Auto-pause other videos when one starts playing
- * - Shared IntersectionObserver for performance
- * - Automatic cleanup on unmount
+ * - Automatic cleanup on unmount via `player.dispose()`
  *
  * @param options - Configuration options
- * @returns Ref to attach to the video element
+ * @returns Ref to attach to the container element that hosts the player
  *
  * @example
  * ```typescript
- * const videoRef = useVideoPlayer({
+ * const containerRef = useVideoPlayer({
  *   src: 'https://v.redd.it/abc123/DASH_720.mp4',
  *   type: 'mp4'
  * })
  *
- * return <video ref={videoRef} controls />
+ * return <div ref={containerRef} />
  * ```
  */
 export function useVideoPlayer({
   src,
-  type = 'mp4'
-}: UseVideoPlayerOptions): React.RefObject<HTMLVideoElement | null> {
-  const videoRef = useRef<HTMLVideoElement>(null)
+  type = 'mp4',
+  poster
+}: UseVideoPlayerOptions): React.RefObject<HTMLDivElement | null> {
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
+    const container = containerRef.current
+    if (!container) return
 
-    let hls: Hls | null = null
+    let player: Player | null = null
+    let videoElement: HTMLVideoElement | null = null
+    let posterImg: HTMLImageElement | null = null
 
-    // Initialize HLS.js for HLS streams
-    // Chrome 141+ reports canPlayType('application/vnd.apple.mpegurl') as "maybe"
-    // but its native HLS player is buggy and fails silently.
-    // Always prefer HLS.js when MediaSource is available; only use native in Safari.
-    if (type === 'hls') {
-      const isSafari =
-        /safari/i.test(navigator.userAgent) &&
-        !/chrome|chromium|android/i.test(navigator.userAgent)
-
-      if (isSafari && video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Safari: use native HLS (hardware-accelerated, most reliable)
-        video.src = src
-      } else if (Hls.isSupported()) {
-        // Chrome, Firefox, Edge: use HLS.js via MediaSource Extensions
-        hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: false,
-          backBufferLength: 90
-        })
-        hls.loadSource(src)
-        hls.attachMedia(video)
-      } else {
-        // Fallback: try to play HLS URL directly (may not work, but prevents black screen)
-        video.src = src
-      }
+    const showPoster = () => {
+      if (!poster) return
+      posterImg = document.createElement('img')
+      posterImg.src = poster
+      posterImg.alt = ''
+      posterImg.className = 'vjs-poster-placeholder'
+      container.appendChild(posterImg)
     }
 
-    // Pause other videos when this one starts playing
-    const handlePlay = () => {
-      const allVideos = document.querySelectorAll('video')
-      allVideos.forEach((v) => {
-        if (v !== video && !v.paused) {
-          v.pause()
-        }
+    // Dispose the player and go back to showing the poster placeholder,
+    // re-arming lazy attach so scrolling back into view recreates it.
+    const detach = () => {
+      if (!player) return
+      const disposedPlayer = player
+      activePlayers.delete(disposedPlayer)
+      if (videoElement) unobserveForVisibility(videoElement)
+      if (!disposedPlayer.isDisposed()) disposedPlayer.dispose()
+      player = null
+      videoElement = null
+      showPoster()
+      observeForAttach(container, attach)
+    }
+
+    const attach = () => {
+      if (player) return
+      unobserveForAttach(container)
+      evictOneIfNeeded()
+
+      posterImg?.remove()
+      posterImg = null
+
+      // video.js takes ownership of this element's DOM subtree, so it's
+      // created imperatively rather than as JSX - React never reconciles
+      // inside it. (aria-label lives on the React-rendered container
+      // instead: video.js copies the tag's attributes onto its own wrapper
+      // div too, so setting aria-label here would duplicate the accessible
+      // name.)
+      const newVideoElement = document.createElement('video')
+      newVideoElement.className = 'video-js'
+      newVideoElement.setAttribute('playsinline', 'true')
+      container.appendChild(newVideoElement)
+      videoElement = newVideoElement
+
+      const newPlayer = videojs(newVideoElement, {
+        controls: true,
+        preload: 'none',
+        fluid: false,
+        poster,
+        sources: [
+          {
+            src,
+            type: type === 'hls' ? 'application/x-mpegURL' : 'video/mp4'
+          }
+        ]
       })
-    }
+      player = newPlayer
 
-    // Create shared observer on first video mount
-    sharedObserver ??= new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const callback = videoCallbacks.get(entry.target as HTMLVideoElement)
-          if (callback) callback()
+      // Pause other videos when this one starts playing
+      const handlePlay = () => {
+        activePlayers.forEach((_entry, otherPlayer) => {
+          if (otherPlayer !== newPlayer && !otherPlayer.paused()) {
+            otherPlayer.pause()
+          }
         })
-      },
-      {threshold: 0.25}
-    )
-
-    // Pause video when scrolled out of view
-    const handleIntersection = () => {
-      if (!video.paused) {
-        video.pause()
       }
+
+      // Log playback errors (network failures, unsupported media, etc.)
+      const handleError = () => {
+        const mediaError = newPlayer.error()
+        logger.error('Video playback error', {
+          src,
+          type,
+          code: mediaError?.code,
+          message: mediaError?.message
+        })
+      }
+
+      newPlayer.on('play', handlePlay)
+      newPlayer.on('error', handleError)
+
+      const handleVisibilityChange = (entry: IntersectionObserverEntry) => {
+        const activeEntry = activePlayers.get(newPlayer)
+        if (activeEntry) activeEntry.visible = entry.isIntersecting
+        if (!entry.isIntersecting && !newPlayer.paused()) {
+          newPlayer.pause()
+        }
+      }
+
+      activePlayers.set(newPlayer, {visible: false, detach})
+      observeForVisibility(newVideoElement, handleVisibilityChange)
     }
 
-    videoCallbacks.set(video, handleIntersection)
-    video.addEventListener('play', handlePlay)
-    sharedObserver.observe(video)
+    // Lazy-load: attach immediately if already close to the viewport,
+    // otherwise wait until scrolled near it.
+    showPoster()
+    observeForAttach(container, attach)
 
     return () => {
-      video.removeEventListener('play', handlePlay)
-      videoCallbacks.delete(video)
-      if (sharedObserver) {
-        sharedObserver.unobserve(video)
-        // Clean up shared observer if no videos remain
-        if (videoCallbacks.size === 0) {
-          sharedObserver.disconnect()
-          sharedObserver = null
-        }
-      }
-      // Clean up HLS.js instance
-      if (hls) {
-        hls.destroy()
+      unobserveForAttach(container)
+      posterImg?.remove()
+
+      if (player) {
+        activePlayers.delete(player)
+        if (videoElement) unobserveForVisibility(videoElement)
+        // Releases the VHS/hls instance, native <video> resources, and DOM -
+        // a single call replaces the manual hls.destroy()/video.src cleanup
+        // this hook used to need.
+        if (!player.isDisposed()) player.dispose()
       }
     }
-  }, [src, type])
+  }, [src, type, poster])
 
-  return videoRef
+  return containerRef
 }

@@ -1,309 +1,452 @@
+import {logger} from '@/lib/datadog/client'
 import {render, screen} from '@/test-utils'
-import Hls from 'hls.js'
+import videojs from 'video.js'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {useVideoPlayer} from './useVideoPlayer'
+import {MAX_ACTIVE_PLAYERS, useVideoPlayer} from './useVideoPlayer'
 
-vi.mock('hls.js', () => {
-  const mockInstance = {
-    loadSource: vi.fn(),
-    attachMedia: vi.fn(),
-    destroy: vi.fn()
+vi.mock('@/lib/datadog/client', () => ({
+  logger: {error: vi.fn()}
+}))
+
+vi.mock('video.js', () => {
+  const createMockPlayer = () => {
+    const handlers = new Map<string, Array<(...args: unknown[]) => void>>()
+    return {
+      on: vi.fn((event: string, cb: (...args: unknown[]) => void) => {
+        const list = handlers.get(event) ?? []
+        list.push(cb)
+        handlers.set(event, list)
+      }),
+      trigger: (event: string) => {
+        handlers.get(event)?.forEach((cb) => cb())
+      },
+      pause: vi.fn(),
+      paused: vi.fn(() => false),
+      error: vi.fn(() => null),
+      dispose: vi.fn(),
+      isDisposed: vi.fn(() => false)
+    }
   }
 
-  const MockHls: any = function () {
-    return mockInstance
-  }
-
-  MockHls.isSupported = vi.fn(() => true)
-  MockHls.mockInstance = mockInstance
-
-  return {
-    default: MockHls
-  }
+  const videojsMock: any = vi.fn(() => createMockPlayer())
+  return {default: videojsMock}
 })
 
-const mockObserver = {
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-  callback: null as any
+// Each `new IntersectionObserver(...)` call in the hook (one for lazy
+// attach, one for visibility/pause tracking) is captured here so tests can
+// drive them independently by their distinguishing options.
+interface MockObserver {
+  callback: IntersectionObserverCallback
+  options?: IntersectionObserverInit
+  observe: ReturnType<typeof vi.fn>
+  unobserve: ReturnType<typeof vi.fn>
+  disconnect: ReturnType<typeof vi.fn>
 }
+const observerInstances: MockObserver[] = []
 
 global.IntersectionObserver = class IntersectionObserver {
-  constructor(callback: IntersectionObserverCallback) {
-    mockObserver.callback = callback
+  callback: IntersectionObserverCallback
+  options?: IntersectionObserverInit
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+  constructor(callback: IntersectionObserverCallback, options?: any) {
+    this.callback = callback
+    this.options = options
+    observerInstances.push(this as unknown as MockObserver)
   }
-  observe = mockObserver.observe
-  unobserve = mockObserver.unobserve
-  disconnect = mockObserver.disconnect
 } as any
+
+// The hook's attach/visibility observers are module-level singletons (only
+// created once, on first use), so grab whichever instance matches each
+// role - `.at(-1)` picks the most recently created one, which is correct the
+// first time each is created and stable afterward since they aren't recreated.
+const getAttachObserver = () =>
+  observerInstances.filter((o) => o.options?.rootMargin).at(-1)!
+const getVisibilityObserver = () =>
+  observerInstances.filter((o) => o.options?.threshold === 0.25).at(-1)!
+
+function simulateAttach(container: Element) {
+  getAttachObserver().callback(
+    [{isIntersecting: true, target: container} as IntersectionObserverEntry],
+    getAttachObserver() as unknown as IntersectionObserver
+  )
+}
+
+function simulateVisibility(videoElement: Element, isIntersecting: boolean) {
+  getVisibilityObserver().callback(
+    [{isIntersecting, target: videoElement} as IntersectionObserverEntry],
+    getVisibilityObserver() as unknown as IntersectionObserver
+  )
+}
 
 // Test component to properly test the hook
 function TestVideoPlayer({
   src,
-  type = 'mp4'
+  type = 'mp4',
+  poster
 }: {
   src: string
   type?: 'hls' | 'mp4'
+  poster?: string
 }) {
-  const videoRef = useVideoPlayer({src, type})
-  return (
-    <video ref={videoRef} aria-label="Test Video">
-      {type === 'mp4' && <source src={src} type="video/mp4" />}
-      <track kind="captions" />
-    </video>
-  )
+  const containerRef = useVideoPlayer({src, type, poster})
+  return <div ref={containerRef} aria-label="Test Video" />
 }
 
 describe('useVideoPlayer', () => {
-  const getMockInstance = () => (Hls as any).mockInstance
+  const mockVideojs = vi.mocked(videojs)
+  const mockLogger = vi.mocked(logger)
+
+  const getLastPlayer = () =>
+    mockVideojs.mock.results.at(-1)?.value as ReturnType<typeof mockVideojs> & {
+      trigger: (event: string) => void
+      pause: ReturnType<typeof vi.fn>
+      paused: ReturnType<typeof vi.fn>
+      error: ReturnType<typeof vi.fn>
+      dispose: ReturnType<typeof vi.fn>
+      isDisposed: ReturnType<typeof vi.fn>
+    }
+
+  const getVideoElement = () =>
+    mockVideojs.mock.calls.at(-1)?.[0] as HTMLVideoElement
 
   beforeEach(() => {
     vi.clearAllMocks()
-    const mockInstance = getMockInstance()
-    mockInstance.loadSource.mockClear()
-    mockInstance.attachMedia.mockClear()
-    mockInstance.destroy.mockClear()
-    ;(Hls.isSupported as any).mockReturnValue(true)
+    observerInstances.length = 0
   })
 
-  describe('HLS streaming', () => {
-    it('initializes HLS.js for HLS streams in Chrome', () => {
-      const mockInstance = getMockInstance()
-      const originalUA = navigator.userAgent
-      Object.defineProperty(navigator, 'userAgent', {
-        value:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',
-        writable: true,
-        configurable: true
-      })
-
-      render(<TestVideoPlayer src="https://v.redd.it/test.m3u8" type="hls" />)
-
-      expect(Hls.isSupported).toHaveBeenCalled()
-      expect(mockInstance.loadSource).toHaveBeenCalledWith(
-        'https://v.redd.it/test.m3u8'
-      )
-      expect(mockInstance.attachMedia).toHaveBeenCalled()
-
-      Object.defineProperty(navigator, 'userAgent', {
-        value: originalUA,
-        writable: true,
-        configurable: true
-      })
-    })
-
-    it('uses native HLS in Safari instead of HLS.js', () => {
-      const mockInstance = getMockInstance()
-      const originalUA = navigator.userAgent
-      Object.defineProperty(navigator, 'userAgent', {
-        value:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
-        writable: true,
-        configurable: true
-      })
-
-      // Mock Safari's native HLS support
-      const canPlayTypeSpy = vi.fn().mockReturnValue('probably')
-      Object.defineProperty(HTMLVideoElement.prototype, 'canPlayType', {
-        value: canPlayTypeSpy,
-        writable: true,
-        configurable: true
-      })
-
-      render(<TestVideoPlayer src="https://v.redd.it/test.m3u8" type="hls" />)
-
-      // Should NOT use HLS.js in Safari
-      expect(mockInstance.loadSource).not.toHaveBeenCalled()
-      expect(mockInstance.attachMedia).not.toHaveBeenCalled()
-
-      // Should use native video.src
-      const video = screen.getByLabelText('Test Video')
-      expect(video).toHaveAttribute('src', 'https://v.redd.it/test.m3u8')
-
-      Object.defineProperty(navigator, 'userAgent', {
-        value: originalUA,
-        writable: true,
-        configurable: true
-      })
-    })
-
-    it('does not initialize HLS for mp4 videos', () => {
-      const mockInstance = getMockInstance()
-
+  describe('lazy attach', () => {
+    it('does not create a player until the container nears the viewport', () => {
       render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
 
-      expect(mockInstance.loadSource).not.toHaveBeenCalled()
-      expect(mockInstance.attachMedia).not.toHaveBeenCalled()
+      expect(mockVideojs).not.toHaveBeenCalled()
     })
 
-    it('destroys HLS instance on unmount', () => {
-      const mockInstance = getMockInstance()
+    it('observes the container for lazy attach on mount', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      const container = screen.getByLabelText('Test Video')
 
-      const {unmount} = render(
-        <TestVideoPlayer src="https://v.redd.it/test.m3u8" type="hls" />
+      expect(getAttachObserver().observe).toHaveBeenCalledWith(container)
+    })
+
+    it('creates the player once the container nears the viewport', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      const container = screen.getByLabelText('Test Video')
+
+      simulateAttach(container)
+
+      expect(mockVideojs).toHaveBeenCalledTimes(1)
+    })
+
+    it('shows a poster placeholder before attaching', () => {
+      render(
+        <TestVideoPlayer
+          src="https://v.redd.it/test.mp4"
+          type="mp4"
+          poster="https://preview.redd.it/poster.jpg"
+        />
       )
+      const container = screen.getByLabelText('Test Video')
+      const img = container.querySelector('img')
 
-      unmount()
-
-      expect(mockInstance.destroy).toHaveBeenCalled()
+      expect(img).toHaveAttribute('src', 'https://preview.redd.it/poster.jpg')
     })
 
-    it('does not destroy HLS instance for mp4 on unmount', () => {
-      const mockInstance = getMockInstance()
+    it('removes the poster placeholder once attached', () => {
+      render(
+        <TestVideoPlayer
+          src="https://v.redd.it/test.mp4"
+          type="mp4"
+          poster="https://preview.redd.it/poster.jpg"
+        />
+      )
+      const container = screen.getByLabelText('Test Video')
 
+      simulateAttach(container)
+
+      expect(container.querySelector('img')).not.toBeInTheDocument()
+    })
+
+    it('does not render a poster placeholder when none is provided', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      const container = screen.getByLabelText('Test Video')
+
+      expect(container.querySelector('img')).not.toBeInTheDocument()
+    })
+
+    it('unobserves the container for attach on unmount before it attaches', () => {
       const {unmount} = render(
         <TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />
       )
+      const observer = getAttachObserver()
 
       unmount()
 
-      expect(mockInstance.destroy).not.toHaveBeenCalled()
+      expect(observer.unobserve).toHaveBeenCalled()
+      expect(mockVideojs).not.toHaveBeenCalled()
     })
   })
 
-  describe('IntersectionObserver', () => {
-    it('observes video element on mount', () => {
-      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+  describe('player initialization', () => {
+    it('initializes video.js with an HLS source for hls type', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.m3u8" type="hls" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
 
-      expect(mockObserver.observe).toHaveBeenCalled()
+      expect(mockVideojs).toHaveBeenCalledWith(
+        expect.any(HTMLVideoElement),
+        expect.objectContaining({
+          sources: [
+            {src: 'https://v.redd.it/test.m3u8', type: 'application/x-mpegURL'}
+          ]
+        })
+      )
     })
 
-    it('unobserves video element on unmount', () => {
+    it('initializes video.js with an mp4 source for mp4 type', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
+
+      expect(mockVideojs).toHaveBeenCalledWith(
+        expect.any(HTMLVideoElement),
+        expect.objectContaining({
+          sources: [{src: 'https://v.redd.it/test.mp4', type: 'video/mp4'}]
+        })
+      )
+    })
+
+    it('passes the poster option through to video.js', () => {
+      render(
+        <TestVideoPlayer
+          src="https://v.redd.it/test.mp4"
+          type="mp4"
+          poster="https://preview.redd.it/poster.jpg"
+        />
+      )
+      simulateAttach(screen.getByLabelText('Test Video'))
+
+      expect(mockVideojs).toHaveBeenCalledWith(
+        expect.any(HTMLVideoElement),
+        expect.objectContaining({poster: 'https://preview.redd.it/poster.jpg'})
+      )
+    })
+
+    it('disposes the player on unmount', () => {
       const {unmount} = render(
         <TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />
       )
+      simulateAttach(screen.getByLabelText('Test Video'))
+      const player = getLastPlayer()
 
       unmount()
 
-      expect(mockObserver.unobserve).toHaveBeenCalled()
+      expect(player.dispose).toHaveBeenCalled()
     })
 
-    it('pauses video when scrolled out of view', () => {
-      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
-
-      const video = screen.getByLabelText('Test Video')
-      const pauseSpy = vi.fn()
-
-      Object.defineProperty(video, 'paused', {
-        value: false,
-        writable: true
-      })
-      Object.defineProperty(video, 'pause', {
-        value: pauseSpy,
-        writable: true
-      })
-
-      // Trigger intersection callback
-      mockObserver.callback([{target: video}])
-
-      expect(pauseSpy).toHaveBeenCalled()
-    })
-
-    it('does not pause already paused video', () => {
-      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
-
-      const video = screen.getByLabelText('Test Video')
-      const pauseSpy = vi.fn()
-
-      Object.defineProperty(video, 'paused', {
-        value: true,
-        writable: true
-      })
-      Object.defineProperty(video, 'pause', {
-        value: pauseSpy,
-        writable: true
-      })
-
-      mockObserver.callback([{target: video}])
-
-      expect(pauseSpy).not.toHaveBeenCalled()
-    })
-
-    it('disconnects shared observer when last video unmounts', () => {
+    it('does not dispose an already-disposed player', () => {
       const {unmount} = render(
         <TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />
       )
+      simulateAttach(screen.getByLabelText('Test Video'))
+      const player = getLastPlayer()
+      player.isDisposed.mockReturnValue(true)
 
       unmount()
 
-      expect(mockObserver.disconnect).toHaveBeenCalled()
+      expect(player.dispose).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('error handling', () => {
+    it('logs playback errors to Datadog', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.m3u8" type="hls" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
+      const player = getLastPlayer()
+      player.error.mockReturnValue({code: 2, message: 'network error'})
+
+      player.trigger('error')
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Video playback error',
+        expect.objectContaining({
+          src: 'https://v.redd.it/test.m3u8',
+          type: 'hls',
+          code: 2,
+          message: 'network error'
+        })
+      )
+    })
+  })
+
+  describe('visibility (pause-on-scroll-away)', () => {
+    it('observes the created video element once attached', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
+
+      expect(getVisibilityObserver().observe).toHaveBeenCalledWith(
+        getVideoElement()
+      )
+    })
+
+    it('pauses the player when scrolled out of view', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
+      const player = getLastPlayer()
+      player.paused.mockReturnValue(false)
+
+      simulateVisibility(getVideoElement(), false)
+
+      expect(player.pause).toHaveBeenCalled()
+    })
+
+    it('does not pause an already-paused player', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
+      const player = getLastPlayer()
+      player.paused.mockReturnValue(true)
+
+      simulateVisibility(getVideoElement(), false)
+
+      expect(player.pause).not.toHaveBeenCalled()
+    })
+
+    it('does not pause when scrolling into view', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
+      const player = getLastPlayer()
+      player.paused.mockReturnValue(false)
+
+      simulateVisibility(getVideoElement(), true)
+
+      expect(player.pause).not.toHaveBeenCalled()
+    })
+
+    it('unobserves the video element on unmount', () => {
+      const {unmount} = render(
+        <TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />
+      )
+      simulateAttach(screen.getByLabelText('Test Video'))
+      const observer = getVisibilityObserver()
+
+      unmount()
+
+      expect(observer.unobserve).toHaveBeenCalled()
     })
   })
 
   describe('auto-pause other videos', () => {
-    it('pauses other videos when one starts playing', () => {
+    it('pauses other players when one starts playing', () => {
       render(
         <>
           <TestVideoPlayer src="https://v.redd.it/one.mp4" type="mp4" />
-          <div data-testid="separator" />
           <TestVideoPlayer src="https://v.redd.it/two.mp4" type="mp4" />
         </>
       )
+      const [firstContainer, secondContainer] =
+        screen.getAllByLabelText('Test Video')
+      simulateAttach(firstContainer)
+      simulateAttach(secondContainer)
 
-      const videos = screen.getAllByLabelText('Test Video')
-      const firstVideo = videos[0]
-      const secondVideo = videos[1]
+      const players = mockVideojs.mock.results.map((r) => r.value)
+      const [firstPlayer, secondPlayer] = players
+      secondPlayer.paused.mockReturnValue(false)
 
-      const pauseSpy = vi.fn()
-      Object.defineProperty(secondVideo, 'paused', {
-        value: false,
-        writable: true
-      })
-      Object.defineProperty(secondVideo, 'pause', {
-        value: pauseSpy,
-        writable: true
-      })
+      firstPlayer.trigger('play')
 
-      // Trigger play event on first video
-      firstVideo.dispatchEvent(new Event('play'))
-
-      expect(pauseSpy).toHaveBeenCalled()
+      expect(secondPlayer.pause).toHaveBeenCalled()
+      expect(firstPlayer.pause).not.toHaveBeenCalled()
     })
 
-    it('does not pause already paused videos', () => {
+    it('does not pause already-paused players', () => {
       render(
         <>
           <TestVideoPlayer src="https://v.redd.it/one.mp4" type="mp4" />
           <TestVideoPlayer src="https://v.redd.it/two.mp4" type="mp4" />
         </>
       )
+      const [firstContainer, secondContainer] =
+        screen.getAllByLabelText('Test Video')
+      simulateAttach(firstContainer)
+      simulateAttach(secondContainer)
 
-      const videos = screen.getAllByLabelText('Test Video')
-      const firstVideo = videos[0]
-      const secondVideo = videos[1]
+      const players = mockVideojs.mock.results.map((r) => r.value)
+      const [firstPlayer, secondPlayer] = players
+      secondPlayer.paused.mockReturnValue(true)
 
-      const pauseSpy = vi.fn()
-      Object.defineProperty(secondVideo, 'paused', {
-        value: true,
-        writable: true
-      })
-      Object.defineProperty(secondVideo, 'pause', {
-        value: pauseSpy,
-        writable: true
-      })
+      firstPlayer.trigger('play')
 
-      firstVideo.dispatchEvent(new Event('play'))
-
-      expect(pauseSpy).not.toHaveBeenCalled()
+      expect(secondPlayer.pause).not.toHaveBeenCalled()
     })
   })
 
-  describe('cleanup', () => {
-    it('removes event listeners on unmount', () => {
-      const {unmount} = render(
-        <TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />
+  describe('active player cap (eviction)', () => {
+    it('evicts the oldest off-screen player once the cap is exceeded', () => {
+      const count = MAX_ACTIVE_PLAYERS + 1
+      render(
+        <>
+          {Array.from({length: count}, (_, i) => (
+            <TestVideoPlayer key={i} src={`https://v.redd.it/${i}.mp4`} />
+          ))}
+        </>
       )
+      const containers = screen.getAllByLabelText('Test Video')
+      containers.forEach(simulateAttach)
 
-      const video = screen.getByLabelText('Test Video')
-      const removeEventListenerSpy = vi.spyOn(video, 'removeEventListener')
+      const players = mockVideojs.mock.results.map((r) => r.value)
 
-      unmount()
+      // Every attached player defaults to visible:false until the
+      // visibility observer says otherwise, so the oldest (first attached)
+      // is the eviction candidate once the (MAX_ACTIVE_PLAYERS + 1)th
+      // attach pushes the registry over the cap.
+      expect(players[0].dispose).toHaveBeenCalled()
+      expect(players.at(-1)!.dispose).not.toHaveBeenCalled()
+    })
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'play',
-        expect.any(Function)
+    it('does not evict a currently-visible player', () => {
+      const count = MAX_ACTIVE_PLAYERS + 1
+      render(
+        <>
+          {Array.from({length: count}, (_, i) => (
+            <TestVideoPlayer key={i} src={`https://v.redd.it/${i}.mp4`} />
+          ))}
+        </>
       )
+      const containers = screen.getAllByLabelText('Test Video')
+
+      // Attach and mark every player visible before the last one attaches,
+      // so there is no safe eviction candidate for it.
+      containers.slice(0, MAX_ACTIVE_PLAYERS).forEach((container) => {
+        simulateAttach(container)
+        simulateVisibility(getVideoElement(), true)
+      })
+      simulateAttach(containers[MAX_ACTIVE_PLAYERS])
+
+      const players = mockVideojs.mock.results.map((r) => r.value)
+
+      players.slice(0, MAX_ACTIVE_PLAYERS).forEach((player) => {
+        expect(player.dispose).not.toHaveBeenCalled()
+      })
+      expect(mockVideojs).toHaveBeenCalledTimes(count)
+    })
+
+    it('re-attaches an evicted player when scrolled back into view', () => {
+      const count = MAX_ACTIVE_PLAYERS + 1
+      render(
+        <>
+          {Array.from({length: count}, (_, i) => (
+            <TestVideoPlayer key={i} src={`https://v.redd.it/${i}.mp4`} />
+          ))}
+        </>
+      )
+      const containers = screen.getAllByLabelText('Test Video')
+      containers.forEach(simulateAttach)
+
+      // The first container's player was evicted - scrolling back near it
+      // should recreate a player for the same container.
+      expect(mockVideojs).toHaveBeenCalledTimes(count)
+      simulateAttach(containers[0])
+
+      expect(mockVideojs).toHaveBeenCalledTimes(count + 1)
     })
   })
 })

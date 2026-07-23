@@ -9,13 +9,31 @@
   touch-action: pan-y pinch-zoom;
 }
 
-.video {
-  display: block;
-  height: auto;
-  max-height: 60vh;
-  max-width: 100%;
-  object-fit: contain;
+.container :global(.video-js) {
   width: 100%;
+  height: 100%;
+  max-height: 60vh;
+}
+
+.container :global(.vjs-tech) {
+  object-fit: contain;
+}
+
+.container :global(.vjs-poster-placeholder) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Portrait video is width-constrained by the 60vh cap on the landscape
+   case, leaving it tiny; relax the cap so it can use more of the viewport. */
+.vertical {
+  max-height: 80vh;
+}
+
+.vertical :global(.video-js),
+.vertical :global(.vjs-poster-placeholder) {
+  max-height: 80vh;
 }
 
 .error {

@@ -3,6 +3,7 @@
 import {useVideoPlayer} from '@/lib/hooks/useVideoPlayer'
 import {getIsVertical} from '@/lib/utils/reddit-helpers'
 import clsx from 'clsx'
+import 'video.js/dist/video-js.css'
 import styles from './VideoPlayer.module.css'
 
 /**
@@ -67,7 +68,7 @@ export function VideoPlayer({
   poster
 }: Readonly<VideoPlayerProps>) {
   // Use custom hook for video player logic
-  const videoRef = useVideoPlayer({src, type})
+  const containerRef = useVideoPlayer({src, type, poster})
 
   // Determine if video is vertical (portrait orientation)
   const isVertical = getIsVertical(width, height)
@@ -83,24 +84,10 @@ export function VideoPlayer({
 
   return (
     <div
+      aria-label={`Video: ${title}`}
       className={clsx(styles.container, isVertical && styles.vertical)}
+      ref={containerRef}
       style={containerStyle}
-    >
-      <video
-        aria-label={`Video: ${title}`}
-        className={styles.video}
-        controls
-        height={height}
-        playsInline
-        poster={poster}
-        preload="none"
-        ref={videoRef}
-        width={width}
-      >
-        {type === 'mp4' && <source src={src} type="video/mp4" />}
-        <track kind="captions" label="English" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
+    />
   )
 }

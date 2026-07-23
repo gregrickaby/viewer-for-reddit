@@ -94,11 +94,9 @@ describe('PostMedia', () => {
         }
       }
 
-      const {container} = render(<PostMedia post={postWithVideo} />)
+      render(<PostMedia post={postWithVideo} />)
 
-      // eslint-disable-next-line testing-library/no-container
-      const video = container.querySelector('video')
-      expect(video).toBeInTheDocument()
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
     })
 
     it('renders reddit video from media', () => {
@@ -115,11 +113,9 @@ describe('PostMedia', () => {
         }
       }
 
-      const {container} = render(<PostMedia post={postWithVideo} />)
+      render(<PostMedia post={postWithVideo} />)
 
-      // eslint-disable-next-line testing-library/no-container
-      const video = container.querySelector('video')
-      expect(video).toBeInTheDocument()
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
     })
 
     it('renders mp4 from variants', () => {
@@ -150,11 +146,9 @@ describe('PostMedia', () => {
         }
       }
 
-      const {container} = render(<PostMedia post={postWithMp4} />)
+      render(<PostMedia post={postWithMp4} />)
 
-      // eslint-disable-next-line testing-library/no-container
-      const video = container.querySelector('video')
-      expect(video).toBeInTheDocument()
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
     })
 
     it('renders external video when is_video is true', () => {
@@ -166,11 +160,9 @@ describe('PostMedia', () => {
         url: 'https://v.redd.it/video.mp4'
       }
 
-      const {container} = render(<PostMedia post={postWithExternalVideo} />)
+      render(<PostMedia post={postWithExternalVideo} />)
 
-      // eslint-disable-next-line testing-library/no-container
-      const video = container.querySelector('video')
-      expect(video).toBeInTheDocument()
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
     })
   })
 
@@ -437,8 +429,7 @@ describe('PostMedia', () => {
       const {container} = render(<PostMedia post={postWithBoth} />)
 
       // Should render video, not image
-      // eslint-disable-next-line testing-library/no-container
-      expect(container.querySelector('video')).toBeInTheDocument()
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
       // eslint-disable-next-line testing-library/no-container
       expect(container.querySelector('img')).not.toBeInTheDocument()
     })
