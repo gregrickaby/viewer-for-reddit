@@ -28,6 +28,7 @@ export function UserMenu({username, avatarUrl}: Readonly<UserMenuProps>) {
         <Button
           component="a"
           href="/api/auth/login"
+          rel="nofollow"
           variant="subtle"
           leftSection={<IconLogin size={16} />}
           aria-label="Login"
@@ -38,6 +39,7 @@ export function UserMenu({username, avatarUrl}: Readonly<UserMenuProps>) {
         <Button
           component="a"
           href="/api/auth/login"
+          rel="nofollow"
           variant="subtle"
           leftSection={<IconLogin size={16} />}
           aria-label="Login"

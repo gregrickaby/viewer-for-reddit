@@ -128,6 +128,7 @@ export function LandingPage() {
                 color="red"
                 component="a"
                 href="/api/auth/login"
+                rel="nofollow"
                 leftSection={<IconBrandReddit size={20} />}
                 size="lg"
                 variant="filled"
@@ -201,6 +202,7 @@ export function LandingPage() {
                 color="red"
                 component="a"
                 href="/api/auth/login"
+                rel="nofollow"
                 leftSection={<IconBrandReddit size={16} />}
                 size="lg"
                 variant="filled"
