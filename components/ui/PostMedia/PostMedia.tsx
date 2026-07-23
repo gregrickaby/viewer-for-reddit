@@ -126,9 +126,9 @@ function getOembedSrc(html: string): string | null {
   const decoded = html
     .replaceAll('&lt;', '<')
     .replaceAll('&gt;', '>')
-    .replaceAll('&amp;', '&')
     .replaceAll('&quot;', '"')
     .replaceAll('&#39;', "'")
+    .replaceAll('&amp;', '&')
 
   const match = OEMBED_SRC_RE.exec(decoded)
   if (!match) return null

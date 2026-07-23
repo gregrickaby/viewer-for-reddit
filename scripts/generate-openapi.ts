@@ -8,6 +8,15 @@ import {Reddit} from 'arctic'
 const OAUTH_BASE_URL = 'https://oauth.reddit.com'
 const SCOPES = ['identity', 'read', 'mysubreddits']
 
+function escapeHtml(text: string): string {
+  return text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
 function generateSelfSignedCert(): {key: string; cert: string} {
   const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'codegen-'))
   const keyPath = path.join(dir, 'key.pem')
@@ -109,7 +118,7 @@ async function getAccessToken(): Promise<string> {
         if (error) {
           res.writeHead(400, {'Content-Type': 'text/html'})
           res.end(
-            `<h1>Authorization failed: ${error}</h1><p>You can close this tab.</p>`
+            `<h1>Authorization failed: ${escapeHtml(error)}</h1><p>You can close this tab.</p>`
           )
           server.close()
           reject(new Error(`Reddit authorization failed: ${error}`))
@@ -315,8 +324,8 @@ class OpenAPIGenerator {
 
       for (const url of sampleUrls) {
         try {
-          const oauthUrl = toOAuthUrl(url)
-          const response = await fetch(oauthUrl, {
+          const requestUrl = toOAuthUrl(url)
+          const response = await fetch(requestUrl, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               'User-Agent': 'OpenAPI-Generator/1.0.0'
@@ -326,7 +335,7 @@ class OpenAPIGenerator {
           if (!response.ok) {
             const errorBody = await response.text()
             console.warn(
-              `⚠️  Failed to fetch ${oauthUrl}: ${response.status} ${response.statusText}`
+              `⚠️  Failed to fetch ${requestUrl}: ${response.status} ${response.statusText}`
             )
             if (response.status === 403) {
               console.warn(`    Response: ${errorBody.slice(0, 200)}`)
@@ -342,7 +351,7 @@ class OpenAPIGenerator {
           }
           ;(this.responses[endpoint.operationId] as unknown[]).push(data)
 
-          console.log(`✓ Fetched sample from ${oauthUrl}`)
+          console.log(`✓ Fetched sample from ${requestUrl}`)
 
           // Rate limit to respect Reddit API
           // Math.random() is safe here - only used for delay jitter, not security
