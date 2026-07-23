@@ -108,9 +108,6 @@ describe('useVideoPlayer', () => {
       isDisposed: ReturnType<typeof vi.fn>
     }
 
-  const getVideoElement = () =>
-    mockVideojs.mock.calls.at(-1)?.[0] as HTMLVideoElement
-
   beforeEach(() => {
     vi.clearAllMocks()
     observerInstances.length = 0
@@ -279,49 +276,56 @@ describe('useVideoPlayer', () => {
   })
 
   describe('visibility (pause-on-scroll-away)', () => {
-    it('observes the created video element once attached', () => {
+    // The container div is observed for visibility, not the `<video>`
+    // element itself: iOS promotes an actively-playing video to its own
+    // compositing layer, and IntersectionObserver reliably stops firing for
+    // elements in that state (a known WebKit bug). The container is never
+    // reparented or layer-promoted, so it stays a reliable observe target.
+    it('observes the container once attached', () => {
       render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
-      simulateAttach(screen.getByLabelText('Test Video'))
+      const container = screen.getByLabelText('Test Video')
+      simulateAttach(container)
 
-      expect(getVisibilityObserver().observe).toHaveBeenCalledWith(
-        getVideoElement()
-      )
+      expect(getVisibilityObserver().observe).toHaveBeenCalledWith(container)
     })
 
     it('pauses the player when scrolled out of view', () => {
       render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
-      simulateAttach(screen.getByLabelText('Test Video'))
+      const container = screen.getByLabelText('Test Video')
+      simulateAttach(container)
       const player = getLastPlayer()
       player.paused.mockReturnValue(false)
 
-      simulateVisibility(getVideoElement(), false)
+      simulateVisibility(container, false)
 
       expect(player.pause).toHaveBeenCalled()
     })
 
     it('does not pause an already-paused player', () => {
       render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
-      simulateAttach(screen.getByLabelText('Test Video'))
+      const container = screen.getByLabelText('Test Video')
+      simulateAttach(container)
       const player = getLastPlayer()
       player.paused.mockReturnValue(true)
 
-      simulateVisibility(getVideoElement(), false)
+      simulateVisibility(container, false)
 
       expect(player.pause).not.toHaveBeenCalled()
     })
 
     it('does not pause when scrolling into view', () => {
       render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
-      simulateAttach(screen.getByLabelText('Test Video'))
+      const container = screen.getByLabelText('Test Video')
+      simulateAttach(container)
       const player = getLastPlayer()
       player.paused.mockReturnValue(false)
 
-      simulateVisibility(getVideoElement(), true)
+      simulateVisibility(container, true)
 
       expect(player.pause).not.toHaveBeenCalled()
     })
 
-    it('unobserves the video element on unmount', () => {
+    it('unobserves the container on unmount', () => {
       const {unmount} = render(
         <TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />
       )
@@ -417,7 +421,7 @@ describe('useVideoPlayer', () => {
       // so there is no safe eviction candidate for it.
       containers.slice(0, MAX_ACTIVE_PLAYERS).forEach((container) => {
         simulateAttach(container)
-        simulateVisibility(getVideoElement(), true)
+        simulateVisibility(container, true)
       })
       simulateAttach(containers[MAX_ACTIVE_PLAYERS])
 

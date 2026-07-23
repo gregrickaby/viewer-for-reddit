@@ -56,6 +56,12 @@ function unobserveForAttach(container: Element) {
 /**
  * Tracks visibility (for pause-on-scroll-away and eviction candidacy) for
  * every currently-attached player. Shared across all videos.
+ *
+ * Observes each video's *container* div, not the `<video>` element itself:
+ * on iOS, WebKit promotes an actively-playing `<video>` to its own hardware
+ * compositing layer, and IntersectionObserver callbacks reliably stop firing
+ * for elements in that state (a known WebKit bug). The container is never
+ * reparented or layer-promoted, so its intersection stays accurate.
  */
 let visibilityObserver: IntersectionObserver | null = null
 const visibilityCallbacks = new Map<
@@ -163,7 +169,6 @@ export function useVideoPlayer({
     if (!container) return
 
     let player: Player | null = null
-    let videoElement: HTMLVideoElement | null = null
     let posterImg: HTMLImageElement | null = null
 
     const showPoster = () => {
@@ -181,10 +186,9 @@ export function useVideoPlayer({
       if (!player) return
       const disposedPlayer = player
       activePlayers.delete(disposedPlayer)
-      if (videoElement) unobserveForVisibility(videoElement)
+      unobserveForVisibility(container)
       if (!disposedPlayer.isDisposed()) disposedPlayer.dispose()
       player = null
-      videoElement = null
       showPoster()
       observeForAttach(container, attach)
     }
@@ -207,7 +211,6 @@ export function useVideoPlayer({
       newVideoElement.className = 'video-js'
       newVideoElement.setAttribute('playsinline', 'true')
       container.appendChild(newVideoElement)
-      videoElement = newVideoElement
 
       const newPlayer = videojs(newVideoElement, {
         controls: true,
@@ -255,7 +258,7 @@ export function useVideoPlayer({
       }
 
       activePlayers.set(newPlayer, {visible: false, detach})
-      observeForVisibility(newVideoElement, handleVisibilityChange)
+      observeForVisibility(container, handleVisibilityChange)
     }
 
     // Lazy-load: attach immediately if already close to the viewport,
@@ -269,7 +272,7 @@ export function useVideoPlayer({
 
       if (player) {
         activePlayers.delete(player)
-        if (videoElement) unobserveForVisibility(videoElement)
+        unobserveForVisibility(container)
         // Releases the VHS/hls instance, native <video> resources, and DOM -
         // a single call replaces the manual hls.destroy()/video.src cleanup
         // this hook used to need.
