@@ -21,11 +21,6 @@
       "type": "local",
       "command": ["npx", "@playwright/mcp@latest"],
       "enabled": false
-    },
-    "axiom": {
-      "type": "local",
-      "command": ["npx", "-y", "mcp-remote", "https://mcp.axiom.co/mcp"],
-      "enabled": false
     }
   }
 }

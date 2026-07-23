@@ -13,7 +13,7 @@ vi.mock('@/lib/utils/env', () => ({
   isProduction: vi.fn(() => false)
 }))
 
-vi.mock('@/lib/axiom/server', () => ({
+vi.mock('@/lib/datadog/server', () => ({
   logger: {
     debug: vi.fn(),
     info: vi.fn(),
@@ -33,7 +33,7 @@ vi.mock('@/lib/auth/processOAuthCallback', () => ({
 // Import after mocks
 import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
 import {persistSession} from '@/lib/auth/session'
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import {getEnvVar} from '@/lib/utils/env'
 import {GET} from './route'
 

@@ -8,7 +8,7 @@
  */
 
 import {getRedditContext} from '@/lib/auth/reddit-context'
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import {getEnvVar} from '@/lib/utils/env'
 import {
   AuthenticationError,

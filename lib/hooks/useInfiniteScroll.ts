@@ -1,7 +1,7 @@
 'use client'
 
 import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit/posts'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {useEffect, useState, type RefObject} from 'react'
 import {useLoadMoreOnIntersect} from './useLoadMoreOnIntersect'

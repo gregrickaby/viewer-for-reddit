@@ -5,7 +5,7 @@ import {
   removeSubredditFromMultireddit,
   updateMultiredditName
 } from '@/lib/actions/reddit/multireddits'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
@@ -24,7 +24,7 @@ vi.mock('@/lib/actions/reddit/multireddits', () => ({
   removeSubredditFromMultireddit: vi.fn(async () => ({success: true}))
 }))
 
-vi.mock('@/lib/axiom/client', () => ({
+vi.mock('@/lib/datadog/client', () => ({
   logger: {error: vi.fn()}
 }))
 

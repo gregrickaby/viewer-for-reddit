@@ -1,7 +1,7 @@
 'use client'
 
 import {logout} from '@/lib/actions/auth/auth'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {useRouter} from 'next/navigation'
 import {useState, useTransition} from 'react'
 

@@ -1,4 +1,4 @@
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import {isProduction} from '@/lib/utils/env'
 import {createLoginUrl} from '@/lib/utils/reddit-auth'
 import {NextResponse} from 'next/server'

@@ -644,15 +644,15 @@ vi.mock('next/navigation', () => ({
 }))
 ```
 
-### Axiom Logging Mock
+### Datadog Logging Mock
 
-`@axiomhq/nextjs` is aliased in `vitest.config.ts` to `./test-utils/mocks/axiomNextjsMock.ts`. No manual mock is needed — it is automatically applied for all tests. Do not add your own `vi.mock('@axiomhq/nextjs', ...)`.
+`@datadog/browser-rum`, `@datadog/browser-rum-nextjs`, and `@datadog/browser-logs` are globally mocked in `vitest.setup.ts`. No manual mock is needed — it is automatically applied for all tests. Do not add your own `vi.mock('@datadog/browser-logs', ...)` etc.
 
-For server-side code that imports `lib/axiom/server.ts`, mock it at the module level:
+For server-side code that imports `lib/datadog/server.ts`, mock it at the module level:
 
 ```typescript
-vi.mock('@/lib/axiom/server', () => ({
-  log: {info: vi.fn(), error: vi.fn(), warn: vi.fn()}
+vi.mock('@/lib/datadog/server', () => ({
+  logger: {debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn()}
 }))
 ```
 

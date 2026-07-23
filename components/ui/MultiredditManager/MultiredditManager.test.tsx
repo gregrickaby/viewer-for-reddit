@@ -26,7 +26,7 @@ vi.mock('@/lib/actions/reddit/search', () => ({
   searchSubredditsAndUsers: vi.fn(async () => ({success: true, data: []}))
 }))
 
-vi.mock('@/lib/axiom/client', () => ({
+vi.mock('@/lib/datadog/client', () => ({
   logger: {error: vi.fn()}
 }))
 

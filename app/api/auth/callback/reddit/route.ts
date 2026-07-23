@@ -1,6 +1,6 @@
 import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
 import {persistSession} from '@/lib/auth/session'
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import {getEnvVar} from '@/lib/utils/env'
 import {NextRequest, NextResponse} from 'next/server'
 import {timingSafeEqual} from 'node:crypto'

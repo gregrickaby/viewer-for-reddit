@@ -1,7 +1,7 @@
 'use client'
 
 import {searchSubredditsAndUsers} from '@/lib/actions/reddit/search'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import type {SearchAutocompleteItem} from '@/lib/types/reddit'
 import {useDebouncedValue} from '@mantine/hooks'
 import {useEffect, useRef, useState} from 'react'

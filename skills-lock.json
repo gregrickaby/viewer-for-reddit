@@ -1,35 +1,11 @@
 {
   "version": 1,
   "skills": {
-    "axiom-alerting": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/axiom-alerting/SKILL.md",
-      "computedHash": "e7946a75c50093b72be697b9459a007e14ccc2d07b6544e5dc383e0a028abefa"
-    },
-    "axiom-sre": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/sre/SKILL.md",
-      "computedHash": "36bedcba5ce07ea8192e75eee422ebbd0e96d37a02fb5c45d456b0aacce88194"
-    },
-    "building-dashboards": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/building-dashboards/SKILL.md",
-      "computedHash": "84a130aab324297fe3fe1203b56743359732d4386dff6f0d065726d175b6e413"
-    },
     "caveman": {
       "source": "juliusbrussee/caveman",
       "sourceType": "github",
       "skillPath": "skills/caveman/SKILL.md",
       "computedHash": "d18cdf73a5f5c496d681a43a6846336b110223bdffa6817b8992529c57f1a815"
-    },
-    "controlling-costs": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/controlling-costs/SKILL.md",
-      "computedHash": "73ed9a6417283ee4029a9e61d11ee3cc9ae64268d131150c4c0f4a71f87cd549"
     },
     "find-skills": {
       "source": "vercel-labs/skills",
@@ -37,35 +13,11 @@
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf"
     },
-    "metrics-chart": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/metrics-chart/SKILL.md",
-      "computedHash": "73d4cbf4dfc2daaa27ee5f93ef2970b8474634b0383b2c3fb65d5691b26a2ab3"
-    },
-    "query-metrics": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/query-metrics/SKILL.md",
-      "computedHash": "955a35d22ca2244c14abafe10c57b8314ddbbc5e9ce1040ddc91edf6cfb05f8e"
-    },
-    "spl-to-apl": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/spl-to-apl/SKILL.md",
-      "computedHash": "4bc60dd19ea863e38b3f0d40a9c03e20e90451727f098c659bd48405d5744f4d"
-    },
     "vercel-react-best-practices": {
       "source": "RealBulbaBot/react-best-practices",
       "sourceType": "github",
       "skillPath": "SKILL.md",
       "computedHash": "52f6ac51eff2a952cfaabfdbcb295463cb0de8227bc3d9b7187acb03945361d1"
-    },
-    "writing-evals": {
-      "source": "axiomhq/skills",
-      "sourceType": "github",
-      "skillPath": "skills/writing-evals/SKILL.md",
-      "computedHash": "37d710e47ce0a681714c54df770db6cf19481a3f7ceb566b3cc5161141396d48"
     }
   }
 }

@@ -2,18 +2,18 @@
 
 ## Tech Stack
 
-| Package                              | Purpose                                                                      |
-| ------------------------------------ | ---------------------------------------------------------------------------- |
-| Next.js 16                           | App Router, React Compiler                                                   |
-| React 19                             | Server Components (default), Client Components (`"use client"`)              |
-| TypeScript 5                         | Strict mode                                                                  |
-| Mantine 9                            | UI components                                                                |
-| Arctic 3.x                           | OAuth2 with Reddit                                                           |
-| iron-session 8.x                     | Encrypted sessions                                                           |
-| Axiom                                | Structured logging (`@axiomhq/logging`, `@axiomhq/nextjs`, `@axiomhq/react`) |
-| Vitest v4 + Testing Library + MSW v2 | Testing                                                                      |
-| ESLint + Prettier                    | Linting and formatting                                                       |
-| SonarQube                            | Static analysis (IDE plugin + Community Edition)                             |
+| Package                              | Purpose                                                                                                     |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Next.js 16                           | App Router, React Compiler                                                                                  |
+| React 19                             | Server Components (default), Client Components (`"use client"`)                                             |
+| TypeScript 5                         | Strict mode                                                                                                 |
+| Mantine 9                            | UI components                                                                                               |
+| Arctic 3.x                           | OAuth2 with Reddit                                                                                          |
+| iron-session 8.x                     | Encrypted sessions                                                                                          |
+| Datadog                              | Logs, RUM, APM (`@datadog/browser-rum`, `@datadog/browser-rum-nextjs`, `@datadog/browser-logs`, `dd-trace`) |
+| Vitest v4 + Testing Library + MSW v2 | Testing                                                                                                     |
+| ESLint + Prettier                    | Linting and formatting                                                                                      |
+| SonarQube                            | Static analysis (IDE plugin + Community Edition)                                                            |
 
 ## This is NOT the Next.js you know
 
@@ -23,7 +23,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - **Reddit for Developers** https://developers.reddit.com/docs/llms.txt
 - **Mantine:** https://mantine.dev/llms.txt
-- **Axiom:** https://axiom.co/docs/llms.txt
+- **Datadog:** https://docs.datadoghq.com/
 
 ## Commands
 
@@ -38,7 +38,7 @@ npm run codegen       # Generate types from Reddit API (requires script app auth
 npm run sonar         # SonarQube analysis (~6 min)
 ```
 
-**Secrets** — copy `.env.example` to `.env.local`: `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `SESSION_SECRET`. Axiom skills read `.axiom.toml` (project root or `~/.axiom.toml`) separately.
+**Secrets** — copy `.env.example` to `.env.local`: `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `SESSION_SECRET`, `DD_API_KEY`, `DD_SITE`, `DD_APPLICATION_ID`, `DD_CLIENT_TOKEN`, `DD_SERVICE`.
 
 ## Always Active
 
@@ -71,20 +71,7 @@ Load with the `skill` tool when the task matches (lazy-loaded on demand):
 
 `caveman` and `find-skills` always active (see Always Active above) — not loaded on demand.
 
-**Axiom-specific skills (load when relevant):**
-
-| Skill                 | When to load                                                              |
-| --------------------- | ------------------------------------------------------------------------- |
-| `axiom-alerting`      | Create and manage Axiom monitors and notifiers via API                    |
-| `axiom-sre`           | Expert SRE investigator for incidents and debugging                       |
-| `building-dashboards` | Designs and builds Axiom dashboards via API                               |
-| `controlling-costs`   | Analyzes Axiom query patterns to find unused data, then builds dashboards |
-| `metrics-chart`       | Render Axiom metrics query results as line charts                         |
-| `query-metrics`       | Runs metrics queries against Axiom MetricsDB                              |
-| `spl-to-apl`          | Translates Splunk SPL queries to Axiom APL                                |
-| `writing-evals`       | Scaffolds evaluation suites for the Axiom AI SDK                          |
-
-These skills use `scripts/`/curl and `.axiom.toml`, not the `axiom` MCP server — that server is disabled in `.claude/settings.local.json` (only `next-devtools` is enabled). Re-enable it there if MCP-based Axiom access is ever needed.
+**Datadog** — observability (logs, RUM, APM traces, dashboards, monitors) lives on the `plugin:datadog:mcp` MCP server. Use the `datadog:ddsetup`/`datadog:ddconfig`/`datadog:ddtoolsets` skills to manage the server itself.
 
 ## Core Conventions
 
@@ -94,9 +81,9 @@ These skills use `scripts/`/curl and `.axiom.toml`, not the `axiom` MCP server �
 
 **React 19 Compiler** — handles memoization automatically.
 
-**Axiom logging** — `lib/axiom/server.ts` is server-only; use `lib/axiom/client.ts` in Client Components.
+**Datadog logging** — `lib/datadog/server.ts` (fetch-based Logs Intake client) is server-only; use `lib/datadog/client.ts` (`@datadog/browser-logs`) in Client Components. Both expose the same `logger.info/warn/error/debug(message, fields)` shape.
 
-**Error tracking** — `instrumentation.ts` wires Axiom's `createOnRequestError` for server-side error logging.
+**Error tracking** — `instrumentation.ts` exports `onRequestError` (logs to Datadog). `dd-trace` APM is initialized via `NODE_OPTIONS='--require dd-trace/init'` in the `dev`/`start` scripts, not in `instrumentation.ts` (dd-trace must patch Node's module loader before Next.js is first required). `instrumentation-client.ts` initializes Datadog RUM + Browser Logs; error boundaries call `addNextjsError()` from `@datadog/browser-rum-nextjs` for RUM correlation.
 
 **Route group** — `(shell)` wraps all browsable pages with a shared layout (sidebar, header). Pages outside `(shell)` (about, donate) are standalone. Nested `(shell)/(protected)` gates `/r/*`, `/u/*`, `/search/*`, `/user/*` with a layout-level `isAuthenticated()` redirect to `/` — second line of defense alongside `proxy.ts` middleware, which already blocks these paths for anonymous requests.
 
@@ -119,7 +106,7 @@ These skills use `scripts/`/curl and `.axiom.toml`, not the `axiom` MCP server �
 - Mock `global.fetch` in tests — use MSW v2
 - Use `memo()`, `useCallback()`, or `useMemo()` — React Compiler handles this
 - Use `useState` + `useTransition` for optimistic updates — use `useOptimistic` inside `startTransition`
-- Import `lib/axiom/server.ts` in Client Components
+- Import `lib/datadog/server.ts` in Client Components
 - Start the dev server — user manages it
 - Skip `npm run validate` before declaring complete
 

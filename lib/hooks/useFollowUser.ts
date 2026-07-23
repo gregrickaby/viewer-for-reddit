@@ -1,7 +1,7 @@
 'use client'
 
 import {followUser, unfollowUser} from '@/lib/actions/reddit/users'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {useOptimisticToggle} from './primitives/useOptimisticToggle'
 
 interface UseFollowUserOptions {

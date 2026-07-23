@@ -8,7 +8,7 @@
  */
 
 import {getSession} from '@/lib/auth/session'
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import type {AuthTokens} from '@/lib/types/auth'
 import type {SessionData} from '@/lib/types/reddit'
 import {REDDIT_API_URL, TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'

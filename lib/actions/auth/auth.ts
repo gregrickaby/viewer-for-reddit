@@ -1,7 +1,7 @@
 'use server'
 
 import {getSession, isSessionExpired} from '@/lib/auth/session'
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 
 /**
  * Logout user by destroying their session.

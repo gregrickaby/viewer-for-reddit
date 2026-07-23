@@ -1,5 +1,5 @@
 import {searchSubreddits} from '@/lib/actions/reddit/search'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {act, renderHook, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useSearch} from './useSearch'

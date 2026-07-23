@@ -1,7 +1,6 @@
 import {SessionData} from '@/lib/types/reddit'
 import {getIronSession, SessionOptions} from 'iron-session'
-import {logger} from '@/lib/axiom/server'
-import {transformMiddlewareRequest} from '@axiomhq/nextjs'
+import {logger} from '@/lib/datadog/server'
 import {type NextFetchEvent, NextRequest, NextResponse} from 'next/server'
 
 const SESSION_OPTIONS: SessionOptions = {
@@ -54,6 +53,19 @@ async function getSessionFromRequest(request: NextRequest) {
 }
 
 /**
+ * Build structured log fields for an incoming request.
+ */
+function buildRequestLogFields(request: NextRequest): Record<string, unknown> {
+  return {
+    method: request.method,
+    path: request.nextUrl.pathname,
+    search: request.nextUrl.search,
+    userAgent: request.headers.get('user-agent') || 'unknown',
+    referer: request.headers.get('referer') || 'none'
+  }
+}
+
+/**
  * Proxy to enforce authentication and add security/SEO headers.
  *
  * Redirects unauthenticated users to /api/auth/login for protected routes.
@@ -76,16 +88,14 @@ export async function proxy(
     }
   }
 
-  const isNoiseRoute =
-    pathname.startsWith('/api/health') || pathname.startsWith('/api/axiom')
+  const isNoiseRoute = pathname.startsWith('/api/health')
 
   if (!isNoiseRoute) {
-    logger.info(...transformMiddlewareRequest(request))
-    const flushPromise = logger.flush()
+    const logPromise = logger.info('request', buildRequestLogFields(request))
     if (event) {
-      event.waitUntil(flushPromise)
+      event.waitUntil(logPromise)
     } else {
-      void flushPromise
+      void logPromise
     }
   }
 

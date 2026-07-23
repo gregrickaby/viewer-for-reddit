@@ -1,7 +1,7 @@
 'use client'
 
 import {fetchSavedItems} from '@/lib/actions/reddit/users'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {SavedItem} from '@/lib/types/reddit'
 import {useState, type RefObject} from 'react'
 import {useLoadMoreOnIntersect} from './useLoadMoreOnIntersect'

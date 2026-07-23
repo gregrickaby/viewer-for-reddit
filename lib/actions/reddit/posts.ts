@@ -1,6 +1,6 @@
 'use server'
 
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import type {
   ApiSubredditPostsResponse,
   CommentSortOption,

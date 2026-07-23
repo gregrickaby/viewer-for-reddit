@@ -6,7 +6,7 @@ vi.mock('@/lib/auth/session', () => ({
   isSessionExpired: vi.fn()
 }))
 
-vi.mock('@/lib/axiom/server', () => ({
+vi.mock('@/lib/datadog/server', () => ({
   logger: {
     info: vi.fn(),
     error: vi.fn(),
@@ -20,7 +20,7 @@ import {clearExpiredSession, getAuthStatus, logout} from './auth'
 
 // Import mocked modules
 const {getSession, isSessionExpired} = await import('@/lib/auth/session')
-const {logger} = await import('@/lib/axiom/server')
+const {logger} = await import('@/lib/datadog/server')
 
 const mockGetSession = vi.mocked(getSession)
 const mockIsSessionExpired = vi.mocked(isSessionExpired)

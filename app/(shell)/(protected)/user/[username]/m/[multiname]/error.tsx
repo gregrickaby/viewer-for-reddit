@@ -1,7 +1,8 @@
 'use client'
 
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
+import {addNextjsError} from '@datadog/browser-rum-nextjs'
 import {Container, Stack} from '@mantine/core'
 import {useEffect} from 'react'
 
@@ -20,6 +21,7 @@ export default function RouteError({
   reset: () => void
 }>) {
   useEffect(() => {
+    addNextjsError(error)
     logger.error('Multireddit page error', {
       error: error.message,
       context: 'MultiredditPageError',

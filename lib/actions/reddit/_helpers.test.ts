@@ -1,7 +1,7 @@
 import {describe, expect, it, vi} from 'vitest'
 
 // Mock dependencies BEFORE module imports
-vi.mock('@/lib/axiom/server', () => ({
+vi.mock('@/lib/datadog/server', () => ({
   logger: {
     info: vi.fn(),
     error: vi.fn(),

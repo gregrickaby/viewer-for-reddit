@@ -1,6 +1,6 @@
 'use client'
 
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {notifications} from '@mantine/notifications'
 
 /**

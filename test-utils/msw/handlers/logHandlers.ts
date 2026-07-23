@@ -4,11 +4,10 @@ import {http, HttpResponse} from 'msw'
  * MSW handlers for logging API endpoints.
  *
  * Handles:
- * - POST /api/axiom - Axiom proxy client-side logging endpoint
+ * - POST to the Datadog Logs Intake API used by lib/datadog/server.ts
  */
 export const logHandlers = [
-  // Axiom proxy endpoint - just acknowledge and ignore
-  http.post('/api/axiom', () => {
+  http.post('https://http-intake.logs.datadoghq.com/api/v2/logs', () => {
     return HttpResponse.json({success: true})
   })
 ]

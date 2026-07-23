@@ -1,7 +1,7 @@
 import {theme} from '@/app/theme'
-import {WebVitals} from '@/lib/axiom/client'
 import {appConfig} from '@/lib/config/app.config'
 import {getOptionalEnvVar, isProduction, validateEnv} from '@/lib/utils/env'
+import {DatadogAppRouter} from '@datadog/browser-rum-nextjs'
 import {
   ColorSchemeScript,
   MantineProvider,
@@ -79,13 +79,12 @@ export default function RootLayout({
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <WebVitals />
         <ColorSchemeScript defaultColorScheme="auto" />
         <meta name="color-scheme" content="light dark" />
       </head>
       <body>
+        <DatadogAppRouter />
         <MantineProvider theme={theme} defaultColorScheme="auto">
-          <WebVitals />
           {children}
           <Notifications position="bottom-right" />
         </MantineProvider>

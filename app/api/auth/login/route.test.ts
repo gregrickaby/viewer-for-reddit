@@ -6,7 +6,7 @@ vi.mock('@/lib/utils/env', () => ({
   isProduction: vi.fn(() => false)
 }))
 
-vi.mock('@/lib/axiom/server', () => ({
+vi.mock('@/lib/datadog/server', () => ({
   logger: {
     info: vi.fn(),
     debug: vi.fn(),
@@ -24,7 +24,7 @@ vi.mock('@/lib/utils/reddit-auth', () => ({
 }))
 
 // Import after mocks
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import {isProduction} from '@/lib/utils/env'
 import {createLoginUrl} from '@/lib/utils/reddit-auth'
 import {GET} from './route'

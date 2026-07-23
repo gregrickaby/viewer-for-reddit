@@ -7,7 +7,7 @@ vi.mock('@/lib/actions/reddit/subreddits', () => ({
   toggleSubscription: vi.fn(async () => ({success: true}))
 }))
 
-vi.mock('@/lib/axiom/client', () => ({
+vi.mock('@/lib/datadog/client', () => ({
   logger: {error: vi.fn()}
 }))
 

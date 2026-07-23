@@ -1,7 +1,8 @@
 'use client'
 
 import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
+import {addNextjsError} from '@datadog/browser-rum-nextjs'
 import {useEffect} from 'react'
 
 /**
@@ -24,6 +25,7 @@ export default function RouteError({
   reset: () => void
 }>) {
   useEffect(() => {
+    addNextjsError(error)
     logger.error('Route error caught', {
       error: error.message,
       context: 'MainLayoutError',

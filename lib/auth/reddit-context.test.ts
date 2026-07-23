@@ -5,8 +5,8 @@
  * avoiding any vi.mock() path-string fragility.
  */
 
-// Mock the Axiom logger to avoid side-effects
-vi.mock('@/lib/axiom/server', () => ({
+// Mock the Datadog logger to avoid side-effects
+vi.mock('@/lib/datadog/server', () => ({
   logger: {
     info: vi.fn(),
     warn: vi.fn(),

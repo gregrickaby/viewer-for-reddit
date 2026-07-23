@@ -2,6 +2,17 @@ import type {NextConfig} from 'next'
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  // Exposed to the browser bundle without the NEXT_PUBLIC_ prefix (project convention).
+  env: {
+    DD_APPLICATION_ID: process.env.DD_APPLICATION_ID,
+    DD_CLIENT_TOKEN: process.env.DD_CLIENT_TOKEN,
+    DD_SITE: process.env.DD_SITE,
+    DD_SERVICE: process.env.DD_SERVICE
+  },
+  // dd-trace patches Node internals via require hooks; it must run
+  // unbundled and be initialized before Next.js loads (NODE_OPTIONS
+  // in the dev/start scripts), not through instrumentation.ts.
+  serverExternalPackages: ['dd-trace'],
   experimental: {
     inlineCss: true,
     prefetchInlining: true,
@@ -92,7 +103,8 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'; " +
               "img-src 'self' data: https://*.redd.it https://*.redditstatic.com https://*.redditmedia.com https://external-preview.redd.it https://media.giphy.com https://i.giphy.com; " +
               "media-src 'self' blob: https://*.redd.it https://v.redd.it https://*.reddit.com; " +
-              "connect-src 'self' https://oauth.reddit.com https://v.redd.it https://*.redd.it https://static.cloudflareinsights.com; " +
+              "connect-src 'self' https://oauth.reddit.com https://v.redd.it https://*.redd.it https://static.cloudflareinsights.com https://browser-intake-us5-datadoghq.com; " +
+              "worker-src 'self' blob:; " +
               "font-src 'self' data:; " +
               'frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://player.twitch.tv https://streamable.com; ' +
               "object-src 'none'; " +

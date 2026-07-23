@@ -7,18 +7,10 @@ const {redirectMock, nextMock} = vi.hoisted(() => ({
   }))
 }))
 
-vi.mock('@/lib/axiom/server', () => ({
+vi.mock('@/lib/datadog/server', () => ({
   logger: {
-    info: vi.fn(),
-    flush: vi.fn(() => Promise.resolve())
+    info: vi.fn(() => Promise.resolve())
   }
-}))
-
-vi.mock('@axiomhq/nextjs', () => ({
-  transformMiddlewareRequest: vi.fn(() => [
-    'request',
-    {path: '/test', method: 'GET'}
-  ])
 }))
 
 vi.mock('iron-session', () => ({
@@ -376,23 +368,13 @@ describe('proxy middleware', () => {
 
   describe('logging behavior', () => {
     it('skips logging for /api/healthcheck requests', async () => {
-      const {logger} = await import('@/lib/axiom/server')
+      const {logger} = await import('@/lib/datadog/server')
       const request = new NextRequest(
         new URL('https://example.com/api/healthcheck')
       )
       await proxy(request)
 
       expect(logger.info).not.toHaveBeenCalled()
-      expect(logger.flush).not.toHaveBeenCalled()
-    })
-
-    it('skips logging for /api/axiom requests', async () => {
-      const {logger} = await import('@/lib/axiom/server')
-      const request = new NextRequest(new URL('https://example.com/api/axiom'))
-      await proxy(request)
-
-      expect(logger.info).not.toHaveBeenCalled()
-      expect(logger.flush).not.toHaveBeenCalled()
     })
 
     it('logs non-healthcheck requests', async () => {
@@ -401,12 +383,11 @@ describe('proxy middleware', () => {
         accessToken: 'valid-token'
       } as never)
 
-      const {logger} = await import('@/lib/axiom/server')
+      const {logger} = await import('@/lib/datadog/server')
       const request = new NextRequest(new URL('https://example.com/r/popular'))
       await proxy(request)
 
       expect(logger.info).toHaveBeenCalledWith('request', expect.anything())
-      expect(logger.flush).toHaveBeenCalled()
     })
 
     it('uses waitUntil when NextFetchEvent is provided', async () => {
@@ -415,7 +396,7 @@ describe('proxy middleware', () => {
         accessToken: 'valid-token'
       } as never)
 
-      const {logger} = await import('@/lib/axiom/server')
+      const {logger} = await import('@/lib/datadog/server')
       const request = new NextRequest(new URL('https://example.com/r/popular'))
       const mockEvent = {waitUntil: vi.fn()}
       await proxy(request, mockEvent as never)

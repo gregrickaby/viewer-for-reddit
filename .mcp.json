@@ -7,10 +7,6 @@
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
-    },
-    "axiom": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.axiom.co/mcp"]
     }
   }
 }

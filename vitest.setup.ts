@@ -34,6 +34,33 @@ vi.mock('next/cache', () => ({
   revalidateTag: vi.fn()
 }))
 
+// Mock Datadog browser SDKs (real init/network calls have no place in tests)
+vi.mock('@datadog/browser-rum', () => ({
+  datadogRum: {
+    init: vi.fn(),
+    addError: vi.fn()
+  }
+}))
+
+vi.mock('@datadog/browser-logs', () => ({
+  datadogLogs: {
+    init: vi.fn(),
+    logger: {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    }
+  }
+}))
+
+vi.mock('@datadog/browser-rum-nextjs', () => ({
+  nextjsPlugin: vi.fn(),
+  onRouterTransitionStart: vi.fn(),
+  addNextjsError: vi.fn(),
+  DatadogAppRouter: () => null
+}))
+
 // Polyfill: Vitest does not provide URLSearchParams in Node by default
 // https://github.com/vitest-dev/vitest/issues/7906
 globalThis.URLSearchParams = NodeURLSearchParams as any
@@ -72,6 +99,11 @@ beforeAll(() => {
   vi.stubEnv('REDDIT_CLIENT_SECRET', 'test_secret')
   vi.stubEnv('SESSION_SECRET', 'test-session-secret-at-least-32-chars-long')
   vi.stubEnv('USER_AGENT', 'test-user-agent')
+  vi.stubEnv('DD_API_KEY', 'test-dd-api-key')
+  vi.stubEnv('DD_SITE', 'datadoghq.com')
+  vi.stubEnv('DD_APPLICATION_ID', 'test-dd-application-id')
+  vi.stubEnv('DD_CLIENT_TOKEN', 'test-dd-client-token')
+  vi.stubEnv('DD_SERVICE', 'reddit-viewer')
 
   vi.spyOn(console, 'error').mockImplementation(() => {})
   vi.spyOn(console, 'warn').mockImplementation(() => {})

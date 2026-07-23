@@ -1,7 +1,7 @@
 'use client'
 
 import {searchSubreddits} from '@/lib/actions/reddit/search'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import type {SubredditItem} from '@/lib/types/reddit'
 import {useDebouncedValue} from '@mantine/hooks'
 import {useRouter} from 'next/navigation'

@@ -1,4 +1,4 @@
-import {logger} from '@/lib/axiom/server'
+import {logger} from '@/lib/datadog/server'
 import {headers} from 'next/headers'
 
 export const GENERIC_SERVER_ERROR = 'Something went wrong.'

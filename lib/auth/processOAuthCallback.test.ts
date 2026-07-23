@@ -13,8 +13,8 @@ vi.mock('@/lib/utils/reddit-auth', () => ({
   refreshToken: vi.fn()
 }))
 
-// Mock Axiom logger
-vi.mock('@/lib/axiom/server', () => ({
+// Mock Datadog logger
+vi.mock('@/lib/datadog/server', () => ({
   logger: {
     info: vi.fn(),
     warn: vi.fn(),

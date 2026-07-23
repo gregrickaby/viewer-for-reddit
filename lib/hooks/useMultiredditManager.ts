@@ -7,7 +7,7 @@ import {
   removeSubredditFromMultireddit,
   updateMultiredditName
 } from '@/lib/actions/reddit/multireddits'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {useOptimistic, useRef, useState, useTransition} from 'react'
 
 export interface ManagedMultireddit {

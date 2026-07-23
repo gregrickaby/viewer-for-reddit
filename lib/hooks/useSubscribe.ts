@@ -1,7 +1,7 @@
 'use client'
 
 import {toggleSubscription} from '@/lib/actions/reddit/subreddits'
-import {logger} from '@/lib/axiom/client'
+import {logger} from '@/lib/datadog/client'
 import {useOptimisticToggle} from './primitives/useOptimisticToggle'
 
 interface UseSubscribeOptions {
