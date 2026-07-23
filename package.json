@@ -45,7 +45,7 @@
     "@tabler/icons-react": "^3.44.0",
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",
-    "dd-trace": "^6.3.0",
+    "dd-trace": "^6.4.0",
     "hls.js": "^1.6.16",
     "iron-session": "^8.0.4",
     "next": "^16.2.10",
