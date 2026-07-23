@@ -48,7 +48,7 @@
     "dd-trace": "^6.4.0",
     "hls.js": "^1.6.16",
     "iron-session": "^8.0.4",
-    "next": "^16.2.10",
+    "next": "^16.2.11",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-markdown": "^10.1.0",
