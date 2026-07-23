@@ -8,10 +8,10 @@ import {getEnvVar} from '@/lib/utils/env'
 export const appConfig = {
   // Site metadata
   site: {
-    name: 'Reddit Viewer',
-    description: 'Surf Reddit without ads, analytics, and algorithms',
+    name: 'Viewer for Reddit',
+    description: 'Surf Reddit without ads or algorithms',
     metaDescription:
-      'Reddit Viewer is a clean way to browse Reddit without ads, analytics, or algorithms. Sign in with your Reddit account to get started.',
+      'Viewer for Reddit is a clean way to browse Reddit without ads or algorithms. Sign in with your Reddit account to get started.',
     baseUrl: getEnvVar('BASE_URL')
   },
 
@@ -23,6 +23,6 @@ export const appConfig = {
 
   // External links
   links: {
-    github: 'https://github.com/gregrickaby/reddit-viewer'
+    github: 'https://github.com/gregrickaby/viewer-for-reddit'
   }
 } as const

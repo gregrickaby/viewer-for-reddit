@@ -8,7 +8,7 @@ import {
   IconChartBar,
   IconLayoutDashboard,
   IconUserCheck,
-  IconEye,
+  IconLock,
   IconBrandGithub
 } from '@tabler/icons-react'
 import Image from 'next/image'
@@ -37,9 +37,9 @@ export function LandingPage() {
     },
     featureList: [
       'Ad-free Reddit browsing',
-      'No tracking or analytics',
       'Chronological feed (no algorithm)',
       'Multi-subreddit views (multireddits)',
+      'Secure Reddit OAuth sign-in',
       'Dark/light mode support',
       'Responsive mobile-first design'
     ],
@@ -57,36 +57,36 @@ export function LandingPage() {
       icon: IconShield,
       title: 'No Ads',
       description:
-        'Browse Reddit completely free of advertisements and promoted content.'
-    },
-    {
-      icon: IconEye,
-      title: 'No Tracking',
-      description:
-        'Zero analytics, no fingerprinting, and no data collection whatsoever.'
+        "Every post you see is real. We don't sell space to advertisers."
     },
     {
       icon: IconChartBar,
       title: 'No Algorithms',
       description:
-        'See posts in chronological order - no engagement-based ranking.'
+        'Posts show up in the order they were posted, not the order that keeps you scrolling.'
     },
     {
       icon: IconLayoutDashboard,
       title: 'Multireddits',
-      description: 'Combine multiple subreddits into custom feeds you control.'
+      description: 'Mix your favorite subreddits into one custom feed.'
     },
     {
       icon: IconUserCheck,
       title: 'Your Account',
       description:
-        'Sign in with Reddit to access your subscriptions and saved posts.'
+        "Sign in and you'll see your subscriptions, saved posts, and votes, just like reddit.com."
+    },
+    {
+      icon: IconLock,
+      title: 'Secure Sign-in',
+      description:
+        "We use Reddit's own login. Your password never touches our servers."
     },
     {
       icon: IconBrandGithub,
       title: 'Open Source',
       description:
-        'Built transparently on GitHub. Contribute or self-host freely.'
+        "The code's on GitHub. Fork it, self-host it, or send a pull request."
     }
   ]
 
@@ -102,7 +102,7 @@ export function LandingPage() {
         <section aria-labelledby="hero-heading" style={{marginBottom: '4rem'}}>
           <Stack align="center" gap="lg">
             <Image
-              alt="Reddit Viewer Logo"
+              alt={`${appConfig.site.name} Logo`}
               height={80}
               priority
               src={AppIcon}
@@ -157,7 +157,7 @@ export function LandingPage() {
           style={{marginBottom: '4rem'}}
         >
           <Title order={2} id="features-heading" ta="center" mb="xl">
-            Why Reddit Viewer?
+            Why {appConfig.site.name}?
           </Title>
           <div
             style={{
@@ -192,11 +192,10 @@ export function LandingPage() {
           <Card withBorder padding="xl" radius="md">
             <Stack align="center" gap="md">
               <Title order={2} id="cta-heading" ta="center">
-                Ready for a better Reddit?
+                Ready to browse without ads?
               </Title>
               <Text c="dimmed" ta="center" maw={500}>
-                Join thousands of users enjoying a cleaner, faster, and more
-                private Reddit experience.
+                Thousands of people already use it daily.
               </Text>
               <Button
                 color="red"

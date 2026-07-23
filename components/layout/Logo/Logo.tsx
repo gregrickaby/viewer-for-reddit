@@ -1,5 +1,6 @@
 import AppIcon from '@/app/icon.png'
 import {AppLink} from '@/components/ui/AppLink/AppLink'
+import {appConfig} from '@/lib/config/app.config'
 import {Group, Title} from '@mantine/core'
 import Image from 'next/image'
 
@@ -9,7 +10,7 @@ export function Logo() {
     <AppLink href="/">
       <Group gap="xs" wrap="nowrap">
         <Image
-          alt="Reddit Viewer Logo"
+          alt={`${appConfig.site.name} Logo`}
           height={32}
           priority
           src={AppIcon}
@@ -17,7 +18,7 @@ export function Logo() {
           width={32}
         />
         <Title order={1} size="h3" visibleFrom="sm">
-          Reddit Viewer
+          {appConfig.site.name}
         </Title>
       </Group>
     </AppLink>

@@ -1,5 +1,5 @@
 /**
- * Custom hooks for Reddit Viewer
+ * Custom hooks for Viewer for Reddit
  * Extracting logic from components to make them more presentational
  */
 

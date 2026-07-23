@@ -7,10 +7,10 @@ describe('Logo', () => {
     it('renders logo with image and text', () => {
       render(<Logo />)
 
-      const image = screen.getByAltText('Reddit Viewer Logo')
+      const image = screen.getByAltText('Viewer for Reddit Logo')
       expect(image).toBeInTheDocument()
 
-      const text = screen.getByText('Reddit Viewer')
+      const text = screen.getByText('Viewer for Reddit')
       expect(text).toBeInTheDocument()
     })
 
@@ -24,7 +24,7 @@ describe('Logo', () => {
     it('renders image with correct dimensions', () => {
       render(<Logo />)
 
-      const image = screen.getByAltText('Reddit Viewer Logo')
+      const image = screen.getByAltText('Viewer for Reddit Logo')
       expect(image).toHaveAttribute('width', '32')
       expect(image).toHaveAttribute('height', '32')
     })
@@ -34,7 +34,7 @@ describe('Logo', () => {
     it('has accessible image alt text', () => {
       render(<Logo />)
 
-      const image = screen.getByAltText('Reddit Viewer Logo')
+      const image = screen.getByAltText('Viewer for Reddit Logo')
       expect(image).toBeInTheDocument()
     })
 
@@ -50,13 +50,13 @@ describe('Logo', () => {
     it('renders consistently across multiple renders', () => {
       const {rerender} = render(<Logo />)
 
-      expect(screen.getByText('Reddit Viewer')).toBeInTheDocument()
-      expect(screen.getByAltText('Reddit Viewer Logo')).toBeInTheDocument()
+      expect(screen.getByText('Viewer for Reddit')).toBeInTheDocument()
+      expect(screen.getByAltText('Viewer for Reddit Logo')).toBeInTheDocument()
 
       rerender(<Logo />)
 
-      expect(screen.getByText('Reddit Viewer')).toBeInTheDocument()
-      expect(screen.getByAltText('Reddit Viewer Logo')).toBeInTheDocument()
+      expect(screen.getByText('Viewer for Reddit')).toBeInTheDocument()
+      expect(screen.getByAltText('Viewer for Reddit Logo')).toBeInTheDocument()
     })
   })
 })

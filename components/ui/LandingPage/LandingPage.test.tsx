@@ -8,7 +8,7 @@ describe('LandingPage', () => {
     render(<LandingPage />)
 
     expect(screen.getByRole('heading', {level: 1})).toHaveTextContent(
-      'Reddit Viewer'
+      'Viewer for Reddit'
     )
   })
 
@@ -17,7 +17,7 @@ describe('LandingPage', () => {
 
     expect(
       screen.getByText(
-        /Reddit Viewer is a clean way to browse Reddit without ads, analytics, or algorithms/i
+        /Viewer for Reddit is a clean way to browse Reddit without ads or algorithms/i
       )
     ).toBeInTheDocument()
   })
@@ -26,10 +26,10 @@ describe('LandingPage', () => {
     render(<LandingPage />)
 
     expect(
-      screen.getByRole('heading', {level: 2, name: /why reddit viewer/i})
+      screen.getByRole('heading', {level: 2, name: /why viewer for reddit/i})
     ).toBeInTheDocument()
     expect(screen.getByText(/No Ads/i)).toBeInTheDocument()
-    expect(screen.getByText(/No Tracking/i)).toBeInTheDocument()
+    expect(screen.getByText(/Secure Sign-in/i)).toBeInTheDocument()
     expect(screen.getByText(/No Algorithms/i)).toBeInTheDocument()
   })
 

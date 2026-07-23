@@ -133,7 +133,7 @@ export interface ListingMetadataOptions {
 
   /**
    * Page description for meta tags and social sharing
-   * @example "Browse posts in r/AskReddit with Reddit Viewer"
+   * @example "Browse posts in r/AskReddit with Viewer for Reddit"
    */
   description: string
 

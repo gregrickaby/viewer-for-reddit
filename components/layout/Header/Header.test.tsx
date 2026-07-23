@@ -4,7 +4,7 @@ import {Header} from './Header'
 
 // Mock child components.
 vi.mock('../Logo/Logo', () => ({
-  Logo: () => <div data-testid="logo">Reddit Viewer Logo</div>
+  Logo: () => <div data-testid="logo">Viewer for Reddit Logo</div>
 }))
 
 vi.mock('../Sidebar/SidebarToggle', () => ({

@@ -1,6 +1,6 @@
 # SonarQube Setup & Maintenance
 
-This document covers the SonarQube Community Edition setup for the Reddit Viewer project.
+This document covers the SonarQube Community Edition setup for the Viewer For Reddit project.
 
 ## Overview
 

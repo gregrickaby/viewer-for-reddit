@@ -1,6 +1,6 @@
 # About Viewer for Reddit
 
-**Viewer for Reddit** is a clean way to browse Reddit without ads, analytics, or algorithms.
+**Viewer for Reddit** is a clean way to browse Reddit without ads or algorithms.
 
 **[Sign in to start browsing →](/api/auth/login)**
 
@@ -15,7 +15,7 @@
 
 ### How is this any different than reddit.com?
 
-There are no advertisements here! We also don't use "the algorithm®" to increase engagement and there's no tracking or analytics. You get to see your feed in chronological order.
+Your feed shows in chronological order, without ads or engagement algorithms.
 
 ### Why do I have to sign in?
 
@@ -23,7 +23,7 @@ Reddit has turned off unauthenticated access to their content APIs. Third-party 
 
 ### Is my data safe?
 
-Yes. We use Reddit's [official OAuth2 flow](https://github.com/reddit-archive/reddit/wiki/oauth2), so your password never reaches our servers. We store temporary access tokens that expire and delete when you sign out. We don't collect or sell personal data.
+Yes. We use Reddit's [official OAuth2 flow](https://github.com/reddit-archive/reddit/wiki/oauth2), so your password never reaches our servers. We store temporary access tokens that expire and delete when you sign out. We don't sell your data.
 
 ## About This Project
 
@@ -32,7 +32,7 @@ I'm [Greg Rickaby](https://gregrickaby.com), a software engineer. I built this i
 ## Contributing
 
 - Submit bugs and suggestions via [GitHub Issues](https://github.com/gregrickaby/viewer-for-reddit/issues).
-- To contribute to the codwbase, see the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md).
+- To contribute to the codebase, see the [contributing guide](https://github.com/gregrickaby/viewer-for-reddit/blob/main/CONTRIBUTING.md).
 - Support the project: [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby), [Venmo](https://venmo.com/u/GregRickaby), [PayPal](https://www.paypal.com/paypalme/GregRickaby).
 
 ---

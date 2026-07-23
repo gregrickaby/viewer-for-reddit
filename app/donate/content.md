@@ -1,6 +1,6 @@
-# Support Reddit Viewer
+# Support Viewer for Reddit
 
-Thank you for considering supporting this project! Reddit Viewer is a **free, open-source, and ad-free** alternative to the official Reddit website. It's built with love and maintained in my spare time.
+Thank you for considering supporting this project! Viewer for Reddit is a **free, open-source, and ad-free** alternative to the official Reddit website. It's built with love and maintained in my spare time.
 
 ## Why Support?
 

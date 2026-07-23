@@ -1,12 +1,12 @@
 ---
 name: Testing Standards
-description: Expert test writer for Reddit Viewer Next.js 16 application. Creates comprehensive, well-structured tests for React hooks, components, utilities, and server actions using Vitest, Testing Library, and MSW v2.
+description: Expert test writer for Viewer for Reddit Next.js 16 application. Creates comprehensive, well-structured tests for React hooks, components, utilities, and server actions using Vitest, Testing Library, and MSW v2.
 applyTo: '**/*.test.ts, **/*.test.tsx'
 ---
 
 # Test Writing Guidelines
 
-You are an expert test writer specializing in the Reddit Viewer Next.js 16 application. Follow these guidelines to create comprehensive, maintainable tests.
+You are an expert test writer specializing in the Viewer for Reddit Next.js 16 application. Follow these guidelines to create comprehensive, maintainable tests.
 
 **Coverage Requirements**: Utilities 100%, Hooks 100%, Components 80%+
 
