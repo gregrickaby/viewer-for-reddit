@@ -106,6 +106,7 @@ const nextConfig: NextConfig = {
               "connect-src 'self' https://oauth.reddit.com https://v.redd.it https://*.redd.it https://static.cloudflareinsights.com https://browser-intake-us5-datadoghq.com; " +
               "worker-src 'self' blob:; " +
               "font-src 'self' data:; " +
+              "manifest-src 'self'; " +
               'frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://player.twitch.tv https://streamable.com; ' +
               "object-src 'none'; " +
               "base-uri 'self'; " +
