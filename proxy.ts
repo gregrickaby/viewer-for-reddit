@@ -20,6 +20,7 @@ function isPublicPath(pathname: string): boolean {
     pathname === '/sitemap.xml' ||
     pathname === '/robots.txt' ||
     pathname === '/favicon.ico' ||
+    pathname === '/manifest.webmanifest' ||
     pathname.startsWith('/api/')
   )
 }
