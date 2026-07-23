@@ -8,15 +8,6 @@ import {Reddit} from 'arctic'
 const OAUTH_BASE_URL = 'https://oauth.reddit.com'
 const SCOPES = ['identity', 'read', 'mysubreddits']
 
-function escapeHtml(text: string): string {
-  return text
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
-}
-
 function generateSelfSignedCert(): {key: string; cert: string} {
   const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'codegen-'))
   const keyPath = path.join(dir, 'key.pem')
@@ -116,10 +107,8 @@ async function getAccessToken(): Promise<string> {
         const error = url.searchParams.get('error')
 
         if (error) {
-          res.writeHead(400, {'Content-Type': 'text/html'})
-          res.end(
-            `<h1>Authorization failed: ${escapeHtml(error)}</h1><p>You can close this tab.</p>`
-          )
+          res.writeHead(400, {'Content-Type': 'text/plain'})
+          res.end(`Authorization failed: ${error}\nYou can close this tab.`)
           server.close()
           reject(new Error(`Reddit authorization failed: ${error}`))
           return
