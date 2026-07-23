@@ -49,7 +49,7 @@ const EMPTY_FOLLOWING: Array<{
   note?: string
 }> = []
 
-/** Navigation sidebar with feeds, subscriptions, and multireddits. Always shows authenticated content. */
+/** Navigation sidebar with feeds, subscriptions, and multireddits. Reddit's API requires an authenticated user context, so Popular/All/Saved only render once signed in. */
 export function Sidebar({
   username,
   subscriptions = EMPTY_SUBSCRIPTIONS,
@@ -89,25 +89,27 @@ export function Sidebar({
                 label="Home"
                 leftSection={<IconFlame size={16} />}
               />
-              <NavLink
-                component={Link}
-                href="/r/popular"
-                label="Popular"
-                leftSection={<IconTrendingUp size={16} />}
-              />
-              <NavLink
-                component={Link}
-                href="/r/all"
-                label="All"
-                leftSection={<IconTrendingUp size={16} />}
-              />
               {username && (
-                <NavLink
-                  component={Link}
-                  href={`/user/${username}/saved`}
-                  label="Saved"
-                  leftSection={<IconBookmark size={16} />}
-                />
+                <>
+                  <NavLink
+                    component={Link}
+                    href="/r/popular"
+                    label="Popular"
+                    leftSection={<IconTrendingUp size={16} />}
+                  />
+                  <NavLink
+                    component={Link}
+                    href="/r/all"
+                    label="All"
+                    leftSection={<IconTrendingUp size={16} />}
+                  />
+                  <NavLink
+                    component={Link}
+                    href={`/user/${username}/saved`}
+                    label="Saved"
+                    leftSection={<IconBookmark size={16} />}
+                  />
+                </>
               )}
               <NavLink
                 component={Link}

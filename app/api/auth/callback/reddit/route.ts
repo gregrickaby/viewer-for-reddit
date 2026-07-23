@@ -99,12 +99,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     timingSafeEqual(Buffer.from(state), Buffer.from(storedState))
 
   if (!code || !state || !storedState || !statesMatch) {
+    const {protocol, host} = resolveHostFromRequest(request)
     logger.error('State validation failed - possible CSRF attack', {
       hasCode: !!code,
       hasState: !!state,
       hasStoredState: !!storedState,
       statesMatch,
-      url: url.toString(),
+      url: `${protocol}://${host}${url.pathname}${url.search}`,
       referer: request.headers.get('referer') || 'none',
       userAgent: request.headers.get('user-agent')?.substring(0, 100) || 'none',
       context: 'OAuth'

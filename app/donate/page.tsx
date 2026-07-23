@@ -2,7 +2,7 @@ import {Shell} from '@/components/layout/Shell/Shell'
 import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
 import {fetchUserSubscriptions} from '@/lib/actions/reddit/subreddits'
 import {getCurrentUserAvatar} from '@/lib/actions/reddit/users'
-import {getSession} from '@/lib/auth/session'
+import {getSession, isAuthenticated} from '@/lib/auth/session'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Typography} from '@mantine/core'
 import type {Metadata} from 'next'
@@ -43,6 +43,25 @@ export async function generateMetadata(): Promise<Metadata> {
  * No loading state needed as it's server-rendered with local file access.
  */
 export default async function DonatePage() {
+  const donateContent = fs.readFileSync(
+    path.join(process.cwd(), 'app', 'donate', 'content.md'),
+    'utf-8'
+  )
+
+  const authenticated = await isAuthenticated()
+
+  if (!authenticated) {
+    return (
+      <Shell>
+        <Container size="md" py="xl">
+          <Typography>
+            <ReactMarkdown>{donateContent}</ReactMarkdown>
+          </Typography>
+        </Container>
+      </Shell>
+    )
+  }
+
   const session = await getSession()
 
   const [subscriptions, multireddits, avatarUrl] = await Promise.all([
@@ -50,11 +69,6 @@ export default async function DonatePage() {
     fetchMultireddits(),
     getCurrentUserAvatar()
   ])
-
-  const donateContent = fs.readFileSync(
-    path.join(process.cwd(), 'app', 'donate', 'content.md'),
-    'utf-8'
-  )
 
   return (
     <Shell

@@ -260,6 +260,36 @@ describe('reddit-context', () => {
       await expect(getRedditContext()).rejects.toThrow('Token refresh failed')
       expect(adapters.refreshAccessToken).not.toHaveBeenCalled()
     })
+
+    it('returns the refreshed context even when persisting the session fails', async () => {
+      // Simulates calling getRedditContext() during Server Component render,
+      // where Next.js forbids cookie mutation outside a Server Action or
+      // Route Handler. The token exchange still succeeded, so the request
+      // should proceed with it instead of failing outright.
+      const now = Date.now()
+      const adapters = createStubAdapters({
+        readSession: vi.fn(async () =>
+          authenticatedSnapshot({expiresAt: now - 1000})
+        ),
+        writeSession: vi.fn(async () => {
+          throw new Error(
+            'Cookies can only be modified in a Server Action or Route Handler'
+          )
+        }),
+        refreshAccessToken: vi.fn(async () =>
+          createMockTokens({accessToken: 'refreshed-access-token'})
+        ),
+        now: () => now
+      })
+      configureRedditContext(adapters)
+
+      const ctx = await getRedditContext()
+
+      expect(ctx.headers).toMatchObject({
+        Authorization: 'Bearer refreshed-access-token'
+      })
+      expect(adapters.writeSession).toHaveBeenCalledOnce()
+    })
   })
 
   // -------------------------------------------------------------------------

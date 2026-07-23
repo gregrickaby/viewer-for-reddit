@@ -57,8 +57,19 @@ describe('Sidebar', () => {
       expect(link).toHaveAttribute('href', '/')
     })
 
-    it('renders Popular and All links', () => {
+    it('does not render Popular and All links when unauthenticated', () => {
       render(<Sidebar />)
+
+      expect(
+        screen.queryByRole('link', {name: /popular/i})
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {name: /^all$/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders Popular and All links when authenticated', () => {
+      render(<Sidebar username="testuser" />)
 
       const popular = screen.getByRole('link', {name: /popular/i})
       expect(popular).toBeInTheDocument()

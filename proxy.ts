@@ -85,7 +85,14 @@ export async function proxy(
     const session = await getSessionFromRequest(request)
 
     if (!session.accessToken) {
-      return NextResponse.redirect(new URL('/api/auth/login', request.url))
+      // Next.js Link prefetch requests are invisible to the user, but the
+      // login redirect chains into a cross-origin Reddit OAuth URL, which
+      // CSP's connect-src blocks for fetch-initiated requests (unlike full
+      // navigations). Send prefetches to the public homepage instead so
+      // they resolve same-origin with no CSP violation.
+      const isPrefetch = request.headers.get('next-router-prefetch') === '1'
+      const target = isPrefetch ? '/' : '/api/auth/login'
+      return NextResponse.redirect(new URL(target, request.url))
     }
   }
 

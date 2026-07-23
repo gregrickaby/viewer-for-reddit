@@ -212,15 +212,28 @@ async function performRefresh(
     return null
   }
 
+  let newAccessToken: string
+  let newRefreshToken: string
+  let newExpiresAt: number
+
   try {
     logger.debug('Refreshing access token', {context: 'getRedditContext'})
 
     const tokens = await adapters.refreshAccessToken(currentRefreshToken)
-    const newAccessToken = tokens.accessToken()
-    const newRefreshToken = extractRefreshToken(tokens, currentRefreshToken)
-    const newExpiresAt =
+    newAccessToken = tokens.accessToken()
+    newRefreshToken = extractRefreshToken(tokens, currentRefreshToken)
+    newExpiresAt =
       tokens.accessTokenExpiresAt()?.getTime() || adapters.now() + 3600000
+  } catch (error) {
+    logger.error('Token refresh failed', {
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      context: 'getRedditContext'
+    })
+    return null
+  }
 
+  try {
     await adapters.writeSession({
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
@@ -232,15 +245,21 @@ async function performRefresh(
     logger.info('Access token refreshed successfully', {
       context: 'getRedditContext'
     })
-    return newAccessToken
   } catch (error) {
-    logger.error('Token refresh failed', {
+    // Cookie mutation is only legal in a Server Action or Route Handler.
+    // getRedditContext() can also run inline during Server Component render
+    // (e.g. a page calling a 'use server' action directly), where Next.js
+    // throws here. The token exchange above already succeeded, so use it
+    // for this request; the session just won't be persisted until a request
+    // that runs in a writable context refreshes again.
+    logger.warn('Token refreshed but could not persist to session', {
       errorType: error instanceof Error ? error.constructor.name : typeof error,
       errorMessage: error instanceof Error ? error.message : String(error),
       context: 'getRedditContext'
     })
-    return null
   }
+
+  return newAccessToken
 }
 
 // ---------------------------------------------------------------------------

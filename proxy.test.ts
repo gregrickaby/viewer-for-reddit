@@ -56,6 +56,22 @@ describe('proxy middleware', () => {
       )
     })
 
+    it('redirects unauthenticated Next.js prefetch requests to / instead of /api/auth/login', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockResolvedValue({accessToken: ''} as never)
+
+      const request = new NextRequest(
+        new URL('https://example.com/r/popular'),
+        {headers: {'next-router-prefetch': '1'}}
+      )
+      await proxy(request)
+
+      expect(redirectMock).toHaveBeenCalledWith(
+        expect.objectContaining({pathname: '/'})
+      )
+    })
+
     it('allows authenticated users through protected routes', async () => {
       const {getIronSession} = await import('iron-session')
       const mockGetIronSession = vi.mocked(getIronSession)

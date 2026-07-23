@@ -15,7 +15,7 @@ interface HeaderProps {
   avatarUrl?: string
 }
 
-/** Application header with navigation and search. Displays logo, navigation toggles, search bar, and user menu. */
+/** Application header with navigation and search. Displays logo, navigation toggles, user menu, and (once signed in) search, since Reddit's API requires an authenticated user context. */
 export function Header({username, avatarUrl}: Readonly<HeaderProps>) {
   return (
     <Group
@@ -30,7 +30,7 @@ export function Header({username, avatarUrl}: Readonly<HeaderProps>) {
       </Group>
 
       <Group gap="xs">
-        <MobileSearch />
+        {username && <MobileSearch />}
 
         <ThemeToggle />
 

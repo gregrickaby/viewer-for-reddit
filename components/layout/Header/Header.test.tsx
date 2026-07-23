@@ -48,8 +48,14 @@ describe('Header', () => {
       expect(screen.getByTestId('logo')).toBeInTheDocument()
     })
 
-    it('renders SearchBar component', () => {
+    it('does not render SearchBar component when unauthenticated', () => {
       render(<Header />)
+
+      expect(screen.queryByTestId('searchbar')).not.toBeInTheDocument()
+    })
+
+    it('renders SearchBar component when authenticated', () => {
+      render(<Header username="testuser" />)
 
       expect(screen.getByTestId('searchbar')).toBeInTheDocument()
     })
