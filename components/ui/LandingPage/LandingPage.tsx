@@ -122,7 +122,7 @@ export function LandingPage() {
               {appConfig.site.metaDescription}
             </Text>
 
-            <Group gap="md" mt="md">
+            <Group gap="md" mt="md" justify="center">
               <Button
                 aria-label="Sign in with Reddit"
                 color="red"
