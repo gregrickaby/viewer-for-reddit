@@ -8,6 +8,7 @@ import {
   isValidFullname,
   isValidMultiredditPath,
   isValidPostId,
+  isValidProfileSubredditName,
   isValidSubredditName,
   isValidUsername
 } from './reddit-helpers'
@@ -113,6 +114,36 @@ describe('reddit-helpers', () => {
       it('rejects only underscores', () => {
         expect(isValidSubredditName('___')).toBe(false)
       })
+    })
+  })
+
+  describe('isValidProfileSubredditName', () => {
+    it('accepts a profile subreddit name', () => {
+      expect(isValidProfileSubredditName('u_someuser')).toBe(true)
+    })
+
+    it('accepts a profile subreddit name with a hyphen', () => {
+      expect(isValidProfileSubredditName('u_Bella-Fiore')).toBe(true)
+    })
+
+    it('rejects names without the u_ prefix', () => {
+      expect(isValidProfileSubredditName('someuser')).toBe(false)
+    })
+
+    it('rejects an invalid username after the prefix', () => {
+      expect(isValidProfileSubredditName('u_..')).toBe(false)
+    })
+
+    it('rejects path traversal attempts', () => {
+      expect(isValidProfileSubredditName('u_../admin')).toBe(false)
+    })
+
+    it('rejects empty string', () => {
+      expect(isValidProfileSubredditName('')).toBe(false)
+    })
+
+    it('rejects non-string types', () => {
+      expect(isValidProfileSubredditName(123 as any)).toBe(false)
     })
   })
 

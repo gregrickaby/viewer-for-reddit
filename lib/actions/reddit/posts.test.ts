@@ -102,6 +102,25 @@ describe('posts server actions', () => {
       expect(posts.length).toBeGreaterThan(0)
     })
 
+    it('fetches a user profile feed (u_ prefixed subreddit)', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [
+                {kind: 't3', data: {id: 'profile1', title: 'Profile Post'}}
+              ],
+              after: null
+            }
+          })
+        })
+      )
+
+      const {posts} = await fetchPosts('u_Bella-Fiore', 'hot')
+
+      expect(posts.length).toBeGreaterThan(0)
+    })
+
     it('handles 404 errors', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
@@ -282,6 +301,39 @@ describe('posts server actions', () => {
 
       await expect(fetchPost('AskReddit', 'missing', 'best')).rejects.toThrow(
         'Resource not found'
+      )
+    })
+
+    it('fetches a profile post (u_ prefixed subreddit)', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/comments/:postId.json',
+          () => {
+            return HttpResponse.json([
+              {
+                data: {
+                  children: [
+                    {
+                      kind: 't3',
+                      data: {id: 'profile1', title: 'Profile Post'}
+                    }
+                  ]
+                }
+              },
+              {data: {children: []}}
+            ])
+          }
+        )
+      )
+
+      const {post} = await fetchPost('u_Bella-Fiore', 'profile1', 'best')
+
+      expect(post.id).toBe('profile1')
+    })
+
+    it('rejects an invalid subreddit name', async () => {
+      await expect(fetchPost('../admin', 'abc123', 'best')).rejects.toThrow(
+        'Something went wrong.'
       )
     })
   })

@@ -266,6 +266,12 @@ export async function searchSubreddits(query: string): Promise<{
     })
     return {success: true, data: results}
   } catch (error) {
+    if (error instanceof Error && error.message === 'Not authenticated') {
+      logger.debug('Subreddit search skipped - not authenticated', {
+        context: 'searchSubreddits'
+      })
+      return {success: false, data: [], error: 'Sign in to search Reddit'}
+    }
     logger.error('Error searching subreddits', {
       error: error instanceof Error ? error.message : String(error),
       context: 'searchSubreddits'
@@ -371,6 +377,12 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
 
     return {success: true, data: results}
   } catch (error) {
+    if (error instanceof Error && error.message === 'Not authenticated') {
+      logger.debug('Autocomplete search skipped - not authenticated', {
+        context: 'searchSubredditsAndUsers'
+      })
+      return {success: false, data: [], error: 'Sign in to search Reddit'}
+    }
     logger.error('Error searching subreddits and users', {
       error: error instanceof Error ? error.message : String(error),
       context: 'searchSubredditsAndUsers'

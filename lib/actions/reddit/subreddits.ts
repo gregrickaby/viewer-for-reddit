@@ -8,7 +8,10 @@ import type {
   RedditSubscriptionsResponse
 } from '@/lib/types/reddit'
 import {CACHE_SUBREDDIT_INFO, CACHE_SUBSCRIPTIONS} from '@/lib/utils/constants'
-import {isValidSubredditName} from '@/lib/utils/reddit-helpers'
+import {
+  isValidProfileSubredditName,
+  isValidSubredditName
+} from '@/lib/utils/reddit-helpers'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
@@ -28,7 +31,10 @@ export async function fetchSubredditInfo(
   subreddit: string
 ): Promise<RedditSubreddit> {
   try {
-    if (!isValidSubredditName(subreddit)) {
+    if (
+      !isValidSubredditName(subreddit) &&
+      !isValidProfileSubredditName(subreddit)
+    ) {
       logger.error('Invalid subreddit parameter', {
         context: 'fetchSubredditInfo',
         subreddit

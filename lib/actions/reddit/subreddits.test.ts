@@ -80,6 +80,29 @@ describe('subreddits server actions', () => {
         'Resource not found'
       )
     })
+
+    it('fetches a user profile subreddit (u_ prefix)', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/r/:subreddit/about.json', () => {
+          return HttpResponse.json({
+            data: {
+              display_name: 'u_Bella-Fiore',
+              subscribers: 0
+            }
+          })
+        })
+      )
+
+      const info = await fetchSubredditInfo('u_Bella-Fiore')
+
+      expect(info.display_name).toBe('u_Bella-Fiore')
+    })
+
+    it('rejects an invalid subreddit name', async () => {
+      await expect(fetchSubredditInfo('../admin')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
   })
 
   describe('fetchUserSubscriptions', () => {

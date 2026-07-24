@@ -311,13 +311,13 @@ describe('search server actions', () => {
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
-    it('returns error when not authenticated', async () => {
+    it('returns a sign-in prompt when not authenticated', async () => {
       mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Something went wrong. Please try again.')
+      expect(result.error).toBe('Sign in to search Reddit')
     })
 
     it('handles 429 rate limit for authenticated users', async () => {
@@ -429,13 +429,13 @@ describe('search server actions', () => {
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
-    it('returns error when not authenticated', async () => {
+    it('returns a sign-in prompt when not authenticated', async () => {
       mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 
       const result = await searchSubredditsAndUsers('test')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Something went wrong. Please try again.')
+      expect(result.error).toBe('Sign in to search Reddit')
     })
   })
 })

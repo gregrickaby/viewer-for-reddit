@@ -2,10 +2,9 @@ import {PostList} from '@/components/ui/PostList/PostList'
 import {searchSubreddit} from '@/lib/actions/reddit/search'
 import {appConfig} from '@/lib/config/app.config'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {Anchor, Container, Group, Stack, Text, Title} from '@mantine/core'
-import {IconArrowLeft} from '@tabler/icons-react'
+import {Container, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
-import Link from 'next/link'
+import {BackToSubreddit} from './BackToSubreddit'
 
 interface PageProps {
   params: Promise<{
@@ -84,20 +83,7 @@ export default async function SubredditSearchPage({
     <Container size="lg">
       <Stack gap="xl" maw={800}>
         <Stack gap="sm">
-          <Group gap="xs">
-            <Anchor
-              component={Link}
-              href={`/r/${subreddit}`}
-              td="none"
-              c="dimmed"
-              fz="sm"
-            >
-              <Group gap={4}>
-                <IconArrowLeft size={14} />
-                Back to r/{subreddit}
-              </Group>
-            </Anchor>
-          </Group>
+          <BackToSubreddit subreddit={subreddit} />
           <Title order={2}>
             Search results for: &quot;{decodedQuery}&quot;
           </Title>

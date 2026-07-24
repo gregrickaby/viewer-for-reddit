@@ -18,6 +18,7 @@ import {
 import {
   isValidMultiredditPath,
   isValidPostId,
+  isValidProfileSubredditName,
   isValidSubredditName,
   isValidUsername
 } from '@/lib/utils/reddit-helpers'
@@ -45,7 +46,10 @@ function buildFeedRelativePath(subreddit: string, sort: string): string {
     return `/${subreddit}/${sort}.json`
   }
 
-  if (!isValidSubredditName(subreddit)) {
+  if (
+    !isValidSubredditName(subreddit) &&
+    !isValidProfileSubredditName(subreddit)
+  ) {
     throw new Error('Invalid subreddit name')
   }
 
@@ -143,6 +147,7 @@ export async function fetchPost(
   try {
     if (
       !isValidSubredditName(subreddit) &&
+      !isValidProfileSubredditName(subreddit) &&
       subreddit !== 'home' &&
       !subreddit.startsWith('user/')
     ) {

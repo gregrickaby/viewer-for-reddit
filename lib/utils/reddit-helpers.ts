@@ -30,6 +30,22 @@ export function isValidSubredditName(name: string): boolean {
 }
 
 /**
+ * Validates a Reddit user-profile "subreddit" name (e.g. `u_someuser`).
+ * Reddit exposes every user's profile as a subreddit-shaped resource named
+ * `u_{username}`, used for profile posts and their permalinks
+ * (`/r/u_someuser/comments/...`). These don't satisfy {@link isValidSubredditName}
+ * since they start with an underscore and the username portion allows hyphens.
+ *
+ * @param name - Candidate profile subreddit name, e.g. `u_someuser`
+ * @returns True if valid, false otherwise
+ */
+export function isValidProfileSubredditName(name: string): boolean {
+  if (!name || typeof name !== 'string') return false
+  if (!name.startsWith('u_')) return false
+  return isValidUsername(name.slice(2))
+}
+
+/**
  * Validates a Reddit username.
  * Usernames must:
  * - Be 3-20 characters long
