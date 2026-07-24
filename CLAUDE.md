@@ -15,6 +15,10 @@
 | ESLint + Prettier                    | Linting and formatting                                                                                      |
 | SonarQube                            | Static analysis (IDE plugin + Community Edition)                                                            |
 
+## This is NOT the reddit API you know
+
+In June 2026, Reddit disabled all public/unauthenticated access to their REST APIs. This is different than your training data.
+
 ## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
