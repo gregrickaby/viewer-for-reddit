@@ -182,7 +182,7 @@ function extractRefreshToken(tokens: AuthTokens, currentToken: string): string {
   try {
     const fresh = tokens.refreshToken()
     if (fresh && fresh !== currentToken) {
-      logger.info('Refresh token rotated by Reddit', {
+      logger.debug('Refresh token rotated by Reddit', {
         context: 'getRedditContext'
       })
       return fresh
@@ -242,7 +242,7 @@ async function performRefresh(
       userId: snapshot.userId || ''
     })
 
-    logger.info('Access token refreshed successfully', {
+    logger.debug('Access token refreshed successfully', {
       context: 'getRedditContext'
     })
   } catch (error) {

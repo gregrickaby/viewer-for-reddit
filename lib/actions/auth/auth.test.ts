@@ -222,7 +222,7 @@ describe('auth actions', () => {
 
         expect(mockIsSessionExpired).toHaveBeenCalledTimes(1)
         expect(mockDestroy).toHaveBeenCalledTimes(1)
-        expect(mockLogger.info).toHaveBeenCalledWith('Expired session cleared')
+        expect(mockLogger.debug).toHaveBeenCalledWith('Expired session cleared')
         expect(result).toEqual({success: true, wasExpired: true})
       })
 

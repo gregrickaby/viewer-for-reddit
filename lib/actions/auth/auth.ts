@@ -70,7 +70,7 @@ export async function clearExpiredSession(): Promise<{
     if (expired) {
       const session = await getSession()
       session.destroy()
-      logger.info('Expired session cleared')
+      logger.debug('Expired session cleared')
       return {success: true, wasExpired: true}
     }
 

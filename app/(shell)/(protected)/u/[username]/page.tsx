@@ -156,12 +156,6 @@ async function UserPosts({
 
   try {
     result = await fetchUserPosts(username, sort, undefined, timeFilter)
-    logger.info(`Fetched ${result.posts.length} posts for user ${username}`, {
-      context: 'UserPosts',
-      username,
-      sort,
-      count: result.posts.length
-    })
   } catch (error) {
     logger.error('Failed to fetch user posts', {
       error: error instanceof Error ? error.message : String(error),
@@ -224,15 +218,6 @@ async function UserComments({
 
   try {
     result = await fetchUserComments(username, sort, undefined, timeFilter)
-    logger.info(
-      `Fetched ${result.comments.length} comments for user ${username}`,
-      {
-        context: 'UserComments',
-        username,
-        sort,
-        count: result.comments.length
-      }
-    )
   } catch (error) {
     logger.error('Failed to fetch user comments', {
       error: error instanceof Error ? error.message : String(error),
