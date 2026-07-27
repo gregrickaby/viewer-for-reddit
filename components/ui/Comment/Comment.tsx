@@ -11,7 +11,7 @@ import {
   formatTimeAgo,
   sanitizeText
 } from '@/lib/utils/formatters'
-import {getVoteColor} from '@/lib/utils/reddit-helpers'
+import {getUserProfileHref, getVoteColor} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
   Anchor,
@@ -71,8 +71,9 @@ function renderAuthor(author: string) {
     author === '[deleted]' ||
     author === '[removed]' ||
     author === 'AutoModerator'
+  const href = isSpecialUser ? null : getUserProfileHref(author)
 
-  if (isSpecialUser) {
+  if (!href) {
     return (
       <Text size="sm" fw={600} c="dimmed">
         u/{author}
@@ -81,13 +82,7 @@ function renderAuthor(author: string) {
   }
 
   return (
-    <Anchor
-      component={Link}
-      href={`/u/${author}`}
-      size="sm"
-      fw={600}
-      underline="hover"
-    >
+    <Anchor component={Link} href={href} size="sm" fw={600} underline="hover">
       u/{author}
     </Anchor>
   )

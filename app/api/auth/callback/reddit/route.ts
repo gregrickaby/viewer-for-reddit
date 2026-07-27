@@ -1,5 +1,5 @@
 import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
-import {persistSession} from '@/lib/auth/session'
+import {isAuthenticated, persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
 import {getEnvVar} from '@/lib/utils/env'
 import {NextRequest, NextResponse} from 'next/server'
@@ -100,6 +100,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   if (!code || !state || !storedState || !statesMatch) {
     const {protocol, host} = resolveHostFromRequest(request)
+
+    // A missing (already-consumed) state cookie on a request from an already
+    // -authenticated session is almost always a duplicate callback hit -- e.g.
+    // a double-tap on Reddit's consent screen, or a browser retry -- landing
+    // after the first request already succeeded and cleared the cookie. That's
+    // not a CSRF attempt, so redirect home quietly instead of logging it as an
+    // attack. A mismatched (present but wrong) state is still treated as a
+    // hard failure below, regardless of session state.
+    if (!storedState && (await isAuthenticated())) {
+      logger.debug('Duplicate OAuth callback ignored (already authenticated)', {
+        context: 'OAuth'
+      })
+      return NextResponse.redirect(new URL('/#', `${protocol}://${host}`))
+    }
+
     logger.error('State validation failed - possible CSRF attack', {
       hasCode: !!code,
       hasState: !!state,

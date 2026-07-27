@@ -1,6 +1,7 @@
 'use client'
 
 import {useLogout} from '@/lib/hooks/useLogout'
+import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Anchor, Avatar, Button, Group} from '@mantine/core'
 import {IconLogin, IconLogout} from '@tabler/icons-react'
 import Link from 'next/link'
@@ -52,12 +53,14 @@ export function UserMenu({username, avatarUrl}: Readonly<UserMenuProps>) {
     )
   }
 
+  const profileHref = getUserProfileHref(username)
+
   return (
     <Group gap="xs" wrap="nowrap">
-      {avatarUrl && (
+      {avatarUrl && profileHref && (
         <Anchor
           component={Link}
-          href={`/u/${username}`}
+          href={profileHref}
           aria-label={`Go to ${username}'s profile`}
         >
           <Avatar

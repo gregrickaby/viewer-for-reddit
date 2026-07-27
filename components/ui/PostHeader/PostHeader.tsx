@@ -1,5 +1,6 @@
 import {RedditPost} from '@/lib/types/reddit'
 import {formatTimeAgo} from '@/lib/utils/formatters'
+import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Anchor, Badge, Group, Text} from '@mantine/core'
 import Link from 'next/link'
 
@@ -13,9 +14,8 @@ interface PostHeaderProps {
 
 /** Display post metadata header (subreddit, author, time, NSFW badge). Shows at the top of PostCard. */
 export function PostHeader({post}: Readonly<PostHeaderProps>) {
-  // Don't link to deleted/removed authors (Next.js treats brackets as dynamic routes)
-  const isDeletedAuthor =
-    post.author === '[deleted]' || post.author === '[removed]'
+  // Don't link deleted/removed/malformed authors (Next.js treats brackets as dynamic routes)
+  const authorHref = getUserProfileHref(post.author)
 
   return (
     <Group justify="space-between" wrap="nowrap" gap="xs">
@@ -32,20 +32,20 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
         </Badge>
         <Text size="xs" c="dimmed" suppressHydrationWarning>
           Posted by{' '}
-          {isDeletedAuthor ? (
-            <Text span size="xs" c="dimmed">
-              u/{post.author}
-            </Text>
-          ) : (
+          {authorHref ? (
             <Anchor
               c="dimmed"
               component={Link}
-              href={`/u/${post.author}`}
+              href={authorHref}
               scroll
               size="xs"
             >
               u/{post.author}
             </Anchor>
+          ) : (
+            <Text span size="xs" c="dimmed">
+              u/{post.author}
+            </Text>
           )}{' '}
           • {formatTimeAgo(post.created_utc)}
         </Text>

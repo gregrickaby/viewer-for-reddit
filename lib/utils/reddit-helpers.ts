@@ -75,6 +75,18 @@ export function isValidUsername(username: string): boolean {
 }
 
 /**
+ * Builds a `/u/{username}` profile href, or null when the username fails
+ * validation. Guards route hrefs against malformed values (e.g. missing,
+ * empty, or slash-containing usernames from unexpected Reddit payloads).
+ *
+ * @param username - Candidate Reddit username
+ * @returns A safe profile href, or null if the username is invalid
+ */
+export function getUserProfileHref(username: string): string | null {
+  return isValidUsername(username) ? `/u/${username}` : null
+}
+
+/**
  * Validates a Reddit post ID.
  * Post IDs are typically 6-7 character base36 strings.
  *

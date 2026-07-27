@@ -23,7 +23,8 @@ vi.mock('@/lib/datadog/server', () => ({
 }))
 
 vi.mock('@/lib/auth/session', () => ({
-  persistSession: vi.fn(async () => {})
+  persistSession: vi.fn(async () => {}),
+  isAuthenticated: vi.fn(async () => false)
 }))
 
 vi.mock('@/lib/auth/processOAuthCallback', () => ({
@@ -32,7 +33,7 @@ vi.mock('@/lib/auth/processOAuthCallback', () => ({
 
 // Import after mocks
 import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
-import {persistSession} from '@/lib/auth/session'
+import {isAuthenticated, persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
 import {getEnvVar} from '@/lib/utils/env'
 import {GET} from './route'
@@ -41,6 +42,7 @@ const mockGetEnvVar = vi.mocked(getEnvVar)
 const mockLogger = vi.mocked(logger)
 const mockProcessOAuthCallback = vi.mocked(processOAuthCallback)
 const mockPersistSession = vi.mocked(persistSession)
+const mockIsAuthenticated = vi.mocked(isAuthenticated)
 
 describe('GET /api/auth/callback/reddit', () => {
   const validState = 'test-state-123'
@@ -56,6 +58,9 @@ describe('GET /api/auth/callback/reddit', () => {
       if (key === 'SESSION_SECRET') return 'test-secret-key'
       return ''
     })
+
+    // Default: no active session
+    mockIsAuthenticated.mockResolvedValue(false)
 
     // Default: successful OAuth callback
     mockProcessOAuthCallback.mockResolvedValue({
@@ -220,6 +225,30 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(400)
     expect(await response.text()).toBe('Invalid state parameter')
+  })
+
+  it('redirects home quietly on duplicate callback when already authenticated', async () => {
+    mockIsAuthenticated.mockResolvedValue(true)
+
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
+        }
+      }
+    )
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(307)
+    expect(response.headers.get('location')).toBe('https://example.com/#')
+    expect(mockLogger.debug).toHaveBeenCalledWith(
+      'Duplicate OAuth callback ignored (already authenticated)',
+      expect.any(Object)
+    )
+    expect(mockLogger.error).not.toHaveBeenCalled()
   })
 
   it('rejects request with mismatched state (CSRF protection)', async () => {

@@ -1,5 +1,6 @@
 'use client'
 
+import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Tabs} from '@mantine/core'
 import {IconMessageCircle, IconNote} from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
@@ -29,8 +30,9 @@ export function UserProfileTabs({
   const router = useRouter()
 
   const handleTabChange = (value: string | null) => {
-    if (value) {
-      router.push(`/u/${username}?tab=${value}`)
+    const href = getUserProfileHref(username)
+    if (value && href) {
+      router.push(`${href}?tab=${value}`)
     }
   }
 

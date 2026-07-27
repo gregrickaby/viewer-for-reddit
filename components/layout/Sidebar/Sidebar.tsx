@@ -6,6 +6,7 @@ import {CollapsibleSection} from '@/components/ui/CollapsibleSection/Collapsible
 import {SubscriptionFilterList} from '@/components/ui/SubscriptionFilterList/SubscriptionFilterList'
 import type {ManagedMultireddit} from '@/lib/hooks/useMultiredditManager'
 import type {ManagedSubscription} from '@/lib/hooks/useSubredditManager'
+import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Avatar, NavLink, ScrollArea, Stack} from '@mantine/core'
 import {useDisclosure} from '@mantine/hooks'
 import {
@@ -179,16 +180,21 @@ export function Sidebar({
             >
               <ScrollArea.Autosize mah={400}>
                 <Stack gap={4}>
-                  {sortedFollowing.map((user) => (
-                    <NavLink
-                      key={user.id}
-                      component={Link}
-                      href={`/u/${user.name}`}
-                      label={user.name}
-                      description={user.note}
-                      leftSection={<IconUser size={16} />}
-                    />
-                  ))}
+                  {sortedFollowing.map((user) => {
+                    const href = getUserProfileHref(user.name)
+                    if (!href) return null
+
+                    return (
+                      <NavLink
+                        key={user.id}
+                        component={Link}
+                        href={href}
+                        label={user.name}
+                        description={user.note}
+                        leftSection={<IconUser size={16} />}
+                      />
+                    )
+                  })}
                 </Stack>
               </ScrollArea.Autosize>
             </CollapsibleSection>

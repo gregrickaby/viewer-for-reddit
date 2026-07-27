@@ -6,8 +6,10 @@ import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {fetchSubredditInfo} from '@/lib/actions/reddit/subreddits'
 import {appConfig} from '@/lib/config/app.config'
+import {logger} from '@/lib/datadog/server'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
+import {notFound} from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
@@ -53,7 +55,20 @@ async function SubredditInfo({
   const specialFeeds = ['all', 'popular']
   const isSpecialFeed = specialFeeds.includes(subreddit.toLowerCase())
 
-  const info = isSpecialFeed ? null : await fetchSubredditInfo(subreddit)
+  let info: Awaited<ReturnType<typeof fetchSubredditInfo>> | null = null
+
+  if (!isSpecialFeed) {
+    try {
+      info = await fetchSubredditInfo(subreddit)
+    } catch (error) {
+      logger.error('Failed to fetch subreddit info', {
+        error: error instanceof Error ? error.message : String(error),
+        context: 'SubredditInfo',
+        subreddit
+      })
+      notFound()
+    }
+  }
 
   if (info) {
     return (
@@ -135,12 +150,19 @@ async function SubredditPosts({
   sort?: SortOption
   timeFilter?: TimeFilter
 }>) {
-  const {posts, after} = await fetchPosts(
-    subreddit,
-    sort,
-    undefined,
-    timeFilter
-  )
+  let posts: Awaited<ReturnType<typeof fetchPosts>>['posts']
+  let after: Awaited<ReturnType<typeof fetchPosts>>['after']
+
+  try {
+    ;({posts, after} = await fetchPosts(subreddit, sort, undefined, timeFilter))
+  } catch (error) {
+    logger.error('Failed to fetch subreddit posts', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'SubredditPosts',
+      subreddit
+    })
+    notFound()
+  }
 
   if (posts.length === 0) {
     return <Text>No posts found in this subreddit.</Text>

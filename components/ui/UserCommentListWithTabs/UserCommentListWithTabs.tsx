@@ -2,6 +2,7 @@
 
 import {Comment} from '@/components/ui/Comment/Comment'
 import {RedditComment, SortOption, TimeFilter} from '@/lib/types/reddit'
+import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Loader, Stack, Tabs, Text, Title} from '@mantine/core'
 import {
   IconClock,
@@ -42,6 +43,9 @@ export function UserCommentListWithTabs({
   const handleSortChange = (sort: string) => {
     if (isPending) return // Prevent race conditions
 
+    const href = getUserProfileHref(username)
+    if (!href) return
+
     startTransition(() => {
       const params = new URLSearchParams()
       params.set('tab', 'comments')
@@ -52,12 +56,15 @@ export function UserCommentListWithTabs({
         params.set('time', activeTimeFilter)
       }
 
-      router.push(`/u/${username}?${params.toString()}`, {scroll: false})
+      router.push(`${href}?${params.toString()}`, {scroll: false})
     })
   }
 
   const handleTimeFilterChange = (time: string) => {
     if (isPending) return
+
+    const href = getUserProfileHref(username)
+    if (!href) return
 
     startTransition(() => {
       const params = new URLSearchParams()
@@ -65,7 +72,7 @@ export function UserCommentListWithTabs({
       params.set('sort', activeSort)
       params.set('time', time)
 
-      router.push(`/u/${username}?${params.toString()}`, {scroll: false})
+      router.push(`${href}?${params.toString()}`, {scroll: false})
     })
   }
 
