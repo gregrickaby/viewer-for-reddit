@@ -26,7 +26,7 @@ export async function GET(): Promise<NextResponse> {
   try {
     const {url, state} = await createLoginUrl()
 
-    logger.info('OAuth login initiated', {
+    logger.debug('OAuth login initiated', {
       state: `${state.substring(0, 8)}...`,
       context: 'OAuth'
     })

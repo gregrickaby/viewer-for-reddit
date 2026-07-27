@@ -134,7 +134,7 @@ describe('GET /api/auth/login', () => {
   it('logs OAuth flow initiation', async () => {
     await GET()
 
-    expect(mockLogger.info).toHaveBeenCalledWith(
+    expect(mockLogger.debug).toHaveBeenCalledWith(
       'OAuth login initiated',
       expect.objectContaining({
         state: expect.stringMatching(/^.{8}\.\.\.$/),
