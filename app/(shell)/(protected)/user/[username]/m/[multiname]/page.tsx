@@ -2,8 +2,10 @@ import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {appConfig} from '@/lib/config/app.config'
+import {logger} from '@/lib/datadog/server'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
+import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
@@ -62,12 +64,24 @@ async function MultiredditPosts({
 
   const multiredditPath = `user/${username}/m/${multiname}`
 
-  const {posts, after} = await fetchPosts(
-    multiredditPath,
-    postSort,
-    undefined,
-    timeFilter
-  )
+  let posts: Awaited<ReturnType<typeof fetchPosts>>['posts']
+  let after: Awaited<ReturnType<typeof fetchPosts>>['after']
+
+  try {
+    ;({posts, after} = await fetchPosts(
+      multiredditPath,
+      postSort,
+      undefined,
+      timeFilter
+    ))
+  } catch (error) {
+    logger.error('Failed to fetch multireddit posts', {
+      error: error instanceof Error ? error.message : String(error),
+      context: 'MultiredditPosts',
+      multiredditPath
+    })
+    notFound()
+  }
 
   return (
     <>

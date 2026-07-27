@@ -125,7 +125,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       userAgent: request.headers.get('user-agent')?.substring(0, 100) || 'none',
       context: 'OAuth'
     })
-    const response = new NextResponse('Invalid state parameter', {status: 400})
+    const response = NextResponse.redirect(
+      new URL('/?error=login_failed', `${protocol}://${host}`)
+    )
     response.cookies.delete('reddit_oauth_state')
     return response
   }

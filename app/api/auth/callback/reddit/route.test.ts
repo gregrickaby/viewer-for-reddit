@@ -188,8 +188,10 @@ describe('GET /api/auth/callback/reddit', () => {
 
     const response = await GET(request)
 
-    expect(response.status).toBe(400)
-    expect(await response.text()).toBe('Invalid state parameter')
+    expect(response.status).toBe(307)
+    expect(response.headers.get('location')).toBe(
+      'https://example.com/?error=login_failed'
+    )
 
     // Verify state cookie is deleted on error
     const cookies = response.cookies.getAll()
@@ -209,8 +211,10 @@ describe('GET /api/auth/callback/reddit', () => {
 
     const response = await GET(request)
 
-    expect(response.status).toBe(400)
-    expect(await response.text()).toBe('Invalid state parameter')
+    expect(response.status).toBe(307)
+    expect(response.headers.get('location')).toBe(
+      'https://example.com/?error=login_failed'
+    )
   })
 
   it('rejects request with missing stored state', async () => {
@@ -223,8 +227,10 @@ describe('GET /api/auth/callback/reddit', () => {
 
     const response = await GET(request)
 
-    expect(response.status).toBe(400)
-    expect(await response.text()).toBe('Invalid state parameter')
+    expect(response.status).toBe(307)
+    expect(response.headers.get('location')).toBe(
+      'https://example.com/?error=login_failed'
+    )
   })
 
   it('redirects home quietly on duplicate callback when already authenticated', async () => {
@@ -263,8 +269,10 @@ describe('GET /api/auth/callback/reddit', () => {
 
     const response = await GET(request)
 
-    expect(response.status).toBe(400)
-    expect(await response.text()).toBe('Invalid state parameter')
+    expect(response.status).toBe(307)
+    expect(response.headers.get('location')).toBe(
+      'https://example.com/?error=login_failed'
+    )
     expect(mockLogger.error).toHaveBeenCalledWith(
       'State validation failed - possible CSRF attack',
       expect.any(Object)
