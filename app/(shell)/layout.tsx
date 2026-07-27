@@ -1,6 +1,8 @@
 import {Shell} from '@/components/layout/Shell/Shell'
-import {AuthenticatedSidebarPanel} from '@/components/layout/Sidebar/AuthenticatedSidebarPanel'
-import {SidebarPanelSkeleton} from '@/components/skeletons/SidebarPanelSkeleton/SidebarPanelSkeleton'
+import {AuthenticatedSidebarSections} from '@/components/layout/Sidebar/AuthenticatedSidebarSections'
+import {PersonalizedNavLinks} from '@/components/layout/Sidebar/PersonalizedNavLinks'
+import {SidebarPanel} from '@/components/layout/Sidebar/SidebarPanel'
+import {SidebarSectionsSkeleton} from '@/components/skeletons/SidebarSectionsSkeleton/SidebarSectionsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import RouteScrollReset from '@/components/ui/RouteScrollReset/RouteScrollReset'
@@ -15,9 +17,9 @@ interface MainLayoutProps {
  * Shared layout for main content routes.
  *
  * Handles:
- * - Shell wrapper (static header + sidebar slot + main content area)
- * - Sidebar personalization (subscriptions, multireddits, following) via
- *   AuthenticatedSidebarPanel, deferred behind its own Suspense boundary
+ * - Shell wrapper (static header + sidebar + main content area)
+ * - Sidebar personalization (feed links, subscriptions, multireddits,
+ *   following), each deferred behind its own Suspense boundary
  * - Utility buttons (Boss button, Back to top, Swipe navigation)
  *
  * Applied to: /, /r/[subreddit], /search/[query], /u/[username], /user/[username]/saved, /user/[username]/m/[multiname]
@@ -27,9 +29,18 @@ export default function MainLayout({children}: Readonly<MainLayoutProps>) {
     <>
       <Shell
         sidebarSlot={
-          <Suspense fallback={<SidebarPanelSkeleton />}>
-            <AuthenticatedSidebarPanel />
-          </Suspense>
+          <SidebarPanel
+            personalizedLinksSlot={
+              <Suspense fallback={null}>
+                <PersonalizedNavLinks />
+              </Suspense>
+            }
+            personalizedSectionsSlot={
+              <Suspense fallback={<SidebarSectionsSkeleton />}>
+                <AuthenticatedSidebarSections />
+              </Suspense>
+            }
+          />
         }
       >
         {children}

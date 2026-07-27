@@ -1,54 +1,36 @@
 'use client'
 
 import styles from '@/components/layout/Shell/Shell.module.css'
-import {Sidebar} from '@/components/layout/Sidebar/Sidebar'
+import {SidebarMobileCloseOnNavigate} from '@/components/layout/Sidebar/SidebarMobileCloseOnNavigate'
+import {SidebarNav} from '@/components/layout/Sidebar/SidebarNav'
 import {useSidebar} from '@/components/layout/Sidebar/SidebarContext'
-import type {ManagedMultireddit} from '@/lib/hooks/useMultiredditManager'
-import type {ManagedSubscription} from '@/lib/hooks/useSubredditManager'
+import {ScrollArea, Stack} from '@mantine/core'
 import {useMediaQuery} from '@mantine/hooks'
-import {usePathname} from 'next/navigation'
-import {useEffect, useRef, useState} from 'react'
+import {Suspense, useEffect, useState} from 'react'
 
 interface SidebarPanelProps {
-  username?: string
-  subscriptions?: ManagedSubscription[]
-  multireddits?: ManagedMultireddit[]
-  following?: Array<{
-    name: string
-    id: string
-    date: number
-    note?: string
-  }>
+  /** Popular/All/Saved -- see {@link SidebarNav}. Pre-wrapped in `<Suspense>` by the caller. */
+  personalizedLinksSlot: React.ReactNode
+  /** My Multireddits/My Subreddits/Following. Pre-wrapped in `<Suspense>` by the caller. */
+  personalizedSectionsSlot: React.ReactNode
 }
 
 /**
- * Client wrapper for the sidebar that controls visibility based on
- * sidebar context state. Handles mobile overlay and auto-close on
- * route changes.
+ * Client wrapper for the sidebar that controls visibility based on sidebar
+ * context state, and handles the mobile overlay. Fully static otherwise --
+ * the two personalization slots are the caller's responsibility to defer.
  */
 export function SidebarPanel({
-  username,
-  subscriptions,
-  multireddits,
-  following
+  personalizedLinksSlot,
+  personalizedSectionsSlot
 }: Readonly<SidebarPanelProps>) {
   const {mobileOpen, desktopOpen, closeMobile} = useSidebar()
   const isMobile = useMediaQuery('(max-width: 48em)')
-  const pathname = usePathname()
-  const prevPathname = useRef(pathname)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  // Close mobile sidebar on route change.
-  useEffect(() => {
-    if (pathname !== prevPathname.current) {
-      prevPathname.current = pathname
-      closeMobile()
-    }
-  }, [pathname, closeMobile])
 
   // Before mount, leave data-hidden unset so CSS handles the initial state:
   // mobile defaults to hidden (transform: translateX(-100%)), desktop to visible.
@@ -58,17 +40,21 @@ export function SidebarPanel({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <SidebarMobileCloseOnNavigate onNavigate={closeMobile} />
+      </Suspense>
+
       <aside
         className={styles.sidebar}
         data-hidden={hidden === undefined ? undefined : String(hidden)}
         aria-label="Sidebar navigation"
       >
-        <Sidebar
-          username={username}
-          subscriptions={subscriptions}
-          multireddits={multireddits}
-          following={following}
-        />
+        <ScrollArea type="auto" offsetScrollbars>
+          <Stack gap="md">
+            <SidebarNav personalizedLinksSlot={personalizedLinksSlot} />
+            {personalizedSectionsSlot}
+          </Stack>
+        </ScrollArea>
       </aside>
 
       {/* Mobile backdrop overlay */}

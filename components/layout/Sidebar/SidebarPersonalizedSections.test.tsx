@@ -1,14 +1,14 @@
 import {render, screen, waitFor} from '@/test-utils'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
-import {Sidebar} from './Sidebar'
+import {SidebarPersonalizedSections} from './SidebarPersonalizedSections'
 
 // Mock fetchUserSubscriptions to avoid env var errors
 vi.mock('@/lib/actions/reddit', () => ({
   fetchUserSubscriptions: vi.fn()
 }))
 
-describe('Sidebar', () => {
+describe('SidebarPersonalizedSections', () => {
   const mockSubscriptions = [
     {
       name: 'programming',
@@ -39,202 +39,22 @@ describe('Sidebar', () => {
     }
   ]
 
-  describe('default feeds', () => {
-    it('renders Navigation section expanded by default', () => {
-      render(<Sidebar />)
-
-      expect(screen.getByText('Navigation')).toBeInTheDocument()
-      expect(
-        screen.getByRole('button', {name: /collapse navigation/i})
-      ).toBeInTheDocument()
-    })
-
-    it('renders Home link', () => {
-      render(<Sidebar />)
-
-      const link = screen.getByRole('link', {name: /home/i})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/')
-    })
-
-    it('does not render Popular and All links when unauthenticated', () => {
-      render(<Sidebar />)
-
-      expect(
-        screen.queryByRole('link', {name: /popular/i})
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', {name: /^all$/i})
-      ).not.toBeInTheDocument()
-    })
-
-    it('renders Popular and All links when authenticated', () => {
-      render(<Sidebar username="testuser" />)
-
-      const popular = screen.getByRole('link', {name: /popular/i})
-      expect(popular).toBeInTheDocument()
-      expect(popular).toHaveAttribute('href', '/r/popular')
-
-      const all = screen.getByRole('link', {name: /^all$/i})
-      expect(all).toBeInTheDocument()
-      expect(all).toHaveAttribute('href', '/r/all')
-    })
-
-    it('renders About link', () => {
-      render(<Sidebar />)
-
-      const link = screen.getByRole('link', {name: /about/i})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/about')
-    })
-
-    it('renders Donate link', () => {
-      render(<Sidebar />)
-
-      const link = screen.getByRole('link', {name: /donate/i})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/donate')
-    })
-
-    it('renders GitHub link', () => {
-      render(<Sidebar />)
-
-      const link = screen.getByRole('link', {name: /github/i})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        'https://github.com/gregrickaby/viewer-for-reddit'
-      )
-      expect(link).toHaveAttribute('target', '_blank')
-      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
-    })
-
-    it('renders Navigation heading', () => {
-      render(<Sidebar />)
-
-      expect(screen.getByText('Navigation')).toBeInTheDocument()
-    })
-
-    it('can toggle Navigation section collapse', async () => {
-      const user = userEvent.setup()
-      render(<Sidebar />)
-
-      // Initially expanded
-      expect(
-        screen.getByRole('button', {name: /collapse navigation/i})
-      ).toBeInTheDocument()
-      expect(screen.getByRole('link', {name: /home/i})).toBeInTheDocument()
-
-      // Click to collapse
-      const collapseButton = screen.getByRole('button', {
-        name: /collapse navigation/i
-      })
-      await user.click(collapseButton)
-
-      // Wait for collapse animation
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', {name: /expand navigation/i})
-        ).toBeInTheDocument()
-      })
-
-      // Click to expand again
-      const expandButton = screen.getByRole('button', {
-        name: /expand navigation/i
-      })
-      await user.click(expandButton)
-
-      // Should be expanded
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', {name: /collapse navigation/i})
-        ).toBeInTheDocument()
-      })
-      expect(screen.getByRole('link', {name: /home/i})).toBeInTheDocument()
-    })
-
-    it('toggles Navigation by keyboard', async () => {
-      const user = userEvent.setup()
-      render(<Sidebar />)
-
-      // Initially expanded
-      let toggleButton = screen.getByRole('button', {
-        name: /collapse navigation/i
-      })
-
-      // Focus and press Enter to collapse
-      toggleButton.focus()
-      await user.keyboard('{Enter}')
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', {name: /expand navigation/i})
-        ).toBeInTheDocument()
-      })
-
-      // Get the expanded button and press Space to expand
-      toggleButton = screen.getByRole('button', {
-        name: /expand navigation/i
-      })
-      toggleButton.focus()
-      await user.keyboard(' ')
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', {name: /collapse navigation/i})
-        ).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('saved link', () => {
-    it('does not show Saved link when no username is provided', () => {
-      render(<Sidebar />)
-
-      expect(
-        screen.queryByRole('link', {name: /saved/i})
-      ).not.toBeInTheDocument()
-    })
-
-    it('shows Saved link when username is provided', () => {
-      render(<Sidebar username="testuser" />)
-
-      const link = screen.getByRole('link', {name: /saved/i})
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/user/testuser/saved')
-    })
-
-    it('renders Saved link in correct position', () => {
-      render(<Sidebar username="testuser" />)
-
-      const allLinks = screen.getAllByRole('link')
-      const navLinks = allLinks.slice(0, 7) // First 7 links are navigation
-
-      expect(navLinks[0]).toHaveTextContent('Home')
-      expect(navLinks[1]).toHaveTextContent('Popular')
-      expect(navLinks[2]).toHaveTextContent('All')
-      expect(navLinks[3]).toHaveTextContent('Saved')
-      expect(navLinks[4]).toHaveTextContent('About')
-    })
-  })
-
   describe('subscriptions', () => {
     it('does not show subscriptions when list is empty', () => {
-      render(<Sidebar subscriptions={[]} />)
+      render(<SidebarPersonalizedSections subscriptions={[]} />)
 
       expect(screen.queryByText('My Subreddits')).not.toBeInTheDocument()
     })
 
     it('renders subscriptions section', () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
       expect(screen.getByText('My Subreddits')).toBeInTheDocument()
     })
 
     it('renders search input when subscriptions section is expanded', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is now expanded by default
       await waitFor(() => {
         const searchInput = screen.getByPlaceholderText('Search subreddits...')
         expect(searchInput).toBeInTheDocument()
@@ -242,7 +62,7 @@ describe('Sidebar', () => {
     })
 
     it('renders sort select when subscriptions section is expanded', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
       // In Mantine v9, aria-label is placed on the listbox rather than the textbox.
       // Use getByDisplayValue to find the Select by its visible value instead.
@@ -256,9 +76,8 @@ describe('Sidebar', () => {
 
     it('filters subscriptions by search query', async () => {
       const user = userEvent.setup()
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is now expanded by default
       await waitFor(() => {
         expect(
           screen.getByPlaceholderText('Search subreddits...')
@@ -268,7 +87,6 @@ describe('Sidebar', () => {
       const searchInput = screen.getByPlaceholderText('Search subreddits...')
       await user.type(searchInput, 'java')
 
-      // Wait for filtering to complete
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /r\/javascript/i})
@@ -284,9 +102,8 @@ describe('Sidebar', () => {
     })
 
     it('renders all subscription links', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is now expanded by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /r\/programming/i})
@@ -301,9 +118,8 @@ describe('Sidebar', () => {
     })
 
     it('maintains subscription order (no sorting)', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is now expanded by default
       await waitFor(() => {
         const links = screen.getAllByRole('link')
         const subscriptionLinks = links.filter((link) => {
@@ -325,16 +141,14 @@ describe('Sidebar', () => {
         )
       })
 
-      // Should maintain original order: programming, javascript, typescript
       expect(subscriptionLinks[0]).toHaveTextContent('r/programming')
       expect(subscriptionLinks[1]).toHaveTextContent('r/javascript')
       expect(subscriptionLinks[2]).toHaveTextContent('r/typescript')
     })
 
     it('has correct href for subscription links', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is now expanded by default
       const programmingLink = await screen.findByRole('link', {
         name: /r\/programming/i
       })
@@ -342,39 +156,34 @@ describe('Sidebar', () => {
     })
 
     it('renders subreddit icon when available', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is expanded by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /r\/programming/i})
         ).toBeInTheDocument()
       })
 
-      // Check for Avatar component with icon
       const iconImg = screen.getByAltText('r/programming icon')
       expect(iconImg).toBeInTheDocument()
       expect(iconImg).toHaveAttribute('src', 'https://example.com/icon1.png')
     })
 
     it('renders fallback icon when subreddit has no icon', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is expanded by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /r\/javascript/i})
         ).toBeInTheDocument()
       })
 
-      // Should render with the default message icon (no Avatar with alt text)
       expect(screen.queryByAltText('r/javascript icon')).not.toBeInTheDocument()
     })
 
     it('renders multiple icons correctly', async () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Section is expanded by default
       await waitFor(() => {
         const programmingIcon = screen.getByAltText('r/programming icon')
         expect(programmingIcon).toHaveAttribute(
@@ -389,15 +198,13 @@ describe('Sidebar', () => {
         'https://example.com/icon2.png'
       )
 
-      // javascript should not have an icon
       expect(screen.queryByAltText('r/javascript icon')).not.toBeInTheDocument()
     })
 
     it('toggles subscriptions collapse when button clicked', async () => {
       const user = userEvent.setup()
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Now starts expanded, so first click should collapse
       const collapseButton = screen.getByRole('button', {
         name: /collapse my subreddits/i
       })
@@ -409,7 +216,7 @@ describe('Sidebar', () => {
     })
 
     it('shows subscriptions initially open', () => {
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
       expect(
         screen.getByRole('button', {name: /collapse my subreddits/i})
@@ -418,23 +225,19 @@ describe('Sidebar', () => {
 
     it('can toggle collapse by clicking anywhere on the header', async () => {
       const user = userEvent.setup()
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
-      // Click the entire header (not just icon) to collapse (starts expanded)
       const header = screen.getByRole('button', {
         name: /collapse my subreddits/i
       })
       await user.click(header)
 
-      // Should be collapsed now
       expect(
         screen.getByRole('button', {name: /expand my subreddits/i})
       ).toBeInTheDocument()
 
-      // Click again to expand
       await user.click(header)
 
-      // Should be expanded now
       expect(
         screen.getByRole('button', {name: /collapse my subreddits/i})
       ).toBeInTheDocument()
@@ -442,7 +245,7 @@ describe('Sidebar', () => {
 
     it('toggles subscriptions by keyboard', async () => {
       const user = userEvent.setup()
-      render(<Sidebar subscriptions={mockSubscriptions} />)
+      render(<SidebarPersonalizedSections subscriptions={mockSubscriptions} />)
 
       let toggleButton = screen.getByRole('button', {
         name: /collapse my subreddits/i
@@ -474,17 +277,16 @@ describe('Sidebar', () => {
 
   describe('multireddits', () => {
     it('does not show multireddits when list is empty', () => {
-      render(<Sidebar multireddits={[]} />)
+      render(<SidebarPersonalizedSections multireddits={[]} />)
 
       expect(screen.queryByText('Multireddits')).not.toBeInTheDocument()
     })
 
     it('renders multireddits section', async () => {
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
       expect(screen.getByText('My Multireddits')).toBeInTheDocument()
 
-      // Section is now open by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /tech news/i})
@@ -493,9 +295,8 @@ describe('Sidebar', () => {
     })
 
     it('renders all multireddit links', async () => {
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
-      // Section is now open by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /tech news/i})
@@ -505,9 +306,8 @@ describe('Sidebar', () => {
     })
 
     it('sorts multireddits alphabetically', async () => {
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
-      // Section is now open by default
       await waitFor(() => {
         const links = screen.getAllByRole('link')
         const multiLinks = links.filter((link) =>
@@ -526,24 +326,21 @@ describe('Sidebar', () => {
     })
 
     it('has correct href for multireddit links', async () => {
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
-      // Section is now open by default
       const techLink = await screen.findByRole('link', {name: /tech news/i})
       expect(techLink).toHaveAttribute('href', '/user/testuser/m/tech')
     })
 
     it('renders multireddit icon when available', async () => {
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
-      // Section is open by default
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /tech news/i})
         ).toBeInTheDocument()
       })
 
-      // Check for Avatar component with icon
       const iconImg = screen.getByAltText('Tech News icon')
       expect(iconImg).toBeInTheDocument()
       expect(iconImg).toHaveAttribute(
@@ -553,24 +350,20 @@ describe('Sidebar', () => {
     })
 
     it('renders fallback avatar with first letter when no icon', async () => {
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
-      // Section is open by default
       await waitFor(() => {
         expect(screen.getByRole('link', {name: /gaming/i})).toBeInTheDocument()
       })
 
-      // Should render Avatar with first letter (no alt text for letter avatars)
       expect(screen.queryByAltText('Gaming icon')).not.toBeInTheDocument()
-      // Check the text is present in the avatar
       expect(screen.getByText('G')).toBeInTheDocument()
     })
 
     it('toggles multireddits collapse when button clicked', async () => {
       const user = userEvent.setup()
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
-      // Now starts open, first click collapses
       const collapseButton = screen.getByRole('button', {
         name: /collapse my multireddits/i
       })
@@ -582,7 +375,7 @@ describe('Sidebar', () => {
     })
 
     it('shows multireddits initially open', () => {
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
       expect(
         screen.getByRole('button', {name: /collapse my multireddits/i})
@@ -591,23 +384,19 @@ describe('Sidebar', () => {
 
     it('can toggle collapse by clicking anywhere on the header', async () => {
       const user = userEvent.setup()
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
-      // Click the entire header (not just icon) to collapse (starts open)
       const header = screen.getByRole('button', {
         name: /collapse my multireddits/i
       })
       await user.click(header)
 
-      // Should be collapsed now
       expect(
         screen.getByRole('button', {name: /expand my multireddits/i})
       ).toBeInTheDocument()
 
-      // Click again to expand
       await user.click(header)
 
-      // Should be expanded now
       expect(
         screen.getByRole('button', {name: /collapse my multireddits/i})
       ).toBeInTheDocument()
@@ -615,7 +404,7 @@ describe('Sidebar', () => {
 
     it('toggles multireddits by keyboard', async () => {
       const user = userEvent.setup()
-      render(<Sidebar multireddits={mockMultireddits} />)
+      render(<SidebarPersonalizedSections multireddits={mockMultireddits} />)
 
       let toggleButton = screen.getByRole('button', {
         name: /collapse my multireddits/i
@@ -648,7 +437,7 @@ describe('Sidebar', () => {
   describe('with both subscriptions and multireddits', () => {
     it('renders both sections', async () => {
       render(
-        <Sidebar
+        <SidebarPersonalizedSections
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}
         />
@@ -657,7 +446,6 @@ describe('Sidebar', () => {
       expect(screen.getByText('My Subreddits')).toBeInTheDocument()
       expect(screen.getByText('My Multireddits')).toBeInTheDocument()
 
-      // Both sections start open, content should be visible
       await waitFor(() => {
         expect(
           screen.getByRole('link', {name: /r\/programming/i})
@@ -667,48 +455,39 @@ describe('Sidebar', () => {
 
     it('renders all links from both sections', async () => {
       render(
-        <Sidebar
+        <SidebarPersonalizedSections
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}
         />
       )
 
-      // Both sections start open, content should be visible
       await waitFor(() => {
-        // Subscriptions
         expect(
           screen.getByRole('link', {name: /r\/programming/i})
         ).toBeInTheDocument()
       })
 
-      // Multireddits
       expect(screen.getByRole('link', {name: /tech news/i})).toBeInTheDocument()
-
-      // Default feeds
-      expect(screen.getByRole('link', {name: /home/i})).toBeInTheDocument()
     })
 
     it('allows independent collapse state for each section', async () => {
       const user = userEvent.setup()
       render(
-        <Sidebar
+        <SidebarPersonalizedSections
           subscriptions={mockSubscriptions}
           multireddits={mockMultireddits}
         />
       )
 
-      // Both sections start open - collapse subreddits
       const subredditsToggle = screen.getByRole('button', {
         name: /collapse my subreddits/i
       })
       await user.click(subredditsToggle)
 
-      // Subreddits now closed
       expect(
         screen.getByRole('button', {name: /expand my subreddits/i})
       ).toBeInTheDocument()
 
-      // Multireddits still open
       expect(
         screen.getByRole('button', {name: /collapse my multireddits/i})
       ).toBeInTheDocument()

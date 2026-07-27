@@ -1,6 +1,8 @@
 import {Shell} from '@/components/layout/Shell/Shell'
-import {AuthenticatedSidebarPanel} from '@/components/layout/Sidebar/AuthenticatedSidebarPanel'
-import {SidebarPanelSkeleton} from '@/components/skeletons/SidebarPanelSkeleton/SidebarPanelSkeleton'
+import {AuthenticatedSidebarSections} from '@/components/layout/Sidebar/AuthenticatedSidebarSections'
+import {PersonalizedNavLinks} from '@/components/layout/Sidebar/PersonalizedNavLinks'
+import {SidebarPanel} from '@/components/layout/Sidebar/SidebarPanel'
+import {SidebarSectionsSkeleton} from '@/components/skeletons/SidebarSectionsSkeleton/SidebarSectionsSkeleton'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Typography} from '@mantine/core'
 import type {Metadata} from 'next'
@@ -48,9 +50,18 @@ export default function AboutPage() {
   return (
     <Shell
       sidebarSlot={
-        <Suspense fallback={<SidebarPanelSkeleton />}>
-          <AuthenticatedSidebarPanel />
-        </Suspense>
+        <SidebarPanel
+          personalizedLinksSlot={
+            <Suspense fallback={null}>
+              <PersonalizedNavLinks />
+            </Suspense>
+          }
+          personalizedSectionsSlot={
+            <Suspense fallback={<SidebarSectionsSkeleton />}>
+              <AuthenticatedSidebarSections />
+            </Suspense>
+          }
+        />
       }
     >
       <Container size="md" py="xl">
