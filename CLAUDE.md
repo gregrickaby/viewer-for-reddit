@@ -49,6 +49,7 @@ npm run sonar         # SonarQube analysis (~6 min)
 - **Caveman skill, `full` mode** — invoke the `caveman` skill at the start of every conversation and keep it active all session (it persists per its own instructions). Drop only for security warnings, irreversible-action confirmations, or if the user asks for normal mode.
 - **Writing style** — `.claude/rules/writing-style.md` is auto-loaded every session; follow it for all prose.
 - **Skill gap** — no known skill covers task, or unsure how to do something: invoke `find-skills` to search/install one before improvising.
+- **Minimize subagent spawning** — each Agent/Task call is a separate billed request. Use Read/Grep/Bash directly for single-file lookups or a known symbol. Reserve the Explore agent for genuinely broad searches (3+ queries across unfamiliar territory), and only spawn other agents when the user asks or the task truly needs parallel, isolated work.
 
 ## Instructions
 
