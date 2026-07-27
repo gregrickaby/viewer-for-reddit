@@ -1,4 +1,7 @@
+import {CommentListSkeleton} from '@/components/skeletons/CommentSkeleton/CommentSkeleton'
+import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
+import {DynamicMetadataMarker} from '@/components/ui/DynamicMetadataMarker/DynamicMetadataMarker'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {fetchPost} from '@/lib/actions/reddit/posts'
 import {CommentSortOption} from '@/lib/types/reddit'
@@ -6,6 +9,7 @@ import {generatePostMetadata} from '@/lib/utils/metadata-helpers'
 import {Container, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
+import {Suspense} from 'react'
 
 interface PageProps {
   params: Promise<{
@@ -37,16 +41,14 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
  * Post detail component - fetches and displays a single post.
  * Shows full post content with media and text.
  *
- * @param subreddit - Subreddit name
- * @param postId - Post ID (Reddit Thing ID)
+ * @param params - URL params promise (subreddit, postId, slug)
  */
 async function PostDetail({
-  subreddit,
-  postId
+  params
 }: Readonly<{
-  subreddit: string
-  postId: string
+  params: PageProps['params']
 }>) {
+  const {subreddit, postId} = await params
   const {post} = await fetchPost(subreddit, postId)
 
   if (!post) {
@@ -59,22 +61,23 @@ async function PostDetail({
 /**
  * Comment list component - fetches and displays comments with sort tabs.
  *
- * @param subreddit - Subreddit name
- * @param postId - Post ID
- * @param sort - Comment sort option (best, top, new, controversial, old, qa)
+ * @param params - URL params promise (subreddit, postId, slug)
+ * @param searchParams - URL search params promise (comment sort option)
  */
 async function CommentList({
-  subreddit,
-  postId,
-  sort = 'best'
+  params,
+  searchParams
 }: Readonly<{
-  subreddit: string
-  postId: string
-  sort?: CommentSortOption
+  params: PageProps['params']
+  searchParams: PageProps['searchParams']
 }>) {
-  const {comments} = await fetchPost(subreddit, postId, sort)
+  const {subreddit, postId} = await params
+  const {sort} = await searchParams
+  const commentSort = (sort as CommentSortOption) || 'best'
 
-  return <CommentListWithTabs comments={comments} activeSort={sort} />
+  const {comments} = await fetchPost(subreddit, postId, commentSort)
+
+  return <CommentListWithTabs comments={comments} activeSort={commentSort} />
 }
 
 /**
@@ -83,28 +86,22 @@ async function CommentList({
  * @param params - URL params (subreddit, postId, slug)
  * @param searchParams - URL search params (comment sort option)
  */
-export default async function PostPage({
-  params,
-  searchParams
-}: Readonly<PageProps>) {
-  const {subreddit, postId} = await params
-  const {sort} = await searchParams
-  const commentSort = (sort as CommentSortOption) || 'best'
-
+export default function PostPage({params, searchParams}: Readonly<PageProps>) {
   return (
     <Container size="lg">
+      <DynamicMetadataMarker />
       <Stack gap="xl" maw={800}>
-        <PostDetail subreddit={subreddit} postId={postId} />
+        <Suspense fallback={<PostSkeleton />}>
+          <PostDetail params={params} />
+        </Suspense>
 
         <div id="comments" style={{scrollMarginTop: '80px'}}>
           <Title order={3} mb="lg">
             Comments
           </Title>
-          <CommentList
-            subreddit={subreddit}
-            postId={postId}
-            sort={commentSort}
-          />
+          <Suspense fallback={<CommentListSkeleton />}>
+            <CommentList params={params} searchParams={searchParams} />
+          </Suspense>
         </div>
       </Stack>
     </Container>

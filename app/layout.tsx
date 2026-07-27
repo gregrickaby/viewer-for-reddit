@@ -12,6 +12,7 @@ import {Notifications} from '@mantine/notifications'
 import '@mantine/notifications/styles.css'
 import '@mantine/spotlight/styles.css'
 import type {Metadata, Viewport} from 'next'
+import {Suspense} from 'react'
 
 if (!isProduction()) {
   validateEnv()
@@ -83,7 +84,9 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body>
-        <DatadogAppRouter />
+        <Suspense fallback={null}>
+          <DatadogAppRouter />
+        </Suspense>
         <MantineProvider theme={theme} defaultColorScheme="auto">
           {children}
           <Notifications position="bottom-right" />

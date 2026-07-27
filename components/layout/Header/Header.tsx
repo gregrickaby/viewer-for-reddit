@@ -3,20 +3,21 @@ import {Logo} from '@/components/layout/Logo/Logo'
 import {SidebarToggle} from '@/components/layout/Sidebar/SidebarToggle'
 import {UserMenu} from '@/components/layout/UserMenu/UserMenu'
 import {ThemeToggle} from '@/components/ui/ThemeToggle/ThemeToggle'
-import {Group} from '@mantine/core'
+import {getCurrentUserAvatar} from '@/lib/actions/reddit/users'
+import {getSession, isAuthenticated} from '@/lib/auth/session'
+import {Group, Skeleton} from '@mantine/core'
+import {Suspense} from 'react'
 
 /**
- * Props for the Header component.
+ * Application header with navigation and search. Displays logo, navigation
+ * toggles, user menu, and (once signed in) search, since Reddit's API
+ * requires an authenticated user context.
+ *
+ * Resolves its own auth state (via Suspense-wrapped children) rather than
+ * taking it as props, so the static chrome (logo, toggles) never blocks on
+ * the session cookie read.
  */
-interface HeaderProps {
-  /** Username of the authenticated user */
-  username?: string
-  /** Avatar URL for the authenticated user */
-  avatarUrl?: string
-}
-
-/** Application header with navigation and search. Displays logo, navigation toggles, user menu, and (once signed in) search, since Reddit's API requires an authenticated user context. */
-export function Header({username, avatarUrl}: Readonly<HeaderProps>) {
+export function Header() {
   return (
     <Group
       h="100%"
@@ -30,12 +31,36 @@ export function Header({username, avatarUrl}: Readonly<HeaderProps>) {
       </Group>
 
       <Group gap="xs">
-        {username && <MobileSearch />}
+        <Suspense fallback={null}>
+          <HeaderMobileSearch />
+        </Suspense>
 
         <ThemeToggle />
 
-        <UserMenu username={username} avatarUrl={avatarUrl} />
+        <Suspense fallback={<Skeleton height={32} width={32} circle />}>
+          <HeaderUserMenu />
+        </Suspense>
       </Group>
     </Group>
+  )
+}
+
+export async function HeaderMobileSearch() {
+  const authenticated = await isAuthenticated()
+  return authenticated ? <MobileSearch /> : null
+}
+
+export async function HeaderUserMenu() {
+  const authenticated = await isAuthenticated()
+
+  if (!authenticated) {
+    return <UserMenu />
+  }
+
+  const session = await getSession()
+  const avatarUrl = await getCurrentUserAvatar()
+
+  return (
+    <UserMenu username={session.username} avatarUrl={avatarUrl ?? undefined} />
   )
 }

@@ -7,7 +7,7 @@ import Image from 'next/image'
 /** Application logo with icon and text. */
 export function Logo() {
   return (
-    <AppLink href="/">
+    <AppLink href="/" data-testid="logo-link">
       <Group gap="xs" wrap="nowrap">
         <Image
           alt={`${appConfig.site.name} Logo`}

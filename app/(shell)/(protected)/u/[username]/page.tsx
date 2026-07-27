@@ -1,3 +1,4 @@
+import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {AddUserToMultiredditButton} from '@/components/ui/AddUserToMultiredditButton/AddUserToMultiredditButton'
 import {FollowButton} from '@/components/ui/FollowButton/FollowButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
@@ -12,10 +13,20 @@ import {appConfig} from '@/lib/config/app.config'
 import {RedditUser, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
+import {
+  Avatar,
+  Card,
+  Container,
+  Group,
+  Skeleton,
+  Stack,
+  Text,
+  Title
+} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
+import {Suspense} from 'react'
 
 interface PageProps {
   params: Promise<{
@@ -58,14 +69,16 @@ function formatDate(timestamp: number): string {
 }
 
 async function UserProfile({
-  username,
-  currentUsername,
-  multireddits
+  params
 }: Readonly<{
-  username: string
-  currentUsername?: string
-  multireddits: Awaited<ReturnType<typeof fetchMultireddits>>
+  params: PageProps['params']
 }>) {
+  const {username} = await params
+  const session = await getSession()
+  const currentUsername = session.username
+  const isOwnProfile = currentUsername?.toLowerCase() === username.toLowerCase()
+  const multireddits = !isOwnProfile ? await fetchMultireddits() : []
+
   try {
     const user: RedditUser = await fetchUserInfo(username)
 
@@ -77,8 +90,6 @@ async function UserProfile({
       ? decodeHtmlEntities(user.icon_img)
       : undefined
 
-    const isOwnProfile =
-      currentUsername?.toLowerCase() === username.toLowerCase()
     const showFollowButton = !isOwnProfile
 
     return (
@@ -259,53 +270,76 @@ async function UserComments({
 }
 
 /**
- * User profile page - displays user info, posts, and comments in tabs.
+ * Resolves params/searchParams, then renders the tab UI with both tab
+ * panels' content pre-rendered on the server.
  *
- * @param params - URL params (username)
- * @param searchParams - URL search params (tab, sort option)
+ * @param params - URL params promise (username)
+ * @param searchParams - URL search params promise (tab, sort option)
  */
-export default async function UserPage({
+async function UserPageTabs({
   params,
   searchParams
-}: Readonly<PageProps>) {
+}: Readonly<{
+  params: PageProps['params']
+  searchParams: PageProps['searchParams']
+}>) {
   const {username} = await params
   const {tab, sort, time} = await searchParams
   const activeTab = tab || 'posts'
   const postSort = (sort as SortOption) || 'new'
   const timeFilter = time as TimeFilter | undefined
 
-  const session = await getSession()
-  const currentUsername = session.username
-  const isOwnProfile = currentUsername?.toLowerCase() === username.toLowerCase()
-  const multireddits = !isOwnProfile ? await fetchMultireddits() : []
+  return (
+    <UserProfileTabs
+      username={username}
+      activeTab={activeTab}
+      postsContent={
+        <UserPosts
+          username={username}
+          sort={postSort}
+          timeFilter={timeFilter}
+        />
+      }
+      commentsContent={
+        <UserComments
+          username={username}
+          sort={postSort}
+          timeFilter={timeFilter}
+        />
+      }
+    />
+  )
+}
 
+/**
+ * User profile page - displays user info, posts, and comments in tabs.
+ *
+ * @param params - URL params (username)
+ * @param searchParams - URL search params (tab, sort option)
+ */
+export default function UserPage({params, searchParams}: Readonly<PageProps>) {
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <UserProfile
-          username={username}
-          currentUsername={currentUsername}
-          multireddits={multireddits}
-        />
+        <Suspense
+          fallback={
+            <Card withBorder padding="lg" radius="md">
+              <Group>
+                <Skeleton height={80} width={80} radius="md" />
+                <Stack gap="xs" flex={1}>
+                  <Skeleton height={28} width={200} />
+                  <Skeleton height={16} width={150} />
+                </Stack>
+              </Group>
+            </Card>
+          }
+        >
+          <UserProfile params={params} />
+        </Suspense>
 
-        <UserProfileTabs
-          username={username}
-          activeTab={activeTab}
-          postsContent={
-            <UserPosts
-              username={username}
-              sort={postSort}
-              timeFilter={timeFilter}
-            />
-          }
-          commentsContent={
-            <UserComments
-              username={username}
-              sort={postSort}
-              timeFilter={timeFilter}
-            />
-          }
-        />
+        <Suspense fallback={<TabsSkeleton />}>
+          <UserPageTabs params={params} searchParams={searchParams} />
+        </Suspense>
       </Stack>
     </Container>
   )

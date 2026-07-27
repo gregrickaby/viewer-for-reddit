@@ -1,6 +1,14 @@
 import {render, screen} from '@/test-utils'
 import {describe, expect, it, vi} from 'vitest'
-import {Header} from './Header'
+
+vi.mock('@/lib/auth/session', () => ({
+  isAuthenticated: vi.fn(),
+  getSession: vi.fn()
+}))
+
+vi.mock('@/lib/actions/reddit/users', () => ({
+  getCurrentUserAvatar: vi.fn()
+}))
 
 // Mock child components.
 vi.mock('../Logo/Logo', () => ({
@@ -20,8 +28,8 @@ vi.mock('../Sidebar/SidebarToggle', () => ({
   )
 }))
 
-vi.mock('@/components/ui/SearchBar/SearchBar', () => ({
-  SearchBar: () => <div data-testid="searchbar">Search</div>
+vi.mock('./MobileSearch', () => ({
+  MobileSearch: () => <div data-testid="searchbar">Search</div>
 }))
 
 vi.mock('../UserMenu/UserMenu', () => ({
@@ -40,72 +48,83 @@ vi.mock('@/components/ui/ThemeToggle/ThemeToggle', () => ({
   )
 }))
 
+import {getCurrentUserAvatar} from '@/lib/actions/reddit/users'
+import {getSession, isAuthenticated} from '@/lib/auth/session'
+import {Header, HeaderMobileSearch, HeaderUserMenu} from './Header'
+
+const mockIsAuthenticated = vi.mocked(isAuthenticated)
+const mockGetSession = vi.mocked(getSession)
+const mockGetCurrentUserAvatar = vi.mocked(getCurrentUserAvatar)
+
+// Header wraps HeaderMobileSearch/HeaderUserMenu (both async Server
+// Components) in <Suspense>. react-dom's client renderer -- what RTL uses --
+// has no RSC-style resolution for async components the way Next.js's real
+// pipeline does, so a full <Header/> render only ever shows their fallback
+// state here. These tests assert on the static, synchronously-rendered
+// chrome; the two deferred components' own auth-branching logic is tested
+// directly below by awaiting them.
 describe('Header', () => {
-  describe('rendering', () => {
-    it('renders Logo component', () => {
-      render(<Header />)
+  it('renders Logo and toggles synchronously', () => {
+    mockIsAuthenticated.mockResolvedValue(false)
 
-      expect(screen.getByTestId('logo')).toBeInTheDocument()
-    })
+    render(<Header />)
 
-    it('does not render SearchBar component when unauthenticated', () => {
-      render(<Header />)
-
-      expect(screen.queryByTestId('searchbar')).not.toBeInTheDocument()
-    })
-
-    it('renders SearchBar component when authenticated', () => {
-      render(<Header username="testuser" />)
-
-      expect(screen.getByTestId('searchbar')).toBeInTheDocument()
-    })
-
-    it('renders UserMenu component', () => {
-      render(<Header />)
-
-      expect(screen.getByTestId('usermenu')).toBeInTheDocument()
-    })
-
-    it('renders SidebarToggle component', () => {
-      render(<Header />)
-
-      expect(screen.getByTestId('sidebar-toggle')).toBeInTheDocument()
-    })
-
-    it('renders mobile navigation toggle button', () => {
-      render(<Header />)
-
-      expect(
-        screen.getByRole('button', {name: /toggle mobile navigation/i})
-      ).toBeInTheDocument()
-    })
-
-    it('renders desktop navigation toggle button', () => {
-      render(<Header />)
-
-      expect(
-        screen.getByRole('button', {name: /toggle desktop navigation/i})
-      ).toBeInTheDocument()
-    })
+    expect(screen.getByTestId('logo')).toBeInTheDocument()
+    expect(screen.getByTestId('sidebar-toggle')).toBeInTheDocument()
+    expect(screen.getByTestId('theme-toggle')).toBeInTheDocument()
   })
 
-  describe('theme toggle', () => {
-    it('renders theme toggle button', () => {
-      render(<Header />)
+  it('renders navigation toggle buttons', () => {
+    mockIsAuthenticated.mockResolvedValue(false)
 
-      expect(screen.getByTestId('theme-toggle')).toBeInTheDocument()
-    })
+    render(<Header />)
+
+    expect(
+      screen.getByRole('button', {name: /toggle mobile navigation/i})
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {name: /toggle desktop navigation/i})
+    ).toBeInTheDocument()
+  })
+})
+
+describe('HeaderMobileSearch', () => {
+  it('renders nothing when not authenticated', async () => {
+    mockIsAuthenticated.mockResolvedValue(false)
+
+    render(<>{await HeaderMobileSearch()}</>)
+
+    expect(screen.queryByTestId('searchbar')).not.toBeInTheDocument()
   })
 
-  describe('all props together', () => {
-    it('works with all props provided', () => {
-      render(<Header username="testuser" />)
+  it('renders MobileSearch when authenticated', async () => {
+    mockIsAuthenticated.mockResolvedValue(true)
 
-      expect(screen.getByTestId('logo')).toBeInTheDocument()
-      expect(screen.getByTestId('usermenu-username')).toHaveTextContent(
-        'testuser'
-      )
-      expect(screen.getByTestId('sidebar-toggle')).toBeInTheDocument()
-    })
+    render(<>{await HeaderMobileSearch()}</>)
+
+    expect(screen.getByTestId('searchbar')).toBeInTheDocument()
+  })
+})
+
+describe('HeaderUserMenu', () => {
+  it('renders an unauthenticated UserMenu when not authenticated', async () => {
+    mockIsAuthenticated.mockResolvedValue(false)
+
+    render(await HeaderUserMenu())
+
+    expect(screen.getByTestId('usermenu-username')).toHaveTextContent('')
+    expect(mockGetSession).not.toHaveBeenCalled()
+  })
+
+  it('renders UserMenu with the session username and avatar when authenticated', async () => {
+    mockIsAuthenticated.mockResolvedValue(true)
+    mockGetSession.mockResolvedValue({username: 'testuser'} as never)
+    mockGetCurrentUserAvatar.mockResolvedValue('https://example.com/avatar.png')
+
+    render(await HeaderUserMenu())
+
+    expect(screen.getByTestId('usermenu-username')).toHaveTextContent(
+      'testuser'
+    )
   })
 })

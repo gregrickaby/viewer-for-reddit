@@ -1,3 +1,4 @@
+import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {LandingPage} from '@/components/ui/LandingPage/LandingPage'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {isAuthenticated} from '@/lib/auth/session'
@@ -5,6 +6,7 @@ import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
+import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
 
@@ -78,12 +80,17 @@ async function PostsContent({
 }
 
 /**
- * Homepage - shows landing page for unauthenticated users,
- * personalized feed for authenticated users.
+ * Resolves auth state, then renders either the landing page or the
+ * personalized feed. Reads `cookies()` via `isAuthenticated`, so the caller
+ * wraps this in `<Suspense>` to keep the route prerenderable.
  *
- * @param searchParams - URL search params (sort option)
+ * @param searchParams - URL search params promise (sort option)
  */
-export default async function Home({searchParams}: Readonly<PageProps>) {
+async function HomeContent({
+  searchParams
+}: Readonly<{
+  searchParams: PageProps['searchParams']
+}>) {
   const authenticated = await isAuthenticated()
 
   if (!authenticated) {
@@ -101,8 +108,24 @@ export default async function Home({searchParams}: Readonly<PageProps>) {
           Your Feed
         </Title>
 
-        <PostsContent sort={postSort} timeFilter={timeFilter} />
+        <Suspense fallback={<TabsSkeleton />}>
+          <PostsContent sort={postSort} timeFilter={timeFilter} />
+        </Suspense>
       </div>
     </Container>
+  )
+}
+
+/**
+ * Homepage - shows landing page for unauthenticated users,
+ * personalized feed for authenticated users.
+ *
+ * @param searchParams - URL search params (sort option)
+ */
+export default function Home({searchParams}: Readonly<PageProps>) {
+  return (
+    <Suspense fallback={<TabsSkeleton />}>
+      <HomeContent searchParams={searchParams} />
+    </Suspense>
   )
 }

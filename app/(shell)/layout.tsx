@@ -1,15 +1,11 @@
 import {Shell} from '@/components/layout/Shell/Shell'
+import {AuthenticatedSidebarPanel} from '@/components/layout/Sidebar/AuthenticatedSidebarPanel'
+import {SidebarPanelSkeleton} from '@/components/skeletons/SidebarPanelSkeleton/SidebarPanelSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
 import RouteScrollReset from '@/components/ui/RouteScrollReset/RouteScrollReset'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
-import {fetchMultireddits} from '@/lib/actions/reddit/multireddits'
-import {fetchUserSubscriptions} from '@/lib/actions/reddit/subreddits'
-import {
-  fetchFollowedUsers,
-  getCurrentUserAvatar
-} from '@/lib/actions/reddit/users'
-import {getSession, isAuthenticated} from '@/lib/auth/session'
+import {Suspense} from 'react'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -19,53 +15,31 @@ interface MainLayoutProps {
  * Shared layout for main content routes.
  *
  * Handles:
- * - User data (subscriptions, multireddits, following, avatar)
- * - Shell wrapper with sidebar navigation
+ * - Shell wrapper (static header + sidebar slot + main content area)
+ * - Sidebar personalization (subscriptions, multireddits, following) via
+ *   AuthenticatedSidebarPanel, deferred behind its own Suspense boundary
  * - Utility buttons (Boss button, Back to top, Swipe navigation)
  *
  * Applied to: /, /r/[subreddit], /search/[query], /u/[username], /user/[username]/saved, /user/[username]/m/[multiname]
  */
-export default async function MainLayout({
-  children
-}: Readonly<MainLayoutProps>) {
-  const authenticated = await isAuthenticated()
-
-  if (!authenticated) {
-    return (
-      <>
-        <Shell>{children}</Shell>
-        <RouteScrollReset />
-        <SwipeNavigation />
-        <BossButton />
-        <BackToTop />
-      </>
-    )
-  }
-
-  const session = await getSession()
-
-  const [subscriptions, multireddits, following, avatarUrl] = await Promise.all(
-    [
-      fetchUserSubscriptions(),
-      fetchMultireddits(),
-      fetchFollowedUsers(),
-      getCurrentUserAvatar()
-    ]
-  )
-
+export default function MainLayout({children}: Readonly<MainLayoutProps>) {
   return (
     <>
       <Shell
-        username={session.username}
-        avatarUrl={avatarUrl ?? undefined}
-        subscriptions={subscriptions}
-        multireddits={multireddits}
-        following={following}
+        sidebarSlot={
+          <Suspense fallback={<SidebarPanelSkeleton />}>
+            <AuthenticatedSidebarPanel />
+          </Suspense>
+        }
       >
         {children}
       </Shell>
-      <RouteScrollReset />
-      <SwipeNavigation />
+      <Suspense fallback={null}>
+        <RouteScrollReset />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SwipeNavigation />
+      </Suspense>
       <BossButton />
       <BackToTop />
     </>

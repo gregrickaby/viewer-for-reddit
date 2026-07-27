@@ -1,8 +1,10 @@
+import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {appConfig} from '@/lib/config/app.config'
 import {Container, Title} from '@mantine/core'
 import type {Metadata} from 'next'
+import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
 
@@ -40,41 +42,46 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 
 /**
  * Multireddit posts component.
- * Fetches and displays posts from a custom multireddit.
+ * Resolves params/searchParams, then fetches and displays posts from a
+ * custom multireddit.
  *
- * @param username - Reddit username who owns the multireddit
- * @param multiname - Multireddit name
- * @param sort - Sort option (hot, new, top, rising, controversial)
- * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
+ * @param params - URL params promise (username, multireddit name)
+ * @param searchParams - URL search params promise (sort option)
  */
 async function MultiredditPosts({
-  username,
-  multiname,
-  sort = 'hot',
-  timeFilter
+  params,
+  searchParams
 }: Readonly<{
-  username: string
-  multiname: string
-  sort?: SortOption
-  timeFilter?: TimeFilter
+  params: PageProps['params']
+  searchParams: PageProps['searchParams']
 }>) {
+  const {username, multiname} = await params
+  const {sort, time} = await searchParams
+  const postSort = (sort as SortOption) || 'hot'
+  const timeFilter = time as TimeFilter | undefined
+
   const multiredditPath = `user/${username}/m/${multiname}`
 
   const {posts, after} = await fetchPosts(
     multiredditPath,
-    sort,
+    postSort,
     undefined,
     timeFilter
   )
 
   return (
-    <PostListWithTabs
-      posts={posts}
-      after={after}
-      activeSort={sort}
-      activeTimeFilter={timeFilter}
-      subreddit={multiredditPath}
-    />
+    <>
+      <Title order={2} mb="lg">
+        {multiname}
+      </Title>
+      <PostListWithTabs
+        posts={posts}
+        after={after}
+        activeSort={postSort}
+        activeTimeFilter={timeFilter}
+        subreddit={multiredditPath}
+      />
+    </>
   )
 }
 
@@ -84,27 +91,15 @@ async function MultiredditPosts({
  * @param params - URL params (username, multireddit name)
  * @param searchParams - URL search params (sort option)
  */
-export default async function MultiredditPage({
+export default function MultiredditPage({
   params,
   searchParams
 }: Readonly<PageProps>) {
-  const {username, multiname} = await params
-  const {sort, time} = await searchParams
-  const postSort = (sort as SortOption) || 'hot'
-  const timeFilter = time as TimeFilter | undefined
-
   return (
     <Container size="lg">
-      <Title order={2} mb="lg">
-        {multiname}
-      </Title>
-
-      <MultiredditPosts
-        username={username}
-        multiname={multiname}
-        sort={postSort}
-        timeFilter={timeFilter}
-      />
+      <Suspense fallback={<TabsSkeleton />}>
+        <MultiredditPosts params={params} searchParams={searchParams} />
+      </Suspense>
     </Container>
   )
 }

@@ -2,6 +2,7 @@ import type {NextConfig} from 'next'
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  cacheComponents: true,
   // Coolify sets SOURCE_COMMIT at build time. Mismatched deploymentId
   // forces a hard navigation instead of a broken client-side one during
   // rolling deploys. https://nextjs.org/docs/app/guides/self-hosting#version-skew
@@ -21,6 +22,9 @@ const nextConfig: NextConfig = {
     inlineCss: true,
     prefetchInlining: true,
     appNewScrollHandler: true,
+    // Only for local production builds measured by the instant-nav e2e loop
+    // (see instant-nav.rig.md) -- never true for the real Coolify deployment.
+    exposeTestingApiInProductionBuild: process.env.EXPOSE_TESTING_API === '1',
     optimizePackageImports: [
       '@mantine/carousel',
       '@mantine/core',

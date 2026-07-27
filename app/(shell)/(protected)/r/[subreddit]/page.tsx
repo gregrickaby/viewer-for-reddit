@@ -1,3 +1,5 @@
+import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleton/SubredditInfoSkeleton'
+import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {AddToMultiredditButton} from '@/components/ui/AddToMultiredditButton/AddToMultiredditButton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubredditSearchBar} from '@/components/ui/SubredditSearchBar/SubredditSearchBar'
@@ -10,6 +12,7 @@ import {logger} from '@/lib/datadog/server'
 import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
+import {Suspense} from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
@@ -41,16 +44,16 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
  * Displays subreddit metadata (title, subscribers, description).
  * Handles special feeds (all, popular) that don't have info.
  *
- * @param subreddit - Subreddit name
- * @param multireddits - User's multireddits
+ * @param params - URL params promise (subreddit name)
  */
 async function SubredditInfo({
-  subreddit,
-  multireddits
+  params
 }: Readonly<{
-  subreddit: string
-  multireddits: Awaited<ReturnType<typeof fetchMultireddits>>
+  params: PageProps['params']
 }>) {
+  const {subreddit} = await params
+  const multireddits = await fetchMultireddits()
+
   // Special feeds like 'all' and 'popular' don't have subreddit info
   const specialFeeds = ['all', 'popular']
   const isSpecialFeed = specialFeeds.includes(subreddit.toLowerCase())
@@ -137,24 +140,31 @@ async function SubredditInfo({
  * Subreddit posts list component.
  * Fetches and displays posts with sort tabs and infinite scroll.
  *
- * @param subreddit - Subreddit name
- * @param sort - Sort option (hot, new, top, rising, controversial)
- * @param timeFilter - Time filter for top/controversial (hour, day, week, month, year, all)
+ * @param params - URL params promise (subreddit name)
+ * @param searchParams - URL search params promise (sort option)
  */
 async function SubredditPosts({
-  subreddit,
-  sort = 'hot',
-  timeFilter
+  params,
+  searchParams
 }: Readonly<{
-  subreddit: string
-  sort?: SortOption
-  timeFilter?: TimeFilter
+  params: PageProps['params']
+  searchParams: PageProps['searchParams']
 }>) {
+  const {subreddit} = await params
+  const {sort, time} = await searchParams
+  const postSort = (sort as SortOption) || 'hot'
+  const timeFilter = time as TimeFilter | undefined
+
   let posts: Awaited<ReturnType<typeof fetchPosts>>['posts']
   let after: Awaited<ReturnType<typeof fetchPosts>>['after']
 
   try {
-    ;({posts, after} = await fetchPosts(subreddit, sort, undefined, timeFilter))
+    ;({posts, after} = await fetchPosts(
+      subreddit,
+      postSort,
+      undefined,
+      timeFilter
+    ))
   } catch (error) {
     logger.error('Failed to fetch subreddit posts', {
       error: error instanceof Error ? error.message : String(error),
@@ -172,7 +182,7 @@ async function SubredditPosts({
     <PostListWithTabs
       posts={posts}
       after={after}
-      activeSort={sort}
+      activeSort={postSort}
       activeTimeFilter={timeFilter}
       subreddit={subreddit}
     />
@@ -182,30 +192,23 @@ async function SubredditPosts({
 /**
  * Subreddit page - displays posts from a specific subreddit.
  *
- * @param params - URL params (subreddit name)
- * @param searchParams - URL search params (sort option)
+ * @param params - URL params promise (subreddit name)
+ * @param searchParams - URL search params promise (sort option)
  */
-export default async function SubredditPage({
+export default function SubredditPage({
   params,
   searchParams
 }: Readonly<PageProps>) {
-  const {subreddit} = await params
-  const {sort, time} = await searchParams
-  const postSort = (sort as SortOption) || 'hot'
-  const timeFilter = time as TimeFilter | undefined
-
-  const multireddits = await fetchMultireddits()
-
   return (
     <Container size="lg">
       <Stack gap="xl" maw={800}>
-        <SubredditInfo subreddit={subreddit} multireddits={multireddits} />
+        <Suspense fallback={<SubredditInfoSkeleton />}>
+          <SubredditInfo params={params} />
+        </Suspense>
 
-        <SubredditPosts
-          subreddit={subreddit}
-          sort={postSort}
-          timeFilter={timeFilter}
-        />
+        <Suspense fallback={<TabsSkeleton />}>
+          <SubredditPosts params={params} searchParams={searchParams} />
+        </Suspense>
       </Stack>
     </Container>
   )

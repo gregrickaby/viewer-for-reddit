@@ -28,11 +28,10 @@ export function PostListSkeleton({
   /** Number of skeleton post cards to render */
   count?: number
 }>) {
-  const skeletonIds = Array.from({length: count}, () => crypto.randomUUID())
   return (
     <Stack gap="md">
-      {skeletonIds.map((id) => (
-        <PostSkeleton key={id} />
+      {Array.from({length: count}, (_, index) => (
+        <PostSkeleton key={index} />
       ))}
     </Stack>
   )

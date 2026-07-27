@@ -129,7 +129,8 @@ describe('useSwipeNavigation', () => {
       push: vi.fn(),
       replace: vi.fn(),
       refresh: vi.fn(),
-      prefetch: vi.fn()
+      prefetch: vi.fn(),
+      bfcacheId: 'test-bfcache-id'
     })
   })
 
