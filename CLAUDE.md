@@ -70,6 +70,7 @@ Load with the `skill` tool when the task matches (lazy-loaded on demand):
 | `next-cache-components-optimizer`   | Drive a Next.js route to instant navigation via agentic loop           |
 | `next-dev-loop`                     | Verify Next.js runtime behavior after editing app code                 |
 | `next-partial-prefetching-adoption` | Turn on Partial Prefetching in a Next.js app and work through insights |
+| `triage-datadog-errors`             | Check Datadog for production errors, triage weekend/overnight issues   |
 | `update-instructions`               | After major feature additions or when instructions feel stale          |
 | `vercel-react-best-practices`       | React/Next.js performance, bundle optimization                         |
 
