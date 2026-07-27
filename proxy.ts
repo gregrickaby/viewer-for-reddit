@@ -1,7 +1,6 @@
 import {SessionData} from '@/lib/types/reddit'
 import {getIronSession, SessionOptions} from 'iron-session'
-import {logger} from '@/lib/datadog/server'
-import {type NextFetchEvent, NextRequest, NextResponse} from 'next/server'
+import {NextRequest, NextResponse} from 'next/server'
 
 const SESSION_OPTIONS: SessionOptions = {
   password: process.env.SESSION_SECRET!,
@@ -54,19 +53,6 @@ async function getSessionFromRequest(request: NextRequest) {
 }
 
 /**
- * Build structured log fields for an incoming request.
- */
-function buildRequestLogFields(request: NextRequest): Record<string, unknown> {
-  return {
-    method: request.method,
-    path: request.nextUrl.pathname,
-    search: request.nextUrl.search,
-    userAgent: request.headers.get('user-agent') || 'unknown',
-    referer: request.headers.get('referer') || 'none'
-  }
-}
-
-/**
  * Proxy to enforce authentication and add security/SEO headers.
  *
  * Redirects unauthenticated users to /api/auth/login for protected routes.
@@ -74,10 +60,7 @@ function buildRequestLogFields(request: NextRequest): Record<string, unknown> {
  *
  * @see https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#xrobotstag
  */
-export async function proxy(
-  request: NextRequest,
-  event?: NextFetchEvent
-): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const {pathname} = request.nextUrl
 
   // Auth enforcement: redirect unauthenticated users to login
@@ -93,17 +76,6 @@ export async function proxy(
       const isPrefetch = request.headers.get('next-router-prefetch') === '1'
       const target = isPrefetch ? '/' : '/api/auth/login'
       return NextResponse.redirect(new URL(target, request.url))
-    }
-  }
-
-  const isNoiseRoute = pathname.startsWith('/api/health')
-
-  if (!isNoiseRoute) {
-    const logPromise = logger.info('request', buildRequestLogFields(request))
-    if (event) {
-      event.waitUntil(logPromise)
-    } else {
-      void logPromise
     }
   }
 

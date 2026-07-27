@@ -98,7 +98,7 @@ Load with the `skill` tool when the task matches (lazy-loaded on demand):
 
 **Test utilities** — `test-utils/` provides custom `render`, `renderHook`, pre-configured `user`, MSW `server`, and handler mocks. Import from `@/test-utils`, not directly from Testing Library.
 
-**Middleware** — `proxy.ts` (with `proxy.test.ts`) handles request logging and `X-Robots-Tag` headers.
+**Middleware** — `proxy.ts` (with `proxy.test.ts`) handles auth enforcement and `X-Robots-Tag` headers. No per-request logging — it fires on every navigation and was pure noise in Datadog.
 
 ## Rules
 

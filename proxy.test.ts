@@ -7,12 +7,6 @@ const {redirectMock, nextMock} = vi.hoisted(() => ({
   }))
 }))
 
-vi.mock('@/lib/datadog/server', () => ({
-  logger: {
-    info: vi.fn(() => Promise.resolve())
-  }
-}))
-
 vi.mock('iron-session', () => ({
   getIronSession: vi.fn()
 }))
@@ -393,46 +387,6 @@ describe('proxy middleware', () => {
       await proxy(request)
 
       expect(nextMock).toHaveBeenCalled()
-    })
-  })
-
-  describe('logging behavior', () => {
-    it('skips logging for /api/healthcheck requests', async () => {
-      const {logger} = await import('@/lib/datadog/server')
-      const request = new NextRequest(
-        new URL('https://example.com/api/healthcheck')
-      )
-      await proxy(request)
-
-      expect(logger.info).not.toHaveBeenCalled()
-    })
-
-    it('logs non-healthcheck requests', async () => {
-      const {getIronSession} = await import('iron-session')
-      vi.mocked(getIronSession).mockResolvedValue({
-        accessToken: 'valid-token'
-      } as never)
-
-      const {logger} = await import('@/lib/datadog/server')
-      const request = new NextRequest(new URL('https://example.com/r/popular'))
-      await proxy(request)
-
-      expect(logger.info).toHaveBeenCalledWith('request', expect.anything())
-    })
-
-    it('uses waitUntil when NextFetchEvent is provided', async () => {
-      const {getIronSession} = await import('iron-session')
-      vi.mocked(getIronSession).mockResolvedValue({
-        accessToken: 'valid-token'
-      } as never)
-
-      const {logger} = await import('@/lib/datadog/server')
-      const request = new NextRequest(new URL('https://example.com/r/popular'))
-      const mockEvent = {waitUntil: vi.fn()}
-      await proxy(request, mockEvent as never)
-
-      expect(mockEvent.waitUntil).toHaveBeenCalled()
-      expect(logger.info).toHaveBeenCalled()
     })
   })
 })
