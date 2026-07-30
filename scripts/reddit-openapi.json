@@ -1227,10 +1227,7 @@
                               "type": "string"
                             },
                             "notification_level": {
-                              "type": [
-                                "string",
-                                "null"
-                              ]
+                              "type": "string"
                             },
                             "banner_img": {
                               "type": "string"
@@ -2687,10 +2684,7 @@
                               "type": "string"
                             },
                             "notification_level": {
-                              "type": [
-                                "string",
-                                "null"
-                              ]
+                              "type": "string"
                             },
                             "banner_img": {
                               "type": "string"
@@ -3462,10 +3456,7 @@
                               "type": "string"
                             },
                             "notification_level": {
-                              "type": [
-                                "string",
-                                "null"
-                              ]
+                              "type": "string"
                             },
                             "banner_img": {
                               "type": "string"
@@ -3821,10 +3812,7 @@
                               "type": "string"
                             },
                             "notification_level": {
-                              "type": [
-                                "string",
-                                "null"
-                              ]
+                              "type": "string"
                             },
                             "banner_img": {
                               "type": "string"
@@ -4549,10 +4537,7 @@
                               "type": "string"
                             },
                             "notification_level": {
-                              "type": [
-                                "string",
-                                "null"
-                              ]
+                              "type": "string"
                             },
                             "banner_img": {
                               "type": "string"

@@ -87,7 +87,7 @@ export async function fetchPosts(
         context: 'fetchPosts',
         subreddit
       })
-      throw new Error(GENERIC_SERVER_ERROR)
+      throw new Error(GENERIC_SERVER_ERROR, {cause: error})
     }
 
     const searchParams: Record<string, string> = {

@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Install Dependencies
-        run: npm i --force # platform-specific binaries require full install
+        run: npm i --legacy-peer-deps # platform-specific binaries require full install
 
       - name: Create Environment File
         run: |

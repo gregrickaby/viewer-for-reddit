@@ -441,7 +441,7 @@ export interface components {
                         link_flair_enabled?: boolean;
                         disable_contributor_requests?: boolean;
                         subreddit_type?: string;
-                        notification_level?: string | null;
+                        notification_level?: string;
                         banner_img?: string;
                         user_flair_text?: string | null;
                         banner_background_color?: string;
@@ -855,7 +855,7 @@ export interface components {
                         link_flair_enabled?: boolean;
                         disable_contributor_requests?: boolean;
                         subreddit_type?: string;
-                        notification_level?: string | null;
+                        notification_level?: string;
                         banner_img?: string;
                         user_flair_text?: string | null;
                         banner_background_color?: string;
@@ -1073,7 +1073,7 @@ export interface components {
                         link_flair_enabled?: boolean;
                         disable_contributor_requests?: boolean;
                         subreddit_type?: string;
-                        notification_level?: string | null;
+                        notification_level?: string;
                         banner_img?: string;
                         user_flair_text?: string | null;
                         banner_background_color?: string;
@@ -1176,7 +1176,7 @@ export interface components {
                         link_flair_enabled?: boolean;
                         disable_contributor_requests?: boolean;
                         subreddit_type?: string;
-                        notification_level?: string | null;
+                        notification_level?: string;
                         banner_img?: string;
                         user_flair_text?: string | null;
                         banner_background_color?: string;
@@ -1384,7 +1384,7 @@ export interface components {
                         link_flair_enabled?: boolean;
                         disable_contributor_requests?: boolean;
                         subreddit_type?: string;
-                        notification_level?: string | null;
+                        notification_level?: string;
                         banner_img?: string;
                         user_flair_text?: string | null;
                         banner_background_color?: string;
