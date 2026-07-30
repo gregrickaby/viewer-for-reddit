@@ -48,7 +48,7 @@
     "@tabler/icons-react": "^3.45.0",
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",
-    "dd-trace": "^6.4.0",
+    "dd-trace": "^6.6.0",
     "embla-carousel-react": "^8.6.0",
     "iron-session": "^8.0.4",
     "next": "^16.3.0-preview.10",
@@ -74,7 +74,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@types/sanitize-html": "^2.16.1",
-    "@vitejs/plugin-react-swc": "^4.3.1",
+    "@vitejs/plugin-react-swc": "^4.3.2",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
     "babel-plugin-react-compiler": "^1.0.0",
@@ -90,7 +90,7 @@
     "jsdom": "^29.1.1",
     "msw": "^2.15.0",
     "openapi-typescript": "^7.13.0",
-    "postcss": "^8.5.21",
+    "postcss": "^8.5.22",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.9.6",
@@ -103,7 +103,7 @@
   },
   "overrides": {
     "sharp": "^0.35.0",
-    "postcss": "^8.5.21",
+    "postcss": "^8.5.22",
     "fast-uri": "^3.1.4"
   }
 }
