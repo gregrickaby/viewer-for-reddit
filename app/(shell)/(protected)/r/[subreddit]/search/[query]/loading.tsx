@@ -8,7 +8,7 @@ import {Container, Skeleton, Stack} from '@mantine/core'
 export default function Loading() {
   return (
     <Container size="lg">
-      <Stack gap="xl" maw={800}>
+      <Stack gap="xl" maw={800} mx="auto">
         <Stack gap="sm">
           <Skeleton height={20} width={150} />
           <Skeleton height={36} width="60%" />

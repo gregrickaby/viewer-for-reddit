@@ -92,9 +92,8 @@ async function classifyAndThrowError(
     resource
   })
 
-  const retryAfter = response.headers.get('retry-after')
-  const retryAfterSeconds = retryAfter
-    ? Number.parseInt(retryAfter, 10)
+  const retryAfterSeconds = rateLimitHeaders.retryAfter
+    ? Number.parseInt(rateLimitHeaders.retryAfter, 10)
     : undefined
 
   switch (response.status) {

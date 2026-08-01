@@ -57,8 +57,10 @@ export async function HeaderUserMenu() {
     return <UserMenu />
   }
 
-  const session = await getSession()
-  const avatarUrl = await getCurrentUserAvatar()
+  const [session, avatarUrl] = await Promise.all([
+    getSession(),
+    getCurrentUserAvatar()
+  ])
 
   return (
     <UserMenu username={session.username} avatarUrl={avatarUrl ?? undefined} />

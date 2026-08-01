@@ -68,6 +68,34 @@ function formatDate(timestamp: number): string {
   })
 }
 
+/**
+ * Empty-state card shown when a user has no posts or comments to display.
+ *
+ * @param title - Heading text
+ * @param message - Explanatory body text
+ */
+function EmptyProfileState({
+  title,
+  message
+}: Readonly<{
+  title: string
+  message: string
+}>) {
+  return (
+    <Card withBorder padding="xl" radius="md">
+      <Stack align="center" gap="md">
+        <IconAlertCircle size={48} color="var(--mantine-color-yellow-6)" />
+        <Text size="lg" fw={600} ta="center">
+          {title}
+        </Text>
+        <Text size="sm" c="dimmed" ta="center">
+          {message}
+        </Text>
+      </Stack>
+    </Card>
+  )
+}
+
 async function UserProfile({
   params
 }: Readonly<{
@@ -90,8 +118,6 @@ async function UserProfile({
       ? decodeHtmlEntities(user.icon_img)
       : undefined
 
-    const showFollowButton = !isOwnProfile
-
     return (
       <Card withBorder padding="lg" radius="md">
         <Group>
@@ -99,7 +125,7 @@ async function UserProfile({
           <Stack gap="xs" flex={1}>
             <Group justify="space-between" align="flex-start">
               <Title order={2}>u/{user.name}</Title>
-              {showFollowButton && (
+              {!isOwnProfile && (
                 <Group gap="xs" wrap="nowrap">
                   {multireddits.length > 0 && (
                     <AddUserToMultiredditButton
@@ -183,17 +209,10 @@ async function UserPosts({
 
   if (result.posts.length === 0) {
     return (
-      <Card withBorder padding="xl" radius="md">
-        <Stack align="center" gap="md">
-          <IconAlertCircle size={48} color="var(--mantine-color-yellow-6)" />
-          <Text size="lg" fw={600} ta="center">
-            No Posts Found
-          </Text>
-          <Text size="sm" c="dimmed" ta="center">
-            This user is either private or hasn&apos;t posted anything yet.
-          </Text>
-        </Stack>
-      </Card>
+      <EmptyProfileState
+        title="No Posts Found"
+        message="This user is either private or hasn't posted anything yet."
+      />
     )
   }
 
@@ -245,17 +264,10 @@ async function UserComments({
 
   if (result.comments.length === 0) {
     return (
-      <Card withBorder padding="xl" radius="md">
-        <Stack align="center" gap="md">
-          <IconAlertCircle size={48} color="var(--mantine-color-yellow-6)" />
-          <Text size="lg" fw={600} ta="center">
-            No Comments Found
-          </Text>
-          <Text size="sm" c="dimmed" ta="center">
-            This user is either private or hasn&apos;t commented yet.
-          </Text>
-        </Stack>
-      </Card>
+      <EmptyProfileState
+        title="No Comments Found"
+        message="This user is either private or hasn't commented yet."
+      />
     )
   }
 
@@ -320,7 +332,7 @@ async function UserPageTabs({
 export default function UserPage({params, searchParams}: Readonly<PageProps>) {
   return (
     <Container size="lg">
-      <Stack gap="xl" maw={800}>
+      <Stack gap="xl" maw={800} mx="auto">
         <Suspense
           fallback={
             <Card withBorder padding="lg" radius="md">

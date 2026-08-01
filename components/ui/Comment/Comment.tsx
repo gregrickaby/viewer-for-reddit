@@ -92,8 +92,7 @@ function renderVoteActions(
   voteState: 1 | 0 | -1 | null,
   score: number,
   isPending: boolean,
-  vote: (direction: 1 | -1) => void,
-  styles: {readonly [key: string]: string}
+  vote: (direction: 1 | -1) => void
 ) {
   return (
     <Group gap={4}>
@@ -133,8 +132,7 @@ function renderActionButtons(
   isSaved: boolean,
   isPending: boolean,
   handleSave: () => void,
-  handleShare: () => void,
-  styles: {readonly [key: string]: string}
+  handleShare: () => void
 ) {
   return (
     <>
@@ -269,13 +267,12 @@ export function Comment({
               />
 
               <Group gap="sm">
-                {renderVoteActions(voteState, score, isPending, vote, styles)}
+                {renderVoteActions(voteState, score, isPending, vote)}
                 {renderActionButtons(
                   isSaved,
                   isPending,
                   handleSave,
-                  handleShare,
-                  styles
+                  handleShare
                 )}
               </Group>
             </Stack>

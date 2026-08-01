@@ -31,7 +31,7 @@ export default function RouteError({
 
   return (
     <Container size="lg">
-      <Stack gap="xl" maw={800}>
+      <Stack gap="xl" maw={800} mx="auto">
         <ErrorDisplay onReset={reset} />
       </Stack>
     </Container>

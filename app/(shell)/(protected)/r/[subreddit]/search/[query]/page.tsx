@@ -46,7 +46,7 @@ async function SearchResults({
   const {posts, after} = await searchSubreddit(subreddit, decodedQuery)
 
   return (
-    <Stack gap="xl" maw={800}>
+    <Stack gap="xl" maw={800} mx="auto">
       <Stack gap="sm">
         <BackToSubreddit subreddit={subreddit} />
         <Title order={2}>Search results for: &quot;{decodedQuery}&quot;</Title>

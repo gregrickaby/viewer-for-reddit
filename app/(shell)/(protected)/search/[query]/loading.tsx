@@ -8,7 +8,7 @@ import {Container, Stack, Title} from '@mantine/core'
 export default function Loading() {
   return (
     <Container size="lg">
-      <Stack gap="xl" maw={800}>
+      <Stack gap="xl" maw={800} mx="auto">
         <Title order={2}>Searching...</Title>
         <PostSkeleton />
       </Stack>

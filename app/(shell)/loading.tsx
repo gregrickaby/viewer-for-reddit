@@ -12,7 +12,7 @@ import {Container} from '@mantine/core'
 export default function Loading() {
   return (
     <Container size="lg">
-      <div style={{maxWidth: '800px'}}>
+      <div style={{maxWidth: '800px', margin: '0 auto'}}>
         <TabsSkeleton />
       </div>
     </Container>

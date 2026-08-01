@@ -38,19 +38,10 @@ function renderSelfText(
 
   const sanitizedHtml = sanitizeText(decodeHtmlEntities(post.selftext_html))
 
-  if (showFullText) {
-    return (
-      <div
-        dangerouslySetInnerHTML={{__html: sanitizedHtml}}
-        className={styles.postBody}
-      />
-    )
-  }
-
   return (
     <div
       dangerouslySetInnerHTML={{__html: sanitizedHtml}}
-      className={styles.postBodyPreview}
+      className={showFullText ? styles.postBody : styles.postBodyPreview}
     />
   )
 }

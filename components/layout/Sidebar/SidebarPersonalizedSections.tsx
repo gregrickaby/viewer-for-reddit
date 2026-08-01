@@ -6,6 +6,7 @@ import {CollapsibleSection} from '@/components/ui/CollapsibleSection/Collapsible
 import {SubscriptionFilterList} from '@/components/ui/SubscriptionFilterList/SubscriptionFilterList'
 import type {ManagedMultireddit} from '@/lib/hooks/useMultiredditManager'
 import type {ManagedSubscription} from '@/lib/hooks/useSubredditManager'
+import type {RedditFollowing} from '@/lib/types/reddit'
 import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Avatar, NavLink, ScrollArea, Stack} from '@mantine/core'
 import {useDisclosure} from '@mantine/hooks'
@@ -19,22 +20,12 @@ interface SidebarPersonalizedSectionsProps {
   /** User's custom multireddits */
   multireddits?: ManagedMultireddit[]
   /** Users being followed */
-  following?: Array<{
-    name: string
-    id: string
-    date: number
-    note?: string
-  }>
+  following?: RedditFollowing[]
 }
 
 const EMPTY_SUBSCRIPTIONS: ManagedSubscription[] = []
 const EMPTY_MULTIREDDITS: ManagedMultireddit[] = []
-const EMPTY_FOLLOWING: Array<{
-  name: string
-  id: string
-  date: number
-  note?: string
-}> = []
+const EMPTY_FOLLOWING: RedditFollowing[] = []
 
 /**
  * The sidebar's personalized sections: multireddits, subscribed subreddits,

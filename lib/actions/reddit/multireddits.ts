@@ -16,6 +16,17 @@ import {GENERIC_ACTION_ERROR, assertRedditUrl} from './_helpers'
 const MULTI_NAME_PATTERN = /^\w{3,50}$/
 
 /**
+ * Strip leading and trailing slashes from a multireddit path so it can be
+ * validated and appended to the API base URL consistently.
+ *
+ * @param multiPath - Raw multireddit path (may have surrounding slashes)
+ * @returns Normalized path without leading/trailing slashes
+ */
+function normalizeMultiPath(multiPath: string): string {
+  return multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+}
+
+/**
  * Fetch authenticated user's custom multireddits.
  * Server Action with Next.js fetch caching.
  * Results cached for 10 minutes. Returns empty array when not authenticated.
@@ -169,7 +180,7 @@ export async function deleteMultireddit(
   multiPath: string
 ): Promise<{success: boolean; error?: string}> {
   try {
-    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+    const normalizedPath = normalizeMultiPath(multiPath)
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', {
         context: 'deleteMultireddit',
@@ -233,7 +244,7 @@ export async function updateMultiredditName(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+    const normalizedPath = normalizeMultiPath(multiPath)
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', {
         context: 'updateMultiredditName',
@@ -301,7 +312,7 @@ export async function addSubredditToMultireddit(
   subredditName: string
 ): Promise<{success: boolean; error?: string}> {
   try {
-    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+    const normalizedPath = normalizeMultiPath(multiPath)
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', {
         context: 'addSubredditToMultireddit',
@@ -379,7 +390,7 @@ export async function removeSubredditFromMultireddit(
   subredditName: string
 ): Promise<{success: boolean; error?: string}> {
   try {
-    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+    const normalizedPath = normalizeMultiPath(multiPath)
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', {
         context: 'removeSubredditFromMultireddit',
@@ -448,7 +459,7 @@ export async function addUserToMultireddit(
   username: string
 ): Promise<{success: boolean; error?: string}> {
   try {
-    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+    const normalizedPath = normalizeMultiPath(multiPath)
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', {
         context: 'addUserToMultireddit',
@@ -527,7 +538,7 @@ export async function removeUserFromMultireddit(
   username: string
 ): Promise<{success: boolean; error?: string}> {
   try {
-    const normalizedPath = multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+    const normalizedPath = normalizeMultiPath(multiPath)
     if (!isValidMultiredditPath(normalizedPath)) {
       logger.error('Invalid multireddit path', {
         context: 'removeUserFromMultireddit',

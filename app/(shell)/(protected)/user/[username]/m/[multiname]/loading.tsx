@@ -8,7 +8,7 @@ import {Container, Stack} from '@mantine/core'
 export default function Loading() {
   return (
     <Container size="lg">
-      <Stack gap="xl" maw={800}>
+      <Stack gap="xl" maw={800} mx="auto">
         <TabsSkeleton />
       </Stack>
     </Container>

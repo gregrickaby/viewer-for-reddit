@@ -7,7 +7,7 @@
  * eliminating vi.mock() path-string fragility in tests.
  */
 
-import {getSession} from '@/lib/auth/session'
+import {getSession, persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
 import type {AuthTokens} from '@/lib/types/auth'
 import type {SessionData} from '@/lib/types/reddit'
@@ -132,15 +132,7 @@ const defaultAdapters: RedditContextAdapters = {
     }
   },
 
-  async writeSession(data: SessionData): Promise<void> {
-    const session = await getSession()
-    session.accessToken = data.accessToken
-    session.refreshToken = data.refreshToken
-    session.expiresAt = data.expiresAt
-    session.username = data.username
-    session.userId = data.userId
-    await session.save()
-  },
+  writeSession: persistSession,
 
   refreshAccessToken: refreshTokenViaArctic,
 

@@ -31,7 +31,7 @@ export default function RouteError({
 
   return (
     <Container size="lg">
-      <div style={{maxWidth: '800px'}}>
+      <div style={{maxWidth: '800px', margin: '0 auto'}}>
         <ErrorDisplay onReset={reset} />
       </div>
     </Container>

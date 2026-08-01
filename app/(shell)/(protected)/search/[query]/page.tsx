@@ -42,7 +42,7 @@ async function SearchResults({
   const {posts, after} = await searchReddit(decodedQuery)
 
   return (
-    <Stack gap="xl" maw={800}>
+    <Stack gap="xl" maw={800} mx="auto">
       <Title order={2}>Search results for: {decodedQuery}</Title>
       {posts.length === 0 ? (
         <Title order={4}>No results found for &quot;{decodedQuery}&quot;</Title>

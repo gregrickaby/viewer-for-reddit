@@ -201,7 +201,7 @@ export default function SubredditPage({
 }: Readonly<PageProps>) {
   return (
     <Container size="lg">
-      <Stack gap="xl" maw={800}>
+      <Stack gap="xl" maw={800} mx="auto">
         <Suspense fallback={<SubredditInfoSkeleton />}>
           <SubredditInfo params={params} />
         </Suspense>

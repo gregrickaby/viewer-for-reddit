@@ -103,7 +103,7 @@ async function HomeContent({
 
   return (
     <Container size="lg">
-      <div style={{maxWidth: '800px'}}>
+      <div style={{maxWidth: '800px', margin: '0 auto'}}>
         <Title order={2} mb="lg">
           Your Feed
         </Title>
@@ -124,7 +124,15 @@ async function HomeContent({
  */
 export default function Home({searchParams}: Readonly<PageProps>) {
   return (
-    <Suspense fallback={<TabsSkeleton />}>
+    <Suspense
+      fallback={
+        <Container size="lg">
+          <div style={{maxWidth: '800px', margin: '0 auto'}}>
+            <TabsSkeleton />
+          </div>
+        </Container>
+      }
+    >
       <HomeContent searchParams={searchParams} />
     </Suspense>
   )

@@ -9,7 +9,7 @@ import {Container, Stack, Title} from '@mantine/core'
 export default function Loading() {
   return (
     <Container size="lg">
-      <Stack gap="xl" maw={800}>
+      <Stack gap="xl" maw={800} mx="auto">
         <PostSkeleton />
         <div id="comments" style={{scrollMarginTop: '80px'}}>
           <Title order={3} mb="lg">
