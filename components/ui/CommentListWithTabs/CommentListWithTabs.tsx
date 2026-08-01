@@ -1,7 +1,9 @@
 'use client'
 
+import {SortTabs} from '@/components/ui/SortTabs/SortTabs'
+import {TransitionOverlay} from '@/components/ui/TransitionOverlay/TransitionOverlay'
 import {CommentSortOption, RedditComment} from '@/lib/types/reddit'
-import {Loader, Stack, Tabs, Text, Title} from '@mantine/core'
+import {Box, Stack, Title} from '@mantine/core'
 import {
   IconClock,
   IconFlame,
@@ -12,6 +14,39 @@ import {
 import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
 import {Comment} from '@/components/ui/Comment/Comment'
+
+const COMMENT_SORT_TABS = [
+  {
+    value: 'best',
+    label: 'Best',
+    icon: <IconStar aria-hidden="true" size={16} />
+  },
+  {
+    value: 'top',
+    label: 'Top',
+    icon: <IconTrendingUp aria-hidden="true" size={16} />
+  },
+  {
+    value: 'new',
+    label: 'New',
+    icon: <IconClock aria-hidden="true" size={16} />
+  },
+  {
+    value: 'controversial',
+    label: 'Controversial',
+    icon: <IconFlame aria-hidden="true" size={16} />
+  },
+  {
+    value: 'old',
+    label: 'Old',
+    icon: <IconClock aria-hidden="true" size={16} />
+  },
+  {
+    value: 'qa',
+    label: 'Q&A',
+    icon: <IconMessageQuestion aria-hidden="true" size={16} />
+  }
+]
 
 /**
  * Props for the CommentListWithTabs component.
@@ -44,83 +79,20 @@ export function CommentListWithTabs({
 
   return (
     <>
-      <Tabs value={activeSort} mb="lg">
-        <Tabs.List grow={false} style={{flexWrap: 'nowrap', overflowX: 'auto'}}>
-          <Tabs.Tab
-            value="best"
-            leftSection={<IconStar aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('best')}
-            disabled={isPending}
-          >
-            Best
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="top"
-            leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('top')}
-            disabled={isPending}
-          >
-            Top
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="new"
-            leftSection={<IconClock aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('new')}
-            disabled={isPending}
-          >
-            New
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="controversial"
-            leftSection={<IconFlame aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('controversial')}
-            disabled={isPending}
-          >
-            Controversial
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="old"
-            leftSection={<IconClock aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('old')}
-            disabled={isPending}
-          >
-            Old
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="qa"
-            leftSection={<IconMessageQuestion aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('qa')}
-            disabled={isPending}
-          >
-            Q&A
-          </Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
+      <Box mb="lg">
+        <SortTabs
+          value={activeSort}
+          onChange={handleSortChange}
+          disabled={isPending}
+          tabs={COMMENT_SORT_TABS}
+        />
+      </Box>
 
       <Stack gap="md" style={{position: 'relative', minHeight: '200px'}}>
-        {isPending && (
-          <Stack
-            gap="md"
-            align="center"
-            justify="center"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'var(--mantine-color-body)',
-              opacity: 0.9,
-              zIndex: 10,
-              pointerEvents: 'none'
-            }}
-          >
-            <Loader size="lg" />
-            <Text size="sm" c="dimmed">
-              Loading {activeSort} comments...
-            </Text>
-          </Stack>
-        )}
+        <TransitionOverlay
+          visible={isPending}
+          label={`Loading ${activeSort} comments...`}
+        />
 
         {comments.length === 0 ? (
           <Title order={4}>No comments yet</Title>
