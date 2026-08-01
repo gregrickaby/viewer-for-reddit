@@ -19,7 +19,7 @@ vi.mock('next/headers', () => ({
 
 // Mock Next.js cache
 vi.mock('next/cache', () => ({
-  revalidatePath: vi.fn()
+  updateTag: vi.fn()
 }))
 
 import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'

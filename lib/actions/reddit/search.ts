@@ -4,22 +4,26 @@ import {getRedditContext} from '@/lib/auth/reddit-context'
 import {logger} from '@/lib/datadog/server'
 import type {
   ApiSubredditPostsResponse,
+  RedditAutocompleteItem,
   RedditAutocompleteResponse,
+  RedditListingChild,
   RedditPost,
   SearchAutocompleteItem,
   SubredditItem,
   TimeFilter
 } from '@/lib/types/reddit'
 import {
+  CACHE_AUTOCOMPLETE,
   CACHE_SEARCH,
-  DEFAULT_POST_LIMIT,
-  ONE_MINUTE
+  DEFAULT_POST_LIMIT
 } from '@/lib/utils/constants'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {isValidSubredditName} from '@/lib/utils/reddit-helpers'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
-  assertRedditUrl
+  assertRedditUrl,
+  logFailedResponse
 } from './_helpers'
 import {redditFetch} from './redditFetch'
 
@@ -77,7 +81,7 @@ export async function searchReddit(
     return {posts, after: afterCursor}
   } catch (error) {
     logger.error('Error searching Reddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'searchReddit'
     })
     throw error
@@ -160,11 +164,83 @@ export async function searchSubreddit(
     return {posts, after: afterCursor}
   } catch (error) {
     logger.error('Error searching subreddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'searchSubreddit',
       subreddit
     })
     throw error
+  }
+}
+
+/**
+ * Query Reddit's subreddit/user autocomplete endpoint.
+ * Shared by {@link searchSubreddits} and {@link searchSubredditsAndUsers} -
+ * the two differ only in whether user profiles are included and how
+ * results are mapped.
+ *
+ * @param query - Search query (minimum 2 characters)
+ * @param includeProfiles - Whether to include user profiles in results
+ * @param operation - Operation name for logging (matches the public function name)
+ * @returns Promise resolving to the raw autocomplete listing children, or a failure result
+ */
+async function fetchAutocomplete(
+  query: string,
+  includeProfiles: boolean,
+  operation: string
+): Promise<
+  | {success: true; children: RedditListingChild<RedditAutocompleteItem>[]}
+  | {success: false; error: string}
+> {
+  if (typeof query !== 'string' || query.length > 100) {
+    logger.error('Invalid autocomplete search query', {
+      context: operation,
+      queryLength: query?.length
+    })
+    return {success: false, error: GENERIC_ACTION_ERROR}
+  }
+
+  try {
+    const {headers, baseUrl} = await getRedditContext()
+
+    const params = new URLSearchParams({
+      query,
+      raw_json: '1',
+      limit: '10',
+      include_over_18: 'true',
+      include_profiles: includeProfiles ? 'true' : 'false',
+      typeahead_active: 'true'
+    })
+
+    const url = `${baseUrl}/api/subreddit_autocomplete_v2.json?${params}`
+    assertRedditUrl(url)
+
+    const response = await fetch(url, {
+      headers,
+      next: {
+        revalidate: CACHE_AUTOCOMPLETE,
+        tags: [includeProfiles ? 'search-autocomplete' : 'search-subreddits']
+      }
+    })
+
+    if (!response.ok) {
+      await logFailedResponse(response, url, 'GET', operation, {query})
+      return {success: false, error: GENERIC_ACTION_ERROR}
+    }
+
+    const data = (await response.json()) as RedditAutocompleteResponse
+    return {success: true, children: data?.data?.children || []}
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Not authenticated') {
+      logger.debug('Autocomplete search skipped - not authenticated', {
+        context: operation
+      })
+      return {success: false, error: 'Sign in to search Reddit'}
+    }
+    logger.error('Error fetching autocomplete results', {
+      error: getErrorMessage(error),
+      context: operation
+    })
+    return {success: false, error: GENERIC_ACTION_ERROR}
   }
 }
 
@@ -188,96 +264,30 @@ export async function searchSubreddits(query: string): Promise<{
     return {success: true, data: []}
   }
 
-  if (typeof query !== 'string' || query.length > 100) {
-    logger.error('Invalid subreddit search query', {
-      context: 'searchSubreddits',
-      queryLength: query?.length
-    })
-    return {success: false, data: [], error: GENERIC_ACTION_ERROR}
+  const result = await fetchAutocomplete(query, false, 'searchSubreddits')
+  if (!result.success) {
+    return {success: false, data: [], error: result.error}
   }
 
-  try {
-    const {headers, baseUrl} = await getRedditContext()
-
-    const params = new URLSearchParams({
-      query,
-      raw_json: '1',
-      limit: '10',
-      include_over_18: 'true',
-      include_profiles: 'false',
-      typeahead_active: 'true'
-    })
-
-    const url = `${baseUrl}/api/subreddit_autocomplete_v2.json?${params}`
-    assertRedditUrl(url)
-
-    const response = await fetch(url, {
-      headers,
-      next: {
-        revalidate: ONE_MINUTE,
-        tags: ['search-subreddits']
+  const results: SubredditItem[] = result.children
+    .map((child) => {
+      const item: SubredditItem = {
+        name: child.data?.display_name || '',
+        displayName: child.data?.display_name_prefixed || '',
+        icon: child.data?.icon_img || child.data?.community_icon || '',
+        subscribers: child.data?.subscribers || 0,
+        over18: child.data?.over18 === true
       }
+      return item
     })
+    .filter((item) => item.name)
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Subreddit search request failed', {
-        url,
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'searchSubreddits',
-        query
-      })
-
-      if (response.status === 429) {
-        return {
-          success: false,
-          data: [],
-          error: 'Reddit rate limit exceeded. Try again later.'
-        }
-      }
-
-      throw new Error(GENERIC_SERVER_ERROR)
-    }
-
-    const data = (await response.json()) as RedditAutocompleteResponse
-
-    const children = data?.data?.children || []
-
-    const results: SubredditItem[] = children
-      .map((child) => {
-        const item: SubredditItem = {
-          name: child.data?.display_name || '',
-          displayName: child.data?.display_name_prefixed || '',
-          icon: child.data?.icon_img || child.data?.community_icon || '',
-          subscribers: child.data?.subscribers || 0,
-          over18: child.data?.over18 === true
-        }
-        return item
-      })
-      .filter((item) => item.name)
-
-    logger.debug('Subreddit search results', {
-      query,
-      count: results.length,
-      nsfwCount: results.filter((r) => r.over18).length
-    })
-    return {success: true, data: results}
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Not authenticated') {
-      logger.debug('Subreddit search skipped - not authenticated', {
-        context: 'searchSubreddits'
-      })
-      return {success: false, data: [], error: 'Sign in to search Reddit'}
-    }
-    logger.error('Error searching subreddits', {
-      error: error instanceof Error ? error.message : String(error),
-      context: 'searchSubreddits'
-    })
-    return {success: false, data: [], error: GENERIC_ACTION_ERROR}
-  }
+  logger.debug('Subreddit search results', {
+    query,
+    count: results.length,
+    nsfwCount: results.filter((r) => r.over18).length
+  })
+  return {success: true, data: results}
 }
 
 /**
@@ -299,94 +309,32 @@ export async function searchSubredditsAndUsers(query: string): Promise<{
     return {success: true, data: []}
   }
 
-  if (typeof query !== 'string' || query.length > 100) {
-    logger.error('Invalid autocomplete search query', {
-      context: 'searchSubredditsAndUsers',
-      queryLength: query?.length
-    })
-    return {success: false, data: [], error: GENERIC_ACTION_ERROR}
+  const result = await fetchAutocomplete(
+    query,
+    true,
+    'searchSubredditsAndUsers'
+  )
+  if (!result.success) {
+    return {success: false, data: [], error: result.error}
   }
 
-  try {
-    const {headers, baseUrl} = await getRedditContext()
-
-    const params = new URLSearchParams({
-      query,
-      raw_json: '1',
-      limit: '10',
-      include_over_18: 'true',
-      include_profiles: 'true',
-      typeahead_active: 'true'
-    })
-
-    const url = `${baseUrl}/api/subreddit_autocomplete_v2.json?${params}`
-    assertRedditUrl(url)
-
-    const response = await fetch(url, {
-      headers,
-      next: {
-        revalidate: ONE_MINUTE,
-        tags: ['search-autocomplete']
+  const results: SearchAutocompleteItem[] = result.children
+    .map((child) => {
+      const prefixed = child.data?.display_name_prefixed || ''
+      const type: 'subreddit' | 'user' = prefixed.startsWith('u/')
+        ? 'user'
+        : 'subreddit'
+      const item: SearchAutocompleteItem = {
+        name: child.data?.display_name || '',
+        displayName: prefixed,
+        icon: child.data?.icon_img || child.data?.community_icon || '',
+        subscribers: child.data?.subscribers || 0,
+        over18: child.data?.over18 === true,
+        type
       }
+      return item
     })
+    .filter((item) => item.name)
 
-    if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Subreddit/user autocomplete request failed', {
-        url,
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'searchSubredditsAndUsers',
-        query
-      })
-
-      if (response.status === 429) {
-        return {
-          success: false,
-          data: [],
-          error: 'Reddit rate limit exceeded. Try again later.'
-        }
-      }
-
-      throw new Error(GENERIC_SERVER_ERROR)
-    }
-
-    const data = (await response.json()) as RedditAutocompleteResponse
-
-    const children = data?.data?.children || []
-
-    const results: SearchAutocompleteItem[] = children
-      .map((child) => {
-        const prefixed = child.data?.display_name_prefixed || ''
-        const type: 'subreddit' | 'user' = prefixed.startsWith('u/')
-          ? 'user'
-          : 'subreddit'
-        const item: SearchAutocompleteItem = {
-          name: child.data?.display_name || '',
-          displayName: prefixed,
-          icon: child.data?.icon_img || child.data?.community_icon || '',
-          subscribers: child.data?.subscribers || 0,
-          over18: child.data?.over18 === true,
-          type
-        }
-        return item
-      })
-      .filter((item) => item.name)
-
-    return {success: true, data: results}
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Not authenticated') {
-      logger.debug('Autocomplete search skipped - not authenticated', {
-        context: 'searchSubredditsAndUsers'
-      })
-      return {success: false, data: [], error: 'Sign in to search Reddit'}
-    }
-    logger.error('Error searching subreddits and users', {
-      error: error instanceof Error ? error.message : String(error),
-      context: 'searchSubredditsAndUsers'
-    })
-    return {success: false, data: [], error: GENERIC_ACTION_ERROR}
-  }
+  return {success: true, data: results}
 }

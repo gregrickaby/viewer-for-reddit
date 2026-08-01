@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 import {
-  BOSS_BUTTON_DELAY,
+  BOSS_BUTTON_SCROLL_THRESHOLD,
   DEFAULT_POST_LIMIT,
   FIVE_MINUTES,
   ONE_HOUR,
@@ -69,13 +69,13 @@ describe('constants', () => {
       expect(SCROLL_THRESHOLD).toBe(100)
     })
 
-    it('defines BOSS_BUTTON_DELAY as 200 milliseconds', () => {
-      expect(BOSS_BUTTON_DELAY).toBe(200)
+    it('defines BOSS_BUTTON_SCROLL_THRESHOLD as 200 pixels', () => {
+      expect(BOSS_BUTTON_SCROLL_THRESHOLD).toBe(200)
     })
 
     it('validates UI thresholds are positive numbers', () => {
       expect(SCROLL_THRESHOLD).toBeGreaterThan(0)
-      expect(BOSS_BUTTON_DELAY).toBeGreaterThan(0)
+      expect(BOSS_BUTTON_SCROLL_THRESHOLD).toBeGreaterThan(0)
     })
   })
 })

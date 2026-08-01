@@ -7,15 +7,22 @@ import type {
   RedditSubreddit,
   RedditSubscriptionsResponse
 } from '@/lib/types/reddit'
-import {CACHE_SUBREDDIT_INFO, CACHE_SUBSCRIPTIONS} from '@/lib/utils/constants'
+import {
+  CACHE_SUBREDDIT_INFO,
+  CACHE_SUBSCRIPTIONS,
+  PAGINATION_MAX_LIMIT
+} from '@/lib/utils/constants'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {
   isValidProfileSubredditName,
   isValidSubredditName
 } from '@/lib/utils/reddit-helpers'
+import {updateTag} from 'next/cache'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
-  assertRedditUrl
+  assertRedditUrl,
+  logFailedResponse
 } from './_helpers'
 import {redditFetch} from './redditFetch'
 
@@ -64,7 +71,7 @@ export async function fetchSubredditInfo(
     return subredditData
   } catch (error) {
     logger.error('Error fetching subreddit info', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchSubredditInfo'
     })
     throw error
@@ -100,7 +107,7 @@ export async function fetchUserSubscriptions(): Promise<
 
     do {
       const url = new URL(`${baseUrl}/subreddits/mine/subscriber.json`)
-      url.searchParams.set('limit', '100')
+      url.searchParams.set('limit', PAGINATION_MAX_LIMIT.toString())
       url.searchParams.set('raw_json', '1')
       if (after) {
         url.searchParams.set('after', after)
@@ -141,7 +148,7 @@ export async function fetchUserSubscriptions(): Promise<
     return allSubscriptions
   } catch (error) {
     logger.error('Error fetching subscriptions', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchUserSubscriptions'
     })
     return []
@@ -191,21 +198,14 @@ export async function toggleSubscription(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Subscription toggle request failed', {
-        url,
-        method: 'POST',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'toggleSubscription',
+      await logFailedResponse(response, url, 'POST', 'toggleSubscription', {
         subreddit: subredditName,
         action
       })
-
-      throw new Error(GENERIC_ACTION_ERROR)
+      return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
+    updateTag('subscriptions')
     logger.debug('Subscription toggled successfully', {
       subreddit: subredditName,
       action
@@ -214,7 +214,7 @@ export async function toggleSubscription(
     return {success: true}
   } catch (error) {
     logger.error('Error toggling subscription', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'toggleSubscription',
       subreddit: subredditName,
       action

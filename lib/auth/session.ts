@@ -4,6 +4,7 @@
  * Session configuration adapts based on environment (development/production).
  */
 
+import {logger} from '@/lib/datadog/server'
 import {SessionData} from '@/lib/types/reddit'
 import {getEnvVar, isProduction} from '@/lib/utils/env'
 import {getIronSession, IronSession, SessionOptions} from 'iron-session'
@@ -19,8 +20,10 @@ import {cookies} from 'next/headers'
  * - Domain-restricted in production
  *
  * Created as a function to avoid module-level evaluation issues with Next.js 16.
+ * Exported for reuse in proxy.ts, which now runs on the Node.js runtime by
+ * default (Next.js 16) and no longer needs its own duplicate config.
  */
-function getSessionOptions(): SessionOptions {
+export function getSessionOptions(): SessionOptions {
   const options: SessionOptions = {
     password: getEnvVar('SESSION_SECRET'),
     cookieName: 'reddit_viewer_session',
@@ -41,7 +44,10 @@ function getSessionOptions(): SessionOptions {
     } catch (error) {
       // If BASE_URL is invalid, continue without domain restriction
       // This is a fallback case - startup validation should catch invalid BASE_URL
-      console.warn('Invalid BASE_URL, skipping domain restriction:', error)
+      logger.warn('Invalid BASE_URL, skipping domain restriction', {
+        error: error instanceof Error ? error.message : String(error),
+        context: 'getSessionOptions'
+      })
     }
   }
 
@@ -68,6 +74,20 @@ export async function getSession(): Promise<IronSession<SessionData>> {
 }
 
 /**
+ * Reads the session once and derives token presence/expiry, shared by
+ * {@link isAuthenticated} and {@link isSessionExpired}.
+ */
+async function getSessionState(): Promise<{
+  hasToken: boolean
+  notExpired: boolean
+}> {
+  const session = await getSession()
+  const hasToken = !!session.accessToken
+  const notExpired = session.expiresAt ? session.expiresAt > Date.now() : false
+  return {hasToken, notExpired}
+}
+
+/**
  * Check if the current user has a valid authenticated session.
  * Validates both token presence and expiration time.
  *
@@ -82,9 +102,7 @@ export async function getSession(): Promise<IronSession<SessionData>> {
  * ```
  */
 export async function isAuthenticated(): Promise<boolean> {
-  const session = await getSession()
-  const hasToken = !!session.accessToken
-  const notExpired = session.expiresAt ? session.expiresAt > Date.now() : false
+  const {hasToken, notExpired} = await getSessionState()
   return hasToken && notExpired
 }
 
@@ -103,10 +121,8 @@ export async function isAuthenticated(): Promise<boolean> {
  * ```
  */
 export async function isSessionExpired(): Promise<boolean> {
-  const session = await getSession()
-  const hasToken = !!session.accessToken
-  const isExpired = session.expiresAt ? session.expiresAt <= Date.now() : true
-  return hasToken && isExpired
+  const {hasToken, notExpired} = await getSessionState()
+  return hasToken && !notExpired
 }
 
 /**

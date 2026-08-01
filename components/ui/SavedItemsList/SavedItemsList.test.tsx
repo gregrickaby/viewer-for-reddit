@@ -32,7 +32,7 @@ vi.mock('../Comment/Comment', () => ({
   Comment: ({comment}: {comment: {body: string}}) => <div>{comment.body}</div>
 }))
 
-import {useInfiniteSavedItems} from '@/lib/hooks'
+import {useInfiniteSavedItems} from '@/lib/hooks/useInfiniteSavedItems'
 import type {RedditComment, RedditPost, SavedItem} from '@/lib/types/reddit'
 import {render, screen} from '@/test-utils'
 import {SavedItemsList} from './SavedItemsList'

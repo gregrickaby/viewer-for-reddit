@@ -1,27 +1,40 @@
+import {getSessionOptions} from '@/lib/auth/session'
+import {logger} from '@/lib/datadog/server'
 import {SessionData} from '@/lib/types/reddit'
-import {getIronSession, SessionOptions} from 'iron-session'
+import {getIronSession} from 'iron-session'
 import {NextRequest, NextResponse} from 'next/server'
 
-const SESSION_OPTIONS: SessionOptions = {
-  password: process.env.SESSION_SECRET!,
-  cookieName: 'reddit_viewer_session'
-}
+// Route prefixes that require authentication and are excluded from search
+// indexing (subreddit feeds, user profiles, saved items/multireddits, search).
+const PROTECTED_ROUTE_PREFIXES = ['/r/', '/u/', '/user/', '/search/'] as const
+
+// Static public paths that are exact matches, not prefixes.
+const PUBLIC_EXACT_PATHS = new Set([
+  '/',
+  '/about',
+  '/donate',
+  '/sitemap.xml',
+  '/robots.txt',
+  '/favicon.ico',
+  '/manifest.webmanifest'
+])
+
+const API_PREFIX = '/api/'
 
 /**
  * Check if a path requires authentication.
  * Public paths (about, donate, all API routes) do not require auth.
  */
 function isPublicPath(pathname: string): boolean {
-  return (
-    pathname === '/' ||
-    pathname === '/about' ||
-    pathname === '/donate' ||
-    pathname === '/sitemap.xml' ||
-    pathname === '/robots.txt' ||
-    pathname === '/favicon.ico' ||
-    pathname === '/manifest.webmanifest' ||
-    pathname.startsWith('/api/')
-  )
+  return PUBLIC_EXACT_PATHS.has(pathname) || pathname.startsWith(API_PREFIX)
+}
+
+/**
+ * Check if a path is a protected content route (subreddit/user/search feeds)
+ * that should be excluded from search indexing.
+ */
+function isProtectedRoute(pathname: string): boolean {
+  return PROTECTED_ROUTE_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 }
 
 /**
@@ -47,7 +60,7 @@ async function getSessionFromRequest(request: NextRequest) {
     set: () => {}
   }
 
-  return getIronSession(cookieStore as never, SESSION_OPTIONS) as Promise<
+  return getIronSession(cookieStore as never, getSessionOptions()) as Promise<
     ReturnType<typeof getIronSession<SessionData>>
   >
 }
@@ -65,9 +78,22 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   // Auth enforcement: redirect unauthenticated users to login
   if (!isPublicPath(pathname)) {
-    const session = await getSessionFromRequest(request)
+    let hasValidSession = false
 
-    if (!session.accessToken) {
+    try {
+      const session = await getSessionFromRequest(request)
+      hasValidSession = !!session.accessToken
+    } catch (error) {
+      // A corrupted/tampered session cookie fails decryption - treat it the
+      // same as no session rather than letting the request 500.
+      logger.error('Failed to read session in proxy', {
+        error: error instanceof Error ? error.message : String(error),
+        context: 'proxy',
+        pathname
+      })
+    }
+
+    if (!hasValidSession) {
       // Next.js Link prefetch requests are invisible to the user, but the
       // login redirect chains into a cross-origin Reddit OAuth URL, which
       // CSP's connect-src blocks for fetch-initiated requests (unlike full
@@ -80,14 +106,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   // Check if path is a dynamic route that should not be indexed
-  const shouldBlock =
-    pathname.startsWith('/r/') ||
-    pathname.startsWith('/u/') ||
-    pathname.startsWith('/user/') ||
-    pathname.startsWith('/search/') ||
-    pathname.startsWith('/api/')
-
-  if (shouldBlock) {
+  if (isProtectedRoute(pathname) || pathname.startsWith(API_PREFIX)) {
     const response = NextResponse.next()
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
     return response

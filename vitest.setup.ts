@@ -31,7 +31,8 @@ vi.mock('next/image', () => ({
 // Mock Next.js cache functions
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
-  revalidateTag: vi.fn()
+  revalidateTag: vi.fn(),
+  updateTag: vi.fn()
 }))
 
 // Mock Datadog browser SDKs (real init/network calls have no place in tests)

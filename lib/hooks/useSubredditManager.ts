@@ -2,7 +2,8 @@
 
 import {toggleSubscription} from '@/lib/actions/reddit/subreddits'
 import {logger} from '@/lib/datadog/client'
-import {useState, useTransition} from 'react'
+import {useState} from 'react'
+import {useOptimisticMutation} from './primitives/useOptimisticMutation'
 
 export interface ManagedSubscription {
   name: string
@@ -12,6 +13,18 @@ export interface ManagedSubscription {
 
 interface UseSubredditManagerOptions {
   initialSubscriptions: ManagedSubscription[]
+}
+
+type SubscriptionAction =
+  {type: 'join'; sub: ManagedSubscription} | {type: 'leave'; name: string}
+
+function computeNextSubscriptions(
+  committed: ManagedSubscription[],
+  action: SubscriptionAction
+): ManagedSubscription[] {
+  return action.type === 'join'
+    ? [...committed, action.sub]
+    : committed.filter((s) => s.name !== action.name)
 }
 
 /**
@@ -31,69 +44,56 @@ interface UseSubredditManagerOptions {
 export function useSubredditManager({
   initialSubscriptions
 }: Readonly<UseSubredditManagerOptions>) {
-  const [subscriptions, setSubscriptions] =
-    useState<ManagedSubscription[]>(initialSubscriptions)
   const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
 
-  const clearError = () => setError(null)
+  const {
+    state: subscriptions,
+    isPending,
+    mutate
+  } = useOptimisticMutation<ManagedSubscription[], SubscriptionAction>(
+    initialSubscriptions,
+    computeNextSubscriptions,
+    async (_next, action) => {
+      setError(null)
 
-  const isSubscribed = (name: string) =>
-    subscriptions.some((s) => s.name.toLowerCase() === name.toLowerCase())
-
-  const join = (sub: ManagedSubscription) => {
-    if (isPending) return
-    setError(null)
-
-    const snapshot = [...subscriptions]
-    // Optimistic update
-    setSubscriptions([...subscriptions, sub])
-
-    startTransition(async () => {
-      const result = await toggleSubscription(sub.name, 'sub')
-      if (!result.success) {
-        // Rollback
-        setSubscriptions(snapshot)
-        const msg = result.error ?? 'Failed to join subreddit'
-        setError(msg)
-        logger.error('Failed to join subreddit', {
-          error: msg,
-          context: 'useSubredditManager',
-          subredditName: sub.name
-        })
+      if (action.type === 'join') {
+        const result = await toggleSubscription(action.sub.name, 'sub')
+        if (!result.success) {
+          const msg = result.error ?? 'Failed to join subreddit'
+          setError(msg)
+          logger.error('Failed to join subreddit', {
+            error: msg,
+            context: 'useSubredditManager',
+            subredditName: action.sub.name
+          })
+        }
+        return {success: result.success}
       }
-    })
-  }
 
-  const leave = (name: string) => {
-    if (isPending) return
-    setError(null)
-
-    const snapshot = [...subscriptions]
-    setSubscriptions((prev) => prev.filter((s) => s.name !== name))
-
-    startTransition(async () => {
-      const result = await toggleSubscription(name, 'unsub')
+      const result = await toggleSubscription(action.name, 'unsub')
       if (!result.success) {
-        setSubscriptions(snapshot)
         const msg = result.error ?? 'Failed to leave subreddit'
         setError(msg)
         logger.error('Failed to leave subreddit', {
           error: msg,
           context: 'useSubredditManager',
-          subredditName: name
+          subredditName: action.name
         })
       }
-    })
-  }
+      return {success: result.success}
+    }
+  )
+
+  const isSubscribed = (name: string) =>
+    subscriptions.some((s) => s.name.toLowerCase() === name.toLowerCase())
 
   return {
     subscriptions,
     error,
     isPending,
-    clearError,
+    clearError: () => setError(null),
     isSubscribed,
-    join,
-    leave
+    join: (sub: ManagedSubscription) => mutate({type: 'join', sub}),
+    leave: (name: string) => mutate({type: 'leave', name})
   }
 }

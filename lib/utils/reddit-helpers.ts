@@ -133,6 +133,10 @@ export function isValidFullname(fullname: string): boolean {
   return validPattern.test(fullname)
 }
 
+// Multireddit URL slug: 3-50 word characters. Shared with the standalone
+// name validation in lib/actions/reddit/multireddits.ts (create/rename).
+export const MULTI_NAME_PATTERN = /^\w{3,50}$/
+
 /**
  * Validates a multireddit path format.
  * Must match: user/{username}/m/{multiname}
@@ -164,9 +168,8 @@ export function isValidMultiredditPath(path: string): boolean {
   // Validate username (parts[1]) and multiname (parts[3])
   // Reddit usernames: 3-20 chars, alphanumeric, underscores, hyphens
   const usernamePattern = /^[a-zA-Z0-9_-]{3,20}$/
-  const multinamePattern = /^\w{3,50}$/
 
-  return usernamePattern.test(parts[1]) && multinamePattern.test(parts[3])
+  return usernamePattern.test(parts[1]) && MULTI_NAME_PATTERN.test(parts[3])
 }
 
 /**
@@ -218,57 +221,4 @@ export function extractSlug(permalink: string, postId: string): string {
  */
 export function getIsVertical(width?: number, height?: number): boolean {
   return !!(width && height && height > width)
-}
-
-/**
- * Builds the appropriate URL path based on feed type.
- * Handles regular subreddits, home feed, and multireddits.
- * Validates input to prevent SSRF and path traversal attacks.
- *
- * @param baseUrl - Base Reddit API URL
- * @param subreddit - Subreddit name, 'home', or multireddit path (e.g., 'user/username/m/multiname')
- * @param sort - Sort option
- * @returns URL path string
- * @throws {Error} If subreddit name or path is invalid
- *
- * @example
- * ```typescript
- * buildFeedUrlPath('https://oauth.reddit.com', 'popular', 'hot')
- * // Returns: 'https://oauth.reddit.com/r/popular/hot.json'
- *
- * buildFeedUrlPath('https://oauth.reddit.com', 'home', 'hot')
- * // Returns: 'https://oauth.reddit.com/hot.json'
- *
- * buildFeedUrlPath('https://oauth.reddit.com', 'user/johndoe/m/tech', 'top')
- * // Returns: 'https://oauth.reddit.com/user/johndoe/m/tech/top.json'
- * ```
- */
-export function buildFeedUrlPath(
-  baseUrl: string,
-  subreddit: string,
-  sort: string
-): string {
-  // Handle home feed (empty or 'home')
-  if (subreddit === '' || subreddit === 'home') {
-    // Authenticated user's home feed (subscribed subreddits)
-    return `${baseUrl}/${sort}.json`
-  }
-
-  // Handle multireddit paths
-  if (subreddit.startsWith('user/')) {
-    // Validate multireddit path to prevent SSRF
-    if (!isValidMultiredditPath(subreddit)) {
-      throw new Error('Invalid multireddit path format')
-    }
-    // Multireddit: /user/username/m/multiname/sort.json
-    return `${baseUrl}/${subreddit}/${sort}.json`
-  }
-
-  // Regular subreddit - validate name to prevent SSRF
-  if (!isValidSubredditName(subreddit)) {
-    throw new Error('Invalid subreddit name')
-  }
-
-  // Regular subreddit: /r/subreddit/sort.json
-  return `${baseUrl}/r/${subreddit}/${sort}.json`
 }

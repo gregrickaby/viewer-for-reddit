@@ -19,12 +19,12 @@ vi.mock('next/headers', () => ({
 
 // Mock Next.js cache
 vi.mock('next/cache', () => ({
-  revalidatePath: vi.fn()
+  updateTag: vi.fn()
 }))
 
 import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'
 import {http, HttpResponse, server} from '@/test-utils'
-import {revalidatePath} from 'next/cache'
+import {updateTag} from 'next/cache'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
   addSubredditToMultireddit,
@@ -86,7 +86,7 @@ describe('multireddits server actions', () => {
 
       expect(result.success).toBe(true)
       expect(result.path).toBe('/user/testuser/m/my_multi')
-      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+      expect(updateTag).toHaveBeenCalledWith('multireddits')
     })
 
     it('returns failure for unauthenticated users', async () => {
@@ -140,7 +140,7 @@ describe('multireddits server actions', () => {
       const result = await deleteMultireddit('/user/testuser/m/tech')
 
       expect(result.success).toBe(true)
-      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+      expect(updateTag).toHaveBeenCalledWith('multireddits')
     })
 
     it('returns failure for unauthenticated users', async () => {
@@ -186,7 +186,7 @@ describe('multireddits server actions', () => {
       )
 
       expect(result.success).toBe(true)
-      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+      expect(updateTag).toHaveBeenCalledWith('multireddits')
     })
 
     it('returns failure for unauthenticated users', async () => {
@@ -231,7 +231,7 @@ describe('multireddits server actions', () => {
       )
 
       expect(result.success).toBe(true)
-      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+      expect(updateTag).toHaveBeenCalledWith('multireddits')
     })
 
     it('strips r/ prefix from subreddit name', async () => {
@@ -286,7 +286,7 @@ describe('multireddits server actions', () => {
       )
 
       expect(result.success).toBe(true)
-      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+      expect(updateTag).toHaveBeenCalledWith('multireddits')
     })
 
     it('strips r/ prefix from subreddit name', async () => {
@@ -357,7 +357,7 @@ describe('multireddits server actions', () => {
       )
 
       expect(result.success).toBe(true)
-      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+      expect(updateTag).toHaveBeenCalledWith('multireddits')
     })
 
     it('strips u/ prefix from username', async () => {
@@ -428,7 +428,7 @@ describe('multireddits server actions', () => {
       )
 
       expect(result.success).toBe(true)
-      expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
+      expect(updateTag).toHaveBeenCalledWith('multireddits')
     })
 
     it('strips u/ prefix from username', async () => {

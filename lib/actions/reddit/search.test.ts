@@ -320,7 +320,7 @@ describe('search server actions', () => {
       expect(result.error).toBe('Sign in to search Reddit')
     })
 
-    it('handles 429 rate limit for authenticated users', async () => {
+    it('handles 429 like any other failed response', async () => {
       server.use(
         http.get(
           'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
@@ -333,7 +333,7 @@ describe('search server actions', () => {
       const result = await searchSubreddits('tech')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Reddit rate limit exceeded. Try again later.')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
   })
 
@@ -401,7 +401,7 @@ describe('search server actions', () => {
       expect(user?.displayName).toBe('u/testuser')
     })
 
-    it('returns rate limit error for authenticated user on 429', async () => {
+    it('handles 429 like any other failed response', async () => {
       server.use(
         http.get(
           'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
@@ -412,7 +412,7 @@ describe('search server actions', () => {
       const result = await searchSubredditsAndUsers('test')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Reddit rate limit exceeded. Try again later.')
+      expect(result.error).toBe('Something went wrong. Please try again.')
     })
 
     it('returns error on network failure', async () => {

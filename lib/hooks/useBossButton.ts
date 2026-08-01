@@ -22,6 +22,7 @@
  * )}
  * ```
  */
+import {BOSS_BUTTON_SCROLL_THRESHOLD} from '@/lib/utils/constants'
 import {useWindowScroll} from '@mantine/hooks'
 import {useRouter} from 'next/navigation'
 import {useEffect} from 'react'
@@ -45,7 +46,7 @@ export function useBossButton(redirectUrl: string) {
   }, [router, redirectUrl])
 
   return {
-    shouldShow: scroll.y > 200,
+    shouldShow: scroll.y > BOSS_BUTTON_SCROLL_THRESHOLD,
     redirectUrl,
     buttonText
   }

@@ -17,14 +17,17 @@ import type {
 import {
   CACHE_SUBSCRIPTIONS,
   CACHE_USER_INFO,
-  DEFAULT_POST_LIMIT
+  DEFAULT_POST_LIMIT,
+  PAGINATION_MAX_LIMIT
 } from '@/lib/utils/constants'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {isValidFullname, isValidUsername} from '@/lib/utils/reddit-helpers'
-import {revalidatePath} from 'next/cache'
+import {updateTag} from 'next/cache'
 import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
-  assertRedditUrl
+  assertRedditUrl,
+  logFailedResponse
 } from './_helpers'
 import {redditFetch} from './redditFetch'
 
@@ -74,7 +77,7 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
     return userData
   } catch (error) {
     logger.error('Error fetching user info', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchUserInfo'
     })
     throw error
@@ -100,7 +103,7 @@ export async function getCurrentUserAvatar(): Promise<string | null> {
     return userInfo.icon_img || null
   } catch (error) {
     logger.error('Error fetching current user avatar', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'getCurrentUserAvatar'
     })
     return null
@@ -167,7 +170,7 @@ export async function fetchUserComments(
     return {comments, after: afterCursor}
   } catch (error) {
     logger.error('Error fetching user comments', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchUserComments'
     })
     throw error
@@ -202,7 +205,7 @@ export async function fetchSavedItems(
     const url = new URL(`${baseUrl}/user/${username}/saved.json`)
     assertRedditUrl(url.toString())
 
-    url.searchParams.set('limit', '100')
+    url.searchParams.set('limit', PAGINATION_MAX_LIMIT.toString())
     url.searchParams.set('raw_json', '1')
     if (after) {
       url.searchParams.set('after', after)
@@ -223,18 +226,16 @@ export async function fetchSavedItems(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Failed to fetch saved items', {
-        url: url.toString(),
-        method: 'GET',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'fetchSavedItems',
-        username,
-        after
-      })
-
+      await logFailedResponse(
+        response,
+        url.toString(),
+        'GET',
+        'fetchSavedItems',
+        {
+          username,
+          after
+        }
+      )
       throw new Error(GENERIC_SERVER_ERROR)
     }
 
@@ -274,7 +275,7 @@ export async function fetchSavedItems(
     return {items, after: data.data?.after || null}
   } catch (error) {
     logger.error('Error fetching saved items', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchSavedItems',
       username,
       after
@@ -337,7 +338,7 @@ export async function fetchFollowedUsers(): Promise<
     return following
   } catch (error) {
     logger.error('Error fetching followed users', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchFollowedUsers'
     })
     return []
@@ -378,25 +379,16 @@ export async function followUser(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Follow user request failed', {
-        url,
-        method: 'PUT',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'followUser',
-        username
-      })
+      await logFailedResponse(response, url, 'PUT', 'followUser', {username})
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('following')
     logger.debug('Followed user successfully', {username})
     return {success: true}
   } catch (error) {
     logger.error('Error following user', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'followUser',
       username
     })
@@ -434,25 +426,18 @@ export async function unfollowUser(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Unfollow user request failed', {
-        url,
-        method: 'DELETE',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'unfollowUser',
+      await logFailedResponse(response, url, 'DELETE', 'unfollowUser', {
         username
       })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('following')
     logger.debug('Unfollowed user successfully', {username})
     return {success: true}
   } catch (error) {
     logger.error('Error unfollowing user', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'unfollowUser',
       username
     })
@@ -478,7 +463,7 @@ export async function savePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl, username} = await getRedditContext()
+    const {headers, baseUrl} = await getRedditContext()
 
     const endpoint = save ? 'save' : 'unsave'
     const url = `${baseUrl}/api/${endpoint}`
@@ -494,31 +479,20 @@ export async function savePost(
     })
 
     if (!res.ok) {
-      const errorBody = await res.text()
-      logger.error('Save/unsave request failed', {
-        url,
-        method: 'POST',
-        status: res.status,
-        statusText: res.statusText,
-        errorBody,
-        context: 'savePost',
+      await logFailedResponse(res, url, 'POST', 'savePost', {
         postName,
         action: save ? 'save' : 'unsave'
       })
-
-      throw new Error(GENERIC_ACTION_ERROR)
+      return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     logger.debug('Save/unsave successful', {postName, save})
-
-    if (username) {
-      revalidatePath(`/user/${username}/saved`)
-    }
+    updateTag('saved')
 
     return {success: true}
   } catch (error) {
     logger.error('Error saving', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'savePost'
     })
     return {success: false, error: GENERIC_ACTION_ERROR}
@@ -561,19 +535,11 @@ export async function votePost(
     })
 
     if (!res.ok) {
-      const errorBody = await res.text()
-      logger.error('Vote request failed', {
-        url,
-        method: 'POST',
-        status: res.status,
-        statusText: res.statusText,
-        errorBody,
-        context: 'votePost',
+      await logFailedResponse(res, url, 'POST', 'votePost', {
         postName,
         direction
       })
-
-      throw new Error(GENERIC_ACTION_ERROR)
+      return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
     logger.debug('Vote successful', {postName, direction})
@@ -581,7 +547,7 @@ export async function votePost(
     return {success: true}
   } catch (error) {
     logger.error('Error voting', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'votePost'
     })
     return {success: false, error: GENERIC_ACTION_ERROR}

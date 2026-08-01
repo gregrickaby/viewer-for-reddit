@@ -38,6 +38,37 @@ export function assertRedditUrl(url: string): void {
 }
 
 /**
+ * Log a failed manual-fetch response with a consistent shape. Used by the
+ * manual-fetch mutation/read call sites that report failure via a return
+ * value or a locally-caught throw instead of a typed error (see
+ * {@link redditFetch}'s classifyAndThrowError for the typed-error path).
+ *
+ * @param response - The non-OK Response to log
+ * @param url - The request URL
+ * @param method - The HTTP method used
+ * @param context - Operation name for logging
+ * @param extra - Additional fields to merge into the log entry
+ */
+export async function logFailedResponse(
+  response: Response,
+  url: string,
+  method: string,
+  context: string,
+  extra: Record<string, unknown> = {}
+): Promise<void> {
+  const errorBody = await response.text()
+  logger.error(`${context} request failed`, {
+    url,
+    method,
+    status: response.status,
+    statusText: response.statusText,
+    errorBody,
+    context,
+    ...extra
+  })
+}
+
+/**
  * Capture incoming request metadata for debugging.
  * Helps identify which clients (e.g., Googlebot) are making requests.
  *

@@ -147,13 +147,13 @@ describe('useSearch', () => {
       expectedMessage: 'Search failed'
     },
     {
-      description: 'shows rate limit error',
+      description: 'surfaces the error message verbatim',
       mockResponse: {
         success: false,
-        error: 'Reddit rate limit exceeded. Try again later.',
+        error: 'Something went wrong. Please try again.',
         data: []
       },
-      expectedMessage: 'Reddit rate limit exceeded. Try again later.'
+      expectedMessage: 'Something went wrong. Please try again.'
     }
   ])('$description', async ({mockResponse, expectedMessage}) => {
     mockSearchSubreddits.mockResolvedValueOnce(mockResponse)

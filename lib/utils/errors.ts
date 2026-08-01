@@ -100,31 +100,6 @@ export class AuthenticationError extends AppError {
 }
 
 /**
- * Error for rate limiting.
- * Includes retry-after information when available.
- */
-export class RateLimitError extends AppError {
-  public readonly retryAfter?: number
-
-  constructor(
-    message: string,
-    operation: string,
-    retryAfter?: number,
-    context: Record<string, unknown> = {}
-  ) {
-    super(message, operation, context, 429)
-    this.retryAfter = retryAfter
-  }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      retryAfter: this.retryAfter
-    }
-  }
-}
-
-/**
  * Error for resource not found (404).
  */
 export class NotFoundError extends AppError {
@@ -149,13 +124,6 @@ export class NotFoundError extends AppError {
 }
 
 /**
- * Type guard to check if error is an AppError.
- */
-export function isAppError(error: unknown): error is AppError {
-  return error instanceof AppError
-}
-
-/**
  * Safely extract error message from unknown error type.
  */
 export function getErrorMessage(error: unknown): string {
@@ -163,24 +131,4 @@ export function getErrorMessage(error: unknown): string {
     return error.message
   }
   return String(error)
-}
-
-/**
- * Safely extract operation context from error.
- */
-export function getErrorContext(error: unknown): Record<string, unknown> {
-  if (isAppError(error)) {
-    return {
-      operation: error.operation,
-      context: error.context,
-      statusCode: error.statusCode
-    }
-  }
-  if (error instanceof Error) {
-    return {
-      name: error.name,
-      message: error.message
-    }
-  }
-  return {}
 }

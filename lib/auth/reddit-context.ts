@@ -13,6 +13,7 @@ import type {AuthTokens} from '@/lib/types/auth'
 import type {SessionData} from '@/lib/types/reddit'
 import {REDDIT_API_URL, TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'
 import {getEnvVar} from '@/lib/utils/env'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {refreshToken as refreshTokenViaArctic} from '@/lib/utils/reddit-auth'
 
 // ---------------------------------------------------------------------------
@@ -219,7 +220,7 @@ async function performRefresh(
   } catch (error) {
     logger.error('Token refresh failed', {
       errorType: error instanceof Error ? error.constructor.name : typeof error,
-      errorMessage: error instanceof Error ? error.message : String(error),
+      errorMessage: getErrorMessage(error),
       context: 'getRedditContext'
     })
     return null
@@ -246,7 +247,7 @@ async function performRefresh(
     // that runs in a writable context refreshes again.
     logger.warn('Token refreshed but could not persist to session', {
       errorType: error instanceof Error ? error.constructor.name : typeof error,
-      errorMessage: error instanceof Error ? error.message : String(error),
+      errorMessage: getErrorMessage(error),
       context: 'getRedditContext'
     })
   }

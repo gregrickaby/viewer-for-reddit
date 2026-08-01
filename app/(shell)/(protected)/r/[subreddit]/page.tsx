@@ -16,6 +16,7 @@ import {Suspense} from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
+import {NotFoundError, getErrorMessage} from '@/lib/utils/errors'
 import {formatNumber} from '@/lib/utils/formatters'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 
@@ -65,11 +66,14 @@ async function SubredditInfo({
       info = await fetchSubredditInfo(subreddit)
     } catch (error) {
       logger.error('Failed to fetch subreddit info', {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
         context: 'SubredditInfo',
         subreddit
       })
-      notFound()
+      if (error instanceof NotFoundError) {
+        notFound()
+      }
+      throw error
     }
   }
 
@@ -167,11 +171,14 @@ async function SubredditPosts({
     ))
   } catch (error) {
     logger.error('Failed to fetch subreddit posts', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'SubredditPosts',
       subreddit
     })
-    notFound()
+    if (error instanceof NotFoundError) {
+      notFound()
+    }
+    throw error
   }
 
   if (posts.length === 0) {

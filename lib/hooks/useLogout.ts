@@ -2,6 +2,7 @@
 
 import {logout} from '@/lib/actions/auth/auth'
 import {logger} from '@/lib/datadog/client'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {useRouter} from 'next/navigation'
 import {useState, useTransition} from 'react'
 
@@ -64,7 +65,7 @@ export function useLogout(): UseLogoutReturn {
       } catch (error) {
         // Log error but don't throw - component stays mounted
         logger.error('Logout failed', {
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
           context: 'useLogout'
         })
       } finally {

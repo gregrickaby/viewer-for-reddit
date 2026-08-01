@@ -3,8 +3,8 @@
  *
  * Handles auth headers via {@link getRedditContext}, URL construction,
  * SSRF validation, raw_json=1 for GET requests, error classification
- * (401/403 to AuthenticationError, 404 to NotFoundError, 429 to
- * RateLimitError), and structured logging.
+ * (401/403 to AuthenticationError, 404 to NotFoundError, everything
+ * else to RedditAPIError), and structured logging.
  */
 
 import {getRedditContext} from '@/lib/auth/reddit-context'
@@ -13,7 +13,6 @@ import {getEnvVar} from '@/lib/utils/env'
 import {
   AuthenticationError,
   NotFoundError,
-  RateLimitError,
   RedditAPIError
 } from '@/lib/utils/errors'
 import {
@@ -92,10 +91,6 @@ async function classifyAndThrowError(
     resource
   })
 
-  const retryAfterSeconds = rateLimitHeaders.retryAfter
-    ? Number.parseInt(rateLimitHeaders.retryAfter, 10)
-    : undefined
-
   switch (response.status) {
     case 401:
     case 403:
@@ -110,17 +105,6 @@ async function classifyAndThrowError(
         operation,
         resource || 'unknown',
         {
-          statusCode: response.status,
-          userMessage: GENERIC_SERVER_ERROR
-        }
-      )
-    case 429:
-      throw new RateLimitError(
-        'Rate limit exceeded',
-        operation,
-        retryAfterSeconds,
-        {
-          resource,
           statusCode: response.status,
           userMessage: GENERIC_SERVER_ERROR
         }
@@ -154,7 +138,6 @@ async function classifyAndThrowError(
  * @returns Parsed JSON response of type T
  * @throws {AuthenticationError} On 401/403 responses
  * @throws {NotFoundError} On 404 responses
- * @throws {RateLimitError} On 429 responses
  * @throws {RedditAPIError} On other non-OK responses
  */
 export async function redditFetch<T>(

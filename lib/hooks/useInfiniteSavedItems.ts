@@ -1,10 +1,9 @@
 'use client'
 
 import {fetchSavedItems} from '@/lib/actions/reddit/users'
-import {logger} from '@/lib/datadog/client'
 import {SavedItem} from '@/lib/types/reddit'
-import {useState, type RefObject} from 'react'
-import {useLoadMoreOnIntersect} from './useLoadMoreOnIntersect'
+import type {RefObject} from 'react'
+import {useCursorPagination} from './primitives/useCursorPagination'
 
 /**
  * Options for configuring the useInfiniteSavedItems hook.
@@ -41,11 +40,8 @@ interface UseInfiniteSavedItemsReturn {
  * Automatically loads more saved items when the user scrolls near the bottom.
  * Uses Server Actions for data fetching (maintains SSR benefits).
  *
- * Features:
- * - IntersectionObserver-based triggering (no scroll event listeners)
- * - Automatic cleanup on unmount
- * - Error handling with logging
- * - Item removal for unsave operations
+ * Cursor pagination, dedup, and IntersectionObserver triggering are owned by
+ * {@link useCursorPagination}.
  *
  * @param options - Configuration for infinite scroll
  * @returns Items array, loading state, error, sentinel ref, and removeItem function
@@ -75,65 +71,12 @@ export function useInfiniteSavedItems({
   initialAfter,
   username
 }: Readonly<UseInfiniteSavedItemsOptions>): UseInfiniteSavedItemsReturn {
-  const [items, setItems] = useState<SavedItem[]>(initialItems)
-  const [after, setAfter] = useState<string | null>(initialAfter)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(!!initialAfter)
-  const [error, setError] = useState<string | null>(null)
-
-  const removeItem = (itemId: string) => {
-    setItems((prev) => prev.filter((item) => item.data.id !== itemId))
-  }
-
-  const loadMore = async () => {
-    if (loading || !after || !hasMore) return
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      const result = await fetchSavedItems(username, after)
-
-      if (result.items && result.items.length > 0) {
-        setItems((prev) => {
-          const existingIds = new Set(prev.map((item) => item.data.id))
-          const newItems = result.items.filter(
-            (item) => !existingIds.has(item.data.id)
-          )
-          return [...prev, ...newItems]
-        })
-        setAfter(result.after)
-        setHasMore(!!result.after)
-      } else {
-        setHasMore(false)
-      }
-    } catch (err) {
-      logger.error('Failed to load more saved items', {
-        error: err instanceof Error ? err.message : String(err),
-        context: 'useInfiniteSavedItems',
-        username
-      })
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to load more items'
-      setError(errorMessage)
-      setHasMore(false)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const sentinelRef = useLoadMoreOnIntersect({
-    hasMore,
-    isPending: loading,
-    loadMore
+  return useCursorPagination({
+    initialItems,
+    initialAfter,
+    getId: (item) => item.data.id,
+    fetchPage: (after) => fetchSavedItems(username, after),
+    context: 'useInfiniteSavedItems',
+    logFields: {username}
   })
-
-  return {
-    items,
-    loading,
-    hasMore,
-    error,
-    sentinelRef,
-    removeItem
-  }
 }

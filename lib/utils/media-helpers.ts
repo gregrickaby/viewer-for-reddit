@@ -1,43 +1,6 @@
 import {GalleryItem, RedditPost} from '@/lib/types/reddit'
 
 /**
- * Validate that a URL is safe and comes from allowed domains
- * @param url - URL to validate
- * @returns True if URL is safe
- */
-export function isValidUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url)
-
-    // Only allow http and https protocols
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return false
-    }
-
-    // Allow Reddit domains and common image/video hosts
-    const allowedDomains = [
-      'reddit.com',
-      'redd.it',
-      'redditstatic.com',
-      'redditmedia.com',
-      'v.redd.it',
-      'i.redd.it',
-      'external-preview.redd.it',
-      'preview.redd.it'
-    ]
-
-    const hostname = parsed.hostname.toLowerCase()
-    const isAllowed = allowedDomains.some(
-      (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
-    )
-
-    return isAllowed
-  } catch {
-    return false
-  }
-}
-
-/**
  * Get the medium-sized image (640px) from Reddit preview resolutions
  * Falls back to the largest available resolution if 640px not found
  * @param post - Reddit post data
@@ -76,31 +39,6 @@ export function getMediumImage(
  */
 export function decodeImageUrl(url: string): string {
   return url.replaceAll('&amp;', '&')
-}
-
-/**
- * Get MP4 video URL from preview variants (for animated gifs)
- * @param post - Reddit post data
- * @returns MP4 video URL or null if not available
- */
-export function getMp4Variant(post: RedditPost): string | null {
-  const mp4Variant = post.preview?.images?.[0]?.variants?.mp4
-  const url = mp4Variant?.source?.url
-  return url ? decodeImageUrl(url) : null
-}
-
-/**
- * Check if an image is vertical (portrait orientation)
- * @param width - Image width
- * @param height - Image height
- * @returns True if the image is vertical
- */
-export function isVerticalImage(
-  width: number | undefined,
-  height: number | undefined
-): boolean {
-  if (!width || !height) return false
-  return height > width
 }
 
 /**

@@ -2,6 +2,7 @@
 
 import {getSession, isSessionExpired} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
+import {getErrorMessage} from '@/lib/utils/errors'
 
 /**
  * Logout user by destroying their session.
@@ -21,7 +22,7 @@ export async function logout(): Promise<{success: boolean; error?: string}> {
     return {success: true}
   } catch (error) {
     logger.error('Logout failed', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'logout'
     })
     return {
@@ -77,7 +78,7 @@ export async function clearExpiredSession(): Promise<{
     return {success: true, wasExpired: false}
   } catch (error) {
     logger.error('Failed to clear expired session', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'clearExpiredSession'
     })
     return {success: false, wasExpired: false}

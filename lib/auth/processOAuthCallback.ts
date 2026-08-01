@@ -10,6 +10,7 @@
 import {contextFromToken} from '@/lib/auth/reddit-context'
 import {logger} from '@/lib/datadog/server'
 import type {SessionData} from '@/lib/types/reddit'
+import {RedditAPIError, getErrorMessage} from '@/lib/utils/errors'
 import {exchangeCode} from '@/lib/utils/reddit-auth'
 
 // ---------------------------------------------------------------------------
@@ -32,6 +33,8 @@ export interface OAuthCallbackFailure {
   reason: 'exchange_failed' | 'identity_failed'
   /** Human-readable error message suitable for logging. */
   message: string
+  /** HTTP status code from the failed Reddit API call, when known. */
+  status?: number
 }
 
 /** Discriminated union returned by {@link processOAuthCallback}. */
@@ -68,7 +71,14 @@ async function fetchIdentity(accessToken: string): Promise<RedditIdentity> {
       errorBody: errorText,
       context: 'processOAuthCallback'
     })
-    throw new Error(`Reddit API responded with ${response.status}`)
+    throw new RedditAPIError(
+      `Reddit API responded with ${response.status}`,
+      'processOAuthCallback',
+      `${ctx.baseUrl}/api/v1/me`,
+      'GET',
+      {},
+      response.status
+    )
   }
 
   return response.json() as Promise<RedditIdentity>
@@ -114,7 +124,7 @@ export async function processOAuthCallback(
     })
   } catch (error) {
     logger.error('Token exchange failed', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'processOAuthCallback'
     })
     return {
@@ -145,14 +155,17 @@ export async function processOAuthCallback(
     }
   } catch (error) {
     logger.error('User identity fetch failed', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'processOAuthCallback'
     })
     return {
       ok: false,
       reason: 'identity_failed',
       message:
-        error instanceof Error ? error.message : 'Failed to fetch user identity'
+        error instanceof Error
+          ? error.message
+          : 'Failed to fetch user identity',
+      status: error instanceof RedditAPIError ? error.statusCode : undefined
     }
   }
 }

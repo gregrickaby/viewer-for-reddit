@@ -1,11 +1,9 @@
 'use client'
 
 import {searchSubreddits} from '@/lib/actions/reddit/search'
-import {logger} from '@/lib/datadog/client'
 import type {SubredditItem} from '@/lib/types/reddit'
-import {useDebouncedValue} from '@mantine/hooks'
 import {useRouter} from 'next/navigation'
-import {useEffect, useRef, useState} from 'react'
+import {useDebouncedSearch} from './primitives/useDebouncedSearch'
 
 /**
  * Grouped search results separated by NSFW status.
@@ -39,20 +37,12 @@ export interface UseSearchReturn {
   handleSubmit: () => void
 }
 
-const DEBOUNCE_DELAY = 300
-const MIN_QUERY_LENGTH = 2
-
 /**
  * Hook for typeahead search with Reddit's autocomplete API.
  * Provides live subreddit suggestions grouped by Communities and NSFW.
  *
- * Features:
- * - AbortController to cancel in-flight requests when query changes
- * - Debounced search (300ms) to reduce API calls
- * - Automatic grouping by NSFW status
- * - Error handling with specific messages
- * - Navigation to subreddit or search page
- * - Automatic cleanup on unmount
+ * Debouncing, in-flight request cancellation, and loading/error state are
+ * owned by {@link useDebouncedSearch}.
  *
  * @returns Search state, results, handlers, and error state
  *
@@ -77,92 +67,17 @@ const MIN_QUERY_LENGTH = 2
  * ```
  */
 export function useSearch(): UseSearchReturn {
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<SubredditItem[]>([])
-  const [isFetching, setIsFetching] = useState(false)
-  const [hasError, setHasError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
-  const [debouncedQuery] = useDebouncedValue(query.trim(), DEBOUNCE_DELAY)
   const router = useRouter()
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const {query, setQuery, results, isLoading, hasError, errorMessage} =
+    useDebouncedSearch<SubredditItem>({
+      search: searchSubreddits,
+      context: 'useSearch'
+    })
 
-  // Fetch subreddit suggestions from server action
-  useEffect(() => {
-    const shouldSearch = debouncedQuery.length >= MIN_QUERY_LENGTH
-
-    if (!shouldSearch) {
-      return
-    }
-
-    // Cancel previous request if still in flight
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
-    }
-
-    // Create new abort controller for this request
-    const abortController = new AbortController()
-    abortControllerRef.current = abortController
-
-    const fetchResults = async () => {
-      setIsFetching(true)
-      setHasError(false)
-      setErrorMessage(undefined)
-
-      try {
-        const response = await searchSubreddits(debouncedQuery)
-
-        // Ignore results if request was aborted
-        if (abortController.signal.aborted) {
-          return
-        }
-
-        if (response.success) {
-          setResults(response.data)
-          setHasError(false)
-          setErrorMessage(undefined)
-        } else {
-          setHasError(true)
-          setErrorMessage(response.error || 'Search failed')
-          setResults([])
-        }
-      } catch (error) {
-        // Ignore abort errors
-        if (abortController.signal.aborted) {
-          return
-        }
-        // Use logger instead of console.error for production-ready code
-        logger.error('Search error', {
-          error: error instanceof Error ? error.message : String(error),
-          context: 'useSearch'
-        })
-        setHasError(true)
-        setErrorMessage('Network error. Please try again.')
-        setResults([])
-      } finally {
-        if (!abortController.signal.aborted) {
-          setIsFetching(false)
-        }
-      }
-    }
-
-    fetchResults()
-
-    // Cleanup: abort request on unmount or when query changes
-    return () => {
-      abortController.abort()
-    }
-  }, [debouncedQuery])
-
-  // Derive loading/error/results from query length and fetch state
-  const isSearching = query.trim().length >= MIN_QUERY_LENGTH
-  const isLoading =
-    isSearching && (query.trim() !== debouncedQuery || isFetching)
-  const displayResults = isSearching ? results : []
-  const communities = displayResults.filter((item) => !item.over18)
-  const nsfw = displayResults.filter((item) => item.over18)
-  const groupedResults: GroupedResults = {communities, nsfw}
-  const displayHasError = isSearching && hasError
-  const displayErrorMessage = displayHasError ? errorMessage : undefined
+  const groupedResults: GroupedResults = {
+    communities: results.filter((item) => !item.over18),
+    nsfw: results.filter((item) => item.over18)
+  }
 
   // Handle selecting a subreddit from dropdown
   const handleOptionSelect = (value: string) => {
@@ -184,8 +99,8 @@ export function useSearch(): UseSearchReturn {
     setQuery,
     groupedResults,
     isLoading,
-    hasError: displayHasError,
-    errorMessage: displayErrorMessage,
+    hasError,
+    errorMessage,
     handleOptionSelect,
     handleSubmit
   }

@@ -37,7 +37,6 @@ import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'
 import {
   AuthenticationError,
   NotFoundError,
-  RateLimitError,
   RedditAPIError
 } from '@/lib/utils/errors'
 import {http, HttpResponse, server} from '@/test-utils'
@@ -209,7 +208,7 @@ describe('redditFetch', () => {
       ).rejects.toThrow(NotFoundError)
     })
 
-    it('throws RateLimitError on 429', async () => {
+    it('throws RedditAPIError on 429', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/test/hot.json', () => {
           return new HttpResponse('Too Many Requests', {
@@ -219,16 +218,12 @@ describe('redditFetch', () => {
         })
       )
 
-      try {
-        await redditFetch('/r/test/hot.json', {
+      await expect(
+        redditFetch('/r/test/hot.json', {
           operation: 'fetchPosts',
           resource: 'test'
         })
-        expect.unreachable('Should have thrown')
-      } catch (error) {
-        expect(error).toBeInstanceOf(RateLimitError)
-        expect((error as RateLimitError).retryAfter).toBe(30)
-      }
+      ).rejects.toThrow(RedditAPIError)
     })
 
     it('throws RedditAPIError on other non-OK status codes', async () => {

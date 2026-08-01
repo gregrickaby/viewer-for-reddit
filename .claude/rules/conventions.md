@@ -15,7 +15,7 @@
 - Use `index` for array keys
 - Use `memo()`, `useCallback()`, or `useMemo()`: React Compiler handles this
 - Use `useState` + `useTransition` for optimistic updates: use `useOptimistic` inside `startTransition`
-- Use barrel files (`lib/hooks/index.ts` is an exception, should migrate to direct imports)
+- Use barrel files
 
 **Always:**
 

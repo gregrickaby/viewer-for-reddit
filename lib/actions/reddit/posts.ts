@@ -15,6 +15,7 @@ import {
   CACHE_USER_INFO,
   DEFAULT_POST_LIMIT
 } from '@/lib/utils/constants'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {
   isValidMultiredditPath,
   isValidPostId,
@@ -83,7 +84,7 @@ export async function fetchPosts(
       path = buildFeedRelativePath(subreddit, sort)
     } catch (error) {
       logger.error('Invalid subreddit parameter', {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
         context: 'fetchPosts',
         subreddit
       })
@@ -121,7 +122,7 @@ export async function fetchPosts(
     return {posts, after: afterCursor}
   } catch (error) {
     logger.error('Error fetching posts', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchPosts'
     })
     throw error
@@ -193,7 +194,7 @@ export async function fetchPost(
     return {post, comments}
   } catch (error) {
     logger.error('Error fetching post', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchPost'
     })
     throw error
@@ -261,7 +262,7 @@ export async function fetchUserPosts(
     return {posts, after: afterCursor}
   } catch (error) {
     logger.error('Error fetching user posts', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchUserPosts'
     })
     throw error

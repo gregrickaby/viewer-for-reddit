@@ -4,16 +4,19 @@ import {getRedditContext} from '@/lib/auth/reddit-context'
 import {logger} from '@/lib/datadog/server'
 import type {RedditMultiredditResponse} from '@/lib/types/reddit'
 import {CACHE_SUBSCRIPTIONS} from '@/lib/utils/constants'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {
+  MULTI_NAME_PATTERN,
   isValidMultiredditPath,
   isValidSubredditName,
   isValidUsername
 } from '@/lib/utils/reddit-helpers'
-import {revalidatePath} from 'next/cache'
-import {GENERIC_ACTION_ERROR, assertRedditUrl} from './_helpers'
-
-// Validation regex for multireddit URL slugs (3-50 word chars)
-const MULTI_NAME_PATTERN = /^\w{3,50}$/
+import {updateTag} from 'next/cache'
+import {
+  GENERIC_ACTION_ERROR,
+  assertRedditUrl,
+  logFailedResponse
+} from './_helpers'
 
 /**
  * Strip leading and trailing slashes from a multireddit path so it can be
@@ -24,6 +27,35 @@ const MULTI_NAME_PATTERN = /^\w{3,50}$/
  */
 function normalizeMultiPath(multiPath: string): string {
   return multiPath.replaceAll(/(?:^\/)|(\/$)/g, '')
+}
+
+/**
+ * Builds a `/api/multi/{path}` URL, optionally scoped to a member subreddit
+ * (`/r/{subredditName}`) for add/remove-subreddit and add/remove-user calls.
+ *
+ * @param baseUrl - Reddit API base URL
+ * @param normalizedPath - Multireddit path without surrounding slashes
+ * @param subredditName - Optional member subreddit name (already encode-safe)
+ * @returns Fully qualified multireddit API URL
+ */
+function buildMultiUrl(
+  baseUrl: string,
+  normalizedPath: string,
+  subredditName?: string
+): string {
+  const base = `${baseUrl}/api/multi/${normalizedPath}`
+  return subredditName ? `${base}/r/${encodeURIComponent(subredditName)}` : base
+}
+
+/**
+ * Converts a Reddit username into its profile subreddit name (`u_username`),
+ * used to add/remove a user from a multireddit via the subreddit-member API.
+ *
+ * @param username - Reddit username without the 'u/' prefix
+ * @returns The `u_{username}` synthetic subreddit name
+ */
+function toUserSubredditName(username: string): string {
+  return `u_${username}`
 }
 
 /**
@@ -81,7 +113,7 @@ export async function fetchMultireddits(): Promise<
     return multireddits
   } catch (error) {
     logger.error('Error fetching multireddits', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'fetchMultireddits'
     })
     return []
@@ -141,14 +173,7 @@ export async function createMultireddit(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Create multireddit request failed', {
-        url,
-        method: 'POST',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'createMultireddit',
+      await logFailedResponse(response, url, 'POST', 'createMultireddit', {
         name: cleanName
       })
       return {success: false, error: GENERIC_ACTION_ERROR}
@@ -157,12 +182,12 @@ export async function createMultireddit(
     const data: {data?: {path?: string}} = await response.json()
     const path = data.data?.path
 
-    revalidatePath('/', 'layout')
+    updateTag('multireddits')
     logger.debug('Created multireddit successfully', {name: cleanName, path})
     return {success: true, path}
   } catch (error) {
     logger.error('Error creating multireddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'createMultireddit'
     })
     return {success: false, error: GENERIC_ACTION_ERROR}
@@ -191,31 +216,24 @@ export async function deleteMultireddit(
 
     const {headers, baseUrl} = await getRedditContext()
 
-    const url = `${baseUrl}/api/multi/${normalizedPath}`
+    const url = buildMultiUrl(baseUrl, normalizedPath)
     assertRedditUrl(url)
 
     const response = await fetch(url, {method: 'DELETE', headers})
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Delete multireddit request failed', {
-        url,
-        method: 'DELETE',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'deleteMultireddit',
+      await logFailedResponse(response, url, 'DELETE', 'deleteMultireddit', {
         multiPath
       })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('multireddits')
     logger.debug('Deleted multireddit successfully', {multiPath})
     return {success: true}
   } catch (error) {
     logger.error('Error deleting multireddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'deleteMultireddit',
       multiPath
     })
@@ -255,7 +273,7 @@ export async function updateMultiredditName(
 
     const {headers, baseUrl} = await getRedditContext()
 
-    const url = `${baseUrl}/api/multi/${normalizedPath}`
+    const url = buildMultiUrl(baseUrl, normalizedPath)
     assertRedditUrl(url)
 
     const response = await fetch(url, {
@@ -270,20 +288,13 @@ export async function updateMultiredditName(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Update multireddit name request failed', {
-        url,
-        method: 'PUT',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'updateMultiredditName',
+      await logFailedResponse(response, url, 'PUT', 'updateMultiredditName', {
         multiPath
       })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('multireddits')
     logger.debug('Updated multireddit name successfully', {
       multiPath,
       displayName: cleanDisplayName
@@ -291,7 +302,7 @@ export async function updateMultiredditName(
     return {success: true}
   } catch (error) {
     logger.error('Error updating multireddit name', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'updateMultiredditName',
       multiPath
     })
@@ -332,7 +343,7 @@ export async function addSubredditToMultireddit(
 
     const {headers, baseUrl} = await getRedditContext()
 
-    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
+    const url = buildMultiUrl(baseUrl, normalizedPath, cleanSubreddit)
     assertRedditUrl(url)
 
     const response = await fetch(url, {
@@ -347,21 +358,17 @@ export async function addSubredditToMultireddit(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Add subreddit to multireddit request failed', {
+      await logFailedResponse(
+        response,
         url,
-        method: 'PUT',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'addSubredditToMultireddit',
-        multiPath,
-        subredditName: cleanSubreddit
-      })
+        'PUT',
+        'addSubredditToMultireddit',
+        {multiPath, subredditName: cleanSubreddit}
+      )
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('multireddits')
     logger.debug('Added subreddit to multireddit successfully', {
       multiPath,
       subredditName: cleanSubreddit
@@ -369,7 +376,7 @@ export async function addSubredditToMultireddit(
     return {success: true}
   } catch (error) {
     logger.error('Error adding subreddit to multireddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'addSubredditToMultireddit',
       multiPath
     })
@@ -410,27 +417,23 @@ export async function removeSubredditFromMultireddit(
 
     const {headers, baseUrl} = await getRedditContext()
 
-    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(cleanSubreddit)}`
+    const url = buildMultiUrl(baseUrl, normalizedPath, cleanSubreddit)
     assertRedditUrl(url)
 
     const response = await fetch(url, {method: 'DELETE', headers})
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Remove subreddit from multireddit request failed', {
+      await logFailedResponse(
+        response,
         url,
-        method: 'DELETE',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'removeSubredditFromMultireddit',
-        multiPath,
-        subredditName: cleanSubreddit
-      })
+        'DELETE',
+        'removeSubredditFromMultireddit',
+        {multiPath, subredditName: cleanSubreddit}
+      )
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('multireddits')
     logger.debug('Removed subreddit from multireddit successfully', {
       multiPath,
       subredditName: cleanSubreddit
@@ -438,7 +441,7 @@ export async function removeSubredditFromMultireddit(
     return {success: true}
   } catch (error) {
     logger.error('Error removing subreddit from multireddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'removeSubredditFromMultireddit',
       multiPath
     })
@@ -479,8 +482,8 @@ export async function addUserToMultireddit(
 
     const {headers, baseUrl} = await getRedditContext()
 
-    const userSubreddit = `u_${cleanUsername}`
-    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
+    const userSubreddit = toUserSubredditName(cleanUsername)
+    const url = buildMultiUrl(baseUrl, normalizedPath, userSubreddit)
     assertRedditUrl(url)
 
     const response = await fetch(url, {
@@ -495,21 +498,14 @@ export async function addUserToMultireddit(
     })
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Add user to multireddit request failed', {
-        url,
-        method: 'PUT',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'addUserToMultireddit',
+      await logFailedResponse(response, url, 'PUT', 'addUserToMultireddit', {
         multiPath,
         username: cleanUsername
       })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('multireddits')
     logger.debug('Added user to multireddit successfully', {
       multiPath,
       username: cleanUsername
@@ -517,7 +513,7 @@ export async function addUserToMultireddit(
     return {success: true}
   } catch (error) {
     logger.error('Error adding user to multireddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'addUserToMultireddit',
       multiPath
     })
@@ -558,28 +554,24 @@ export async function removeUserFromMultireddit(
 
     const {headers, baseUrl} = await getRedditContext()
 
-    const userSubreddit = `u_${cleanUsername}`
-    const url = `${baseUrl}/api/multi/${normalizedPath}/r/${encodeURIComponent(userSubreddit)}`
+    const userSubreddit = toUserSubredditName(cleanUsername)
+    const url = buildMultiUrl(baseUrl, normalizedPath, userSubreddit)
     assertRedditUrl(url)
 
     const response = await fetch(url, {method: 'DELETE', headers})
 
     if (!response.ok) {
-      const errorBody = await response.text()
-      logger.error('Remove user from multireddit request failed', {
+      await logFailedResponse(
+        response,
         url,
-        method: 'DELETE',
-        status: response.status,
-        statusText: response.statusText,
-        errorBody,
-        context: 'removeUserFromMultireddit',
-        multiPath,
-        username: cleanUsername
-      })
+        'DELETE',
+        'removeUserFromMultireddit',
+        {multiPath, username: cleanUsername}
+      )
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    revalidatePath('/', 'layout')
+    updateTag('multireddits')
     logger.debug('Removed user from multireddit successfully', {
       multiPath,
       username: cleanUsername
@@ -587,7 +579,7 @@ export async function removeUserFromMultireddit(
     return {success: true}
   } catch (error) {
     logger.error('Error removing user from multireddit', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'removeUserFromMultireddit',
       multiPath
     })

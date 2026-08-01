@@ -2,6 +2,7 @@ import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
 import {isAuthenticated, persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
 import {getEnvVar} from '@/lib/utils/env'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {NextRequest, NextResponse} from 'next/server'
 import {timingSafeEqual} from 'node:crypto'
 
@@ -32,19 +33,22 @@ function resolveHostFromRequest(request: NextRequest): {
 }
 
 /**
- * Maps an OAuth failure message to the appropriate HTTP error response.
+ * Maps an OAuth failure's HTTP status to the appropriate error response.
  */
-function oauthFailureResponse(message: string): NextResponse {
-  if (message.includes('401')) {
-    return new NextResponse('Authentication expired', {status: 401})
+function oauthFailureResponse(
+  status: number | undefined,
+  message: string
+): NextResponse {
+  switch (status) {
+    case 401:
+      return new NextResponse('Authentication expired', {status: 401})
+    case 503:
+      return new NextResponse('Reddit API unavailable', {status: 503})
+    default:
+      return new NextResponse(`Authentication failed: ${message}`, {
+        status: 500
+      })
   }
-  if (message.includes('429') || message.includes('rate')) {
-    return new NextResponse('Rate limit exceeded', {status: 429})
-  }
-  if (message.includes('503') || message.includes('unavailable')) {
-    return new NextResponse('Reddit API unavailable', {status: 503})
-  }
-  return new NextResponse(`Authentication failed: ${message}`, {status: 500})
 }
 
 /**
@@ -156,7 +160,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
 
       // Map failure reasons to HTTP status codes
-      return oauthFailureResponse(result.message)
+      return oauthFailureResponse(result.status, result.message)
     }
 
     await persistSession(result.sessionData)
@@ -180,7 +184,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return response
   } catch (error) {
     logger.error('OAuth authentication failed', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'OAuthCallback'
     })
 

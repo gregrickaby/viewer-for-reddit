@@ -1,5 +1,7 @@
 import {logger} from '@/lib/datadog/server'
+import {TEN_MINUTES} from '@/lib/utils/constants'
 import {isProduction} from '@/lib/utils/env'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {createLoginUrl} from '@/lib/utils/reddit-auth'
 import {NextResponse} from 'next/server'
 
@@ -36,13 +38,13 @@ export async function GET(): Promise<NextResponse> {
       httpOnly: true,
       secure: isProduction(),
       sameSite: 'lax',
-      maxAge: 600 // 10 minutes
+      maxAge: TEN_MINUTES
     })
 
     return response
   } catch (error) {
     logger.error('Failed to initiate OAuth login', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'OAuthLogin'
     })
     return new NextResponse('Failed to initiate login', {status: 500})

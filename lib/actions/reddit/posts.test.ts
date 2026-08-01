@@ -133,7 +133,7 @@ describe('posts server actions', () => {
       )
     })
 
-    it('handles 429 rate limit', async () => {
+    it('handles 429 like any other failed response', async () => {
       server.use(
         http.get('https://oauth.reddit.com/r/:subreddit/:sort.json', () => {
           return new HttpResponse(null, {status: 429})
@@ -141,7 +141,7 @@ describe('posts server actions', () => {
       )
 
       await expect(fetchPosts('popular', 'hot')).rejects.toThrow(
-        'Rate limit exceeded'
+        'Something went wrong.'
       )
     })
 

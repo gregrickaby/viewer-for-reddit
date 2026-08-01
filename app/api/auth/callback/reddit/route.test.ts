@@ -305,7 +305,8 @@ describe('GET /api/auth/callback/reddit', () => {
     mockProcessOAuthCallback.mockResolvedValue({
       ok: false,
       reason: 'identity_failed',
-      message: 'Reddit API responded with 401'
+      message: 'Reddit API responded with 401',
+      status: 401
     })
 
     const request = new NextRequest(
@@ -325,11 +326,12 @@ describe('GET /api/auth/callback/reddit', () => {
     expect(await response.text()).toContain('Authentication expired')
   })
 
-  it('handles rate limit error (429)', async () => {
+  it('handles 429 like any other failed response', async () => {
     mockProcessOAuthCallback.mockResolvedValue({
       ok: false,
       reason: 'identity_failed',
-      message: 'Reddit API responded with 429'
+      message: 'Reddit API responded with 429',
+      status: 429
     })
 
     const request = new NextRequest(
@@ -345,15 +347,16 @@ describe('GET /api/auth/callback/reddit', () => {
 
     const response = await GET(request)
 
-    expect(response.status).toBe(429)
-    expect(await response.text()).toBe('Rate limit exceeded')
+    expect(response.status).toBe(500)
+    expect(await response.text()).toContain('Authentication failed')
   })
 
   it('handles Reddit API unavailable (503)', async () => {
     mockProcessOAuthCallback.mockResolvedValue({
       ok: false,
       reason: 'identity_failed',
-      message: 'Reddit API responded with 503'
+      message: 'Reddit API responded with 503',
+      status: 503
     })
 
     const request = new NextRequest(

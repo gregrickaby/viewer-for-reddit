@@ -1,10 +1,9 @@
 'use client'
 
 import {fetchPosts, fetchUserPosts} from '@/lib/actions/reddit/posts'
-import {logger} from '@/lib/datadog/client'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
-import {useEffect, useState, type RefObject} from 'react'
-import {useLoadMoreOnIntersect} from './useLoadMoreOnIntersect'
+import type {RefObject} from 'react'
+import {useCursorPagination} from './primitives/useCursorPagination'
 
 /**
  * Options for configuring the useInfiniteScroll hook.
@@ -43,12 +42,8 @@ interface UseInfiniteScrollReturn {
  * Automatically loads more posts when the user scrolls near the bottom.
  * Uses Server Actions for data fetching (maintains SSR benefits).
  *
- * Features:
- * - IntersectionObserver-based triggering (no scroll event listeners)
- * - Automatic cleanup on unmount
- * - Resets state when initial data changes (e.g., tab changes)
- * - Error handling with logging
- * - Supports both subreddit and user profile posts
+ * Cursor pagination, dedup, and IntersectionObserver triggering are owned by
+ * {@link useCursorPagination}.
  *
  * @param options - Configuration for infinite scroll
  * @returns Posts array, loading state, hasMore flag, and sentinel ref
@@ -79,64 +74,19 @@ export function useInfiniteScroll({
   sort = 'hot',
   timeFilter
 }: Readonly<UseInfiniteScrollOptions>): UseInfiniteScrollReturn {
-  const [posts, setPosts] = useState<RedditPost[]>(initialPosts)
-  const [after, setAfter] = useState<string | null>(initialAfter || null)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(!!initialAfter)
-
-  // Reset posts when initialPosts changes (e.g., tab change)
-  useEffect(() => {
-    setPosts(initialPosts)
-    setAfter(initialAfter || null)
-    setHasMore(!!initialAfter)
-  }, [initialPosts, initialAfter])
-
-  const loadMore = async () => {
-    if (loading || !after || !hasMore) return
-
-    setLoading(true)
-
-    try {
+  const {items, loading, hasMore, sentinelRef} = useCursorPagination({
+    initialItems: initialPosts,
+    initialAfter,
+    getId: (post) => post.id,
+    fetchPage: async (after) => {
       const result = username
         ? await fetchUserPosts(username, sort, after, timeFilter)
         : await fetchPosts(subreddit, sort, after, timeFilter)
-
-      if (result.posts && result.posts.length > 0) {
-        setPosts((prev) => {
-          const existingIds = new Set(prev.map((p) => p.id))
-          const newPosts = result.posts.filter((p) => !existingIds.has(p.id))
-          return [...prev, ...newPosts]
-        })
-        setAfter(result.after)
-        setHasMore(!!result.after)
-      } else {
-        setHasMore(false)
-      }
-    } catch (error) {
-      logger.error('Failed to load more posts', {
-        error: error instanceof Error ? error.message : String(error),
-        context: 'useInfiniteScroll',
-        subreddit,
-        username,
-        sort,
-        timeFilter
-      })
-      setHasMore(false)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const sentinelRef = useLoadMoreOnIntersect({
-    hasMore,
-    isPending: loading,
-    loadMore
+      return {items: result.posts, after: result.after}
+    },
+    context: 'useInfiniteScroll',
+    logFields: {subreddit, username, sort, timeFilter}
   })
 
-  return {
-    posts,
-    loading,
-    hasMore,
-    sentinelRef
-  }
+  return {posts: items, loading, hasMore, sentinelRef}
 }

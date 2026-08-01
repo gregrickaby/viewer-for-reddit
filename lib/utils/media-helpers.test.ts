@@ -5,58 +5,11 @@ import {
   extractGalleryItems,
   getHighestQualityVideoUrl,
   getMediumImage,
-  getMp4Variant,
   getPosterImage,
-  isValidThumbnail,
-  isValidUrl,
-  isVerticalImage
+  isValidThumbnail
 } from './media-helpers'
 
 describe('media-helpers', () => {
-  describe('isValidUrl', () => {
-    it('accepts valid Reddit URLs', () => {
-      expect(isValidUrl('https://i.redd.it/abc123.jpg')).toBe(true)
-      expect(isValidUrl('https://v.redd.it/video123')).toBe(true)
-      expect(isValidUrl('https://preview.redd.it/image.png')).toBe(true)
-      expect(isValidUrl('https://external-preview.redd.it/image.jpg')).toBe(
-        true
-      )
-      expect(isValidUrl('https://www.reddit.com/r/test')).toBe(true)
-      expect(isValidUrl('https://old.reddit.com/r/test')).toBe(true)
-    })
-
-    it('accepts subdomains of allowed domains', () => {
-      expect(isValidUrl('https://preview.redd.it/image.png')).toBe(true)
-      expect(isValidUrl('https://external-preview.redd.it/image.jpg')).toBe(
-        true
-      )
-    })
-
-    it('rejects non-HTTP(S) protocols', () => {
-      expect(isValidUrl('ftp://example.com/file.txt')).toBe(false)
-      expect(isValidUrl('data:text/html,<script>alert("xss")</script>')).toBe(
-        false
-      )
-      expect(isValidUrl('file:///etc/passwd')).toBe(false)
-    })
-
-    it('rejects URLs from disallowed domains', () => {
-      expect(isValidUrl('https://evil.com/malicious.jpg')).toBe(false)
-      expect(isValidUrl('https://example.com/image.png')).toBe(false)
-    })
-
-    it('rejects invalid URLs', () => {
-      expect(isValidUrl('not a url')).toBe(false)
-      expect(isValidUrl('')).toBe(false)
-      expect(isValidUrl('://invalid')).toBe(false)
-    })
-
-    it('is case-insensitive for domain checking', () => {
-      expect(isValidUrl('https://I.REDD.IT/ABC123.jpg')).toBe(true)
-      expect(isValidUrl('https://V.REDD.IT/video123')).toBe(true)
-    })
-  })
-
   describe('getMediumImage', () => {
     it('returns 640px resolution when available', () => {
       const post = {
@@ -187,122 +140,6 @@ describe('media-helpers', () => {
 
     it('handles empty string', () => {
       expect(decodeImageUrl('')).toBe('')
-    })
-  })
-
-  describe('getMp4Variant', () => {
-    it('returns MP4 URL from preview variants', () => {
-      const post = {
-        preview: {
-          images: [
-            {
-              variants: {
-                mp4: {
-                  source: {
-                    url: 'https://preview.redd.it/video.mp4'
-                  }
-                }
-              }
-            }
-          ]
-        }
-      } as unknown as RedditPost
-
-      expect(getMp4Variant(post)).toBe('https://preview.redd.it/video.mp4')
-    })
-
-    it('decodes URL with HTML entities', () => {
-      const post = {
-        preview: {
-          images: [
-            {
-              variants: {
-                mp4: {
-                  source: {
-                    url: 'https://preview.redd.it/video.mp4?param=1&amp;param=2'
-                  }
-                }
-              }
-            }
-          ]
-        }
-      } as unknown as RedditPost
-
-      expect(getMp4Variant(post)).toBe(
-        'https://preview.redd.it/video.mp4?param=1&param=2'
-      )
-    })
-
-    it('returns null when no preview exists', () => {
-      const post = {} as RedditPost
-
-      expect(getMp4Variant(post)).toBeNull()
-    })
-
-    it('returns null when no MP4 variant exists', () => {
-      const post = {
-        preview: {
-          images: [
-            {
-              variants: {}
-            }
-          ]
-        }
-      } as unknown as RedditPost
-
-      expect(getMp4Variant(post)).toBeNull()
-    })
-
-    it('returns null when MP4 source URL is undefined', () => {
-      const post = {
-        preview: {
-          images: [
-            {
-              variants: {
-                mp4: {
-                  source: {}
-                }
-              }
-            }
-          ]
-        }
-      } as unknown as RedditPost
-
-      expect(getMp4Variant(post)).toBeNull()
-    })
-  })
-
-  describe('isVerticalImage', () => {
-    it('returns true when height is greater than width', () => {
-      expect(isVerticalImage(1080, 1920)).toBe(true)
-    })
-
-    it('returns false when width is greater than height', () => {
-      expect(isVerticalImage(1920, 1080)).toBe(false)
-    })
-
-    it('returns false when width equals height', () => {
-      expect(isVerticalImage(1080, 1080)).toBe(false)
-    })
-
-    it('returns false when width is undefined', () => {
-      expect(isVerticalImage(undefined, 1920)).toBe(false)
-    })
-
-    it('returns false when height is undefined', () => {
-      expect(isVerticalImage(1080, undefined)).toBe(false)
-    })
-
-    it('returns false when both are undefined', () => {
-      expect(isVerticalImage(undefined, undefined)).toBe(false)
-    })
-
-    it('returns false when width is zero', () => {
-      expect(isVerticalImage(0, 1920)).toBe(false)
-    })
-
-    it('returns false when height is zero', () => {
-      expect(isVerticalImage(1080, 0)).toBe(false)
     })
   })
 

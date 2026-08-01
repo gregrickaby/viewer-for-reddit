@@ -139,7 +139,9 @@ describe('SubredditManager', () => {
       })
 
       // Subscription should be restored
-      expect(screen.getByText('r/programming')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText('r/programming')).toBeInTheDocument()
+      })
     })
 
     it('dismisses error when close button clicked', async () => {

@@ -6,6 +6,8 @@ interface UseOptimisticMutationReturn<TState, TAction> {
   state: TState
   isPending: boolean
   mutate: (action: TAction) => void
+  /** Resyncs the committed state, e.g. when fresh data arrives via props. */
+  setState: (state: TState) => void
 }
 
 /**
@@ -24,12 +26,18 @@ interface UseOptimisticMutationReturn<TState, TAction> {
  *   current committed state and the dispatched action.
  * @param mutationFn - Async function that performs the mutation. Receives the
  *   computed next state and the original action, returns `{success: boolean}`.
- * @returns `state` (optimistic display state), `isPending`, and `mutate`.
+ *   On success, `committed` overrides what gets committed (e.g. server-assigned
+ *   fields the optimistic guess couldn't know); defaults to the computed next state.
+ * @returns `state` (optimistic display state), `isPending`, `mutate`, and
+ *   `setState` for resyncing committed state from outside a mutation.
  */
 export function useOptimisticMutation<TState, TAction>(
   initial: TState,
   computeNext: (committed: TState, action: TAction) => TState,
-  mutationFn: (next: TState, action: TAction) => Promise<{success: boolean}>
+  mutationFn: (
+    next: TState,
+    action: TAction
+  ) => Promise<{success: boolean; committed?: TState}>
 ): UseOptimisticMutationReturn<TState, TAction> {
   const [committed, setCommitted] = useState(initial)
   const [optimistic, setOptimistic] = useOptimistic(committed)
@@ -43,10 +51,10 @@ export function useOptimisticMutation<TState, TAction>(
       setOptimistic(next)
       const result = await mutationFn(next, action)
       if (result.success) {
-        setCommitted(next)
+        setCommitted(result.committed ?? next)
       }
     })
   }
 
-  return {state: optimistic, isPending, mutate}
+  return {state: optimistic, isPending, mutate, setState: setCommitted}
 }

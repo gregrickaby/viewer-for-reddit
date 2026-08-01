@@ -9,6 +9,7 @@ import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
+import {NotFoundError, getErrorMessage} from '@/lib/utils/errors'
 
 interface PageProps {
   params: Promise<{
@@ -76,11 +77,14 @@ async function MultiredditPosts({
     ))
   } catch (error) {
     logger.error('Failed to fetch multireddit posts', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'MultiredditPosts',
       multiredditPath
     })
-    notFound()
+    if (error instanceof NotFoundError) {
+      notFound()
+    }
+    throw error
   }
 
   return (

@@ -1,6 +1,7 @@
 'use client'
 
 import {logger} from '@/lib/datadog/client'
+import {getErrorMessage} from '@/lib/utils/errors'
 import {notifications} from '@mantine/notifications'
 
 /**
@@ -35,7 +36,7 @@ export function useSharePost() {
       })
     } catch (error) {
       logger.error('Failed to copy link', {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
         context: 'useSharePost',
         path
       })

@@ -11,6 +11,7 @@ import {getSession} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
 import {appConfig} from '@/lib/config/app.config'
 import {RedditUser, SortOption, TimeFilter} from '@/lib/types/reddit'
+import {NotFoundError, getErrorMessage} from '@/lib/utils/errors'
 import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
 import {
@@ -164,11 +165,14 @@ async function UserProfile({
     )
   } catch (error) {
     logger.error('Failed to fetch user profile', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'UserProfile',
       username
     })
-    notFound()
+    if (error instanceof NotFoundError) {
+      notFound()
+    }
+    throw error
   }
 }
 
@@ -195,16 +199,11 @@ async function UserPosts({
     result = await fetchUserPosts(username, sort, undefined, timeFilter)
   } catch (error) {
     logger.error('Failed to fetch user posts', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'UserPosts',
       username
     })
-    return (
-      <Text size="sm" c="red">
-        Failed to load posts:{' '}
-        {error instanceof Error ? error.message : 'Unknown error'}
-      </Text>
-    )
+    throw error
   }
 
   if (result.posts.length === 0) {
@@ -250,16 +249,11 @@ async function UserComments({
     result = await fetchUserComments(username, sort, undefined, timeFilter)
   } catch (error) {
     logger.error('Failed to fetch user comments', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       context: 'UserComments',
       username
     })
-    return (
-      <Text size="sm" c="red">
-        Failed to load comments:{' '}
-        {error instanceof Error ? error.message : 'Unknown error'}
-      </Text>
-    )
+    throw error
   }
 
   if (result.comments.length === 0) {
