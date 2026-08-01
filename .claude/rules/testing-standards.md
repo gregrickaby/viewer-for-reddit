@@ -75,20 +75,9 @@ expect(await axe(container)).toHaveNoViolations()
 
 Already configured, don't duplicate: MSW server (`onUnhandledRequest: 'warn'`, resets after each test), DOM shims, browser API mocks, `next/image`/`next/cache` mocks, stubbed env vars (`APP_URL`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `SESSION_SECRET`, `USER_AGENT`), `URLSearchParams` polyfill, console suppression (`error`/`warn`/`info`), jest-axe matcher.
 
-## Coverage exclusions
-
-Configured in `vitest.config.ts`: `*.config.*`, `*.d.ts`, test files, app route files (`page`, `layout`, `manifest`, `robots`, `sitemap`, `not-found`, `loading`, `error`, etc.), `scripts/`, `skeletons/`, `test-utils/`, `types/`.
-
 ## Placement & commands
 
 Test files live next to source with `.test.ts`/`.test.tsx`.
-
-```bash
-npm test               # run all tests
-npm test useVote        # run one file
-npm run test:coverage  # verify coverage thresholds
-npm run validate       # format + typecheck + lint
-```
 
 Run `npm test` before declaring any task complete.
 

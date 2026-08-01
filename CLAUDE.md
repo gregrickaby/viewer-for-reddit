@@ -49,27 +49,6 @@ npm run sonar         # SonarQube analysis (~6 min)
 | [conventions.md](./.claude/rules/conventions.md)             | Never/Always rules, ask-before, definition of done | every session (unconditional)                                         |
 | [writing-style.md](./.claude/rules/writing-style.md)         | Prose style, AI vocabulary to avoid                | every session (unconditional)                                         |
 
-## Skills
-
-Load with the `skill` tool when the task matches (lazy-loaded on demand):
-
-| Skill                               | When to load                                                           |
-| ----------------------------------- | ---------------------------------------------------------------------- |
-| `agent-skills`                      | Datadog monitoring, logging, tracing, and observability tasks          |
-| `cloudflare`                        | Comprehensive Cloudflare platform skill                                |
-| `next-cache-components-adoption`    | Turn on Cache Components in a Next.js app and resolve blocking routes  |
-| `next-cache-components-optimizer`   | Drive a Next.js route to instant navigation via agentic loop           |
-| `next-dev-loop`                     | Verify Next.js runtime behavior after editing app code                 |
-| `next-partial-prefetching-adoption` | Turn on Partial Prefetching in a Next.js app and work through insights |
-| `sonarqube-mcp`                     | Quality gate checks, Sonar issue search, rule lookups, pre-push scans  |
-| `triage-datadog-errors`             | Check Datadog for production errors, triage weekend/overnight issues   |
-| `triage-sonarqube-issues`           | Triage SonarQube issues/quality gate into a prioritized fix plan       |
-| `vercel-react-best-practices`       | React/Next.js performance, bundle optimization                         |
-
-`caveman` and `find-skills` are always active (see Always Active), not loaded on demand.
-
-**Datadog**: observability (logs, RUM, APM traces, dashboards, monitors) lives on the `plugin:datadog:mcp` MCP server. Use `ddsetup`/`ddconfig`/`ddtoolsets` to manage the server. Datadog CLI (`pup`) is available.
-
 ## Core Conventions
 
 **CLI tools**: CLI tools are the most context-efficient way to interact with external services. Reach for these before MCP servers.
