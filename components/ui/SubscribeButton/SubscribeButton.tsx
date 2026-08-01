@@ -1,7 +1,7 @@
 'use client'
 
+import {ToggleButton} from '@/components/ui/ToggleButton/ToggleButton'
 import {useSubscribe} from '@/lib/hooks/useSubscribe'
-import {Button} from '@mantine/core'
 import {IconCheck, IconPlus} from '@tabler/icons-react'
 
 interface SubscribeButtonProps {
@@ -25,20 +25,16 @@ export function SubscribeButton({
   })
 
   return (
-    <Button
-      onClick={toggleSubscribe}
-      disabled={isPending}
-      variant={isSubscribed ? 'light' : 'filled'}
-      color={isSubscribed ? 'gray' : 'blue'}
-      leftSection={
-        isSubscribed ? <IconCheck size={16} /> : <IconPlus size={16} />
-      }
-      size="sm"
-      aria-label={
-        isSubscribed ? `Leave r/${subredditName}` : `Join r/${subredditName}`
-      }
-    >
-      {isSubscribed ? 'Leave' : 'Join'}
-    </Button>
+    <ToggleButton
+      active={isSubscribed}
+      isPending={isPending}
+      onToggle={toggleSubscribe}
+      activeLabel="Leave"
+      inactiveLabel="Join"
+      activeIcon={<IconCheck size={16} />}
+      inactiveIcon={<IconPlus size={16} />}
+      activeAriaLabel={`Leave r/${subredditName}`}
+      inactiveAriaLabel={`Join r/${subredditName}`}
+    />
   )
 }
