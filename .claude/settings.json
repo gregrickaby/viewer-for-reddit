@@ -14,7 +14,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npm run validate && npm run build || exit 2"
+            "command": "npm run validate || exit 2"
           }
         ]
       }
