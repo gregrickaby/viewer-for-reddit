@@ -41,6 +41,7 @@ yarn-error.log*
 
 # sonarqube
 .sonar_token
+.sonar_pg_password
 .sonar
 .sonarlint
 .scannerwork
@@ -57,3 +58,6 @@ scripts/reddit-openapi.json
 lib/types/reddit-api.ts
 
 certificates
+
+# Claude Code local settings (personal, machine-specific)
+.claude/settings.local.json

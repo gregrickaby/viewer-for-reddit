@@ -14,6 +14,10 @@
 /coverage
 /.playwright-mcp
 
+# vendored skill content (managed by npx skills, hash-verified in skills-lock.json)
+/.agents/skills
+/.claude/skills
+
 # next.js
 /.next/
 /out/

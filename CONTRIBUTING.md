@@ -115,6 +115,63 @@ npm run build         # Production build
 npm run start         # Test production build locally
 ```
 
+### SonarQube
+
+Local analysis runs against a SonarQube Community Build instance at <http://localhost:9000>, backed by PostgreSQL (the bundled H2 database does not support version upgrades, so don't use it).
+
+**One-time setup:**
+
+```bash
+# Shared network so the two containers can reach each other by name
+docker network create sonarqube-net
+
+# Generate a local-only DB password (gitignored, never commit it)
+openssl rand -base64 24 | tr -d '/+=\n' > .sonar_pg_password
+
+# PostgreSQL container
+docker run -d --name sonarqube-postgres \
+  --network sonarqube-net \
+  -e POSTGRES_USER=sonar \
+  -e POSTGRES_PASSWORD="$(cat .sonar_pg_password)" \
+  -e POSTGRES_DB=sonar \
+  -v sonarqube_postgres_data:/var/lib/postgresql/data \
+  postgres:17-alpine
+
+# SonarQube container
+docker run -d --name sonarqube \
+  --network sonarqube-net \
+  -p 9000:9000 \
+  -e SONAR_JDBC_URL="jdbc:postgresql://sonarqube-postgres:5432/sonar" \
+  -e SONAR_JDBC_USERNAME=sonar \
+  -e SONAR_JDBC_PASSWORD="$(cat .sonar_pg_password)" \
+  -v sonarqube_data:/opt/sonarqube/data \
+  -v sonarqube_extensions:/opt/sonarqube/extensions \
+  -v sonarqube_logs:/opt/sonarqube/logs \
+  sonarqube:community
+```
+
+Wait ~30-60 seconds, then visit <http://localhost:9000>, log in with the default `admin` / `admin`, and set a real password when prompted. Create the project manually (**Projects > Create Project > Manually**, key `viewer-for-reddit`, matching `sonar-project.properties`).
+
+**Day to day:**
+
+```bash
+docker start sonarqube-postgres sonarqube   # after a reboot
+npm run sonar                               # run analysis (~6 min)
+```
+
+**Upgrading:** pull the new `sonarqube:community` image, `docker rm -f sonarqube`, then rerun the `docker run` command above unchanged (same network, same volumes). PostgreSQL supports in-place schema migration, triggered automatically on first boot after the image bump, unlike H2.
+
+**MCP server (optional, for AI-assisted quality gate/issue checks):**
+
+1. Log in to <http://localhost:9000>, then generate a token under **My Account > Security**.
+2. Save it to a `.sonar_token` file at the repo root (gitignored, never commit it):
+
+   ```bash
+   echo "your_token_here" > .sonar_token
+   ```
+
+3. The `sonarqube` entry in `.mcp.json` reads that file and starts the [`mcp/sonarqube`](https://hub.docker.com/r/mcp/sonarqube) Docker image automatically, no shell exports needed. Requires Docker running locally.
+
 ### Pre-commit Hooks
 
 This project uses [Lefthook](https://github.com/evilmartians/lefthook) to run quality checks before commits.

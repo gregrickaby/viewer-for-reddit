@@ -1,0 +1,37 @@
+{
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "datadog@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run validate && npm run build || exit 2"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git log *)",
+      "Bash(git diff-tree *)",
+      "Bash(git add *)",
+      "Bash(npm run *)",
+      "Bash(npm view *)",
+      "Bash(npx --version)",
+      "Bash(npx -y skills --help)",
+      "Bash(npx -y skills list)",
+      "Bash(gh search *)",
+      "WebFetch(domain:docs.datadoghq.com)"
+    ]
+  }
+}

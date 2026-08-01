@@ -7,6 +7,17 @@
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "cloudflare-api": {
+      "type": "http",
+      "url": "https://mcp.cloudflare.com/mcp"
+    },
+    "sonarqube": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "SONARQUBE_TOKEN=\"$(cat './.sonar_token')\" docker run -i --rm -e SONARQUBE_URL=http://host.docker.internal:9000 -e SONARQUBE_TOKEN mcp/sonarqube"
+      ]
     }
   }
 }

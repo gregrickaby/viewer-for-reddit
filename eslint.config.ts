@@ -13,6 +13,7 @@ export default defineConfig(
     ignores: [
       '**/*.js',
       '**/*.min.js',
+      '**/*.mjs',
       '**/.*cache/',
       '**/.next/',
       '**/build/',
@@ -21,6 +22,7 @@ export default defineConfig(
       '**/node_modules/',
       '**/out/',
       '**/public/',
+      '.agents/**',
       '.claude/**',
       'scripts/**'
     ]
