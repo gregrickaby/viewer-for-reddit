@@ -342,7 +342,23 @@ describe('MultiredditManager', () => {
       })
     })
 
-    it('supports Enter key to add subreddit', async () => {
+    it.each([
+      {
+        description: 'supports Enter key to add subreddit',
+        typedText: 'typescript{Enter}',
+        expectedName: 'typescript'
+      },
+      {
+        description: 'strips r/ prefix before adding',
+        typedText: 'r/typescript{Enter}',
+        expectedName: 'typescript'
+      },
+      {
+        description: 'strips u/ prefix before adding user',
+        typedText: 'u/someuser{Enter}',
+        expectedName: 'someuser'
+      }
+    ])('$description', async ({typedText, expectedName}) => {
       const user = userEvent.setup()
       render(<MultiredditManager {...baseProps} />)
 
@@ -352,52 +368,12 @@ describe('MultiredditManager', () => {
         'Add subreddit to multireddit'
       )
 
-      await user.type(inputs[0], 'typescript{Enter}')
+      await user.type(inputs[0], typedText)
 
       await waitFor(() => {
         expect(mockAddSub).toHaveBeenCalledWith(
           '/user/testuser/m/tech',
-          'typescript'
-        )
-      })
-    })
-
-    it('strips r/ prefix before adding', async () => {
-      const user = userEvent.setup()
-      render(<MultiredditManager {...baseProps} />)
-
-      await user.click(screen.getByRole('button', {name: /tech news/i}))
-
-      const inputs = await screen.findAllByLabelText(
-        'Add subreddit to multireddit'
-      )
-
-      await user.type(inputs[0], 'r/typescript{Enter}')
-
-      await waitFor(() => {
-        expect(mockAddSub).toHaveBeenCalledWith(
-          '/user/testuser/m/tech',
-          'typescript'
-        )
-      })
-    })
-
-    it('strips u/ prefix before adding user', async () => {
-      const user = userEvent.setup()
-      render(<MultiredditManager {...baseProps} />)
-
-      await user.click(screen.getByRole('button', {name: /tech news/i}))
-
-      const inputs = await screen.findAllByLabelText(
-        'Add subreddit to multireddit'
-      )
-
-      await user.type(inputs[0], 'u/someuser{Enter}')
-
-      await waitFor(() => {
-        expect(mockAddSub).toHaveBeenCalledWith(
-          '/user/testuser/m/tech',
-          'someuser'
+          expectedName
         )
       })
     })

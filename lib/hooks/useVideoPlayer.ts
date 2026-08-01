@@ -117,6 +117,14 @@ function evictOneIfNeeded() {
   // safe to evict. Leave it be rather than yanking something on screen.
 }
 
+function pauseOtherPlayers(current: Player) {
+  activePlayers.forEach((_entry, otherPlayer) => {
+    if (otherPlayer !== current && !otherPlayer.paused()) {
+      otherPlayer.pause()
+    }
+  })
+}
+
 /**
  * Options for the useVideoPlayer hook.
  */
@@ -227,13 +235,7 @@ export function useVideoPlayer({
       player = newPlayer
 
       // Pause other videos when this one starts playing
-      const handlePlay = () => {
-        activePlayers.forEach((_entry, otherPlayer) => {
-          if (otherPlayer !== newPlayer && !otherPlayer.paused()) {
-            otherPlayer.pause()
-          }
-        })
-      }
+      const handlePlay = () => pauseOtherPlayers(newPlayer)
 
       // Log playback errors (network failures, unsupported media, etc.)
       const handleError = () => {

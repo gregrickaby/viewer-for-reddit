@@ -166,9 +166,9 @@ export function LandingPage() {
               gap: '1.5rem'
             }}
           >
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <Card
-                key={index}
+                key={feature.title}
                 withBorder
                 padding="lg"
                 radius="md"

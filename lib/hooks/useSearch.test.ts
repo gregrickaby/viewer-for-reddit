@@ -135,12 +135,28 @@ describe('useSearch', () => {
     expect(result.current.groupedResults.nsfw[0].name).toBe('nsfw_sub')
   })
 
-  it('handles API error response', async () => {
-    mockSearchSubreddits.mockResolvedValueOnce({
-      success: false,
-      error: 'API error',
-      data: []
-    })
+  it.each([
+    {
+      description: 'handles API error response',
+      mockResponse: {success: false, error: 'API error', data: []},
+      expectedMessage: 'API error'
+    },
+    {
+      description: 'uses fallback error message when API provides none',
+      mockResponse: {success: false, data: []},
+      expectedMessage: 'Search failed'
+    },
+    {
+      description: 'shows rate limit error',
+      mockResponse: {
+        success: false,
+        error: 'Reddit rate limit exceeded. Try again later.',
+        data: []
+      },
+      expectedMessage: 'Reddit rate limit exceeded. Try again later.'
+    }
+  ])('$description', async ({mockResponse, expectedMessage}) => {
+    mockSearchSubreddits.mockResolvedValueOnce(mockResponse)
 
     const {result} = renderHook(() => useSearch())
 
@@ -152,74 +168,7 @@ describe('useSearch', () => {
 
     await waitFor(() => {
       expect(result.current.hasError).toBe(true)
-      expect(result.current.errorMessage).toBe('API error')
-      expect(result.current.groupedResults.communities).toEqual([])
-    })
-  })
-
-  it('uses fallback error message when API provides none', async () => {
-    mockSearchSubreddits.mockResolvedValueOnce({
-      success: false,
-      data: []
-    })
-
-    const {result} = renderHook(() => useSearch())
-
-    act(() => {
-      result.current.setQuery('test')
-    })
-
-    await new Promise((r) => setTimeout(r, 350))
-
-    await waitFor(() => {
-      expect(result.current.errorMessage).toBe('Search failed')
-    })
-  })
-
-  it('shows rate limit error', async () => {
-    mockSearchSubreddits.mockResolvedValueOnce({
-      success: false,
-      error: 'Reddit rate limit exceeded. Try again later.',
-      data: []
-    })
-
-    const {result} = renderHook(() => useSearch())
-
-    act(() => {
-      result.current.setQuery('test')
-    })
-
-    await new Promise((r) => setTimeout(r, 350))
-
-    await waitFor(() => {
-      expect(result.current.hasError).toBe(true)
-      expect(result.current.errorMessage).toBe(
-        'Reddit rate limit exceeded. Try again later.'
-      )
-      expect(result.current.groupedResults.communities).toEqual([])
-    })
-  })
-
-  it('shows rate limit error with retry message', async () => {
-    mockSearchSubreddits.mockResolvedValueOnce({
-      success: false,
-      error: 'Reddit rate limit exceeded. Try again later.',
-      data: []
-    })
-
-    const {result} = renderHook(() => useSearch())
-
-    act(() => {
-      result.current.setQuery('test')
-    })
-
-    await new Promise((r) => setTimeout(r, 350))
-
-    await waitFor(() => {
-      expect(result.current.hasError).toBe(true)
-      expect(result.current.errorMessage).toBe(
-        'Reddit rate limit exceeded. Try again later.'
-      )
+      expect(result.current.errorMessage).toBe(expectedMessage)
       expect(result.current.groupedResults.communities).toEqual([])
     })
   })

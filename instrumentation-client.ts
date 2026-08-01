@@ -1,11 +1,8 @@
 import {datadogLogs} from '@datadog/browser-logs'
 import {datadogRum} from '@datadog/browser-rum'
-import {
-  nextjsPlugin,
-  onRouterTransitionStart
-} from '@datadog/browser-rum-nextjs'
+import {nextjsPlugin} from '@datadog/browser-rum-nextjs'
 
-export {onRouterTransitionStart}
+export {onRouterTransitionStart} from '@datadog/browser-rum-nextjs'
 
 datadogRum.init({
   applicationId: process.env.DD_APPLICATION_ID!,

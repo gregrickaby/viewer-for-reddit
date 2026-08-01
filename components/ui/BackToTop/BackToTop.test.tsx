@@ -16,17 +16,18 @@ describe('BackToTop', () => {
   })
 
   describe('visibility', () => {
-    it('does not render when scroll is at top', () => {
-      mockScrollY = 0
-      render(<BackToTop />)
-
-      expect(
-        screen.queryByRole('button', {name: /go back to the top/i})
-      ).not.toBeInTheDocument()
-    })
-
-    it('does not render when scroll is below threshold', () => {
-      mockScrollY = 99 // Below 100 threshold
+    it.each([
+      {description: 'does not render when scroll is at top', scrollY: 0},
+      {
+        description: 'does not render when scroll is below threshold',
+        scrollY: 99 // Below 100 threshold
+      },
+      {
+        description: 'renders at exact threshold',
+        scrollY: 100 // At threshold, should not render (<=)
+      }
+    ])('$description', ({scrollY}) => {
+      mockScrollY = scrollY
       render(<BackToTop />)
 
       expect(
@@ -41,15 +42,6 @@ describe('BackToTop', () => {
       expect(
         screen.getByRole('button', {name: /go back to the top/i})
       ).toBeInTheDocument()
-    })
-
-    it('renders at exact threshold', () => {
-      mockScrollY = 100 // At threshold, should not render (<=)
-      render(<BackToTop />)
-
-      expect(
-        screen.queryByRole('button', {name: /go back to the top/i})
-      ).not.toBeInTheDocument()
     })
   })
 

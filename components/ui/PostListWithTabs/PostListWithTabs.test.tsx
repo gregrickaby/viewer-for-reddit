@@ -211,23 +211,14 @@ describe('PostListWithTabs', () => {
       expect(screen.getByText('Week')).toBeInTheDocument()
     })
 
-    it('does not show time filter when sort is hot', () => {
-      render(<PostListWithTabs posts={[mockPost]} activeSort="hot" />)
+    it.each(['hot', 'new', 'rising'] as const)(
+      'does not show time filter when sort is %s',
+      (sort) => {
+        render(<PostListWithTabs posts={[mockPost]} activeSort={sort} />)
 
-      expect(screen.queryByText('Time:')).not.toBeInTheDocument()
-    })
-
-    it('does not show time filter when sort is new', () => {
-      render(<PostListWithTabs posts={[mockPost]} activeSort="new" />)
-
-      expect(screen.queryByText('Time:')).not.toBeInTheDocument()
-    })
-
-    it('does not show time filter when sort is rising', () => {
-      render(<PostListWithTabs posts={[mockPost]} activeSort="rising" />)
-
-      expect(screen.queryByText('Time:')).not.toBeInTheDocument()
-    })
+        expect(screen.queryByText('Time:')).not.toBeInTheDocument()
+      }
+    )
 
     it('navigates with time filter when clicking time option', async () => {
       render(

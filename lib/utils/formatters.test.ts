@@ -189,19 +189,21 @@ describe('formatters', () => {
   })
 
   describe('convertImageLinksToImages', () => {
-    it('converts links with URL as text to images', () => {
-      const html =
-        '<a href="https://preview.redd.it/image.jpg">https://preview.redd.it/image.jpg</a>'
+    it.each([
+      {
+        description: 'converts links with URL as text to images',
+        html: '<a href="https://preview.redd.it/image.jpg">https://preview.redd.it/image.jpg</a>',
+        expectedSrc: 'src="https://preview.redd.it/image.jpg"'
+      },
+      {
+        description: 'converts links with empty text to images',
+        html: '<a href="https://i.redd.it/image.png"></a>',
+        expectedSrc: 'src="https://i.redd.it/image.png"'
+      }
+    ])('$description', ({html, expectedSrc}) => {
       const result = convertImageLinksToImages(html)
       expect(result).toContain('<img')
-      expect(result).toContain('src="https://preview.redd.it/image.jpg"')
-    })
-
-    it('converts links with empty text to images', () => {
-      const html = '<a href="https://i.redd.it/image.png"></a>'
-      const result = convertImageLinksToImages(html)
-      expect(result).toContain('<img')
-      expect(result).toContain('src="https://i.redd.it/image.png"')
+      expect(result).toContain(expectedSrc)
     })
 
     it('converts gifv to gif', () => {

@@ -565,70 +565,64 @@ describe('reddit-helpers', () => {
   })
 
   describe('extractSlug', () => {
-    it('extracts slug from standard permalink', () => {
-      const permalink = '/r/programming/comments/abc123/this_is_a_slug/'
-      const postId = 'abc123'
-
-      expect(extractSlug(permalink, postId)).toBe('this_is_a_slug')
-    })
-
-    it('extracts slug without trailing slash', () => {
-      const permalink = '/r/javascript/comments/xyz789/my_post_title'
-      const postId = 'xyz789'
-
-      expect(extractSlug(permalink, postId)).toBe('my_post_title')
-    })
-
-    it('extracts slug with special characters', () => {
-      const permalink =
-        '/r/test/comments/id123/slug_with_underscores_and_numbers_42/'
-      const postId = 'id123'
-
-      expect(extractSlug(permalink, postId)).toBe(
-        'slug_with_underscores_and_numbers_42'
-      )
-    })
-
-    it('returns "post" when slug is not found', () => {
-      const permalink = '/r/test/comments/abc123/'
-      const postId = 'abc123'
-
-      expect(extractSlug(permalink, postId)).toBe('post')
-    })
-
-    it('returns "post" when post ID is not in permalink', () => {
-      const permalink = '/r/test/comments/differentid/some_slug/'
-      const postId = 'abc123'
-
-      expect(extractSlug(permalink, postId)).toBe('post')
-    })
-
-    it('handles permalink with comment reference', () => {
-      const permalink = '/r/programming/comments/abc123/slug/commentid/'
-      const postId = 'abc123'
-
-      expect(extractSlug(permalink, postId)).toBe('slug')
-    })
-
-    it('handles empty permalink', () => {
-      const permalink = ''
-      const postId = 'abc123'
-
-      expect(extractSlug(permalink, postId)).toBe('post')
-    })
-
-    it('handles malformed permalink', () => {
-      const permalink = 'not-a-valid-permalink'
-      const postId = 'abc123'
-
-      expect(extractSlug(permalink, postId)).toBe('post')
-    })
-
-    it('handles permalink with multiple slashes', () => {
-      const permalink = '/r/test/comments/abc123/slug//'
-      const postId = 'abc123'
-
-      expect(extractSlug(permalink, postId)).toBe('slug')
+    it.each([
+      {
+        description: 'extracts slug from standard permalink',
+        permalink: '/r/programming/comments/abc123/this_is_a_slug/',
+        postId: 'abc123',
+        expected: 'this_is_a_slug'
+      },
+      {
+        description: 'extracts slug without trailing slash',
+        permalink: '/r/javascript/comments/xyz789/my_post_title',
+        postId: 'xyz789',
+        expected: 'my_post_title'
+      },
+      {
+        description: 'extracts slug with special characters',
+        permalink:
+          '/r/test/comments/id123/slug_with_underscores_and_numbers_42/',
+        postId: 'id123',
+        expected: 'slug_with_underscores_and_numbers_42'
+      },
+      {
+        description: 'returns "post" when slug is not found',
+        permalink: '/r/test/comments/abc123/',
+        postId: 'abc123',
+        expected: 'post'
+      },
+      {
+        description: 'returns "post" when post ID is not in permalink',
+        permalink: '/r/test/comments/differentid/some_slug/',
+        postId: 'abc123',
+        expected: 'post'
+      },
+      {
+        description: 'handles permalink with comment reference',
+        permalink: '/r/programming/comments/abc123/slug/commentid/',
+        postId: 'abc123',
+        expected: 'slug'
+      },
+      {
+        description: 'handles empty permalink',
+        permalink: '',
+        postId: 'abc123',
+        expected: 'post'
+      },
+      {
+        description: 'handles malformed permalink',
+        permalink: 'not-a-valid-permalink',
+        postId: 'abc123',
+        expected: 'post'
+      },
+      {
+        description: 'handles permalink with multiple slashes',
+        permalink: '/r/test/comments/abc123/slug//',
+        postId: 'abc123',
+        expected: 'slug'
+      }
+    ])('$description', ({permalink, postId, expected}) => {
+      expect(extractSlug(permalink, postId)).toBe(expected)
     })
   })
 

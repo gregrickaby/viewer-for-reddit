@@ -55,62 +55,33 @@ describe('VideoPlayer', () => {
       expect(screen.getByText('Video unavailable')).toBeInTheDocument()
     })
 
-    it('accepts v.redd.it domain', () => {
-      render(
-        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
-      )
-
-      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
-    })
-
-    it('accepts reddit.com domain', () => {
-      render(
-        <VideoPlayer
-          src="https://www.reddit.com/video.mp4"
-          title="Test Video"
-        />
-      )
-
-      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
-    })
-
-    it('accepts preview.redd.it domain', () => {
-      render(
-        <VideoPlayer
-          src="https://preview.redd.it/test.mp4"
-          title="Test Video"
-        />
-      )
-
-      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
-    })
-
-    it('accepts external-preview.redd.it domain', () => {
-      render(
-        <VideoPlayer
-          src="https://external-preview.redd.it/test.mp4"
-          title="Test Video"
-        />
-      )
-
-      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
-    })
-
-    it('accepts i.redd.it domain', () => {
-      render(
-        <VideoPlayer src="https://i.redd.it/test.mp4" title="Test Video" />
-      )
-
-      expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
-    })
-
-    it('accepts subdomains of allowed domains', () => {
-      render(
-        <VideoPlayer
-          src="https://sub.preview.redd.it/test.mp4"
-          title="Test Video"
-        />
-      )
+    it.each([
+      {
+        description: 'accepts v.redd.it domain',
+        src: 'https://v.redd.it/test.mp4'
+      },
+      {
+        description: 'accepts reddit.com domain',
+        src: 'https://www.reddit.com/video.mp4'
+      },
+      {
+        description: 'accepts preview.redd.it domain',
+        src: 'https://preview.redd.it/test.mp4'
+      },
+      {
+        description: 'accepts external-preview.redd.it domain',
+        src: 'https://external-preview.redd.it/test.mp4'
+      },
+      {
+        description: 'accepts i.redd.it domain',
+        src: 'https://i.redd.it/test.mp4'
+      },
+      {
+        description: 'accepts subdomains of allowed domains',
+        src: 'https://sub.preview.redd.it/test.mp4'
+      }
+    ])('$description', ({src}) => {
+      render(<VideoPlayer src={src} title="Test Video" />)
 
       expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
     })

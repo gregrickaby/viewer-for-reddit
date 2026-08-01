@@ -40,32 +40,32 @@ describe('useBossButton', () => {
     )
   })
 
-  it('shows button when scrolled past threshold', () => {
-    mockScrollY = 250
+  it.each([
+    {
+      description: 'shows button when scrolled past threshold',
+      scrollY: 250,
+      shouldShow: true
+    },
+    {
+      description: 'hides button when scroll is below threshold',
+      scrollY: 150,
+      shouldShow: false
+    },
+    {
+      description: 'shows button exactly at threshold',
+      scrollY: 200,
+      shouldShow: false
+    },
+    {
+      description: 'shows button just above threshold',
+      scrollY: 201,
+      shouldShow: true
+    }
+  ])('$description', ({scrollY, shouldShow}) => {
+    mockScrollY = scrollY
     const {result} = renderHook(() => useBossButton(redirectUrl))
 
-    expect(result.current.shouldShow).toBe(true)
-  })
-
-  it('hides button when scroll is below threshold', () => {
-    mockScrollY = 150
-    const {result} = renderHook(() => useBossButton(redirectUrl))
-
-    expect(result.current.shouldShow).toBe(false)
-  })
-
-  it('shows button exactly at threshold', () => {
-    mockScrollY = 200
-    const {result} = renderHook(() => useBossButton(redirectUrl))
-
-    expect(result.current.shouldShow).toBe(false)
-  })
-
-  it('shows button just above threshold', () => {
-    mockScrollY = 201
-    const {result} = renderHook(() => useBossButton(redirectUrl))
-
-    expect(result.current.shouldShow).toBe(true)
+    expect(result.current.shouldShow).toBe(shouldShow)
   })
 
   it('navigates when Escape key is pressed', async () => {

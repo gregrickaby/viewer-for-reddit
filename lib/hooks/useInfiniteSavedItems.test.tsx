@@ -110,7 +110,7 @@ describe('useInfiniteSavedItems', () => {
       expect(result.current.items).toEqual(mockItems)
       expect(result.current.loading).toBe(false)
       expect(result.current.hasMore).toBe(false)
-      expect(result.current.error).toBe(null)
+      expect(result.current.error).toBeNull()
     })
 
     it('sets hasMore to true when initialAfter is provided', () => {

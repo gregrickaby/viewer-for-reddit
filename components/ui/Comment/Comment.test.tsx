@@ -33,22 +33,17 @@ describe('Comment', () => {
   })
 
   describe('rendering', () => {
-    it('renders comment with author username', () => {
+    it.each([
+      {description: 'renders comment with author username', text: 'u/testuser'},
+      {
+        description: 'renders comment body from body_html',
+        text: 'This is a test comment'
+      },
+      {description: 'renders comment score', text: '42'}
+    ])('$description', ({text}) => {
       render(<Comment comment={mockComment} />)
 
-      expect(screen.getByText('u/testuser')).toBeInTheDocument()
-    })
-
-    it('renders comment body from body_html', () => {
-      render(<Comment comment={mockComment} />)
-
-      expect(screen.getByText('This is a test comment')).toBeInTheDocument()
-    })
-
-    it('renders comment score', () => {
-      render(<Comment comment={mockComment} />)
-
-      expect(screen.getByText('42')).toBeInTheDocument()
+      expect(screen.getByText(text)).toBeInTheDocument()
     })
 
     it('renders time ago', () => {

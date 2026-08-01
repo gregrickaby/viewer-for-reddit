@@ -60,43 +60,18 @@ describe('metadata-helpers', () => {
       })
     })
 
-    it('ignores "self" placeholder thumbnail', () => {
-      const post = {
-        ...mockPost,
-        thumbnail: 'self'
-      }
-
-      const result = getPostImageMetadata(post)
-
-      expect(result.url).toBe('/social-share.webp')
-    })
-
-    it('ignores "nsfw" placeholder thumbnail', () => {
-      const post = {
-        ...mockPost,
-        thumbnail: 'nsfw'
-      }
-
-      const result = getPostImageMetadata(post)
-
-      expect(result.url).toBe('/social-share.webp')
-    })
-
-    it('ignores "spoiler" placeholder thumbnail', () => {
-      const post = {
-        ...mockPost,
+    it.each([
+      {description: 'ignores "self" placeholder thumbnail', thumbnail: 'self'},
+      {description: 'ignores "nsfw" placeholder thumbnail', thumbnail: 'nsfw'},
+      {
+        description: 'ignores "spoiler" placeholder thumbnail',
         thumbnail: 'spoiler'
-      }
-
-      const result = getPostImageMetadata(post)
-
-      expect(result.url).toBe('/social-share.webp')
-    })
-
-    it('ignores empty string thumbnail', () => {
+      },
+      {description: 'ignores empty string thumbnail', thumbnail: ''}
+    ])('$description', ({thumbnail}) => {
       const post = {
         ...mockPost,
-        thumbnail: ''
+        thumbnail
       }
 
       const result = getPostImageMetadata(post)

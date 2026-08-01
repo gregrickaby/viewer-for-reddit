@@ -32,16 +32,30 @@ describe('useSharePost', () => {
   })
 
   describe('successful share', () => {
-    it('copies full URL to clipboard', async () => {
+    it.each([
+      {
+        description: 'copies full URL to clipboard',
+        path: '/r/pics/comments/abc123',
+        expectedUrl: 'https://example.com/r/pics/comments/abc123'
+      },
+      {
+        description: 'handles different path formats',
+        path: '/r/AskReddit',
+        expectedUrl: 'https://example.com/r/AskReddit'
+      },
+      {
+        description: 'handles paths with hash fragments',
+        path: '/r/pics/comments/abc123#comments',
+        expectedUrl: 'https://example.com/r/pics/comments/abc123#comments'
+      }
+    ])('$description', async ({path, expectedUrl}) => {
       const {result} = renderHook(() => useSharePost())
 
       await act(async () => {
-        await result.current.sharePost('/r/pics/comments/abc123')
+        await result.current.sharePost(path)
       })
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'https://example.com/r/pics/comments/abc123'
-      )
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expectedUrl)
     })
 
     it('shows success notification', async () => {
@@ -56,30 +70,6 @@ describe('useSharePost', () => {
         color: 'teal',
         autoClose: 3000
       })
-    })
-
-    it('handles different path formats', async () => {
-      const {result} = renderHook(() => useSharePost())
-
-      await act(async () => {
-        await result.current.sharePost('/r/AskReddit')
-      })
-
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'https://example.com/r/AskReddit'
-      )
-    })
-
-    it('handles paths with hash fragments', async () => {
-      const {result} = renderHook(() => useSharePost())
-
-      await act(async () => {
-        await result.current.sharePost('/r/pics/comments/abc123#comments')
-      })
-
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'https://example.com/r/pics/comments/abc123#comments'
-      )
     })
   })
 

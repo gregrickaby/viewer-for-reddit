@@ -658,25 +658,20 @@ describe('media-helpers', () => {
       )
     })
 
-    it('returns undefined when thumbnail is "self"', () => {
-      const post = {
-        thumbnail: 'self'
-      } as unknown as RedditPost
-
-      expect(getPosterImage(post)).toBeUndefined()
-    })
-
-    it('returns undefined when thumbnail is "default"', () => {
-      const post = {
-        thumbnail: 'default'
-      } as unknown as RedditPost
-
-      expect(getPosterImage(post)).toBeUndefined()
-    })
-
-    it('returns undefined when no preview or valid thumbnail', () => {
-      const post = {} as RedditPost
-
+    it.each([
+      {
+        description: 'returns undefined when thumbnail is "self"',
+        post: {thumbnail: 'self'} as unknown as RedditPost
+      },
+      {
+        description: 'returns undefined when thumbnail is "default"',
+        post: {thumbnail: 'default'} as unknown as RedditPost
+      },
+      {
+        description: 'returns undefined when no preview or valid thumbnail',
+        post: {} as RedditPost
+      }
+    ])('$description', ({post}) => {
       expect(getPosterImage(post)).toBeUndefined()
     })
 

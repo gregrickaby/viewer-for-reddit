@@ -267,19 +267,28 @@ describe('useSearchBar', () => {
 
   describe('mobile auto-focus', () => {
     it('focuses input after delay when mobile modal opens', async () => {
-      const options = {...defaultOptions, mobileOpen: true}
       mockUseMediaQuery.mockReturnValue(true)
 
-      renderHook(() => useSearchBar(options))
+      const {result, rerender} = renderHook(
+        (props: {mobile: boolean}) =>
+          useSearchBar({...defaultOptions, mobileOpen: props.mobile}),
+        {initialProps: {mobile: false}}
+      )
 
-      // Wait for setTimeout to complete
+      const mockInput = document.createElement('input')
+      document.body.appendChild(mockInput)
+      result.current.inputRef.current = mockInput
+
+      rerender({mobile: true})
+
       await waitFor(
         () => {
-          // Verify setTimeout was called (100ms delay)
-          expect(true).toBe(true)
+          expect(mockInput).toHaveFocus()
         },
         {timeout: 200}
       )
+
+      document.body.removeChild(mockInput)
     })
 
     it('cleans up timeout on unmount', async () => {

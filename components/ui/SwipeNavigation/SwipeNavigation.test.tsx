@@ -59,57 +59,20 @@ describe('SwipeNavigation', () => {
   })
 
   describe('non-homepage behavior', () => {
-    it('enables swipe navigation on subreddit pages', () => {
-      mockUsePathname.mockReturnValue('/r/programming')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('enables swipe navigation on post pages', () => {
-      mockUsePathname.mockReturnValue('/r/programming/comments/abc123/title')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('enables swipe navigation on user profile pages', () => {
-      mockUsePathname.mockReturnValue('/u/spez')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('enables swipe navigation on search pages', () => {
-      mockUsePathname.mockReturnValue('/search/test')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('enables swipe navigation on about page', () => {
-      mockUsePathname.mockReturnValue('/about')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('enables swipe navigation on donate page', () => {
-      mockUsePathname.mockReturnValue('/donate')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('enables swipe navigation on saved items page', () => {
-      mockUsePathname.mockReturnValue('/user/testuser/saved')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('enables swipe navigation on multireddit pages', () => {
-      mockUsePathname.mockReturnValue('/user/testuser/m/tech')
+    it.each([
+      {description: 'subreddit pages', path: '/r/programming'},
+      {
+        description: 'post pages',
+        path: '/r/programming/comments/abc123/title'
+      },
+      {description: 'user profile pages', path: '/u/spez'},
+      {description: 'search pages', path: '/search/test'},
+      {description: 'about page', path: '/about'},
+      {description: 'donate page', path: '/donate'},
+      {description: 'saved items page', path: '/user/testuser/saved'},
+      {description: 'multireddit pages', path: '/user/testuser/m/tech'}
+    ])('enables swipe navigation on $description', ({path}) => {
+      mockUsePathname.mockReturnValue(path)
       render(<SwipeNavigation />)
 
       expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
@@ -158,39 +121,24 @@ describe('SwipeNavigation', () => {
   })
 
   describe('edge cases', () => {
-    it('handles empty pathname', () => {
-      mockUsePathname.mockReturnValue('')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('handles pathname with query parameters', () => {
-      mockUsePathname.mockReturnValue('/r/programming?sort=top')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('handles pathname with hash', () => {
-      mockUsePathname.mockReturnValue('/r/programming#top')
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('handles deeply nested paths', () => {
-      mockUsePathname.mockReturnValue(
-        '/r/programming/comments/abc/title/def?sort=top#comment-123'
-      )
-      render(<SwipeNavigation />)
-
-      expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})
-    })
-
-    it('is case-sensitive for homepage detection', () => {
-      // Only exactly '/' should be detected as homepage
-      mockUsePathname.mockReturnValue('/Home')
+    it.each([
+      {description: 'handles empty pathname', path: ''},
+      {
+        description: 'handles pathname with query parameters',
+        path: '/r/programming?sort=top'
+      },
+      {description: 'handles pathname with hash', path: '/r/programming#top'},
+      {
+        description: 'handles deeply nested paths',
+        path: '/r/programming/comments/abc/title/def?sort=top#comment-123'
+      },
+      {
+        // Only exactly '/' should be detected as homepage
+        description: 'is case-sensitive for homepage detection',
+        path: '/Home'
+      }
+    ])('$description', ({path}) => {
+      mockUsePathname.mockReturnValue(path)
       render(<SwipeNavigation />)
 
       expect(mockUseSwipeNavigation).toHaveBeenCalledWith({enabled: true})

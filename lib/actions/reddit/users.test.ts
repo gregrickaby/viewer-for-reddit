@@ -185,7 +185,7 @@ describe('users server actions', () => {
 
       const {items, after} = await fetchSavedItems('testuser')
 
-      expect(items.length).toBe(2)
+      expect(items).toHaveLength(2)
       expect(items[0].type).toBe('post')
       expect(items[1].type).toBe('comment')
       expect(after).toBe('t3_after')
@@ -238,7 +238,7 @@ describe('users server actions', () => {
 
       const {items} = await fetchSavedItems('testuser')
 
-      expect(items.length).toBe(2)
+      expect(items).toHaveLength(2)
       expect(items[0].data.id).toBe('saved1')
       expect(items[1].data.id).toBe('comment1')
     })
@@ -278,7 +278,7 @@ describe('users server actions', () => {
 
       const {items, after} = await fetchSavedItems('testuser', 't3_cursor')
 
-      expect(items.length).toBe(1)
+      expect(items).toHaveLength(1)
       expect(after).toBeNull()
     })
   })

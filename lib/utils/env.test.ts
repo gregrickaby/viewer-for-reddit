@@ -141,62 +141,35 @@ describe('env', () => {
   })
 
   describe('isProduction', () => {
-    it('returns true when NODE_ENV is production', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-
-      expect(isProduction()).toBe(true)
-    })
-
-    it('returns false when NODE_ENV is not production', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
-
-      expect(isProduction()).toBe(false)
-    })
-
-    it('returns false when NODE_ENV is test', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'test'
-
-      expect(isProduction()).toBe(false)
+    it.each([
+      {nodeEnv: 'production', expected: true},
+      {nodeEnv: 'development', expected: false},
+      {nodeEnv: 'test', expected: false}
+    ])('returns $expected when NODE_ENV is $nodeEnv', ({nodeEnv, expected}) => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = nodeEnv
+      expect(isProduction()).toBe(expected)
     })
   })
 
   describe('isDevelopment', () => {
-    it('returns true when NODE_ENV is development', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
-
-      expect(isDevelopment()).toBe(true)
-    })
-
-    it('returns false when NODE_ENV is not development', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-
-      expect(isDevelopment()).toBe(false)
-    })
-
-    it('returns false when NODE_ENV is test', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'test'
-
-      expect(isDevelopment()).toBe(false)
+    it.each([
+      {nodeEnv: 'development', expected: true},
+      {nodeEnv: 'production', expected: false},
+      {nodeEnv: 'test', expected: false}
+    ])('returns $expected when NODE_ENV is $nodeEnv', ({nodeEnv, expected}) => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = nodeEnv
+      expect(isDevelopment()).toBe(expected)
     })
   })
 
   describe('isTest', () => {
-    it('returns true when NODE_ENV is test', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'test'
-
-      expect(isTest()).toBe(true)
-    })
-
-    it('returns false when NODE_ENV is not test', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
-
-      expect(isTest()).toBe(false)
-    })
-
-    it('returns false when NODE_ENV is development', () => {
-      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
-
-      expect(isTest()).toBe(false)
+    it.each([
+      {nodeEnv: 'test', expected: true},
+      {nodeEnv: 'production', expected: false},
+      {nodeEnv: 'development', expected: false}
+    ])('returns $expected when NODE_ENV is $nodeEnv', ({nodeEnv, expected}) => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = nodeEnv
+      expect(isTest()).toBe(expected)
     })
   })
 })

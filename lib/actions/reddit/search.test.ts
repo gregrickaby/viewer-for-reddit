@@ -138,7 +138,7 @@ describe('search server actions', () => {
 
       const {posts, after} = await searchSubreddit('programming', 'typescript')
 
-      expect(posts.length).toBe(2)
+      expect(posts).toHaveLength(2)
       expect(posts[0].title).toBe('TypeScript Guide')
       expect(after).toBe('t3_next')
     })
@@ -171,7 +171,7 @@ describe('search server actions', () => {
         't3_after'
       )
 
-      expect(posts.length).toBe(1)
+      expect(posts).toHaveLength(1)
       expect(after).toBeNull()
     })
 

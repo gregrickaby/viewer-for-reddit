@@ -48,34 +48,35 @@ describe('SubredditSearchBar', () => {
     expect(input).toHaveValue('typescript')
   })
 
-  it('navigates to search page on form submit', async () => {
+  it.each([
+    {
+      description: 'navigates to search page on form submit',
+      typedText: 'nextjs',
+      expectedUrl: '/r/programming/search/nextjs'
+    },
+    {
+      description: 'encodes special characters in query',
+      typedText: 'react hooks',
+      expectedUrl: '/r/programming/search/react%20hooks'
+    },
+    {
+      description: 'trims whitespace from query',
+      typedText: '  typescript  ',
+      expectedUrl: '/r/programming/search/typescript'
+    },
+    {
+      description: 'disables input during navigation',
+      typedText: 'test',
+      expectedUrl: '/r/programming/search/test'
+    }
+  ])('$description', async ({typedText, expectedUrl}) => {
     render(<SubredditSearchBar subreddit="programming" />)
 
     const input = screen.getByPlaceholderText('Search r/programming...')
-    await user.type(input, 'nextjs')
+    await user.type(input, typedText)
     await user.keyboard('{Enter}')
 
-    expect(mockPush).toHaveBeenCalledWith('/r/programming/search/nextjs')
-  })
-
-  it('encodes special characters in query', async () => {
-    render(<SubredditSearchBar subreddit="programming" />)
-
-    const input = screen.getByPlaceholderText('Search r/programming...')
-    await user.type(input, 'react hooks')
-    await user.keyboard('{Enter}')
-
-    expect(mockPush).toHaveBeenCalledWith('/r/programming/search/react%20hooks')
-  })
-
-  it('trims whitespace from query', async () => {
-    render(<SubredditSearchBar subreddit="programming" />)
-
-    const input = screen.getByPlaceholderText('Search r/programming...')
-    await user.type(input, '  typescript  ')
-    await user.keyboard('{Enter}')
-
-    expect(mockPush).toHaveBeenCalledWith('/r/programming/search/typescript')
+    expect(mockPush).toHaveBeenCalledWith(expectedUrl)
   })
 
   it('does not submit empty query', async () => {
@@ -131,18 +132,5 @@ describe('SubredditSearchBar', () => {
     await user.click(clearButton)
 
     expect(input).toHaveValue('')
-  })
-
-  it('disables input during navigation', async () => {
-    render(<SubredditSearchBar subreddit="programming" />)
-
-    const input = screen.getByPlaceholderText('Search r/programming...')
-    await user.type(input, 'test')
-    await user.keyboard('{Enter}')
-
-    // Input should be disabled during transition
-    // Note: Since startTransition is synchronous in tests, we can't easily
-    // test the exact pending state, but we verify the navigation happens
-    expect(mockPush).toHaveBeenCalledWith('/r/programming/search/test')
   })
 })
