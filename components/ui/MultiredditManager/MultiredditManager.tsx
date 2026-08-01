@@ -1,5 +1,6 @@
 'use client'
 
+import {ManagerDrawer} from '@/components/ui/ManagerDrawer/ManagerDrawer'
 import {
   type ManagedMultireddit,
   useMultiredditManager
@@ -9,17 +10,14 @@ import {formatNumber} from '@/lib/utils/formatters'
 import {
   Accordion,
   ActionIcon,
-  Alert,
   Avatar,
   Badge,
   Button,
   Combobox,
   Divider,
-  Drawer,
   Group,
   InputBase,
   Loader,
-  ScrollArea,
   Stack,
   Text,
   TextInput,
@@ -27,7 +25,6 @@ import {
   useCombobox
 } from '@mantine/core'
 import {
-  IconAlertCircle,
   IconCheck,
   IconEdit,
   IconPlus,
@@ -79,110 +76,78 @@ export function MultiredditManager({
   }
 
   return (
-    <Drawer
+    <ManagerDrawer
       opened={opened}
       onClose={onClose}
-      title={
-        <Text fw={700} size="md">
-          Manage Multireddits
-        </Text>
-      }
-      position="right"
-      size="sm"
-      scrollAreaComponent={ScrollArea.Autosize}
+      title="Manage Multireddits"
+      error={error}
+      onDismissError={clearError}
     >
-      <Stack gap="md">
-        {error && (
-          <Alert icon={<IconAlertCircle size={16} />} color="red">
-            <Group
-              justify="space-between"
-              align="center"
-              gap="xs"
-              wrap="nowrap"
-            >
-              <Text size="sm" flex={1}>
-                {error}
-              </Text>
-              <ActionIcon
-                size="sm"
-                variant="subtle"
-                color="red"
-                onClick={clearError}
-                data-testid="dismiss-error-btn"
-                aria-label="Dismiss error"
-              >
-                <IconX size={14} />
-              </ActionIcon>
-            </Group>
-          </Alert>
-        )}
-
-        {/* Create section */}
-        <Stack gap="xs">
-          <Text size="sm" fw={600}>
-            Create New Multireddit
-          </Text>
-          <TextInput
-            label="URL Name"
-            description="Letters, numbers, underscores — min 3 chars"
-            placeholder="my_multi"
-            value={newName}
-            onChange={(e) => setNewName(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleCreate()
-            }}
-            size="sm"
-          />
-          <TextInput
-            label="Display Name"
-            placeholder="My Tech Feed"
-            value={newDisplayName}
-            onChange={(e) => setNewDisplayName(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleCreate()
-            }}
-            size="sm"
-          />
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={handleCreate}
-            disabled={isPending || !newName.trim() || !newDisplayName.trim()}
-            loading={isPending}
-            size="sm"
-          >
-            Create
-          </Button>
-        </Stack>
-
-        {multireddits.length > 0 && (
-          <>
-            <Divider />
-            <Text size="xs" fw={700} c="dimmed" tt="uppercase">
-              Your Multireddits ({multireddits.length})
-            </Text>
-            <Accordion variant="separated" chevronPosition="left">
-              {multireddits.map((multi) => (
-                <MultiItem
-                  key={multi.path}
-                  multi={multi}
-                  isPending={isPending}
-                  onRename={(name) => rename(multi.path, name)}
-                  onDelete={() => remove(multi.path)}
-                  onAddSubreddit={(sub) => addSubreddit(multi.path, sub)}
-                  onRemoveSubreddit={(sub) => removeSubreddit(multi.path, sub)}
-                />
-              ))}
-            </Accordion>
-          </>
-        )}
-
-        {multireddits.length === 0 && (
-          <Text c="dimmed" size="sm" ta="center" py="md">
-            No multireddits yet. Create one above!
-          </Text>
-        )}
+      {/* Create section */}
+      <Stack gap="xs">
+        <Text size="sm" fw={600}>
+          Create New Multireddit
+        </Text>
+        <TextInput
+          label="URL Name"
+          description="Letters, numbers, underscores — min 3 chars"
+          placeholder="my_multi"
+          value={newName}
+          onChange={(e) => setNewName(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleCreate()
+          }}
+          size="sm"
+        />
+        <TextInput
+          label="Display Name"
+          placeholder="My Tech Feed"
+          value={newDisplayName}
+          onChange={(e) => setNewDisplayName(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleCreate()
+          }}
+          size="sm"
+        />
+        <Button
+          leftSection={<IconPlus size={16} />}
+          onClick={handleCreate}
+          disabled={isPending || !newName.trim() || !newDisplayName.trim()}
+          loading={isPending}
+          size="sm"
+        >
+          Create
+        </Button>
       </Stack>
-    </Drawer>
+
+      {multireddits.length > 0 && (
+        <>
+          <Divider />
+          <Text size="xs" fw={700} c="dimmed" tt="uppercase">
+            Your Multireddits ({multireddits.length})
+          </Text>
+          <Accordion variant="separated" chevronPosition="left">
+            {multireddits.map((multi) => (
+              <MultiItem
+                key={multi.path}
+                multi={multi}
+                isPending={isPending}
+                onRename={(name) => rename(multi.path, name)}
+                onDelete={() => remove(multi.path)}
+                onAddSubreddit={(sub) => addSubreddit(multi.path, sub)}
+                onRemoveSubreddit={(sub) => removeSubreddit(multi.path, sub)}
+              />
+            ))}
+          </Accordion>
+        </>
+      )}
+
+      {multireddits.length === 0 && (
+        <Text c="dimmed" size="sm" ta="center" py="md">
+          No multireddits yet. Create one above!
+        </Text>
+      )}
+    </ManagerDrawer>
   )
 }
 
