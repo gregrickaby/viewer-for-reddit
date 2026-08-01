@@ -4,29 +4,36 @@ Welcome! 👋 This guide will help you contribute to Viewer for Reddit, whether 
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
-- [Development Workflow](#development-workflow)
-  - [Prerequisites](#prerequisites)
-  - [Setup](#setup)
-  - [Development](#development)
-  - [Quality Gates](#quality-gates)
-  - [Pre-commit Hooks](#pre-commit-hooks)
-- [Project Architecture](#project-architecture)
-  - [Tech Stack](#tech-stack)
-  - [Architecture Overview](#architecture-overview)
-  - [File Structure](#file-structure)
-  - [Core Patterns](#core-patterns)
-- [Testing](#testing)
-  - [Test-Driven Development](#test-driven-development)
-  - [Running Tests](#running-tests)
-  - [MSW v2 HTTP Mocking](#msw-v2-http-mocking)
-  - [Writing Tests](#writing-tests)
-- [Reddit API Integration](#reddit-api-integration)
-  - [Authentication Setup](#authentication-setup)
-  - [Type Generation System](#type-generation-system)
-- [Code Review Process](#code-review-process)
-- [Getting Help](#getting-help)
-- [Legal](#legal)
+- [Contributing Guide](#contributing-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+  - [Development Workflow](#development-workflow)
+    - [Prerequisites](#prerequisites)
+    - [Setup](#setup)
+    - [Development](#development)
+    - [Quality Gates](#quality-gates)
+    - [SonarQube](#sonarqube)
+    - [Pre-commit Hooks](#pre-commit-hooks)
+  - [Project Architecture](#project-architecture)
+    - [Tech Stack](#tech-stack)
+    - [Key Principles](#key-principles)
+    - [Quick File Organization](#quick-file-organization)
+    - [Critical Conventions](#critical-conventions)
+  - [Testing](#testing)
+    - [Test-Driven Development](#test-driven-development)
+    - [Running Tests](#running-tests)
+    - [Testing Quick Reference](#testing-quick-reference)
+  - [Reddit API Integration](#reddit-api-integration)
+    - [Authentication Setup](#authentication-setup)
+    - [Type Generation System](#type-generation-system)
+  - [Code Review Process](#code-review-process)
+    - [Before Submitting a Pull Request](#before-submitting-a-pull-request)
+    - [Quick Review Checklist](#quick-review-checklist)
+  - [Getting Help](#getting-help)
+    - [Resources](#resources)
+    - [Before You Ask](#before-you-ask)
+    - [Reporting Issues](#reporting-issues)
+  - [Legal](#legal)
 
 ---
 
@@ -48,8 +55,8 @@ That's it! You're ready to start contributing. 🎉
 
 ### Prerequisites
 
-- **Node.js v24.13+** (see `.nvmrc`)
-- **npm v10+**
+- **Node.js v24.18+** (see `.nvmrc`)
+- **npm v12+**
 - **Git**
 - **Reddit API credentials** (see [Authentication Setup](#authentication-setup))
 

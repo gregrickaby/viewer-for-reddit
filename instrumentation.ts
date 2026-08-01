@@ -1,10 +1,5 @@
-import type {Instrumentation} from 'next'
 import {logger} from '@/lib/datadog/server'
-
-// dd-trace APM is initialized via NODE_OPTIONS='--require dd-trace/init' in
-// the dev/start scripts (package.json), not here — dd-trace patches Node's
-// module loader and must run before Next.js is first required, which has
-// already happened by the time this file's register() would run.
+import type {Instrumentation} from 'next'
 
 export const onRequestError: Instrumentation.onRequestError = async (
   err,

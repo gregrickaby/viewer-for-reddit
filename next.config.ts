@@ -3,27 +3,18 @@ import type {NextConfig} from 'next'
 const nextConfig: NextConfig = {
   reactCompiler: true,
   cacheComponents: true,
-  // Coolify sets SOURCE_COMMIT at build time. Mismatched deploymentId
-  // forces a hard navigation instead of a broken client-side one during
-  // rolling deploys. https://nextjs.org/docs/app/guides/self-hosting#version-skew
   deploymentId: process.env.SOURCE_COMMIT,
-  // Exposed to the browser bundle without the NEXT_PUBLIC_ prefix (project convention).
   env: {
     DD_APPLICATION_ID: process.env.DD_APPLICATION_ID,
     DD_CLIENT_TOKEN: process.env.DD_CLIENT_TOKEN,
     DD_SITE: process.env.DD_SITE,
     DD_SERVICE: process.env.DD_SERVICE
   },
-  // dd-trace patches Node internals via require hooks; it must run
-  // unbundled and be initialized before Next.js loads (NODE_OPTIONS
-  // in the dev/start scripts), not through instrumentation.ts.
   serverExternalPackages: ['dd-trace'],
   experimental: {
     inlineCss: true,
     prefetchInlining: true,
     appNewScrollHandler: true,
-    // Only for local production builds measured by the instant-nav e2e loop
-    // (see instant-nav.rig.md) -- never true for the real Coolify deployment.
     exposeTestingApiInProductionBuild: process.env.EXPOSE_TESTING_API === '1',
     optimizePackageImports: [
       '@mantine/carousel',
@@ -69,7 +60,6 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
   },
-  // Add security headers
   async headers() {
     return [
       {
@@ -123,7 +113,6 @@ const nextConfig: NextConfig = {
         ]
       },
       {
-        // Cache public folder assets (images, fonts, etc.)
         source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp|woff|woff2|ttf|otf)',
         headers: [
           {
