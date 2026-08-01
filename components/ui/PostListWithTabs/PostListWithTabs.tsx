@@ -1,16 +1,10 @@
 'use client'
 
+import {SortTabs, TIME_FILTER_TABS} from '@/components/ui/SortTabs/SortTabs'
+import {TransitionOverlay} from '@/components/ui/TransitionOverlay/TransitionOverlay'
 import {useInfiniteScroll} from '@/lib/hooks/useInfiniteScroll'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
-import {
-  Center,
-  Group,
-  Loader,
-  SegmentedControl,
-  Stack,
-  Tabs,
-  Text
-} from '@mantine/core'
+import {Center, Group, Loader, Stack, Text} from '@mantine/core'
 import {
   IconClock,
   IconFlame,
@@ -21,6 +15,29 @@ import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import styles from '@/components/ui/PostList/PostList.module.css'
+
+const POST_SORT_TABS = [
+  {
+    value: 'hot',
+    label: 'Hot',
+    icon: <IconFlame aria-hidden="true" size={16} />
+  },
+  {
+    value: 'new',
+    label: 'New',
+    icon: <IconClock aria-hidden="true" size={16} />
+  },
+  {
+    value: 'top',
+    label: 'Top',
+    icon: <IconTrendingUp aria-hidden="true" size={16} />
+  },
+  {
+    value: 'rising',
+    label: 'Rising',
+    icon: <IconRocket aria-hidden="true" size={16} />
+  }
+]
 
 /**
  * Props for the PostListWithTabs component.
@@ -88,64 +105,25 @@ export function PostListWithTabs({
 
   const showTimeFilter = activeSort === 'top' || activeSort === 'controversial'
 
-  const timeFilterOptions = [
-    {value: 'hour', label: 'Hour'},
-    {value: 'day', label: 'Day'},
-    {value: 'week', label: 'Week'},
-    {value: 'month', label: 'Month'},
-    {value: 'year', label: 'Year'},
-    {value: 'all', label: 'All Time'}
-  ]
-
   return (
     <Stack gap="md">
-      <Tabs
+      <SortTabs
         value={activeSort}
-        onChange={(value) => value && handleSortChange(value)}
-      >
-        <Tabs.List grow={false} style={{flexWrap: 'nowrap', overflowX: 'auto'}}>
-          <Tabs.Tab
-            value="hot"
-            leftSection={<IconFlame aria-hidden="true" size={16} />}
-            disabled={isPending}
-          >
-            Hot
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="new"
-            leftSection={<IconClock aria-hidden="true" size={16} />}
-            disabled={isPending}
-          >
-            New
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="top"
-            leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
-            disabled={isPending}
-          >
-            Top
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="rising"
-            leftSection={<IconRocket aria-hidden="true" size={16} />}
-            disabled={isPending}
-          >
-            Rising
-          </Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
+        onChange={handleSortChange}
+        disabled={isPending}
+        tabs={POST_SORT_TABS}
+      />
 
       {showTimeFilter && (
         <Group gap="xs">
           <Text size="sm" fw={500} c="dimmed">
             Time:
           </Text>
-          <SegmentedControl
+          <SortTabs
             value={activeTimeFilter}
             onChange={handleTimeFilterChange}
-            data={timeFilterOptions}
-            size="xs"
             disabled={isPending}
+            tabs={TIME_FILTER_TABS}
           />
         </Group>
       )}
@@ -155,29 +133,10 @@ export function PostListWithTabs({
         className={styles.container}
         style={{position: 'relative'}}
       >
-        {isPending && (
-          <Stack
-            gap="md"
-            align="center"
-            justify="center"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'var(--mantine-color-body)',
-              opacity: 0.9,
-              zIndex: 10,
-              pointerEvents: 'none'
-            }}
-          >
-            <Loader size="lg" />
-            <Text size="sm" c="dimmed">
-              Loading {activeSort} posts...
-            </Text>
-          </Stack>
-        )}
+        <TransitionOverlay
+          visible={isPending}
+          label={`Loading ${activeSort} posts...`}
+        />
 
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
