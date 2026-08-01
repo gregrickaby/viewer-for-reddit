@@ -16,7 +16,17 @@ datadogRum.init({
   trackUserInteractions: true,
   trackLongTasks: true,
   defaultPrivacyLevel: 'mask-user-input',
-  plugins: [nextjsPlugin()]
+  plugins: [nextjsPlugin()],
+  beforeSend: (event) => {
+    if (
+      event.type === 'error' &&
+      event.error.resource?.status_code === 0 &&
+      event.error.resource.url.includes('_rsc=')
+    ) {
+      return false
+    }
+    return true
+  }
 })
 
 datadogLogs.init({

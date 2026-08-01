@@ -1,16 +1,13 @@
 'use client'
 
+import {TimeAgo} from '@/components/ui/TimeAgo/TimeAgo'
 import {useCommentCollapse} from '@/lib/hooks/useCommentCollapse'
 import {useSavePost} from '@/lib/hooks/useSavePost'
 import {useSharePost} from '@/lib/hooks/useSharePost'
 import {useVote} from '@/lib/hooks/useVote'
 import {RedditComment as RedditCommentType} from '@/lib/types/reddit'
 import {MAX_COMMENT_DEPTH} from '@/lib/utils/constants'
-import {
-  decodeHtmlEntities,
-  formatTimeAgo,
-  sanitizeText
-} from '@/lib/utils/formatters'
+import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {getUserProfileHref, getVoteColor} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
@@ -248,8 +245,8 @@ export function Comment({
                 {comment.distinguished}
               </Badge>
             )}
-            <Text size="xs" c="dimmed" suppressHydrationWarning>
-              • {formatTimeAgo(comment.created_utc)}
+            <Text size="xs" c="dimmed">
+              • <TimeAgo timestamp={comment.created_utc} />
             </Text>
             {isCollapsed && replies.length > 0 && (
               <Text size="xs" c="dimmed">

@@ -1,5 +1,5 @@
+import {TimeAgo} from '@/components/ui/TimeAgo/TimeAgo'
 import {RedditPost} from '@/lib/types/reddit'
-import {formatTimeAgo} from '@/lib/utils/formatters'
 import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Anchor, Badge, Group, Text} from '@mantine/core'
 import Link from 'next/link'
@@ -14,7 +14,6 @@ interface PostHeaderProps {
 
 /** Display post metadata header (subreddit, author, time, NSFW badge). Shows at the top of PostCard. */
 export function PostHeader({post}: Readonly<PostHeaderProps>) {
-  // Don't link deleted/removed/malformed authors (Next.js treats brackets as dynamic routes)
   const authorHref = getUserProfileHref(post.author)
 
   return (
@@ -30,7 +29,7 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
         >
           {post.subreddit_name_prefixed}
         </Badge>
-        <Text size="xs" c="dimmed" suppressHydrationWarning>
+        <Text size="xs" c="dimmed">
           Posted by{' '}
           {authorHref ? (
             <Anchor
@@ -47,7 +46,7 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
               u/{post.author}
             </Text>
           )}{' '}
-          • {formatTimeAgo(post.created_utc)}
+          • <TimeAgo timestamp={post.created_utc} />
         </Text>
       </Group>
       {post.over_18 && (
