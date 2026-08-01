@@ -1,7 +1,7 @@
 'use client'
 
+import {ToggleButton} from '@/components/ui/ToggleButton/ToggleButton'
 import {useFollowUser} from '@/lib/hooks/useFollowUser'
-import {Button} from '@mantine/core'
 import {IconUserCheck, IconUserPlus} from '@tabler/icons-react'
 
 interface FollowButtonProps {
@@ -25,20 +25,16 @@ export function FollowButton({
   })
 
   return (
-    <Button
-      color={isFollowing ? 'gray' : 'blue'}
-      disabled={isPending}
-      onClick={toggleFollow}
-      variant={isFollowing ? 'light' : 'filled'}
-      leftSection={
-        isFollowing ? <IconUserCheck size={16} /> : <IconUserPlus size={16} />
-      }
-      size="sm"
-      aria-label={
-        isFollowing ? `Unfollow u/${username}` : `Follow u/${username}`
-      }
-    >
-      {isFollowing ? 'Following' : 'Follow'}
-    </Button>
+    <ToggleButton
+      active={isFollowing}
+      isPending={isPending}
+      onToggle={toggleFollow}
+      activeLabel="Following"
+      inactiveLabel="Follow"
+      activeIcon={<IconUserCheck size={16} />}
+      inactiveIcon={<IconUserPlus size={16} />}
+      activeAriaLabel={`Unfollow u/${username}`}
+      inactiveAriaLabel={`Follow u/${username}`}
+    />
   )
 }
