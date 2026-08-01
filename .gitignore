@@ -61,3 +61,6 @@ certificates
 
 # Claude Code local settings (personal, machine-specific)
 .claude/settings.local.json
+
+# git worktrees (local scratch, never committed)
+/.worktrees
