@@ -1,9 +1,11 @@
 'use client'
 
+import {SortTabs, TIME_FILTER_TABS} from '@/components/ui/SortTabs/SortTabs'
+import {TransitionOverlay} from '@/components/ui/TransitionOverlay/TransitionOverlay'
 import {Comment} from '@/components/ui/Comment/Comment'
 import {RedditComment, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
-import {Loader, Stack, Tabs, Text, Title} from '@mantine/core'
+import {Box, Group, Stack, Text, Title} from '@mantine/core'
 import {
   IconClock,
   IconFlame,
@@ -12,6 +14,29 @@ import {
 } from '@tabler/icons-react'
 import {useRouter} from 'next/navigation'
 import {useTransition} from 'react'
+
+const USER_COMMENT_SORT_TABS = [
+  {
+    value: 'hot',
+    label: 'Hot',
+    icon: <IconFlame aria-hidden="true" size={16} />
+  },
+  {
+    value: 'new',
+    label: 'New',
+    icon: <IconClock aria-hidden="true" size={16} />
+  },
+  {
+    value: 'top',
+    label: 'Top',
+    icon: <IconTrendingUp aria-hidden="true" size={16} />
+  },
+  {
+    value: 'controversial',
+    label: 'Controversial',
+    icon: <IconRocket aria-hidden="true" size={16} />
+  }
+]
 
 /**
  * Props for the UserCommentListWithTabs component.
@@ -80,119 +105,36 @@ export function UserCommentListWithTabs({
 
   return (
     <>
-      <Tabs value={activeSort} mb="lg">
-        <Tabs.List grow={false} style={{flexWrap: 'nowrap', overflowX: 'auto'}}>
-          <Tabs.Tab
-            value="hot"
-            leftSection={<IconFlame aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('hot')}
-            disabled={isPending}
-          >
-            Hot
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="new"
-            leftSection={<IconClock aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('new')}
-            disabled={isPending}
-          >
-            New
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="top"
-            leftSection={<IconTrendingUp aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('top')}
-            disabled={isPending}
-          >
-            Top
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="controversial"
-            leftSection={<IconRocket aria-hidden="true" size={16} />}
-            onClick={() => handleSortChange('controversial')}
-            disabled={isPending}
-          >
-            Controversial
-          </Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
+      <Box mb="lg">
+        <SortTabs
+          value={activeSort}
+          onChange={handleSortChange}
+          disabled={isPending}
+          tabs={USER_COMMENT_SORT_TABS}
+        />
+      </Box>
 
       {showTimeFilter && (
-        <Tabs value={activeTimeFilter || 'all'} mb="md">
-          <Tabs.List
-            grow={false}
-            style={{flexWrap: 'nowrap', overflowX: 'auto'}}
-          >
-            <Tabs.Tab
-              value="hour"
-              onClick={() => handleTimeFilterChange('hour')}
+        <Box mb="md">
+          <Group gap="xs">
+            <Text size="sm" fw={500} c="dimmed">
+              Time:
+            </Text>
+            <SortTabs
+              value={activeTimeFilter || 'all'}
+              onChange={handleTimeFilterChange}
               disabled={isPending}
-            >
-              Hour
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="day"
-              onClick={() => handleTimeFilterChange('day')}
-              disabled={isPending}
-            >
-              Today
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="week"
-              onClick={() => handleTimeFilterChange('week')}
-              disabled={isPending}
-            >
-              Week
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="month"
-              onClick={() => handleTimeFilterChange('month')}
-              disabled={isPending}
-            >
-              Month
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="year"
-              onClick={() => handleTimeFilterChange('year')}
-              disabled={isPending}
-            >
-              Year
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="all"
-              onClick={() => handleTimeFilterChange('all')}
-              disabled={isPending}
-            >
-              All Time
-            </Tabs.Tab>
-          </Tabs.List>
-        </Tabs>
+              tabs={TIME_FILTER_TABS}
+            />
+          </Group>
+        </Box>
       )}
 
       <Stack gap="md" style={{position: 'relative', minHeight: '200px'}}>
-        {isPending && (
-          <Stack
-            gap="md"
-            align="center"
-            justify="center"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'var(--mantine-color-body)',
-              opacity: 0.9,
-              zIndex: 10,
-              pointerEvents: 'none'
-            }}
-          >
-            <Loader size="lg" />
-            <Text size="sm" c="dimmed">
-              Loading {activeSort} comments...
-            </Text>
-          </Stack>
-        )}
+        <TransitionOverlay
+          visible={isPending}
+          label={`Loading ${activeSort} comments...`}
+        />
 
         {comments.length === 0 ? (
           <Title order={4}>No comments yet</Title>

@@ -122,7 +122,7 @@ describe('UserCommentListWithTabs', () => {
     )
 
     expect(screen.getByRole('tab', {name: /hour/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /today/i})).toBeInTheDocument()
+    expect(screen.getByRole('tab', {name: 'Day'})).toBeInTheDocument()
     expect(screen.getByRole('tab', {name: /week/i})).toBeInTheDocument()
     expect(screen.getByRole('tab', {name: /month/i})).toBeInTheDocument()
     expect(screen.getByRole('tab', {name: /year/i})).toBeInTheDocument()
