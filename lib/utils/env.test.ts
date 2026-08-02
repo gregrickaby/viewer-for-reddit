@@ -1,5 +1,6 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
+  getCookieDomain,
   getEnvVar,
   getOptionalEnvVar,
   isDevelopment,
@@ -170,6 +171,36 @@ describe('env', () => {
     ])('returns $expected when NODE_ENV is $nodeEnv', ({nodeEnv, expected}) => {
       ;(process.env as {NODE_ENV?: string}).NODE_ENV = nodeEnv
       expect(isTest()).toBe(expected)
+    })
+  })
+
+  describe('getCookieDomain', () => {
+    it('returns undefined outside production', () => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'development'
+      process.env.BASE_URL = 'https://reddit-viewer.com'
+
+      expect(getCookieDomain()).toBeUndefined()
+    })
+
+    it('returns the BASE_URL hostname in production', () => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
+      process.env.BASE_URL = 'https://reddit-viewer.com'
+
+      expect(getCookieDomain()).toBe('reddit-viewer.com')
+    })
+
+    it('returns undefined when BASE_URL is invalid in production', () => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
+      process.env.BASE_URL = 'not-a-valid-url'
+
+      expect(getCookieDomain()).toBeUndefined()
+    })
+
+    it('returns undefined when BASE_URL is unset in production', () => {
+      ;(process.env as {NODE_ENV?: string}).NODE_ENV = 'production'
+      delete process.env.BASE_URL
+
+      expect(getCookieDomain()).toBeUndefined()
     })
   })
 })

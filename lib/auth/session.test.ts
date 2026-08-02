@@ -15,11 +15,12 @@ vi.mock('@/lib/utils/env', () => ({
     if (key === 'BASE_URL') return 'https://example.com'
     return ''
   }),
-  isProduction: vi.fn(() => false)
+  isProduction: vi.fn(() => false),
+  getCookieDomain: vi.fn(() => undefined)
 }))
 
 // Import after mocks
-import {getEnvVar, isProduction} from '@/lib/utils/env'
+import {getCookieDomain, getEnvVar, isProduction} from '@/lib/utils/env'
 import {getIronSession} from 'iron-session'
 import {cookies} from 'next/headers'
 import {getSession, isAuthenticated, isSessionExpired} from './session'
@@ -28,6 +29,7 @@ const mockCookies = vi.mocked(cookies)
 const mockGetIronSession = vi.mocked(getIronSession)
 const mockGetEnvVar = vi.mocked(getEnvVar)
 const mockIsProduction = vi.mocked(isProduction)
+const mockGetCookieDomain = vi.mocked(getCookieDomain)
 
 describe('session', () => {
   beforeEach(() => {
@@ -38,6 +40,7 @@ describe('session', () => {
       return ''
     })
     mockIsProduction.mockReturnValue(false)
+    mockGetCookieDomain.mockReturnValue(undefined)
   })
 
   describe('getSession', () => {
@@ -105,11 +108,7 @@ describe('session', () => {
 
     it('includes domain restriction in production', async () => {
       mockIsProduction.mockReturnValue(true)
-      mockGetEnvVar.mockImplementation((key: string) => {
-        if (key === 'SESSION_SECRET') return 'test-secret-key-32-chars-long!'
-        if (key === 'BASE_URL') return 'https://example.com'
-        return ''
-      })
+      mockGetCookieDomain.mockReturnValue('example.com')
 
       const mockCookieStore = {} as any
       mockCookies.mockResolvedValue(mockCookieStore)
@@ -122,13 +121,9 @@ describe('session', () => {
       expect(callArgs.cookieOptions.secure).toBe(true)
     })
 
-    it('handles invalid BASE_URL gracefully in production', async () => {
+    it('omits domain when getCookieDomain returns undefined (e.g. invalid BASE_URL)', async () => {
       mockIsProduction.mockReturnValue(true)
-      mockGetEnvVar.mockImplementation((key: string) => {
-        if (key === 'SESSION_SECRET') return 'test-secret-key-32-chars-long!'
-        if (key === 'BASE_URL') return 'not-a-valid-url'
-        return ''
-      })
+      mockGetCookieDomain.mockReturnValue(undefined)
 
       const mockCookieStore = {} as any
       mockCookies.mockResolvedValue(mockCookieStore)

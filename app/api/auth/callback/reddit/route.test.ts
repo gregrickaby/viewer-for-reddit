@@ -10,7 +10,8 @@ vi.mock('@/lib/utils/env', () => ({
     if (key === 'SESSION_SECRET') return 'test-secret-key'
     return ''
   }),
-  isProduction: vi.fn(() => false)
+  isProduction: vi.fn(() => false),
+  getCookieDomain: vi.fn(() => undefined)
 }))
 
 vi.mock('@/lib/datadog/server', () => ({
@@ -35,10 +36,11 @@ vi.mock('@/lib/auth/processOAuthCallback', () => ({
 import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
 import {isAuthenticated, persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
-import {getEnvVar} from '@/lib/utils/env'
+import {getCookieDomain, getEnvVar} from '@/lib/utils/env'
 import {GET} from './route'
 
 const mockGetEnvVar = vi.mocked(getEnvVar)
+const mockGetCookieDomain = vi.mocked(getCookieDomain)
 const mockLogger = vi.mocked(logger)
 const mockProcessOAuthCallback = vi.mocked(processOAuthCallback)
 const mockPersistSession = vi.mocked(persistSession)
@@ -58,6 +60,8 @@ describe('GET /api/auth/callback/reddit', () => {
       if (key === 'SESSION_SECRET') return 'test-secret-key'
       return ''
     })
+
+    mockGetCookieDomain.mockReturnValue(undefined)
 
     // Default: no active session
     mockIsAuthenticated.mockResolvedValue(false)
@@ -145,6 +149,28 @@ describe('GET /api/auth/callback/reddit', () => {
 
     // Cookie is deleted (value is empty)
     expect(stateCookie?.value).toBe('')
+  })
+
+  it('deletes the state cookie with the matching domain in production', async () => {
+    mockGetCookieDomain.mockReturnValue('example.com')
+
+    const request = new NextRequest(
+      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
+      {
+        headers: {
+          cookie: `reddit_oauth_state=${validState}`,
+          host: 'example.com',
+          'x-forwarded-proto': 'https'
+        }
+      }
+    )
+
+    const response = await GET(request)
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+    expect(stateCookie?.value).toBe('')
+    expect(stateCookie?.domain).toBe('example.com')
   })
 
   it('rejects request with OAuth error from Reddit', async () => {

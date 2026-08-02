@@ -4,9 +4,8 @@
  * Session configuration adapts based on environment (development/production).
  */
 
-import {logger} from '@/lib/datadog/server'
 import {SessionData} from '@/lib/types/reddit'
-import {getEnvVar, isProduction} from '@/lib/utils/env'
+import {getCookieDomain, getEnvVar, isProduction} from '@/lib/utils/env'
 import {getIronSession, IronSession, SessionOptions} from 'iron-session'
 import {cookies} from 'next/headers'
 
@@ -37,18 +36,9 @@ export function getSessionOptions(): SessionOptions {
   }
 
   // Add domain restriction in production for enhanced security
-  if (isProduction() && options.cookieOptions) {
-    try {
-      const baseUrl = new URL(getEnvVar('BASE_URL'))
-      options.cookieOptions.domain = baseUrl.hostname
-    } catch (error) {
-      // If BASE_URL is invalid, continue without domain restriction
-      // This is a fallback case - startup validation should catch invalid BASE_URL
-      logger.warn('Invalid BASE_URL, skipping domain restriction', {
-        error: error instanceof Error ? error.message : String(error),
-        context: 'getSessionOptions'
-      })
-    }
+  const domain = getCookieDomain()
+  if (domain && options.cookieOptions) {
+    options.cookieOptions.domain = domain
   }
 
   return options

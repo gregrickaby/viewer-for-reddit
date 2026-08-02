@@ -3,7 +3,8 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock dependencies before imports
 vi.mock('@/lib/utils/env', () => ({
-  isProduction: vi.fn(() => false)
+  isProduction: vi.fn(() => false),
+  getCookieDomain: vi.fn(() => undefined)
 }))
 
 vi.mock('@/lib/datadog/server', () => ({
@@ -25,18 +26,20 @@ vi.mock('@/lib/utils/reddit-auth', () => ({
 
 // Import after mocks
 import {logger} from '@/lib/datadog/server'
-import {isProduction} from '@/lib/utils/env'
+import {getCookieDomain, isProduction} from '@/lib/utils/env'
 import {createLoginUrl} from '@/lib/utils/reddit-auth'
 import {GET} from './route'
 
 const mockCreateLoginUrl = vi.mocked(createLoginUrl)
 const mockIsProduction = vi.mocked(isProduction)
+const mockGetCookieDomain = vi.mocked(getCookieDomain)
 const mockLogger = vi.mocked(logger)
 
 describe('GET /api/auth/login', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockIsProduction.mockReturnValue(false)
+    mockGetCookieDomain.mockReturnValue(undefined)
     mockCreateLoginUrl.mockResolvedValue({url: mockUrl, state: mockState})
   })
 
@@ -108,6 +111,35 @@ describe('GET /api/auth/login', () => {
     const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
     expect(stateCookie).toBeDefined()
     expect(stateCookie?.value).toBe(mockState)
+  })
+
+  it('sets a 15 minute maxAge on the state cookie', async () => {
+    const response = await GET()
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+    expect(stateCookie?.maxAge).toBe(900)
+  })
+
+  it('omits the domain attribute when getCookieDomain returns undefined', async () => {
+    mockGetCookieDomain.mockReturnValue(undefined)
+
+    const response = await GET()
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+    expect(stateCookie?.domain).toBeUndefined()
+  })
+
+  it('sets the domain attribute returned by getCookieDomain', async () => {
+    mockIsProduction.mockReturnValue(true)
+    mockGetCookieDomain.mockReturnValue('reddit-viewer.com')
+
+    const response = await GET()
+
+    const cookies = response.cookies.getAll()
+    const stateCookie = cookies.find((c) => c.name === 'reddit_oauth_state')
+    expect(stateCookie?.domain).toBe('reddit-viewer.com')
   })
 
   it('uses a different state for each call to createLoginUrl', async () => {

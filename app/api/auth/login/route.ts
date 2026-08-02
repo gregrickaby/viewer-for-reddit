@@ -1,6 +1,6 @@
 import {logger} from '@/lib/datadog/server'
-import {TEN_MINUTES} from '@/lib/utils/constants'
-import {isProduction} from '@/lib/utils/env'
+import {FIFTEEN_MINUTES} from '@/lib/utils/constants'
+import {getCookieDomain, isProduction} from '@/lib/utils/env'
 import {getErrorMessage} from '@/lib/utils/errors'
 import {createLoginUrl} from '@/lib/utils/reddit-auth'
 import {NextResponse} from 'next/server'
@@ -34,11 +34,15 @@ export async function GET(): Promise<NextResponse> {
     })
 
     const response = NextResponse.redirect(url.toString())
+    const domain = getCookieDomain()
+
     response.cookies.set('reddit_oauth_state', state, {
       httpOnly: true,
       secure: isProduction(),
       sameSite: 'lax',
-      maxAge: TEN_MINUTES
+      maxAge: FIFTEEN_MINUTES,
+      path: '/',
+      ...(domain ? {domain} : {})
     })
 
     return response

@@ -1,7 +1,7 @@
 import {processOAuthCallback} from '@/lib/auth/processOAuthCallback'
 import {isAuthenticated, persistSession} from '@/lib/auth/session'
 import {logger} from '@/lib/datadog/server'
-import {getEnvVar} from '@/lib/utils/env'
+import {getCookieDomain, getEnvVar} from '@/lib/utils/env'
 import {getErrorMessage} from '@/lib/utils/errors'
 import {NextRequest, NextResponse} from 'next/server'
 import {timingSafeEqual} from 'node:crypto'
@@ -30,6 +30,18 @@ function resolveHostFromRequest(request: NextRequest): {
   }
 
   return {protocol, host}
+}
+
+/**
+ * Deletes the OAuth state cookie, matching the `domain`/`path` it was set
+ * with in the login route so the deletion actually takes effect.
+ */
+function deleteOAuthStateCookie(response: NextResponse): void {
+  response.cookies.delete({
+    name: 'reddit_oauth_state',
+    path: '/',
+    domain: getCookieDomain()
+  })
 }
 
 /**
@@ -91,7 +103,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.redirect(
       new URL(`/?error=${encodeURIComponent(error)}`, `${protocol}://${host}`)
     )
-    response.cookies.delete('reddit_oauth_state')
+    deleteOAuthStateCookie(response)
     return response
   }
 
@@ -132,7 +144,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.redirect(
       new URL('/?error=login_failed', `${protocol}://${host}`)
     )
-    response.cookies.delete('reddit_oauth_state')
+    deleteOAuthStateCookie(response)
     return response
   }
 
@@ -179,7 +191,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const redirectUrl = new URL('/#', `${protocol}://${host}`)
 
     const response = NextResponse.redirect(redirectUrl)
-    response.cookies.delete('reddit_oauth_state')
+    deleteOAuthStateCookie(response)
 
     return response
   } catch (error) {

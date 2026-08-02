@@ -89,3 +89,19 @@ export function isDevelopment(): boolean {
 export function isTest(): boolean {
   return process.env.NODE_ENV === 'test'
 }
+
+/**
+ * Resolves the cookie `domain` attribute for production, derived from
+ * BASE_URL. Returns undefined outside production, or when BASE_URL is
+ * missing/invalid, so callers fall back to a host-only cookie instead of
+ * throwing. Shared by every OAuth-related cookie so they all scope to the
+ * same host consistently.
+ */
+export function getCookieDomain(): string | undefined {
+  if (!isProduction()) return undefined
+  try {
+    return new URL(getEnvVar('BASE_URL')).hostname
+  } catch {
+    return undefined
+  }
+}
