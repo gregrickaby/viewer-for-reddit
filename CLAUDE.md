@@ -36,7 +36,8 @@ npm run sonar         # SonarQube analysis (~6 min)
 - **Writing style**: `.claude/rules/writing-style.md` has no `paths:` frontmatter, so it loads every session. Follow it for all prose.
 - **Conventions**: `.claude/rules/conventions.md` has no `paths:` frontmatter, so it loads every session. Never/Always rules, ask-before list, definition of done.
 - **Skill gap**: no skill covers the task, or unsure how: invoke `find-skills` before improvising.
-- **Minimize subagent spawning**: each Agent/Task call is a separate billed request. Use Read/Grep/Bash directly for single-file lookups or known symbols. Reserve Explore for broad searches (3+ queries, unfamiliar territory); spawn other agents only when asked or when the task needs parallel, isolated work. If possible, choose a lower cost model to save on costs.
+- **Minimize subagent spawning**: each Agent/Task call is a separate billed request. No SDD tasks allowed! Use Read/Grep/Bash directly for single-file lookups or known symbols. Reserve Explore for broad searches (3+ queries, unfamiliar territory); spawn other agents only when asked or when the task needs parallel, isolated work. If possible, choose a lower cost model to save on costs.
+- **Never commit plans**: Plans are internal facing, not public facing. Use temp directories on the local machine, not /docs directories in this repo.
 
 ## Instructions
 
