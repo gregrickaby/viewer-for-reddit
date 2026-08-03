@@ -49,7 +49,7 @@
     "dd-trace": "^6.6.0",
     "embla-carousel-react": "^8.6.0",
     "iron-session": "^8.0.4",
-    "next": "^16.3.0-canary.105",
+    "next": "^16.3.0-preview.9",
     "opossum": "^10.0.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
