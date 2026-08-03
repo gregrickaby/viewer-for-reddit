@@ -1,4 +1,5 @@
 import {logger} from '@/lib/datadog/server'
+import {withCircuitBreaker} from '@/lib/utils/circuit-breaker'
 import {headers} from 'next/headers'
 
 export const GENERIC_SERVER_ERROR = 'Something went wrong.'
@@ -35,6 +36,48 @@ export function assertRedditUrl(url: string): void {
   if (parsedUrl.protocol !== 'https:') {
     throw new Error('Invalid protocol - HTTPS required')
   }
+}
+
+/**
+ * Thrown by {@link circuitProtectedFetch} when a Reddit response indicates
+ * upstream trouble (429 or 5xx), carrying the original {@link Response} so
+ * callers can still classify and log it. Counts as a circuit breaker
+ * failure; 401/403/404 responses do not, they prove Reddit answered fine.
+ */
+export class UpstreamStatusError extends Error {
+  public readonly response: Response
+
+  constructor(response: Response) {
+    super(`Reddit upstream error: ${response.status}`)
+    this.name = 'UpstreamStatusError'
+    this.response = response
+  }
+}
+
+/**
+ * Drop-in replacement for `fetch()` at Reddit API call sites. Runs the
+ * request through the shared circuit breaker, throwing
+ * {@link UpstreamStatusError} on 429/5xx so those responses count as
+ * breaker failures. Any other response, including 401/403/404, returns
+ * normally.
+ *
+ * @param url - Fully qualified Reddit API URL
+ * @param init - Standard fetch options
+ * @returns The fetch Response, for any status other than 429/5xx
+ * @throws {UpstreamStatusError} On 429 or 5xx responses
+ * @throws {CircuitOpenError} When the circuit breaker is open
+ */
+export async function circuitProtectedFetch(
+  url: string | URL,
+  init?: RequestInit
+): Promise<Response> {
+  return withCircuitBreaker(async () => {
+    const response = await fetch(url, init)
+    if (response.status === 429 || response.status >= 500) {
+      throw new UpstreamStatusError(response)
+    }
+    return response
+  })
 }
 
 /**

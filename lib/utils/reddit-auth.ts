@@ -1,4 +1,5 @@
 import type {AuthTokens} from '@/lib/types/auth'
+import {withCircuitBreaker} from '@/lib/utils/circuit-breaker'
 import {getEnvVar} from '@/lib/utils/env'
 import {generateState, Reddit} from 'arctic'
 
@@ -81,5 +82,5 @@ export async function exchangeCode(code: string): Promise<AuthTokens> {
  * @throws If Arctic rejects the refresh token or the request fails
  */
 export async function refreshToken(token: string): Promise<AuthTokens> {
-  return getClient().refreshAccessToken(token)
+  return withCircuitBreaker(() => getClient().refreshAccessToken(token))
 }

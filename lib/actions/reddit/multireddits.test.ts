@@ -23,6 +23,7 @@ vi.mock('next/cache', () => ({
 }))
 
 import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'
+import {resetCircuitBreakerForTests} from '@/lib/utils/circuit-breaker'
 import {http, HttpResponse, server} from '@/test-utils'
 import {updateTag} from 'next/cache'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -52,6 +53,7 @@ function createAuthContext(username = 'testuser'): RedditContext {
 
 describe('multireddits server actions', () => {
   beforeEach(() => {
+    resetCircuitBreakerForTests()
     mockGetRedditContext.mockClear()
     mockGetRedditContext.mockResolvedValue(createAuthContext())
   })
@@ -69,6 +71,22 @@ describe('multireddits server actions', () => {
       const multis = await fetchMultireddits()
 
       expect(Array.isArray(multis)).toBe(true)
+    })
+
+    it('returns an empty array once repeated upstream failures open the circuit', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/api/multi/mine', () => {
+          return new HttpResponse(null, {status: 500})
+        })
+      )
+
+      for (let i = 0; i < 5; i++) {
+        await fetchMultireddits()
+      }
+
+      const result = await fetchMultireddits()
+
+      expect(result).toEqual([])
     })
   })
 

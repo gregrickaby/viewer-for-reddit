@@ -23,6 +23,7 @@ import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
   assertRedditUrl,
+  circuitProtectedFetch,
   logFailedResponse
 } from './_helpers'
 import {redditFetch} from './redditFetch'
@@ -214,7 +215,7 @@ async function fetchAutocomplete(
     const url = `${baseUrl}/api/subreddit_autocomplete_v2.json?${params}`
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       headers,
       next: {
         revalidate: CACHE_AUTOCOMPLETE,

@@ -22,6 +22,7 @@ import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
   assertRedditUrl,
+  circuitProtectedFetch,
   logFailedResponse
 } from './_helpers'
 import {redditFetch} from './redditFetch'
@@ -113,7 +114,7 @@ export async function fetchUserSubscriptions(): Promise<
         url.searchParams.set('after', after)
       }
 
-      const response = await fetch(url.toString(), {
+      const response = await circuitProtectedFetch(url.toString(), {
         headers,
         next: {
           revalidate: CACHE_SUBSCRIPTIONS,
@@ -188,7 +189,7 @@ export async function toggleSubscription(
     const url = `${baseUrl}/api/subscribe`
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       method: 'POST',
       headers: {
         ...headers,

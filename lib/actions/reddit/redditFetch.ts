@@ -17,7 +17,9 @@ import {
 } from '@/lib/utils/errors'
 import {
   GENERIC_SERVER_ERROR,
+  UpstreamStatusError,
   assertRedditUrl,
+  circuitProtectedFetch,
   getRequestMetadata
 } from './_helpers'
 
@@ -161,16 +163,32 @@ export async function redditFetch<T>(
     }
   }
 
-  const response = await fetch(url.toString(), {
-    method,
-    headers: context.headers,
-    ...(cache && {
-      next: {
-        ...(cache.revalidate !== undefined && {revalidate: cache.revalidate}),
-        ...(cache.tags && {tags: cache.tags})
-      }
+  let response: Response
+  try {
+    response = await circuitProtectedFetch(url.toString(), {
+      method,
+      headers: context.headers,
+      ...(cache && {
+        next: {
+          ...(cache.revalidate !== undefined && {
+            revalidate: cache.revalidate
+          }),
+          ...(cache.tags && {tags: cache.tags})
+        }
+      })
     })
-  })
+  } catch (error) {
+    if (error instanceof UpstreamStatusError) {
+      await classifyAndThrowError(
+        error.response,
+        url,
+        method,
+        operation,
+        resource
+      )
+    }
+    throw error
+  }
 
   if (!response.ok) {
     await classifyAndThrowError(response, url, method, operation, resource)

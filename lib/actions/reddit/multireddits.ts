@@ -15,6 +15,7 @@ import {updateTag} from 'next/cache'
 import {
   GENERIC_ACTION_ERROR,
   assertRedditUrl,
+  circuitProtectedFetch,
   logFailedResponse
 } from './_helpers'
 
@@ -84,7 +85,7 @@ async function mutateMultiredditMember(
   const url = buildMultiUrl(baseUrl, normalizedPath, member)
   assertRedditUrl(url)
 
-  const response = await fetch(url, {
+  const response = await circuitProtectedFetch(url, {
     method,
     headers:
       method === 'PUT'
@@ -127,7 +128,7 @@ export async function fetchMultireddits(): Promise<
     const url = `${baseUrl}/api/multi/mine`
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       headers,
       next: {
         revalidate: CACHE_SUBSCRIPTIONS,
@@ -203,7 +204,7 @@ export async function createMultireddit(
     const url = `${baseUrl}/api/multi`
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       method: 'POST',
       headers: {
         ...headers,
@@ -266,7 +267,10 @@ export async function deleteMultireddit(
     const url = buildMultiUrl(baseUrl, normalizedPath)
     assertRedditUrl(url)
 
-    const response = await fetch(url, {method: 'DELETE', headers})
+    const response = await circuitProtectedFetch(url, {
+      method: 'DELETE',
+      headers
+    })
 
     if (!response.ok) {
       await logFailedResponse(response, url, 'DELETE', 'deleteMultireddit', {
@@ -323,7 +327,7 @@ export async function updateMultiredditName(
     const url = buildMultiUrl(baseUrl, normalizedPath)
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       method: 'PUT',
       headers: {
         ...headers,

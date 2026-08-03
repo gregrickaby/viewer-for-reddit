@@ -27,6 +27,7 @@ import {
   GENERIC_ACTION_ERROR,
   GENERIC_SERVER_ERROR,
   assertRedditUrl,
+  circuitProtectedFetch,
   logFailedResponse
 } from './_helpers'
 import {redditFetch} from './redditFetch'
@@ -217,7 +218,7 @@ export async function fetchSavedItems(
       url: url.toString()
     })
 
-    const response = await fetch(url.toString(), {
+    const response = await circuitProtectedFetch(url.toString(), {
       headers,
       next: {
         revalidate: CACHE_USER_INFO,
@@ -305,7 +306,7 @@ export async function fetchFollowedUsers(): Promise<
     const url = `${baseUrl}/api/v1/me/friends`
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       headers,
       next: {
         revalidate: CACHE_SUBSCRIPTIONS,
@@ -369,7 +370,7 @@ export async function followUser(
     const url = `${baseUrl}/api/v1/me/friends/${encodeURIComponent(username)}`
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       method: 'PUT',
       headers: {
         ...headers,
@@ -420,7 +421,7 @@ export async function unfollowUser(
     const url = `${baseUrl}/api/v1/me/friends/${encodeURIComponent(username)}`
     assertRedditUrl(url)
 
-    const response = await fetch(url, {
+    const response = await circuitProtectedFetch(url, {
       method: 'DELETE',
       headers
     })
@@ -469,7 +470,7 @@ export async function savePost(
     const url = `${baseUrl}/api/${endpoint}`
     assertRedditUrl(url)
 
-    const res = await fetch(url, {
+    const res = await circuitProtectedFetch(url, {
       method: 'POST',
       headers: {
         ...headers,
@@ -522,7 +523,7 @@ export async function votePost(
     const url = `${baseUrl}/api/vote`
     assertRedditUrl(url)
 
-    const res = await fetch(url, {
+    const res = await circuitProtectedFetch(url, {
       method: 'POST',
       headers: {
         ...headers,

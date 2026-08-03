@@ -2,6 +2,7 @@ import {describe, expect, it} from 'vitest'
 import {
   AppError,
   AuthenticationError,
+  CircuitOpenError,
   getErrorMessage,
   NotFoundError,
   RedditAPIError
@@ -125,6 +126,25 @@ describe('NotFoundError', () => {
       name: 'NotFoundError',
       resource: 'r/test'
     })
+  })
+})
+
+describe('CircuitOpenError', () => {
+  it('creates a 503 error for an open circuit', () => {
+    const error = new CircuitOpenError('Circuit is open', 'redditFetch', {
+      resource: 'popular'
+    })
+
+    expect(error.statusCode).toBe(503)
+    expect(error.operation).toBe('redditFetch')
+    expect(error.context).toEqual({resource: 'popular'})
+    expect(error.name).toBe('CircuitOpenError')
+  })
+
+  it('defaults to an empty context', () => {
+    const error = new CircuitOpenError('Circuit is open', 'redditFetch')
+
+    expect(error.context).toEqual({})
   })
 })
 

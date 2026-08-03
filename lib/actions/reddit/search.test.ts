@@ -23,6 +23,7 @@ vi.mock('next/cache', () => ({
 }))
 
 import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'
+import {resetCircuitBreakerForTests} from '@/lib/utils/circuit-breaker'
 import {http, HttpResponse, server} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {
@@ -47,6 +48,7 @@ function createAuthContext(username = 'testuser'): RedditContext {
 
 describe('search server actions', () => {
   beforeEach(() => {
+    resetCircuitBreakerForTests()
     mockGetRedditContext.mockClear()
     mockGetRedditContext.mockResolvedValue(createAuthContext())
   })
@@ -334,6 +336,25 @@ describe('search server actions', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
+    it('degrades to a generic error once repeated upstream failures open the circuit', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => {
+            return new HttpResponse(null, {status: 500})
+          }
+        )
+      )
+
+      for (let i = 0; i < 5; i++) {
+        await searchSubreddits('tech')
+      }
+
+      const result = await searchSubreddits('tech')
+
+      expect(result.success).toBe(false)
     })
   })
 

@@ -124,6 +124,21 @@ export class NotFoundError extends AppError {
 }
 
 /**
+ * Error for a Reddit API call rejected because the shared circuit breaker
+ * is open. Always carries a 503 status code, since the breaker being open
+ * means the app itself is refusing the call, not Reddit.
+ */
+export class CircuitOpenError extends AppError {
+  constructor(
+    message: string,
+    operation: string,
+    context: Record<string, unknown> = {}
+  ) {
+    super(message, operation, context, 503)
+  }
+}
+
+/**
  * Safely extract error message from unknown error type.
  */
 export function getErrorMessage(error: unknown): string {

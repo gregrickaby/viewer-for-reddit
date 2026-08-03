@@ -34,8 +34,10 @@ vi.mock('next/headers', () => ({
 }))
 
 import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'
+import {resetCircuitBreakerForTests} from '@/lib/utils/circuit-breaker'
 import {
   AuthenticationError,
+  CircuitOpenError,
   NotFoundError,
   RedditAPIError
 } from '@/lib/utils/errors'
@@ -66,6 +68,7 @@ function createAuthContext(): RedditContext {
 
 describe('redditFetch', () => {
   beforeEach(() => {
+    resetCircuitBreakerForTests()
     mockGetRedditContext.mockReset()
     mockGetRedditContext.mockResolvedValue(createAuthContext())
   })
@@ -326,6 +329,66 @@ describe('redditFetch', () => {
       expect(result.data.children).toHaveLength(1)
       expect(result.data.children[0].data.title).toBe('Test Post')
       expect(result.data.after).toBe('t3_xyz')
+    })
+  })
+
+  // -------------------------------------------------------------------------
+  // Circuit breaker
+  // -------------------------------------------------------------------------
+
+  describe('circuit breaker', () => {
+    it('throws CircuitOpenError once repeated upstream failures open the circuit', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+          return new HttpResponse('Internal Server Error', {status: 500})
+        })
+      )
+
+      for (let i = 0; i < 5; i++) {
+        await expect(
+          redditFetch('/r/test/hot.json', {
+            operation: 'fetchPosts',
+            resource: 'test'
+          })
+        ).rejects.toThrow(RedditAPIError)
+      }
+
+      await expect(
+        redditFetch('/r/test/hot.json', {
+          operation: 'fetchPosts',
+          resource: 'test'
+        })
+      ).rejects.toThrow(CircuitOpenError)
+    })
+
+    it('does not count 401 toward the breaker (five 401s do not open it)', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+          return new HttpResponse('Unauthorized', {status: 401})
+        })
+      )
+
+      for (let i = 0; i < 5; i++) {
+        await expect(
+          redditFetch('/r/test/hot.json', {
+            operation: 'fetchPosts',
+            resource: 'test'
+          })
+        ).rejects.toThrow(AuthenticationError)
+      }
+
+      server.use(
+        http.get('https://oauth.reddit.com/r/popular/hot.json', () => {
+          return HttpResponse.json({data: {children: []}})
+        })
+      )
+
+      // Still closed: a 6th, unrelated successful call goes through normally.
+      const result = await redditFetch<{data: {children: unknown[]}}>(
+        '/r/popular/hot.json',
+        {operation: 'fetchPosts'}
+      )
+      expect(result.data.children).toEqual([])
     })
   })
 })

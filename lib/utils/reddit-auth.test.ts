@@ -1,3 +1,5 @@
+import {resetCircuitBreakerForTests} from '@/lib/utils/circuit-breaker'
+import {CircuitOpenError} from '@/lib/utils/errors'
 import {beforeEach, describe, expect, it, vi, type Mock} from 'vitest'
 
 // Declare globals for TypeScript
@@ -50,6 +52,7 @@ import {createLoginUrl, exchangeCode, refreshToken} from './reddit-auth'
 
 describe('lib/reddit-auth', () => {
   beforeEach(() => {
+    resetCircuitBreakerForTests()
     vi.clearAllMocks()
     globalThis.mockArcticGenerateState.mockReturnValue('mock-state-abc123')
     globalThis.mockArcticCreateAuthorizationURL.mockImplementation(
@@ -208,6 +211,22 @@ describe('lib/reddit-auth', () => {
       )
 
       await expect(refreshToken('stale-token')).rejects.toThrow('token_expired')
+    })
+
+    it('throws CircuitOpenError once repeated upstream failures open the circuit', async () => {
+      globalThis.mockArcticRefreshAccessToken.mockRejectedValue(
+        new Error('network failure')
+      )
+
+      for (let i = 0; i < 5; i++) {
+        await expect(refreshToken('stale-token')).rejects.toThrow(
+          'network failure'
+        )
+      }
+
+      await expect(refreshToken('stale-token')).rejects.toThrow(
+        CircuitOpenError
+      )
     })
   })
 })

@@ -23,8 +23,10 @@ vi.mock('next/cache', () => ({
 }))
 
 import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'
+import {resetCircuitBreakerForTests} from '@/lib/utils/circuit-breaker'
 import {http, HttpResponse, server} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {GENERIC_ACTION_ERROR} from './_helpers'
 import {
   fetchFollowedUsers,
   fetchSavedItems,
@@ -52,6 +54,7 @@ function createAuthContext(username = 'testuser'): RedditContext {
 
 describe('users server actions', () => {
   beforeEach(() => {
+    resetCircuitBreakerForTests()
     mockGetRedditContext.mockClear()
     mockGetRedditContext.mockResolvedValue(createAuthContext())
   })
@@ -106,6 +109,22 @@ describe('users server actions', () => {
       const result = await savePost('t3_test123', false)
 
       expect(result.success).toBe(true)
+    })
+
+    it('degrades to a generic error once repeated upstream failures open the circuit', async () => {
+      server.use(
+        http.post('https://oauth.reddit.com/api/save', () => {
+          return new HttpResponse(null, {status: 500})
+        })
+      )
+
+      for (let i = 0; i < 5; i++) {
+        await savePost('t3_abc', true)
+      }
+
+      const result = await savePost('t3_abc', true)
+
+      expect(result).toEqual({success: false, error: GENERIC_ACTION_ERROR})
     })
   })
 
