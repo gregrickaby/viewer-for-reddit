@@ -3,6 +3,7 @@
 import {SortTabs, TIME_FILTER_TABS} from '@/components/ui/SortTabs/SortTabs'
 import {TransitionOverlay} from '@/components/ui/TransitionOverlay/TransitionOverlay'
 import {useInfiniteScroll} from '@/lib/hooks/useInfiniteScroll'
+import {useSortNavigation} from '@/lib/hooks/useSortNavigation'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {Center, Group, Loader, Stack, Text} from '@mantine/core'
 import {
@@ -11,8 +12,6 @@ import {
   IconRocket,
   IconTrendingUp
 } from '@tabler/icons-react'
-import {useRouter} from 'next/navigation'
-import {useTransition} from 'react'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import styles from '@/components/ui/PostList/PostList.module.css'
 
@@ -69,9 +68,6 @@ export function PostListWithTabs({
   subreddit,
   username
 }: Readonly<PostListWithTabsProps>) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-
   const {posts, hasMore, sentinelRef} = useInfiniteScroll({
     initialPosts,
     initialAfter,
@@ -81,27 +77,13 @@ export function PostListWithTabs({
     timeFilter: activeTimeFilter
   })
 
-  const handleSortChange = (sort: string) => {
-    if (isPending) return // Prevent race conditions
-
-    startTransition(() => {
-      // Keep time filter when switching to top/controversial, default to week
-      if (sort === 'top' || sort === 'controversial') {
-        const timeFilter = activeTimeFilter || 'week'
-        router.push(`?sort=${sort}&time=${timeFilter}`)
-      } else {
-        router.push(`?sort=${sort}`)
-      }
+  const {isPending, handleSortChange, handleTimeFilterChange} =
+    useSortNavigation({
+      activeSort,
+      activeTimeFilter,
+      buildHref: ({sort, time}) =>
+        time ? `?sort=${sort}&time=${time}` : `?sort=${sort}`
     })
-  }
-
-  const handleTimeFilterChange = (time: string) => {
-    if (isPending) return // Prevent race conditions
-
-    startTransition(() => {
-      router.push(`?sort=${activeSort}&time=${time}`)
-    })
-  }
 
   const showTimeFilter = activeSort === 'top' || activeSort === 'controversial'
 

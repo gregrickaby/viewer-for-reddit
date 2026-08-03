@@ -1,39 +1,10 @@
 'use client'
 
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/datadog/client'
-import {addNextjsError} from '@datadog/browser-rum-nextjs'
-import {Container, Stack} from '@mantine/core'
-import {useEffect} from 'react'
+import {createRouteErrorBoundary} from '@/components/ui/ErrorDisplay/RouteErrorBoundary'
 
-/**
- * Error boundary for user profile pages.
- * Catches errors in /u/[username] routes.
- *
- * @param error - Error object with optional digest
- * @param reset - Function to re-render the route segment
- */
-export default function RouteError({
-  error,
-  reset
-}: Readonly<{
-  error: Error & {digest?: string}
-  reset: () => void
-}>) {
-  useEffect(() => {
-    addNextjsError(error)
-    logger.error('User profile page error', {
-      error: error.message,
-      context: 'UserProfilePageError',
-      digest: error.digest
-    })
-  }, [error])
-
-  return (
-    <Container size="lg">
-      <Stack gap="xl" maw={800} mx="auto">
-        <ErrorDisplay onReset={reset} />
-      </Stack>
-    </Container>
-  )
-}
+export default createRouteErrorBoundary({
+  message: 'User profile page error',
+  context: 'UserProfilePageError',
+  containerSize: 'lg',
+  centered: true
+})

@@ -1,37 +1,12 @@
 'use client'
 
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/datadog/client'
-import {addNextjsError} from '@datadog/browser-rum-nextjs'
-import {useEffect} from 'react'
+import {createRouteErrorBoundary} from '@/components/ui/ErrorDisplay/RouteErrorBoundary'
 
 /**
- * Error boundary for main layout routes.
- * Catches errors in /, /r/*, /u/*, /search/*, etc.
- *
- * Next.js automatically wraps route segments with this error boundary.
- * Provides reset functionality to attempt recovery.
- *
- * @param error - Error object with optional digest
- * @param reset - Function to re-render the route segment
- *
+ * Error boundary for main layout routes: /, /r/*, /u/*, /search/*, etc.
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/error
  */
-export default function RouteError({
-  error,
-  reset
-}: Readonly<{
-  error: Error & {digest?: string}
-  reset: () => void
-}>) {
-  useEffect(() => {
-    addNextjsError(error)
-    logger.error('Route error caught', {
-      error: error.message,
-      context: 'MainLayoutError',
-      digest: error.digest
-    })
-  }, [error])
-
-  return <ErrorDisplay onReset={reset} />
-}
+export default createRouteErrorBoundary({
+  message: 'Route error caught',
+  context: 'MainLayoutError'
+})

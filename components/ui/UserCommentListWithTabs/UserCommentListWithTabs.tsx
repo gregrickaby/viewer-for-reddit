@@ -3,6 +3,7 @@
 import {SortTabs, TIME_FILTER_TABS} from '@/components/ui/SortTabs/SortTabs'
 import {TransitionOverlay} from '@/components/ui/TransitionOverlay/TransitionOverlay'
 import {Comment} from '@/components/ui/Comment/Comment'
+import {useSortNavigation} from '@/lib/hooks/useSortNavigation'
 import {RedditComment, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {Box, Group, Stack, Text, Title} from '@mantine/core'
@@ -12,8 +13,6 @@ import {
   IconRocket,
   IconTrendingUp
 } from '@tabler/icons-react'
-import {useRouter} from 'next/navigation'
-import {useTransition} from 'react'
 
 const USER_COMMENT_SORT_TABS = [
   {
@@ -62,44 +61,23 @@ export function UserCommentListWithTabs({
   activeTimeFilter,
   username
 }: Readonly<UserCommentListWithTabsProps>) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  const {isPending, handleSortChange, handleTimeFilterChange} =
+    useSortNavigation({
+      activeSort,
+      activeTimeFilter,
+      navigateOptions: {scroll: false},
+      buildHref: ({sort, time}) => {
+        const href = getUserProfileHref(username)
+        if (!href) return null
 
-  const handleSortChange = (sort: string) => {
-    if (isPending) return // Prevent race conditions
+        const params = new URLSearchParams()
+        params.set('tab', 'comments')
+        params.set('sort', sort)
+        if (time) params.set('time', time)
 
-    const href = getUserProfileHref(username)
-    if (!href) return
-
-    startTransition(() => {
-      const params = new URLSearchParams()
-      params.set('tab', 'comments')
-      params.set('sort', sort)
-
-      // Add time filter for top/controversial
-      if ((sort === 'top' || sort === 'controversial') && activeTimeFilter) {
-        params.set('time', activeTimeFilter)
+        return `${href}?${params.toString()}`
       }
-
-      router.push(`${href}?${params.toString()}`, {scroll: false})
     })
-  }
-
-  const handleTimeFilterChange = (time: string) => {
-    if (isPending) return
-
-    const href = getUserProfileHref(username)
-    if (!href) return
-
-    startTransition(() => {
-      const params = new URLSearchParams()
-      params.set('tab', 'comments')
-      params.set('sort', activeSort)
-      params.set('time', time)
-
-      router.push(`${href}?${params.toString()}`, {scroll: false})
-    })
-  }
 
   const showTimeFilter = activeSort === 'top' || activeSort === 'controversial'
 

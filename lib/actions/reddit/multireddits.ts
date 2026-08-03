@@ -59,6 +59,53 @@ function toUserSubredditName(username: string): string {
 }
 
 /**
+ * Adds or removes a member subreddit (a real subreddit, or a user's
+ * `u_{username}` profile subreddit) from a multireddit via the
+ * `/api/multi/{path}/r/{member}` endpoint.
+ *
+ * @param normalizedPath - Multireddit path without surrounding slashes
+ * @param member - Member subreddit name to scope the request to
+ * @param method - `PUT` to add, `DELETE` to remove
+ * @param actionName - Server Action name, used for failure log context
+ * @param successLog - Datadog log message on success
+ * @param logFields - Fields attached to both the failure and success log entries
+ * @returns Promise resolving to success status and optional error
+ */
+async function mutateMultiredditMember(
+  normalizedPath: string,
+  member: string,
+  method: 'PUT' | 'DELETE',
+  actionName: string,
+  successLog: string,
+  logFields: Record<string, string>
+): Promise<{success: boolean; error?: string}> {
+  const {headers, baseUrl} = await getRedditContext()
+
+  const url = buildMultiUrl(baseUrl, normalizedPath, member)
+  assertRedditUrl(url)
+
+  const response = await fetch(url, {
+    method,
+    headers:
+      method === 'PUT'
+        ? {...headers, 'Content-Type': 'application/x-www-form-urlencoded'}
+        : headers,
+    ...(method === 'PUT' && {
+      body: new URLSearchParams({model: JSON.stringify({name: member})})
+    })
+  })
+
+  if (!response.ok) {
+    await logFailedResponse(response, url, method, actionName, logFields)
+    return {success: false, error: GENERIC_ACTION_ERROR}
+  }
+
+  updateTag('multireddits')
+  logger.debug(successLog, logFields)
+  return {success: true}
+}
+
+/**
  * Fetch authenticated user's custom multireddits.
  * Server Action with Next.js fetch caching.
  * Results cached for 10 minutes. Returns empty array when not authenticated.
@@ -341,39 +388,14 @@ export async function addSubredditToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl} = await getRedditContext()
-
-    const url = buildMultiUrl(baseUrl, normalizedPath, cleanSubreddit)
-    assertRedditUrl(url)
-
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        ...headers,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({
-        model: JSON.stringify({name: cleanSubreddit})
-      })
-    })
-
-    if (!response.ok) {
-      await logFailedResponse(
-        response,
-        url,
-        'PUT',
-        'addSubredditToMultireddit',
-        {multiPath, subredditName: cleanSubreddit}
-      )
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
-
-    updateTag('multireddits')
-    logger.debug('Added subreddit to multireddit successfully', {
-      multiPath,
-      subredditName: cleanSubreddit
-    })
-    return {success: true}
+    return await mutateMultiredditMember(
+      normalizedPath,
+      cleanSubreddit,
+      'PUT',
+      'addSubredditToMultireddit',
+      'Added subreddit to multireddit successfully',
+      {multiPath, subredditName: cleanSubreddit}
+    )
   } catch (error) {
     logger.error('Error adding subreddit to multireddit', {
       error: getErrorMessage(error),
@@ -415,30 +437,14 @@ export async function removeSubredditFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl} = await getRedditContext()
-
-    const url = buildMultiUrl(baseUrl, normalizedPath, cleanSubreddit)
-    assertRedditUrl(url)
-
-    const response = await fetch(url, {method: 'DELETE', headers})
-
-    if (!response.ok) {
-      await logFailedResponse(
-        response,
-        url,
-        'DELETE',
-        'removeSubredditFromMultireddit',
-        {multiPath, subredditName: cleanSubreddit}
-      )
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
-
-    updateTag('multireddits')
-    logger.debug('Removed subreddit from multireddit successfully', {
-      multiPath,
-      subredditName: cleanSubreddit
-    })
-    return {success: true}
+    return await mutateMultiredditMember(
+      normalizedPath,
+      cleanSubreddit,
+      'DELETE',
+      'removeSubredditFromMultireddit',
+      'Removed subreddit from multireddit successfully',
+      {multiPath, subredditName: cleanSubreddit}
+    )
   } catch (error) {
     logger.error('Error removing subreddit from multireddit', {
       error: getErrorMessage(error),
@@ -480,37 +486,14 @@ export async function addUserToMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl} = await getRedditContext()
-
-    const userSubreddit = toUserSubredditName(cleanUsername)
-    const url = buildMultiUrl(baseUrl, normalizedPath, userSubreddit)
-    assertRedditUrl(url)
-
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        ...headers,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({
-        model: JSON.stringify({name: userSubreddit})
-      })
-    })
-
-    if (!response.ok) {
-      await logFailedResponse(response, url, 'PUT', 'addUserToMultireddit', {
-        multiPath,
-        username: cleanUsername
-      })
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
-
-    updateTag('multireddits')
-    logger.debug('Added user to multireddit successfully', {
-      multiPath,
-      username: cleanUsername
-    })
-    return {success: true}
+    return await mutateMultiredditMember(
+      normalizedPath,
+      toUserSubredditName(cleanUsername),
+      'PUT',
+      'addUserToMultireddit',
+      'Added user to multireddit successfully',
+      {multiPath, username: cleanUsername}
+    )
   } catch (error) {
     logger.error('Error adding user to multireddit', {
       error: getErrorMessage(error),
@@ -552,31 +535,14 @@ export async function removeUserFromMultireddit(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    const {headers, baseUrl} = await getRedditContext()
-
-    const userSubreddit = toUserSubredditName(cleanUsername)
-    const url = buildMultiUrl(baseUrl, normalizedPath, userSubreddit)
-    assertRedditUrl(url)
-
-    const response = await fetch(url, {method: 'DELETE', headers})
-
-    if (!response.ok) {
-      await logFailedResponse(
-        response,
-        url,
-        'DELETE',
-        'removeUserFromMultireddit',
-        {multiPath, username: cleanUsername}
-      )
-      return {success: false, error: GENERIC_ACTION_ERROR}
-    }
-
-    updateTag('multireddits')
-    logger.debug('Removed user from multireddit successfully', {
-      multiPath,
-      username: cleanUsername
-    })
-    return {success: true}
+    return await mutateMultiredditMember(
+      normalizedPath,
+      toUserSubredditName(cleanUsername),
+      'DELETE',
+      'removeUserFromMultireddit',
+      'Removed user from multireddit successfully',
+      {multiPath, username: cleanUsername}
+    )
   } catch (error) {
     logger.error('Error removing user from multireddit', {
       error: getErrorMessage(error),

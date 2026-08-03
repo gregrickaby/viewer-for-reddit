@@ -1,37 +1,9 @@
 'use client'
 
-import {ErrorDisplay} from '@/components/ui/ErrorDisplay/ErrorDisplay'
-import {logger} from '@/lib/datadog/client'
-import {addNextjsError} from '@datadog/browser-rum-nextjs'
-import {Container} from '@mantine/core'
-import {useEffect} from 'react'
+import {createRouteErrorBoundary} from '@/components/ui/ErrorDisplay/RouteErrorBoundary'
 
-/**
- * Error boundary for saved items pages.
- * Catches errors in /user/[username]/saved routes.
- *
- * @param error - Error object with optional digest
- * @param reset - Function to re-render the route segment
- */
-export default function RouteError({
-  error,
-  reset
-}: Readonly<{
-  error: Error & {digest?: string}
-  reset: () => void
-}>) {
-  useEffect(() => {
-    addNextjsError(error)
-    logger.error('Saved items page error', {
-      error: error.message,
-      context: 'SavedItemsPageError',
-      digest: error.digest
-    })
-  }, [error])
-
-  return (
-    <Container size="lg">
-      <ErrorDisplay onReset={reset} />
-    </Container>
-  )
-}
+export default createRouteErrorBoundary({
+  message: 'Saved items page error',
+  context: 'SavedItemsPageError',
+  containerSize: 'lg'
+})
