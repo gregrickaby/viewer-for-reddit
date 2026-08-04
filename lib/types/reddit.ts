@@ -85,6 +85,8 @@ export interface RedditPost {
   downs: number
   likes?: boolean | null
   saved?: boolean
+  /** True for Reddit's injected ad/promoted posts. Undocumented in the public API schema. */
+  promoted?: boolean
 }
 
 export interface RedditMedia {

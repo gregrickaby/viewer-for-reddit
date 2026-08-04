@@ -23,7 +23,7 @@ import {
   isValidSubredditName,
   isValidUsername
 } from '@/lib/utils/reddit-helpers'
-import {GENERIC_SERVER_ERROR} from './_helpers'
+import {excludePromoted, GENERIC_SERVER_ERROR} from './_helpers'
 import {redditFetch} from './redditFetch'
 
 /**
@@ -108,8 +108,9 @@ export async function fetchPosts(
       resource: subreddit
     })
 
-    const posts = (data.data?.children?.map((child) => child.data) ??
-      []) as RedditPost[]
+    const posts = excludePromoted(data.data?.children).map(
+      (child) => child.data
+    ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
 
     logger.debug('Fetched posts successfully', {
@@ -248,8 +249,9 @@ export async function fetchUserPosts(
       }
     )
 
-    const posts = (data.data?.children?.map((child) => child.data) ??
-      []) as RedditPost[]
+    const posts = excludePromoted(data.data?.children).map(
+      (child) => child.data
+    ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
 
     logger.debug('Fetched user posts successfully', {

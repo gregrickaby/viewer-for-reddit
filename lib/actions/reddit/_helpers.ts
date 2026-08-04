@@ -112,6 +112,23 @@ export async function logFailedResponse(
 }
 
 /**
+ * Filter Reddit's injected promoted/ad posts out of a listing's children.
+ * The `promoted` field isn't part of the public API schema (so it can't be
+ * typed through the generated response types), but Reddit still sets it on
+ * ad listings mixed into organic results.
+ *
+ * @param children - Listing children from a Reddit API response
+ * @returns The children array with promoted posts removed
+ */
+export function excludePromoted<T extends {data?: unknown}>(
+  children: readonly T[] | undefined
+): T[] {
+  return (children ?? []).filter(
+    (child) => !(child.data as {promoted?: boolean} | undefined)?.promoted
+  )
+}
+
+/**
  * Capture incoming request metadata for debugging.
  * Helps identify which clients (e.g., Googlebot) are making requests.
  *

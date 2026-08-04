@@ -24,6 +24,7 @@ import {
   GENERIC_SERVER_ERROR,
   assertRedditUrl,
   circuitProtectedFetch,
+  excludePromoted,
   logFailedResponse
 } from './_helpers'
 import {redditFetch} from './redditFetch'
@@ -69,8 +70,9 @@ export async function searchReddit(
       resource: query
     })
 
-    const posts = (data.data?.children?.map((child) => child.data) ??
-      []) as RedditPost[]
+    const posts = excludePromoted(data.data?.children).map(
+      (child) => child.data
+    ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
 
     logger.debug('Search successful', {
@@ -151,8 +153,9 @@ export async function searchSubreddit(
       }
     )
 
-    const posts = (data.data?.children?.map((child) => child.data) ??
-      []) as RedditPost[]
+    const posts = excludePromoted(data.data?.children).map(
+      (child) => child.data
+    ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
 
     logger.debug('Subreddit search successful', {
