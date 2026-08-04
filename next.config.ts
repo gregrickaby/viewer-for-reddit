@@ -3,6 +3,7 @@ import type {NextConfig} from 'next'
 const nextConfig: NextConfig = {
   reactCompiler: true,
   cacheComponents: true,
+  partialPrefetching: true,
   deploymentId: process.env.SOURCE_COMMIT,
   env: {
     DD_APPLICATION_ID: process.env.DD_APPLICATION_ID,

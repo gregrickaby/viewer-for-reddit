@@ -5,6 +5,10 @@ vi.mock('next/headers', () => ({
   cookies: vi.fn()
 }))
 
+vi.mock('next/server', () => ({
+  connection: vi.fn()
+}))
+
 vi.mock('iron-session', () => ({
   getIronSession: vi.fn()
 }))

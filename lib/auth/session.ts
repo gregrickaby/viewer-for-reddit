@@ -8,6 +8,7 @@ import {SessionData} from '@/lib/types/reddit'
 import {getCookieDomain, getEnvVar, isProduction} from '@/lib/utils/env'
 import {getIronSession, IronSession, SessionOptions} from 'iron-session'
 import {cookies} from 'next/headers'
+import {connection} from 'next/server'
 
 /**
  * Get iron-session configuration options.
@@ -59,6 +60,7 @@ export function getSessionOptions(): SessionOptions {
  * ```
  */
 export async function getSession(): Promise<IronSession<SessionData>> {
+  await connection()
   const cookieStore = await cookies()
   return getIronSession<SessionData>(cookieStore, getSessionOptions())
 }
