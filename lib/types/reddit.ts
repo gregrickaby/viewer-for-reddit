@@ -187,6 +187,16 @@ export interface GalleryItem {
   caption?: string
 }
 
+/**
+ * A single award (gilding) applied to a comment or post.
+ */
+export interface RedditAward {
+  id: string
+  name: string
+  icon_url: string
+  count: number
+}
+
 export interface RedditComment {
   id: string
   name: string
@@ -204,6 +214,7 @@ export interface RedditComment {
   likes?: boolean | null
   score_hidden: boolean
   saved?: boolean
+  all_awardings?: RedditAward[]
 }
 
 export interface RedditCommentListing {

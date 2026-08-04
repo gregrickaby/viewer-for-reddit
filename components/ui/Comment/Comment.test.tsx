@@ -1,7 +1,8 @@
 import {votePost} from '@/lib/actions/reddit/users'
-import {RedditComment} from '@/lib/types/reddit'
+import {RedditAward, RedditComment} from '@/lib/types/reddit'
 import {render, screen, user, waitFor} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+import styles from './Comment.module.css'
 import {Comment} from './Comment'
 
 vi.mock('@/lib/actions/reddit/users', () => ({
@@ -448,6 +449,54 @@ describe('Comment', () => {
       render(<Comment comment={longComment} />)
 
       expect(screen.getByText('A'.repeat(10000))).toBeInTheDocument()
+    })
+  })
+
+  describe('awards', () => {
+    const testAward: RedditAward = {
+      id: 'award_1',
+      name: 'Gold',
+      icon_url: 'https://example.redditstatic.com/gold.png',
+      count: 2
+    }
+
+    it('renders an award icon when the comment has awardings', () => {
+      const awardedComment = {...mockComment, all_awardings: [testAward]}
+      render(<Comment comment={awardedComment} />)
+
+      expect(screen.getByRole('img', {name: 'Gold'})).toBeInTheDocument()
+    })
+
+    it('does not render award icons when the comment has no awardings', () => {
+      render(<Comment comment={mockComment} />)
+
+      expect(screen.queryByRole('img', {name: 'Gold'})).not.toBeInTheDocument()
+    })
+  })
+
+  describe('gilded highlight', () => {
+    const testAward: RedditAward = {
+      id: 'award_1',
+      name: 'Gold',
+      icon_url: 'https://example.redditstatic.com/gold.png',
+      count: 1
+    }
+
+    it('applies the gilded class to the card when the comment has awardings', () => {
+      const awardedComment = {...mockComment, all_awardings: [testAward]}
+      const {container} = render(<Comment comment={awardedComment} />)
+
+      // eslint-disable-next-line testing-library/no-container
+      const card = container.querySelector('.mantine-Card-root')
+      expect(card).toHaveClass(styles.gilded)
+    })
+
+    it('does not apply the gilded class to comments without awardings', () => {
+      const {container} = render(<Comment comment={mockComment} />)
+
+      // eslint-disable-next-line testing-library/no-container
+      const card = container.querySelector('.mantine-Card-root')
+      expect(card).not.toHaveClass(styles.gilded)
     })
   })
 })

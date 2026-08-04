@@ -5,7 +5,10 @@ import {useCommentCollapse} from '@/lib/hooks/useCommentCollapse'
 import {useSavePost} from '@/lib/hooks/useSavePost'
 import {useSharePost} from '@/lib/hooks/useSharePost'
 import {useVote} from '@/lib/hooks/useVote'
-import {RedditComment as RedditCommentType} from '@/lib/types/reddit'
+import {
+  RedditAward,
+  RedditComment as RedditCommentType
+} from '@/lib/types/reddit'
 import {MAX_COMMENT_DEPTH} from '@/lib/utils/constants'
 import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {getUserProfileHref, getVoteColor} from '@/lib/utils/reddit-helpers'
@@ -19,7 +22,8 @@ import {
   Group,
   NumberFormatter,
   Stack,
-  Text
+  Text,
+  Tooltip
 } from '@mantine/core'
 import {notifications} from '@mantine/notifications'
 import {
@@ -31,6 +35,7 @@ import {
   IconChevronUp,
   IconShare
 } from '@tabler/icons-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import styles from './Comment.module.css'
 
@@ -82,6 +87,27 @@ function renderAuthor(author: string) {
     <Anchor component={Link} href={href} size="sm" fw={600} underline="hover">
       u/{author}
     </Anchor>
+  )
+}
+
+/**
+ * Render award icons with tooltips showing award name and count
+ */
+function renderAwards(awardings: RedditAward[]) {
+  return (
+    <Group gap={4}>
+      {awardings.map((award) => (
+        <Tooltip key={award.id} label={`${award.name} × ${award.count}`}>
+          <Image
+            src={award.icon_url}
+            alt={award.name}
+            width={18}
+            height={18}
+            className={styles.awardIcon}
+          />
+        </Tooltip>
+      ))}
+    </Group>
   )
 }
 
@@ -198,6 +224,7 @@ export function Comment({
   })
 
   const isPending = isVotePending || isSavePending
+  const isGilded = Boolean(comment.all_awardings?.length)
 
   const replies =
     comment.replies?.data?.children?.filter(
@@ -218,7 +245,13 @@ export function Comment({
 
   return (
     <Box ml={depth > 0 ? 20 : 0}>
-      <Card withBorder padding="md" radius="md" mb="sm">
+      <Card
+        withBorder
+        padding="md"
+        radius="md"
+        mb="sm"
+        className={isGilded ? styles.gilded : undefined}
+      >
         <Stack gap="sm">
           <Group gap="xs">
             {depth === 0 && (
@@ -243,6 +276,9 @@ export function Comment({
                 {comment.distinguished}
               </Badge>
             )}
+            {comment.all_awardings &&
+              comment.all_awardings.length > 0 &&
+              renderAwards(comment.all_awardings)}
             <Text size="xs" c="dimmed">
               • <TimeAgo timestamp={comment.created_utc} />
             </Text>
