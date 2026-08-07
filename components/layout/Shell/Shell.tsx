@@ -10,10 +10,16 @@ interface ShellProps {
    * fully static -- only the slot's own boundary defers to request time.
    */
   sidebarSlot: React.ReactNode
+  /**
+   * Right-rail content (Recent Posts). Optional -- when omitted, the rail
+   * column simply renders empty. Hidden below the `min-width: 90em`
+   * breakpoint defined in `Shell.module.css`.
+   */
+  railSlot?: React.ReactNode
 }
 
-/** Server-rendered application shell with header, sidebar, and main content area. */
-export function Shell({children, sidebarSlot}: Readonly<ShellProps>) {
+/** Server-rendered application shell with header, sidebar, main content, and right rail. */
+export function Shell({children, sidebarSlot, railSlot}: Readonly<ShellProps>) {
   return (
     <SidebarProvider>
       <div className={styles.shell}>
@@ -24,6 +30,8 @@ export function Shell({children, sidebarSlot}: Readonly<ShellProps>) {
         {sidebarSlot}
 
         <main className={styles.main}>{children}</main>
+
+        <div className={styles.rail}>{railSlot}</div>
       </div>
     </SidebarProvider>
   )

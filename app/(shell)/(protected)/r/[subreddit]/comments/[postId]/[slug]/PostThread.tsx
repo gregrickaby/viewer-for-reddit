@@ -4,6 +4,7 @@ import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
 import {DynamicMetadataMarker} from '@/components/ui/DynamicMetadataMarker/DynamicMetadataMarker'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
+import {RecordRecentPost} from '@/components/ui/RecordRecentPost/RecordRecentPost'
 import {fetchPost} from '@/lib/actions/reddit/posts'
 import {CommentSortOption} from '@/lib/types/reddit'
 import {generatePostMetadata} from '@/lib/utils/metadata-helpers'
@@ -52,7 +53,12 @@ async function PostDetail({params}: Readonly<{params: ThreadParams}>) {
     notFound()
   }
 
-  return <PostCard post={post} showFullText />
+  return (
+    <>
+      <RecordRecentPost post={post} />
+      <PostCard post={post} showFullText />
+    </>
+  )
 }
 
 /**

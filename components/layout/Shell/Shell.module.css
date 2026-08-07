@@ -18,6 +18,18 @@
   min-height: 100vh;
 }
 
+@media (min-width: 90em) {
+  .shell {
+    grid-template-areas:
+      'header header header'
+      'sidebar main rail';
+    grid-template-columns:
+      var(--shell-sidebar-width, 300px)
+      1fr
+      var(--shell-rail-width, 320px);
+  }
+}
+
 /* ── Header ─────────────────────────────────────────── */
 
 .header {
@@ -59,6 +71,30 @@
   grid-area: main;
   padding: var(--mantine-spacing-md);
   min-width: 0;
+}
+
+/* ── Rail (Recent Posts, wide viewports only) ──────────── */
+
+.rail {
+  display: none;
+}
+
+@media (min-width: 90em) {
+  .rail {
+    grid-area: rail;
+    display: block;
+    width: var(--shell-rail-width, 320px);
+    height: calc(100vh - 60px);
+    position: sticky;
+    top: 60px;
+    overflow-y: auto;
+    padding: var(--mantine-spacing-md);
+    /* BossButton is fixed at top:96px, height:48px (viewport-relative), so
+     * its bottom edge sits at y=144. This rail pins at top:60px, so clear
+     * that with extra top padding instead of letting the button overlap
+     * the first recent post. */
+    padding-top: 108px;
+  }
 }
 
 /* ── Overlay (mobile backdrop) ──────────────────────── */

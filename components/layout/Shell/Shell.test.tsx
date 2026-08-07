@@ -44,6 +44,19 @@ describe('Shell', () => {
       expect(screen.getByText('Sidebar')).toBeInTheDocument()
     })
 
+    it('renders the provided railSlot', () => {
+      render(
+        <Shell
+          sidebarSlot={<div data-testid="sidebar-slot" />}
+          railSlot={<div data-testid="rail-slot">Recent posts</div>}
+        >
+          Content
+        </Shell>
+      )
+
+      expect(screen.getByTestId('rail-slot')).toBeInTheDocument()
+    })
+
     it('wraps content in SidebarProvider', () => {
       render(
         <Shell sidebarSlot={<div data-testid="sidebar-slot" />}>Content</Shell>
