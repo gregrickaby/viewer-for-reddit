@@ -1,3 +1,4 @@
+import {DesktopSearch} from '@/components/layout/Header/DesktopSearch'
 import {MobileSearch} from '@/components/layout/Header/MobileSearch'
 import {Logo} from '@/components/layout/Logo/Logo'
 import {SidebarToggle} from '@/components/layout/Sidebar/SidebarToggle'
@@ -10,8 +11,8 @@ import {Suspense} from 'react'
 
 /**
  * Application header with navigation and search. Displays logo, navigation
- * toggles, user menu, and (once signed in) search, since Reddit's API
- * requires an authenticated user context.
+ * toggles, a wide centered search bar, and user menu, since Reddit's API
+ * requires an authenticated user context for search.
  *
  * Resolves its own auth state (via Suspense-wrapped children) rather than
  * taking it as props, so the static chrome (logo, toggles) never blocks on
@@ -19,18 +20,19 @@ import {Suspense} from 'react'
  */
 export function Header() {
   return (
-    <Group
-      h="100%"
-      px={{base: 'sm', sm: 'md'}}
-      justify="space-between"
-      gap="xs"
-    >
-      <Group gap="xs">
+    <Group h="100%" px={{base: 'sm', sm: 'md'}} wrap="nowrap" gap="md">
+      <Group gap="xs" wrap="nowrap" style={{flexShrink: 0}}>
         <SidebarToggle />
         <Logo />
       </Group>
 
-      <Group gap="xs">
+      <Group justify="center" visibleFrom="sm" style={{flex: 1}}>
+        <Suspense fallback={null}>
+          <HeaderDesktopSearch />
+        </Suspense>
+      </Group>
+
+      <Group gap="xs" wrap="nowrap" style={{flexShrink: 0}}>
         <Suspense fallback={null}>
           <HeaderMobileSearch />
         </Suspense>
@@ -48,6 +50,11 @@ export function Header() {
 export async function HeaderMobileSearch() {
   const authenticated = await isAuthenticated()
   return authenticated ? <MobileSearch /> : null
+}
+
+export async function HeaderDesktopSearch() {
+  const authenticated = await isAuthenticated()
+  return authenticated ? <DesktopSearch /> : null
 }
 
 export async function HeaderUserMenu() {

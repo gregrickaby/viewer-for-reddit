@@ -32,6 +32,10 @@ vi.mock('./MobileSearch', () => ({
   MobileSearch: () => <div data-testid="searchbar">Search</div>
 }))
 
+vi.mock('./DesktopSearch', () => ({
+  DesktopSearch: () => <div data-testid="desktop-search">Search</div>
+}))
+
 vi.mock('../UserMenu/UserMenu', () => ({
   UserMenu: ({username}: {username?: string}) => (
     <div data-testid="usermenu">
@@ -50,7 +54,12 @@ vi.mock('@/components/ui/ThemeToggle/ThemeToggle', () => ({
 
 import {getCurrentUserAvatar} from '@/lib/actions/reddit/users'
 import {getSession, isAuthenticated} from '@/lib/auth/session'
-import {Header, HeaderMobileSearch, HeaderUserMenu} from './Header'
+import {
+  Header,
+  HeaderDesktopSearch,
+  HeaderMobileSearch,
+  HeaderUserMenu
+} from './Header'
 
 const mockIsAuthenticated = vi.mocked(isAuthenticated)
 const mockGetSession = vi.mocked(getSession)
@@ -103,6 +112,24 @@ describe('HeaderMobileSearch', () => {
     render(<>{await HeaderMobileSearch()}</>)
 
     expect(screen.getByTestId('searchbar')).toBeInTheDocument()
+  })
+})
+
+describe('HeaderDesktopSearch', () => {
+  it('renders nothing when not authenticated', async () => {
+    mockIsAuthenticated.mockResolvedValue(false)
+
+    render(<>{await HeaderDesktopSearch()}</>)
+
+    expect(screen.queryByTestId('desktop-search')).not.toBeInTheDocument()
+  })
+
+  it('renders DesktopSearch when authenticated', async () => {
+    mockIsAuthenticated.mockResolvedValue(true)
+
+    render(<>{await HeaderDesktopSearch()}</>)
+
+    expect(screen.getByTestId('desktop-search')).toBeInTheDocument()
   })
 })
 
