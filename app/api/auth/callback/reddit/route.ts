@@ -92,8 +92,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     })
     const {protocol, host} = resolveHostFromRequest(request)
 
+    // Appending # prevents the OAuth provider from injecting #_=_
     const response = NextResponse.redirect(
-      new URL(`/?error=${encodeURIComponent(error)}`, `${protocol}://${host}`)
+      new URL(`/?error=${encodeURIComponent(error)}#`, `${protocol}://${host}`)
     )
     deleteOAuthStateCookie(response)
     return response
@@ -131,7 +132,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       context: 'OAuth'
     })
     const response = NextResponse.redirect(
-      new URL('/?error=login_failed', `${protocol}://${host}`)
+      new URL('/?error=login_failed#', `${protocol}://${host}`)
     )
     deleteOAuthStateCookie(response)
     return response

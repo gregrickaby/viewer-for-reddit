@@ -62,4 +62,10 @@ describe('LandingPage', () => {
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
+
+  it('passes the error search param through to SignInErrorAlert', () => {
+    render(<LandingPage error="access_denied" />)
+
+    expect(screen.getByText(/sign-in didn't complete/i)).toBeInTheDocument()
+  })
 })

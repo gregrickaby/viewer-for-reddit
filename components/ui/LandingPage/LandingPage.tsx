@@ -1,5 +1,6 @@
 import AppIcon from '@/app/icon.png'
 import {AppLink} from '@/components/ui/AppLink/AppLink'
+import {SignInErrorAlert} from '@/components/ui/SignInErrorAlert/SignInErrorAlert'
 import {appConfig} from '@/lib/config/app.config'
 import {Button, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
 import {
@@ -14,8 +15,13 @@ import {
 import Image from 'next/image'
 import Script from 'next/script'
 
+interface LandingPageProps {
+  /** OAuth error code from a failed or declined sign-in redirect, e.g. "access_denied" */
+  error?: string
+}
+
 /** Landing page for unauthenticated users - markets the application. */
-export function LandingPage() {
+export function LandingPage({error}: Readonly<LandingPageProps>) {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -99,6 +105,8 @@ export function LandingPage() {
         dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData)}}
       />
       <Container size="sm" py="xl">
+        <SignInErrorAlert error={error} />
+
         <section aria-labelledby="hero-heading" style={{marginBottom: '4rem'}}>
           <Stack align="center" gap="lg">
             <Image

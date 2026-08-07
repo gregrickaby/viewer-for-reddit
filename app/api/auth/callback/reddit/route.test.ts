@@ -189,7 +189,7 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe(
-      'https://example.com/?error=access_denied'
+      'https://example.com/?error=access_denied#'
     )
     expect(mockLogger.error).toHaveBeenCalledWith(
       'OAuth error from Reddit',
@@ -216,7 +216,7 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe(
-      'https://example.com/?error=login_failed'
+      'https://example.com/?error=login_failed#'
     )
 
     // Verify state cookie is deleted on error
@@ -239,7 +239,7 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe(
-      'https://example.com/?error=login_failed'
+      'https://example.com/?error=login_failed#'
     )
   })
 
@@ -255,7 +255,7 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe(
-      'https://example.com/?error=login_failed'
+      'https://example.com/?error=login_failed#'
     )
   })
 
@@ -293,7 +293,7 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe(
-      'https://example.com/?error=login_failed'
+      'https://example.com/?error=login_failed#'
     )
     expect(mockLogger.error).toHaveBeenCalledWith(
       'State validation failed - possible CSRF attack',

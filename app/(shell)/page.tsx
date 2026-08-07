@@ -11,7 +11,7 @@ import {Suspense} from 'react'
 import {SortOption, TimeFilter} from '@/lib/types/reddit'
 
 interface PageProps {
-  searchParams: Promise<{sort?: string; time?: string}>
+  searchParams: Promise<{sort?: string; time?: string; error?: string}>
 }
 
 /**
@@ -92,12 +92,12 @@ async function HomeContent({
   searchParams: PageProps['searchParams']
 }>) {
   const authenticated = await isAuthenticated()
+  const {sort, time, error} = await searchParams
 
   if (!authenticated) {
-    return <LandingPage />
+    return <LandingPage error={error} />
   }
 
-  const {sort, time} = await searchParams
   const postSort = (sort as SortOption) || 'hot'
   const timeFilter = time as TimeFilter | undefined
 
