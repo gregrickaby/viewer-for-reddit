@@ -1,5 +1,5 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import {Container} from '@mantine/core'
 
 /**
  * Loading UI for main layout routes.
@@ -11,10 +11,8 @@ import {Container} from '@mantine/core'
  */
 export default function Loading() {
   return (
-    <Container size="lg">
-      <div style={{maxWidth: '800px', margin: '0 auto'}}>
-        <TabsSkeleton />
-      </div>
-    </Container>
+    <FeedContainer>
+      <TabsSkeleton />
+    </FeedContainer>
   )
 }

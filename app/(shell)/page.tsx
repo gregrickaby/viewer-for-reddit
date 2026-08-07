@@ -1,10 +1,11 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {LandingPage} from '@/components/ui/LandingPage/LandingPage'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {isAuthenticated} from '@/lib/auth/session'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {appConfig} from '@/lib/config/app.config'
-import {Container, Title} from '@mantine/core'
+import {Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 
@@ -102,17 +103,15 @@ async function HomeContent({
   const timeFilter = time as TimeFilter | undefined
 
   return (
-    <Container size="lg">
-      <div style={{maxWidth: '800px', margin: '0 auto'}}>
-        <Title order={2} mb="lg">
-          Your Feed
-        </Title>
+    <FeedContainer>
+      <Title order={2} mb="lg">
+        Your Feed
+      </Title>
 
-        <Suspense fallback={<TabsSkeleton />}>
-          <PostsContent sort={postSort} timeFilter={timeFilter} />
-        </Suspense>
-      </div>
-    </Container>
+      <Suspense fallback={<TabsSkeleton />}>
+        <PostsContent sort={postSort} timeFilter={timeFilter} />
+      </Suspense>
+    </FeedContainer>
   )
 }
 
@@ -126,11 +125,9 @@ export default function Home({searchParams}: Readonly<PageProps>) {
   return (
     <Suspense
       fallback={
-        <Container size="lg">
-          <div style={{maxWidth: '800px', margin: '0 auto'}}>
-            <TabsSkeleton />
-          </div>
-        </Container>
+        <FeedContainer>
+          <TabsSkeleton />
+        </FeedContainer>
       }
     >
       <HomeContent searchParams={searchParams} />

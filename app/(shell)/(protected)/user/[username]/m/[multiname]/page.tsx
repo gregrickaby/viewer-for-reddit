@@ -1,9 +1,10 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {appConfig} from '@/lib/config/app.config'
 import {logger} from '@/lib/datadog/server'
-import {Container, Title} from '@mantine/core'
+import {Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
@@ -114,10 +115,10 @@ export default function MultiredditPage({
   searchParams
 }: Readonly<PageProps>) {
   return (
-    <Container size="lg">
+    <FeedContainer>
       <Suspense fallback={<TabsSkeleton />}>
         <MultiredditPosts params={params} searchParams={searchParams} />
       </Suspense>
-    </Container>
+    </FeedContainer>
   )
 }

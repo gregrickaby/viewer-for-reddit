@@ -1,6 +1,7 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {CommentListSkeleton} from '@/components/skeletons/CommentSkeleton/CommentSkeleton'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import {Container, Stack, Title} from '@mantine/core'
+import {Title} from '@mantine/core'
 
 /**
  * Loading UI for post detail pages.
@@ -8,16 +9,14 @@ import {Container, Stack, Title} from '@mantine/core'
  */
 export default function Loading() {
   return (
-    <Container size="lg">
-      <Stack gap="xl" maw={800} mx="auto">
-        <PostSkeleton />
-        <div id="comments" style={{scrollMarginTop: '80px'}}>
-          <Title order={3} mb="lg">
-            Comments
-          </Title>
-          <CommentListSkeleton />
-        </div>
-      </Stack>
-    </Container>
+    <FeedContainer>
+      <PostSkeleton />
+      <div id="comments" style={{scrollMarginTop: '80px'}}>
+        <Title order={3} mb="lg">
+          Comments
+        </Title>
+        <CommentListSkeleton />
+      </div>
+    </FeedContainer>
   )
 }

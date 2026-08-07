@@ -1,5 +1,6 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import {Container, Skeleton, Stack} from '@mantine/core'
+import {Skeleton, Stack} from '@mantine/core'
 
 /**
  * Loading skeleton for subreddit search page.
@@ -7,19 +8,17 @@ import {Container, Skeleton, Stack} from '@mantine/core'
  */
 export default function Loading() {
   return (
-    <Container size="lg">
-      <Stack gap="xl" maw={800} mx="auto">
-        <Stack gap="sm">
-          <Skeleton height={20} width={150} />
-          <Skeleton height={36} width="60%" />
-          <Skeleton height={16} width={100} />
-        </Stack>
-        <Stack gap="md">
-          <PostSkeleton />
-          <PostSkeleton />
-          <PostSkeleton />
-        </Stack>
+    <FeedContainer>
+      <Stack gap="sm">
+        <Skeleton height={20} width={150} />
+        <Skeleton height={36} width="60%" />
+        <Skeleton height={16} width={100} />
       </Stack>
-    </Container>
+      <Stack gap="md">
+        <PostSkeleton />
+        <PostSkeleton />
+        <PostSkeleton />
+      </Stack>
+    </FeedContainer>
   )
 }

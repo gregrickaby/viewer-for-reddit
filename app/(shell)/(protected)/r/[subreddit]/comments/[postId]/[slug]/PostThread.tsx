@@ -1,3 +1,4 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {CommentListSkeleton} from '@/components/skeletons/CommentSkeleton/CommentSkeleton'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
@@ -6,7 +7,7 @@ import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {fetchPost} from '@/lib/actions/reddit/posts'
 import {CommentSortOption} from '@/lib/types/reddit'
 import {generatePostMetadata} from '@/lib/utils/metadata-helpers'
-import {Container, Stack, Title} from '@mantine/core'
+import {Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
@@ -86,22 +87,20 @@ export function PostThread({
   searchParams: ThreadSearchParams
 }>) {
   return (
-    <Container size="lg">
+    <FeedContainer>
       <DynamicMetadataMarker />
-      <Stack gap="xl" maw={800} mx="auto">
-        <Suspense fallback={<PostSkeleton />}>
-          <PostDetail params={params} />
-        </Suspense>
+      <Suspense fallback={<PostSkeleton />}>
+        <PostDetail params={params} />
+      </Suspense>
 
-        <div id="comments" style={{scrollMarginTop: '80px'}}>
-          <Title order={3} mb="lg">
-            Comments
-          </Title>
-          <Suspense fallback={<CommentListSkeleton />}>
-            <CommentList params={params} searchParams={searchParams} />
-          </Suspense>
-        </div>
-      </Stack>
-    </Container>
+      <div id="comments" style={{scrollMarginTop: '80px'}}>
+        <Title order={3} mb="lg">
+          Comments
+        </Title>
+        <Suspense fallback={<CommentListSkeleton />}>
+          <CommentList params={params} searchParams={searchParams} />
+        </Suspense>
+      </div>
+    </FeedContainer>
   )
 }

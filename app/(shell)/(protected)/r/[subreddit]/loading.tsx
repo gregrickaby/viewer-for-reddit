@@ -1,6 +1,6 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleton/SubredditInfoSkeleton'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import {Container, Stack} from '@mantine/core'
 
 /**
  * Loading UI for subreddit pages.
@@ -8,11 +8,9 @@ import {Container, Stack} from '@mantine/core'
  */
 export default function Loading() {
   return (
-    <Container size="lg">
-      <Stack gap="xl" maw={800} mx="auto">
-        <SubredditInfoSkeleton />
-        <TabsSkeleton />
-      </Stack>
-    </Container>
+    <FeedContainer>
+      <SubredditInfoSkeleton />
+      <TabsSkeleton />
+    </FeedContainer>
   )
 }

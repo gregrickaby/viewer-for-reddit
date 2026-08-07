@@ -1,5 +1,5 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
-import {Container, Stack} from '@mantine/core'
 
 /**
  * Loading UI for multireddit pages.
@@ -7,10 +7,8 @@ import {Container, Stack} from '@mantine/core'
  */
 export default function Loading() {
   return (
-    <Container size="lg">
-      <Stack gap="xl" maw={800} mx="auto">
-        <TabsSkeleton />
-      </Stack>
-    </Container>
+    <FeedContainer>
+      <TabsSkeleton />
+    </FeedContainer>
   )
 }

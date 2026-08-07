@@ -1,3 +1,4 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleton/SubredditInfoSkeleton'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {AddToMultiredditButton} from '@/components/ui/AddToMultiredditButton/AddToMultiredditButton'
@@ -9,7 +10,7 @@ import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {fetchSubredditInfo} from '@/lib/actions/reddit/subreddits'
 import {appConfig} from '@/lib/config/app.config'
 import {logger} from '@/lib/datadog/server'
-import {Avatar, Card, Container, Group, Stack, Text, Title} from '@mantine/core'
+import {Avatar, Card, Group, Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
@@ -207,16 +208,14 @@ export default function SubredditPage({
   searchParams
 }: Readonly<PageProps>) {
   return (
-    <Container size="lg">
-      <Stack gap="xl" maw={800} mx="auto">
-        <Suspense fallback={<SubredditInfoSkeleton />}>
-          <SubredditInfo params={params} />
-        </Suspense>
+    <FeedContainer>
+      <Suspense fallback={<SubredditInfoSkeleton />}>
+        <SubredditInfo params={params} />
+      </Suspense>
 
-        <Suspense fallback={<TabsSkeleton />}>
-          <SubredditPosts params={params} searchParams={searchParams} />
-        </Suspense>
-      </Stack>
-    </Container>
+      <Suspense fallback={<TabsSkeleton />}>
+        <SubredditPosts params={params} searchParams={searchParams} />
+      </Suspense>
+    </FeedContainer>
   )
 }

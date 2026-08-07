@@ -1,8 +1,9 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {SavedItemsList} from '@/components/ui/SavedItemsList/SavedItemsList'
 import {fetchSavedItems} from '@/lib/actions/reddit/users'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {Container, Title} from '@mantine/core'
+import {Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 
@@ -59,13 +60,13 @@ async function SavedItems({
  */
 export default function SavedItemsPage({params}: Readonly<PageProps>) {
   return (
-    <Container size="lg">
+    <FeedContainer>
       <Title order={2} mb="md">
         Saved
       </Title>
       <Suspense fallback={<TabsSkeleton />}>
         <SavedItems params={params} />
       </Suspense>
-    </Container>
+    </FeedContainer>
   )
 }

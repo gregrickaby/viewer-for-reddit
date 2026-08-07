@@ -1,5 +1,6 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
-import {Container, Title} from '@mantine/core'
+import {Title} from '@mantine/core'
 
 /**
  * Loading UI for saved items pages.
@@ -7,11 +8,11 @@ import {Container, Title} from '@mantine/core'
  */
 export default function Loading() {
   return (
-    <Container size="lg">
+    <FeedContainer>
       <Title order={2} mb="md">
         Saved
       </Title>
       <PostSkeleton />
-    </Container>
+    </FeedContainer>
   )
 }

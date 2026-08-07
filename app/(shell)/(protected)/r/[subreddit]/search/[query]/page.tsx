@@ -1,9 +1,10 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {PostList} from '@/components/ui/PostList/PostList'
 import {searchSubreddit} from '@/lib/actions/reddit/search'
 import {appConfig} from '@/lib/config/app.config'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {Container, Stack, Text, Title} from '@mantine/core'
+import {Stack, Text, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 import {BackToSubreddit} from './BackToSubreddit'
@@ -46,7 +47,7 @@ async function SearchResults({
   const {posts, after} = await searchSubreddit(subreddit, decodedQuery)
 
   return (
-    <Stack gap="xl" maw={800} mx="auto">
+    <Stack gap="xl">
       <Stack gap="sm">
         <BackToSubreddit subreddit={subreddit} />
         <Title order={2}>Search results for: &quot;{decodedQuery}&quot;</Title>
@@ -83,10 +84,10 @@ async function SearchResults({
  */
 export default function SubredditSearchPage({params}: Readonly<PageProps>) {
   return (
-    <Container size="lg">
+    <FeedContainer>
       <Suspense fallback={<TabsSkeleton />}>
         <SearchResults params={params} />
       </Suspense>
-    </Container>
+    </FeedContainer>
   )
 }

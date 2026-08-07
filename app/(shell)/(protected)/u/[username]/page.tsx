@@ -1,3 +1,4 @@
+import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {AddUserToMultiredditButton} from '@/components/ui/AddUserToMultiredditButton/AddUserToMultiredditButton'
 import {FollowButton} from '@/components/ui/FollowButton/FollowButton'
@@ -14,16 +15,7 @@ import {RedditUser, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {NotFoundError, getErrorMessage} from '@/lib/utils/errors'
 import {decodeHtmlEntities, formatNumber} from '@/lib/utils/formatters'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {
-  Avatar,
-  Card,
-  Container,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  Title
-} from '@mantine/core'
+import {Avatar, Card, Group, Skeleton, Stack, Text, Title} from '@mantine/core'
 import {IconAlertCircle} from '@tabler/icons-react'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
@@ -325,28 +317,26 @@ async function UserPageTabs({
  */
 export default function UserPage({params, searchParams}: Readonly<PageProps>) {
   return (
-    <Container size="lg">
-      <Stack gap="xl" maw={800} mx="auto">
-        <Suspense
-          fallback={
-            <Card withBorder padding="lg" radius="md">
-              <Group>
-                <Skeleton height={80} width={80} radius="md" />
-                <Stack gap="xs" flex={1}>
-                  <Skeleton height={28} width={200} />
-                  <Skeleton height={16} width={150} />
-                </Stack>
-              </Group>
-            </Card>
-          }
-        >
-          <UserProfile params={params} />
-        </Suspense>
+    <FeedContainer>
+      <Suspense
+        fallback={
+          <Card withBorder padding="lg" radius="md">
+            <Group>
+              <Skeleton height={80} width={80} radius="md" />
+              <Stack gap="xs" flex={1}>
+                <Skeleton height={28} width={200} />
+                <Skeleton height={16} width={150} />
+              </Stack>
+            </Group>
+          </Card>
+        }
+      >
+        <UserProfile params={params} />
+      </Suspense>
 
-        <Suspense fallback={<TabsSkeleton />}>
-          <UserPageTabs params={params} searchParams={searchParams} />
-        </Suspense>
-      </Stack>
-    </Container>
+      <Suspense fallback={<TabsSkeleton />}>
+        <UserPageTabs params={params} searchParams={searchParams} />
+      </Suspense>
+    </FeedContainer>
   )
 }
