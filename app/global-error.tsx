@@ -11,16 +11,16 @@ import {useEffect} from 'react'
  * layout this replaces, so no Mantine components are available here.
  *
  * @param error - Error object with optional digest
- * @param reset - Function to re-render the root layout
+ * @param retry - Function to re-fetch and re-render the root layout
  *
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/error#global-error
  */
 export default function GlobalError({
   error,
-  reset
+  retry
 }: Readonly<{
   error: Error & {digest?: string}
-  reset: () => void
+  retry: () => void
 }>) {
   useEffect(() => {
     addNextjsError(error)
@@ -51,7 +51,7 @@ export default function GlobalError({
         <p>An unexpected error occurred. Please try again.</p>
         <button
           type="button"
-          onClick={reset}
+          onClick={retry}
           style={{
             marginTop: '1rem',
             padding: '0.5rem 1.5rem',
