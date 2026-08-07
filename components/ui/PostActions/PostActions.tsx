@@ -1,19 +1,17 @@
 'use client'
 
+import {ActionPill} from '@/components/ui/ActionPill/ActionPill'
+import {VotePill} from '@/components/ui/VotePill/VotePill'
 import {useSharePost} from '@/lib/hooks/useSharePost'
 import {formatNumber} from '@/lib/utils/formatters'
-import {getVoteColor} from '@/lib/utils/reddit-helpers'
-import {ActionIcon, Anchor, Group, Text} from '@mantine/core'
+import {Group} from '@mantine/core'
 import {notifications} from '@mantine/notifications'
 import {
-  IconArrowDown,
-  IconArrowUp,
   IconBookmark,
   IconBookmarkFilled,
   IconMessage,
   IconShare
 } from '@tabler/icons-react'
-import Link from 'next/link'
 
 /**
  * Props for the PostActions component.
@@ -66,66 +64,45 @@ export function PostActions({
 
   return (
     <Group gap="sm">
-      <Group gap={2}>
-        <ActionIcon
-          variant="subtle"
-          color={voteState === 1 ? 'orange' : 'gray'}
-          aria-label="Upvote"
-          onClick={() => onVote(1)}
-          loading={isPending}
-        >
-          <IconArrowUp aria-hidden="true" size={18} />
-        </ActionIcon>
-        <Text size="sm" fw={600} c={getVoteColor(voteState)}>
-          {formatNumber(score)}
-        </Text>
-        <ActionIcon
-          variant="subtle"
-          color={voteState === -1 ? 'blue' : 'gray'}
-          aria-label="Downvote"
-          onClick={() => onVote(-1)}
-          loading={isPending}
-        >
-          <IconArrowDown aria-hidden="true" size={18} />
-        </ActionIcon>
-      </Group>
+      <VotePill
+        voteState={voteState}
+        score={score}
+        isPending={isPending}
+        onVote={onVote}
+        upvoteLabel="Upvote"
+        downvoteLabel="Downvote"
+      />
 
-      <Anchor
-        component={Link}
+      <ActionPill
         href={`${postUrl}#comments`}
-        underline="never"
-        c="inherit"
-      >
-        <Group gap={2}>
-          <ActionIcon variant="subtle" color="gray" aria-label="View comments">
-            <IconMessage aria-hidden="true" size={18} />
-          </ActionIcon>
-          <Text size="sm">{formatNumber(numComments)}</Text>
-        </Group>
-      </Anchor>
+        icon={<IconMessage aria-hidden="true" size={16} />}
+        label={formatNumber(numComments)}
+        ariaLabel={`View comments, ${formatNumber(numComments)}`}
+      />
 
-      <ActionIcon
-        variant={isSaved ? 'light' : 'subtle'}
-        color={isSaved ? 'yellow' : 'gray'}
-        aria-label={isSaved ? 'Unsave post' : 'Save post'}
+      <ActionPill
         onClick={handleSave}
         disabled={isPending}
-      >
-        {isSaved ? (
-          <IconBookmarkFilled aria-hidden="true" size={18} />
-        ) : (
-          <IconBookmark aria-hidden="true" size={18} />
-        )}
-      </ActionIcon>
+        ariaLabel={isSaved ? 'Unsave post' : 'Save post'}
+        icon={
+          isSaved ? (
+            <IconBookmarkFilled
+              aria-hidden="true"
+              size={16}
+              color="var(--mantine-color-yellow-6)"
+            />
+          ) : (
+            <IconBookmark aria-hidden="true" size={16} />
+          )
+        }
+      />
 
-      <ActionIcon
-        variant="subtle"
-        color="gray"
-        aria-label="Share post"
+      <ActionPill
         onClick={handleShare}
-      >
-        <IconShare aria-hidden="true" size={18} />
-      </ActionIcon>
+        ariaLabel="Share post"
+        icon={<IconShare aria-hidden="true" size={16} />}
+        label="Share"
+      />
     </Group>
   )
 }

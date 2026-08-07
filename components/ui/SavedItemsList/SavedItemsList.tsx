@@ -2,7 +2,7 @@
 
 import {useInfiniteSavedItems} from '@/lib/hooks/useInfiniteSavedItems'
 import type {SavedItem} from '@/lib/types/reddit'
-import {Card, Center, Container, Loader, Stack, Text} from '@mantine/core'
+import {Center, Container, Divider, Loader, Stack, Text} from '@mantine/core'
 import {Comment} from '@/components/ui/Comment/Comment'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 
@@ -61,26 +61,25 @@ export function SavedItemsList({
             )
           }
           return (
-            <Card key={`comment-${item.data.id}-${index}`} p="md" withBorder>
-              <Stack gap="xs">
-                <Text size="sm" c="dimmed">
-                  Comment on{' '}
-                  {item.data.link_title && (
-                    <Text component="span" fw={500}>
-                      {item.data.link_title}
-                    </Text>
-                  )}
-                  {item.data.subreddit && (
-                    <Text component="span"> in r/{item.data.subreddit}</Text>
-                  )}
-                </Text>
-                <Comment
-                  comment={item.data}
-                  depth={0}
-                  onUnsave={() => removeItem(item.data.id)}
-                />
-              </Stack>
-            </Card>
+            <Stack key={`comment-${item.data.id}-${index}`} gap="xs">
+              <Text size="sm" c="dimmed">
+                Comment on{' '}
+                {item.data.link_title && (
+                  <Text component="span" fw={500}>
+                    {item.data.link_title}
+                  </Text>
+                )}
+                {item.data.subreddit && (
+                  <Text component="span"> in r/{item.data.subreddit}</Text>
+                )}
+              </Text>
+              <Comment
+                comment={item.data}
+                depth={0}
+                onUnsave={() => removeItem(item.data.id)}
+              />
+              <Divider mt="xs" />
+            </Stack>
           )
         })}
         {hasMore && (

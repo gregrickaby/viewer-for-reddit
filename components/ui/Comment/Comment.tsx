@@ -1,6 +1,8 @@
 'use client'
 
+import {ActionPill} from '@/components/ui/ActionPill/ActionPill'
 import {TimeAgo} from '@/components/ui/TimeAgo/TimeAgo'
+import {VotePill} from '@/components/ui/VotePill/VotePill'
 import {useCommentCollapse} from '@/lib/hooks/useCommentCollapse'
 import {useSavePost} from '@/lib/hooks/useSavePost'
 import {useSharePost} from '@/lib/hooks/useSharePost'
@@ -11,7 +13,7 @@ import {
 } from '@/lib/types/reddit'
 import {MAX_COMMENT_DEPTH} from '@/lib/utils/constants'
 import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
-import {getUserProfileHref, getVoteColor} from '@/lib/utils/reddit-helpers'
+import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
   Anchor,
@@ -20,15 +22,12 @@ import {
   Card,
   Collapse,
   Group,
-  NumberFormatter,
   Stack,
   Text,
   Tooltip
 } from '@mantine/core'
 import {notifications} from '@mantine/notifications'
 import {
-  IconArrowDown,
-  IconArrowUp,
   IconBookmark,
   IconBookmarkFilled,
   IconChevronDown,
@@ -112,7 +111,8 @@ function renderAwards(awardings: RedditAward[]) {
 }
 
 /**
- * Render vote action buttons with score display
+ * Render vote action buttons with score display. Shares `VotePill` with
+ * `PostActions` so vote controls look identical on posts and comments.
  */
 function renderVoteActions(
   voteState: 1 | 0 | -1 | null,
@@ -121,38 +121,20 @@ function renderVoteActions(
   vote: (direction: 1 | -1) => void
 ) {
   return (
-    <Group gap={4}>
-      <ActionIcon
-        variant="subtle"
-        size="sm"
-        color={voteState === 1 ? 'orange' : 'gray'}
-        onClick={() => vote(1)}
-        loading={isPending}
-        className={styles.voteButton}
-        aria-label={`${voteState === 1 ? 'Upvoted' : 'Upvote'} comment (${score} points)`}
-      >
-        <IconArrowUp aria-hidden="true" size={14} />
-      </ActionIcon>
-      <Text size="xs" fw={600} c={getVoteColor(voteState)}>
-        <NumberFormatter value={score} thousandSeparator="," />
-      </Text>
-      <ActionIcon
-        variant="subtle"
-        size="sm"
-        color={voteState === -1 ? 'blue' : 'gray'}
-        onClick={() => vote(-1)}
-        loading={isPending}
-        className={styles.voteButton}
-        aria-label={`${voteState === -1 ? 'Downvoted' : 'Downvote'} comment (${score} points)`}
-      >
-        <IconArrowDown aria-hidden="true" size={14} />
-      </ActionIcon>
-    </Group>
+    <VotePill
+      voteState={voteState}
+      score={score}
+      isPending={isPending}
+      onVote={vote}
+      upvoteLabel={`${voteState === 1 ? 'Upvoted' : 'Upvote'} comment (${score} points)`}
+      downvoteLabel={`${voteState === -1 ? 'Downvoted' : 'Downvote'} comment (${score} points)`}
+    />
   )
 }
 
 /**
- * Render save and share action buttons
+ * Render save and share action buttons. Shares `ActionPill` with
+ * `PostActions` so these controls look identical on posts and comments.
  */
 function renderActionButtons(
   isSaved: boolean,
@@ -162,30 +144,27 @@ function renderActionButtons(
 ) {
   return (
     <>
-      <ActionIcon
-        variant={isSaved ? 'light' : 'subtle'}
-        size="sm"
-        color={isSaved ? 'yellow' : 'gray'}
+      <ActionPill
         onClick={handleSave}
         disabled={isPending}
-        className={styles.voteButton}
-        aria-label={isSaved ? 'Unsave comment' : 'Save comment'}
-      >
-        {isSaved ? (
-          <IconBookmarkFilled aria-hidden="true" size={14} />
-        ) : (
-          <IconBookmark aria-hidden="true" size={14} />
-        )}
-      </ActionIcon>
-      <ActionIcon
-        variant="subtle"
-        size="sm"
-        color="gray"
+        ariaLabel={isSaved ? 'Unsave comment' : 'Save comment'}
+        icon={
+          isSaved ? (
+            <IconBookmarkFilled
+              aria-hidden="true"
+              size={16}
+              color="var(--mantine-color-yellow-6)"
+            />
+          ) : (
+            <IconBookmark aria-hidden="true" size={16} />
+          )
+        }
+      />
+      <ActionPill
         onClick={handleShare}
-        aria-label="Share comment"
-      >
-        <IconShare aria-hidden="true" size={14} />
-      </ActionIcon>
+        ariaLabel="Share comment"
+        icon={<IconShare aria-hidden="true" size={16} />}
+      />
     </>
   )
 }
@@ -246,10 +225,14 @@ export function Comment({
   return (
     <Box ml={depth > 0 ? 20 : 0}>
       <Card
-        withBorder
         padding="md"
         radius="md"
         mb="sm"
+        bg={
+          isGilded
+            ? 'var(--mantine-color-yellow-light)'
+            : 'var(--mantine-color-body)'
+        }
         className={isGilded ? styles.gilded : undefined}
       >
         <Stack gap="sm">

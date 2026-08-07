@@ -23,19 +23,40 @@ const redditColorScheme: MantineColorsTuple = [
 ]
 
 /**
+ * Dark-mode surface palette tuned to sit closer to reddit.com's near-black
+ * chrome. Indexes 0-3 (text/dimmed-text shades) match Mantine's default dark
+ * tuple; indexes 4-9 (borders, hover, card, body, and beyond) are darkened.
+ *
+ * @see https://mantine.dev/theming/colors/#override-colors
+ */
+const redditDarkScheme: MantineColorsTuple = [
+  '#C1C2C5',
+  '#A6A7AB',
+  '#909296',
+  '#5c5f66',
+  '#343536', // dark.4 -- --mantine-color-default-border
+  '#272729', // dark.5 -- --mantine-color-default-hover
+  '#1a1a1b', // dark.6 -- --mantine-color-default (cards, pills, panels)
+  '#0e0e10', // dark.7 -- --mantine-color-body (page background)
+  '#0a0a0b',
+  '#050505'
+]
+
+/**
  * Mantine theme configuration.
  * Sets up the application's design system with custom colors and defaults.
  *
  * Features:
  * - Reddit orange color scheme
+ * - Reddit-style near-black dark mode surfaces
  * - System font stack
- * - Default border radius (md)
+ * - Default border radius (md), pill-shaped buttons/action icons (xl)
  * - Anchor component defaults (no underline)
  *
  * @see https://mantine.dev/theming/theme-object/
  */
 export const theme = createTheme({
-  colors: {redditColorScheme},
+  colors: {redditColorScheme, dark: redditDarkScheme},
   primaryColor: 'redditColorScheme',
   primaryShade: {light: 8, dark: 8}, // WCAG AA compliant contrast ratio for #ff4500
   fontFamily:
@@ -45,6 +66,16 @@ export const theme = createTheme({
     Anchor: {
       defaultProps: {
         underline: 'never'
+      }
+    },
+    Button: {
+      defaultProps: {
+        radius: 'xl'
+      }
+    },
+    ActionIcon: {
+      defaultProps: {
+        radius: 'xl'
       }
     }
   }

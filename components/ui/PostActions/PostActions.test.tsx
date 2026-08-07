@@ -28,11 +28,19 @@ describe('PostActions', () => {
       expect(screen.getByRole('button', {name: 'Upvote'})).toBeInTheDocument()
       expect(screen.getByRole('button', {name: 'Downvote'})).toBeInTheDocument()
       expect(
-        screen.getByRole('button', {name: 'View comments'})
+        screen.getByRole('link', {name: 'View comments, 42'})
       ).toBeInTheDocument()
       expect(
         screen.getByRole('button', {name: 'Save post'})
       ).toBeInTheDocument()
+    })
+
+    it('renders a labeled Share button', () => {
+      render(<PostActions {...defaultProps} />)
+
+      const shareButton = screen.getByRole('button', {name: 'Share post'})
+      expect(shareButton).toBeInTheDocument()
+      expect(shareButton).toHaveTextContent('Share')
     })
 
     it('renders score with formatted number', () => {
@@ -50,7 +58,7 @@ describe('PostActions', () => {
     it('renders comments link with correct href', () => {
       render(<PostActions {...defaultProps} />)
 
-      const link = screen.getByRole('link')
+      const link = screen.getByRole('link', {name: 'View comments, 42'})
       expect(link).toHaveAttribute('href', '/r/test/comments/abc123#comments')
     })
   })

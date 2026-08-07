@@ -12,21 +12,11 @@
   display: block;
 }
 
-.voteButton {
-  cursor: pointer;
-}
-
-.voteButtonDisabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
 .awardIcon {
   display: block;
   border-radius: 2px;
 }
 
 .gilded {
-  border-color: var(--mantine-color-yellow-6);
-  background-color: var(--mantine-color-yellow-light);
+  border: 1px solid var(--mantine-color-yellow-6);
 }

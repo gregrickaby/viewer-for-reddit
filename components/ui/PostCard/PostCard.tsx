@@ -8,7 +8,7 @@ import {useVote} from '@/lib/hooks/useVote'
 import {RedditPost} from '@/lib/types/reddit'
 import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {extractSlug} from '@/lib/utils/reddit-helpers'
-import {Anchor, Card, Stack, Text} from '@mantine/core'
+import {Anchor, Divider, Stack, Text} from '@mantine/core'
 import Link from 'next/link'
 import styles from './PostCard.module.css'
 
@@ -97,37 +97,37 @@ export function PostCard({
   const isPending = isVotePending || isSavePending
 
   return (
-    <Card withBorder padding="md" radius="md">
-      <Stack gap="xs">
-        <PostHeader post={post} />
+    <Stack gap="xs">
+      <PostHeader post={post} />
 
-        <Anchor
-          c="inherit"
-          component={Link}
-          href={postUrl}
-          scroll
-          underline="never"
-        >
-          <Text size="md" fw={600} mt={2}>
-            {post.title}
-          </Text>
-        </Anchor>
+      <Anchor
+        c="inherit"
+        component={Link}
+        href={postUrl}
+        scroll
+        underline="never"
+      >
+        <Text size="md" fw={600} mt={2}>
+          {post.title}
+        </Text>
+      </Anchor>
 
-        <PostMedia post={post} priority={priority} />
+      <PostMedia post={post} priority={priority} />
 
-        {post.selftext && renderSelfText(post, postUrl, showFullText)}
+      {post.selftext && renderSelfText(post, postUrl, showFullText)}
 
-        <PostActions
-          postUrl={postUrl}
-          numComments={post.num_comments}
-          voteState={voteState}
-          score={score}
-          isSaved={isSaved}
-          isPending={isPending}
-          onVote={vote}
-          onToggleSave={toggleSave}
-        />
-      </Stack>
-    </Card>
+      <PostActions
+        postUrl={postUrl}
+        numComments={post.num_comments}
+        voteState={voteState}
+        score={score}
+        isSaved={isSaved}
+        isPending={isPending}
+        onVote={vote}
+        onToggleSave={toggleSave}
+      />
+
+      <Divider mt="xs" />
+    </Stack>
   )
 }
