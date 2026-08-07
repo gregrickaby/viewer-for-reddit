@@ -87,6 +87,36 @@ export function convertGiphyLinksToImages(html: string): string {
 }
 
 /**
+ * Image hosts allowed by the `img-src` directive in next.config.ts. Keep in
+ * sync with that CSP entry - anything not on this list gets a broken-image
+ * icon and a CSP violation report instead of rendering, so links to other
+ * hosts are left as plain links rather than converted to <img> tags.
+ */
+const ALLOWED_IMAGE_HOSTS = [
+  /(?:^|\.)redd\.it$/i,
+  /(?:^|\.)redditstatic\.com$/i,
+  /(?:^|\.)redditmedia\.com$/i,
+  /^external-preview\.redd\.it$/i,
+  /^media\.giphy\.com$/i,
+  /^i\.giphy\.com$/i,
+  /^i\.imgur\.com$/i
+]
+
+/**
+ * Check whether a URL's host is one the CSP `img-src` directive allows.
+ * @param url - Absolute URL to check
+ * @returns True if the host is on the CSP image allowlist
+ */
+function isAllowedImageHost(url: string): boolean {
+  try {
+    const {hostname} = new URL(url)
+    return ALLOWED_IMAGE_HOSTS.some((pattern) => pattern.test(hostname))
+  } catch {
+    return false
+  }
+}
+
+/**
  * Convert image URLs in links to actual img tags
  * @param html - HTML string potentially containing image links
  * @returns HTML with image links converted to img tags
@@ -104,13 +134,14 @@ export function convertImageLinksToImages(html: string): string {
       trimmedText === '' ||
       url.includes(trimmedText.replace(/^https?:\/\//, ''))
 
-    if (isUrlAsText) {
+    if (isUrlAsText && isAllowedImageHost(url)) {
       // Convert gifv to gif for direct display
       const imgUrl = url.replace(/\.gifv$/, '.gif')
       return `<img src="${imgUrl}" alt="Image" />`
     }
 
-    // Keep the link if it has meaningful link text
+    // Keep the link if it has meaningful text, or if the host isn't
+    // CSP-allowed for inline images (would just show a broken icon)
     return match
   })
 }

@@ -233,10 +233,33 @@ describe('formatters', () => {
     it('supports common image formats', () => {
       const formats = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'gifv']
       formats.forEach((format) => {
-        const html = `<a href="https://example.com/image.${format}">https://example.com/image.${format}</a>`
+        const html = `<a href="https://i.redd.it/image.${format}">https://i.redd.it/image.${format}</a>`
         const result = convertImageLinksToImages(html)
         expect(result).toContain('<img')
       })
+    })
+
+    it('leaves links to non-CSP-allowed hosts as plain links', () => {
+      const html =
+        '<a href="https://example.com/image.jpg">https://example.com/image.jpg</a>'
+      const result = convertImageLinksToImages(html)
+      expect(result).toContain('<a')
+      expect(result).not.toContain('<img')
+    })
+
+    it.each([
+      'redditstatic.com',
+      'redditmedia.com',
+      'external-preview.redd.it',
+      'media.giphy.com',
+      'i.giphy.com',
+      'i.imgur.com'
+    ])('converts links to the CSP-allowed host %s', (host) => {
+      const url = `https://${host}/image.jpg`
+      const html = `<a href="${url}">${url}</a>`
+      const result = convertImageLinksToImages(html)
+      expect(result).toContain('<img')
+      expect(result).toContain(`src="${url}"`)
     })
   })
 })
