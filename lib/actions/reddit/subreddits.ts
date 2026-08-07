@@ -64,11 +64,6 @@ export async function fetchSubredditInfo(
 
     const subredditData = data.data as RedditSubreddit
 
-    logger.debug('Fetched subreddit info successfully', {
-      subreddit,
-      subscribers: subredditData.subscribers
-    })
-
     return subredditData
   } catch (error) {
     logger.error('Error fetching subreddit info', {
@@ -142,10 +137,6 @@ export async function fetchUserSubscriptions(): Promise<
       after = data.data?.after || null
     } while (after)
 
-    logger.debug('Fetched all subscriptions successfully', {
-      count: allSubscriptions.length
-    })
-
     return allSubscriptions
   } catch (error) {
     logger.error('Error fetching subscriptions', {
@@ -179,8 +170,6 @@ export async function toggleSubscription(
 
     const {headers, baseUrl} = await getRedditContext()
 
-    logger.debug('Toggling subscription', {subreddit: subredditName, action})
-
     const formData = new URLSearchParams({
       action,
       sr_name: subredditName
@@ -207,10 +196,6 @@ export async function toggleSubscription(
     }
 
     updateTag('subscriptions')
-    logger.debug('Subscription toggled successfully', {
-      subreddit: subredditName,
-      action
-    })
 
     return {success: true}
   } catch (error) {

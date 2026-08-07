@@ -41,9 +41,6 @@ describe('auth actions', () => {
       const result = await logout()
 
       expect(mockDestroy).toHaveBeenCalledTimes(1)
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'User logged out successfully'
-      )
       expect(result).toEqual({success: true})
     })
 
@@ -222,7 +219,6 @@ describe('auth actions', () => {
 
         expect(mockIsSessionExpired).toHaveBeenCalledTimes(1)
         expect(mockDestroy).toHaveBeenCalledTimes(1)
-        expect(mockLogger.debug).toHaveBeenCalledWith('Expired session cleared')
         expect(result).toEqual({success: true, wasExpired: true})
       })
 

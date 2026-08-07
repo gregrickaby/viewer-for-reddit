@@ -17,8 +17,6 @@ export async function logout(): Promise<{success: boolean; error?: string}> {
     // Destroy the session
     session.destroy()
 
-    logger.info('User logged out successfully')
-
     return {success: true}
   } catch (error) {
     logger.error('Logout failed', {
@@ -71,7 +69,6 @@ export async function clearExpiredSession(): Promise<{
     if (expired) {
       const session = await getSession()
       session.destroy()
-      logger.debug('Expired session cleared')
       return {success: true, wasExpired: true}
     }
 

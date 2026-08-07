@@ -276,10 +276,6 @@ describe('GET /api/auth/callback/reddit', () => {
 
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe('https://example.com/#')
-    expect(mockLogger.debug).toHaveBeenCalledWith(
-      'Duplicate OAuth callback ignored (already authenticated)',
-      expect.any(Object)
-    )
     expect(mockLogger.error).not.toHaveBeenCalled()
   })
 
@@ -450,31 +446,6 @@ describe('GET /api/auth/callback/reddit', () => {
     expect(response.status).toBe(307)
     expect(mockPersistSession).toHaveBeenCalledWith(
       expect.objectContaining({refreshToken: ''})
-    )
-  })
-
-  it('logs authentication flow', async () => {
-    const request = new NextRequest(
-      `https://example.com/api/auth/callback/reddit?code=${validCode}&state=${validState}`,
-      {
-        headers: {
-          cookie: `reddit_oauth_state=${validState}`,
-          host: 'example.com',
-          'x-forwarded-proto': 'https'
-        }
-      }
-    )
-
-    await GET(request)
-
-    expect(mockLogger.debug).toHaveBeenCalledWith(
-      'OAuth Callback',
-      expect.any(Object)
-    )
-
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      'OAuth authentication successful',
-      expect.objectContaining({username: 'testuser', context: 'OAuthCallback'})
     )
   })
 

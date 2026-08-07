@@ -175,15 +175,10 @@ function extractRefreshToken(tokens: AuthTokens, currentToken: string): string {
   try {
     const fresh = tokens.refreshToken()
     if (fresh && fresh !== currentToken) {
-      logger.debug('Refresh token rotated by Reddit', {
-        context: 'getRedditContext'
-      })
       return fresh
     }
   } catch {
-    logger.debug('No new refresh token provided, keeping existing', {
-      context: 'getRedditContext'
-    })
+    // Provider did not issue a new refresh token; keep the existing one.
   }
   return currentToken
 }
@@ -210,8 +205,6 @@ async function performRefresh(
   let newExpiresAt: number
 
   try {
-    logger.debug('Refreshing access token', {context: 'getRedditContext'})
-
     const tokens = await adapters.refreshAccessToken(currentRefreshToken)
     newAccessToken = tokens.accessToken()
     newRefreshToken = extractRefreshToken(tokens, currentRefreshToken)
@@ -233,10 +226,6 @@ async function performRefresh(
       expiresAt: newExpiresAt,
       username: snapshot.username || '',
       userId: snapshot.userId || ''
-    })
-
-    logger.debug('Access token refreshed successfully', {
-      context: 'getRedditContext'
     })
   } catch (error) {
     // Cookie mutation is only legal in a Server Action or Route Handler.

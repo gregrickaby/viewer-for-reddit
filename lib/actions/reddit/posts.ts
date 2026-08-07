@@ -113,13 +113,6 @@ export async function fetchPosts(
     ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
 
-    logger.debug('Fetched posts successfully', {
-      subreddit,
-      sort,
-      count: posts.length,
-      hasMore: !!afterCursor
-    })
-
     return {posts, after: afterCursor}
   } catch (error) {
     logger.error('Error fetching posts', {
@@ -186,12 +179,6 @@ export async function fetchPost(
       .filter((child) => child.kind === 't1' && child.data !== undefined)
       .map((child) => child.data as RedditComment)
 
-    logger.debug('Fetched post successfully', {
-      postId,
-      subreddit,
-      commentCount: comments.length
-    })
-
     return {post, comments}
   } catch (error) {
     logger.error('Error fetching post', {
@@ -253,13 +240,6 @@ export async function fetchUserPosts(
       (child) => child.data
     ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
-
-    logger.debug('Fetched user posts successfully', {
-      username,
-      sort,
-      count: posts.length,
-      hasMore: !!afterCursor
-    })
 
     return {posts, after: afterCursor}
   } catch (error) {

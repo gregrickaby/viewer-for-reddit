@@ -83,14 +83,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const error = url.searchParams.get('error')
   const storedState = request.cookies.get('reddit_oauth_state')?.value
 
-  logger.debug('OAuth Callback', {
-    code: !!code,
-    state: !!state,
-    storedState: !!storedState,
-    error,
-    context: 'OAuth'
-  })
-
   // Handle OAuth error from Reddit
   if (error) {
     logger.error('OAuth error from Reddit', {
@@ -125,9 +117,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // attack. A mismatched (present but wrong) state is still treated as a
     // hard failure below, regardless of session state.
     if (!storedState && (await isAuthenticated())) {
-      logger.debug('Duplicate OAuth callback ignored (already authenticated)', {
-        context: 'OAuth'
-      })
       return NextResponse.redirect(new URL('/#', `${protocol}://${host}`))
     }
 
@@ -176,14 +165,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     await persistSession(result.sessionData)
-
-    logger.info('OAuth authentication successful', {
-      username: result.sessionData.username,
-      userId: result.sessionData.userId,
-      hasRefreshToken: !!result.sessionData.refreshToken,
-      expiresIn: `${Math.round((result.sessionData.expiresAt - Date.now()) / 1000 / 60)}min`,
-      context: 'OAuthCallback'
-    })
 
     // Build redirect URL using proper host (handles reverse proxies)
     // Appending # prevents the OAuth provider from injecting #_=_

@@ -110,18 +110,9 @@ export async function processOAuthCallback(
       refreshTokenValue = tokens.refreshToken() || ''
     } catch {
       refreshTokenValue = ''
-      logger.info('No refresh token provided by Reddit', {
-        context: 'processOAuthCallback'
-      })
     }
 
     expiresAt = tokens.accessTokenExpiresAt()?.getTime() || Date.now() + 3600000
-
-    logger.debug('Tokens received', {
-      hasAccessToken: !!accessToken,
-      hasRefreshToken: !!refreshTokenValue,
-      context: 'processOAuthCallback'
-    })
   } catch (error) {
     logger.error('Token exchange failed', {
       error: getErrorMessage(error),
@@ -137,11 +128,6 @@ export async function processOAuthCallback(
   // Step 2: fetch user identity
   try {
     const identity = await fetchIdentity(accessToken)
-
-    logger.info('User authenticated', {
-      username: identity.name,
-      context: 'processOAuthCallback'
-    })
 
     return {
       ok: true,

@@ -75,12 +75,6 @@ export async function searchReddit(
     ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
 
-    logger.debug('Search successful', {
-      query,
-      count: posts.length,
-      hasMore: !!afterCursor
-    })
-
     return {posts, after: afterCursor}
   } catch (error) {
     logger.error('Error searching Reddit', {
@@ -158,13 +152,6 @@ export async function searchSubreddit(
     ) as RedditPost[]
     const afterCursor = data.data?.after ?? null
 
-    logger.debug('Subreddit search successful', {
-      subreddit,
-      query,
-      count: posts.length,
-      hasMore: !!afterCursor
-    })
-
     return {posts, after: afterCursor}
   } catch (error) {
     logger.error('Error searching subreddit', {
@@ -235,9 +222,6 @@ async function fetchAutocomplete(
     return {success: true, children: data?.data?.children || []}
   } catch (error) {
     if (error instanceof Error && error.message === 'Not authenticated') {
-      logger.debug('Autocomplete search skipped - not authenticated', {
-        context: operation
-      })
       return {success: false, error: 'Sign in to search Reddit'}
     }
     logger.error('Error fetching autocomplete results', {
@@ -286,11 +270,6 @@ export async function searchSubreddits(query: string): Promise<{
     })
     .filter((item) => item.name)
 
-  logger.debug('Subreddit search results', {
-    query,
-    count: results.length,
-    nsfwCount: results.filter((r) => r.over18).length
-  })
   return {success: true, data: results}
 }
 

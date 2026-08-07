@@ -70,11 +70,6 @@ export async function fetchUserInfo(username: string): Promise<RedditUser> {
 
     const userData = data.data as RedditUser
 
-    logger.debug('Fetched user info successfully', {
-      username,
-      karma: userData.total_karma
-    })
-
     return userData
   } catch (error) {
     logger.error('Error fetching user info', {
@@ -161,13 +156,6 @@ export async function fetchUserComments(
     const comments = data.data?.children?.map((child) => child.data) ?? []
     const afterCursor = data.data?.after ?? null
 
-    logger.debug('Fetched user comments successfully', {
-      username,
-      sort,
-      count: comments.length,
-      hasMore: !!afterCursor
-    })
-
     return {comments, after: afterCursor}
   } catch (error) {
     logger.error('Error fetching user comments', {
@@ -211,12 +199,6 @@ export async function fetchSavedItems(
     if (after) {
       url.searchParams.set('after', after)
     }
-
-    logger.debug('Fetching saved items', {
-      username,
-      after,
-      url: url.toString()
-    })
 
     const response = await circuitProtectedFetch(url.toString(), {
       headers,
@@ -264,14 +246,6 @@ export async function fetchSavedItems(
         }
         return {type: 'comment' as const, data: commentData}
       })
-
-    logger.debug('Fetched saved items', {
-      username,
-      count: items.length,
-      posts: items.filter((i) => i.type === 'post').length,
-      comments: items.filter((i) => i.type === 'comment').length,
-      after: data.data?.after
-    })
 
     return {items, after: data.data?.after || null}
   } catch (error) {
@@ -332,10 +306,6 @@ export async function fetchFollowedUsers(): Promise<
         note: user.note
       })) || []
 
-    logger.debug('Fetched followed users successfully', {
-      count: following.length
-    })
-
     return following
   } catch (error) {
     logger.error('Error fetching followed users', {
@@ -385,7 +355,6 @@ export async function followUser(
     }
 
     updateTag('following')
-    logger.debug('Followed user successfully', {username})
     return {success: true}
   } catch (error) {
     logger.error('Error following user', {
@@ -434,7 +403,6 @@ export async function unfollowUser(
     }
 
     updateTag('following')
-    logger.debug('Unfollowed user successfully', {username})
     return {success: true}
   } catch (error) {
     logger.error('Error unfollowing user', {
@@ -487,7 +455,6 @@ export async function savePost(
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
 
-    logger.debug('Save/unsave successful', {postName, save})
     updateTag('saved')
 
     return {success: true}
@@ -542,8 +509,6 @@ export async function votePost(
       })
       return {success: false, error: GENERIC_ACTION_ERROR}
     }
-
-    logger.debug('Vote successful', {postName, direction})
 
     return {success: true}
   } catch (error) {

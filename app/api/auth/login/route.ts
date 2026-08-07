@@ -28,11 +28,6 @@ export async function GET(): Promise<NextResponse> {
   try {
     const {url, state} = await createLoginUrl()
 
-    logger.debug('OAuth login initiated', {
-      state: `${state.substring(0, 8)}...`,
-      context: 'OAuth'
-    })
-
     const response = NextResponse.redirect(url.toString())
     const domain = getCookieDomain()
 

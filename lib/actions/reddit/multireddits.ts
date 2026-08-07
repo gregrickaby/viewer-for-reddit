@@ -68,8 +68,7 @@ function toUserSubredditName(username: string): string {
  * @param member - Member subreddit name to scope the request to
  * @param method - `PUT` to add, `DELETE` to remove
  * @param actionName - Server Action name, used for failure log context
- * @param successLog - Datadog log message on success
- * @param logFields - Fields attached to both the failure and success log entries
+ * @param logFields - Fields attached to the failure log entry
  * @returns Promise resolving to success status and optional error
  */
 async function mutateMultiredditMember(
@@ -77,7 +76,6 @@ async function mutateMultiredditMember(
   member: string,
   method: 'PUT' | 'DELETE',
   actionName: string,
-  successLog: string,
   logFields: Record<string, string>
 ): Promise<{success: boolean; error?: string}> {
   const {headers, baseUrl} = await getRedditContext()
@@ -102,7 +100,6 @@ async function mutateMultiredditMember(
   }
 
   updateTag('multireddits')
-  logger.debug(successLog, logFields)
   return {success: true}
 }
 
@@ -153,10 +150,6 @@ export async function fetchMultireddits(): Promise<
       subreddits: multi.data.subreddits?.map((sub) => sub.name) || [],
       icon: multi.data.icon_url || ''
     }))
-
-    logger.debug('Fetched multireddits successfully', {
-      count: multireddits.length
-    })
 
     return multireddits
   } catch (error) {
@@ -231,7 +224,6 @@ export async function createMultireddit(
     const path = data.data?.path
 
     updateTag('multireddits')
-    logger.debug('Created multireddit successfully', {name: cleanName, path})
     return {success: true, path}
   } catch (error) {
     logger.error('Error creating multireddit', {
@@ -280,7 +272,6 @@ export async function deleteMultireddit(
     }
 
     updateTag('multireddits')
-    logger.debug('Deleted multireddit successfully', {multiPath})
     return {success: true}
   } catch (error) {
     logger.error('Error deleting multireddit', {
@@ -346,10 +337,6 @@ export async function updateMultiredditName(
     }
 
     updateTag('multireddits')
-    logger.debug('Updated multireddit name successfully', {
-      multiPath,
-      displayName: cleanDisplayName
-    })
     return {success: true}
   } catch (error) {
     logger.error('Error updating multireddit name', {
@@ -397,7 +384,6 @@ export async function addSubredditToMultireddit(
       cleanSubreddit,
       'PUT',
       'addSubredditToMultireddit',
-      'Added subreddit to multireddit successfully',
       {multiPath, subredditName: cleanSubreddit}
     )
   } catch (error) {
@@ -446,7 +432,6 @@ export async function removeSubredditFromMultireddit(
       cleanSubreddit,
       'DELETE',
       'removeSubredditFromMultireddit',
-      'Removed subreddit from multireddit successfully',
       {multiPath, subredditName: cleanSubreddit}
     )
   } catch (error) {
@@ -495,7 +480,6 @@ export async function addUserToMultireddit(
       toUserSubredditName(cleanUsername),
       'PUT',
       'addUserToMultireddit',
-      'Added user to multireddit successfully',
       {multiPath, username: cleanUsername}
     )
   } catch (error) {
@@ -544,7 +528,6 @@ export async function removeUserFromMultireddit(
       toUserSubredditName(cleanUsername),
       'DELETE',
       'removeUserFromMultireddit',
-      'Removed user from multireddit successfully',
       {multiPath, username: cleanUsername}
     )
   } catch (error) {

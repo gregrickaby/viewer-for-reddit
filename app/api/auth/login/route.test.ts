@@ -163,18 +163,6 @@ describe('GET /api/auth/login', () => {
     expect(location1).not.toBe(location2)
   })
 
-  it('logs OAuth flow initiation', async () => {
-    await GET()
-
-    expect(mockLogger.debug).toHaveBeenCalledWith(
-      'OAuth login initiated',
-      expect.objectContaining({
-        state: expect.stringMatching(/^.{8}\.\.\.$/),
-        context: 'OAuth'
-      })
-    )
-  })
-
   it('handles errors gracefully', async () => {
     mockCreateLoginUrl.mockRejectedValue(
       new Error('Arctic initialization failed')
