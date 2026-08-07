@@ -246,6 +246,77 @@ describe('redditFetch', () => {
   })
 
   // -------------------------------------------------------------------------
+  // 401/403 retry with forced token refresh
+  // -------------------------------------------------------------------------
+
+  describe('401/403 retry with forced token refresh', () => {
+    it('retries once with a forced refresh and succeeds if the retry succeeds', async () => {
+      let callCount = 0
+      server.use(
+        http.get('https://oauth.reddit.com/user/testuser/about.json', () => {
+          callCount++
+          if (callCount === 1) {
+            return new HttpResponse('Unauthorized', {status: 401})
+          }
+          return HttpResponse.json({data: {name: 'testuser'}})
+        })
+      )
+
+      const result = await redditFetch<{data: {name: string}}>(
+        '/user/testuser/about.json',
+        {operation: 'fetchUserInfo', resource: 'testuser'}
+      )
+
+      expect(result.data.name).toBe('testuser')
+      expect(callCount).toBe(2)
+      expect(mockGetRedditContext).toHaveBeenCalledTimes(2)
+      expect(mockGetRedditContext).toHaveBeenNthCalledWith(2, {
+        forceRefresh: true
+      })
+    })
+
+    it('throws AuthenticationError when the retry also 401s', async () => {
+      let callCount = 0
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+          callCount++
+          return new HttpResponse('Unauthorized', {status: 401})
+        })
+      )
+
+      await expect(
+        redditFetch('/r/test/hot.json', {
+          operation: 'fetchPosts',
+          resource: 'test'
+        })
+      ).rejects.toThrow(AuthenticationError)
+
+      expect(callCount).toBe(2)
+      expect(mockGetRedditContext).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not retry on non-auth failures', async () => {
+      let callCount = 0
+      server.use(
+        http.get('https://oauth.reddit.com/r/test/hot.json', () => {
+          callCount++
+          return new HttpResponse('Not Found', {status: 404})
+        })
+      )
+
+      await expect(
+        redditFetch('/r/test/hot.json', {
+          operation: 'fetchPosts',
+          resource: 'test'
+        })
+      ).rejects.toThrow(NotFoundError)
+
+      expect(callCount).toBe(1)
+      expect(mockGetRedditContext).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  // -------------------------------------------------------------------------
   // SSRF validation
   // -------------------------------------------------------------------------
 

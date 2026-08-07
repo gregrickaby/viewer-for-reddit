@@ -150,6 +150,27 @@ describe('reddit-context', () => {
       // Should NOT have attempted a refresh
       expect(adapters.refreshAccessToken).not.toHaveBeenCalled()
     })
+
+    it('refreshes anyway when forceRefresh is true, even with time to spare', async () => {
+      const now = Date.now()
+      const adapters = createStubAdapters({
+        readSession: vi.fn(async () =>
+          authenticatedSnapshot({
+            expiresAt: now + TOKEN_REFRESH_BUFFER + 60000 // well beyond buffer
+          })
+        ),
+        refreshAccessToken: vi.fn(async () => createMockTokens()),
+        now: () => now
+      })
+      configureRedditContext(adapters)
+
+      const ctx = await getRedditContext({forceRefresh: true})
+
+      expect(ctx.headers).toMatchObject({
+        Authorization: 'Bearer refreshed-access-token'
+      })
+      expect(adapters.refreshAccessToken).toHaveBeenCalledOnce()
+    })
   })
 
   // -------------------------------------------------------------------------

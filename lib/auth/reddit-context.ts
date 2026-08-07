@@ -271,16 +271,32 @@ export function contextFromToken(accessToken: string): RedditContext {
 }
 
 /**
+ * Options for {@link getRedditContext}.
+ */
+export interface GetRedditContextOptions {
+  /**
+   * Force a token refresh even if the tracked expiry says the access token
+   * is still valid. Used to recover from a 401/403 Reddit returns despite
+   * our own expiry buffer not having tripped yet (early revocation, clock
+   * skew) - see {@link redditFetch}'s retry-on-401 path.
+   */
+  forceRefresh?: boolean
+}
+
+/**
  * Resolve the current Reddit request context.
  *
  * Reads the session, refreshes the access token if needed (coalescing
  * concurrent calls), and returns a fully-formed {@link RedditContext}.
  * Throws when no valid session exists or when token refresh fails.
  *
+ * @param options - Optional behavior overrides
  * @returns Promise resolving to the current RedditContext
  * @throws Error when not authenticated or token refresh fails
  */
-export async function getRedditContext(): Promise<RedditContext> {
+export async function getRedditContext(
+  options?: GetRedditContextOptions
+): Promise<RedditContext> {
   const adapters = getAdapters()
   const snapshot = await adapters.readSession()
 
@@ -289,6 +305,7 @@ export async function getRedditContext(): Promise<RedditContext> {
   }
 
   const needsRefresh =
+    options?.forceRefresh ||
     !snapshot.expiresAt ||
     snapshot.expiresAt - adapters.now() < TOKEN_REFRESH_BUFFER
 
