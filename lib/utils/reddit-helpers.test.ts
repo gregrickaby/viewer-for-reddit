@@ -2,6 +2,7 @@ import {describe, expect, it} from 'vitest'
 import {
   extractSlug,
   getInitialVoteState,
+  getInternalPostHref,
   getIsVertical,
   getVoteColor,
   isValidFullname,
@@ -622,6 +623,34 @@ describe('reddit-helpers', () => {
       }
     ])('$description', ({permalink, postId, expected}) => {
       expect(extractSlug(permalink, postId)).toBe(expected)
+    })
+  })
+
+  describe('getInternalPostHref', () => {
+    it.each([
+      {
+        description: 'strips the reddit.com domain from an absolute URL',
+        permalink:
+          'https://www.reddit.com/r/testsubreddit/comments/abc123/some_slug/',
+        expected: '/r/testsubreddit/comments/abc123/some_slug/'
+      },
+      {
+        description: 'passes a relative permalink through unchanged',
+        permalink: '/r/testsubreddit/comments/abc123/some_slug/',
+        expected: '/r/testsubreddit/comments/abc123/some_slug/'
+      },
+      {
+        description: 'strips a bare reddit.com domain without www',
+        permalink: 'https://reddit.com/r/testsubreddit/comments/abc123/slug/',
+        expected: '/r/testsubreddit/comments/abc123/slug/'
+      },
+      {
+        description: 'returns null for an empty permalink',
+        permalink: '',
+        expected: null
+      }
+    ])('$description', ({permalink, expected}) => {
+      expect(getInternalPostHref(permalink)).toBe(expected)
     })
   })
 

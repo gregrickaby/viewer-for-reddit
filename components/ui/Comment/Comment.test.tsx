@@ -88,6 +88,27 @@ describe('Comment', () => {
       )
     })
 
+    it('strips the reddit.com domain so the post link stays on this site', () => {
+      // Reddit's real API sends link_permalink as a fully qualified
+      // reddit.com URL; using it as-is would navigate away from the app.
+      const commentWithAbsoluteLink: RedditComment = {
+        ...mockComment,
+        subreddit: 'testsubreddit',
+        subreddit_name_prefixed: 'r/testsubreddit',
+        link_title: 'Some post title',
+        link_permalink:
+          'https://www.reddit.com/r/testsubreddit/comments/abc123/some_post_title/'
+      }
+      render(<Comment comment={commentWithAbsoluteLink} />)
+
+      expect(
+        screen.getByRole('link', {name: 'Some post title'})
+      ).toHaveAttribute(
+        'href',
+        '/r/testsubreddit/comments/abc123/some_post_title'
+      )
+    })
+
     it('falls back to the subreddit badge alone when the post title is unavailable', () => {
       const commentWithSubredditOnly: RedditComment = {
         ...mockComment,

@@ -202,6 +202,23 @@ export function getVoteColor(voteState: 1 | 0 | -1 | null): string {
  * @param postId - Reddit post ID
  * @returns Slug string or 'post' as fallback
  */
+/**
+ * Converts a Reddit post permalink into an internal app route.
+ * `link_permalink` on user-profile comment listings is a fully qualified
+ * reddit.com URL; this strips the domain so the link stays on this site.
+ *
+ * @param permalink - Reddit's absolute or relative post permalink
+ * @returns Relative path starting with '/', or null if permalink is empty
+ */
+export function getInternalPostHref(permalink: string): string | null {
+  if (!permalink) return null
+  try {
+    return new URL(permalink, 'https://www.reddit.com').pathname
+  } catch {
+    return null
+  }
+}
+
 export function extractSlug(permalink: string, postId: string): string {
   // Reddit permalink format: /r/subreddit/comments/postId/slug/
   const parts = permalink.split('/')

@@ -14,7 +14,10 @@ import {
 } from '@/lib/types/reddit'
 import {MAX_COMMENT_DEPTH} from '@/lib/utils/constants'
 import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
-import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
+import {
+  getInternalPostHref,
+  getUserProfileHref
+} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
   Anchor,
@@ -151,6 +154,8 @@ function renderAwards(awardings: RedditAward[]) {
 function renderPostContext(comment: RedditCommentType) {
   if (!comment.link_permalink) return null
 
+  const postHref = getInternalPostHref(comment.link_permalink)
+
   return (
     <Group gap={6} mb={4} wrap="nowrap">
       {comment.subreddit_name_prefixed && (
@@ -165,11 +170,11 @@ function renderPostContext(comment: RedditCommentType) {
           {comment.subreddit_name_prefixed}
         </Badge>
       )}
-      {comment.link_title && comment.link_permalink && (
+      {comment.link_title && postHref && (
         <Anchor
           c="inherit"
           component={Link}
-          href={comment.link_permalink}
+          href={postHref}
           scroll
           size="sm"
           fw={700}
