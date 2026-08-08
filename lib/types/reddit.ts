@@ -81,6 +81,10 @@ export interface RedditPost {
   over_18: boolean
   stickied: boolean
   link_flair_text?: string
+  /** Reddit's flair background color, either a hex value or empty string for no custom color */
+  link_flair_background_color?: string
+  /** Reddit's flair text color keyword: 'light' or 'dark' */
+  link_flair_text_color?: string
   ups: number
   downs: number
   likes?: boolean | null

@@ -8,7 +8,7 @@ import {useVote} from '@/lib/hooks/useVote'
 import {RedditPost} from '@/lib/types/reddit'
 import {decodeHtmlEntities, sanitizeText} from '@/lib/utils/formatters'
 import {extractSlug} from '@/lib/utils/reddit-helpers'
-import {Anchor, Divider, Stack, Text} from '@mantine/core'
+import {Anchor, Badge, Divider, Stack, Text} from '@mantine/core'
 import Link from 'next/link'
 import styles from './PostCard.module.css'
 
@@ -43,6 +43,35 @@ function renderSelfText(
       dangerouslySetInnerHTML={{__html: sanitizedHtml}}
       className={showFullText ? styles.postBody : styles.postBodyPreview}
     />
+  )
+}
+
+/**
+ * Render the post's flair badge, matching Reddit's own colors when provided.
+ */
+function renderFlair(post: RedditPost) {
+  if (!post.link_flair_text) {
+    return null
+  }
+
+  const hasCustomColor = Boolean(post.link_flair_background_color)
+
+  return (
+    <Badge
+      radius="sm"
+      size="sm"
+      variant={hasCustomColor ? 'filled' : 'light'}
+      style={
+        hasCustomColor
+          ? {
+              backgroundColor: post.link_flair_background_color,
+              color: post.link_flair_text_color === 'light' ? '#fff' : '#1a1a1a'
+            }
+          : undefined
+      }
+    >
+      {post.link_flair_text}
+    </Badge>
   )
 }
 
@@ -111,6 +140,8 @@ export function PostCard({
           {post.title}
         </Text>
       </Anchor>
+
+      {renderFlair(post)}
 
       <PostMedia post={post} priority={priority} />
 

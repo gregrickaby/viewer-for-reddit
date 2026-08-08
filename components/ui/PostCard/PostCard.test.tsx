@@ -290,6 +290,35 @@ describe('PostCard', () => {
     })
   })
 
+  describe('flair', () => {
+    it('does not render a flair badge when link_flair_text is absent', () => {
+      render(<PostCard post={mockPost} />)
+
+      expect(screen.queryByText(/updates/i)).not.toBeInTheDocument()
+    })
+
+    it('renders the flair badge text when Reddit provides custom colors', () => {
+      const postWithFlair = {
+        ...mockPost,
+        link_flair_text: 'Updates',
+        link_flair_background_color: '#ff4500',
+        link_flair_text_color: 'light'
+      }
+
+      render(<PostCard post={postWithFlair} />)
+
+      expect(screen.getByText('Updates')).toBeInTheDocument()
+    })
+
+    it('renders the flair badge with default styling when Reddit sends no colors', () => {
+      const postWithFlair = {...mockPost, link_flair_text: 'Discussion'}
+
+      render(<PostCard post={postWithFlair} />)
+
+      expect(screen.getByText('Discussion')).toBeInTheDocument()
+    })
+  })
+
   describe('component rendering', () => {
     it('renders correctly', () => {
       // React Compiler handles optimization automatically
