@@ -101,12 +101,12 @@ export function configureRedditContext(adapters: RedditContextAdapters): void {
 }
 
 /**
- * Restore default (production) adapters and clear any in-flight refresh.
+ * Restore default (production) adapters and clear any in-flight refreshes.
  * Call in afterEach or afterAll during tests.
  */
 export function resetRedditContext(): void {
   customAdapters = null
-  inflightRefresh = null
+  inflightRefreshes.clear()
 }
 
 /**
@@ -144,7 +144,13 @@ const defaultAdapters: RedditContextAdapters = {
 // Concurrent refresh coalescing
 // ---------------------------------------------------------------------------
 
-let inflightRefresh: Promise<string | null> | null = null
+/**
+ * In-flight refresh promises keyed by refresh token, so concurrent requests
+ * for the *same* session share one refresh while different sessions
+ * refreshing at the same moment never wait on (or fail from) each other's
+ * token exchange.
+ */
+const inflightRefreshes = new Map<string, Promise<string | null>>()
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -302,10 +308,17 @@ export async function getRedditContext(
     return authenticatedContext(snapshot.accessToken, snapshot.username || null)
   }
 
-  // Coalesce concurrent refresh attempts
-  inflightRefresh ??= performRefresh(snapshot, adapters).finally(() => {
-    inflightRefresh = null
-  })
+  // Coalesce concurrent refresh attempts for the same session only - keyed
+  // by refresh token so a different session refreshing at the same moment
+  // gets its own attempt instead of sharing (and failing from) this one.
+  const refreshKey = snapshot.refreshToken ?? snapshot.accessToken
+  let inflightRefresh = inflightRefreshes.get(refreshKey)
+  if (!inflightRefresh) {
+    inflightRefresh = performRefresh(snapshot, adapters).finally(() => {
+      inflightRefreshes.delete(refreshKey)
+    })
+    inflightRefreshes.set(refreshKey, inflightRefresh)
+  }
 
   const newAccessToken = await inflightRefresh
 

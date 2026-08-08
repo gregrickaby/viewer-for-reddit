@@ -41,12 +41,20 @@ export interface UseUserAvatarResult {
  */
 export function useUserAvatar(username: string | null): UseUserAvatarResult {
   const ref = useRef<HTMLDivElement | null>(null)
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(
-    username ? (avatarCache.get(username) ?? null) : null
-  )
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!username || avatarCache.has(username)) return
+    if (!username) return
+
+    // Read the cache only after mount, never during the initial render -
+    // SSR always starts with an empty cache, so reading it synchronously
+    // in useState's initializer would mismatch the server-rendered HTML
+    // whenever the client's module-scope cache is already warm.
+    const cached = avatarCache.get(username)
+    if (cached !== undefined) {
+      setAvatarUrl(cached)
+      return
+    }
 
     const node = ref.current
     if (!node) return

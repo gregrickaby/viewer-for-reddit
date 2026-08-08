@@ -2,6 +2,7 @@ import {fetchUserInfo} from '@/lib/actions/reddit/users'
 import type {RedditUser} from '@/lib/types/reddit'
 import {mockObserver} from '@/test-utils/intersectionObserverMock'
 import {act, render, screen, waitFor} from '@/test-utils'
+import {renderToStaticMarkup} from 'react-dom/server'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useUserAvatar} from './useUserAvatar'
 
@@ -122,6 +123,30 @@ describe('useUserAvatar', () => {
       'https://example.com/avatar-d.png'
     )
     expect(mockFetchUserInfo).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders without the cached avatar on a server-side pass, avoiding hydration mismatches', async () => {
+    mockFetchUserInfo.mockResolvedValueOnce(
+      makeUser('https://example.com/avatar-f.png')
+    )
+
+    const {unmount} = render(<AvatarHost username="avatar-user-f" />)
+    act(() => {
+      mockObserver._trigger(true)
+    })
+    await waitFor(() =>
+      expect(screen.getByTestId('host')).toHaveTextContent(
+        'https://example.com/avatar-f.png'
+      )
+    )
+    unmount()
+
+    // A fresh server-side pass for the same user must not read the
+    // now-warm module cache - SSR has no cache, so a client render that
+    // reads it synchronously would mismatch the server-rendered HTML.
+    const view = renderToStaticMarkup(<AvatarHost username="avatar-user-f" />)
+    expect(view).toContain('none')
+    expect(view).not.toContain('https://example.com/avatar-f.png')
   })
 
   it('disconnects the observer on unmount', () => {

@@ -355,6 +355,81 @@ describe('reddit-context', () => {
   })
 
   // -------------------------------------------------------------------------
+  // getRedditContext — cross-session refresh isolation
+  // -------------------------------------------------------------------------
+
+  describe('getRedditContext — cross-session refresh isolation', () => {
+    it('does not coalesce refreshes across different sessions (different refresh tokens)', async () => {
+      const now = Date.now()
+      const readSession = vi
+        .fn()
+        .mockResolvedValueOnce(
+          authenticatedSnapshot({
+            refreshToken: 'session-a-refresh',
+            expiresAt: now - 1000
+          })
+        )
+        .mockResolvedValueOnce(
+          authenticatedSnapshot({
+            refreshToken: 'session-b-refresh',
+            expiresAt: now - 1000
+          })
+        )
+      const refreshAccessToken = vi.fn(async () => createMockTokens())
+
+      const adapters = createStubAdapters({
+        readSession,
+        refreshAccessToken,
+        now: () => now
+      })
+      configureRedditContext(adapters)
+
+      await Promise.all([getRedditContext(), getRedditContext()])
+
+      expect(refreshAccessToken).toHaveBeenCalledWith('session-a-refresh')
+      expect(refreshAccessToken).toHaveBeenCalledWith('session-b-refresh')
+      expect(refreshAccessToken).toHaveBeenCalledTimes(2)
+    })
+
+    it('a refresh failure in one session does not fail a concurrent different session', async () => {
+      const now = Date.now()
+      const readSession = vi
+        .fn()
+        .mockResolvedValueOnce(
+          authenticatedSnapshot({
+            refreshToken: 'bad-refresh',
+            expiresAt: now - 1000
+          })
+        )
+        .mockResolvedValueOnce(
+          authenticatedSnapshot({
+            refreshToken: 'good-refresh',
+            expiresAt: now - 1000
+          })
+        )
+      const refreshAccessToken = vi.fn(async (token: string) => {
+        if (token === 'bad-refresh') throw new Error('revoked')
+        return createMockTokens()
+      })
+
+      const adapters = createStubAdapters({
+        readSession,
+        refreshAccessToken,
+        now: () => now
+      })
+      configureRedditContext(adapters)
+
+      const [resultA, resultB] = await Promise.allSettled([
+        getRedditContext(),
+        getRedditContext()
+      ])
+
+      expect(resultA.status).toBe('rejected')
+      expect(resultB.status).toBe('fulfilled')
+    })
+  })
+
+  // -------------------------------------------------------------------------
   // Token rotation handling
   // -------------------------------------------------------------------------
 
