@@ -66,6 +66,56 @@ describe('Comment', () => {
     })
   })
 
+  describe('post context (user profile listing)', () => {
+    it('renders the subreddit badge and post title with a link to the post', () => {
+      const commentWithLink: RedditComment = {
+        ...mockComment,
+        subreddit: 'testsubreddit',
+        subreddit_name_prefixed: 'r/testsubreddit',
+        link_title: 'Some post title',
+        link_permalink: '/r/testsubreddit/comments/abc123/some_post_title/'
+      }
+      render(<Comment comment={commentWithLink} />)
+
+      expect(screen.getByText('r/testsubreddit')).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {name: 'Some post title'})
+      ).toHaveAttribute(
+        'href',
+        '/r/testsubreddit/comments/abc123/some_post_title'
+      )
+    })
+
+    it('falls back to the subreddit badge alone when the post title is unavailable', () => {
+      const commentWithSubredditOnly: RedditComment = {
+        ...mockComment,
+        subreddit: 'testsubreddit',
+        subreddit_name_prefixed: 'r/testsubreddit',
+        link_permalink: '/r/testsubreddit/comments/abc123/some_post_title/'
+      }
+      render(<Comment comment={commentWithSubredditOnly} />)
+
+      expect(screen.getByText('r/testsubreddit')).toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {name: /post/i})
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders nothing when the comment has no link_permalink (regular post thread)', () => {
+      // Reddit's normal post-comments endpoint sends subreddit_name_prefixed
+      // on every comment, but never link_permalink - gate on link_permalink
+      // so the badge doesn't show up redundantly inside a post's own thread.
+      const commentInPostThread: RedditComment = {
+        ...mockComment,
+        subreddit: 'testsubreddit',
+        subreddit_name_prefixed: 'r/testsubreddit'
+      }
+      render(<Comment comment={commentInPostThread} />)
+
+      expect(screen.queryByText('r/testsubreddit')).not.toBeInTheDocument()
+    })
+  })
+
   describe('distinguished comments', () => {
     it('renders moderator badge for moderator comments', () => {
       const modComment = {...mockComment, distinguished: 'moderator'}
@@ -182,6 +232,78 @@ describe('Comment', () => {
       expect(screen.getByText('This is a reply')).toBeInTheDocument()
     })
 
+    it('collapses a nested reply and its grandchildren independently of the parent', async () => {
+      const commentWithGrandchild = {
+        ...mockComment,
+        replies: {
+          kind: 'Listing',
+          data: {
+            children: [
+              {
+                kind: 't1',
+                data: {
+                  id: 'reply1',
+                  name: 't1_reply1',
+                  author: 'replyuser',
+                  body: 'This is a reply',
+                  body_html: '<div>This is a reply</div>',
+                  score: 10,
+                  created_utc: Date.now() / 1000 - 1800,
+                  likes: null,
+                  distinguished: null,
+                  depth: 1,
+                  replies: {
+                    kind: 'Listing',
+                    data: {
+                      children: [
+                        {
+                          kind: 't1',
+                          data: {
+                            id: 'grandchild1',
+                            name: 't1_grandchild1',
+                            author: 'grandchilduser',
+                            body: 'This is a grandchild reply',
+                            body_html: '<div>This is a grandchild reply</div>',
+                            score: 2,
+                            created_utc: Date.now() / 1000 - 900,
+                            likes: null,
+                            distinguished: null,
+                            depth: 2,
+                            replies: ''
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      render(<Comment comment={commentWithGrandchild as any} />)
+
+      // Parent, reply, and grandchild all visible expanded
+      expect(screen.getByText('This is a reply')).toBeInTheDocument()
+      expect(screen.getByText('This is a grandchild reply')).toBeInTheDocument()
+
+      // Collapse just the nested reply (the second collapse button - the
+      // first belongs to the top-level comment)
+      const [, replyCollapseButton] = screen.getAllByRole('button', {
+        name: /collapse comment/i
+      })
+      await user.click(replyCollapseButton)
+
+      await waitFor(() => {
+        expect(replyCollapseButton).toHaveAttribute('aria-expanded', 'false')
+      })
+
+      // The grandchild is hidden, but the top-level comment body stays visible
+      expect(screen.getByText('This is a grandchild reply')).not.toBeVisible()
+      expect(screen.getByText('This is a test comment')).toBeVisible()
+    })
+
     it('renders multiple nested replies', () => {
       const commentWithMultipleReplies = {
         ...mockComment,
@@ -270,20 +392,18 @@ describe('Comment', () => {
   })
 
   describe('collapse functionality', () => {
-    it('shows collapse button only for top-level comments (depth 0)', () => {
+    it('shows a collapse button at any nesting depth', () => {
       const {rerender} = render(<Comment comment={mockComment} depth={0} />)
 
-      // Top-level comment should have collapse button
       expect(
         screen.getByRole('button', {name: /collapse comment/i})
       ).toBeInTheDocument()
 
-      // Nested comment should not have collapse button
       rerender(<Comment comment={mockComment} depth={1} />)
 
       expect(
-        screen.queryByRole('button', {name: /collapse comment/i})
-      ).not.toBeInTheDocument()
+        screen.getByRole('button', {name: /collapse comment/i})
+      ).toBeInTheDocument()
     })
 
     it('starts with comment expanded by default', () => {
@@ -383,8 +503,9 @@ describe('Comment', () => {
       // Reply count should not be visible when expanded
       expect(screen.queryByText('(2 replies)')).not.toBeInTheDocument()
 
-      // Collapse the comment
-      const collapseButton = screen.getByRole('button', {
+      // Collapse the top-level comment (first in DOM order; replies have
+      // their own collapse buttons too now that nesting can collapse)
+      const [collapseButton] = screen.getAllByRole('button', {
         name: /collapse comment/i
       })
       await user.click(collapseButton)

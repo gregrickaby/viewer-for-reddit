@@ -1,7 +1,12 @@
 .commentBody {
   font-size: 0.875rem;
   line-height: 1.5;
-  word-break: break-word;
+  word-break: word-break;
+}
+
+.commentBody p {
+  padding: 0;
+  margin: 0;
 }
 
 .commentBody img {
@@ -19,4 +24,9 @@
 
 .gilded {
   border: 1px solid var(--mantine-color-yellow-6);
+}
+
+.threadLine {
+  border-left: 1px solid var(--mantine-primary-color-filled);
+  padding-left: 0.25rem;
 }

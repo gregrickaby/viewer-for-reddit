@@ -217,6 +217,14 @@ export interface RedditComment {
   score_hidden: boolean
   saved?: boolean
   all_awardings?: RedditAward[]
+  /** Post title, present only on user profile comment listings (`/user/{username}/comments.json`) */
+  link_title?: string
+  /** Permalink to the parent post, present only on user profile comment listings */
+  link_permalink?: string
+  /** Subreddit name without prefix, present only on user profile comment listings */
+  subreddit?: string
+  /** Subreddit name with `r/` prefix, present only on user profile comment listings */
+  subreddit_name_prefixed?: string
 }
 
 export interface RedditCommentListing {

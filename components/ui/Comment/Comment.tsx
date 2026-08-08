@@ -111,6 +111,47 @@ function renderAwards(awardings: RedditAward[]) {
 }
 
 /**
+ * Render the parent post's subreddit badge and title above a comment.
+ * Only present on user profile comment listings, where a comment is shown
+ * out of context and needs a link back to the post it belongs to. Falls
+ * back to the subreddit badge alone when the title isn't available.
+ */
+function renderPostContext(comment: RedditCommentType) {
+  if (!comment.link_permalink) return null
+
+  return (
+    <Group gap={6} mb={4} wrap="nowrap">
+      {comment.subreddit_name_prefixed && (
+        <Badge
+          component={Link}
+          href={`/r/${comment.subreddit}`}
+          scroll
+          size="xs"
+          variant="light"
+          style={{cursor: 'pointer', flexShrink: 0}}
+        >
+          {comment.subreddit_name_prefixed}
+        </Badge>
+      )}
+      {comment.link_title && comment.link_permalink && (
+        <Anchor
+          c="inherit"
+          component={Link}
+          href={comment.link_permalink}
+          scroll
+          size="sm"
+          fw={700}
+          truncate="end"
+          style={{minWidth: 0}}
+        >
+          {comment.link_title}
+        </Anchor>
+      )}
+    </Group>
+  )
+}
+
+/**
  * Render vote action buttons with score display. Shares `VotePill` with
  * `PostActions` so vote controls look identical on posts and comments.
  */
@@ -223,11 +264,16 @@ export function Comment({
   }
 
   return (
-    <Box ml={depth > 0 ? 20 : 0}>
+    <Box
+      ml={depth > 0 ? 20 : 0}
+      className={depth > 0 ? styles.threadLine : undefined}
+    >
+      {renderPostContext(comment)}
+
       <Card
-        padding="md"
+        padding="xs"
         radius="md"
-        mb="sm"
+        mb="xs"
         bg={
           isGilded
             ? 'var(--mantine-color-yellow-light)'
@@ -235,24 +281,22 @@ export function Comment({
         }
         className={isGilded ? styles.gilded : undefined}
       >
-        <Stack gap="sm">
+        <Stack gap="xs">
           <Group gap="xs">
-            {depth === 0 && (
-              <ActionIcon
-                variant="subtle"
-                size="sm"
-                color="gray"
-                onClick={toggleCollapse}
-                aria-label={isCollapsed ? 'Expand comment' : 'Collapse comment'}
-                aria-expanded={!isCollapsed}
-              >
-                {isCollapsed ? (
-                  <IconChevronDown aria-hidden="true" size={16} />
-                ) : (
-                  <IconChevronUp aria-hidden="true" size={16} />
-                )}
-              </ActionIcon>
-            )}
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              color="gray"
+              onClick={toggleCollapse}
+              aria-label={isCollapsed ? 'Expand comment' : 'Collapse comment'}
+              aria-expanded={!isCollapsed}
+            >
+              {isCollapsed ? (
+                <IconChevronDown aria-hidden="true" size={16} />
+              ) : (
+                <IconChevronUp aria-hidden="true" size={16} />
+              )}
+            </ActionIcon>
             {renderAuthor(comment.author)}
             {comment.distinguished && (
               <Badge size="xs" color="green">
@@ -273,7 +317,7 @@ export function Comment({
           </Group>
 
           <Collapse expanded={!isCollapsed}>
-            <Stack gap="sm">
+            <Stack gap="xs">
               <div
                 dangerouslySetInnerHTML={{
                   __html: sanitizeText(
