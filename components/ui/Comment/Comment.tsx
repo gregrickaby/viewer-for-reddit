@@ -6,6 +6,7 @@ import {VotePill} from '@/components/ui/VotePill/VotePill'
 import {useCommentCollapse} from '@/lib/hooks/useCommentCollapse'
 import {useSavePost} from '@/lib/hooks/useSavePost'
 import {useSharePost} from '@/lib/hooks/useSharePost'
+import {useUserAvatar} from '@/lib/hooks/useUserAvatar'
 import {useVote} from '@/lib/hooks/useVote'
 import {
   RedditAward,
@@ -17,6 +18,7 @@ import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
 import {
   ActionIcon,
   Anchor,
+  Avatar,
   Badge,
   Box,
   Card,
@@ -65,14 +67,44 @@ interface CommentProps {
 }
 
 /**
- * Helper to render author name (special users vs normal users)
+ * Reddit system accounts and tombstoned authors that have no real profile
+ * to link to or avatar to fetch.
  */
-function renderAuthor(author: string) {
-  const isSpecialUser =
+function isSpecialUser(author: string): boolean {
+  return (
     author === '[deleted]' ||
     author === '[removed]' ||
     author === 'AutoModerator'
-  const href = isSpecialUser ? null : getUserProfileHref(author)
+  )
+}
+
+/**
+ * Render a comment author's avatar. Lazily fetched via `useUserAvatar` once
+ * scrolled into view, and skipped entirely for system/tombstoned accounts.
+ */
+function CommentAvatar({author}: Readonly<{author: string}>) {
+  const special = isSpecialUser(author)
+  const {avatarUrl, ref} = useUserAvatar(special ? null : author)
+
+  if (special) return null
+
+  return (
+    <Box ref={ref}>
+      <Avatar
+        src={avatarUrl}
+        alt={`${author}'s avatar`}
+        size={20}
+        radius="xl"
+      />
+    </Box>
+  )
+}
+
+/**
+ * Helper to render author name (special users vs normal users)
+ */
+function renderAuthor(author: string) {
+  const href = isSpecialUser(author) ? null : getUserProfileHref(author)
 
   if (!href) {
     return (
@@ -297,6 +329,7 @@ export function Comment({
                 <IconChevronUp aria-hidden="true" size={16} />
               )}
             </ActionIcon>
+            <CommentAvatar author={comment.author} />
             {renderAuthor(comment.author)}
             {comment.distinguished && (
               <Badge size="xs" color="green">
@@ -307,7 +340,7 @@ export function Comment({
               comment.all_awardings.length > 0 &&
               renderAwards(comment.all_awardings)}
             <Text size="xs" c="dimmed">
-              • <TimeAgo timestamp={comment.created_utc} />
+              <TimeAgo timestamp={comment.created_utc} />
             </Text>
             {isCollapsed && replies.length > 0 && (
               <Text size="xs" c="dimmed">

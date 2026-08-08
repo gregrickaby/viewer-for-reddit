@@ -1,15 +1,17 @@
-import {votePost} from '@/lib/actions/reddit/users'
-import {RedditAward, RedditComment} from '@/lib/types/reddit'
+import {fetchUserInfo, votePost} from '@/lib/actions/reddit/users'
+import {RedditAward, RedditComment, RedditUser} from '@/lib/types/reddit'
 import {render, screen, user, waitFor} from '@/test-utils'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import styles from './Comment.module.css'
 import {Comment} from './Comment'
 
 vi.mock('@/lib/actions/reddit/users', () => ({
-  votePost: vi.fn(async () => ({success: true}))
+  votePost: vi.fn(async () => ({success: true})),
+  fetchUserInfo: vi.fn()
 }))
 
 const mockVotePost = vi.mocked(votePost)
+const mockFetchUserInfo = vi.mocked(fetchUserInfo)
 
 describe('Comment', () => {
   const mockComment: RedditComment = {
@@ -114,6 +116,65 @@ describe('Comment', () => {
 
       expect(screen.queryByText('r/testsubreddit')).not.toBeInTheDocument()
     })
+  })
+
+  describe('author avatar', () => {
+    // Comment.tsx also renders Next `<Link>`s (author, post context), which
+    // install their own IntersectionObserver for prefetching. The shared
+    // `mockObserver` singleton from test-utils only tracks the most
+    // recently constructed observer, so triggering it here would fire
+    // Link's callback instead of ours. Use a local observer that fires
+    // immediately on `observe()` so each instance invokes its own callback.
+    const originalIntersectionObserver = globalThis.IntersectionObserver
+
+    beforeEach(() => {
+      class ImmediateIntersectionObserver {
+        constructor(private readonly callback: IntersectionObserverCallback) {}
+        observe(target: Element) {
+          this.callback(
+            [{isIntersecting: true, target} as IntersectionObserverEntry],
+            this as unknown as IntersectionObserver
+          )
+        }
+        unobserve() {}
+        disconnect() {}
+        takeRecords(): IntersectionObserverEntry[] {
+          return []
+        }
+      }
+      globalThis.IntersectionObserver =
+        ImmediateIntersectionObserver as unknown as typeof IntersectionObserver
+    })
+
+    afterEach(() => {
+      globalThis.IntersectionObserver = originalIntersectionObserver
+    })
+
+    it('fetches and renders the avatar once the comment scrolls into view', async () => {
+      mockFetchUserInfo.mockResolvedValueOnce({
+        icon_img: 'https://example.com/avatar.png'
+      } as RedditUser)
+      const commentWithAuthor = {...mockComment, author: 'avataruser'}
+
+      render(<Comment comment={commentWithAuthor} />)
+
+      await waitFor(() =>
+        expect(screen.getByAltText("avataruser's avatar")).toHaveAttribute(
+          'src',
+          'https://example.com/avatar.png'
+        )
+      )
+      expect(mockFetchUserInfo).toHaveBeenCalledWith('avataruser')
+    })
+
+    it.each(['[deleted]', '[removed]', 'AutoModerator'])(
+      'does not fetch an avatar for the system author %s',
+      (author) => {
+        render(<Comment comment={{...mockComment, author}} />)
+
+        expect(mockFetchUserInfo).not.toHaveBeenCalled()
+      }
+    )
   })
 
   describe('distinguished comments', () => {
