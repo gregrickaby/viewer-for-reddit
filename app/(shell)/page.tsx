@@ -5,7 +5,6 @@ import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTab
 import {isAuthenticated} from '@/lib/auth/session'
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {appConfig} from '@/lib/config/app.config'
-import {Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 
@@ -104,10 +103,6 @@ async function HomeContent({
 
   return (
     <FeedContainer>
-      <Title order={2} mb="lg">
-        Your Feed
-      </Title>
-
       <Suspense fallback={<TabsSkeleton />}>
         <PostsContent sort={postSort} timeFilter={timeFilter} />
       </Suspense>

@@ -1,4 +1,4 @@
-import {RecentPostsRail} from '@/components/layout/RecentPostsRail/RecentPostsRail'
+import {AuthenticatedRecentPostsRail} from '@/components/layout/RecentPostsRail/AuthenticatedRecentPostsRail'
 import {Shell} from '@/components/layout/Shell/Shell'
 import {AuthenticatedSidebarSections} from '@/components/layout/Sidebar/AuthenticatedSidebarSections'
 import {PersonalizedNavLinks} from '@/components/layout/Sidebar/PersonalizedNavLinks'
@@ -21,8 +21,8 @@ interface MainLayoutProps {
  * - Shell wrapper (static header + sidebar + main content area + right rail)
  * - Sidebar personalization (feed links, subscriptions, multireddits,
  *   following), each deferred behind its own Suspense boundary
- * - Recent Posts rail (client-only, reads localStorage directly -- no
- *   Suspense boundary needed)
+ * - Recent Posts rail, gated behind auth, deferred behind its own
+ *   Suspense boundary
  * - Utility buttons (Boss button, Back to top, Swipe navigation)
  *
  * Applied to: /, /r/[subreddit], /search/[query], /u/[username], /user/[username]/saved, /user/[username]/m/[multiname]
@@ -45,7 +45,11 @@ export default function MainLayout({children}: Readonly<MainLayoutProps>) {
             }
           />
         }
-        railSlot={<RecentPostsRail />}
+        railSlot={
+          <Suspense fallback={null}>
+            <AuthenticatedRecentPostsRail />
+          </Suspense>
+        }
       >
         {children}
       </Shell>
