@@ -25,6 +25,13 @@
   margin-bottom: 0;
 }
 
+.postBody img {
+  border-radius: 8px;
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
 .postBodyPreview {
   font-size: 0.875rem;
   line-height: 1.5;
@@ -56,4 +63,8 @@
 
 .postBodyPreview p:last-child {
   margin-bottom: 0;
+}
+
+.postBodyPreview img {
+  display: none;
 }
