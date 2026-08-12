@@ -305,6 +305,15 @@ export function Comment({
       ml={depth > 0 ? 20 : 0}
       className={depth > 0 ? styles.threadLine : undefined}
     >
+      {depth > 0 && (
+        <button
+          type="button"
+          className={styles.threadLineToggle}
+          onClick={toggleCollapse}
+          aria-label={isCollapsed ? 'Expand thread' : 'Collapse thread'}
+        />
+      )}
+
       {renderPostContext(comment)}
 
       <Card

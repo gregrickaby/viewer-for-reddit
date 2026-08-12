@@ -27,6 +27,38 @@
 }
 
 .threadLine {
-  border-left: 1px solid var(--mantine-primary-color-filled);
-  padding-left: 0.25rem;
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+.threadLineToggle {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.75rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.threadLineToggle::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: var(--mantine-primary-color-filled);
+  transition:
+    width 0.1s ease,
+    background-color 0.1s ease;
+}
+
+.threadLineToggle:hover::before,
+.threadLineToggle:focus-visible::before {
+  width: 3px;
+  background: var(--mantine-primary-color-filled-hover);
+}
+
+.threadLineToggle:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
 }
