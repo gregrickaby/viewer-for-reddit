@@ -2,7 +2,7 @@
 
 **Viewer for Reddit** is a clean way to browse Reddit without ads or algorithms.
 
-**[Sign in to start browsing →](/api/auth/login)**
+**[Sign in to start browsing →](https://reddit-viewer.com/api/auth/login)**
 
 ## How It Works
 
