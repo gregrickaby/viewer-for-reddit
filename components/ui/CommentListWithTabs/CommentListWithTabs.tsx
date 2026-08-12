@@ -3,7 +3,7 @@
 import {SortTabs} from '@/components/ui/SortTabs/SortTabs'
 import {TransitionOverlay} from '@/components/ui/TransitionOverlay/TransitionOverlay'
 import {CommentSortOption, RedditComment} from '@/lib/types/reddit'
-import {Box, Stack, Title} from '@mantine/core'
+import {Box, Divider, Stack, Title} from '@mantine/core'
 import {
   IconClock,
   IconFlame,
@@ -86,6 +86,7 @@ export function CommentListWithTabs({
           disabled={isPending}
           tabs={COMMENT_SORT_TABS}
         />
+        <Divider mt="xs" />
       </Box>
 
       <Stack gap="md" style={{position: 'relative', minHeight: '200px'}}>

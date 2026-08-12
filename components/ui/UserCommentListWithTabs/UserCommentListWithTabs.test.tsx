@@ -1,5 +1,5 @@
 import {render, screen, user} from '@/test-utils'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {UserCommentListWithTabs} from './UserCommentListWithTabs'
 import type {RedditComment} from '@/lib/types/reddit'
 
@@ -77,7 +77,7 @@ describe('UserCommentListWithTabs', () => {
     expect(screen.getByText('No comments yet')).toBeInTheDocument()
   })
 
-  it('renders all sort tabs', () => {
+  it('renders all sort options in the dropdown', async () => {
     render(
       <UserCommentListWithTabs
         comments={mockComments}
@@ -86,15 +86,14 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    expect(screen.getByRole('tab', {name: /hot/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /new/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /top/i})).toBeInTheDocument()
-    expect(
-      screen.getByRole('tab', {name: /controversial/i})
-    ).toBeInTheDocument()
+    await user.click(screen.getByRole('button', {name: /sort by new/i}))
+
+    expect(await screen.findByText('Hot')).toBeInTheDocument()
+    expect(screen.getByText('Top')).toBeInTheDocument()
+    expect(screen.getByText('Controversial')).toBeInTheDocument()
   })
 
-  it('changes sort when tab clicked', async () => {
+  it('changes sort when option clicked', async () => {
     render(
       <UserCommentListWithTabs
         comments={mockComments}
@@ -103,15 +102,15 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    const hotTab = screen.getByRole('tab', {name: /hot/i})
-    await user.click(hotTab)
+    await user.click(screen.getByRole('button', {name: /sort by new/i}))
+    await user.click(await screen.findByText('Hot'))
 
     expect(mockPush).toHaveBeenCalledWith('/u/testuser?tab=comments&sort=hot', {
       scroll: false
     })
   })
 
-  it('shows time filter for top sort', () => {
+  it('shows time filter for top sort', async () => {
     render(
       <UserCommentListWithTabs
         comments={mockComments}
@@ -121,15 +120,16 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    expect(screen.getByRole('tab', {name: /hour/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: 'Day'})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /week/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /month/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /year/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /all time/i})).toBeInTheDocument()
+    await user.click(screen.getByRole('button', {name: /filter by time day/i}))
+
+    expect(await screen.findByText('Hour')).toBeInTheDocument()
+    expect(screen.getByText('Week')).toBeInTheDocument()
+    expect(screen.getByText('Month')).toBeInTheDocument()
+    expect(screen.getByText('Year')).toBeInTheDocument()
+    expect(screen.getByText('All Time')).toBeInTheDocument()
   })
 
-  it('shows time filter for controversial sort', () => {
+  it('shows time filter for controversial sort', async () => {
     render(
       <UserCommentListWithTabs
         comments={mockComments}
@@ -139,8 +139,9 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    expect(screen.getByRole('tab', {name: /hour/i})).toBeInTheDocument()
-    expect(screen.getByRole('tab', {name: /week/i})).toBeInTheDocument()
+    await user.click(screen.getByRole('button', {name: /filter by time week/i}))
+
+    expect(await screen.findByText('Hour')).toBeInTheDocument()
   })
 
   it('does not show time filter for hot sort', () => {
@@ -152,8 +153,9 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    expect(screen.queryByRole('tab', {name: /hour/i})).not.toBeInTheDocument()
-    expect(screen.queryByRole('tab', {name: /week/i})).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', {name: /filter by time/i})
+    ).not.toBeInTheDocument()
   })
 
   it('changes time filter when clicked', async () => {
@@ -166,8 +168,8 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    const weekTab = screen.getByRole('tab', {name: /week/i})
-    await user.click(weekTab)
+    await user.click(screen.getByRole('button', {name: /filter by time day/i}))
+    await user.click(await screen.findByText('Week'))
 
     expect(mockPush).toHaveBeenCalledWith(
       '/u/testuser?tab=comments&sort=top&time=week',
@@ -185,8 +187,8 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    const controversialTab = screen.getByRole('tab', {name: /controversial/i})
-    await user.click(controversialTab)
+    await user.click(screen.getByRole('button', {name: /sort by top/i}))
+    await user.click(await screen.findByText('Controversial'))
 
     expect(mockPush).toHaveBeenCalledWith(
       '/u/testuser?tab=comments&sort=controversial&time=month',
@@ -203,12 +205,9 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    const hotTab = screen.getByRole('tab', {name: /hot/i})
+    await user.click(screen.getByRole('button', {name: /sort by new/i}))
+    await user.click(await screen.findByText('Hot'))
 
-    // Click once
-    await user.click(hotTab)
-
-    // Verify navigation happened
     expect(mockPush).toHaveBeenCalledWith('/u/testuser?tab=comments&sort=hot', {
       scroll: false
     })
@@ -223,8 +222,8 @@ describe('UserCommentListWithTabs', () => {
       />
     )
 
-    const hotTab = screen.getByRole('tab', {name: /hot/i})
-    await user.click(hotTab)
+    await user.click(screen.getByRole('button', {name: /sort by new/i}))
+    await user.click(await screen.findByText('Hot'))
 
     expect(mockPush).toHaveBeenCalledWith('/u/testuser?tab=comments&sort=hot', {
       scroll: false

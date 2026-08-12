@@ -5,7 +5,7 @@ import {TransitionOverlay} from '@/components/ui/TransitionOverlay/TransitionOve
 import {useInfiniteScroll} from '@/lib/hooks/useInfiniteScroll'
 import {useSortNavigation} from '@/lib/hooks/useSortNavigation'
 import {RedditPost, SortOption, TimeFilter} from '@/lib/types/reddit'
-import {Center, Group, Loader, Stack, Text} from '@mantine/core'
+import {Center, Divider, Group, Loader, Stack, Text} from '@mantine/core'
 import {
   IconClock,
   IconFlame,
@@ -89,26 +89,26 @@ export function PostListWithTabs({
 
   return (
     <Stack gap="md">
-      <SortTabs
-        value={activeSort}
-        onChange={handleSortChange}
-        disabled={isPending}
-        tabs={POST_SORT_TABS}
-      />
+      <Group gap="xs">
+        <SortTabs
+          value={activeSort}
+          onChange={handleSortChange}
+          disabled={isPending}
+          tabs={POST_SORT_TABS}
+        />
 
-      {showTimeFilter && (
-        <Group gap="xs">
-          <Text size="sm" fw={500} c="dimmed">
-            Time:
-          </Text>
+        {showTimeFilter && (
           <SortTabs
             value={activeTimeFilter}
             onChange={handleTimeFilterChange}
             disabled={isPending}
             tabs={TIME_FILTER_TABS}
+            ariaLabel="Filter by time"
           />
-        </Group>
-      )}
+        )}
+      </Group>
+
+      <Divider />
 
       <Stack
         gap="md"

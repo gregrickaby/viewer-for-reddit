@@ -1,56 +1,76 @@
 'use client'
 
-import {Tabs} from '@mantine/core'
+import {Button, Menu} from '@mantine/core'
+import {IconCheck, IconChevronDown} from '@tabler/icons-react'
 import {ReactNode} from 'react'
 
 export interface SortTabOption {
-  /** Value passed to onChange when this tab is selected */
+  /** Value passed to onChange when this option is selected */
   value: string
-  /** Visible tab label */
+  /** Visible option label */
   label: string
   /** Icon rendered to the left of the label */
   icon?: ReactNode
 }
 
 interface SortTabsProps {
-  /** Currently active tab value */
+  /** Currently active option value */
   value: string
-  /** Called with the new value when the user selects a different tab */
+  /** Called with the new value when the user selects a different option */
   onChange: (value: string) => void
-  /** Disables every tab, e.g. while a navigation transition is pending */
+  /** Disables the trigger, e.g. while a navigation transition is pending */
   disabled?: boolean
-  /** Tabs to render, in order */
+  /** Options to render, in order */
   tabs: SortTabOption[]
+  /** Accessible label for the trigger button, prefixed to the active option's name */
+  ariaLabel?: string
 }
 
 /**
- * Horizontally-scrollable sort-tab list shared by the post/comment list
- * components and their time-filter rows.
+ * Dropdown sort-option menu shared by the post/comment list components and
+ * their time-filter rows, matching reddit.com's sort control.
  */
 export function SortTabs({
   value,
   onChange,
   disabled = false,
-  tabs
+  tabs,
+  ariaLabel = 'Sort by'
 }: Readonly<SortTabsProps>) {
+  const activeTab = tabs.find((tab) => tab.value === value)
+
   return (
-    <Tabs
-      value={value}
-      onChange={(next) => next && next !== value && onChange(next)}
-    >
-      <Tabs.List grow={false} style={{flexWrap: 'nowrap', overflowX: 'auto'}}>
+    <Menu shadow="md" withinPortal transitionProps={{duration: 0}}>
+      <Menu.Target>
+        <Button
+          variant="subtle"
+          color="gray"
+          size="compact-sm"
+          fw={700}
+          disabled={disabled}
+          aria-label={`${ariaLabel} ${activeTab?.label ?? ''}`}
+          rightSection={<IconChevronDown aria-hidden="true" size={14} />}
+        >
+          {activeTab?.label}
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown>
         {tabs.map((tab) => (
-          <Tabs.Tab
+          <Menu.Item
             key={tab.value}
-            value={tab.value}
             leftSection={tab.icon}
-            disabled={disabled}
+            rightSection={
+              tab.value === value ? (
+                <IconCheck aria-hidden="true" size={14} />
+              ) : undefined
+            }
+            onClick={() => tab.value !== value && onChange(tab.value)}
           >
             {tab.label}
-          </Tabs.Tab>
+          </Menu.Item>
         ))}
-      </Tabs.List>
-    </Tabs>
+      </Menu.Dropdown>
+    </Menu>
   )
 }
 

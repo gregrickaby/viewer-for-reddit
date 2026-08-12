@@ -51,38 +51,44 @@ const mockComment: RedditComment = {
   score_hidden: false
 }
 
+/** Opens the sort dropdown via its trigger button. */
+async function openSortMenu(triggerName: RegExp) {
+  await user.click(screen.getByRole('button', {name: triggerName}))
+}
+
 describe('CommentListWithTabs', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   describe('tabs rendering', () => {
-    it('renders all comment sort tabs', () => {
+    it('renders all comment sort options in the dropdown', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
 
-      expect(screen.getByRole('tab', {name: /best/i})).toBeInTheDocument()
-      expect(screen.getByRole('tab', {name: /top/i})).toBeInTheDocument()
-      expect(screen.getByRole('tab', {name: /new/i})).toBeInTheDocument()
-      expect(
-        screen.getByRole('tab', {name: /controversial/i})
-      ).toBeInTheDocument()
-      expect(screen.getByRole('tab', {name: /old/i})).toBeInTheDocument()
-      expect(screen.getByRole('tab', {name: /q&a/i})).toBeInTheDocument()
+      await openSortMenu(/sort by best/i)
+
+      expect(await screen.findByText('Top')).toBeInTheDocument()
+      expect(screen.getByText('New')).toBeInTheDocument()
+      expect(screen.getByText('Controversial')).toBeInTheDocument()
+      expect(screen.getByText('Old')).toBeInTheDocument()
+      expect(screen.getByText('Q&A')).toBeInTheDocument()
     })
 
-    it('marks active tab correctly', () => {
+    it('shows the active sort on the trigger button', () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="top" />)
 
-      const topTab = screen.getByRole('tab', {name: /^top$/i})
-      expect(topTab).toHaveAttribute('data-active', 'true')
+      expect(
+        screen.getByRole('button', {name: /sort by top/i})
+      ).toBeInTheDocument()
     })
 
-    it('renders tab icons', () => {
+    it('renders tab icons', async () => {
       const {container} = render(
         <CommentListWithTabs comments={[mockComment]} activeSort="best" />
       )
 
-      // Check for SVG icons in tabs
+      await openSortMenu(/sort by best/i)
+
       // eslint-disable-next-line testing-library/no-container
       const icons = container.querySelectorAll('svg')
       expect(icons.length).toBeGreaterThanOrEqual(6)
@@ -90,58 +96,58 @@ describe('CommentListWithTabs', () => {
   })
 
   describe('sort navigation', () => {
-    it('navigates when clicking best tab', async () => {
+    it('navigates when clicking best option', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="top" />)
 
-      const bestTab = screen.getByRole('tab', {name: /best/i})
-      await user.click(bestTab)
+      await openSortMenu(/sort by top/i)
+      await user.click(await screen.findByText('Best'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=best', {scroll: false})
     })
 
-    it('navigates when clicking top tab', async () => {
+    it('navigates when clicking top option', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
 
-      const topTab = screen.getByRole('tab', {name: /^top$/i})
-      await user.click(topTab)
+      await openSortMenu(/sort by best/i)
+      await user.click(await screen.findByText('Top'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=top', {scroll: false})
     })
 
-    it('navigates when clicking new tab', async () => {
+    it('navigates when clicking new option', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
 
-      const newTab = screen.getByRole('tab', {name: /^new$/i})
-      await user.click(newTab)
+      await openSortMenu(/sort by best/i)
+      await user.click(await screen.findByText('New'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=new', {scroll: false})
     })
 
-    it('navigates when clicking controversial tab', async () => {
+    it('navigates when clicking controversial option', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
 
-      const controversialTab = screen.getByRole('tab', {name: /controversial/i})
-      await user.click(controversialTab)
+      await openSortMenu(/sort by best/i)
+      await user.click(await screen.findByText('Controversial'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=controversial', {
         scroll: false
       })
     })
 
-    it('navigates when clicking old tab', async () => {
+    it('navigates when clicking old option', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
 
-      const oldTab = screen.getByRole('tab', {name: /old/i})
-      await user.click(oldTab)
+      await openSortMenu(/sort by best/i)
+      await user.click(await screen.findByText('Old'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=old', {scroll: false})
     })
 
-    it('navigates when clicking Q&A tab', async () => {
+    it('navigates when clicking Q&A option', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
 
-      const qaTab = screen.getByRole('tab', {name: /q&a/i})
-      await user.click(qaTab)
+      await openSortMenu(/sort by best/i)
+      await user.click(await screen.findByText('Q&A'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=qa', {scroll: false})
     })
@@ -149,8 +155,8 @@ describe('CommentListWithTabs', () => {
     it('preserves scroll position on navigation', async () => {
       render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
 
-      const topTab = screen.getByRole('tab', {name: /^top$/i})
-      await user.click(topTab)
+      await openSortMenu(/sort by best/i)
+      await user.click(await screen.findByText('Top'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=top', {scroll: false})
     })
@@ -211,9 +217,11 @@ describe('CommentListWithTabs', () => {
           <CommentListWithTabs comments={[mockComment]} activeSort={sort} />
         )
 
-        const tabName = sort === 'qa' ? /q&a/i : new RegExp(sort, 'i')
-        const tab = screen.getByRole('tab', {name: tabName})
-        expect(tab).toHaveAttribute('data-active', 'true')
+        const triggerName =
+          sort === 'qa' ? /sort by q&a/i : new RegExp(`sort by ${sort}`, 'i')
+        expect(
+          screen.getByRole('button', {name: triggerName})
+        ).toBeInTheDocument()
 
         unmount()
       })

@@ -64,28 +64,32 @@ describe('PostListWithTabs', () => {
   })
 
   describe('tabs rendering', () => {
-    it('renders all sort tabs', () => {
+    it('renders all sort options in the dropdown', async () => {
       render(<PostListWithTabs posts={[mockPost]} activeSort="hot" />)
 
-      expect(screen.getByRole('tab', {name: /hot/i})).toBeInTheDocument()
-      expect(screen.getByRole('tab', {name: /new/i})).toBeInTheDocument()
-      expect(screen.getByRole('tab', {name: /top/i})).toBeInTheDocument()
-      expect(screen.getByRole('tab', {name: /rising/i})).toBeInTheDocument()
+      await user.click(screen.getByRole('button', {name: /sort by hot/i}))
+
+      expect(await screen.findByText('New')).toBeInTheDocument()
+      expect(screen.getByText('Top')).toBeInTheDocument()
+      expect(screen.getByText('Rising')).toBeInTheDocument()
     })
 
-    it('marks active tab correctly', () => {
+    it('shows the active sort on the trigger button', () => {
       render(<PostListWithTabs posts={[mockPost]} activeSort="new" />)
 
-      const newTab = screen.getByRole('tab', {name: /new/i})
-      expect(newTab).toHaveAttribute('data-active', 'true')
+      expect(
+        screen.getByRole('button', {name: /sort by new/i})
+      ).toBeInTheDocument()
     })
 
-    it('renders tab icons', () => {
+    it('renders tab icons', async () => {
       const {container} = render(
         <PostListWithTabs posts={[mockPost]} activeSort="hot" />
       )
 
-      // Check for SVG icons in tabs
+      await user.click(screen.getByRole('button', {name: /sort by hot/i}))
+      await screen.findByText('New')
+
       // eslint-disable-next-line testing-library/no-container
       const icons = container.querySelectorAll('svg')
       expect(icons.length).toBeGreaterThanOrEqual(4)
@@ -93,38 +97,38 @@ describe('PostListWithTabs', () => {
   })
 
   describe('sort navigation', () => {
-    it('navigates when clicking hot tab', async () => {
+    it('navigates when clicking hot option', async () => {
       render(<PostListWithTabs posts={[mockPost]} activeSort="new" />)
 
-      const hotTab = screen.getByRole('tab', {name: /hot/i})
-      await user.click(hotTab)
+      await user.click(screen.getByRole('button', {name: /sort by new/i}))
+      await user.click(await screen.findByText('Hot'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=hot')
     })
 
-    it('navigates when clicking new tab', async () => {
+    it('navigates when clicking new option', async () => {
       render(<PostListWithTabs posts={[mockPost]} activeSort="hot" />)
 
-      const newTab = screen.getByRole('tab', {name: /new/i})
-      await user.click(newTab)
+      await user.click(screen.getByRole('button', {name: /sort by hot/i}))
+      await user.click(await screen.findByText('New'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=new')
     })
 
-    it('navigates when clicking top tab', async () => {
+    it('navigates when clicking top option', async () => {
       render(<PostListWithTabs posts={[mockPost]} activeSort="hot" />)
 
-      const topTab = screen.getByRole('tab', {name: /top/i})
-      await user.click(topTab)
+      await user.click(screen.getByRole('button', {name: /sort by hot/i}))
+      await user.click(await screen.findByText('Top'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=top&time=week')
     })
 
-    it('navigates when clicking rising tab', async () => {
+    it('navigates when clicking rising option', async () => {
       render(<PostListWithTabs posts={[mockPost]} activeSort="hot" />)
 
-      const risingTab = screen.getByRole('tab', {name: /rising/i})
-      await user.click(risingTab)
+      await user.click(screen.getByRole('button', {name: /sort by hot/i}))
+      await user.click(await screen.findByText('Rising'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=rising')
     })
@@ -154,7 +158,9 @@ describe('PostListWithTabs', () => {
     it('handles empty posts array', () => {
       render(<PostListWithTabs posts={[]} activeSort="hot" />)
 
-      expect(screen.getByRole('tab', {name: /hot/i})).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {name: /sort by hot/i})
+      ).toBeInTheDocument()
       expect(screen.queryByText(/test post/i)).not.toBeInTheDocument()
     })
 
@@ -171,8 +177,9 @@ describe('PostListWithTabs', () => {
           <PostListWithTabs posts={[mockPost]} activeSort={sort} />
         )
 
-        const tab = screen.getByRole('tab', {name: new RegExp(sort, 'i')})
-        expect(tab).toHaveAttribute('data-active', 'true')
+        expect(
+          screen.getByRole('button', {name: new RegExp(`sort by ${sort}`, 'i')})
+        ).toBeInTheDocument()
 
         unmount()
       })
@@ -180,7 +187,7 @@ describe('PostListWithTabs', () => {
   })
 
   describe('time filter', () => {
-    it('shows time filter when sort is top', () => {
+    it('shows time filter when sort is top', async () => {
       render(
         <PostListWithTabs
           posts={[mockPost]}
@@ -189,9 +196,12 @@ describe('PostListWithTabs', () => {
         />
       )
 
-      expect(screen.getByText('Time:')).toBeInTheDocument()
-      expect(screen.getByText('Hour')).toBeInTheDocument()
-      expect(screen.getByText('Day')).toBeInTheDocument()
+      const timeTrigger = screen.getByRole('button', {
+        name: /filter by time day/i
+      })
+      await user.click(timeTrigger)
+
+      expect(await screen.findByText('Hour')).toBeInTheDocument()
       expect(screen.getByText('Week')).toBeInTheDocument()
       expect(screen.getByText('Month')).toBeInTheDocument()
       expect(screen.getByText('Year')).toBeInTheDocument()
@@ -207,8 +217,9 @@ describe('PostListWithTabs', () => {
         />
       )
 
-      expect(screen.getByText('Time:')).toBeInTheDocument()
-      expect(screen.getByText('Week')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {name: /filter by time week/i})
+      ).toBeInTheDocument()
     })
 
     it.each(['hot', 'new', 'rising'] as const)(
@@ -216,7 +227,9 @@ describe('PostListWithTabs', () => {
       (sort) => {
         render(<PostListWithTabs posts={[mockPost]} activeSort={sort} />)
 
-        expect(screen.queryByText('Time:')).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', {name: /filter by time/i})
+        ).not.toBeInTheDocument()
       }
     )
 
@@ -229,8 +242,10 @@ describe('PostListWithTabs', () => {
         />
       )
 
-      const weekOption = screen.getByText('Week')
-      await user.click(weekOption)
+      await user.click(
+        screen.getByRole('button', {name: /filter by time day/i})
+      )
+      await user.click(await screen.findByText('Week'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=top&time=week')
     })
@@ -244,8 +259,8 @@ describe('PostListWithTabs', () => {
         />
       )
 
-      const topTab = screen.getByRole('tab', {name: /top/i})
-      await user.click(topTab)
+      await user.click(screen.getByRole('button', {name: /sort by hot/i}))
+      await user.click(await screen.findByText('Top'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=top&time=week')
     })
@@ -259,10 +274,10 @@ describe('PostListWithTabs', () => {
         />
       )
 
-      // Note: controversial tab not rendered in basic PostListWithTabs
-      // This test would apply if we add controversial to the tab list
-      const topTab = screen.getByRole('tab', {name: /top/i})
-      await user.click(topTab)
+      // Note: controversial not rendered in basic PostListWithTabs's sort
+      // dropdown. This test would apply if we add controversial to the tabs.
+      await user.click(screen.getByRole('button', {name: /sort by new/i}))
+      await user.click(await screen.findByText('Top'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=top&time=month')
     })
@@ -276,16 +291,18 @@ describe('PostListWithTabs', () => {
         />
       )
 
-      const hotTab = screen.getByRole('tab', {name: /hot/i})
-      await user.click(hotTab)
+      await user.click(screen.getByRole('button', {name: /sort by top/i}))
+      await user.click(await screen.findByText('Hot'))
 
       expect(mockPush).toHaveBeenCalledWith('?sort=hot')
     })
 
-    it('uses default time filter of day when not provided', () => {
+    it('uses default time filter of week when not provided', () => {
       render(<PostListWithTabs posts={[mockPost]} activeSort="top" />)
 
-      expect(screen.getByText('Day')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {name: /filter by time week/i})
+      ).toBeInTheDocument()
     })
   })
 })

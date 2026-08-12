@@ -6,7 +6,7 @@ import {Comment} from '@/components/ui/Comment/Comment'
 import {useSortNavigation} from '@/lib/hooks/useSortNavigation'
 import {RedditComment, SortOption, TimeFilter} from '@/lib/types/reddit'
 import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
-import {Box, Group, Stack, Text, Title} from '@mantine/core'
+import {Box, Divider, Group, Stack, Title} from '@mantine/core'
 import {
   IconClock,
   IconFlame,
@@ -84,29 +84,26 @@ export function UserCommentListWithTabs({
   return (
     <>
       <Box mb="lg">
-        <SortTabs
-          value={activeSort}
-          onChange={handleSortChange}
-          disabled={isPending}
-          tabs={USER_COMMENT_SORT_TABS}
-        />
-      </Box>
+        <Group gap="xs">
+          <SortTabs
+            value={activeSort}
+            onChange={handleSortChange}
+            disabled={isPending}
+            tabs={USER_COMMENT_SORT_TABS}
+          />
 
-      {showTimeFilter && (
-        <Box mb="md">
-          <Group gap="xs">
-            <Text size="sm" fw={500} c="dimmed">
-              Time:
-            </Text>
+          {showTimeFilter && (
             <SortTabs
               value={activeTimeFilter || 'all'}
               onChange={handleTimeFilterChange}
               disabled={isPending}
               tabs={TIME_FILTER_TABS}
+              ariaLabel="Filter by time"
             />
-          </Group>
-        </Box>
-      )}
+          )}
+        </Group>
+        <Divider mt="xs" />
+      </Box>
 
       <Stack gap="md" style={{position: 'relative', minHeight: '200px'}}>
         <TransitionOverlay
