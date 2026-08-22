@@ -23,7 +23,10 @@ export function Shell({children, sidebarSlot, railSlot}: Readonly<ShellProps>) {
   return (
     <SidebarProvider>
       <div className={styles.shell}>
-        <header className={styles.header}>
+        <header
+          className={styles.header}
+          style={{viewTransitionName: 'persistent-header'}}
+        >
           <Header />
         </header>
 

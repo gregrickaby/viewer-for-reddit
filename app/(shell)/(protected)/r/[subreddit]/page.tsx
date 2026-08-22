@@ -2,6 +2,7 @@ import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {SubredditInfoSkeleton} from '@/components/skeletons/SubredditInfoSkeleton/SubredditInfoSkeleton'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
 import {AddToMultiredditButton} from '@/components/ui/AddToMultiredditButton/AddToMultiredditButton'
+import {DirectionalTransition} from '@/components/ui/DirectionalTransition/DirectionalTransition'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {SubredditSearchBar} from '@/components/ui/SubredditSearchBar/SubredditSearchBar'
 import {SubscribeButton} from '@/components/ui/SubscribeButton/SubscribeButton'
@@ -208,14 +209,16 @@ export default function SubredditPage({
   searchParams
 }: Readonly<PageProps>) {
   return (
-    <FeedContainer>
-      <Suspense fallback={<SubredditInfoSkeleton />}>
-        <SubredditInfo params={params} />
-      </Suspense>
+    <DirectionalTransition>
+      <FeedContainer>
+        <Suspense fallback={<SubredditInfoSkeleton />}>
+          <SubredditInfo params={params} />
+        </Suspense>
 
-      <Suspense fallback={<TabsSkeleton />}>
-        <SubredditPosts params={params} searchParams={searchParams} />
-      </Suspense>
-    </FeedContainer>
+        <Suspense fallback={<TabsSkeleton />}>
+          <SubredditPosts params={params} searchParams={searchParams} />
+        </Suspense>
+      </FeedContainer>
+    </DirectionalTransition>
   )
 }

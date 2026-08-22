@@ -2,6 +2,7 @@ import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {CommentListSkeleton} from '@/components/skeletons/CommentSkeleton/CommentSkeleton'
 import {PostSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {CommentListWithTabs} from '@/components/ui/CommentListWithTabs/CommentListWithTabs'
+import {DirectionalTransition} from '@/components/ui/DirectionalTransition/DirectionalTransition'
 import {DynamicMetadataMarker} from '@/components/ui/DynamicMetadataMarker/DynamicMetadataMarker'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 import {RecordRecentPost} from '@/components/ui/RecordRecentPost/RecordRecentPost'
@@ -11,7 +12,7 @@ import {generatePostMetadata} from '@/lib/utils/metadata-helpers'
 import {Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
-import {Suspense} from 'react'
+import {Suspense, ViewTransition} from 'react'
 
 type ThreadParams = Promise<{
   subreddit: string
@@ -93,20 +94,38 @@ export function PostThread({
   searchParams: ThreadSearchParams
 }>) {
   return (
-    <FeedContainer>
-      <DynamicMetadataMarker />
-      <Suspense fallback={<PostSkeleton />}>
-        <PostDetail params={params} />
-      </Suspense>
-
-      <div id="comments" style={{scrollMarginTop: '80px'}}>
-        <Title order={3} mb="lg">
-          Comments
-        </Title>
-        <Suspense fallback={<CommentListSkeleton />}>
-          <CommentList params={params} searchParams={searchParams} />
+    <DirectionalTransition>
+      <FeedContainer>
+        <DynamicMetadataMarker />
+        <Suspense
+          fallback={
+            <ViewTransition exit="slide-down">
+              <PostSkeleton />
+            </ViewTransition>
+          }
+        >
+          <ViewTransition enter="slide-up" default="none">
+            <PostDetail params={params} />
+          </ViewTransition>
         </Suspense>
-      </div>
-    </FeedContainer>
+
+        <div id="comments" style={{scrollMarginTop: '80px'}}>
+          <Title order={3} mb="lg">
+            Comments
+          </Title>
+          <Suspense
+            fallback={
+              <ViewTransition exit="slide-down">
+                <CommentListSkeleton />
+              </ViewTransition>
+            }
+          >
+            <ViewTransition enter="slide-up" default="none">
+              <CommentList params={params} searchParams={searchParams} />
+            </ViewTransition>
+          </Suspense>
+        </div>
+      </FeedContainer>
+    </DirectionalTransition>
   )
 }

@@ -17,6 +17,18 @@ vi.mock('@/lib/hooks/useSharePost', () => ({
   }))
 }))
 
+// `transitionTypes` isn't rendered as a DOM attribute by next/link (it's only
+// read internally on click), so surface it as a data attribute to assert on.
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    transitionTypes,
+    ...rest
+  }: {transitionTypes?: string[]} & Record<string, unknown>) => (
+    <a data-transition-types={transitionTypes?.join(',')} {...rest} />
+  )
+}))
+
 // Import after mocks
 const {PostCard} = await import('./PostCard')
 const {useVote} = await import('@/lib/hooks/useVote')
@@ -124,6 +136,27 @@ describe('PostCard', () => {
         'href',
         '/r/test/comments/test123/test_post'
       )
+    })
+
+    it('tags the title link for forward navigation', () => {
+      render(<PostCard post={mockPost} />)
+
+      const titleLink = screen.getByText('Test Post Title').closest('a')
+      expect(titleLink).toHaveAttribute('data-transition-types', 'nav-forward')
+    })
+
+    it('marks the header as the detail view when showFullText is true', () => {
+      render(<PostCard post={mockPost} showFullText />)
+
+      const subredditLink = screen.getByText('r/test').closest('a')
+      expect(subredditLink).toHaveAttribute('data-transition-types', 'nav-back')
+    })
+
+    it('does not mark the header as the detail view by default', () => {
+      render(<PostCard post={mockPost} />)
+
+      const subredditLink = screen.getByText('r/test').closest('a')
+      expect(subredditLink).not.toHaveAttribute('data-transition-types')
     })
   })
 

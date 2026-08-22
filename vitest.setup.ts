@@ -20,6 +20,16 @@ interface MockNextImageProps extends Omit<
   unoptimized?: boolean
 }
 
+// Mock React's `ViewTransition`: only resolves inside Next.js's own build
+// (aliased to its vendored React canary channel), not under plain Vitest
+// module resolution against the installed `react` package. Render children
+// directly -- jsdom has no View Transitions API to animate against anyway.
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>()
+  const ViewTransition = ({children}: {children: React.ReactNode}) => children
+  return {...actual, ViewTransition}
+})
+
 vi.mock('next/image', () => ({
   __esModule: true,
   default: ({src, alt, priority, unoptimized, ...rest}: MockNextImageProps) => {

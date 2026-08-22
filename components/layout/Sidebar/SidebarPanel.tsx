@@ -48,6 +48,7 @@ export function SidebarPanel({
         className={styles.sidebar}
         data-hidden={hidden === undefined ? undefined : String(hidden)}
         aria-label="Sidebar navigation"
+        style={{viewTransitionName: 'persistent-sidebar'}}
       >
         <ScrollArea type="auto" offsetScrollbars>
           <Stack gap="md">

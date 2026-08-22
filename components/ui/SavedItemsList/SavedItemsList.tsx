@@ -3,6 +3,7 @@
 import {useInfiniteSavedItems} from '@/lib/hooks/useInfiniteSavedItems'
 import type {SavedItem} from '@/lib/types/reddit'
 import {Center, Container, Divider, Loader, Stack, Text} from '@mantine/core'
+import {ViewTransition} from 'react'
 import {Comment} from '@/components/ui/Comment/Comment'
 import {PostCard} from '@/components/ui/PostCard/PostCard'
 
@@ -53,33 +54,36 @@ export function SavedItemsList({
         {items.map((item, index) => {
           if (item.type === 'post') {
             return (
-              <PostCard
-                key={`post-${item.data.id}-${index}`}
-                post={item.data}
-                onUnsave={() => removeItem(item.data.id)}
-              />
+              <ViewTransition key={`post-${item.data.id}-${index}`}>
+                <PostCard
+                  post={item.data}
+                  onUnsave={() => removeItem(item.data.id)}
+                />
+              </ViewTransition>
             )
           }
           return (
-            <Stack key={`comment-${item.data.id}-${index}`} gap="xs">
-              <Text size="sm" c="dimmed">
-                Comment on{' '}
-                {item.data.link_title && (
-                  <Text component="span" fw={500}>
-                    {item.data.link_title}
-                  </Text>
-                )}
-                {item.data.subreddit && (
-                  <Text component="span"> in r/{item.data.subreddit}</Text>
-                )}
-              </Text>
-              <Comment
-                comment={item.data}
-                depth={0}
-                onUnsave={() => removeItem(item.data.id)}
-              />
-              <Divider mt="xs" />
-            </Stack>
+            <ViewTransition key={`comment-${item.data.id}-${index}`}>
+              <Stack gap="xs">
+                <Text size="sm" c="dimmed">
+                  Comment on{' '}
+                  {item.data.link_title && (
+                    <Text component="span" fw={500}>
+                      {item.data.link_title}
+                    </Text>
+                  )}
+                  {item.data.subreddit && (
+                    <Text component="span"> in r/{item.data.subreddit}</Text>
+                  )}
+                </Text>
+                <Comment
+                  comment={item.data}
+                  depth={0}
+                  onUnsave={() => removeItem(item.data.id)}
+                />
+                <Divider mt="xs" />
+              </Stack>
+            </ViewTransition>
           )
         })}
         {hasMore && (

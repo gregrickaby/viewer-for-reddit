@@ -127,13 +127,14 @@ export function PostCard({
 
   return (
     <Stack gap="xs">
-      <PostHeader post={post} />
+      <PostHeader post={post} isDetailView={showFullText} />
 
       <Anchor
         c="inherit"
         component={Link}
         href={postUrl}
         scroll
+        transitionTypes={['nav-forward']}
         underline="never"
       >
         <Text size="md" fw={600} mt={2}>

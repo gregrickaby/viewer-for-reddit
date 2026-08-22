@@ -2,7 +2,7 @@
 
 import {logger} from '@/lib/datadog/client'
 import {getErrorMessage} from '@/lib/utils/errors'
-import {useEffect, useState, type RefObject} from 'react'
+import {startTransition, useEffect, useState, type RefObject} from 'react'
 import {useLoadMoreOnIntersect} from '../useLoadMoreOnIntersect'
 
 interface UseCursorPaginationOptions<T> {
@@ -67,7 +67,9 @@ export function useCursorPagination<T>({
   }, [initialItems, initialAfter])
 
   const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((item) => getId(item) !== id))
+    startTransition(() => {
+      setItems((prev) => prev.filter((item) => getId(item) !== id))
+    })
   }
 
   const loadMore = async () => {

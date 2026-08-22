@@ -1,5 +1,6 @@
 import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
 import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
+import {DirectionalTransition} from '@/components/ui/DirectionalTransition/DirectionalTransition'
 import {LandingPage} from '@/components/ui/LandingPage/LandingPage'
 import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTabs'
 import {isAuthenticated} from '@/lib/auth/session'
@@ -102,11 +103,13 @@ async function HomeContent({
   const timeFilter = time as TimeFilter | undefined
 
   return (
-    <FeedContainer>
-      <Suspense fallback={<TabsSkeleton />}>
-        <PostsContent sort={postSort} timeFilter={timeFilter} />
-      </Suspense>
-    </FeedContainer>
+    <DirectionalTransition>
+      <FeedContainer>
+        <Suspense fallback={<TabsSkeleton />}>
+          <PostsContent sort={postSort} timeFilter={timeFilter} />
+        </Suspense>
+      </FeedContainer>
+    </DirectionalTransition>
   )
 }
 

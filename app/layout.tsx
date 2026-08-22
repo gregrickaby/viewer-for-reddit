@@ -11,6 +11,7 @@ import '@mantine/core/styles.css'
 import {Notifications} from '@mantine/notifications'
 import '@mantine/notifications/styles.css'
 import '@mantine/spotlight/styles.css'
+import '@/app/view-transitions.css'
 import type {Metadata, Viewport} from 'next'
 import {Suspense} from 'react'
 

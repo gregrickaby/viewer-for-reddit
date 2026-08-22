@@ -1,7 +1,20 @@
 import {RedditPost} from '@/lib/types/reddit'
 import {render, screen} from '@/test-utils'
-import {describe, expect, it} from 'vitest'
-import {PostHeader} from './PostHeader'
+import {describe, expect, it, vi} from 'vitest'
+
+// `transitionTypes` isn't rendered as a DOM attribute by next/link (it's only
+// read internally on click), so surface it as a data attribute to assert on.
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    transitionTypes,
+    ...rest
+  }: {transitionTypes?: string[]} & Record<string, unknown>) => (
+    <a data-transition-types={transitionTypes?.join(',')} {...rest} />
+  )
+}))
+
+const {PostHeader} = await import('./PostHeader')
 
 describe('PostHeader', () => {
   const mockPost: RedditPost = {
@@ -62,6 +75,22 @@ describe('PostHeader', () => {
       render(<PostHeader post={mockPost} />)
 
       expect(screen.getByText(/Posted by/)).toBeInTheDocument()
+    })
+  })
+
+  describe('isDetailView', () => {
+    it('does not tag the subreddit link for back navigation by default', () => {
+      render(<PostHeader post={mockPost} />)
+
+      const badge = screen.getByText('r/test').closest('a')
+      expect(badge).not.toHaveAttribute('data-transition-types')
+    })
+
+    it('tags the subreddit link for back navigation on the detail view', () => {
+      render(<PostHeader post={mockPost} isDetailView />)
+
+      const badge = screen.getByText('r/test').closest('a')
+      expect(badge).toHaveAttribute('data-transition-types', 'nav-back')
     })
   })
 

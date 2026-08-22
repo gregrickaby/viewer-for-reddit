@@ -10,10 +10,15 @@ import Link from 'next/link'
 interface PostHeaderProps {
   /** Reddit post data */
   post: RedditPost
+  /** Whether this renders on the single-post detail view (the subreddit link acts as "back to feed") */
+  isDetailView?: boolean
 }
 
 /** Display post metadata header (subreddit, author, time, NSFW badge). Shows at the top of PostCard. */
-export function PostHeader({post}: Readonly<PostHeaderProps>) {
+export function PostHeader({
+  post,
+  isDetailView = false
+}: Readonly<PostHeaderProps>) {
   const authorHref = getUserProfileHref(post.author)
 
   return (
@@ -25,6 +30,7 @@ export function PostHeader({post}: Readonly<PostHeaderProps>) {
           scroll
           size="xs"
           style={{cursor: 'pointer'}}
+          transitionTypes={isDetailView ? ['nav-back'] : undefined}
           variant="light"
         >
           {post.subreddit_name_prefixed}
