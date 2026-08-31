@@ -334,7 +334,7 @@ export default function UserPage({params, searchParams}: Readonly<PageProps>) {
         <UserProfile params={params} />
       </Suspense>
 
-      <Suspense fallback={<TabsSkeleton />}>
+      <Suspense fallback={<TabsSkeleton withProfileTabs />}>
         <UserPageTabs params={params} searchParams={searchParams} />
       </Suspense>
     </FeedContainer>

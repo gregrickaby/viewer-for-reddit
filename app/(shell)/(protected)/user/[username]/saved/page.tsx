@@ -1,5 +1,5 @@
 import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
-import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
+import {PostListSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {SavedItemsList} from '@/components/ui/SavedItemsList/SavedItemsList'
 import {fetchSavedItems} from '@/lib/actions/reddit/users'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
@@ -64,7 +64,7 @@ export default function SavedItemsPage({params}: Readonly<PageProps>) {
       <Title order={2} mb="md">
         Saved
       </Title>
-      <Suspense fallback={<TabsSkeleton />}>
+      <Suspense fallback={<PostListSkeleton />}>
         <SavedItems params={params} />
       </Suspense>
     </FeedContainer>

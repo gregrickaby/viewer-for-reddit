@@ -4,7 +4,7 @@ import {PostListWithTabs} from '@/components/ui/PostListWithTabs/PostListWithTab
 import {fetchPosts} from '@/lib/actions/reddit/posts'
 import {appConfig} from '@/lib/config/app.config'
 import {logger} from '@/lib/datadog/server'
-import {Title} from '@mantine/core'
+import {Skeleton, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
@@ -116,7 +116,14 @@ export default function MultiredditPage({
 }: Readonly<PageProps>) {
   return (
     <FeedContainer>
-      <Suspense fallback={<TabsSkeleton />}>
+      <Suspense
+        fallback={
+          <>
+            <Skeleton height={28} width={200} mb="lg" />
+            <TabsSkeleton />
+          </>
+        }
+      >
         <MultiredditPosts params={params} searchParams={searchParams} />
       </Suspense>
     </FeedContainer>

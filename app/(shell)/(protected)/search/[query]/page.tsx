@@ -1,9 +1,9 @@
 import {FeedContainer} from '@/components/layout/FeedContainer/FeedContainer'
-import {TabsSkeleton} from '@/components/skeletons/TabsSkeleton/TabsSkeleton'
+import {PostListSkeleton} from '@/components/skeletons/PostSkeleton/PostSkeleton'
 import {PostList} from '@/components/ui/PostList/PostList'
 import {searchReddit} from '@/lib/actions/reddit/search'
 import {generateListingMetadata} from '@/lib/utils/metadata-helpers'
-import {Stack, Title} from '@mantine/core'
+import {Skeleton, Stack, Title} from '@mantine/core'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
 
@@ -66,7 +66,14 @@ async function SearchResults({
 export default function SearchPage({params}: Readonly<PageProps>) {
   return (
     <FeedContainer>
-      <Suspense fallback={<TabsSkeleton />}>
+      <Suspense
+        fallback={
+          <Stack gap="xl">
+            <Skeleton height={28} width={300} />
+            <PostListSkeleton />
+          </Stack>
+        }
+      >
         <SearchResults params={params} />
       </Suspense>
     </FeedContainer>

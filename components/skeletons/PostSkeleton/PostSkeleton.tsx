@@ -3,17 +3,18 @@ import {Divider, Group, Skeleton, Stack} from '@mantine/core'
 /** Skeleton loading placeholder for a single post card. Mimics the borderless PostCard component structure. */
 export function PostSkeleton() {
   return (
-    <Stack gap="md">
-      <Group justify="space-between">
-        <Skeleton height={20} width="60%" />
-        <Skeleton height={20} width={50} />
+    <Stack gap="xs">
+      <Group gap={6}>
+        <Skeleton height={20} width={70} radius="sm" />
+        <Skeleton height={14} width={150} />
       </Group>
-      <Skeleton height={12} width="40%" />
+      <Skeleton height={22} width="80%" mt={2} />
       <Skeleton height={700} />
-      <Group gap="md">
-        <Skeleton height={30} width={80} />
-        <Skeleton height={30} width={80} />
-        <Skeleton height={30} width={80} />
+      <Group gap="sm">
+        <Skeleton height={26} width={70} radius="xl" />
+        <Skeleton height={26} width={50} radius="xl" />
+        <Skeleton height={26} width={50} radius="xl" />
+        <Skeleton height={26} width={50} radius="xl" />
       </Group>
       <Divider mt="xs" />
     </Stack>
