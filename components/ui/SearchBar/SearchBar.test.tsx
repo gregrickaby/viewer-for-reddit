@@ -1,11 +1,21 @@
 import {useSearch} from '@/lib/hooks/useSearch'
 import {render, screen, user} from '@/test-utils'
+import {spotlight} from '@mantine/spotlight'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {SearchBar} from './SearchBar'
 
 vi.mock('@/lib/hooks/useSearch', () => ({
   useSearch: vi.fn()
 }))
+
+let mockIsMobile = false
+vi.mock('@mantine/hooks', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@mantine/hooks')>()
+  return {
+    ...actual,
+    useMediaQuery: () => mockIsMobile
+  }
+})
 
 const mockUseSearch = vi.mocked(useSearch)
 
@@ -28,6 +38,7 @@ describe('SearchBar', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseSearch.mockReturnValue(defaultSearchState)
+    mockIsMobile = false
   })
 
   describe('rendering', () => {
@@ -270,6 +281,36 @@ describe('SearchBar', () => {
       render(<SearchBar forceOpened />)
 
       expect(screen.getByRole('textbox')).toHaveValue('')
+    })
+  })
+
+  describe('mobile full screen', () => {
+    it('shows a close button on mobile', () => {
+      mockIsMobile = true
+
+      render(<SearchBar forceOpened />)
+
+      expect(
+        screen.getByRole('button', {name: 'Close search'})
+      ).toBeInTheDocument()
+    })
+
+    it('does not show a close button on desktop', () => {
+      render(<SearchBar forceOpened />)
+
+      expect(
+        screen.queryByRole('button', {name: 'Close search'})
+      ).not.toBeInTheDocument()
+    })
+
+    it('closes spotlight when the close button is clicked', async () => {
+      mockIsMobile = true
+      const closeSpy = vi.spyOn(spotlight, 'close')
+
+      render(<SearchBar forceOpened />)
+      await user.click(screen.getByRole('button', {name: 'Close search'}))
+
+      expect(closeSpy).toHaveBeenCalled()
     })
   })
 })

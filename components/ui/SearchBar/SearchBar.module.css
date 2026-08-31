@@ -1,0 +1,6 @@
+/* Mantine hardcodes actionsList to max-height: calc(100vh - 15rem), which
+   leaves the results boxed inside a scroll well even in the full-screen
+   modal used on mobile. Let it use the full-screen sheet's own scroll. */
+.actionsListFullScreen {
+  max-height: none !important;
+}

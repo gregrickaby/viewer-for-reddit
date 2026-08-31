@@ -2,9 +2,20 @@
 
 import {useSearch} from '@/lib/hooks/useSearch'
 import {formatNumber} from '@/lib/utils/formatters'
-import {Avatar, Badge, Divider, Group, Loader, Stack, Text} from '@mantine/core'
-import {Spotlight} from '@mantine/spotlight'
+import {
+  Avatar,
+  Badge,
+  CloseButton,
+  Divider,
+  Group,
+  Loader,
+  Stack,
+  Text
+} from '@mantine/core'
+import {useMediaQuery} from '@mantine/hooks'
+import {Spotlight, spotlight} from '@mantine/spotlight'
 import {IconSearch} from '@tabler/icons-react'
+import styles from './SearchBar.module.css'
 
 /**
  * Subreddit search powered by Mantine Spotlight.
@@ -25,6 +36,7 @@ export function SearchBar({
     handleSubmit
   } = useSearch()
 
+  const isMobile = useMediaQuery('(max-width: 48em)')
   const {communities, nsfw} = groupedResults
   const hasResults = communities.length > 0 || nsfw.length > 0
   const showEmpty = query.length >= 2 && !isLoading && !hasError && !hasResults
@@ -86,11 +98,22 @@ export function SearchBar({
       closeOnActionTrigger
       zIndex={500}
       forceOpened={forceOpened}
+      fullScreen={isMobile}
+      classNames={
+        isMobile ? {actionsList: styles.actionsListFullScreen} : undefined
+      }
     >
       <Spotlight.Search
         placeholder="Search Reddit..."
         leftSection={<IconSearch size={18} aria-hidden="true" />}
-        rightSection={isLoading ? <Loader size={16} /> : null}
+        rightSection={
+          isLoading ? (
+            <Loader size={16} />
+          ) : isMobile ? (
+            <CloseButton aria-label="Close search" onClick={spotlight.close} />
+          ) : null
+        }
+        rightSectionPointerEvents={isMobile ? 'all' : undefined}
         aria-label="Search Reddit or subreddits"
         onKeyDown={(e) => {
           if (e.key === 'Enter') handleSubmit()
