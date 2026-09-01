@@ -8,7 +8,7 @@ import type {ManagedMultireddit} from '@/lib/hooks/useMultiredditManager'
 import type {ManagedSubscription} from '@/lib/hooks/useSubredditManager'
 import type {RedditFollowing} from '@/lib/types/reddit'
 import {getUserProfileHref} from '@/lib/utils/reddit-helpers'
-import {Avatar, NavLink, ScrollArea, Stack} from '@mantine/core'
+import {Avatar, NavLink, Stack} from '@mantine/core'
 import {useDisclosure} from '@mantine/hooks'
 import {IconUser} from '@tabler/icons-react'
 import Link from 'next/link'
@@ -63,32 +63,30 @@ export function SidebarPersonalizedSections({
           onToggle={setMultiredditsOpen}
           onSettingsClick={openManager}
         >
-          <ScrollArea.Autosize mah={400}>
-            <Stack gap={4}>
-              {sortedMultireddits.map((multi) => (
-                <NavLink
-                  key={multi.path}
-                  component={Link}
-                  href={multi.path}
-                  label={multi.displayName}
-                  leftSection={
-                    multi.icon ? (
-                      <Avatar
-                        src={multi.icon}
-                        alt={`${multi.displayName} icon`}
-                        size={20}
-                        radius="sm"
-                      />
-                    ) : (
-                      <Avatar size={20} radius="sm" color="blue">
-                        {multi.displayName.charAt(0).toUpperCase()}
-                      </Avatar>
-                    )
-                  }
-                />
-              ))}
-            </Stack>
-          </ScrollArea.Autosize>
+          <Stack gap={4}>
+            {sortedMultireddits.map((multi) => (
+              <NavLink
+                key={multi.path}
+                component={Link}
+                href={multi.path}
+                label={multi.displayName}
+                leftSection={
+                  multi.icon ? (
+                    <Avatar
+                      src={multi.icon}
+                      alt={`${multi.displayName} icon`}
+                      size={20}
+                      radius="sm"
+                    />
+                  ) : (
+                    <Avatar size={20} radius="sm" color="blue">
+                      {multi.displayName.charAt(0).toUpperCase()}
+                    </Avatar>
+                  )
+                }
+              />
+            ))}
+          </Stack>
         </CollapsibleSection>
       )}
 
@@ -98,25 +96,23 @@ export function SidebarPersonalizedSections({
           isOpen={followingOpen}
           onToggle={setFollowingOpen}
         >
-          <ScrollArea.Autosize mah={400}>
-            <Stack gap={4}>
-              {sortedFollowing.map((user) => {
-                const href = getUserProfileHref(user.name)
-                if (!href) return null
+          <Stack gap={4}>
+            {sortedFollowing.map((user) => {
+              const href = getUserProfileHref(user.name)
+              if (!href) return null
 
-                return (
-                  <NavLink
-                    key={user.id}
-                    component={Link}
-                    href={href}
-                    label={user.name}
-                    description={user.note}
-                    leftSection={<IconUser size={16} />}
-                  />
-                )
-              })}
-            </Stack>
-          </ScrollArea.Autosize>
+              return (
+                <NavLink
+                  key={user.id}
+                  component={Link}
+                  href={href}
+                  label={user.name}
+                  description={user.note}
+                  leftSection={<IconUser size={16} />}
+                />
+              )
+            })}
+          </Stack>
         </CollapsibleSection>
       )}
 

@@ -2,14 +2,7 @@
 
 import type {ManagedSubscription} from '@/lib/hooks/useSubredditManager'
 import {useSubscriptionsFilterSort} from '@/lib/hooks/useSubscriptionsFilterSort'
-import {
-  Avatar,
-  NavLink,
-  ScrollArea,
-  Select,
-  Stack,
-  TextInput
-} from '@mantine/core'
+import {Avatar, NavLink, Select, Stack, TextInput} from '@mantine/core'
 import {IconMessage, IconSearch} from '@tabler/icons-react'
 import Link from 'next/link'
 
@@ -59,30 +52,28 @@ export function SubscriptionFilterList({
         aria-label="Sort subscriptions"
         allowDeselect={false}
       />
-      <ScrollArea.Autosize mah={400}>
-        <Stack gap={4}>
-          {filteredSubscriptions.map((sub) => (
-            <NavLink
-              key={sub.name}
-              component={Link}
-              href={`/r/${sub.name}`}
-              label={sub.displayName}
-              leftSection={
-                sub.icon ? (
-                  <Avatar
-                    src={sub.icon}
-                    alt={`${sub.displayName} icon`}
-                    size={20}
-                    radius="sm"
-                  />
-                ) : (
-                  <IconMessage size={16} />
-                )
-              }
-            />
-          ))}
-        </Stack>
-      </ScrollArea.Autosize>
+      <Stack gap={4}>
+        {filteredSubscriptions.map((sub) => (
+          <NavLink
+            key={sub.name}
+            component={Link}
+            href={`/r/${sub.name}`}
+            label={sub.displayName}
+            leftSection={
+              sub.icon ? (
+                <Avatar
+                  src={sub.icon}
+                  alt={`${sub.displayName} icon`}
+                  size={20}
+                  radius="sm"
+                />
+              ) : (
+                <IconMessage size={16} />
+              )
+            }
+          />
+        ))}
+      </Stack>
     </Stack>
   )
 }
