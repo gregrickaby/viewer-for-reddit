@@ -84,13 +84,15 @@ function simulateVisibility(videoElement: Element, isIntersecting: boolean) {
 function TestVideoPlayer({
   src,
   type = 'mp4',
-  poster
+  poster,
+  gifStyle
 }: {
   src: string
   type?: 'hls' | 'mp4'
   poster?: string
+  gifStyle?: boolean
 }) {
-  const containerRef = useVideoPlayer({src, type, poster})
+  const containerRef = useVideoPlayer({src, type, poster, gifStyle})
   return <div ref={containerRef} aria-label="Test Video" />
 }
 
@@ -225,6 +227,44 @@ describe('useVideoPlayer', () => {
       expect(mockVideojs).toHaveBeenCalledWith(
         expect.any(HTMLVideoElement),
         expect.objectContaining({poster: 'https://preview.redd.it/poster.jpg'})
+      )
+    })
+
+    it('shows controls and does not autoplay/loop/mute by default', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      simulateAttach(screen.getByLabelText('Test Video'))
+
+      expect(mockVideojs).toHaveBeenCalledWith(
+        expect.any(HTMLVideoElement),
+        expect.objectContaining({
+          controls: true,
+          autoplay: false,
+          loop: false,
+          muted: false,
+          preload: 'none'
+        })
+      )
+    })
+
+    it('hides controls and autoplays muted on loop for gifStyle', () => {
+      render(
+        <TestVideoPlayer
+          src="https://media.giphy.com/media/abc/giphy.mp4"
+          type="mp4"
+          gifStyle
+        />
+      )
+      simulateAttach(screen.getByLabelText('Test Video'))
+
+      expect(mockVideojs).toHaveBeenCalledWith(
+        expect.any(HTMLVideoElement),
+        expect.objectContaining({
+          controls: false,
+          autoplay: 'muted',
+          loop: true,
+          muted: true,
+          preload: 'auto'
+        })
       )
     })
 
@@ -376,6 +416,56 @@ describe('useVideoPlayer', () => {
       const players = mockVideojs.mock.results.map((r) => r.value)
       const [firstPlayer, secondPlayer] = players
       secondPlayer.paused.mockReturnValue(true)
+
+      firstPlayer.trigger('play')
+
+      expect(secondPlayer.pause).not.toHaveBeenCalled()
+    })
+
+    it('does not pause a gif-style player when another video starts playing', () => {
+      render(
+        <>
+          <TestVideoPlayer src="https://v.redd.it/one.mp4" type="mp4" />
+          <TestVideoPlayer
+            src="https://media.giphy.com/media/abc/giphy.mp4"
+            type="mp4"
+            gifStyle
+          />
+        </>
+      )
+      const [firstContainer, secondContainer] =
+        screen.getAllByLabelText('Test Video')
+      simulateAttach(firstContainer)
+      simulateAttach(secondContainer)
+
+      const players = mockVideojs.mock.results.map((r) => r.value)
+      const [firstPlayer, secondPlayer] = players
+      secondPlayer.paused.mockReturnValue(false)
+
+      firstPlayer.trigger('play')
+
+      expect(secondPlayer.pause).not.toHaveBeenCalled()
+    })
+
+    it('does not pause other players when a gif-style player starts playing', () => {
+      render(
+        <>
+          <TestVideoPlayer
+            src="https://media.giphy.com/media/abc/giphy.mp4"
+            type="mp4"
+            gifStyle
+          />
+          <TestVideoPlayer src="https://v.redd.it/two.mp4" type="mp4" />
+        </>
+      )
+      const [firstContainer, secondContainer] =
+        screen.getAllByLabelText('Test Video')
+      simulateAttach(firstContainer)
+      simulateAttach(secondContainer)
+
+      const players = mockVideojs.mock.results.map((r) => r.value)
+      const [firstPlayer, secondPlayer] = players
+      secondPlayer.paused.mockReturnValue(false)
 
       firstPlayer.trigger('play')
 

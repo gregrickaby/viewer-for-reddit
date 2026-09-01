@@ -1,3 +1,4 @@
+import {useVideoPlayer} from '@/lib/hooks/useVideoPlayer'
 import {render, screen} from '@/test-utils'
 import {describe, expect, it, vi} from 'vitest'
 import {VideoPlayer} from './VideoPlayer'
@@ -7,6 +8,8 @@ import {VideoPlayer} from './VideoPlayer'
 vi.mock('@/lib/hooks/useVideoPlayer', () => ({
   useVideoPlayer: vi.fn(() => ({current: null}))
 }))
+
+const mockUseVideoPlayer = vi.mocked(useVideoPlayer)
 
 describe('VideoPlayer', () => {
   describe('rendering with valid URLs', () => {
@@ -79,11 +82,45 @@ describe('VideoPlayer', () => {
       {
         description: 'accepts subdomains of allowed domains',
         src: 'https://sub.preview.redd.it/test.mp4'
+      },
+      {
+        description: 'accepts giphy.com domain',
+        src: 'https://media.giphy.com/media/abc123/giphy.mp4'
+      },
+      {
+        description: 'accepts imgur.com domain',
+        src: 'https://i.imgur.com/abc123.mp4'
       }
     ])('$description', ({src}) => {
       render(<VideoPlayer src={src} title="Test Video" />)
 
       expect(screen.queryByText('Video unavailable')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('gifStyle', () => {
+    it('passes gifStyle through to the hook', () => {
+      render(
+        <VideoPlayer
+          src="https://media.giphy.com/media/abc/giphy.mp4"
+          title="Test Video"
+          gifStyle
+        />
+      )
+
+      expect(mockUseVideoPlayer).toHaveBeenCalledWith(
+        expect.objectContaining({gifStyle: true})
+      )
+    })
+
+    it('defaults gifStyle to undefined when not passed', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      expect(mockUseVideoPlayer).toHaveBeenCalledWith(
+        expect.objectContaining({gifStyle: undefined})
+      )
     })
   })
 

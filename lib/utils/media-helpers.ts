@@ -145,6 +145,81 @@ export function getRedgifsEmbedUrl(url: string): string | null {
 }
 
 /**
+ * Build a direct Giphy mp4 URL from a submitted post URL. Reddit doesn't
+ * always generate its own mirrored preview for external GIF links, so this
+ * lets the post still animate by playing Giphy's own video CDN copy.
+ * @param url - Post URL to check (e.g. post.url)
+ * @returns Giphy mp4 URL (https://media.giphy.com/media/{id}/giphy.mp4) or null if not a Giphy link
+ */
+export function getGiphyVideoUrl(url: string): string | null {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    return null
+  }
+
+  const hostname = parsed.hostname.toLowerCase()
+  if (hostname !== 'giphy.com' && !hostname.endsWith('.giphy.com')) {
+    return null
+  }
+
+  const segments = parsed.pathname.split('/').filter(Boolean)
+  if (segments.length === 0) {
+    return null
+  }
+
+  // giphy.com/gifs/{slug}-{id}
+  if (segments[0] === 'gifs') {
+    const id = segments.at(-1)?.split('-').at(-1)
+    return id ? `https://media.giphy.com/media/${id}/giphy.mp4` : null
+  }
+
+  // media.giphy.com/media/{id}/giphy.gif (or any file under that id)
+  const mediaIndex = segments.indexOf('media')
+  if (mediaIndex !== -1 && segments[mediaIndex + 1]) {
+    return `https://media.giphy.com/media/${segments[mediaIndex + 1]}/giphy.mp4`
+  }
+
+  // i.giphy.com/{id}.gif
+  if (segments.length === 1) {
+    const id = segments[0].split('.')[0]
+    return id ? `https://media.giphy.com/media/${id}/giphy.mp4` : null
+  }
+
+  return null
+}
+
+/**
+ * Build a direct Imgur mp4 URL from a submitted post URL, for explicit
+ * `.gif`/`.gifv` links only - Imgur only generates an mp4 for those, and a
+ * bare `imgur.com/{id}` link is ambiguous (could be a static photo).
+ * Albums/galleries aren't single media items and are left alone.
+ * @param url - Post URL to check (e.g. post.url)
+ * @returns Imgur mp4 URL (https://i.imgur.com/{id}.mp4) or null if not a convertible Imgur link
+ */
+export function getImgurVideoUrl(url: string): string | null {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    return null
+  }
+
+  const hostname = parsed.hostname.toLowerCase()
+  if (hostname !== 'imgur.com' && !hostname.endsWith('.imgur.com')) {
+    return null
+  }
+
+  if (/^\/(a|gallery|t)\//.test(parsed.pathname)) {
+    return null
+  }
+
+  const match = /\/([a-zA-Z0-9]+)\.gifv?$/i.exec(parsed.pathname)
+  return match ? `https://i.imgur.com/${match[1]}.mp4` : null
+}
+
+/**
  * Get the highest quality video URL from Reddit video data.
  * Reddit provides multiple resolutions (DASH_240, DASH_360, DASH_480, DASH_720, DASH_1080, DASH_4K).
  * The fallback_url typically points to a lower resolution, so we replace it with the highest available.

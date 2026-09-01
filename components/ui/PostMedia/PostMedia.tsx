@@ -2,7 +2,9 @@ import {RedditPost} from '@/lib/types/reddit'
 import {
   decodeImageUrl,
   extractGalleryItems,
+  getGiphyVideoUrl,
   getHighestQualityVideoUrl,
+  getImgurVideoUrl,
   getMediumImage,
   getPosterImage,
   getRedgifsEmbedUrl,
@@ -28,6 +30,8 @@ interface PostMediaProps {
 
 /**
  * Render a Reddit-hosted or external video player
+ * @param gifStyle - Render as a silent, autoplaying, looping clip with no
+ * controls, for GIF-origin sources that never carry audio
  */
 function renderVideo(
   src: string,
@@ -35,7 +39,8 @@ function renderVideo(
   type: 'hls' | 'mp4',
   width?: number,
   height?: number,
-  poster?: string
+  poster?: string,
+  gifStyle = false
 ) {
   return (
     <VideoPlayer
@@ -45,15 +50,20 @@ function renderVideo(
       width={width}
       height={height}
       poster={poster}
+      gifStyle={gifStyle}
     />
   )
 }
 
 /**
  * Render Reddit video (hosted or external)
- * Uses highest quality video URL when fallback_url is provided
+ * Uses highest quality video URL when fallback_url is provided.
+ * `reddit_video_preview` is Reddit's own mirrored preview of an external
+ * link (almost always a silent GIF-like clip), rendered gif-style; a native
+ * `media.reddit_video` upload can carry real audio, so it keeps controls.
  */
 function renderRedditVideo(post: RedditPost) {
+  const isExternalPreview = Boolean(post.preview?.reddit_video_preview)
   const redditVideo =
     post.preview?.reddit_video_preview ?? post.media?.reddit_video
 
@@ -72,7 +82,8 @@ function renderRedditVideo(post: RedditPost) {
       redditVideo.hls_url ? 'hls' : 'mp4',
       redditVideo.width,
       redditVideo.height,
-      getPosterImage(post)
+      getPosterImage(post),
+      isExternalPreview
     )
   }
 
@@ -100,7 +111,8 @@ function renderAnimatedGif(post: RedditPost) {
       'mp4',
       highestRes.width,
       highestRes.height,
-      post.preview?.images?.[0]?.source?.url
+      post.preview?.images?.[0]?.source?.url,
+      true
     )
   }
 
@@ -198,6 +210,26 @@ function renderExternalVideo(post: RedditPost) {
 }
 
 /**
+ * Render a Giphy or Imgur GIF as an mp4 video. Checked after Reddit's own
+ * mirrored preview - Reddit usually generates one for these links already,
+ * this only fills the gap for links it didn't mirror.
+ */
+function renderGifProviderVideo(post: RedditPost) {
+  const videoUrl = getGiphyVideoUrl(post.url) ?? getImgurVideoUrl(post.url)
+  if (!videoUrl) return null
+
+  return renderVideo(
+    videoUrl,
+    post.title,
+    'mp4',
+    undefined,
+    undefined,
+    getPosterImage(post),
+    true
+  )
+}
+
+/**
  * Render a static image with optional link wrapper
  */
 function renderImage(
@@ -256,13 +288,14 @@ export function PostMedia({post, priority = false}: Readonly<PostMediaProps>) {
     return <Gallery items={galleryItems} title={post.title} />
   }
 
-  // Try to render video (RedGifs, Reddit, oembed/YouTube, animated GIF, or external)
+  // Try to render video (RedGifs, Reddit, oembed/YouTube, animated GIF, external, or Giphy/Imgur)
   const videoElement =
     renderRedgifs(post) ||
     renderRedditVideo(post) ||
     renderOembed(post) ||
     renderAnimatedGif(post) ||
-    renderExternalVideo(post)
+    renderExternalVideo(post) ||
+    renderGifProviderVideo(post)
   if (videoElement) {
     return videoElement
   }

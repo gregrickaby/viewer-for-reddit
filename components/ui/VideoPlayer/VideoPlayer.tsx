@@ -22,11 +22,13 @@ interface VideoPlayerProps {
   height?: number
   /** Poster image URL (preview/thumbnail) */
   poster?: string
+  /** Render as a silent, autoplaying, looping clip with no controls (GIF-origin content) */
+  gifStyle?: boolean
 }
 
 /**
  * Validate video URL to prevent XSS attacks.
- * Only allows HTTPS URLs from Reddit video/media domains.
+ * Only allows HTTPS URLs from Reddit, Giphy, and Imgur video/media domains.
  *
  * @param url - URL to validate
  * @returns True if URL is safe to use
@@ -38,13 +40,14 @@ function isValidVideoUrl(url: string): boolean {
     if (parsed.protocol !== 'https:') {
       return false
     }
-    // Allow Reddit video/media domains
     const allowedDomains = [
       'v.redd.it',
       'reddit.com',
       'preview.redd.it',
       'external-preview.redd.it',
-      'i.redd.it'
+      'i.redd.it',
+      'giphy.com',
+      'imgur.com'
     ]
     const hostname = parsed.hostname.toLowerCase()
     return allowedDomains.some(
@@ -65,10 +68,11 @@ export function VideoPlayer({
   type = 'mp4',
   width,
   height,
-  poster
+  poster,
+  gifStyle
 }: Readonly<VideoPlayerProps>) {
   // Use custom hook for video player logic
-  const containerRef = useVideoPlayer({src, type, poster})
+  const containerRef = useVideoPlayer({src, type, poster, gifStyle})
 
   // Determine if video is vertical (portrait orientation)
   const isVertical = getIsVertical(width, height)

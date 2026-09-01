@@ -36,6 +36,9 @@ describe('PostMedia', () => {
     vi.mocked(mediaHelpers.getMediumImage).mockReturnValue(null)
     vi.mocked(mediaHelpers.decodeImageUrl).mockImplementation((url) => url)
     vi.mocked(mediaHelpers.isValidThumbnail).mockReturnValue(false)
+    vi.mocked(mediaHelpers.getRedgifsEmbedUrl).mockReturnValue(null)
+    vi.mocked(mediaHelpers.getGiphyVideoUrl).mockReturnValue(null)
+    vi.mocked(mediaHelpers.getImgurVideoUrl).mockReturnValue(null)
   })
 
   describe('gallery rendering', () => {
@@ -252,6 +255,53 @@ describe('PostMedia', () => {
         'src',
         'https://www.youtube.com/embed/abc'
       )
+    })
+  })
+
+  describe('gif provider video rendering', () => {
+    it('renders a Giphy GIF as an mp4 video', () => {
+      vi.mocked(mediaHelpers.getGiphyVideoUrl).mockReturnValue(
+        'https://media.giphy.com/media/abc123/giphy.mp4'
+      )
+
+      render(<PostMedia post={basePost} />)
+
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
+    })
+
+    it('renders an Imgur GIF as an mp4 video when the URL is not a Giphy link', () => {
+      vi.mocked(mediaHelpers.getGiphyVideoUrl).mockReturnValue(null)
+      vi.mocked(mediaHelpers.getImgurVideoUrl).mockReturnValue(
+        'https://i.imgur.com/abc123.mp4'
+      )
+
+      render(<PostMedia post={basePost} />)
+
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
+    })
+
+    it('prefers a Reddit-mirrored video over checking Giphy/Imgur', () => {
+      vi.mocked(mediaHelpers.getGiphyVideoUrl).mockReturnValue(
+        'https://media.giphy.com/media/abc123/giphy.mp4'
+      )
+
+      const postWithRedditVideo = {
+        ...basePost,
+        media: {
+          reddit_video: {
+            hls_url: 'https://v.redd.it/test.m3u8',
+            fallback_url: 'https://v.redd.it/test.mp4',
+            width: 640,
+            height: 480,
+            duration: 60
+          }
+        }
+      }
+
+      render(<PostMedia post={postWithRedditVideo} />)
+
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
+      expect(mediaHelpers.getGiphyVideoUrl).not.toHaveBeenCalled()
     })
   })
 

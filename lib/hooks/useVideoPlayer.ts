@@ -102,6 +102,7 @@ function unobserveForVisibility(videoElement: Element) {
 interface ActivePlayerEntry {
   visible: boolean
   detach: () => void
+  gifStyle: boolean
 }
 const activePlayers = new Map<Player, ActivePlayerEntry>()
 
@@ -117,9 +118,16 @@ function evictOneIfNeeded() {
   // safe to evict. Leave it be rather than yanking something on screen.
 }
 
+/**
+ * Pauses other playing videos when one starts, to avoid overlapping audio.
+ * Gif-style players are muted, so they're exempt on both sides: starting one
+ * doesn't pause anything else, and a real video starting doesn't interrupt
+ * gifs already looping in the feed.
+ */
 function pauseOtherPlayers(current: Player) {
-  activePlayers.forEach((_entry, otherPlayer) => {
-    if (otherPlayer !== current && !otherPlayer.paused()) {
+  if (activePlayers.get(current)?.gifStyle) return
+  activePlayers.forEach((entry, otherPlayer) => {
+    if (otherPlayer !== current && !entry.gifStyle && !otherPlayer.paused()) {
       otherPlayer.pause()
     }
   })
@@ -135,6 +143,13 @@ export interface UseVideoPlayerOptions {
   type?: 'hls' | 'mp4'
   /** Poster image URL (preview/thumbnail) */
   poster?: string
+  /**
+   * Render as a silent, autoplaying, looping clip with no visible controls -
+   * for GIF-origin content (animated GIF uploads, Giphy/Imgur conversions,
+   * Reddit's mirrored preview of an external GIF link), which never carries
+   * audio and should look like a GIF, not a video with a scrubber.
+   */
+  gifStyle?: boolean
 }
 
 /**
@@ -150,6 +165,7 @@ export interface UseVideoPlayerOptions {
  * - A capped number of concurrently-attached players, LRU-evicted by visibility
  * - Auto-pause when scrolled out of view (IntersectionObserver)
  * - Auto-pause other videos when one starts playing
+ * - Optional `gifStyle` mode: no controls, silent autoplay, loop
  * - Automatic cleanup on unmount via `player.dispose()`
  *
  * @param options - Configuration options
@@ -168,7 +184,8 @@ export interface UseVideoPlayerOptions {
 export function useVideoPlayer({
   src,
   type = 'mp4',
-  poster
+  poster,
+  gifStyle = false
 }: UseVideoPlayerOptions): React.RefObject<HTMLDivElement | null> {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -221,8 +238,11 @@ export function useVideoPlayer({
       container.appendChild(newVideoElement)
 
       const newPlayer = videojs(newVideoElement, {
-        controls: true,
-        preload: 'none',
+        controls: !gifStyle,
+        autoplay: gifStyle ? 'muted' : false,
+        loop: gifStyle,
+        muted: gifStyle,
+        preload: gifStyle ? 'auto' : 'none',
         fluid: false,
         poster,
         sources: [
@@ -259,7 +279,7 @@ export function useVideoPlayer({
         }
       }
 
-      activePlayers.set(newPlayer, {visible: false, detach})
+      activePlayers.set(newPlayer, {visible: false, detach, gifStyle})
       observeForVisibility(container, handleVisibilityChange)
     }
 
@@ -281,7 +301,7 @@ export function useVideoPlayer({
         if (!player.isDisposed()) player.dispose()
       }
     }
-  }, [src, type, poster])
+  }, [src, type, poster, gifStyle])
 
   return containerRef
 }

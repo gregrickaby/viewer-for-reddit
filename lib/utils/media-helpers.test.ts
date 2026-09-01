@@ -3,7 +3,9 @@ import {describe, expect, it} from 'vitest'
 import {
   decodeImageUrl,
   extractGalleryItems,
+  getGiphyVideoUrl,
   getHighestQualityVideoUrl,
+  getImgurVideoUrl,
   getMediumImage,
   getPosterImage,
   getRedgifsEmbedUrl,
@@ -498,6 +500,78 @@ describe('media-helpers', () => {
 
     it('returns null when the path has no id', () => {
       expect(getRedgifsEmbedUrl('https://www.redgifs.com/')).toBeNull()
+    })
+  })
+
+  describe('getGiphyVideoUrl', () => {
+    it.each([
+      [
+        'giphy.com/gifs/{slug}-{id}',
+        'https://giphy.com/gifs/cat-funny-xT0xeJpnrWC4XWblEk'
+      ],
+      [
+        'giphy.com/gifs/{id} with no slug',
+        'https://giphy.com/gifs/xT0xeJpnrWC4XWblEk'
+      ],
+      [
+        'media.giphy.com/media/{id}/giphy.gif',
+        'https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif'
+      ],
+      [
+        'a numbered media subdomain',
+        'https://media2.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy-downsized.gif'
+      ],
+      ['i.giphy.com/{id}.gif', 'https://i.giphy.com/xT0xeJpnrWC4XWblEk.gif']
+    ])('builds an mp4 URL for %s', (_label, url) => {
+      expect(getGiphyVideoUrl(url)).toBe(
+        'https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.mp4'
+      )
+    })
+
+    it('returns null for non-giphy domains', () => {
+      expect(getGiphyVideoUrl('https://www.youtube.com/watch?v=abc')).toBeNull()
+    })
+
+    it('returns null for a malformed URL', () => {
+      expect(getGiphyVideoUrl('not-a-url')).toBeNull()
+    })
+
+    it('returns null when the path has no id', () => {
+      expect(getGiphyVideoUrl('https://giphy.com/')).toBeNull()
+    })
+  })
+
+  describe('getImgurVideoUrl', () => {
+    it.each([
+      ['.gif extension', 'https://i.imgur.com/abc123.gif'],
+      ['.gifv extension', 'https://i.imgur.com/abc123.gifv'],
+      ['bare imgur.com host', 'https://imgur.com/abc123.gifv']
+    ])('builds an mp4 URL for %s', (_label, url) => {
+      expect(getImgurVideoUrl(url)).toBe('https://i.imgur.com/abc123.mp4')
+    })
+
+    it('returns null for a bare link with no extension (ambiguous)', () => {
+      expect(getImgurVideoUrl('https://imgur.com/abc123')).toBeNull()
+    })
+
+    it('returns null for a static image extension', () => {
+      expect(getImgurVideoUrl('https://i.imgur.com/abc123.jpg')).toBeNull()
+    })
+
+    it('returns null for albums', () => {
+      expect(getImgurVideoUrl('https://imgur.com/a/abc123')).toBeNull()
+    })
+
+    it('returns null for galleries', () => {
+      expect(getImgurVideoUrl('https://imgur.com/gallery/abc123')).toBeNull()
+    })
+
+    it('returns null for non-imgur domains', () => {
+      expect(getImgurVideoUrl('https://www.youtube.com/abc123.gif')).toBeNull()
+    })
+
+    it('returns null for a malformed URL', () => {
+      expect(getImgurVideoUrl('not-a-url')).toBeNull()
     })
   })
 
