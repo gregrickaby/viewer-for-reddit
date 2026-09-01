@@ -37,11 +37,13 @@ export function SubscriptionFilterList({
         onChange={(e) => setSearchQuery(e.currentTarget.value)}
         leftSection={<IconSearch size={16} />}
         size="xs"
+        styles={{input: {fontSize: 16}}}
         aria-label="Search subscriptions"
       />
       <Select
         id="sidebar-sort-select"
         size="xs"
+        styles={{input: {fontSize: 16}}}
         data={[
           {value: 'default', label: 'Default Order'},
           {value: 'a-z', label: 'A-Z'},
