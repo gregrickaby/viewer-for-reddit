@@ -20,13 +20,19 @@ import {Suspense} from 'react'
  */
 export function Header() {
   return (
-    <Group h="100%" px={{base: 'sm', sm: 'md'}} wrap="nowrap" gap="md">
+    <Group
+      h="100%"
+      px={{base: 'sm', sm: 'md'}}
+      wrap="nowrap"
+      gap="md"
+      justify="space-between"
+    >
       <Group gap="xs" wrap="nowrap" style={{flexShrink: 0}}>
         <SidebarToggle />
         <Logo />
       </Group>
 
-      <Group justify="center" visibleFrom="sm" style={{flex: 1}}>
+      <Group justify="center" style={{flex: 1, minWidth: 0}}>
         <Suspense fallback={null}>
           <HeaderDesktopSearch />
         </Suspense>
