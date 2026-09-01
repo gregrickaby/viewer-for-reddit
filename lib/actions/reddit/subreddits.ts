@@ -75,10 +75,25 @@ export async function fetchSubredditInfo(
 }
 
 /**
+ * Detect Next.js's dev-only "items over 2MB can not be cached" data-cache
+ * error (thrown by the built-in fetch cache, not a documented public API -
+ * matched on message text since there's no exported error type).
+ */
+function isCacheSizeLimitError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    error.message.includes('items over 2MB can not be cached')
+  )
+}
+
+/**
  * Fetch ALL authenticated user's subreddit subscriptions.
- * Server Action with Next.js fetch caching.
- * Results cached for 10 minutes. Returns empty array when not authenticated.
- * Automatically fetches all pages to return complete subscription list.
+ * Server Action with Next.js fetch caching (10 minutes). A page can exceed
+ * Next's 2MB fetch-cache entry limit for accounts with many subscriptions -
+ * that throws in dev and silently skips caching in production, so on that
+ * specific error this retries the page uncached rather than losing the
+ * whole list. Returns empty array when not authenticated. Automatically
+ * fetches all pages to return complete subscription list.
  *
  * @returns Promise resolving to complete subscriptions array
  */
@@ -109,13 +124,24 @@ export async function fetchUserSubscriptions(): Promise<
         url.searchParams.set('after', after)
       }
 
-      const response = await circuitProtectedFetch(url.toString(), {
-        headers,
-        next: {
-          revalidate: CACHE_SUBSCRIPTIONS,
-          tags: ['subscriptions']
+      let response: Response
+      try {
+        response = await circuitProtectedFetch(url.toString(), {
+          headers,
+          next: {
+            revalidate: CACHE_SUBSCRIPTIONS,
+            tags: ['subscriptions']
+          }
+        })
+      } catch (error) {
+        if (!isCacheSizeLimitError(error)) {
+          throw error
         }
-      })
+        response = await circuitProtectedFetch(url.toString(), {
+          headers,
+          cache: 'no-store'
+        })
+      }
 
       if (!response.ok) {
         logger.warn(
