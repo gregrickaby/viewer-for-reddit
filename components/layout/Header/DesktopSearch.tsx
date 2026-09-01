@@ -6,7 +6,7 @@ import {IconSearch} from '@tabler/icons-react'
 import styles from './DesktopSearch.module.css'
 
 /**
- * Wide, centered search trigger shown in the header at every breakpoint,
+ * Wide, centered search trigger shown in the header on desktop viewports,
  * matching reddit.com's layout. Opens the same Spotlight overlay mounted by
  * `MobileSearch`.
  */

@@ -32,7 +32,7 @@ export function Header() {
         <Logo />
       </Group>
 
-      <Group justify="center" style={{flex: 1, minWidth: 0}}>
+      <Group justify="center" visibleFrom="sm" style={{flex: 1, minWidth: 0}}>
         <Suspense fallback={null}>
           <HeaderDesktopSearch />
         </Suspense>

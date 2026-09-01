@@ -1,12 +1,30 @@
 'use client'
 
 import {SearchBar} from '@/components/ui/SearchBar/SearchBar'
+import {ActionIcon} from '@mantine/core'
+import {spotlight} from '@mantine/spotlight'
+import {IconSearch} from '@tabler/icons-react'
 
 /**
- * Mounts the Spotlight search overlay once, regardless of viewport. The
- * wide trigger bar lives in `DesktopSearch` (shown at every breakpoint) and
- * opens this overlay via `spotlight.open()`.
+ * Mobile search trigger (icon button), plus the Spotlight overlay itself -
+ * mounted once here regardless of viewport. The wide desktop trigger lives
+ * in `DesktopSearch` and opens this same overlay via `spotlight.open()`.
  */
 export function MobileSearch() {
-  return <SearchBar />
+  return (
+    <>
+      <ActionIcon
+        variant="subtle"
+        color="gray"
+        size="lg"
+        hiddenFrom="sm"
+        aria-label="Search"
+        onClick={spotlight.open}
+      >
+        <IconSearch aria-hidden="true" size={20} />
+      </ActionIcon>
+
+      <SearchBar />
+    </>
+  )
 }
