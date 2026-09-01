@@ -118,6 +118,33 @@ export function getPosterImage(post: RedditPost): string | undefined {
 }
 
 /**
+ * Build a RedGifs native embed URL from a submitted post URL.
+ * RedGifs' own player includes audio; Reddit's mirrored HLS/mp4 preview often does not.
+ * @param url - Post URL to check (e.g. post.url)
+ * @returns RedGifs embed URL (https://www.redgifs.com/ifr/{id}) or null if not a RedGifs link
+ */
+export function getRedgifsEmbedUrl(url: string): string | null {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    return null
+  }
+
+  const hostname = parsed.hostname.toLowerCase()
+  if (hostname !== 'redgifs.com' && !hostname.endsWith('.redgifs.com')) {
+    return null
+  }
+
+  const id = parsed.pathname.split('/').filter(Boolean).at(-1)?.split('.')[0]
+  if (!id) {
+    return null
+  }
+
+  return `https://www.redgifs.com/ifr/${id}`
+}
+
+/**
  * Get the highest quality video URL from Reddit video data.
  * Reddit provides multiple resolutions (DASH_240, DASH_360, DASH_480, DASH_720, DASH_1080, DASH_4K).
  * The fallback_url typically points to a lower resolution, so we replace it with the highest available.

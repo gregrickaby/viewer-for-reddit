@@ -166,6 +166,95 @@ describe('PostMedia', () => {
     })
   })
 
+  describe('redgifs rendering', () => {
+    it('renders the redgifs native embed when the post URL is a redgifs link', () => {
+      vi.mocked(mediaHelpers.getRedgifsEmbedUrl).mockReturnValue(
+        'https://www.redgifs.com/ifr/deadlyimaginarygrub'
+      )
+
+      render(<PostMedia post={basePost} />)
+
+      const iframe = screen.getByTitle('Test Post')
+      expect(iframe).toHaveAttribute(
+        'src',
+        'https://www.redgifs.com/ifr/deadlyimaginarygrub'
+      )
+    })
+
+    it('prioritizes the redgifs embed over a Reddit-mirrored video', () => {
+      vi.mocked(mediaHelpers.getRedgifsEmbedUrl).mockReturnValue(
+        'https://www.redgifs.com/ifr/deadlyimaginarygrub'
+      )
+
+      const postWithBoth = {
+        ...basePost,
+        media: {
+          reddit_video: {
+            hls_url: 'https://v.redd.it/test.m3u8',
+            fallback_url: 'https://v.redd.it/test.mp4',
+            width: 640,
+            height: 480,
+            duration: 60
+          }
+        }
+      }
+
+      render(<PostMedia post={postWithBoth} />)
+
+      expect(screen.getByTitle('Test Post').tagName).toBe('IFRAME')
+      expect(
+        screen.queryByLabelText('Video: Test Post')
+      ).not.toBeInTheDocument()
+    })
+
+    it('falls back to the oembed iframe src when the post URL is not a redgifs link', () => {
+      vi.mocked(mediaHelpers.getRedgifsEmbedUrl).mockReturnValue(null)
+
+      const postWithOembed = {
+        ...basePost,
+        media: {
+          oembed: {
+            provider_name: 'Redgifs',
+            provider_url: 'https://redgifs.com',
+            type: 'video',
+            html: '&lt;iframe src="https://www.redgifs.com/ifr/deadlyimaginarygrub"&gt;&lt;/iframe&gt;'
+          }
+        }
+      }
+
+      render(<PostMedia post={postWithOembed} />)
+
+      const iframe = screen.getByTitle('Test Post')
+      expect(iframe).toHaveAttribute(
+        'src',
+        'https://www.redgifs.com/ifr/deadlyimaginarygrub'
+      )
+    })
+
+    it('does not render a redgifs embed for a non-redgifs oembed provider', () => {
+      vi.mocked(mediaHelpers.getRedgifsEmbedUrl).mockReturnValue(null)
+
+      const postWithYoutube = {
+        ...basePost,
+        media: {
+          oembed: {
+            provider_name: 'YouTube',
+            provider_url: 'https://youtube.com',
+            type: 'video',
+            html: '&lt;iframe src="https://www.youtube.com/embed/abc"&gt;&lt;/iframe&gt;'
+          }
+        }
+      }
+
+      render(<PostMedia post={postWithYoutube} />)
+
+      expect(screen.getByTitle('Test Post')).toHaveAttribute(
+        'src',
+        'https://www.youtube.com/embed/abc'
+      )
+    })
+  })
+
   describe('image rendering', () => {
     it('renders medium image with link', () => {
       vi.mocked(mediaHelpers.getMediumImage).mockReturnValue({

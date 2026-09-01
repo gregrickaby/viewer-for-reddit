@@ -6,6 +6,7 @@ import {
   getHighestQualityVideoUrl,
   getMediumImage,
   getPosterImage,
+  getRedgifsEmbedUrl,
   isValidThumbnail
 } from './media-helpers'
 
@@ -463,6 +464,40 @@ describe('media-helpers', () => {
       expect(getHighestQualityVideoUrl(url)).toBe(
         'https://v.redd.it/abc123/DASH_1080.mp4?source=fallback'
       )
+    })
+  })
+
+  describe('getRedgifsEmbedUrl', () => {
+    it.each([
+      ['watch path', 'https://www.redgifs.com/watch/deadlyimaginarygrub'],
+      ['ifr path', 'https://redgifs.com/ifr/deadlyimaginarygrub'],
+      [
+        'i path with extension',
+        'https://www.redgifs.com/i/deadlyimaginarygrub.mp4'
+      ],
+      ['trailing slash', 'https://www.redgifs.com/watch/deadlyimaginarygrub/']
+    ])('builds an ifr embed URL for %s', (_label, url) => {
+      expect(getRedgifsEmbedUrl(url)).toBe(
+        'https://www.redgifs.com/ifr/deadlyimaginarygrub'
+      )
+    })
+
+    it('returns null for non-redgifs domains', () => {
+      expect(
+        getRedgifsEmbedUrl('https://www.youtube.com/watch?v=abc')
+      ).toBeNull()
+    })
+
+    it('returns null for a lookalike domain', () => {
+      expect(getRedgifsEmbedUrl('https://notredgifs.com/watch/abc')).toBeNull()
+    })
+
+    it('returns null for a malformed URL', () => {
+      expect(getRedgifsEmbedUrl('not-a-url')).toBeNull()
+    })
+
+    it('returns null when the path has no id', () => {
+      expect(getRedgifsEmbedUrl('https://www.redgifs.com/')).toBeNull()
     })
   })
 

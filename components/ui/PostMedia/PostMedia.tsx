@@ -5,11 +5,13 @@ import {
   getHighestQualityVideoUrl,
   getMediumImage,
   getPosterImage,
+  getRedgifsEmbedUrl,
   isValidThumbnail
 } from '@/lib/utils/media-helpers'
 import {Anchor} from '@mantine/core'
 import Image from 'next/image'
 import Link from 'next/link'
+import {EmbedFrame} from '@/components/ui/PostMedia/EmbedFrame'
 import {Gallery} from '@/components/ui/Gallery/Gallery'
 import {VideoPlayer} from '@/components/ui/VideoPlayer/VideoPlayer'
 import styles from './PostMedia.module.css'
@@ -113,7 +115,8 @@ const ALLOWED_OEMBED_DOMAINS = [
   'youtube.com',
   'vimeo.com',
   'twitch.tv',
-  'streamable.com'
+  'streamable.com',
+  'redgifs.com'
 ]
 
 const OEMBED_SRC_RE = /src="([^"]+)"/
@@ -148,6 +151,23 @@ function getOembedSrc(html: string): string | null {
 }
 
 /**
+ * Render RedGifs' native player as a responsive iframe.
+ * Checked before renderRedditVideo/renderOembed so RedGifs posts get
+ * their own player (with audio) instead of Reddit's silent HLS/mp4 mirror.
+ */
+function renderRedgifs(post: RedditPost) {
+  const src =
+    getRedgifsEmbedUrl(post.url) ??
+    (post.media?.oembed?.html ? getOembedSrc(post.media.oembed.html) : null)
+
+  if (!src || !new URL(src).hostname.toLowerCase().endsWith('redgifs.com')) {
+    return null
+  }
+
+  return <EmbedFrame src={src} title={post.title} />
+}
+
+/**
  * Render an oembed video (YouTube, Vimeo, etc.) as a responsive iframe
  */
 function renderOembed(post: RedditPost) {
@@ -157,19 +177,7 @@ function renderOembed(post: RedditPost) {
   const src = getOembedSrc(html)
   if (!src) return null
 
-  return (
-    <div className={styles.embedContainer}>
-      <iframe
-        src={src}
-        title={post.title}
-        className={styles.embed}
-        allowFullScreen
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerPolicy="strict-origin-when-cross-origin"
-        loading="lazy"
-      />
-    </div>
-  )
+  return <EmbedFrame src={src} title={post.title} />
 }
 
 /**
@@ -248,8 +256,9 @@ export function PostMedia({post, priority = false}: Readonly<PostMediaProps>) {
     return <Gallery items={galleryItems} title={post.title} />
   }
 
-  // Try to render video (Reddit, oembed/YouTube, animated GIF, or external)
+  // Try to render video (RedGifs, Reddit, oembed/YouTube, animated GIF, or external)
   const videoElement =
+    renderRedgifs(post) ||
     renderRedditVideo(post) ||
     renderOembed(post) ||
     renderAnimatedGif(post) ||

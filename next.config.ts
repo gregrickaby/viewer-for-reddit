@@ -106,7 +106,7 @@ const nextConfig: NextConfig = {
               "worker-src 'self' blob:; " +
               "font-src 'self' data:; " +
               "manifest-src 'self'; " +
-              'frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://player.twitch.tv https://streamable.com; ' +
+              'frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://player.twitch.tv https://streamable.com https://www.redgifs.com; ' +
               "object-src 'none'; " +
               "base-uri 'self'; " +
               "form-action 'self';"
