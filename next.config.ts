@@ -92,7 +92,9 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()'
+            value:
+              'camera=(), microphone=(), geolocation=(), ' +
+              'fullscreen=(self "https://www.youtube.com" "https://www.youtube-nocookie.com" "https://player.vimeo.com" "https://player.twitch.tv" "https://streamable.com" "https://www.redgifs.com")'
           },
           {
             key: 'Content-Security-Policy',
