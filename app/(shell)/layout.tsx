@@ -6,6 +6,7 @@ import {SidebarPanel} from '@/components/layout/Sidebar/SidebarPanel'
 import {SidebarSectionsSkeleton} from '@/components/skeletons/SidebarSectionsSkeleton/SidebarSectionsSkeleton'
 import BackToTop from '@/components/ui/BackToTop/BackToTop'
 import BossButton from '@/components/ui/BossButton/BossButton'
+import RevalidateOnFocus from '@/components/ui/RevalidateOnFocus/RevalidateOnFocus'
 import RouteScrollReset from '@/components/ui/RouteScrollReset/RouteScrollReset'
 import SwipeNavigation from '@/components/ui/SwipeNavigation/SwipeNavigation'
 import {Suspense} from 'react'
@@ -24,6 +25,7 @@ interface MainLayoutProps {
  * - Recent Posts rail, gated behind auth, deferred behind its own
  *   Suspense boundary
  * - Utility buttons (Boss button, Back to top, Swipe navigation)
+ * - Revalidate on focus, refreshing stale content after the tab was hidden
  *
  * Applied to: /, /r/[subreddit], /search/[query], /u/[username], /user/[username]/saved, /user/[username]/m/[multiname]
  */
@@ -58,6 +60,9 @@ export default function MainLayout({children}: Readonly<MainLayoutProps>) {
       </Suspense>
       <Suspense fallback={null}>
         <SwipeNavigation />
+      </Suspense>
+      <Suspense fallback={null}>
+        <RevalidateOnFocus />
       </Suspense>
       <BossButton />
       <BackToTop />

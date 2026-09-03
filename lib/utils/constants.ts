@@ -35,5 +35,9 @@ export const PAGINATION_MAX_LIMIT = 100 // Reddit's max items per page
 export const SCROLL_THRESHOLD = 100 // pixels from bottom to trigger infinite scroll
 export const BOSS_BUTTON_SCROLL_THRESHOLD = 200 // pixels scrolled before boss button appears
 
+// Refresh the current route if the tab was hidden at least this long, since
+// the server's post cache (CACHE_POSTS) is stale by then anyway
+export const STALE_TAB_REVALIDATE_MS = CACHE_POSTS * 1000
+
 // Comment rendering
 export const MAX_COMMENT_DEPTH = 10 // Maximum nesting depth before "Continue thread" link
