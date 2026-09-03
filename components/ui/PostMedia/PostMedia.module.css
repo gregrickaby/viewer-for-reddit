@@ -27,6 +27,7 @@
 .embedContainer {
   aspect-ratio: 16 / 9;
   border-radius: 8px;
+  max-height: 60vh;
   overflow: hidden;
   width: 100%;
 }
