@@ -56,7 +56,7 @@ export function PostHeader({
         </Text>
       </Group>
       {post.over_18 && (
-        <Badge color="red" size="sm">
+        <Badge color="red" size="sm" style={{flexShrink: 0}}>
           NSFW
         </Badge>
       )}
