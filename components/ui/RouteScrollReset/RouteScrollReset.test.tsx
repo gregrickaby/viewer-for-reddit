@@ -53,6 +53,7 @@ describe('RouteScrollReset', () => {
       writable: true,
       configurable: true
     })
+    globalThis.dispatchEvent(new Event('scroll'))
 
     mockUsePathname.mockReturnValue('/r/typescript')
     rerender(<RouteScrollReset />)
@@ -67,5 +68,31 @@ describe('RouteScrollReset', () => {
       left: 0,
       behavior: 'auto'
     })
+  })
+
+  it('does not clobber a scrolled page position when navigating away', () => {
+    const {rerender} = render(<RouteScrollReset />)
+
+    Object.defineProperty(globalThis, 'scrollY', {
+      value: 3200,
+      writable: true,
+      configurable: true
+    })
+    globalThis.dispatchEvent(new Event('scroll'))
+
+    // Next.js's own scroll-to-top handling (a `useLayoutEffect`) runs before
+    // this component's passive-effect cleanup, so by the time cleanup reads
+    // `scrollY` for the outgoing page, the browser has already jumped to 0
+    // for the incoming page.
+    Object.defineProperty(globalThis, 'scrollY', {
+      value: 0,
+      writable: true,
+      configurable: true
+    })
+
+    mockUsePathname.mockReturnValue('/r/typescript')
+    rerender(<RouteScrollReset />)
+
+    expect(globalThis.sessionStorage.getItem('scroll-position:/')).toBe('3200')
   })
 })

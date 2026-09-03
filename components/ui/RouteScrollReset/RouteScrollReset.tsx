@@ -28,12 +28,8 @@ export default function RouteScrollReset() {
   useEffect(() => {
     const storageKey = `${SCROLL_STORAGE_PREFIX}${pathname}`
 
-    const persistScrollPosition = () => {
-      globalThis.sessionStorage.setItem(storageKey, String(globalThis.scrollY))
-    }
-
     const handleScroll = () => {
-      persistScrollPosition()
+      globalThis.sessionStorage.setItem(storageKey, String(globalThis.scrollY))
     }
 
     globalThis.addEventListener('scroll', handleScroll, {passive: true})
@@ -53,7 +49,6 @@ export default function RouteScrollReset() {
     isPopStateNavigation.current = false
 
     return () => {
-      persistScrollPosition()
       globalThis.removeEventListener('scroll', handleScroll)
     }
   }, [pathname])
