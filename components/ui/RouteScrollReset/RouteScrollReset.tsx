@@ -5,6 +5,13 @@ import {useEffect, useRef} from 'react'
 
 const SCROLL_STORAGE_PREFIX = 'scroll-position:'
 
+// Next can still reset scroll after a history-traversal's dynamic content
+// finishes streaming in (its scroll handler re-checks intent on every
+// commit). Keep reasserting the restored position until mutations quiet
+// down, capped so a chatty page can't postpone this indefinitely.
+const MUTATION_QUIET_MS = 150
+const MAX_SETTLE_WAIT_MS = 2000
+
 /**
  * Resets window scroll on pathname change. Restores the prior scroll position
  * when navigating with the browser's back or forward buttons.
@@ -43,12 +50,35 @@ export default function RouteScrollReset() {
 
     const savedScrollPosition = globalThis.sessionStorage.getItem(storageKey)
 
+    let settleObserver: MutationObserver | null = null
+    let quietTimer: ReturnType<typeof setTimeout> | null = null
+    let maxWaitTimer: ReturnType<typeof setTimeout> | null = null
+
+    const stopSettling = () => {
+      settleObserver?.disconnect()
+      if (quietTimer !== null) clearTimeout(quietTimer)
+      if (maxWaitTimer !== null) clearTimeout(maxWaitTimer)
+    }
+
     if (isPopStateNavigation.current && savedScrollPosition !== null) {
-      globalThis.scrollTo({
-        top: Number(savedScrollPosition),
-        left: 0,
-        behavior: 'auto'
-      })
+      const target = Number(savedScrollPosition)
+
+      const restore = () => {
+        globalThis.scrollTo({top: target, left: 0, behavior: 'auto'})
+        stopSettling()
+      }
+
+      restore()
+
+      const scheduleQuietRestore = () => {
+        if (quietTimer !== null) clearTimeout(quietTimer)
+        quietTimer = setTimeout(restore, MUTATION_QUIET_MS)
+      }
+
+      settleObserver = new MutationObserver(scheduleQuietRestore)
+      settleObserver.observe(document.body, {childList: true, subtree: true})
+      scheduleQuietRestore()
+      maxWaitTimer = setTimeout(restore, MAX_SETTLE_WAIT_MS)
     } else {
       globalThis.scrollTo({top: 0, left: 0, behavior: 'auto'})
     }
@@ -57,6 +87,7 @@ export default function RouteScrollReset() {
 
     return () => {
       globalThis.removeEventListener('scroll', handleScroll)
+      stopSettling()
     }
   }, [pathname])
 
