@@ -63,6 +63,33 @@ describe('RecentPostsRail', () => {
     )
   })
 
+  it('renders a thumbnail image when the entry has a valid thumbnail', () => {
+    mockUseRecentPosts.mockReturnValue({
+      recentPosts: [{...mockEntry, thumbnail: 'https://example.com/thumb.jpg'}],
+      addRecentPost: vi.fn(),
+      clearRecentPosts: mockClearRecentPosts
+    })
+
+    render(<RecentPostsRail />)
+
+    expect(screen.getByAltText('')).toHaveAttribute(
+      'src',
+      'https://example.com/thumb.jpg'
+    )
+  })
+
+  it('omits the thumbnail image when the thumbnail is invalid', () => {
+    mockUseRecentPosts.mockReturnValue({
+      recentPosts: [{...mockEntry, thumbnail: 'self'}],
+      addRecentPost: vi.fn(),
+      clearRecentPosts: mockClearRecentPosts
+    })
+
+    render(<RecentPostsRail />)
+
+    expect(screen.queryByAltText('')).not.toBeInTheDocument()
+  })
+
   it('calls clearRecentPosts when Clear is clicked', async () => {
     mockUseRecentPosts.mockReturnValue({
       recentPosts: [mockEntry],

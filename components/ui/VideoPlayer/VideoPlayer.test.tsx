@@ -1,6 +1,7 @@
 import {useVideoPlayer} from '@/lib/hooks/useVideoPlayer'
 import {render, screen} from '@/test-utils'
 import {describe, expect, it, vi} from 'vitest'
+import styles from './VideoPlayer.module.css'
 import {VideoPlayer} from './VideoPlayer'
 
 // Player internals (video.js) are covered by useVideoPlayer.test.tsx;
@@ -131,6 +132,48 @@ describe('VideoPlayer', () => {
       )
 
       expect(screen.getByLabelText('Video: My Test Video')).toBeInTheDocument()
+    })
+  })
+
+  describe('orientation', () => {
+    it('applies the vertical class when height exceeds width', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4"
+          title="Test Video"
+          width={100}
+          height={200}
+        />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).toHaveClass(
+        styles.vertical
+      )
+    })
+
+    it('does not apply the vertical class for landscape dimensions', () => {
+      render(
+        <VideoPlayer
+          src="https://v.redd.it/test.mp4"
+          title="Test Video"
+          width={200}
+          height={100}
+        />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).not.toHaveClass(
+        styles.vertical
+      )
+    })
+
+    it('does not apply the vertical class when dimensions are omitted', () => {
+      render(
+        <VideoPlayer src="https://v.redd.it/test.mp4" title="Test Video" />
+      )
+
+      expect(screen.getByLabelText('Video: Test Video')).not.toHaveClass(
+        styles.vertical
+      )
     })
   })
 })

@@ -1,16 +1,26 @@
-import {fetchUserInfo, votePost} from '@/lib/actions/reddit/users'
+import {fetchUserInfo, savePost, votePost} from '@/lib/actions/reddit/users'
 import {RedditAward, RedditComment, RedditUser} from '@/lib/types/reddit'
+import {MAX_COMMENT_DEPTH} from '@/lib/utils/constants'
 import {render, screen, user, waitFor} from '@/test-utils'
+import {notifications} from '@mantine/notifications'
+import {axe} from 'jest-axe'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import styles from './Comment.module.css'
 import {Comment} from './Comment'
 
 vi.mock('@/lib/actions/reddit/users', () => ({
   votePost: vi.fn(async () => ({success: true})),
+  savePost: vi.fn(async () => ({success: true})),
   fetchUserInfo: vi.fn()
 }))
 
+const mockSharePost = vi.fn()
+vi.mock('@/lib/hooks/useSharePost', () => ({
+  useSharePost: () => ({sharePost: mockSharePost})
+}))
+
 const mockVotePost = vi.mocked(votePost)
+const mockSavePost = vi.mocked(savePost)
 const mockFetchUserInfo = vi.mocked(fetchUserInfo)
 
 describe('Comment', () => {
@@ -700,6 +710,90 @@ describe('Comment', () => {
       // eslint-disable-next-line testing-library/no-container
       const card = container.querySelector('.mantine-Card-root')
       expect(card).not.toHaveClass(styles.gilded)
+    })
+  })
+
+  describe('save action', () => {
+    it('saves the comment and shows a saved notification when not yet saved', async () => {
+      const showSpy = vi.spyOn(notifications, 'show')
+      render(<Comment comment={mockComment} />)
+
+      await user.click(screen.getByRole('button', {name: 'Save comment'}))
+
+      expect(mockSavePost).toHaveBeenCalledWith('t1_test123', true)
+      expect(showSpy).toHaveBeenCalledWith({
+        message: 'Comment saved',
+        color: 'yellow',
+        autoClose: 3000
+      })
+    })
+
+    it('unsaves the comment and shows an unsaved notification when already saved', async () => {
+      const showSpy = vi.spyOn(notifications, 'show')
+      const savedComment = {...mockComment, saved: true}
+      render(<Comment comment={savedComment} />)
+
+      await user.click(screen.getByRole('button', {name: 'Unsave comment'}))
+
+      expect(mockSavePost).toHaveBeenCalledWith('t1_test123', false)
+      expect(showSpy).toHaveBeenCalledWith({
+        message: 'Comment unsaved',
+        color: 'gray',
+        autoClose: 3000
+      })
+    })
+  })
+
+  describe('share action', () => {
+    it('shares the comment permalink when the share button is clicked', async () => {
+      render(<Comment comment={mockComment} />)
+
+      await user.click(screen.getByRole('button', {name: 'Share comment'}))
+
+      expect(mockSharePost).toHaveBeenCalledWith(mockComment.permalink)
+    })
+  })
+
+  describe('deep nesting (continue thread link)', () => {
+    it('renders a "Continue this thread" link instead of replies at max depth', () => {
+      const deepComment = {
+        ...mockComment,
+        permalink: '/r/test/comments/postid/slug/commentid/comment_name/'
+      }
+      render(<Comment comment={deepComment} depth={MAX_COMMENT_DEPTH} />)
+
+      const link = screen.getByRole('link', {name: /continue this thread/i})
+      expect(link).toHaveAttribute(
+        'href',
+        '/r/test/comments/postid/slug/commentid'
+      )
+    })
+
+    it('falls back to the raw permalink when it has too few segments', () => {
+      const deepComment = {
+        ...mockComment,
+        permalink: '/r/test/comments/postid'
+      }
+      render(<Comment comment={deepComment} depth={MAX_COMMENT_DEPTH} />)
+
+      const link = screen.getByRole('link', {name: /continue this thread/i})
+      expect(link).toHaveAttribute('href', '/r/test/comments/postid')
+    })
+
+    it('does not render a continue thread link below max depth', () => {
+      render(<Comment comment={mockComment} depth={MAX_COMMENT_DEPTH - 1} />)
+
+      expect(
+        screen.queryByRole('link', {name: /continue this thread/i})
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('accessibility', () => {
+    it('has no axe violations', async () => {
+      const {container} = render(<Comment comment={mockComment} />)
+
+      expect(await axe(container)).toHaveNoViolations()
     })
   })
 })

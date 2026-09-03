@@ -126,6 +126,22 @@ describe('useSubredditManager', () => {
       // Second join was ignored (isPending guard)
       expect(mockToggle).toHaveBeenCalledTimes(1)
     })
+
+    it('falls back to a default message when the failure has no error text', async () => {
+      mockToggle.mockResolvedValueOnce({success: false})
+
+      const {result} = renderHook(() =>
+        useSubredditManager({initialSubscriptions})
+      )
+
+      act(() => {
+        result.current.join({name: 'typescript', displayName: 'r/typescript'})
+      })
+
+      await waitFor(() => {
+        expect(result.current.error).toBe('Failed to join subreddit')
+      })
+    })
   })
 
   describe('leave', () => {
@@ -193,6 +209,22 @@ describe('useSubredditManager', () => {
 
       // Second leave was ignored (isPending guard)
       expect(mockToggle).toHaveBeenCalledTimes(1)
+    })
+
+    it('falls back to a default message when the failure has no error text', async () => {
+      mockToggle.mockResolvedValueOnce({success: false})
+
+      const {result} = renderHook(() =>
+        useSubredditManager({initialSubscriptions})
+      )
+
+      act(() => {
+        result.current.leave('programming')
+      })
+
+      await waitFor(() => {
+        expect(result.current.error).toBe('Failed to leave subreddit')
+      })
     })
   })
 

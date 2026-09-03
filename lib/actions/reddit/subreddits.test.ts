@@ -3,6 +3,17 @@ vi.mock('@/lib/auth/reddit-context', () => ({
   getRedditContext: vi.fn()
 }))
 
+// Partially mocked so a single test can simulate Next's dev-only
+// "items over 2MB can not be cached" data-cache error on the first call
+// while every other test uses the real circuit-breaker-backed fetch.
+vi.mock('./_helpers', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./_helpers')>()
+  return {
+    ...actual,
+    circuitProtectedFetch: vi.fn(actual.circuitProtectedFetch)
+  }
+})
+
 // Mock Next.js headers
 vi.mock('next/headers', () => ({
   headers: vi.fn(async () => ({
@@ -26,6 +37,7 @@ import {type RedditContext, getRedditContext} from '@/lib/auth/reddit-context'
 import {resetCircuitBreakerForTests} from '@/lib/utils/circuit-breaker'
 import {http, HttpResponse, server} from '@/test-utils'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {circuitProtectedFetch} from './_helpers'
 import {
   fetchSubredditInfo,
   fetchUserSubscriptions,
@@ -33,6 +45,7 @@ import {
 } from './subreddits'
 
 const mockGetRedditContext = vi.mocked(getRedditContext)
+const mockCircuitProtectedFetch = vi.mocked(circuitProtectedFetch)
 
 function createAuthContext(username = 'testuser'): RedditContext {
   return {
@@ -156,6 +169,39 @@ describe('subreddits server actions', () => {
       expect(result).toEqual([])
     })
 
+    it('retries uncached when the fetch cache rejects a large response', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/subreddits/mine/subscriber.json',
+          () =>
+            HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    data: {
+                      display_name: 'programming',
+                      display_name_prefixed: 'r/programming',
+                      icon_img: '',
+                      subscribers: 0
+                    }
+                  }
+                ],
+                after: null
+              }
+            })
+        )
+      )
+
+      mockCircuitProtectedFetch.mockImplementationOnce(() => {
+        throw new Error('items over 2MB can not be cached')
+      })
+
+      const result = await fetchUserSubscriptions()
+
+      expect(result).toHaveLength(1)
+      expect(result[0].subscribers).toBe(0)
+    })
+
     it('fetches all pages and returns complete list', async () => {
       server.use(
         http.get(
@@ -211,6 +257,26 @@ describe('subreddits server actions', () => {
   })
 
   describe('toggleSubscription', () => {
+    it('rejects an invalid subreddit name', async () => {
+      const result = await toggleSubscription('../admin', 'sub')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
+    it('reports failure on a non-rate-limit error response', async () => {
+      server.use(
+        http.post('https://oauth.reddit.com/api/subscribe', () => {
+          return new HttpResponse(null, {status: 400})
+        })
+      )
+
+      const result = await toggleSubscription('programming', 'sub')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
     it('requires authentication', async () => {
       mockGetRedditContext.mockRejectedValue(new Error('Not authenticated'))
 

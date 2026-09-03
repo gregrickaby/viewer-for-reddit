@@ -174,6 +174,33 @@ describe('useVideoPlayer', () => {
       expect(container.querySelector('img')).not.toBeInTheDocument()
     })
 
+    it('ignores an attach-observer callback while the container is not intersecting', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      const container = screen.getByLabelText('Test Video')
+
+      getAttachObserver().callback(
+        [
+          {
+            isIntersecting: false,
+            target: container
+          } as unknown as IntersectionObserverEntry
+        ],
+        getAttachObserver() as unknown as IntersectionObserver
+      )
+
+      expect(mockVideojs).not.toHaveBeenCalled()
+    })
+
+    it('ignores a second attach-observer callback once already attached', () => {
+      render(<TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />)
+      const container = screen.getByLabelText('Test Video')
+
+      simulateAttach(container)
+      simulateAttach(container)
+
+      expect(mockVideojs).toHaveBeenCalledTimes(1)
+    })
+
     it('unobserves the container for attach on unmount before it attaches', () => {
       const {unmount} = render(
         <TestVideoPlayer src="https://v.redd.it/test.mp4" type="mp4" />
@@ -473,6 +500,18 @@ describe('useVideoPlayer', () => {
     })
   })
 
+  it('does not attach a player when the container ref is never set', () => {
+    function NoRefHost({src}: {src: string}) {
+      useVideoPlayer({src})
+      return null
+    }
+
+    expect(() =>
+      render(<NoRefHost src="https://v.redd.it/test.mp4" />)
+    ).not.toThrow()
+    expect(mockVideojs).not.toHaveBeenCalled()
+  })
+
   describe('active player cap (eviction)', () => {
     it('evicts the oldest off-screen player once the cap is exceeded', () => {
       const count = MAX_ACTIVE_PLAYERS + 1
@@ -521,6 +560,21 @@ describe('useVideoPlayer', () => {
         expect(player.dispose).not.toHaveBeenCalled()
       })
       expect(mockVideojs).toHaveBeenCalledTimes(count)
+    })
+
+    it('ignores a stale visibility callback for an already-evicted player', () => {
+      const count = MAX_ACTIVE_PLAYERS + 1
+      render(
+        <>
+          {Array.from({length: count}, (_, i) => (
+            <TestVideoPlayer key={i} src={`https://v.redd.it/${i}.mp4`} />
+          ))}
+        </>
+      )
+      const containers = screen.getAllByLabelText('Test Video')
+      containers.forEach(simulateAttach)
+
+      expect(() => simulateVisibility(containers[0], false)).not.toThrow()
     })
 
     it('re-attaches an evicted player when scrolled back into view', () => {

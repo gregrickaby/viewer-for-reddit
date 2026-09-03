@@ -61,6 +61,18 @@ describe('createRouteErrorBoundary', () => {
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
   })
 
+  it('wraps content in a centered stack when centered is true', () => {
+    const RouteError = createRouteErrorBoundary({
+      message: 'Centered error',
+      context: 'CenteredError',
+      centered: true
+    })
+
+    render(<RouteError error={testError} retry={vi.fn()} />)
+
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+  })
+
   it('does not show the sign-in button while the user is authenticated', async () => {
     mockGetAuthStatus.mockResolvedValue({isAuthenticated: true})
     const RouteError = createRouteErrorBoundary({

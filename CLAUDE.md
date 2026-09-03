@@ -2,7 +2,7 @@
 
 ## Stack
 
-Next.js 16 (App Router, React Compiler) · React 19 · TypeScript 6 (strict) · Mantine 9 · Arctic 3.x (Reddit OAuth2) · iron-session 8.x (encrypted sessions) · Datadog (`@datadog/browser-rum`, `-rum-nextjs`, `-browser-logs`, `dd-trace`) · Vitest v4 + Testing Library + MSW v2 + jest-axe · ESLint + Prettier · SonarQube (IDE plugin + Community Edition)
+Next.js 16 (App Router, React Compiler) · React 19 · TypeScript 6 (strict) · Mantine 9 · Arctic 3.x (Reddit OAuth2) · iron-session 8.x (encrypted sessions) · Datadog (`@datadog/browser-rum`, `-rum-nextjs`, `-browser-logs`, `dd-trace`) · Vitest 5 + Testing Library + MSW v2 + jest-axe · ESLint + Prettier · SonarQube (IDE plugin + Community Edition)
 
 ## Not what you know
 

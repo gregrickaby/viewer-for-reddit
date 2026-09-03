@@ -25,16 +25,42 @@ vi.mock('@/lib/actions/auth', () => ({
 }))
 
 vi.mock('../PostCard/PostCard', () => ({
-  PostCard: ({post}: {post: {title: string}}) => <div>{post.title}</div>
+  PostCard: ({
+    post,
+    onUnsave
+  }: {
+    post: {title: string}
+    onUnsave?: () => void
+  }) => (
+    <div>
+      {post.title}
+      <button type="button" onClick={onUnsave}>
+        Unsave post-{post.title}
+      </button>
+    </div>
+  )
 }))
 
 vi.mock('../Comment/Comment', () => ({
-  Comment: ({comment}: {comment: {body: string}}) => <div>{comment.body}</div>
+  Comment: ({
+    comment,
+    onUnsave
+  }: {
+    comment: {body: string}
+    onUnsave?: () => void
+  }) => (
+    <div>
+      {comment.body}
+      <button type="button" onClick={onUnsave}>
+        Unsave comment-{comment.body}
+      </button>
+    </div>
+  )
 }))
 
 import {useInfiniteSavedItems} from '@/lib/hooks/useInfiniteSavedItems'
 import type {RedditComment, RedditPost, SavedItem} from '@/lib/types/reddit'
-import {render, screen} from '@/test-utils'
+import {render, screen, user} from '@/test-utils'
 import {SavedItemsList} from './SavedItemsList'
 
 const mockUseInfiniteSavedItems = vi.mocked(useInfiniteSavedItems)
@@ -294,6 +320,58 @@ describe('SavedItemsList', () => {
       )
 
       expect(screen.getByText('This is a saved comment')).toBeInTheDocument()
+    })
+
+    it('calls removeItem with the post id when a post is unsaved', async () => {
+      const mockRemoveItem = vi.fn()
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [{type: 'post', data: mockPost}],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: {current: null},
+        removeItem: mockRemoveItem
+      })
+
+      render(
+        <SavedItemsList
+          initialItems={[{type: 'post', data: mockPost}]}
+          username="testuser"
+          initialAfter={null}
+        />
+      )
+
+      await user.click(
+        screen.getByRole('button', {name: `Unsave post-${mockPost.title}`})
+      )
+
+      expect(mockRemoveItem).toHaveBeenCalledWith(mockPost.id)
+    })
+
+    it('calls removeItem with the comment id when a comment is unsaved', async () => {
+      const mockRemoveItem = vi.fn()
+      mockUseInfiniteSavedItems.mockReturnValue({
+        items: [{type: 'comment', data: mockComment}],
+        loading: false,
+        hasMore: false,
+        error: null,
+        sentinelRef: {current: null},
+        removeItem: mockRemoveItem
+      })
+
+      render(
+        <SavedItemsList
+          initialItems={[{type: 'comment', data: mockComment}]}
+          username="testuser"
+          initialAfter={null}
+        />
+      )
+
+      await user.click(
+        screen.getByRole('button', {name: `Unsave comment-${mockComment.body}`})
+      )
+
+      expect(mockRemoveItem).toHaveBeenCalledWith(mockComment.id)
     })
 
     it('renders mixed posts and comments in order', () => {

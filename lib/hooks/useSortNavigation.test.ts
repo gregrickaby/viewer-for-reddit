@@ -10,9 +10,21 @@ vi.mock('next/navigation', () => ({
 
 const mockUseRouter = vi.mocked(useRouter)
 
+// Forces the isPending branch of the race-condition guards without racing
+// real React transition timing.
+let mockIsPending = false
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>()
+  return {
+    ...actual,
+    useTransition: () => [mockIsPending, (callback: () => void) => callback()]
+  }
+})
+
 describe('useSortNavigation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockIsPending = false
     mockUseRouter.mockReturnValue({push: mockPush} as never)
   })
 
@@ -83,6 +95,36 @@ describe('useSortNavigation', () => {
     })
 
     expect(mockPush).toHaveBeenCalledWith('?sort=new', {scroll: false})
+  })
+
+  it('ignores handleSortChange while a navigation is already pending', () => {
+    mockIsPending = true
+    const buildHref = vi.fn(() => '?sort=hot')
+    const {result} = renderHook(() =>
+      useSortNavigation({activeSort: 'top', buildHref})
+    )
+
+    act(() => {
+      result.current.handleSortChange('hot')
+    })
+
+    expect(buildHref).not.toHaveBeenCalled()
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it('ignores handleTimeFilterChange while a navigation is already pending', () => {
+    mockIsPending = true
+    const buildHref = vi.fn(() => '?sort=top&time=year')
+    const {result} = renderHook(() =>
+      useSortNavigation({activeSort: 'top', buildHref})
+    )
+
+    act(() => {
+      result.current.handleTimeFilterChange('year')
+    })
+
+    expect(buildHref).not.toHaveBeenCalled()
+    expect(mockPush).not.toHaveBeenCalled()
   })
 
   it('skips navigation when buildHref returns a falsy value', () => {

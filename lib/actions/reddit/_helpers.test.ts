@@ -10,13 +10,76 @@ vi.mock('@/lib/datadog/server', () => ({
   }
 }))
 
+let mockHeaders: Record<string, string>
+vi.mock('next/headers', () => ({
+  headers: vi.fn(async () => ({
+    get: vi.fn((name: string) => mockHeaders[name] || null)
+  }))
+}))
+
 import {resetCircuitBreakerForTests} from '@/lib/utils/circuit-breaker'
 import {http, HttpResponse, server} from '@/test-utils'
 import {
   assertRedditUrl,
   circuitProtectedFetch,
+  excludePromoted,
+  getRequestMetadata,
   UpstreamStatusError
 } from './_helpers'
+
+describe('excludePromoted', () => {
+  it('returns an empty array when children is undefined', () => {
+    expect(excludePromoted(undefined)).toEqual([])
+  })
+
+  it('filters out children flagged as promoted', () => {
+    const children = [
+      {data: {name: 'organic'}},
+      {data: {name: 'ad', promoted: true}}
+    ]
+
+    expect(excludePromoted(children)).toEqual([{data: {name: 'organic'}}])
+  })
+})
+
+describe('getRequestMetadata', () => {
+  it('falls back to "unknown"/"none" when headers are missing', async () => {
+    mockHeaders = {}
+
+    const metadata = await getRequestMetadata()
+
+    expect(metadata).toEqual({
+      clientUserAgent: 'unknown',
+      clientIp: 'unknown',
+      referer: 'none'
+    })
+  })
+
+  it('falls back to x-real-ip when x-forwarded-for is missing', async () => {
+    mockHeaders = {'x-real-ip': '10.0.0.1'}
+
+    const metadata = await getRequestMetadata()
+
+    expect(metadata.clientIp).toBe('10.0.0.1')
+  })
+
+  it('prefers x-forwarded-for, user-agent, and referer when all present', async () => {
+    mockHeaders = {
+      'user-agent': 'Mozilla/5.0',
+      'x-forwarded-for': '1.2.3.4',
+      'x-real-ip': '10.0.0.1',
+      referer: 'https://reddit.com'
+    }
+
+    const metadata = await getRequestMetadata()
+
+    expect(metadata).toEqual({
+      clientUserAgent: 'Mozilla/5.0',
+      clientIp: '1.2.3.4',
+      referer: 'https://reddit.com'
+    })
+  })
+})
 
 describe('assertRedditUrl', () => {
   it('accepts oauth.reddit.com URLs', () => {

@@ -27,7 +27,12 @@ vi.mock('@/lib/utils/env', () => ({
 import {getCookieDomain, getEnvVar, isProduction} from '@/lib/utils/env'
 import {getIronSession} from 'iron-session'
 import {cookies} from 'next/headers'
-import {getSession, isAuthenticated, isSessionExpired} from './session'
+import {
+  getSession,
+  isAuthenticated,
+  isSessionExpired,
+  persistSession
+} from './session'
 
 const mockCookies = vi.mocked(cookies)
 const mockGetIronSession = vi.mocked(getIronSession)
@@ -406,6 +411,31 @@ describe('session', () => {
       const result = await isSessionExpired()
 
       expect(result).toBe(false)
+    })
+  })
+
+  describe('persistSession', () => {
+    it('writes all session fields to the cookie and saves it', async () => {
+      const mockSave = vi.fn()
+      const mockSession: Record<string, unknown> = {save: mockSave}
+
+      mockCookies.mockResolvedValue({} as any)
+      mockGetIronSession.mockResolvedValue(mockSession as any)
+
+      await persistSession({
+        accessToken: 'access-abc',
+        refreshToken: 'refresh-def',
+        expiresAt: 1700000000000,
+        username: 'johndoe',
+        userId: 't2_abc123'
+      })
+
+      expect(mockSession.accessToken).toBe('access-abc')
+      expect(mockSession.refreshToken).toBe('refresh-def')
+      expect(mockSession.expiresAt).toBe(1700000000000)
+      expect(mockSession.username).toBe('johndoe')
+      expect(mockSession.userId).toBe('t2_abc123')
+      expect(mockSave).toHaveBeenCalledOnce()
     })
   })
 })

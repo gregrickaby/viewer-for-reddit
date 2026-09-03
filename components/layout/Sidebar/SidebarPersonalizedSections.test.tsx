@@ -434,6 +434,70 @@ describe('SidebarPersonalizedSections', () => {
     })
   })
 
+  describe('following', () => {
+    const mockFollowing = [
+      {name: 'zelda_fan', id: 't2_1', date: 1700000000, note: 'gaming buddy'},
+      {name: 'ab', id: 't2_2', date: 1700000001},
+      {name: 'annie', id: 't2_3', date: 1700000002}
+    ]
+
+    it('does not show following when list is empty', () => {
+      render(<SidebarPersonalizedSections following={[]} />)
+
+      expect(screen.queryByText('Following')).not.toBeInTheDocument()
+    })
+
+    it('renders the following section sorted alphabetically', async () => {
+      render(<SidebarPersonalizedSections following={mockFollowing} />)
+
+      expect(screen.getByText('Following')).toBeInTheDocument()
+
+      await waitFor(() => {
+        expect(screen.getByRole('link', {name: /annie/i})).toBeInTheDocument()
+      })
+
+      const links = screen
+        .getAllByRole('link')
+        .filter((link) => link.getAttribute('href')?.startsWith('/u/'))
+
+      expect(links).toHaveLength(2)
+      expect(links[0]).toHaveTextContent('annie')
+      expect(links[1]).toHaveTextContent('zelda_fan')
+    })
+
+    it('omits a followed user whose name produces no valid profile href', async () => {
+      render(<SidebarPersonalizedSections following={mockFollowing} />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('link', {name: /annie/i})).toBeInTheDocument()
+      })
+
+      expect(screen.queryByRole('link', {name: 'ab'})).not.toBeInTheDocument()
+    })
+
+    it('renders the note as a description when present', async () => {
+      render(<SidebarPersonalizedSections following={mockFollowing} />)
+
+      await waitFor(() => {
+        expect(screen.getByText('gaming buddy')).toBeInTheDocument()
+      })
+    })
+
+    it('toggles following collapse when button clicked', async () => {
+      const user = userEvent.setup()
+      render(<SidebarPersonalizedSections following={mockFollowing} />)
+
+      const collapseButton = screen.getByRole('button', {
+        name: /collapse following/i
+      })
+      await user.click(collapseButton)
+
+      expect(
+        screen.getByRole('button', {name: /expand following/i})
+      ).toBeInTheDocument()
+    })
+  })
+
   describe('with both subscriptions and multireddits', () => {
     it('renders both sections', async () => {
       render(

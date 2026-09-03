@@ -214,6 +214,22 @@ describe('UserProfileTabs', () => {
     expect(mockPush).not.toHaveBeenCalledWith('/u/testuser?tab=null')
   })
 
+  it('does not navigate when the username is invalid (no href)', async () => {
+    render(
+      <UserProfileTabs
+        username="a"
+        activeTab="posts"
+        postsContent={<div>Posts content</div>}
+        commentsContent={<div>Comments content</div>}
+      />
+    )
+
+    const commentsTab = screen.getByRole('tab', {name: /comments/i})
+    await user.click(commentsTab)
+
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
   it('maintains tab state on rerender', () => {
     const {rerender} = render(
       <UserProfileTabs

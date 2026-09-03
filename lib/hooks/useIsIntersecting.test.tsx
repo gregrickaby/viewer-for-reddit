@@ -82,6 +82,15 @@ describe('useIsIntersecting', () => {
     expect(getObserver().options?.threshold).toBe(0.25)
   })
 
+  it('does not throw when the ref is never attached to an element', () => {
+    function NoRefComponent() {
+      useIsIntersecting<HTMLDivElement>()
+      return null
+    }
+
+    expect(() => render(<NoRefComponent />)).not.toThrow()
+  })
+
   it('shares a single observer instance across multiple mounted components', () => {
     render(<TestComponent />)
     const firstCount = observerInstances.length

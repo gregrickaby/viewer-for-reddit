@@ -7,6 +7,17 @@ vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({refresh: mockRefresh}))
 }))
 
+// Forces the isPending branch of handleToggle's race-condition guard
+// without racing real React transition timing.
+let mockIsPending = false
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>()
+  return {
+    ...actual,
+    useTransition: () => [mockIsPending, (callback: () => void) => callback()]
+  }
+})
+
 const mockMultireddits = [
   {
     name: 'tech',
@@ -25,6 +36,7 @@ const mockMultireddits = [
 describe('MultiredditMenuButton', () => {
   beforeEach(() => {
     mockRefresh.mockClear()
+    mockIsPending = false
   })
 
   it('renders nothing when multireddits is empty', () => {
@@ -105,9 +117,27 @@ describe('MultiredditMenuButton', () => {
     })
   })
 
-  it('disables the trigger while a toggle is pending', async () => {
-    const onAdd = vi.fn(() => new Promise(() => {}))
+  it('disables the trigger while a toggle is pending', () => {
+    mockIsPending = true
     render(
+      <MultiredditMenuButton
+        multireddits={mockMultireddits}
+        menuLabel="Your Multireddits"
+        triggerLabel="Add to multireddit"
+        isInMulti={() => false}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+      />
+    )
+
+    expect(
+      screen.getByRole('button', {name: /add to multireddit/i})
+    ).toBeDisabled()
+  })
+
+  it('ignores a selection if isPending flips true after the menu opens', async () => {
+    const onAdd = vi.fn().mockResolvedValue(undefined)
+    const {rerender} = render(
       <MultiredditMenuButton
         multireddits={mockMultireddits}
         menuLabel="Your Multireddits"
@@ -118,12 +148,24 @@ describe('MultiredditMenuButton', () => {
       />
     )
 
-    const trigger = screen.getByRole('button', {name: /add to multireddit/i})
-    await user.click(trigger)
-    await user.click(await screen.findByText('Tech News'))
+    await user.click(screen.getByRole('button', {name: /add to multireddit/i}))
+    const techNews = await screen.findByText('Tech News')
 
-    await waitFor(() => {
-      expect(trigger).toBeDisabled()
-    })
+    mockIsPending = true
+    rerender(
+      <MultiredditMenuButton
+        multireddits={mockMultireddits}
+        menuLabel="Your Multireddits"
+        triggerLabel="Add to multireddit"
+        isInMulti={() => false}
+        onAdd={onAdd}
+        onRemove={vi.fn()}
+      />
+    )
+
+    await user.click(techNews)
+
+    expect(onAdd).not.toHaveBeenCalled()
+    expect(mockRefresh).not.toHaveBeenCalled()
   })
 })

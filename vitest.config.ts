@@ -39,6 +39,7 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.{spec,test}.{ts,tsx}',
         '**/app/**/{page,layout,manifest,robots,sitemap,global-not-found,global-error,not-found,loading,error}.{ts,tsx}',
+        '**/e2e/**',
         '**/scripts/**',
         '**/skeletons/**',
         '**/test-utils/**',

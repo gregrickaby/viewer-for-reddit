@@ -220,6 +220,62 @@ describe('posts server actions', () => {
       expect(requestUrl).not.toContain('t=week')
     })
 
+    it('fetches a valid multireddit path', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/m/:multiname/:sort.json',
+          () => {
+            return HttpResponse.json({
+              data: {
+                children: [
+                  {kind: 't3', data: {id: 'multi1', title: 'Multi Post'}}
+                ],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      const {posts} = await fetchPosts('user/testuser/m/mymulti', 'hot')
+
+      expect(posts.length).toBeGreaterThan(0)
+    })
+
+    it('rejects an invalid multireddit path', async () => {
+      await expect(fetchPosts('user/bad path', 'hot')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('rejects an invalid subreddit name', async () => {
+      await expect(fetchPosts('../admin', 'hot')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('includes the after cursor when paginating', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/:sort.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {
+                children: [{kind: 't3', data: {id: 'test1', title: 'Post'}}],
+                after: null
+              }
+            })
+          }
+        )
+      )
+
+      await fetchPosts('popular', 'hot', 't3_cursor')
+
+      expect(requestUrl).toContain('after=t3_cursor')
+    })
+
     it('does not include time filter when undefined for top sort', async () => {
       let requestUrl = ''
       server.use(
@@ -335,6 +391,51 @@ describe('posts server actions', () => {
       await expect(fetchPost('../admin', 'abc123', 'best')).rejects.toThrow(
         'Something went wrong.'
       )
+    })
+
+    it('rejects an invalid post ID', async () => {
+      await expect(fetchPost('programming', '../etc', 'best')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('requests a focused comment thread when commentId is given', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/comments/:postId.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json([
+              {data: {children: [{kind: 't3', data: {id: 'abc123'}}]}},
+              {data: {children: []}}
+            ])
+          }
+        )
+      )
+
+      await fetchPost('programming', 'abc123', 'best', 'c1')
+
+      expect(requestUrl).toContain('comment=c1')
+      expect(requestUrl).toContain('context=8')
+    })
+
+    it('returns an empty comments array when the response has none', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/comments/:postId.json',
+          () => {
+            return HttpResponse.json([
+              {data: {children: [{kind: 't3', data: {id: 'abc123'}}]}},
+              {data: {}}
+            ])
+          }
+        )
+      )
+
+      const {comments} = await fetchPost('programming', 'abc123', 'best')
+
+      expect(comments).toEqual([])
     })
   })
 
@@ -489,6 +590,32 @@ describe('posts server actions', () => {
       await expect(fetchUserPosts('nonexistent')).rejects.toThrow(
         'Resource not found'
       )
+    })
+
+    it('rejects an invalid username', async () => {
+      await expect(fetchUserPosts('../admin')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('includes time filter for controversial sort', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/submitted.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {children: [], after: null}
+            })
+          }
+        )
+      )
+
+      await fetchUserPosts('testuser', 'controversial', undefined, 'year')
+
+      expect(requestUrl).toContain('sort=controversial')
+      expect(requestUrl).toContain('t=year')
     })
   })
 })

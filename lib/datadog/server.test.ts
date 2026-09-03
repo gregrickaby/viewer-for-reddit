@@ -35,6 +35,18 @@ describe('datadog server logger', () => {
       expect(spy).toHaveBeenCalledWith('broken', {c: 3})
     })
 
+    it('logs warn without fields as an empty string', () => {
+      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      logger.warn('careful')
+      expect(spy).toHaveBeenCalledWith('careful', '')
+    })
+
+    it('logs error without fields as an empty string', () => {
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      logger.error('broken')
+      expect(spy).toHaveBeenCalledWith('broken', '')
+    })
+
     it('does not call fetch', async () => {
       const fetchSpy = vi.fn()
       server.use(

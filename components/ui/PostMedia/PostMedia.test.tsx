@@ -39,6 +39,9 @@ describe('PostMedia', () => {
     vi.mocked(mediaHelpers.getRedgifsEmbedUrl).mockReturnValue(null)
     vi.mocked(mediaHelpers.getGiphyVideoUrl).mockReturnValue(null)
     vi.mocked(mediaHelpers.getImgurVideoUrl).mockReturnValue(null)
+    vi.mocked(mediaHelpers.getHighestQualityVideoUrl).mockImplementation(
+      (url) => url
+    )
   })
 
   describe('gallery rendering', () => {
@@ -154,6 +157,32 @@ describe('PostMedia', () => {
       expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
     })
 
+    it('upgrades a fallback_url-only reddit video to its highest quality version', () => {
+      vi.mocked(mediaHelpers.getHighestQualityVideoUrl).mockReturnValue(
+        'https://v.redd.it/test/DASH_1080.mp4'
+      )
+
+      // Simulates a reddit_video with only fallback_url set (no hls_url).
+      const postWithFallbackOnly = {
+        ...basePost,
+        media: {
+          reddit_video: {
+            fallback_url: 'https://v.redd.it/test/DASH_480.mp4',
+            width: 640,
+            height: 480,
+            duration: 60
+          }
+        }
+      } as unknown as RedditPost
+
+      render(<PostMedia post={postWithFallbackOnly} />)
+
+      expect(mediaHelpers.getHighestQualityVideoUrl).toHaveBeenCalledWith(
+        'https://v.redd.it/test/DASH_480.mp4'
+      )
+      expect(screen.getByLabelText('Video: Test Post')).toBeInTheDocument()
+    })
+
     it('renders external video when is_video is true', () => {
       vi.mocked(mediaHelpers.getMediumImage).mockReturnValue(null)
 
@@ -255,6 +284,27 @@ describe('PostMedia', () => {
         'src',
         'https://www.youtube.com/embed/abc'
       )
+    })
+  })
+
+  describe('oembed domain allow-list', () => {
+    it('does not render an embed when the oembed src domain is not allow-listed', () => {
+      const postWithUntrustedOembed = {
+        ...basePost,
+        media: {
+          oembed: {
+            provider_name: 'Evil',
+            provider_url: 'https://evil.com',
+            type: 'video',
+            html: '&lt;iframe src="https://evil.com/embed/abc"&gt;&lt;/iframe&gt;'
+          }
+        }
+      }
+
+      render(<PostMedia post={postWithUntrustedOembed} />)
+
+      expect(screen.queryByTitle('Test Post')).not.toBeInTheDocument()
+      expect(screen.queryByRole('img')).not.toBeInTheDocument()
     })
   })
 

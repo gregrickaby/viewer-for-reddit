@@ -29,4 +29,4 @@
 
 **Ask before**: modifying auth flow, changing API structure, adding dependencies, or committing.
 
-**Definition of done**: `npm run validate` + `npm run test` + `npm run build` all pass, SonarQube IDE analysis checked. No exceptions.
+**Definition of done**: `npm run validate` + `npm run test` + `npm run build` all pass, SonarQube IDE analysis checked. Test coverage 90%+. No exceptions.

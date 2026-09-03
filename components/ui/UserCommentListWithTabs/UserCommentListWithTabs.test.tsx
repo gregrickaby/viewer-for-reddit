@@ -196,6 +196,35 @@ describe('UserCommentListWithTabs', () => {
     )
   })
 
+  it('skips navigation when the username cannot build a valid profile href', async () => {
+    render(
+      <UserCommentListWithTabs
+        comments={mockComments}
+        activeSort="new"
+        username=""
+      />
+    )
+
+    await user.click(screen.getByRole('button', {name: /sort by new/i}))
+    await user.click(await screen.findByText('Hot'))
+
+    expect(mockPush).not.toHaveBeenCalled()
+  })
+
+  it('defaults the time filter display to "all" when none is active', () => {
+    render(
+      <UserCommentListWithTabs
+        comments={mockComments}
+        activeSort="top"
+        username="testuser"
+      />
+    )
+
+    expect(
+      screen.getByRole('button', {name: /filter by time all time/i})
+    ).toBeInTheDocument()
+  })
+
   it('prevents race conditions during sort change', async () => {
     render(
       <UserCommentListWithTabs

@@ -1,6 +1,9 @@
 import {render, screen, userEvent} from '@/test-utils'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {ThemeToggle} from './ThemeToggle'
+
+let mockComputedColorScheme: 'light' | 'dark' = 'light'
+const mockSetColorScheme = vi.fn()
 
 // Partial mock - only mock the hooks we need
 vi.mock('@mantine/core', async () => {
@@ -28,9 +31,9 @@ vi.mock('@mantine/core', async () => {
       )
     ),
     useMantineColorScheme: () => ({
-      setColorScheme: vi.fn()
+      setColorScheme: mockSetColorScheme
     }),
-    useComputedColorScheme: () => 'light'
+    useComputedColorScheme: () => mockComputedColorScheme
   }
 })
 
@@ -40,30 +43,15 @@ vi.mock('@tabler/icons-react', () => ({
 }))
 
 describe('ThemeToggle', () => {
+  beforeEach(() => {
+    mockComputedColorScheme = 'light'
+    mockSetColorScheme.mockClear()
+  })
+
   it('renders theme toggle button', () => {
     render(<ThemeToggle />)
 
     const button = screen.getByTestId('theme-toggle')
-    expect(button).toBeInTheDocument()
-  })
-
-  it('has correct aria-label for light mode', () => {
-    render(<ThemeToggle />)
-
-    const button = screen.getByTestId('theme-toggle')
-    expect(button).toHaveAttribute('aria-label', 'Switch to dark mode')
-  })
-
-  it('calls setColorScheme when clicked', async () => {
-    // We can't easily test the dark mode case without re-mocking
-    // The component uses useComputedColorScheme internally
-    // Test basic click handler
-    render(<ThemeToggle />)
-
-    const button = screen.getByTestId('theme-toggle')
-    await userEvent.click(button)
-
-    // Button should be clickable
     expect(button).toBeInTheDocument()
   })
 
@@ -73,4 +61,31 @@ describe('ThemeToggle', () => {
     expect(screen.getByTestId('sun')).toBeInTheDocument()
     expect(screen.getByTestId('moon')).toBeInTheDocument()
   })
+
+  it.each([
+    {
+      scheme: 'light' as const,
+      expectedLabel: 'Switch to dark mode',
+      expectedNextScheme: 'dark'
+    },
+    {
+      scheme: 'dark' as const,
+      expectedLabel: 'Switch to light mode',
+      expectedNextScheme: 'light'
+    }
+  ])(
+    'shows "$expectedLabel" and switches to $expectedNextScheme when currently $scheme',
+    async ({scheme, expectedLabel, expectedNextScheme}) => {
+      mockComputedColorScheme = scheme
+
+      render(<ThemeToggle />)
+
+      const button = screen.getByTestId('theme-toggle')
+      expect(button).toHaveAttribute('aria-label', expectedLabel)
+
+      await userEvent.click(button)
+
+      expect(mockSetColorScheme).toHaveBeenCalledWith(expectedNextScheme)
+    }
+  )
 })

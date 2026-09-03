@@ -149,6 +149,55 @@ describe('useUserAvatar', () => {
     expect(view).not.toContain('https://example.com/avatar-f.png')
   })
 
+  it('reuses an in-flight fetch instead of starting a second one', async () => {
+    mockFetchUserInfo.mockResolvedValueOnce(
+      makeUser('https://example.com/avatar-race.png')
+    )
+
+    render(<AvatarHost username="avatar-user-race" />)
+
+    act(() => {
+      // Both fire synchronously, before the first fetch's promise settles,
+      // so the second call finds a pending fetch already in flight.
+      mockObserver._trigger(true)
+      mockObserver._trigger(true)
+    })
+
+    await waitFor(() =>
+      expect(screen.getByTestId('host')).toHaveTextContent(
+        'https://example.com/avatar-race.png'
+      )
+    )
+    expect(mockFetchUserInfo).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to null when the user has no icon_img', async () => {
+    mockFetchUserInfo.mockResolvedValueOnce(makeUser(''))
+
+    render(<AvatarHost username="avatar-user-no-icon" />)
+
+    act(() => {
+      mockObserver._trigger(true)
+    })
+
+    await waitFor(() =>
+      expect(mockFetchUserInfo).toHaveBeenCalledWith('avatar-user-no-icon')
+    )
+    expect(screen.getByTestId('host')).toHaveTextContent('none')
+  })
+
+  it('does not observe when the ref is never attached to an element', () => {
+    function NoRefHost({username}: Readonly<TestProps>) {
+      useUserAvatar(username)
+      return null
+    }
+
+    expect(() =>
+      render(<NoRefHost username="avatar-user-no-ref" />)
+    ).not.toThrow()
+    expect(mockObserver.observe).not.toHaveBeenCalled()
+  })
+
   it('disconnects the observer on unmount', () => {
     const {unmount} = render(<AvatarHost username="avatar-user-e" />)
 

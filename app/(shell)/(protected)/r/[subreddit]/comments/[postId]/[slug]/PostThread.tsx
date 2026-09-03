@@ -46,7 +46,7 @@ export async function generatePostThreadMetadata(
 /**
  * Post detail component - fetches and displays a single post.
  */
-async function PostDetail({params}: Readonly<{params: ThreadParams}>) {
+export async function PostDetail({params}: Readonly<{params: ThreadParams}>) {
   const {subreddit, postId} = await params
   const {post} = await fetchPost(subreddit, postId)
 
@@ -66,7 +66,7 @@ async function PostDetail({params}: Readonly<{params: ThreadParams}>) {
  * Comment list component - displays comments, optionally focused on a
  * specific comment thread when the route carries a `commentId`.
  */
-async function CommentList({
+export async function CommentList({
   params,
   searchParams
 }: Readonly<{

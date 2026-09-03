@@ -190,6 +190,33 @@ describe('MultiredditManager', () => {
         expect(mockCreate).toHaveBeenCalledWith('new_multi', 'New Multi')
       })
     })
+
+    it('supports Enter key in the URL name field to submit', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.type(screen.getByPlaceholderText('My Tech Feed'), 'New Multi')
+      await user.type(
+        screen.getByPlaceholderText('my_multi'),
+        'new_multi{Enter}'
+      )
+
+      await waitFor(() => {
+        expect(mockCreate).toHaveBeenCalledWith('new_multi', 'New Multi')
+      })
+    })
+
+    it('does not submit on Enter when the display name is still empty', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.type(
+        screen.getByPlaceholderText('my_multi'),
+        'new_multi{Enter}'
+      )
+
+      expect(mockCreate).not.toHaveBeenCalled()
+    })
   })
 
   describe('accordion interactions', () => {
@@ -295,6 +322,111 @@ describe('MultiredditManager', () => {
         )
       })
     })
+
+    it('resets to the original name and skips the action when submitted empty', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.click(screen.getByRole('button', {name: /tech news/i}))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /rename tech news/i})
+        ).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', {name: /rename tech news/i}))
+
+      const input = screen.getByLabelText('New display name')
+      await user.clear(input)
+      await user.click(screen.getByRole('button', {name: /save name/i}))
+
+      expect(mockRename).not.toHaveBeenCalled()
+      expect(
+        screen.queryByLabelText('New display name')
+      ).not.toBeInTheDocument()
+    })
+
+    it('exits edit mode without calling rename when the name is unchanged', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.click(screen.getByRole('button', {name: /tech news/i}))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /rename tech news/i})
+        ).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', {name: /rename tech news/i}))
+      await user.click(screen.getByRole('button', {name: /save name/i}))
+
+      expect(mockRename).not.toHaveBeenCalled()
+      expect(
+        screen.queryByLabelText('New display name')
+      ).not.toBeInTheDocument()
+    })
+
+    it('submits the rename via the Enter key', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.click(screen.getByRole('button', {name: /tech news/i}))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /rename tech news/i})
+        ).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', {name: /rename tech news/i}))
+
+      const input = screen.getByLabelText('New display name')
+      await user.clear(input)
+      await user.type(input, 'Updated via Enter{Enter}')
+
+      await waitFor(() => {
+        expect(mockRename).toHaveBeenCalledWith(
+          '/user/testuser/m/tech',
+          'Updated via Enter'
+        )
+      })
+    })
+
+    it('cancels the rename via the Escape key', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.click(screen.getByRole('button', {name: /tech news/i}))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /rename tech news/i})
+        ).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', {name: /rename tech news/i}))
+
+      const input = screen.getByLabelText('New display name')
+      await user.type(input, ' more text{Escape}')
+
+      expect(mockRename).not.toHaveBeenCalled()
+      expect(
+        screen.queryByLabelText('New display name')
+      ).not.toBeInTheDocument()
+    })
+
+    it('cancels the rename via the Cancel button', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.click(screen.getByRole('button', {name: /tech news/i}))
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', {name: /rename tech news/i})
+        ).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', {name: /rename tech news/i}))
+      await user.click(screen.getByRole('button', {name: /cancel rename/i}))
+
+      expect(mockRename).not.toHaveBeenCalled()
+      expect(
+        screen.queryByLabelText('New display name')
+      ).not.toBeInTheDocument()
+    })
   })
 
   describe('delete', () => {
@@ -376,6 +508,20 @@ describe('MultiredditManager', () => {
           expectedName
         )
       })
+    })
+
+    it('does not call addSubreddit when only the r/ prefix is entered', async () => {
+      const user = userEvent.setup()
+      render(<MultiredditManager {...baseProps} />)
+
+      await user.click(screen.getByRole('button', {name: /tech news/i}))
+
+      const inputs = await screen.findAllByLabelText(
+        'Add subreddit to multireddit'
+      )
+      await user.type(inputs[0], 'r/{Enter}')
+
+      expect(mockAddSub).not.toHaveBeenCalled()
     })
 
     it('shows autocomplete results when typing', async () => {

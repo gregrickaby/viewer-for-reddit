@@ -68,9 +68,49 @@ describe('multireddits server actions', () => {
     })
 
     it('fetches multireddits when authenticated', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/api/multi/mine', () => {
+          return HttpResponse.json([
+            {
+              kind: 'LabeledMulti',
+              data: {
+                name: 'tech',
+                display_name: 'Tech News',
+                path: '/user/testuser/m/tech',
+                subreddits: [{name: 'programming'}, {name: 'technology'}],
+                icon_url: 'https://example.com/tech-icon.png'
+              }
+            },
+            {
+              kind: 'LabeledMulti',
+              data: {
+                name: 'gaming',
+                display_name: 'Gaming',
+                path: '/user/testuser/m/gaming'
+              }
+            }
+          ])
+        })
+      )
+
       const multis = await fetchMultireddits()
 
-      expect(Array.isArray(multis)).toBe(true)
+      expect(multis).toEqual([
+        {
+          name: 'tech',
+          displayName: 'Tech News',
+          path: '/user/testuser/m/tech',
+          subreddits: ['programming', 'technology'],
+          icon: 'https://example.com/tech-icon.png'
+        },
+        {
+          name: 'gaming',
+          displayName: 'Gaming',
+          path: '/user/testuser/m/gaming',
+          subreddits: [],
+          icon: ''
+        }
+      ])
     })
 
     it('returns an empty array once repeated upstream failures open the circuit', async () => {
@@ -129,6 +169,12 @@ describe('multireddits server actions', () => {
 
     it('returns failure for empty display name', async () => {
       const result = await createMultireddit('my_multi', '  ')
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure for display name exceeding 50 chars', async () => {
+      const result = await createMultireddit('my_multi', 'A'.repeat(51))
 
       expect(result.success).toBe(false)
     })
@@ -232,6 +278,28 @@ describe('multireddits server actions', () => {
 
       expect(result.success).toBe(false)
     })
+
+    it('returns failure for an invalid multireddit path', async () => {
+      const result = await updateMultiredditName('/invalid/path', 'New Name')
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure when API call fails', async () => {
+      server.use(
+        http.put(
+          'https://oauth.reddit.com/api/multi/user/testuser/m/tech',
+          () => new HttpResponse(null, {status: 403})
+        )
+      )
+
+      const result = await updateMultiredditName(
+        '/user/testuser/m/tech',
+        'New Name'
+      )
+
+      expect(result.success).toBe(false)
+    })
   })
 
   describe('addSubredditToMultireddit', () => {
@@ -287,6 +355,15 @@ describe('multireddits server actions', () => {
 
       expect(result.success).toBe(false)
     })
+
+    it('returns failure for an invalid multireddit path', async () => {
+      const result = await addSubredditToMultireddit(
+        '/invalid/path',
+        'typescript'
+      )
+
+      expect(result.success).toBe(false)
+    })
   })
 
   describe('removeSubredditFromMultireddit', () => {
@@ -338,6 +415,15 @@ describe('multireddits server actions', () => {
       const result = await removeSubredditFromMultireddit(
         '/user/testuser/m/tech',
         '../attack'
+      )
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure for an invalid multireddit path', async () => {
+      const result = await removeSubredditFromMultireddit(
+        '/invalid/path',
+        'typescript'
       )
 
       expect(result.success).toBe(false)
@@ -414,6 +500,12 @@ describe('multireddits server actions', () => {
       expect(result.success).toBe(false)
     })
 
+    it('returns failure for an invalid multireddit path', async () => {
+      const result = await addUserToMultireddit('/invalid/path', 'johndoe')
+
+      expect(result.success).toBe(false)
+    })
+
     it('returns failure when API call fails', async () => {
       server.use(
         http.put(
@@ -481,6 +573,12 @@ describe('multireddits server actions', () => {
         '/user/testuser/m/tech',
         '../attack'
       )
+
+      expect(result.success).toBe(false)
+    })
+
+    it('returns failure for an invalid multireddit path', async () => {
+      const result = await removeUserFromMultireddit('/invalid/path', 'johndoe')
 
       expect(result.success).toBe(false)
     })

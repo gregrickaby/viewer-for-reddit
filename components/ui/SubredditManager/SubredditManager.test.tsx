@@ -301,5 +301,83 @@ describe('SubredditManager', () => {
         expect(leaveButtons.length).toBeGreaterThan(0)
       })
     })
+
+    it('leaves an already-subscribed subreddit when its search result is selected', async () => {
+      mockSearch.mockResolvedValue({
+        success: true,
+        data: [
+          {
+            name: 'programming',
+            displayName: 'r/programming',
+            icon: '',
+            subscribers: 10000,
+            over18: false,
+            type: 'subreddit' as const
+          }
+        ]
+      })
+
+      const user = userEvent.setup()
+      render(<SubredditManager {...baseProps} />)
+
+      await user.type(
+        screen.getByRole('textbox', {name: /search subreddits/i}),
+        'prog'
+      )
+
+      // "10.0K members" only renders inside the dropdown option (the
+      // subscriptions list below has no subscriber count), so clicking it
+      // selects the search result specifically, not the subscribed item's
+      // own row further down the page. Rendering it at all exercises the
+      // "already subscribed" leave styling (label, icon, aria-label).
+      const searchResultRow = await screen.findByText('10.0K members')
+
+      await user.click(searchResultRow)
+
+      await waitFor(() => {
+        expect(mockToggle).toHaveBeenCalledWith('programming', 'unsub')
+      })
+    })
+  })
+
+  describe('closing the drawer', () => {
+    it('resets the search query and notifies the parent when a subscription link is clicked', async () => {
+      const onClose = vi.fn()
+      const user = userEvent.setup()
+      render(<SubredditManager {...baseProps} onClose={onClose} />)
+
+      await user.click(screen.getByText('r/programming'))
+
+      expect(onClose).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('search input blur', () => {
+    it('closes the dropdown when the search input loses focus', async () => {
+      mockSearch.mockResolvedValue({
+        success: true,
+        data: [
+          {
+            name: 'typescript',
+            displayName: 'r/typescript',
+            icon: '',
+            subscribers: 5000,
+            over18: false,
+            type: 'subreddit' as const
+          }
+        ]
+      })
+
+      const user = userEvent.setup()
+      render(<SubredditManager {...baseProps} />)
+
+      const input = screen.getByRole('textbox', {name: /search subreddits/i})
+      await user.type(input, 'ty')
+      await screen.findByText('r/typescript')
+
+      await user.tab()
+
+      expect(input).not.toHaveFocus()
+    })
   })
 })

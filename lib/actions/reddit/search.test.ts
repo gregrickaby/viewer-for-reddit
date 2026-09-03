@@ -102,6 +102,42 @@ describe('search server actions', () => {
         'Something went wrong.'
       )
     })
+
+    it('rejects an empty query', async () => {
+      await expect(searchReddit('')).rejects.toThrow('Something went wrong.')
+    })
+
+    it('rejects a query over 512 characters', async () => {
+      await expect(searchReddit('a'.repeat(513))).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('includes the after cursor when paginating', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get('https://oauth.reddit.com/search.json', ({request}) => {
+          requestUrl = request.url
+          return HttpResponse.json({data: {children: [], after: null}})
+        })
+      )
+
+      await searchReddit('nextjs', 't3_cursor')
+
+      expect(requestUrl).toContain('after=t3_cursor')
+    })
+
+    it('defaults after to null when the response omits it', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/search.json', () => {
+          return HttpResponse.json({data: {children: []}})
+        })
+      )
+
+      const {after} = await searchReddit('nextjs')
+
+      expect(after).toBeNull()
+    })
   })
 
   describe('searchSubreddit', () => {
@@ -223,6 +259,32 @@ describe('search server actions', () => {
       expect(capturedUrl).toContain('t=week')
     })
 
+    it('includes time filter for relevance sort', async () => {
+      let capturedUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/r/:subreddit/search.json',
+          ({request}) => {
+            capturedUrl = request.url
+            return HttpResponse.json({
+              data: {children: [], after: null}
+            })
+          }
+        )
+      )
+
+      await searchSubreddit(
+        'programming',
+        'typescript',
+        undefined,
+        'relevance',
+        'all'
+      )
+
+      expect(capturedUrl).toContain('sort=relevance')
+      expect(capturedUrl).toContain('t=all')
+    })
+
     it('validates subreddit name', async () => {
       await expect(
         searchSubreddit('invalid@subreddit', 'query')
@@ -311,6 +373,65 @@ describe('search server actions', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
+    it('rejects a query over 100 characters', async () => {
+      const result = await searchSubreddits('a'.repeat(101))
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
+    it('handles a non-breaker failed response (e.g. 400)', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => new HttpResponse(null, {status: 400})
+        )
+      )
+
+      const result = await searchSubreddits('tech')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
+    it('returns an empty array when the response has no children', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () => HttpResponse.json({data: {}})
+        )
+      )
+
+      const result = await searchSubreddits('tech')
+
+      expect(result.success).toBe(true)
+      expect(result.data).toEqual([])
+    })
+
+    it('falls back to empty/zero values for sparse subreddit data', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () =>
+            HttpResponse.json({
+              data: {children: [{data: {display_name: 'sparse'}}]}
+            })
+        )
+      )
+
+      const result = await searchSubreddits('sparse')
+
+      expect(result.data).toEqual([
+        {
+          name: 'sparse',
+          displayName: '',
+          icon: '',
+          subscribers: 0,
+          over18: false
+        }
+      ])
     })
 
     it('returns a sign-in prompt when not authenticated', async () => {
@@ -434,6 +555,57 @@ describe('search server actions', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('Something went wrong. Please try again.')
+    })
+
+    it('falls back to empty values for sparse subreddit/user data', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () =>
+            HttpResponse.json({
+              data: {children: [{data: {display_name: 'sparse'}}]}
+            })
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('sparse')
+
+      expect(result.data).toEqual([
+        {
+          name: 'sparse',
+          displayName: '',
+          icon: '',
+          subscribers: 0,
+          over18: false,
+          type: 'subreddit'
+        }
+      ])
+    })
+
+    it('uses community_icon when icon_img is missing', async () => {
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/api/subreddit_autocomplete_v2.json',
+          () =>
+            HttpResponse.json({
+              data: {
+                children: [
+                  {
+                    data: {
+                      display_name: 'fallback',
+                      display_name_prefixed: 'r/fallback',
+                      community_icon: 'https://example.com/community.png'
+                    }
+                  }
+                ]
+              }
+            })
+        )
+      )
+
+      const result = await searchSubredditsAndUsers('fallback')
+
+      expect(result.data[0].icon).toBe('https://example.com/community.png')
     })
 
     it('returns error on network failure', async () => {

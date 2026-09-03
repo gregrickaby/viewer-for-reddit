@@ -40,4 +40,14 @@ describe('PersonalizedNavLinks', () => {
     expect(saved).toBeInTheDocument()
     expect(saved).toHaveAttribute('href', '/user/testuser/saved')
   })
+
+  it('falls back to an empty username when the session has none', async () => {
+    mockIsAuthenticated.mockResolvedValue(true)
+    mockGetSession.mockResolvedValue({username: undefined} as never)
+
+    render(<>{await PersonalizedNavLinks()}</>)
+
+    const saved = screen.getByRole('link', {name: /saved/i})
+    expect(saved).toHaveAttribute('href', '/user//saved')
+  })
 })

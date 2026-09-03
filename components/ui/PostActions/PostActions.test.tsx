@@ -1,6 +1,19 @@
 import {render, screen, user} from '@/test-utils'
+import {notifications} from '@mantine/notifications'
+import {axe} from 'jest-axe'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {PostActions} from './PostActions'
+
+const mockSharePost = vi.fn()
+
+vi.mock('@mantine/notifications', () => ({
+  notifications: {show: vi.fn()}
+}))
+
+vi.mock('@/lib/hooks/useSharePost', () => ({
+  useSharePost: vi.fn(() => ({sharePost: mockSharePost}))
+}))
+
+const {PostActions} = await import('./PostActions')
 
 describe('PostActions', () => {
   const mockOnVote = vi.fn()
@@ -107,6 +120,55 @@ describe('PostActions', () => {
 
       const saveButton = screen.getByRole('button', {name: 'Save post'})
       expect(saveButton).toBeInTheDocument()
+    })
+
+    it.each([
+      {
+        isSaved: false,
+        expectedMessage: 'Post saved',
+        expectedColor: 'yellow'
+      },
+      {
+        isSaved: true,
+        expectedMessage: 'Post unsaved',
+        expectedColor: 'gray'
+      }
+    ])(
+      'shows a "$expectedMessage" notification when isSaved is $isSaved',
+      async ({isSaved, expectedMessage, expectedColor}) => {
+        render(<PostActions {...defaultProps} isSaved={isSaved} />)
+
+        const saveButton = screen.getByRole('button', {
+          name: isSaved ? 'Unsave post' : 'Save post'
+        })
+        await user.click(saveButton)
+
+        expect(notifications.show).toHaveBeenCalledWith({
+          message: expectedMessage,
+          color: expectedColor,
+          autoClose: 3000
+        })
+      }
+    )
+  })
+
+  describe('share', () => {
+    it('calls sharePost with the post URL when the share button is clicked', async () => {
+      render(<PostActions {...defaultProps} />)
+
+      const shareButton = screen.getByRole('button', {name: 'Share post'})
+      await user.click(shareButton)
+
+      expect(mockSharePost).toHaveBeenCalledWith(defaultProps.postUrl)
+      expect(mockSharePost).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('accessibility', () => {
+    it('has no axe violations', async () => {
+      const {container} = render(<PostActions {...defaultProps} />)
+
+      expect(await axe(container)).toHaveNoViolations()
     })
   })
 

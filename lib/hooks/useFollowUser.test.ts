@@ -2,6 +2,7 @@ import {act, renderHook, waitFor} from '@/test-utils'
 import {describe, expect, it, vi, beforeEach} from 'vitest'
 import {useFollowUser} from './useFollowUser'
 import {followUser, unfollowUser} from '@/lib/actions/reddit/users'
+import {logger} from '@/lib/datadog/client'
 
 vi.mock('@/lib/actions/reddit/users', () => ({
   followUser: vi.fn(async () => ({success: true})),
@@ -72,6 +73,20 @@ describe('useFollowUser', () => {
     })
 
     expect(mockUnfollowUser).toHaveBeenCalledWith('testuser')
+  })
+
+  it('does not log an error on successful follow', async () => {
+    const {result} = renderHook(() => useFollowUser(mockOptions))
+
+    act(() => {
+      result.current.toggleFollow()
+    })
+
+    await waitFor(() => {
+      expect(result.current.isPending).toBe(false)
+    })
+
+    expect(logger.error).not.toHaveBeenCalled()
   })
 
   it('reverts on follow failure', async () => {

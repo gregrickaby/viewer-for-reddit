@@ -87,6 +87,13 @@ describe('users server actions', () => {
       expect(result.success).toBe(false)
       expect(result.error).toBe('Something went wrong. Please try again.')
     })
+
+    it('rejects an invalid fullname', async () => {
+      const result = await votePost('not-a-fullname', 1)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Something went wrong. Please try again.')
+    })
   })
 
   describe('savePost', () => {
@@ -126,6 +133,36 @@ describe('users server actions', () => {
 
       expect(result).toEqual({success: false, error: GENERIC_ACTION_ERROR})
     })
+
+    it('handles a non-breaker failed response when saving', async () => {
+      server.use(
+        http.post('https://oauth.reddit.com/api/save', () => {
+          return new HttpResponse(null, {status: 401})
+        })
+      )
+
+      const result = await savePost('t3_abc', true)
+
+      expect(result).toEqual({success: false, error: GENERIC_ACTION_ERROR})
+    })
+
+    it('handles a non-breaker failed response when unsaving', async () => {
+      server.use(
+        http.post('https://oauth.reddit.com/api/unsave', () => {
+          return new HttpResponse(null, {status: 401})
+        })
+      )
+
+      const result = await savePost('t3_abc', false)
+
+      expect(result).toEqual({success: false, error: GENERIC_ACTION_ERROR})
+    })
+
+    it('rejects an invalid fullname', async () => {
+      const result = await savePost('not-a-fullname', true)
+
+      expect(result).toEqual({success: false, error: GENERIC_ACTION_ERROR})
+    })
   })
 
   describe('fetchUserInfo', () => {
@@ -158,6 +195,24 @@ describe('users server actions', () => {
 
       await expect(fetchUserInfo('nonexistent')).rejects.toThrow(
         'Resource not found'
+      )
+    })
+
+    it('rejects an invalid username', async () => {
+      await expect(fetchUserInfo('../admin')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('throws when the response has no data', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/about.json', () => {
+          return HttpResponse.json({})
+        })
+      )
+
+      await expect(fetchUserInfo('testuser')).rejects.toThrow(
+        'Something went wrong.'
       )
     })
   })
@@ -300,6 +355,42 @@ describe('users server actions', () => {
       expect(items).toHaveLength(1)
       expect(after).toBeNull()
     })
+
+    it('rejects an invalid username', async () => {
+      await expect(fetchSavedItems('../admin')).rejects.toThrow(
+        'Something went wrong.'
+      )
+    })
+
+    it('returns an empty items array when the response has no children', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/saved.json', () => {
+          return HttpResponse.json({data: {}})
+        })
+      )
+
+      const {items, after} = await fetchSavedItems('testuser')
+
+      expect(items).toEqual([])
+      expect(after).toBeNull()
+    })
+
+    it('excludes items of an unrecognized kind', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/saved.json', () => {
+          return HttpResponse.json({
+            data: {
+              children: [{kind: 'more', data: {id: 'stub'}}],
+              after: null
+            }
+          })
+        })
+      )
+
+      const {items} = await fetchSavedItems('testuser')
+
+      expect(items).toEqual([])
+    })
   })
 
   describe('fetchFollowedUsers', () => {
@@ -365,6 +456,30 @@ describe('users server actions', () => {
               children: []
             }
           })
+        })
+      )
+
+      const following = await fetchFollowedUsers()
+
+      expect(following).toEqual([])
+    })
+
+    it('returns empty array on a non-breaker failed response', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/api/v1/me/friends', () => {
+          return new HttpResponse(null, {status: 403})
+        })
+      )
+
+      const following = await fetchFollowedUsers()
+
+      expect(following).toEqual([])
+    })
+
+    it('returns empty array when the response has no children', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/api/v1/me/friends', () => {
+          return HttpResponse.json({data: {}})
         })
       )
 
@@ -610,6 +725,38 @@ describe('users server actions', () => {
       await fetchUserComments('testuser', 'top', undefined, 'week')
 
       expect(requestUrl).toContain('t=week')
+    })
+
+    it('applies time filter for controversial sort', async () => {
+      let requestUrl = ''
+      server.use(
+        http.get(
+          'https://oauth.reddit.com/user/:username/comments.json',
+          ({request}) => {
+            requestUrl = request.url
+            return HttpResponse.json({
+              data: {children: [], after: null}
+            })
+          }
+        )
+      )
+
+      await fetchUserComments('testuser', 'controversial', undefined, 'year')
+
+      expect(requestUrl).toContain('t=year')
+    })
+
+    it('returns an empty comments array when the response has no children', async () => {
+      server.use(
+        http.get('https://oauth.reddit.com/user/:username/comments.json', () =>
+          HttpResponse.json({data: {}})
+        )
+      )
+
+      const result = await fetchUserComments('testuser')
+
+      expect(result.comments).toEqual([])
+      expect(result.after).toBeNull()
     })
 
     it('throws for invalid username', async () => {

@@ -42,4 +42,18 @@ describe('SubscriptionFilterList', () => {
       '/r/aww'
     )
   })
+
+  it('sorts the list when a sort option is selected', async () => {
+    render(<SubscriptionFilterList subscriptions={subscriptions} />)
+
+    await user.click(screen.getByRole('combobox', {name: 'Sort subscriptions'}))
+    await user.click(await screen.findByText('A-Z'))
+
+    const links = screen.getAllByRole('link')
+    expect(links.map((link) => link.textContent)).toEqual([
+      'r/aww',
+      'r/nextjs',
+      'r/reactjs'
+    ])
+  })
 })

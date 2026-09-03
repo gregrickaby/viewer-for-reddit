@@ -1,5 +1,6 @@
 import type {RedditComment} from '@/lib/types/reddit'
 import {render, screen, user} from '@/test-utils'
+import {axe} from 'jest-axe'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 const mockPush = vi.fn()
@@ -10,6 +11,19 @@ vi.mock('next/navigation', () => ({
   }),
   usePathname: () => '/r/test/comments/test123'
 }))
+
+// Forces the isPending branch of handleSortChange's race-condition guard
+// without racing real React transition timing (router.push is synchronous
+// in tests, so the real isPending flag flips back to false too fast to
+// observe across two awaited clicks).
+let mockIsPending = false
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>()
+  return {
+    ...actual,
+    useTransition: () => [mockIsPending, (callback: () => void) => callback()]
+  }
+})
 
 vi.mock('@/lib/hooks', () => ({
   useVote: vi.fn(() => ({
@@ -59,6 +73,7 @@ async function openSortMenu(triggerName: RegExp) {
 describe('CommentListWithTabs', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockIsPending = false
   })
 
   describe('tabs rendering', () => {
@@ -243,6 +258,49 @@ describe('CommentListWithTabs', () => {
       // Check that comments are rendered (text may be split)
       expect(container).toHaveTextContent(/Comment 0/)
       expect(container).toHaveTextContent(/Comment 49/)
+    })
+  })
+
+  describe('race condition guard', () => {
+    it('disables the sort trigger while a navigation is already pending', async () => {
+      mockIsPending = true
+      render(<CommentListWithTabs comments={[mockComment]} activeSort="best" />)
+
+      const trigger = screen.getByRole('button', {name: /sort by best/i})
+      expect(trigger).toBeDisabled()
+
+      await user.click(trigger)
+
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+
+    it('ignores a sort selection if isPending flips true after the menu opens', async () => {
+      mockIsPending = false
+      const {rerender} = render(
+        <CommentListWithTabs comments={[mockComment]} activeSort="best" />
+      )
+
+      await openSortMenu(/sort by best/i)
+      const topOption = await screen.findByText('Top')
+
+      mockIsPending = true
+      rerender(
+        <CommentListWithTabs comments={[mockComment]} activeSort="best" />
+      )
+
+      await user.click(topOption)
+
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('accessibility', () => {
+    it('has no axe violations', async () => {
+      const {container} = render(
+        <CommentListWithTabs comments={[mockComment]} activeSort="best" />
+      )
+
+      expect(await axe(container)).toHaveNoViolations()
     })
   })
 })

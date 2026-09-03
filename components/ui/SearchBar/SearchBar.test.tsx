@@ -1,6 +1,7 @@
 import {useSearch} from '@/lib/hooks/useSearch'
-import {render, screen, user} from '@/test-utils'
+import {render, screen, user, waitFor} from '@/test-utils'
 import {spotlight} from '@mantine/spotlight'
+import {axe} from 'jest-axe'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {SearchBar} from './SearchBar'
 
@@ -256,6 +257,63 @@ describe('SearchBar', () => {
 
       expect(mockHandleOptionSelect).toHaveBeenCalledWith('r/test')
     })
+
+    it('calls handleOptionSelect when an NSFW result is clicked', async () => {
+      mockUseSearch.mockReturnValue({
+        ...defaultSearchState,
+        query: 'test',
+        groupedResults: {
+          communities: [],
+          nsfw: [
+            {
+              name: 't5_nsfw',
+              displayName: 'r/nsfw_test',
+              icon: 'https://example.com/icon.png',
+              subscribers: 500
+            }
+          ]
+        }
+      })
+
+      render(<SearchBar forceOpened />)
+
+      await user.click(screen.getByText('r/nsfw_test'))
+
+      expect(mockHandleOptionSelect).toHaveBeenCalledWith('r/nsfw_test')
+    })
+  })
+
+  describe('keyboard submit', () => {
+    it('calls handleSubmit when Enter is pressed', async () => {
+      render(<SearchBar forceOpened />)
+
+      const input = screen.getByRole('textbox')
+      await user.type(input, '{Enter}')
+
+      expect(mockHandleSubmit).toHaveBeenCalled()
+    })
+
+    it('does not call handleSubmit for other keys', async () => {
+      render(<SearchBar forceOpened />)
+
+      const input = screen.getByRole('textbox')
+      await user.type(input, 'a')
+
+      expect(mockHandleSubmit).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('spotlight close', () => {
+    it('clears the query when the spotlight closes', async () => {
+      render(<SearchBar />)
+
+      spotlight.open()
+      await screen.findByRole('textbox', {name: 'Search Reddit or subreddits'})
+
+      spotlight.close()
+
+      await waitFor(() => expect(mockSetQuery).toHaveBeenCalledWith(''))
+    })
   })
 
   describe('edge cases', () => {
@@ -281,6 +339,14 @@ describe('SearchBar', () => {
       render(<SearchBar forceOpened />)
 
       expect(screen.getByRole('textbox')).toHaveValue('')
+    })
+  })
+
+  describe('accessibility', () => {
+    it('has no axe violations', async () => {
+      const {container} = render(<SearchBar forceOpened />)
+
+      expect(await axe(container)).toHaveNoViolations()
     })
   })
 

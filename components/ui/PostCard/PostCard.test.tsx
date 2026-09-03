@@ -197,6 +197,23 @@ describe('PostCard', () => {
       expect(htmlContent?.innerHTML).toContain('Safe text')
     })
 
+    it('renders plain-text selftext linked to the post when selftext_html is absent', () => {
+      const postPlainTextOnly = {
+        ...mockPost,
+        selftext: 'Plain text body with no HTML',
+        selftext_html: undefined
+      }
+
+      render(<PostCard post={postPlainTextOnly} />)
+
+      const bodyText = screen.getByText('Plain text body with no HTML')
+      expect(bodyText).toBeInTheDocument()
+      expect(bodyText.closest('a')).toHaveAttribute(
+        'href',
+        '/r/test/comments/test123/test_post'
+      )
+    })
+
     it('does not render selftext section when selftext is empty', () => {
       const postNoText = {...mockPost, selftext: '', selftext_html: ''}
       render(<PostCard post={postNoText} />)

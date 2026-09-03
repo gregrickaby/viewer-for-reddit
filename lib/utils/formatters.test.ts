@@ -1,5 +1,6 @@
 import {describe, expect, it} from 'vitest'
 import {
+  convertGiphyLinksToImages,
   convertImageLinksToImages,
   decodeHtmlEntities,
   formatNumber,
@@ -118,7 +119,44 @@ describe('formatters', () => {
     })
   })
 
+  describe('convertGiphyLinksToImages', () => {
+    it('converts a giphy.com gifs link to a direct media.giphy.com image', () => {
+      const html =
+        '<a href="https://giphy.com/gifs/funny-cat-abc123XYZ">giphy</a>'
+      const result = convertGiphyLinksToImages(html)
+      expect(result).toBe(
+        '<img src="https://media.giphy.com/media/funny-cat-abc123XYZ/giphy.gif" alt="GIF" />'
+      )
+    })
+
+    it('converts a link wrapping a media.giphy.com URL to an img tag', () => {
+      const html =
+        '<a href="https://media.giphy.com/media/abc123/giphy.gif">link</a>'
+      const result = convertGiphyLinksToImages(html)
+      expect(result).toBe(
+        '<img src="https://media.giphy.com/media/abc123/giphy.gif" alt="GIF" />'
+      )
+    })
+
+    it('converts a link wrapping an i.giphy.com URL to an img tag', () => {
+      const html = '<a href="https://i.giphy.com/abc123.gif">link</a>'
+      const result = convertGiphyLinksToImages(html)
+      expect(result).toBe(
+        '<img src="https://i.giphy.com/abc123.gif" alt="GIF" />'
+      )
+    })
+
+    it('leaves non-giphy links untouched', () => {
+      const html = '<a href="https://example.com/page">link</a>'
+      expect(convertGiphyLinksToImages(html)).toBe(html)
+    })
+  })
+
   describe('sanitizeText', () => {
+    it('handles falsy html input', () => {
+      expect(sanitizeText('')).toBe('')
+    })
+
     it('allows img tags with proper attributes', () => {
       const html = '<img src="https://example.com/image.gif" alt="test" />'
       const result = sanitizeText(html)

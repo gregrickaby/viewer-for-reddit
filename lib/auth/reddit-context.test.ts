@@ -15,9 +15,21 @@ vi.mock('@/lib/datadog/server', () => ({
   }
 }))
 
+// Only used by the "production adapters" describe block below, which
+// exercises the real (non-configured) defaultAdapters instead of stubs.
+vi.mock('@/lib/auth/session', () => ({
+  getSession: vi.fn(),
+  persistSession: vi.fn()
+}))
+vi.mock('@/lib/utils/reddit-auth', () => ({
+  refreshToken: vi.fn()
+}))
+
+import {getSession} from '@/lib/auth/session'
 import type {AuthTokens} from '@/lib/types/auth'
 import type {SessionData} from '@/lib/types/reddit'
 import {TOKEN_REFRESH_BUFFER} from '@/lib/utils/constants'
+import {refreshToken} from '@/lib/utils/reddit-auth'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 import {
   type RedditContextAdapters,
@@ -595,6 +607,99 @@ describe('reddit-context', () => {
         .calls[0][0] as SessionData
       // Fallback: now + 1 hour
       expect(writtenData.expiresAt).toBe(now + 3600000)
+    })
+
+    it('writes empty strings when the refreshed session has no username/userId', async () => {
+      const now = Date.now()
+      const adapters = createStubAdapters({
+        readSession: vi.fn(async () =>
+          authenticatedSnapshot({
+            username: undefined,
+            userId: undefined,
+            expiresAt: now - 1000
+          })
+        ),
+        refreshAccessToken: vi.fn(async () => createMockTokens()),
+        now: () => now
+      })
+      configureRedditContext(adapters)
+
+      const ctx = await getRedditContext()
+
+      const writtenData = vi.mocked(adapters.writeSession).mock
+        .calls[0][0] as SessionData
+      expect(writtenData.username).toBe('')
+      expect(writtenData.userId).toBe('')
+      // The refreshed context itself falls back to null, not ''.
+      expect(ctx.username).toBeNull()
+    })
+
+    it('logs a non-Error rejection type when persisting the refreshed session fails', async () => {
+      const now = Date.now()
+      const adapters = createStubAdapters({
+        readSession: vi.fn(async () =>
+          authenticatedSnapshot({expiresAt: now - 1000})
+        ),
+        writeSession: vi.fn(() => {
+          const nonErrorRejection: unknown = 'a plain string rejection'
+          return Promise.reject(nonErrorRejection)
+        }),
+        refreshAccessToken: vi.fn(async () => createMockTokens()),
+        now: () => now
+      })
+      configureRedditContext(adapters)
+
+      const ctx = await getRedditContext()
+
+      // Token exchange still succeeded, so the request proceeds with it.
+      expect(ctx.headers).toMatchObject({
+        Authorization: 'Bearer refreshed-access-token'
+      })
+    })
+  })
+
+  // -------------------------------------------------------------------------
+  // Production (default) adapters — exercised without configureRedditContext
+  // -------------------------------------------------------------------------
+
+  describe('production adapters', () => {
+    const mockGetSession = vi.mocked(getSession)
+    const mockRefreshToken = vi.mocked(refreshToken)
+
+    it('reads the real session and returns context without refreshing', async () => {
+      mockGetSession.mockResolvedValue({
+        accessToken: 'prod-access-token',
+        refreshToken: 'prod-refresh-token',
+        expiresAt: Date.now() + TOKEN_REFRESH_BUFFER + 60000,
+        username: 'produser',
+        userId: 't2_prod'
+      } as never)
+
+      const ctx = await getRedditContext()
+
+      expect(ctx.username).toBe('produser')
+      expect(ctx.headers).toMatchObject({
+        Authorization: 'Bearer prod-access-token'
+      })
+      expect(mockRefreshToken).not.toHaveBeenCalled()
+    })
+
+    it('refreshes via the real adapters when the token is expired', async () => {
+      mockGetSession.mockResolvedValue({
+        accessToken: 'prod-access-token',
+        refreshToken: 'prod-refresh-token',
+        expiresAt: Date.now() - 1000,
+        username: 'produser',
+        userId: 't2_prod'
+      } as never)
+      mockRefreshToken.mockResolvedValue(createMockTokens())
+
+      const ctx = await getRedditContext()
+
+      expect(ctx.headers).toMatchObject({
+        Authorization: 'Bearer refreshed-access-token'
+      })
+      expect(mockRefreshToken).toHaveBeenCalledWith('prod-refresh-token')
     })
   })
 })

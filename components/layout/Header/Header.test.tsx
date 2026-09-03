@@ -154,4 +154,14 @@ describe('HeaderUserMenu', () => {
       'testuser'
     )
   })
+
+  it('falls back to undefined avatarUrl when getCurrentUserAvatar returns null', async () => {
+    mockIsAuthenticated.mockResolvedValue(true)
+    mockGetSession.mockResolvedValue({username: 'testuser'} as never)
+    mockGetCurrentUserAvatar.mockResolvedValue(null)
+
+    const result = await HeaderUserMenu()
+
+    expect(result.props.avatarUrl).toBeUndefined()
+  })
 })

@@ -6,10 +6,20 @@ paths:
 
 # Test Writing Guidelines
 
-Vitest v4 + Testing Library + MSW v2 + jest-axe. Coverage: Utilities 100%, Hooks 100%, Components 80%+.
+Vitest 5 + Testing Library + MSW v2 + jest-axe.
+
+Vitest 5 guide: https://vitest.dev/guide/migration.md
+
+## Vitest 5 behavior (differs from v4 - don't assume v4 semantics)
+
+- **`clearMocks` defaults to `true`** in v5 (this repo doesn't override it) - mock call history is auto-cleared before every test. A manual `vi.clearAllMocks()` in `beforeEach` is redundant but harmless; don't rely on a mock's call history surviving from one test into the next.
+- **`vi.mock()` / `vi.hoisted()` not at true module top level is now a hard error**, not a warning - keep them above all imports (see the ordering gotcha below), never inside a function, conditional, or `describe`/`beforeEach` block.
+- **Unawaited `.resolves`/`.rejects` now fail the test** instead of just warning - always `await expect(promise).resolves.toBe(...)` / `await expect(promise).rejects.toThrow(...)`.
+- **`toThrow('')` now matches any error message** (substring match against everything), not just an error with an empty message - if you actually need to assert an empty message, use `toThrow(/^$/)`.
 
 ## Critical rules
 
+- Coverage expectations 90%+ statements, branches, functions, and lines.
 - **Never mock `global.fetch`, `axios`, or any HTTP client** - use MSW v2 handlers (`http`, `HttpResponse`, `server` from `@/test-utils`)
 - **Never use `eslint-disable` or `@ts-ignore`** to bypass a failing test - fix the underlying issue
 - **Never assert CSS values or CSS variables**

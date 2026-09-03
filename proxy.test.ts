@@ -230,6 +230,82 @@ describe('proxy middleware', () => {
     })
   })
 
+  describe('session cookie parsing', () => {
+    it('parses a real Cookie header into the store iron-session reads', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      let capturedValue: unknown
+      mockGetIronSession.mockImplementation(async (store: unknown) => {
+        const cookieStore = store as {
+          get: (name: string) => {value: string} | undefined
+          set: () => void
+        }
+        capturedValue = cookieStore.get('reddit_viewer_session')?.value
+        cookieStore.set()
+        return {accessToken: 'valid-token'} as never
+      })
+
+      const request = new NextRequest(
+        new URL('https://example.com/r/programming'),
+        {headers: {cookie: 'reddit_viewer_session=abc123; other=xyz'}}
+      )
+      await proxy(request)
+
+      expect(capturedValue).toBe('abc123')
+    })
+
+    it('treats an unrecognized cookie name as unset', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      let capturedValue: unknown = 'not-yet-read'
+      mockGetIronSession.mockImplementation(async (store: unknown) => {
+        const cookieStore = store as {
+          get: (name: string) => {value: string} | undefined
+        }
+        capturedValue = cookieStore.get('nonexistent_cookie')
+        return {accessToken: 'valid-token'} as never
+      })
+
+      const request = new NextRequest(
+        new URL('https://example.com/r/programming'),
+        {headers: {cookie: 'reddit_viewer_session=abc123'}}
+      )
+      await proxy(request)
+
+      expect(capturedValue).toBeUndefined()
+    })
+
+    it('logs and treats the session as invalid when getIronSession throws an Error', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockRejectedValue(new Error('corrupted cookie'))
+
+      const request = new NextRequest(
+        new URL('https://example.com/r/programming')
+      )
+      await proxy(request)
+
+      expect(redirectMock).toHaveBeenCalledWith(
+        expect.objectContaining({pathname: '/api/auth/login'})
+      )
+    })
+
+    it('logs and treats the session as invalid when getIronSession rejects with a non-Error', async () => {
+      const {getIronSession} = await import('iron-session')
+      const mockGetIronSession = vi.mocked(getIronSession)
+      mockGetIronSession.mockRejectedValue('a plain string rejection')
+
+      const request = new NextRequest(
+        new URL('https://example.com/r/programming')
+      )
+      await proxy(request)
+
+      expect(redirectMock).toHaveBeenCalledWith(
+        expect.objectContaining({pathname: '/api/auth/login'})
+      )
+    })
+  })
+
   describe('routes that should be blocked from indexing', () => {
     it('adds X-Robots-Tag header to /r/ routes', async () => {
       const {getIronSession} = await import('iron-session')
