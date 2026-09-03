@@ -81,6 +81,8 @@ export interface RedditPost {
   over_18: boolean
   stickied: boolean
   link_flair_text?: string
+  /** Resolved flair segments; emoji flairs need this since link_flair_text keeps the raw :shortcode: */
+  link_flair_richtext?: RedditFlairRichtextItem[]
   /** Reddit's flair background color, either a hex value or empty string for no custom color */
   link_flair_background_color?: string
   /** Reddit's flair text color keyword: 'light' or 'dark' */
@@ -91,6 +93,19 @@ export interface RedditPost {
   saved?: boolean
   /** True for Reddit's injected ad/promoted posts. Undocumented in the public API schema. */
   promoted?: boolean
+}
+
+/**
+ * One segment of a flair's rich text: either literal text or a resolved emoji image.
+ */
+export interface RedditFlairRichtextItem {
+  e: 'text' | 'emoji'
+  /** Text content, present when e is 'text' */
+  t?: string
+  /** Emoji image URL, present when e is 'emoji' */
+  u?: string
+  /** Emoji shortcode (e.g. ':smilingface2:'), present when e is 'emoji' */
+  a?: string
 }
 
 export interface RedditMedia {

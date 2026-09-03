@@ -47,6 +47,33 @@ function renderSelfText(
 }
 
 /**
+ * Render flair content, resolving emoji shortcodes (e.g. :smilingface2:) to their
+ * image via link_flair_richtext. link_flair_text alone keeps those shortcodes literal.
+ */
+function renderFlairContent(post: RedditPost) {
+  if (post.link_flair_richtext?.length) {
+    // Segment order is fixed per post and the same emoji can repeat within
+    // one flair, so there's no natural unique key besides position.
+    return post.link_flair_richtext.map((segment, index) =>
+      segment.e === 'emoji' && segment.u ? (
+        <img
+          key={index}
+          src={segment.u}
+          alt={segment.a ?? ''}
+          loading="lazy"
+          decoding="async"
+          className={styles.flairEmoji}
+        />
+      ) : (
+        <span key={index}>{segment.t}</span>
+      )
+    )
+  }
+
+  return post.link_flair_text
+}
+
+/**
  * Render the post's flair badge, matching Reddit's own colors when provided.
  */
 function renderFlair(post: RedditPost) {
@@ -70,7 +97,7 @@ function renderFlair(post: RedditPost) {
           : undefined
       }
     >
-      {post.link_flair_text}
+      {renderFlairContent(post)}
     </Badge>
   )
 }

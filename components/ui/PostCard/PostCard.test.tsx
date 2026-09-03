@@ -350,6 +350,33 @@ describe('PostCard', () => {
 
       expect(screen.getByText('Discussion')).toBeInTheDocument()
     })
+
+    it('resolves emoji shortcodes to images using link_flair_richtext instead of showing raw :shortcode: text', () => {
+      const postWithEmojiFlair = {
+        ...mockPost,
+        link_flair_text: ':smilingface2: FAMILY & FRIENDS :smilingface2:',
+        link_flair_richtext: [
+          {
+            e: 'emoji',
+            u: 'https://reddit.com/smilingface2.png',
+            a: ':smilingface2:'
+          },
+          {e: 'text', t: ' FAMILY & FRIENDS '},
+          {
+            e: 'emoji',
+            u: 'https://reddit.com/smilingface2.png',
+            a: ':smilingface2:'
+          }
+        ]
+      } as RedditPost
+
+      render(<PostCard post={postWithEmojiFlair} />)
+
+      expect(screen.queryByText(/:smilingface2:/)).not.toBeInTheDocument()
+      expect(screen.getByText(/FAMILY & FRIENDS/)).toBeInTheDocument()
+      const emojiImages = screen.getAllByAltText(':smilingface2:')
+      expect(emojiImages).toHaveLength(2)
+    })
   })
 
   describe('component rendering', () => {
