@@ -18,6 +18,14 @@ describe('RouteScrollReset', () => {
     vi.spyOn(globalThis, 'scrollTo').mockImplementation(() => undefined)
   })
 
+  it('disables the browser automatic scroll restoration so it cannot race the manual restore', () => {
+    globalThis.history.scrollRestoration = 'auto'
+
+    render(<RouteScrollReset />)
+
+    expect(globalThis.history.scrollRestoration).toBe('manual')
+  })
+
   it('scrolls to top on mount', () => {
     render(<RouteScrollReset />)
 

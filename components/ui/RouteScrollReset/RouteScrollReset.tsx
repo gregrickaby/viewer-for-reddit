@@ -14,6 +14,13 @@ export default function RouteScrollReset() {
   const isPopStateNavigation = useRef(false)
 
   useEffect(() => {
+    // The browser's own automatic scroll restoration races with the manual
+    // restore below (most visible on iOS Safari, where it can snap back to 0
+    // after this component's scrollTo runs). Take restoration over fully.
+    if ('scrollRestoration' in globalThis.history) {
+      globalThis.history.scrollRestoration = 'manual'
+    }
+
     const handlePopState = () => {
       isPopStateNavigation.current = true
     }
