@@ -1,6 +1,7 @@
 'use client'
 
 import {useVideoPlayer} from '@/lib/hooks/useVideoPlayer'
+import {getAspectRatioStyle} from '@/lib/utils/media-helpers'
 import {getIsVertical} from '@/lib/utils/reddit-helpers'
 import clsx from 'clsx'
 import 'video.js/dist/video-js.css'
@@ -83,8 +84,7 @@ export function VideoPlayer({
   }
 
   // Calculate aspect ratio for container to prevent layout shifts
-  const containerStyle =
-    width && height ? {aspectRatio: `${width} / ${height}`} : undefined
+  const containerStyle = getAspectRatioStyle(width, height)
 
   return (
     <div

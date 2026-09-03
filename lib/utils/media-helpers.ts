@@ -1,4 +1,18 @@
 import {GalleryItem, RedditPost} from '@/lib/types/reddit'
+import type {CSSProperties} from 'react'
+
+/**
+ * Build an inline aspect-ratio style from known media dimensions
+ * @param width - Source media width
+ * @param height - Source media height
+ * @returns Style object with `aspectRatio`, or undefined if either dimension is missing
+ */
+export function getAspectRatioStyle(
+  width?: number,
+  height?: number
+): CSSProperties | undefined {
+  return width && height ? {aspectRatio: `${width} / ${height}`} : undefined
+}
 
 /**
  * Get the medium-sized image (640px) from Reddit preview resolutions

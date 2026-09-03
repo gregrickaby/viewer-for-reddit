@@ -176,7 +176,14 @@ function renderRedgifs(post: RedditPost) {
     return null
   }
 
-  return <EmbedFrame src={src} title={post.title} />
+  return (
+    <EmbedFrame
+      src={src}
+      title={post.title}
+      width={post.media?.oembed?.width}
+      height={post.media?.oembed?.height}
+    />
+  )
 }
 
 /**
@@ -189,7 +196,14 @@ function renderOembed(post: RedditPost) {
   const src = getOembedSrc(html)
   if (!src) return null
 
-  return <EmbedFrame src={src} title={post.title} />
+  return (
+    <EmbedFrame
+      src={src}
+      title={post.title}
+      width={post.media?.oembed?.width}
+      height={post.media?.oembed?.height}
+    />
+  )
 }
 
 /**

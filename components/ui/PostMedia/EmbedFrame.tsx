@@ -1,6 +1,7 @@
 'use client'
 
 import {useIsIntersecting} from '@/lib/hooks/useIsIntersecting'
+import {getAspectRatioStyle} from '@/lib/utils/media-helpers'
 import {usePathname} from 'next/navigation'
 import {useRef} from 'react'
 import styles from './PostMedia.module.css'
@@ -13,6 +14,10 @@ interface EmbedFrameProps {
   src: string
   /** Accessible title for the iframe */
   title: string
+  /** Source media width, for aspect ratio calculation */
+  width?: number
+  /** Source media height, for aspect ratio calculation */
+  height?: number
 }
 
 /**
@@ -23,14 +28,20 @@ interface EmbedFrameProps {
  * (just hidden) for fast back/forward navigation, so a plain unmount-on-scroll
  * check isn't enough to stop it playing in the background after navigating.
  */
-export function EmbedFrame({src, title}: Readonly<EmbedFrameProps>) {
+export function EmbedFrame({
+  src,
+  title,
+  width,
+  height
+}: Readonly<EmbedFrameProps>) {
   const [containerRef, isIntersecting] = useIsIntersecting<HTMLDivElement>()
   const pathname = usePathname()
   const mountedPathname = useRef(pathname)
   const isVisible = isIntersecting && pathname === mountedPathname.current
+  const style = getAspectRatioStyle(width, height)
 
   return (
-    <div className={styles.embedContainer} ref={containerRef}>
+    <div className={styles.embedContainer} style={style} ref={containerRef}>
       {isVisible && (
         <iframe
           src={src}

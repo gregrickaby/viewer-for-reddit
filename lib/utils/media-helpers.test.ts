@@ -3,6 +3,7 @@ import {describe, expect, it} from 'vitest'
 import {
   decodeImageUrl,
   extractGalleryItems,
+  getAspectRatioStyle,
   getGiphyVideoUrl,
   getHighestQualityVideoUrl,
   getImgurVideoUrl,
@@ -13,6 +14,22 @@ import {
 } from './media-helpers'
 
 describe('media-helpers', () => {
+  describe('getAspectRatioStyle', () => {
+    it('returns an aspectRatio style when width and height are provided', () => {
+      expect(getAspectRatioStyle(640, 360)).toEqual({
+        aspectRatio: '640 / 360'
+      })
+    })
+
+    it.each([
+      [undefined, 360],
+      [640, undefined],
+      [undefined, undefined]
+    ])('returns undefined when width=%s height=%s', (width, height) => {
+      expect(getAspectRatioStyle(width, height)).toBeUndefined()
+    })
+  })
+
   describe('getMediumImage', () => {
     it('returns 640px resolution when available', () => {
       const post = {

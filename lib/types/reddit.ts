@@ -106,6 +106,8 @@ export interface RedditMedia {
     provider_url: string
     type: string
     html?: string
+    width?: number
+    height?: number
   }
 }
 

@@ -54,6 +54,22 @@ describe('EmbedFrame', () => {
     expect(iframe).toHaveAttribute('src', 'https://www.redgifs.com/ifr/abc')
   })
 
+  it('renders with explicit width and height without breaking the iframe', () => {
+    render(
+      <EmbedFrame
+        src="https://www.redgifs.com/ifr/abc"
+        title="Test Post"
+        width={640}
+        height={360}
+      />
+    )
+
+    expect(screen.getByTitle('Test Post')).toHaveAttribute(
+      'src',
+      'https://www.redgifs.com/ifr/abc'
+    )
+  })
+
   it('removes the iframe when scrolled out of view', () => {
     render(
       <EmbedFrame src="https://www.redgifs.com/ifr/abc" title="Test Post" />
