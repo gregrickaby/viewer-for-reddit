@@ -11,8 +11,7 @@ interface SidebarMobileCloseOnNavigateProps {
  * Closes the mobile sidebar overlay on route change. Isolated into its own
  * leaf (rather than living directly in `SidebarPanel`) because `usePathname`
  * blocks prerendering on routes with dynamic segments unless the component
- * reading it sits behind its own `<Suspense>` -- same treatment as
- * `RouteScrollReset`/`SwipeNavigation`. Renders no UI.
+ * reading it sits behind its own `<Suspense>`. Renders no UI.
  */
 export function SidebarMobileCloseOnNavigate({
   onNavigate
