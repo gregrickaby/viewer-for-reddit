@@ -35,9 +35,9 @@
     "validate:ci": "npm run format:check && npm run typecheck && npm run lint && npm run test:coverage"
   },
   "dependencies": {
-    "@datadog/browser-logs": "^7.11.0",
-    "@datadog/browser-rum": "^7.11.0",
-    "@datadog/browser-rum-nextjs": "^7.11.0",
+    "@datadog/browser-logs": "^7.12.0",
+    "@datadog/browser-rum": "^7.12.0",
+    "@datadog/browser-rum-nextjs": "^7.12.0",
     "@mantine/carousel": "^9.6.0",
     "@mantine/core": "^9.6.0",
     "@mantine/hooks": "^9.6.0",
@@ -90,7 +90,7 @@
     "jsdom": "^30.0.1",
     "msw": "^2.15.0",
     "openapi-typescript": "^7.13.0",
-    "postcss": "^8.5.27",
+    "postcss": "^8.5.28",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.9.6",
@@ -104,7 +104,7 @@
   },
   "overrides": {
     "sharp": "^0.35.0",
-    "postcss": "^8.5.27",
+    "postcss": "^8.5.28",
     "fast-uri": "^3.1.5",
     "js-yaml": "^4.3.1"
   }
