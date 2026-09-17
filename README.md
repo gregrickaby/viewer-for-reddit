@@ -1,6 +1,6 @@
 # About Viewer for Reddit
 
-**Viewer for Reddit** is a clean way to browse Reddit without ads or algorithms.
+**Viewer for Reddit** is a clean way to browse Reddit without ads, analytics, or algorithms.
 
 **[Sign in to start browsing →](https://reddit-viewer.com/api/auth/login)**
 
