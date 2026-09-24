@@ -268,7 +268,7 @@ function renderImage(
         width={width}
         height={height}
         priority={priority}
-        quality={85}
+        unoptimized
         className={className || styles.image}
       />
     </div>
@@ -336,7 +336,7 @@ export function PostMedia({post, priority = false}: Readonly<PostMediaProps>) {
         width={140}
         height={140}
         priority={priority}
-        quality={75}
+        unoptimized
         className={styles.thumbnail}
       />
     )

@@ -54,6 +54,7 @@ export function RecentPostsRail() {
                     alt=""
                     width={48}
                     height={48}
+                    unoptimized
                     style={{
                       borderRadius: 'var(--mantine-radius-sm)',
                       objectFit: 'cover',
