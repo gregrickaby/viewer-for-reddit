@@ -1,4 +1,4 @@
-import {renderHook} from '@/test-utils'
+import {act, renderHook} from '@/test-utils'
 import {useRouter} from 'next/navigation'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {useRevalidateOnFocus} from './useRevalidateOnFocus'
@@ -13,12 +13,18 @@ vi.mock('next/navigation', () => ({
   useRouter: vi.fn()
 }))
 
+const mockRevalidateFeeds = vi.fn().mockResolvedValue(undefined)
+vi.mock('@/lib/actions/reddit/revalidate', () => ({
+  revalidateFeeds: () => mockRevalidateFeeds()
+}))
+
 const mockRefresh = vi.fn()
 const mockUseRouter = vi.mocked(useRouter)
 
 describe('useRevalidateOnFocus', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockRevalidateFeeds.mockResolvedValue(undefined)
     mockVisibility = 'visible'
     mockUseRouter.mockReturnValue({
       refresh: mockRefresh
@@ -50,7 +56,7 @@ describe('useRevalidateOnFocus', () => {
     expect(mockRefresh).not.toHaveBeenCalled()
   })
 
-  it('refreshes when the tab becomes visible after the threshold elapses', () => {
+  it('revalidates the posts cache tag then refreshes when the tab becomes visible after the threshold elapses', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(0)
     const {rerender} = renderHook(() => useRevalidateOnFocus(1000))
@@ -62,10 +68,14 @@ describe('useRevalidateOnFocus', () => {
     mockVisibility = 'visible'
     rerender()
 
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(mockRevalidateFeeds).toHaveBeenCalledTimes(1)
     expect(mockRefresh).toHaveBeenCalledTimes(1)
   })
 
-  it('does not refresh again on a later render without hiding first', () => {
+  it('does not refresh again on a later render without hiding first', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(0)
     const {rerender} = renderHook(() => useRevalidateOnFocus(1000))
@@ -76,6 +86,9 @@ describe('useRevalidateOnFocus', () => {
     vi.setSystemTime(1500)
     mockVisibility = 'visible'
     rerender()
+    await act(async () => {
+      await Promise.resolve()
+    })
     mockRefresh.mockClear()
 
     rerender()
