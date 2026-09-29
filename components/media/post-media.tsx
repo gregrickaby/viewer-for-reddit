@@ -1,10 +1,8 @@
 /* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets (design §4.2); the image optimizer would add a hop and a server cache of NSFW media. */
 import type { ReactNode } from 'react'
-import { setBlurNsfw } from '@/app/actions/settings'
 import { AutoplayVideo } from '@/components/islands/autoplay-video'
 import { EmbedFacade } from '@/components/islands/embed-facade'
 import { RedditVideo } from '@/components/islands/reddit-video'
-import { formAction } from '@/lib/actions/form-action'
 import { Gallery } from './gallery'
 import type {
   AnimatedMedia,
@@ -99,7 +97,7 @@ export function MediaReveal({
   blurred: { image: ImageSet; blurred: NonNullable<ImageSet['blurred']> } | null
   children: ReactNode
 }) {
-  const details = (
+  return (
     <details className={styles.reveal}>
       <summary className={styles.revealSummary}>
         {blurred ? (
@@ -126,19 +124,6 @@ export function MediaReveal({
       </summary>
       {children}
     </details>
-  )
-  if (reason !== 'nsfw') return details
-  // One click to stop blurring for good, right where the blur is (also in Settings).
-  return (
-    <div className={styles.revealGroup}>
-      {details}
-      <form action={formAction(setBlurNsfw)} className={styles.unblur}>
-        <input type="hidden" name="blur" value="off" />
-        <button type="submit" className={styles.unblurButton}>
-          Stop blurring NSFW media
-        </button>
-      </form>
-    </div>
   )
 }
 

@@ -1,11 +1,9 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { PostMedia, blurredOf } from '@/components/media/post-media'
 import { RedditHtml } from '@/components/reddit-html'
 import type { GalleryItem, PostMedia as Media } from '@/lib/view-models'
 import { blurred, html, imageSet } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
-
-vi.mock('@/app/actions/settings', () => ({ setBlurNsfw: vi.fn() }))
 
 const render = (media: Media, reveal: 'nsfw' | 'spoiler' | null = null) =>
   renderServer(<PostMedia media={media} title="Title" reveal={reveal} postId="abc" />)
@@ -189,16 +187,12 @@ describe('PostMedia', () => {
 
   it('puts NSFW and spoiler media behind a native reveal with the pre-blurred image', async () => {
     const nsfw = await render({ type: 'image', image: imageSet({ blurred }) }, 'nsfw')
-    expect(nsfw).toMatch(/^<div class="revealGroup"><details class="reveal"><summary/)
-    // NSFW offers a one-click, permanent opt-out right under the blur; spoilers don't.
-    expect(nsfw).toContain('name="blur" value="off"')
-    expect(nsfw).toContain('Stop blurring NSFW media')
+    expect(nsfw).toMatch(/^<details class="reveal"><summary/)
     expect(nsfw).toContain('src="https://preview.redd.it/blur.jpg"')
     expect(nsfw).toContain('>NSFW</span>Show')
     const spoiler = await render({ type: 'video', video, poster: null }, 'spoiler')
     expect(spoiler).toContain('class="placeholder"')
     expect(spoiler).toContain('>Spoiler</span>Show')
-    expect(spoiler).not.toContain('Stop blurring')
   })
 })
 

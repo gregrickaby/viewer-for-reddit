@@ -22,7 +22,6 @@ const getMyMultis = vi.fn(async (): Promise<unknown[]> => [])
 vi.mock('@/lib/reddit/reads', () => ({ getFeed, getSubreddit, getMyMultis }))
 vi.mock('@/app/actions/multis', () => ({ setMembership: vi.fn() }))
 vi.mock('@/app/actions/subscriptions', () => ({ setSubscription: vi.fn() }))
-vi.mock('@/app/actions/settings', () => ({ setBlurNsfw: vi.fn() }))
 vi.mock('@/lib/settings', () => ({
   getSettings: vi.fn(async () => ({ theme: 'system', blurNsfw: state.blurNsfw })),
 }))
