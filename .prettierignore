@@ -6,3 +6,4 @@ package-lock.json
 *.module.css.d.ts.map
 docs
 fixtures
+lib/reddit/schemas/generated.ts
