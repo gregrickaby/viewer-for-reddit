@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const submitComment = vi.fn(async () => 'new1')
+const submitComment = vi.fn(async () => ({ id: 'new1', postId: 'abc' }))
 const editComment = vi.fn(async () => {})
 const deleteComment = vi.fn(async () => {})
 const refresh = vi.fn()
+const waitForComment = vi.fn(async () => {})
+vi.mock('@/lib/reddit/thread', () => ({ waitForComment }))
 vi.mock('@/lib/reddit/writes', () => ({ submitComment, editComment, deleteComment }))
 vi.mock('next/cache', () => ({ refresh }))
 vi.mock('next/navigation', () => ({ redirect: vi.fn(), unstable_rethrow: vi.fn() }))
@@ -19,7 +21,8 @@ const form = (values: Record<string, string>) => {
 }
 
 beforeEach(() => {
-  for (const mock of [submitComment, editComment, deleteComment, refresh]) mock.mockClear()
+  for (const mock of [submitComment, editComment, deleteComment, refresh, waitForComment])
+    mock.mockClear()
 })
 
 describe('postComment', () => {
@@ -29,6 +32,7 @@ describe('postComment', () => {
       data: { id: 'new1' },
     })
     expect(submitComment).toHaveBeenCalledWith('t3_abc', 'Hi there')
+    expect(waitForComment).toHaveBeenCalledWith('abc', 'new1')
     expect(refresh).toHaveBeenCalledOnce()
   })
 

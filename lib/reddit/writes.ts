@@ -51,10 +51,16 @@ async function submitForm(path: string, form: Record<string, string>) {
   return parseItems(data?.things ?? [], CommentThing, path)
 }
 
-/** Replies to a post (`t3_`) or comment (`t1_`). Returns the new comment's id. */
-export async function submitComment(parent: string, text: string): Promise<string | null> {
+/** Replies to a post (`t3_`) or comment (`t1_`). Returns the new comment's id and its post's. */
+export async function submitComment(
+  parent: string,
+  text: string,
+): Promise<{ id: string | null; postId: string | null }> {
   const [created] = await submitForm('/api/comment', { thing_id: parent, text })
-  return created?.data.id ?? null
+  return {
+    id: created?.data.id ?? null,
+    postId: created?.data.link_id?.replace(/^t3_/, '') ?? null,
+  }
 }
 
 export async function editComment(fullname: string, text: string): Promise<void> {

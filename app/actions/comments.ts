@@ -3,6 +3,7 @@
 import { refresh } from 'next/cache'
 import { invalid, runAction } from '@/lib/actions/run-action'
 import type { ActionResult } from '@/lib/actions/result'
+import { waitForComment } from '@/lib/reddit/thread'
 import {
   deleteComment as deleteRedditComment,
   editComment as editRedditComment,
@@ -33,7 +34,8 @@ export async function postComment(
   if (!text) return invalid('Write something first (up to 10,000 characters).')
 
   return runAction(async () => {
-    const id = await submitComment(parent, text)
+    const { id, postId } = await submitComment(parent, text)
+    if (id && postId) await waitForComment(postId, id)
     refresh()
     return { id }
   })

@@ -85,3 +85,25 @@ async function fetchMoreChildren(
         },
   )
 }
+
+/**
+ * Waits until Reddit's comment listing includes a comment just written. Reddit
+ * serves the thread from a cache that can lag the write by a second or two, so
+ * re-rendering straight away would show the old tree. Gives up quietly.
+ */
+export async function waitForComment(postId: string, commentId: string): Promise<void> {
+  if (!THING_ID.test(postId)) return
+  const { accessToken } = await requireAuth()
+  for (let attempt = 0; attempt < 5; attempt++) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 400 * attempt))
+    try {
+      const json = await redditFetch(`/comments/${postId}`, {
+        token: accessToken,
+        query: { sort: 'new', limit: 500 },
+      })
+      if (JSON.stringify(json).includes(`"id":"${commentId}"`)) return
+    } catch {
+      return
+    }
+  }
+}

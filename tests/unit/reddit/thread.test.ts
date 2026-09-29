@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { sample, samples } from '@/tests/helpers/fixtures'
 
 const redditFetch = vi.fn()
@@ -7,7 +7,7 @@ vi.mock('@/lib/auth/session', () => ({
   requireAuth: vi.fn(async () => ({ accessToken: 'tok', username: 'fixture_user' })),
 }))
 
-const { getThread } = await import('@/lib/reddit/thread')
+const { getThread, waitForComment } = await import('@/lib/reddit/thread')
 const { deleteComment, editComment, submitComment } = await import('@/lib/reddit/writes')
 const { RedditApiError, RedditNotFoundError } = await import('@/lib/reddit/errors')
 const { parseThreadQuery } = await import('@/lib/url-state')
@@ -194,7 +194,10 @@ describe('comment writes', () => {
     redditFetch.mockResolvedValue({
       json: { errors: [], data: { things: [{ kind: 't1', data: { ...created, replies: '' } }] } },
     })
-    expect(await submitComment('t3_abc', 'Hello')).toBe(created.id)
+    expect(await submitComment('t3_abc', 'Hello')).toEqual({
+      id: created.id,
+      postId: String(created.link_id).replace(/^t3_/, ''),
+    })
     expect(redditFetch).toHaveBeenCalledWith('/api/comment', {
       token: 'tok',
       method: 'POST',
@@ -204,7 +207,7 @@ describe('comment writes', () => {
 
   it('returns null when Reddit omits the new comment', async () => {
     redditFetch.mockResolvedValue({ json: { errors: [] } })
-    expect(await submitComment('t1_abc', 'Hi')).toBeNull()
+    expect(await submitComment('t1_abc', 'Hi')).toEqual({ id: null, postId: null })
   })
 
   it('turns Reddit form errors into typed errors', async () => {
@@ -229,5 +232,44 @@ describe('comment writes', () => {
     await deleteComment('t1_abc')
     expect(redditFetch.mock.calls.map((call) => call[0])).toEqual(['/api/editusertext', '/api/del'])
     expect(redditFetch.mock.calls[1]![1].form).toEqual({ id: 't1_abc' })
+  })
+})
+
+describe('waitForComment', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('returns as soon as the listing includes the comment', async () => {
+    redditFetch.mockResolvedValueOnce([{}, { data: { id: 'old' } }])
+    redditFetch.mockResolvedValueOnce([{}, { data: { id: 'new1' } }])
+    const done = waitForComment('abc', 'new1')
+    await vi.runAllTimersAsync()
+    await done
+    expect(redditFetch).toHaveBeenCalledTimes(2)
+    expect(redditFetch).toHaveBeenCalledWith('/comments/abc', {
+      token: 'tok',
+      query: { sort: 'new', limit: 500 },
+    })
+  })
+
+  it('gives up after a few tries', async () => {
+    redditFetch.mockResolvedValue([{}, { data: { id: 'old' } }])
+    const done = waitForComment('abc', 'new1')
+    await vi.runAllTimersAsync()
+    await done
+    expect(redditFetch).toHaveBeenCalledTimes(5)
+  })
+
+  it('stops quietly when Reddit errors or the id is malformed', async () => {
+    redditFetch.mockRejectedValue(new Error('down'))
+    await waitForComment('abc', 'new1')
+    expect(redditFetch).toHaveBeenCalledTimes(1)
+    redditFetch.mockClear()
+    await waitForComment('not valid!', 'new1')
+    expect(redditFetch).not.toHaveBeenCalled()
   })
 })
