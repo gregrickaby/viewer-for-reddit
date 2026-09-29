@@ -46,6 +46,16 @@ describe('session cookies', () => {
     expect(await unsealAccess(refresh)).toBeNull()
   })
 
+  it('returns null when unsealing throws', async () => {
+    // A well-formed seal from a different password makes iron-session throw.
+    const { sealData } = await import('iron-session')
+    const foreign = await sealData(
+      { accessToken: 'a', expiresAt: 1 },
+      { password: 'a-completely-different-password-32+' },
+    )
+    expect(await unsealAccess(foreign)).toBeNull()
+  })
+
   it('keeps each sealed cookie under 3.8 KB with realistic Reddit token lengths', async () => {
     const access = await sealAccess({
       accessToken: longToken(1400),

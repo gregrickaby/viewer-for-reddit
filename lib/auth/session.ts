@@ -1,4 +1,5 @@
 import 'server-only'
+import { io } from 'next/cache'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { cache } from 'react'
@@ -23,6 +24,10 @@ export class SessionUnavailableError extends Error {
 
 const readSession = cache(async () => {
   const jar = await cookies()
+  // Unsealing checks the seal's TTL and we compare expiry against the clock. With Partial
+  // Prefetching, cookies() alone doesn't exclude this from the per-session App Shell, so mark the
+  // time read explicitly (bundled docs: 04-functions/io.md). Resolves immediately at request time.
+  await io()
   const [access, refresh] = await Promise.all([
     unsealAccess(jar.get(ACCESS_COOKIE)?.value),
     unsealRefresh(jar.get(REFRESH_COOKIE)?.value),

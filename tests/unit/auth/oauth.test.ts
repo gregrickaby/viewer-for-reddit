@@ -101,6 +101,11 @@ describe('token endpoint', () => {
 })
 
 describe('revokeToken', () => {
+  it('reports success', async () => {
+    mockFetch({})
+    expect(await revokeToken('rt')).toBe(true)
+  })
+
   it('returns false instead of throwing', async () => {
     vi.stubGlobal(
       'fetch',
@@ -119,5 +124,32 @@ describe('fetchIdentity', () => {
   it('returns null on failure', async () => {
     mockFetch({}, { status: 401 })
     expect(await fetchIdentity('at')).toBeNull()
+  })
+
+  it('returns null on a malformed body or network failure', async () => {
+    mockFetch({ id: 'no-name' })
+    expect(await fetchIdentity('at')).toBeNull()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Promise.reject(new Error('offline'))),
+    )
+    expect(await fetchIdentity('at')).toBeNull()
+  })
+
+  it('treats a non-Error network rejection as a network error', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Promise.reject('nope')),
+    )
+    expect(await refreshAccessToken('rt')).toEqual({ kind: 'error', status: 0, error: 'network' })
+  })
+
+  it('reports a non-grant error body', async () => {
+    mockFetch({ error: 'unsupported_grant_type' }, { status: 400 })
+    expect(await refreshAccessToken('rt')).toEqual({
+      kind: 'error',
+      status: 400,
+      error: 'unsupported_grant_type',
+    })
   })
 })

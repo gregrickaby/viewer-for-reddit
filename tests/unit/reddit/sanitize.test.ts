@@ -59,6 +59,11 @@ describe('sanitizeRedditHtml: Reddit markdown output', () => {
     )
   })
 
+  it('turns links without an href or with an unsafe one into plain text', () => {
+    expect(sanitizeRedditHtml('<a>anchor</a>')).toBe('<span>anchor</span>')
+    expect(sanitizeRedditHtml('<a href="http://[bad">bad</a>')).toBe('<span>bad</span>')
+  })
+
   it('strips classes from other spans', () => {
     expect(sanitizeRedditHtml('<span class="evil md-spoiler-text-x">t</span>')).toBe(
       '<span>t</span>',
@@ -118,6 +123,17 @@ describe('resolveRedditLink', () => {
       href: 'https://reddit.com.evil.com/r/pics',
       internal: false,
     })
+  })
+
+  it('keeps mailto links external', () => {
+    expect(resolveRedditLink('mailto:mod@example.com')).toEqual({
+      href: 'mailto:mod@example.com',
+      internal: false,
+    })
+  })
+
+  it('rejects unparseable URLs', () => {
+    expect(resolveRedditLink('http://[bad')).toBeNull()
   })
 
   it('rejects non-web schemes', () => {

@@ -344,10 +344,11 @@ Followed users show up in `/subreddits/mine/subscriber` as `t5` things with `sub
 Types have three layers, and only the first is generated:
 
 ```
-fixtures/reddit/raw/*.json          ← captured real responses (scrubbed)
-        │  scripts/reddit/extract-things.ts
+fixtures/reddit/raw/*.json          ← captured real responses (scrubbed, local-only, git-ignored)
+        │  scripts/reddit/extract-things.ts (coverage-based sample selection)
         ▼
-fixtures/reddit/things/{Link,Comment,More,Subreddit,Account,LabeledMulti}/*.json
+fixtures/reddit/things/{Link,Comment,More,Subreddit,Account,LabeledMulti,
+                        Me,MediaMetadataItem}/*.json   ← committed, ~1.2 MB
         │  quicktype --lang typescript-zod --src fixtures/reddit/things
         ▼
 lib/reddit/schemas/generated.ts     ← GENERATED. Never hand-edited. One merged schema per kind.
@@ -1021,9 +1022,11 @@ Section-level boundaries use `catchError` from `next/error`, so a failure in the
 
 ## 13. Testing strategy
 
+**Coverage floor: 90%** for branches, functions, lines, and statements, enforced by Vitest's coverage thresholds. `npm test` fails below it.
+
 | Layer | Tool | What |
 |---|---|---|
-| Schemas | Vitest | Every fixture in `fixtures/reddit/raw` parses with the curated schemas. Snapshot tests of mapper output for each `PostContent` type, deleted and removed comments, and crossposts. |
+| Schemas | Vitest | Every committed sample in `fixtures/reddit/things` parses with the curated schemas. Snapshot tests of mapper output for each `PostContent` type, deleted and removed comments, and crossposts. |
 | Pure logic | Vitest | Score math, `next` sanitization, cursor math, `?more=` resolution and tree splicing, sanitizer allowlist (XSS corpus), link rewriting, token-expiry decisions. |
 | Auth and proxy | Vitest | `proxy()` against mocked `fetch`: refresh on expiry, `invalid_grant` clears cookies, gating redirects, non-GET pass-through. |
 | Server Actions | Vitest | Called directly with a mocked session and a mocked Reddit. Asserts input validation, error mapping, and `refresh()` versus no-refresh behavior. |

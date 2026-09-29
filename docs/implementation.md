@@ -103,8 +103,8 @@ export default nextConfig
     "lint": "eslint && stylelint \"**/*.css\"",
     "css:types": "hcm \"{app,components}/**/*.module.css\"",
     "css:types:watch": "hcm --watch \"{app,components}/**/*.module.css\"",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "types:extract": "tsx scripts/reddit/extract-things.ts",
@@ -232,7 +232,7 @@ components/
              vote-buttons.tsx  save-button.tsx  subscribe-button.tsx  membership-toggle.tsx
              comment-composer.tsx  pending-button.tsx  link-pending-hint.tsx  section-error.tsx
              reddit-video.tsx  autoplay-video.tsx  embed-facade.tsx  use-enhanced-form.ts
-scripts/reddit/ manifest.ts  extract-things.ts  postprocess-generated.ts  scrub.ts
+scripts/reddit/ manifest.ts  things.ts  extract-things.ts  generated.ts  postprocess-generated.ts  scrub.ts
 fixtures/reddit/ raw/  things/
 tests/unit/**   tests/media/corpus/*.json   e2e/**   e2e/mock-reddit/**
 docs/ design.md  implementation.md
@@ -428,29 +428,39 @@ export const config = {
 
 ```ts
 import 'server-only'
-import { cache } from 'react'
+import { io } from 'next/cache'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { cache } from 'react'
 import { ACCESS_COOKIE, REFRESH_COOKIE, unsealAccess, unsealRefresh } from './cookies'
 
 export type Auth = { accessToken: string; username: string }
 
-export const getAuth = cache(async (): Promise<Auth | null> => {
+/** Signed in, but no usable access token reached this request (a transient refresh failure). Retryable. */
+export class SessionUnavailableError extends Error {}
+
+const readSession = cache(async () => {
   const jar = await cookies()
-  const [at, rt] = await Promise.all([
+  await io() // see note below
+  const [access, refresh] = await Promise.all([
     unsealAccess(jar.get(ACCESS_COOKIE)?.value),
     unsealRefresh(jar.get(REFRESH_COOKIE)?.value),
   ])
-  if (!at || !rt || at.expiresAt <= Date.now()) return null
-  return { accessToken: at.accessToken, username: rt.username }
+  const usable = access !== null && access.expiresAt > Date.now()
+  return { access: usable ? access : null, refresh }
 })
 
+export async function getAuth(): Promise<Auth | null>       // null unless both cookies are usable
+export async function getUsername(): Promise<string | null> // needs only rv_rt
 export async function requireAuth(): Promise<Auth> {
-  const auth = await getAuth()
-  if (!auth) redirect('/api/auth/signout?reason=expired')
-  return auth
+  const { access, refresh } = await readSession()
+  if (!refresh) redirect('/api/auth/signout?reason=expired')
+  if (!access) throw new SessionUnavailableError()
+  return { accessToken: access.accessToken, username: refresh.username }
 }
 ```
+
+**`await io()` is required.** With Partial Prefetching, reading `cookies()` alone does not exclude a component from the per-session App Shell, so the `Date.now()` expiry check (and iron-session's TTL check) would run during prerender and fail the build with a "current time" error. `io()` from `next/cache` marks the clock read explicitly (bundled docs: `04-functions/io.md`) and resolves immediately at request time.
 
 ### 1.8 `app/actions/auth.ts`
 
@@ -568,11 +578,13 @@ The developer triggers it by visiting `https://localhost:3000/api/dev/capture` w
 - Drops the `/api/v1/me` private fields: everything except `name`, `id`, `icon_img`, `snoovatar_img`, `total_karma`, `link_karma`, `comment_karma`, `created_utc`, `over_18`, `is_gold`, `is_mod`, `verified`, `has_verified_email`, and `subreddit`.
 - Strips `modhash`.
 
-The raw fixtures are **committed**. They drive type generation and tests, and re-capture is manual.
+The raw captures are **not committed**: they are about 61 MB, contain other people's public posts in bulk, and can be re-captured at any time. `/fixtures/reddit/raw/` is git-ignored. The selected samples in `fixtures/reddit/things/` (about 1.2 MB) **are committed**, together with `lib/reddit/schemas/generated.ts`, so type generation's inputs and outputs are reviewable and tests run on a fresh clone. Re-capture is manual.
 
-### 2.3 `scripts/reddit/extract-things.ts`
+### 2.3 Sample extraction (`scripts/reddit/things.ts`)
 
-The script walks every JSON value in `fixtures/reddit/raw/**` and buckets the `data` of each `{ kind, data }` node into a directory per type:
+The logic lives in `scripts/reddit/things.ts` so it can be unit-tested. `scripts/reddit/extract-things.ts` is a thin CLI that calls `extractThings({ rawDir, outDir, schemaDir })` with the repo paths and exits with code 1 on error.
+
+It walks every JSON value in `fixtures/reddit/raw/**` and buckets the `data` of each `{ kind, data }` node into a directory per type:
 
 | kind | dir |
 |---|---|
@@ -582,19 +594,27 @@ The script walks every JSON value in `fixtures/reddit/raw/**` and buckets the `d
 | `t5` | `Subreddit` |
 | `more` | `More` |
 | `LabeledMulti` | `LabeledMulti` |
+| each value of a `media_metadata` map | `MediaMetadataItem` |
 
-The root of `me.json` goes to `Me`, and the root of `prefs.json` goes to `Prefs`.
+The root of `me.json` goes to `Me`.
 
-Rules:
+Rules (`prepare`):
 
-- For `t1`, replace `replies` with `""` before writing the sample. The recursion is modeled by hand.
-- For `t3`, extract every `crosspost_parent_list[]` item as its own `Link` sample, then replace the array with `[]` in the parent.
-- Deduplicate by `name`/`id` and cap each kind at 400 samples.
-- Write `fixtures/reddit/things/<Dir>/<id>.json`. This directory is git-ignored because it is regenerated.
+- For `t1`, replace `replies` with `""`. The recursion is modeled by hand, and nested replies become samples of their own.
+- For `t3`, extract every `crosspost_parent_list[]` item as its own `Link` sample, then replace the array with `[]`.
+- `media_metadata` is keyed by random media ids, so quicktype would infer an object with random property names. Its values become `MediaMetadataItem` samples, and the parent's map is replaced with `{}`. The curated layer types it as `z.record(z.string(), MediaMetadataItemSchema)`.
+
+**Sample selection is coverage-based** (`selectSamples`). The raw set has thousands of things per kind (2,637 Links, 6,711 Comments, 701 media items), and the first N are biased toward whichever file was captured first. Instead:
+
+1. Each sample is reduced to a set of *shape features* (`shapeFeatures`): every `path:type` pair it contains, down to depth 6, plus an `absent` feature for each field that some other sample of the kind has and this one lacks. Absent features are what make quicktype emit `.optional()`. Map fields (`media_metadata`, `gildings`) are collapsed.
+2. The first 15 samples are kept as a baseline.
+3. Then samples are added greedily, each time taking the one that contributes the most unseen features, until every feature is covered or the kind reaches 250.
+
+The result is small and complete: 36 Links, 24 Comments, 15 Mores, 23 Subreddits, 7 LabeledMultis, 20 MediaMetadataItems, and one each of Me and Account. Every field and value type seen anywhere in the capture is represented, including the optional-ness of each field. The script writes `fixtures/reddit/things/<Dir>/<id>.json`, clearing the directory first, and creates the schema output directory for quicktype.
 
 **Checked on 2026-09-29:** quicktype 26 merges all files in `--src <dir>/<TypeName>/` into one schema named `<TypeName>Schema`. Absent-in-some fields become `.optional()`, and mixed types become `z.union` (for example `edited: z.union([z.boolean(), z.number()])`). Output uses `import * as z from "zod"`, which works with Zod 4.
 
-`scripts/reddit/postprocess-generated.ts` prepends a `// GENERATED by npm run types:generate. DO NOT EDIT.` banner and runs a sanity check: the file must export `LinkSchema`, `CommentSchema`, `MoreSchema`, `SubredditSchema`, `AccountSchema`, `LabeledMultiSchema`, and `MeSchema`.
+`scripts/reddit/postprocess-generated.ts` is a thin CLI around `stampGenerated()` in `scripts/reddit/generated.ts`. It prepends a `// GENERATED by npm run types:generate. DO NOT EDIT.` banner and `import 'server-only'`, and runs a sanity check: the file must export `LinkSchema`, `CommentSchema`, `MoreSchema`, `SubredditSchema`, `AccountSchema`, `LabeledMultiSchema`, `MeSchema`, and `MediaMetadataItemSchema`. Re-stamping an already stamped file is a no-op.
 
 ### 2.4 Curated schemas (hand-written)
 
@@ -1461,10 +1481,12 @@ Links with meaningful text stay links. The allowlist adds `figure`, `figcaption`
    A unit test snapshots the generated policy.
 2. **Error pages:** `(app)/error.tsx` (`catchError`-style retry), `not-found.tsx`, and a global error page.
 3. **Vitest.**
-   - `vitest.config.ts` uses the `node` environment, aliases `server-only` to an empty module, and aliases `@/` to the root.
-   - Suites cover: auth cookies and proxy branches, `safeNext`, url-state and cursor math, sanitizer XSS, schemas over all fixtures, mappers (snapshots), comment tree and `resolveMore`, `runAction` error mapping, and each action's validation.
+   - `vitest.config.mts` uses the `node` environment, aliases `server-only` to an empty stub and `@/` to the root, and processes `*.module.css` with non-scoped class names so markup assertions are readable.
+   - **Coverage is enforced at 90%** for branches, functions, lines, and statements (`coverage.thresholds`, v8 provider). `npm test` runs `vitest run --coverage`, so `npm test` and `npm run check` fail below the floor. Coverage includes `lib/`, `app/`, `components/`, `scripts/`, `stylelint/`, and `proxy.ts`. Only `lib/reddit/schemas/generated.ts` and `*.d.ts` are excluded. New code ships with its tests; the threshold is never lowered to land a change.
+   - `tests/helpers/render-server.tsx` renders Server Component trees with `prerender` from `react-dom/static`, which awaits async components and settles every Suspense boundary, so tests assert final HTML. `tests/helpers/cookie-jar.ts` fakes `cookies()`.
+   - Suites cover: auth cookies, session, routes, actions and proxy branches, `safeNext`, env validation, the fixture scripts, the Stylelint plugin, components and pages, url-state and cursor math, sanitizer XSS, schemas over all committed samples, mappers (snapshots), comment tree and `resolveMore`, `runAction` error mapping, and each action's validation.
 4. **Mock Reddit** (`e2e/mock-reddit/server.ts`), a small Node HTTP server:
-   - It serves `/api/v1/authorize` (auto-approves and redirects back with a code), `/api/v1/access_token`, and every GET in §6.1 from `fixtures/reddit/raw`.
+   - It serves `/api/v1/authorize` (auto-approves and redirects back with a code), `/api/v1/access_token`, and every GET in §6.1 from listings assembled out of the committed samples in `fixtures/reddit/things` (raw captures are local-only).
    - It records writes in memory so later GETs reflect them (votes, subscriptions, multis, comments).
    - Latency and failures can be injected via a `x-mock-delay` / `x-mock-fail` control endpoint.
    - The app points at it with `REDDIT_WWW_BASE` and `REDDIT_API_BASE`.

@@ -6,6 +6,7 @@ import {
   RedditForbiddenError,
   RedditNotFoundError,
   RedditRateLimitError,
+  RedditSchemaError,
 } from '@/lib/reddit/errors'
 import { MIN_REMAINING, resetRateLimit } from '@/lib/reddit/rate-limit'
 
@@ -78,6 +79,29 @@ describe('redditFetch', () => {
     )
   })
 
+  it('reports redirects and non-JSON bodies on writes as API errors', async () => {
+    respond('', { status: 302, headers: { location: '/login' } })
+    await expect(redditFetch('/api/vote', { token: 't', method: 'POST' })).rejects.toBeInstanceOf(
+      RedditApiError,
+    )
+    respond('<html>oops</html>')
+    await expect(redditFetch('/api/vote', { token: 't', method: 'POST' })).rejects.toThrow(
+      /Non-JSON response/,
+    )
+  })
+
+  it('maps a 403 with an unreadable body to an unknown reason', async () => {
+    respond('not json', { status: 403 })
+    await expect(redditFetch('/r/x/about', { token: 't' })).rejects.toMatchObject({
+      reason: 'unknown',
+    })
+  })
+
+  it('defaults the 429 retry window when Reddit omits it', async () => {
+    respond('{}', { status: 429 })
+    await expect(redditFetch('/x', { token: 't' })).rejects.toMatchObject({ resetSeconds: 60 })
+  })
+
   it('surfaces 429 with the reset time', async () => {
     respond('{}', { status: 429, headers: { 'x-ratelimit-reset': '12.4' } })
     await expect(redditFetch('/x', { token: 't' })).rejects.toMatchObject({ resetSeconds: 13 })
@@ -105,8 +129,13 @@ describe('redditFetch', () => {
 })
 
 describe('error classes', () => {
-  it('carry their own names', () => {
+  it('carry their own names and details', () => {
     expect(new RedditForbiddenError('private').name).toBe('RedditForbiddenError')
     expect(new RedditRateLimitError(3).message).toContain('3s')
+    const api = new RedditApiError('Thread locked', 200, 'THREAD_LOCKED', 'parent')
+    expect(api).toMatchObject({ status: 200, code: 'THREAD_LOCKED', field: 'parent' })
+    const schema = new RedditSchemaError('/best', [{ path: ['data'] }])
+    expect(schema).toMatchObject({ name: 'RedditSchemaError', status: 502, endpoint: '/best' })
+    expect(schema.message).toContain('/best')
   })
 })

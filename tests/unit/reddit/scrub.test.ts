@@ -20,6 +20,11 @@ describe('fixture scrubbing', () => {
     expect(scrub({ a: 'a-b.c' }, 'a-b.c')).toEqual({ a: FIXTURE_USER })
   })
 
+  it('passes non-object /api/v1/me responses through', () => {
+    expect(scrubMe(null, 'x')).toBeNull()
+    expect(scrubMe('text', 'x')).toBe('text')
+  })
+
   it('keeps only public fields from /api/v1/me', () => {
     const me = {
       name: 'GregR',
