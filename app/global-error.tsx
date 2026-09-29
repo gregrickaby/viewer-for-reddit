@@ -27,7 +27,16 @@ export default function GlobalError({
           <button
             type="button"
             onClick={() => retry()}
-            style={{ font: 'inherit', padding: '0.5rem 1rem' }}
+            style={{
+              font: 'inherit',
+              fontWeight: 600,
+              padding: '0.5rem 1rem',
+              borderRadius: '999px',
+              border: '1px solid GrayText',
+              background: 'Canvas',
+              color: 'CanvasText',
+              cursor: 'pointer',
+            }}
           >
             Try again
           </button>

@@ -16,7 +16,7 @@ export function PendingButton({
 }: {
   children: ReactNode
   pending?: boolean
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
 }) {
   const status = useFormStatus()
   const busy = pending ?? status.pending

@@ -2,6 +2,7 @@
 
 import { useId, useOptimistic, useState } from 'react'
 import { setSubscription } from '@/app/actions/subscriptions'
+import { Button } from '@/components/ui/button'
 import styles from './subscribe-button.module.css'
 import { useEnhancedForm } from './use-enhanced-form'
 
@@ -67,17 +68,17 @@ export function SubscribeButton({
               {kind === 'user' ? 'Unfollow' : 'Leave'} {label}?
             </p>
             <div className={styles.confirmActions}>
-              <button
-                type="button"
-                className={styles.button}
+              <Button
+                variant="secondary"
+                size="sm"
                 popoverTarget={confirmId}
                 popoverTargetAction="hide"
               >
                 Cancel
-              </button>
-              <button type="submit" className={`${styles.button} ${styles.danger}`}>
+              </Button>
+              <Button type="submit" variant="danger" size="sm">
                 {kind === 'user' ? 'Unfollow' : 'Leave'}
-              </button>
+              </Button>
             </div>
           </div>
         </>

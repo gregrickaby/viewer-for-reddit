@@ -15,19 +15,4 @@
     max-inline-size: var(--measure);
     color: var(--text-2);
   }
-
-  .retry {
-    min-block-size: 2.5rem;
-    padding-inline: var(--space-4);
-    border: var(--border-width) solid var(--border-strong);
-    border-radius: var(--radius-pill);
-    background: var(--surface-card);
-    color: var(--text-1);
-    font-weight: 600;
-    cursor: pointer;
-
-    &:hover {
-      background: var(--surface-hover);
-    }
-  }
 }

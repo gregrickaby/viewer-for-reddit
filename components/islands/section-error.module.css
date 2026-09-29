@@ -17,19 +17,4 @@
     color: var(--text-2);
     font-size: var(--step-minus-1);
   }
-
-  .retry {
-    min-block-size: 2rem;
-    padding-inline: var(--space-3);
-    border: var(--border-width) solid var(--border-strong);
-    border-radius: var(--radius-pill);
-    background: var(--surface-card);
-    color: var(--text-1);
-    font-weight: 600;
-    cursor: pointer;
-
-    &:hover {
-      background: var(--surface-hover);
-    }
-  }
 }

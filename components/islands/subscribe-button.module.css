@@ -39,17 +39,6 @@
     }
   }
 
-  .danger {
-    border-color: transparent;
-    background: var(--badge-nsfw);
-    color: var(--accent-contrast);
-
-    &:hover {
-      background: var(--badge-nsfw);
-      filter: brightness(1.1);
-    }
-  }
-
   .confirm {
     inline-size: min(20rem, calc(100vw - 2 * var(--space-4)));
     padding: var(--space-4);

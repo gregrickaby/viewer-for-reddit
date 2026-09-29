@@ -5,6 +5,7 @@ import { addToMultiForm, deleteMulti, updateMultiForm } from '@/app/actions/mult
 import { ActionForm } from '@/components/islands/action-form'
 import { MembershipToggle } from '@/components/islands/membership-toggle'
 import { PendingButton } from '@/components/islands/pending-button'
+import { Button } from '@/components/ui/button'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { formAction } from '@/lib/actions/form-action'
@@ -206,9 +207,9 @@ function DangerZone({ multi }: { multi: MultiView }) {
       </h2>
       <p className={multis.help}>Deleting removes the multireddit, not the communities in it.</p>
       <div>
-        <button type="button" className={multis.edit} popoverTarget={id}>
+        <Button variant="secondary" size="sm" popoverTarget={id}>
           Delete {multi.displayName}…
-        </button>
+        </Button>
       </div>
       <div
         id={id}
@@ -219,17 +220,12 @@ function DangerZone({ multi }: { multi: MultiView }) {
       >
         <p>Delete {multi.displayName}? This can’t be undone.</p>
         <div className={multis.confirmActions}>
-          <button
-            type="button"
-            className={multis.edit}
-            popoverTarget={id}
-            popoverTargetAction="hide"
-          >
+          <Button variant="secondary" size="sm" popoverTarget={id} popoverTargetAction="hide">
             Cancel
-          </button>
+          </Button>
           <form action={formAction(deleteMulti)}>
             <input type="hidden" name="name" value={multi.name} />
-            <PendingButton>Delete</PendingButton>
+            <PendingButton variant="danger">Delete</PendingButton>
           </form>
         </div>
       </div>

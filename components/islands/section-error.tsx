@@ -1,6 +1,7 @@
 'use client'
 
 import { type ErrorInfo, catchError } from 'next/error'
+import { Button } from '@/components/ui/button'
 import styles from './section-error.module.css'
 
 /**
@@ -13,9 +14,9 @@ function SectionErrorFallback({ title }: { title: string }, { retry }: ErrorInfo
     <div className={styles.root} role="alert">
       <p className={styles.title}>{title}</p>
       <p className={styles.detail}>Reddit may be busy or rate-limiting us.</p>
-      <button type="button" className={styles.retry} onClick={() => retry()}>
+      <Button variant="secondary" size="sm" onClick={() => retry()}>
         Try again
-      </button>
+      </Button>
     </div>
   )
 }

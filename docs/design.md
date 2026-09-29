@@ -971,7 +971,7 @@ components/**/name.module.css      @layer components { … }  – colocated with
 
 | Primitive | Built on | Client? |
 |---|---|---|
-| `Button`, `IconButton`, `LinkButton` | `<button>` / `<a>`, pill radius, accent and ghost variants, `aria-busy` | No |
+| `Button`, `IconButton`, `LinkButton` | `<button>` / `<a>`, pill radius, primary, secondary, ghost and danger variants (every text button uses these; confirmations pair a secondary Cancel with a danger action), `aria-busy` | No |
 | `Menu` | `popover` + a `popovertarget` button, positioned with CSS anchor positioning (`position-anchor`, `position-try-fallbacks`). Uses the disclosure pattern (a list of links and buttons), not ARIA `menu`. | No |
 | `Tooltip` | `popover="hint"` + `interestfor`, where supported. Otherwise the `title` attribute. | No |
 | `Dialog`, `ConfirmDialog` | `<dialog closedby="any">`, opened via invoker commands (`commandfor` / `command="show-modal"`) | No. `GalleryLightbox` is the only dialog island. |

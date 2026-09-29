@@ -7,6 +7,7 @@ import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import { PendingButton } from '@/components/islands/pending-button'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
+import { Button } from '@/components/ui/button'
 import { RedditHtml } from '@/components/reddit-html'
 import { formAction } from '@/lib/actions/form-action'
 import { absoluteTime, compactNumber, isoTime, timeAgo } from '@/lib/format'
@@ -160,17 +161,12 @@ function DeleteComment({ fullname }: { fullname: string }) {
       >
         <p>Delete this comment? This can’t be undone.</p>
         <div className={styles.confirmActions}>
-          <button
-            type="button"
-            className={styles.action}
-            popoverTarget={id}
-            popoverTargetAction="hide"
-          >
+          <Button variant="secondary" size="sm" popoverTarget={id} popoverTargetAction="hide">
             Cancel
-          </button>
+          </Button>
           <form action={formAction(deleteComment)}>
             <input type="hidden" name="thing" value={fullname} />
-            <PendingButton>Delete</PendingButton>
+            <PendingButton variant="danger">Delete</PendingButton>
           </form>
         </div>
       </div>

@@ -53,6 +53,15 @@
     }
   }
 
+  .danger {
+    background: var(--danger);
+    color: var(--accent-contrast);
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.1);
+    }
+  }
+
   .ghost {
     background: transparent;
     color: var(--text-2);
