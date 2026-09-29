@@ -12,6 +12,8 @@ import {
   unsealRefresh,
 } from '@/lib/auth/cookies'
 import { refreshAccessToken } from '@/lib/auth/oauth'
+import { env } from '@/lib/env'
+import { securityHeaders } from '@/lib/security/headers'
 
 const isPublicPath = (pathname: string) => pathname === '/' || pathname.startsWith('/api/auth/')
 
@@ -38,7 +40,7 @@ export async function proxy(request: NextRequest) {
       const response = NextResponse.redirect(url)
       response.cookies.delete(ACCESS_COOKIE)
       response.cookies.delete(REFRESH_COOKIE)
-      return response
+      return withSecurityHeaders(response)
     }
 
     if (result.kind === 'ok') {
@@ -79,6 +81,15 @@ export async function proxy(request: NextRequest) {
   for (const cookie of outgoing) {
     response.cookies.set(cookie.name, cookie.value, cookieOptions(cookie.maxAge))
   }
+  return withSecurityHeaders(response)
+}
+
+function withSecurityHeaders(response: NextResponse): NextResponse {
+  const headers = securityHeaders({
+    dev: process.env.NODE_ENV === 'development',
+    https: env.BASE_URL.startsWith('https:'),
+  })
+  for (const [name, value] of Object.entries(headers)) response.headers.set(name, value)
   return response
 }
 

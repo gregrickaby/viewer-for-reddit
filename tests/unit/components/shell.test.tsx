@@ -44,6 +44,7 @@ const userMultiPage = await import('@/app/(app)/user/[username]/m/[multi]/page')
 const { default: SettingsPage, metadata: settingsMetadata } =
   await import('@/app/(app)/settings/page')
 const { default: NotFound } = await import('@/app/(app)/not-found')
+const rootNotFound = await import('@/app/not-found')
 const errors = await import('@/lib/reddit/errors')
 
 const searchParams = Promise.resolve({})
@@ -218,5 +219,12 @@ describe('settings and status pages', () => {
 
   it('has a friendly not-found page', async () => {
     expect(await renderServer(<NotFound />)).toContain('Reddit couldn’t find that.')
+  })
+
+  it('has a root not-found page for unknown addresses', async () => {
+    expect(rootNotFound.metadata).toEqual({ title: 'Not found' })
+    const out = await renderServer(<rootNotFound.default />)
+    expect(out).toContain('This page doesn’t exist')
+    expect(out).toContain('href="/home"')
   })
 })

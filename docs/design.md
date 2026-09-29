@@ -80,7 +80,7 @@ Every Reddit response is **validated at runtime against Zod schemas generated fr
 | N3 | **Rate-limit aware.** Reddit allows about 100 requests per minute per OAuth client. We read the `X-Ratelimit-*` headers, avoid redundant calls, and degrade gracefully on 429. |
 | N4 | **Resilience.** One malformed item in a listing is dropped and logged. It does not fail the page. |
 | N5 | **Server-first performance.** The static shell prerenders, and data sections stream behind `<Suspense>`. Everything that renders Reddit data is a Server Component. Client JS stays within the island budget (§4.1). |
-| N6 | **Progressive enhancement.** Reading, paginating, sorting, voting, commenting, subscribing, and multi management all work with JavaScript disabled. JS only adds optimistic feedback. |
+| N6 | **Progressive enhancement.** Sign-in, sign-out, and every form (vote, save, comment, subscribe, multi management, settings) are plain `<form action>` posts that work before hydration; JS only adds optimistic feedback. *Amended in Phase 8:* reading streamed Reddit data needs JS. Under Cache Components, Partial Prerendering sends each Suspense boundary's content as a hidden segment that an inline script moves into place, and this holds for every user agent, crawlers included (`htmlLimitedBots` doesn't change it). Script-less readers get the server-rendered shell, navigation, and skeletons. |
 | N7 | **Accessibility.** WCAG 2.2 AA. Everything works by keyboard, and toggle buttons expose state (`aria-pressed`). |
 | N8 | **Responsive.** 360px phones through wide desktops. Light and dark mode follow the system setting. |
 
@@ -624,7 +624,7 @@ type Provider = {
 }
 ```
 
-The CSP is **generated from the registry**, so adding a provider is one module, its tests, and zero manual CSP edits.
+The CSP is **generated from the registry**, so adding a provider is one module, its tests, and zero manual CSP edits. It is **static** (no nonces): a per-request nonce makes every page dynamic and defeats Partial Prerendering, so `script-src` is `'self' 'unsafe-inline'`, and the real XSS defense is the sanitizer plus the `SafeHtml` type and its lint rule (§7, §11). `lib/security/headers.ts` builds it, and `proxy.ts` sets it with the other security headers on every response.
 
 | Provider | Recognized URLs | Renders as |
 |---|---|---|
@@ -1004,7 +1004,7 @@ Primitives are Server Components unless noted, so their CSS ships but no JS does
 
 | Threat | Mitigation |
 |---|---|
-| Token theft via XSS | Tokens are only in httpOnly cookies. All Reddit HTML goes through a strict `sanitize-html` allowlist (no `style`, no `on*`, and only `http(s)` and `mailto` schemes). The branded `SafeHtml` type plus a lint rule guard `dangerouslySetInnerHTML`. Minimal client JS shrinks the attack surface. A CSP ships in the hardening phase. |
+| Token theft via XSS | Tokens are only in httpOnly cookies. All Reddit HTML goes through a strict `sanitize-html` allowlist (no `style`, no `on*`, and only `http(s)` and `mailto` schemes). The branded `SafeHtml` type plus a lint rule guard `dangerouslySetInnerHTML`. Minimal client JS shrinks the attack surface. A static CSP limits where scripts, frames, and media load from (§8.7), and `frame-ancestors 'none'` blocks clickjacking. |
 | OAuth CSRF / login fixation | A random `state` in a sealed, short-lived cookie is compared on callback. |
 | Open redirect via `next` | Only same-origin relative paths are allowed (§5.3). |
 | Malicious or tracking embeds | Iframes are built **only** from provider-registry URLs, with strictly validated ids, and Reddit's oEmbed `html` is never injected. Every iframe carries `sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"` and a minimal `allow` list. Iframes load only after a click (facade). The CSP `frame-src`, `media-src`, `img-src`, and `connect-src` lists are generated from the registry. |
@@ -1039,7 +1039,7 @@ Section-level boundaries use `catchError` from `next/error`, so a failure in the
 | Pure logic | Vitest | Score math, `next` sanitization, cursor math, `?more=` resolution and tree splicing, sanitizer allowlist (XSS corpus), link rewriting, token-expiry decisions. |
 | Auth and proxy | Vitest | `proxy()` against mocked `fetch`: refresh on expiry, `invalid_grant` clears cookies, gating redirects, non-GET pass-through. |
 | Server Actions | Vitest | Called directly with a mocked session and a mocked Reddit. Asserts input validation, error mapping, and `refresh()` versus no-refresh behavior. |
-| End to end | Playwright + a mock Reddit server (base URLs from env) | Sign-in round trip, feed pagination, vote with rollback, comment and reply, load more comments, subscribe and follow, the full multi CRUD cycle, sign out. **The same suite runs a second time with `javaScriptEnabled: false`** to enforce N6. |
+| End to end | Playwright + a mock Reddit server (base URLs from env) | Sign-in round trip, feed pagination, vote with rollback, comment and reply, load more comments, subscribe and follow, the full multi CRUD cycle, sign out. A `chromium-nojs` project (`javaScriptEnabled: false`) runs the `@nojs`-tagged specs to enforce N6 as amended: sign-in and the server-rendered shell. |
 | Media detection | Vitest | Table-driven corpus in `tests/media/corpus/*.json`: a real captured post plus the expected `PostMedia` type and provider. Coverage gates require every resolver and provider to have at least 2 samples. There are also URL-parser tests with spoofed hosts and malformed ids. |
 | Media playback | Playwright (Chromium + WebKit) | GIF loops animate (`currentTime` advances). Reddit video plays with an audio track (via `hls.js` on Chromium, native on WebKit). An embed makes no request to its provider before the click. NSFW media makes **no** network request before reveal. Reduced motion stops autoplay. |
 | Network guard | Playwright | Asserts that no browser-initiated `fetch` or XHR goes to anything other than RSC navigations and Server Action POSTs (enforces rule 2). |

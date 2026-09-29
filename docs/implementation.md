@@ -490,7 +490,7 @@ export async function requireAuth(): Promise<Auth> {
   // <head><script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} /></head>
   ```
 
-  The regex only accepts the three known values, so the cookie can't inject anything. This file is the second allowed `dangerouslySetInnerHTML` site, so add it to the ESLint `ignores` list. The CSP (Phase 8) allows this script by hash or by the proxy nonce.
+  The regex only accepts the three known values, so the cookie can't inject anything. This file is the second allowed `dangerouslySetInnerHTML` site, so add it to the ESLint `ignores` list. The static CSP (Phase 8) allows it through `script-src 'unsafe-inline'`; nonces are off the table under Partial Prerendering.
 
 ### Phase 1 acceptance
 
@@ -1707,6 +1707,45 @@ Links with meaningful text stay links. The allowlist adds `figure`, `figcaption`
    - Back-button restoration.
    - Reduced motion.
    - Mobile drawer.
+
+### Phase 8 status (2026-09-29)
+
+**Built:**
+- `lib/security/headers.ts`: `contentSecurityPolicy()` and `securityHeaders()`. `proxy.ts` applies them to every response it returns, the `invalid_grant` redirect included.
+- `app/not-found.tsx` for unknown addresses, and `app/global-error.tsx`, which brings its own `<html>` and follows the OS color scheme.
+- `e2e/mock-reddit/server.ts`, `e2e/fixtures.ts`, `playwright.config.ts`, and three specs: `auth-and-feeds`, `actions`, and `platform`.
+- `.github/workflows/ci.yml`: format check, `npm run check`, and the Playwright suite on every push to `main` and every PR. `.github/workflows/canary.yml`: the weekly bump, which opens a PR only when the bumped tree passes both.
+
+**Decisions and findings (they amend items 1 and 4–5 above):**
+- **The CSP is static, with no nonce.** A per-request nonce needs a dynamic render, which defeats Partial Prerendering and the prefetched shells (design §8.4). So:
+  - `script-src` is `'self' 'unsafe-inline'`, plus `'unsafe-eval'` in dev only.
+  - XSS defense stays with the sanitizer and `SafeHtml` (design §11).
+  - Hosts come from the registry's `cspSources()` plus Reddit's media hosts. `form-action` allows `'self'` and the `REDDIT_WWW_BASE` origin, for the OAuth redirect.
+  - `upgrade-insecure-requests` and HSTS are sent only when `BASE_URL` is HTTPS and it isn't dev, so the plain-HTTP e2e server works.
+  - Other headers: `nosniff`, `strict-origin-when-cross-origin`, a deny-all `Permissions-Policy`, and `Cross-Origin-Opener-Policy: same-origin`.
+  - `tests/unit/security.test.ts` snapshots the production policy.
+- **Mock Reddit controls** are a `POST /__mock/control` endpoint (`delayMs`, `failNext`), plus `/__mock/reset` and `/__mock/state`, not request headers: the server makes the requests, so a test can't add headers to them. Writes change in-memory state, so later reads reflect votes, saves, subscriptions, comments, and multis.
+- **Playwright runs plain HTTP on port 3100**, against the mock on 4010, with Chromium only for now. A fixture aborts every browser request to a non-localhost host, so no test can reach the real internet.
+- **No-JS is narrower than planned (design N6, amended).** Under Cache Components, every user agent gets streamed Suspense content as hidden segments that need a script to reveal. An experiment with `htmlLimitedBots` plus a crawler user agent was reverted, because crawlers get the same segments. The `chromium-nojs` project therefore covers sign-in and the server-rendered shell only.
+- **Hidden automation tabs don't reveal streamed content.** In a background Chrome tab, `document.visibilityState` is `hidden`, so `requestAnimationFrame` never fires, React's stream reveal stalls, and screenshots look stale. Verify rendering with Playwright, not a background tab.
+
+**Verified:**
+- 780 unit tests pass: 99.4% statements, 97.6% branches, 98.8% functions, 99.8% lines. Every new file is at 100%.
+- 15 e2e tests pass:
+  - sign-in and sign-out
+  - paging without repeats, and sorting
+  - optimistic vote, save, comment, and join against a 1.5-second delay, with rollback on failure
+  - no-JS sign-in
+  - network guard
+  - no CSP violations on home, post, and settings
+  - `instant()` navigation
+
+**Still open:**
+- WebKit and media-playback e2e (the Phase 7 acceptance items).
+- Axe checks.
+- Multi CRUD, reply, edit, and delete in e2e.
+- The CI workflows haven't run yet: the repository has no GitHub remote.
+- The switch from canary to stable before production.
 
 ---
 

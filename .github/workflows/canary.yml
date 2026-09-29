@@ -1,0 +1,46 @@
+name: Next.js canary bump
+
+# Development tracks next@canary (design §2). Once a week, try the newest
+# canary and open a PR only if it passes the full check and e2e suite.
+on:
+  schedule:
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - id: bump
+        run: |
+          before=$(node -p "require('./package.json').dependencies.next")
+          npm install -E next@canary eslint-config-next@canary @next/playwright@canary
+          after=$(node -p "require('./package.json').dependencies.next")
+          echo "before=$before" >> "$GITHUB_OUTPUT"
+          echo "after=$after" >> "$GITHUB_OUTPUT"
+      - if: steps.bump.outputs.before != steps.bump.outputs.after
+        run: npm run check
+      - if: steps.bump.outputs.before != steps.bump.outputs.after
+        run: npx playwright install --with-deps chromium && npm run test:e2e
+        env:
+          CI: true
+      - if: steps.bump.outputs.before != steps.bump.outputs.after
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/next-canary
+          commit-message: 'chore: bump next to ${{ steps.bump.outputs.after }}'
+          title: 'chore: bump next to ${{ steps.bump.outputs.after }}'
+          body: |
+            Weekly canary bump: `${{ steps.bump.outputs.before }}` → `${{ steps.bump.outputs.after }}`.
+            `npm run check` and the Playwright suite passed on this change.
+            Read the release notes and `node_modules/next/dist/docs` for deprecations before merging.
