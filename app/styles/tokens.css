@@ -1,0 +1,101 @@
+/* Design tokens (docs/design.md §10.4). Reddit-native palette: brand orangered
+   and reddit.com's near-black dark chrome. Semantic colors are defined once
+   with light-dark(); `data-theme` only switches `color-scheme` (§8.8). */
+@layer tokens {
+  :root {
+    color-scheme: light dark; /* data-theme="system" */
+
+    /* Orangered scale — Reddit brand #ff4500 at step 6 */
+    --orangered-0: #ffeee4;
+    --orangered-1: #ffdbcd;
+    --orangered-2: #ffb69b;
+    --orangered-3: #ff8e64;
+    --orangered-4: #fe6d37;
+    --orangered-5: #fe5719;
+    --orangered-6: #ff4500;
+    --orangered-7: #e43c00;
+    --orangered-8: #cb3400;
+    --orangered-9: #b22900;
+
+    /* Surfaces & text */
+    --surface-page: light-dark(#fff, #0e0e10);
+    --surface-card: light-dark(#fff, #1a1a1b);
+    --surface-sunken: light-dark(#f6f7f8, #0a0a0b);
+    --surface-hover: light-dark(#f6f7f8, #272729);
+    --border: light-dark(#dadde1, #343536);
+    --border-strong: light-dark(#878a8c, #717375);
+    --text-1: light-dark(#1c1c1c, #d7dadc);
+    --text-2: light-dark(#4f5a60, #b0b3b8);
+    --text-3: light-dark(#6a6f73, #909296);
+
+    /* Accent text/links: #ff4500 on white is ~3.6:1 (fails AA text), so light mode uses step 8 */
+    --accent: light-dark(var(--orangered-8), var(--orangered-6));
+    --accent-soft: light-dark(var(--orangered-0), #3a1a0c);
+
+    /* Accent fills (buttons): white text needs step 8+ in both themes */
+    --accent-fill: var(--orangered-8);
+    --accent-fill-hover: var(--orangered-9);
+    --accent-contrast: #fff;
+
+    /* Votes: Reddit orangered (up) and periwinkle (down), darkened in light mode for AA */
+    --upvote: light-dark(#cb3400, #ff4500);
+    --downvote: light-dark(#4d62d6, #7193ff);
+
+    /* Status */
+    --focus-ring: light-dark(#0079d3, #4fbcff);
+    --danger: light-dark(#c4122f, #ff585b);
+    --nsfw: light-dark(#c4122f, #ff585b);
+    --spoiler: light-dark(#5c5f66, #a6a7ab);
+
+    /* Type */
+    --font-sans:
+      var(--font-reddit-sans), -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, helvetica,
+      arial, sans-serif;
+    --font-mono: var(--font-reddit-mono), ui-monospace, sfmono-regular, menlo, monospace;
+    --step-minus-2: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
+    --step-minus-1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
+    --step-0: clamp(0.95rem, 0.92rem + 0.2vw, 1.05rem);
+    --step-1: clamp(1.1rem, 1.04rem + 0.3vw, 1.25rem);
+    --step-2: clamp(1.3rem, 1.2rem + 0.5vw, 1.55rem);
+    --step-3: clamp(1.6rem, 1.4rem + 0.9vw, 2rem);
+    --step-4: clamp(2rem, 1.7rem + 1.5vw, 2.8rem);
+    --measure: 70ch;
+
+    /* Space (4px base) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+
+    /* Shape */
+    --radius-1: 4px;
+    --radius-2: 8px;
+    --radius-3: 16px;
+    --radius-pill: 999px;
+    --border-width: 1px;
+    --shadow-1: 0 1px 2px color-mix(in srgb, #000 12%, transparent);
+    --shadow-2: 0 8px 24px color-mix(in srgb, #000 20%, transparent);
+
+    /* Layers */
+    --z-sticky: 10;
+    --z-overlay: 100;
+
+    /* Motion (docs/design.md §8.5) */
+    --duration-exit: 150ms;
+    --duration-enter: 210ms;
+    --duration-move: 400ms;
+    --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+}

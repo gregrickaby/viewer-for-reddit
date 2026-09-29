@@ -911,11 +911,13 @@ Mobile <768px: header + single column. The sidebar is a `popover` drawer opened 
 | `--surface-page` | `#ffffff` | `#0e0e10` | reddit.com page background (dark) |
 | `--surface-card` | `#ffffff` | `#1a1a1b` | cards, panels, pills |
 | `--surface-hover` | `#f6f7f8` | `#272729` | |
-| `--border` | `#dadde1` | `#343536` | |
+| `--border` | `#dadde1` | `#343536` | decorative dividers |
+| `--border-strong` | `#878a8c` | `#717375` | Input and control boundaries, ≥3:1 per WCAG 1.4.11 |
 | `--text-1` | `#1c1c1c` | `#d7dadc` | body text |
 | `--text-2` | `#576f76` | `#a6a7ab` | secondary |
 | `--text-3` | `#7c7c7c` | `#818384` | dimmed and meta |
 | `--accent` | `var(--orangered-8)` `#cb3400` | `var(--orangered-6)` `#ff4500` | Links and primary buttons. `#ff4500` on white is about 3.6:1, which fails AA for text, so light mode uses step 8. This is the same fix as the old app's `primaryShade: 8`. |
+| `--accent-fill` / `--accent-fill-hover` | `#cb3400` / `#b22900` | `#cb3400` / `#b22900` | Button fills. White on `#ff4500` is only 3.44:1, so fills use step 8 in **both** themes (the contrast test caught this). |
 | `--accent-contrast` | `#ffffff` | `#ffffff` | text on accent fills |
 | `--upvote` | `#cb3400` | `#ff4500` | Reddit orangered, darkened in light mode for AA text contrast |
 | `--downvote` | `#4d62d6` | `#7193ff` | Reddit periwinkle, darkened in light mode (**VERIFY** ≥4.5:1 in Phase 3) |
@@ -930,7 +932,7 @@ The light-mode neutrals are new values chosen to match reddit.com's light chrome
   - **Reddit Sans** for UI and body, and **Reddit Mono** for code. Both are Reddit's open-source typefaces, available in `next/font/google` (checked).
   - They replace Geist from the scaffold.
   - Fallback is the system stack `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`.
-- **Type scale:** fluid `clamp()` steps `--step--1` to `--step-4`. The reading measure is ~70ch for self text and comments.
+- **Type scale:** fluid `clamp()` steps `--step-minus-2` to `--step-4`. The reading measure is ~70ch for self text and comments.
 - **Space:** a 4px-based scale, `--space-1` to `--space-8`. Motion tokens are listed in §8.5.
 - **Density:** "Card" in v1. "Compact" is a P2 toggle stored in a cookie.
 
@@ -1068,8 +1070,8 @@ We checked this against the installed packages and the npm registry on 2026-09-2
 
 Policy:
 
-1. **During development, run `next@canary`**, pinned to an exact version (`16.4.0-canary.52` at project start) together with the matching `eslint-config-next` and `@next/playwright` canaries. The top-level `react` and `react-dom` track `react@canary`, so the types and the vendored runtime stay aligned.
-2. Bump the canary deliberately with a weekly PR (`npm i -E next@canary eslint-config-next@canary @next/playwright@canary react@canary react-dom@canary`), gated by the full CI suite. Read the bundled docs' diff for anything that changed.
+1. **During development, run `next@canary`**, pinned to an exact version (`16.4.0-canary.52` at project start) together with the matching `eslint-config-next` and `@next/playwright` canaries. The top-level `react` and `react-dom` stay on the latest **stable** release, because `next@canary`'s `^19.0.0` peer range excludes React prereleases. The App Router runs Next's vendored React canary regardless.
+2. Bump the canary deliberately with a weekly PR (`npm i -E next@canary eslint-config-next@canary @next/playwright@canary`), gated by the full CI suite. Read the bundled docs' diff for anything that changed.
 3. Enable `cacheComponents`, `partialPrefetching`, `typedRoutes`, and `reactCompiler`, and keep instant-navigation validation at its default level.
 4. **Before production,** switch to the latest stable release at or above the last green canary and pin it exactly. After that, a nightly job tests `next@canary` without blocking.
 5. Before writing code against any Next API, read the bundled docs in `node_modules/next/dist/docs/` (per `AGENTS.md`). That is the source of truth for this version.

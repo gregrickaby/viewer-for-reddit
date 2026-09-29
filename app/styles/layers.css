@@ -1,0 +1,4 @@
+/* Cascade layer order for the whole app. Imported first, so every later
+   stylesheet — including code-split CSS Modules — lands in a known layer
+   regardless of load order (docs/design.md §10.4). */
+@layer reset, tokens, base, components, utilities;

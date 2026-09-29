@@ -37,7 +37,7 @@ At <https://www.reddit.com/prefs/apps>, confirm the app is type **web app**. Its
 |---|---|---|
 | `next` | `16.4.0-canary.52` (exact) | The App Router vendors its own React canary |
 | `eslint-config-next`, `@next/playwright` | the matching `16.4.0-canary.52` | Always bump together with `next` |
-| `react`, `react-dom` | `react@canary` (exact, currently `19.3.0-canary-d083ec1d-20260922`) | Keeps the top-level types and runtime aligned with the vendored build |
+| `react`, `react-dom` | `19.3.0` (exact, **stable**) | `next@canary` declares a `^19.0.0` peer dependency, and semver excludes prereleases, so `react@canary` fails to resolve. The App Router uses Next's vendored React canary at runtime regardless (`19.3.0-canary-8b0da1c6-20260922` in 16.4.0-canary.52), so the top-level package only supplies types and the Pages Router runtime, which we don't use. |
 | `@types/react` / `@types/react-dom` | `19.3.x` | Already type `ViewTransition`, `addTransitionType`, and `Activity` |
 
 After `npm i`, re-read `node_modules/next/dist/docs/` for anything that differs from these sketches. They were checked against 16.3.7. Before production, switch to the latest stable release and pin it (design §15).
@@ -59,7 +59,7 @@ npm i -D -E @types/sanitize-html quicktype@26 tsx vitest@5 @vitest/coverage-v8 \
   happy-css-modules stylelint stylelint-config-standard stylelint-config-css-modules
 
 # framework on canary, pinned exactly (bump weekly as one PR)
-npm i -E next@canary eslint-config-next@canary react@canary react-dom@canary
+npm i -E next@canary eslint-config-next@canary react@19.3.0 react-dom@19.3.0
 ```
 
 Registry versions checked on 2026-09-29: happy-css-modules 5.0.2, stylelint 17.15.0, stylelint-config-standard 40.0.0, stylelint-config-css-modules 4.6.0, iron-session 9.0.1, zod 4.6.5, sanitize-html 2.17.7, hls.js 1.7.3, quicktype 26.0.0, vitest 5.0.2, @playwright/test 1.63.0, @next/playwright 16.3.7.
@@ -129,6 +129,8 @@ export default nextConfig
 ```
 
 ### 2.4 ESLint guardrails (`eslint.config.mjs`)
+
+> **Build note (2026-09-29):** the `eslint-plugin-react` bundled with `eslint-config-next@16.4.0-canary.52` calls `context.getFilename()`, which ESLint 10 removed, but only while auto-detecting the React version. The config pins `settings.react.version: '19.3'` to skip detection. Remove the pin once the plugin supports ESLint 10.
 
 These enforce the server-first rules (§4.1) and the HTML safety rule (§7). Add them after the Next presets:
 
@@ -1474,7 +1476,7 @@ Links with meaningful text stay links. The allowlist adds `figure`, `figcaption`
    - `optimistic.spec.ts` injects 1.5 seconds of latency and asserts that the vote, save, subscribe, and multi membership UI updates in under 100ms. An injected 500 rolls back.
 6. **CI (GitHub Actions):**
    - On PR: `npm ci`, `npm run check`, `npm run build`, `npm run test:e2e`.
-   - **Weekly canary bump:** a scheduled job opens a PR that runs `npm i -E next@canary eslint-config-next@canary @next/playwright@canary react@canary react-dom@canary` and the full suite. Merge it when green.
+   - **Weekly canary bump:** a scheduled job opens a PR that runs `npm i -E next@canary eslint-config-next@canary @next/playwright@canary` (plus the latest stable `react`/`react-dom`) and the full suite. Merge it when green.
    - **After switching to stable (pre-production):** replace the bump with a nightly, non-blocking `next@canary` job.
 7. **Manual smoke checklist** (per release, with a real Reddit account and Chrome plus Safari):
    - Sign in, sign out, and expired session.

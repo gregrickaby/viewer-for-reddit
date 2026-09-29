@@ -1,0 +1,67 @@
+@layer components {
+  .page {
+    display: grid;
+    place-items: center;
+    min-block-size: 100dvh;
+    padding: var(--space-5) var(--space-4);
+    background:
+      radial-gradient(
+        60rem 40rem at 50% -10%,
+        color-mix(in srgb, var(--orangered-6) 14%, transparent),
+        transparent 70%
+      ),
+      var(--surface-page);
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    inline-size: min(100%, 30rem);
+    padding: var(--space-7) var(--space-6);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-3);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    text-align: center;
+  }
+
+  .title {
+    font-size: var(--step-3);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .lede {
+    color: var(--text-2);
+    max-inline-size: 36ch;
+  }
+
+  .form {
+    inline-size: 100%;
+    display: grid;
+    margin-block-start: var(--space-2);
+  }
+
+  .cta {
+    inline-size: 100%;
+  }
+
+  .alert {
+    inline-size: 100%;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-2);
+    border: var(--border-width) solid color-mix(in srgb, var(--danger) 40%, transparent);
+    background: color-mix(in srgb, var(--danger) 10%, transparent);
+    color: var(--text-1);
+    font-size: var(--step-minus-1);
+    text-align: start;
+  }
+
+  .note {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+    max-inline-size: 38ch;
+  }
+}

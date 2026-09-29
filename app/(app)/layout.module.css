@@ -1,0 +1,36 @@
+@layer components {
+  .shell {
+    min-block-size: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  .header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    border-block-end: var(--border-width) solid var(--border);
+    background: color-mix(in srgb, var(--surface-card) 88%, transparent);
+    backdrop-filter: blur(12px);
+    view-transition-name: site-header;
+  }
+
+  .brand {
+    color: inherit;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .main {
+    inline-size: min(100%, 72rem);
+    margin-inline: auto;
+    padding: var(--space-5) var(--space-4);
+  }
+}
