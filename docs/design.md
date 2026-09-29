@@ -665,7 +665,7 @@ Reddit attaches `media_metadata` to self posts and comments that contain uploade
 2. Either the link text is empty or equals the URL (a "bare" media link), or the href matches a `media_metadata` entry with `status: 'valid'`.
 3. The media type can be determined: `media_metadata.e`, or the file extension `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, or `.gifv` (→ `.mp4`).
 
-The result is a `<figure>` holding an `<img>` for images, or a `<video muted loop playsinline autoplay>` for GIFs (Giphy → `media.giphy.com/media/<id>/giphy.mp4`, `.gifv` → `.mp4`), plus the caption. A link with meaningful text stays a link. The sanitizer allows `figure`, `figcaption`, `picture`, `source`, `img`, and `video` **only** with `src` on the allowlist (`*.redd.it`, `*.redditmedia.com`, `*.redditstatic.com`, `media.giphy.com`, `i.giphy.com`, `i.imgur.com`). Inline media inside NSFW or spoiler content follows the same reveal rules.
+The result is a `<span data-inline-media>` (a block; `<figure>` isn't allowed inside the `<p>` Reddit wraps these links in) holding an `<img>` for images, or a `<video muted loop playsinline autoplay>` for GIFs (Giphy → `media.giphy.com/media/<id>/giphy.mp4`, `.gifv` → `.mp4`), plus the caption. A link with meaningful text stays a link. The sanitizer allows `figure`, `figcaption`, `picture`, `source`, `img`, and `video` **only** with `src` on the allowlist (`*.redd.it`, `*.redditmedia.com`, `*.redditstatic.com`, `media.giphy.com`, `i.giphy.com`, `i.imgur.com`). Inline media inside NSFW or spoiler content follows the same reveal rules.
 
 #### NSFW and spoilers
 

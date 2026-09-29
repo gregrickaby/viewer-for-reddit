@@ -1631,9 +1631,24 @@ Links with meaningful text stay links. The allowlist adds `figure`, `figcaption`
 - Tapping image 2 opens "Image 2 of 7"; → moves to "Image 3 of 7".
 - Closing returns focus to the tapped link.
 
+### Phase 7 status: part 4, inline media
+
+**Built:** `lib/media/inline.ts` (`inlineFor`, `inlineMedia`), plus a `sanitizeRedditHtml(html, { inlineMedia: { metadata } })` option. Post bodies (including a crosspost's borrowed text) and comments use it; community and multi descriptions don't.
+
+**Findings:**
+- **No second parser.** The spike asked how to read link text inside sanitize-html. It isn't reachable in `transformTags`, but no second HTML parser is needed either: the pass runs **after** sanitizing, on its canonical output. A bare link is exactly `<a href="…" …>text</a>` with no nested tags, and its text is compared to its href after entity decoding.
+- **Real markup from the capture:**
+  - Uploads are bare links to `i.redd.it`/`preview.redd.it` whose file name is the `media_metadata` key; that gives the size, the MP4, and the `p[]` srcset.
+  - Giphy-picker GIFs are bare `giphy.com/gifs/<id>` links, often with **empty** metadata (`giphy|<id>`), so the Giphy id drives the loop, and the size is used only when present.
+  - Note the apex host: `giphy.com` has to be allowed explicitly, because `.giphy.com` matches subdomains only.
+- **The wrapper is `<span data-inline-media>`**, styled as a block, not `<figure>`: Reddit puts these links inside `<p>`, where a `<figure>` would split the paragraph.
+- **Autoplay is left to the browser.** Inline loops are native `muted loop playsinline autoplay` videos, and Chromium pauses offscreen muted autoplay on its own. A long-thread performance check is still open.
+
+**Verified in the browser** (r/gifs thread with 49 comments): 7 inline GIFs render (uploads from preview.redd.it, Giphy as media.giphy.com MP4 loops that play), and no bare media links remain.
+
 ### Phase 7 acceptance
 
-- [ ] **Corpus:** `tests/media/corpus/*.json` has at least 2 real samples per resolver and per provider, including NSFW Redgifs (both the transcode and iframe paths), a spoiler, a crossposted video, a gallery with a GIF item, a removed post, thumbnail sentinels, a `v.redd.it` GIF versus a video, an Imgur GIFV, and a Giphy comment. All pass, and `media:unresolved` fires for fewer than 2% of corpus posts.
+- [x] **Corpus:** `tests/media/corpus/*.json` has at least 2 real samples per resolver and per provider, including NSFW Redgifs (both the transcode and iframe paths), a spoiler, a crossposted video, a gallery with a GIF item, a removed post, thumbnail sentinels, a `v.redd.it` GIF versus a video, an Imgur GIFV, and a Giphy comment. All pass, and `media:unresolved` fires for fewer than 2% of corpus posts.
 - [x] **URL safety:** spoofed hosts (`youtube.com.evil.com`, `evil.com/youtube.com/watch?v=…`, `https://youtube.com@evil.com`), `javascript:` and `data:` URLs, and over-long or odd ids are all rejected.
 - [ ] **Playback (Playwright, Chromium and WebKit):**
   - A GIF loop's `currentTime` advances while it is visible and pauses offscreen.

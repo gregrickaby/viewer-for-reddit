@@ -1,6 +1,7 @@
 import 'server-only'
 import sanitizeHtml from 'sanitize-html'
 import type { SafeHtml } from '@/lib/view-models'
+import { inlineMedia } from '@/lib/media/inline'
 import { resolveRedditLink } from './links'
 
 /*
@@ -99,8 +100,20 @@ const OPTIONS: sanitizeHtml.IOptions = {
   },
 }
 
-export function sanitizeRedditHtml(html: string | null | undefined): SafeHtml | null {
+export type SanitizeOptions = {
+  /**
+   * Turn bare media links into inline images and GIF loops (self text and
+   * comments), using the thing's `media_metadata` for sizes (design §8.7).
+   */
+  inlineMedia?: { metadata: Record<string, unknown> | null | undefined }
+}
+
+export function sanitizeRedditHtml(
+  html: string | null | undefined,
+  options: SanitizeOptions = {},
+): SafeHtml | null {
   if (!html) return null
-  const clean = sanitizeHtml(html, OPTIONS).trim()
+  let clean = sanitizeHtml(html, OPTIONS).trim()
+  if (options.inlineMedia) clean = inlineMedia(clean, options.inlineMedia.metadata)
   return clean === '' ? null : (clean as SafeHtml)
 }

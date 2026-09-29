@@ -13,7 +13,11 @@ export function mapComment(comment: RedditComment, viewer: string | null = null)
     id: comment.id,
     fullname: `t1_${comment.id}`,
     author: authorName(comment.author),
-    body: removal ? null : sanitizeRedditHtml(comment.body_html),
+    body: removal
+      ? null
+      : sanitizeRedditHtml(comment.body_html, {
+          inlineMedia: { metadata: comment.media_metadata },
+        }),
     createdUtc: comment.created_utc,
     editedUtc: editedAt(comment.edited),
     score: comment.score,

@@ -106,6 +106,21 @@
       color: var(--text-3);
     }
 
+    /* Inline media (lib/media/inline.ts): uploads and GIFs in text, kept modest in size. */
+    & [data-inline-media] {
+      display: block;
+
+      & :is(img, video) {
+        display: block;
+        inline-size: auto;
+        max-inline-size: min(100%, 24rem);
+        block-size: auto;
+        max-block-size: 20rem;
+        border-radius: var(--radius-2);
+        background: var(--surface-sunken);
+      }
+    }
+
     & hr {
       border: 0;
       border-block-start: var(--border-width) solid var(--border);

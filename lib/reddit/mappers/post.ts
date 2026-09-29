@@ -45,8 +45,7 @@ export function mapPost(link: RedditLink): PostView {
       link.link_flair_background_color,
       link.link_flair_text_color,
     ),
-    // A crosspost of a text post has no text of its own.
-    body: removal ? null : sanitizeRedditHtml(link.selftext_html || parent?.selftext_html),
+    body: removal ? null : postBody(link, parent),
     media: resolveMedia(link),
     crosspostFrom: parent
       ? {
@@ -60,4 +59,12 @@ export function mapPost(link: RedditLink): PostView {
 
 function postPath(link: RedditLink): string {
   return appPath(link.permalink, `/r/${link.subreddit}/comments/${link.id}`)
+}
+
+/** Self text, with inline media; a crosspost of a text post borrows the original's. */
+function postBody(link: RedditLink, parent: RedditLink | null) {
+  const source = link.selftext_html ? link : parent
+  return sanitizeRedditHtml(source?.selftext_html, {
+    inlineMedia: { metadata: source?.media_metadata },
+  })
 }
