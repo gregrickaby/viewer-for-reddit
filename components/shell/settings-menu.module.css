@@ -33,8 +33,6 @@
     position-anchor: --settings-menu;
     position-area: bottom span-left;
     position-try-fallbacks: flip-inline;
-    display: grid;
-    gap: var(--space-3);
     inline-size: min(18rem, calc(100vw - 2 * var(--space-4)));
     margin: var(--space-2) 0 0;
     padding: var(--space-3);
@@ -43,6 +41,12 @@
     background: var(--surface-card);
     box-shadow: var(--shadow-2);
     color: var(--text-1);
+
+    /* Only while open: a display on the base rule would defeat the hidden state. */
+    &:popover-open {
+      display: grid;
+      gap: var(--space-3);
+    }
   }
 
   .skeleton {
