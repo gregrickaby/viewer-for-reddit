@@ -65,7 +65,11 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
 
         <p className={styles.note}>
           We never see your password. You’ll approve access on reddit.com, and you can revoke it
-          anytime from your Reddit app settings.
+          anytime from your{' '}
+          <a href="https://www.reddit.com/prefs/apps" target="_blank" rel="noopener noreferrer">
+            Reddit app settings
+          </a>
+          .
         </p>
       </section>
     </main>

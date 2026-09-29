@@ -63,5 +63,10 @@
     color: var(--text-3);
     font-size: var(--step-minus-1);
     max-inline-size: 38ch;
+
+    & a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
   }
 }
