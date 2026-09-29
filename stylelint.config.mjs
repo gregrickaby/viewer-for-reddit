@@ -26,6 +26,15 @@ const config = {
       rules: { 'selector-class-pattern': null },
     },
     {
+      // CSS Carousel (design §8.10) is newer than Stylelint's selector lists:
+      // `::scroll-button(left|right)` arguments and `:target-current` are spec syntax.
+      files: ['components/media/gallery.module.css'],
+      rules: {
+        'selector-type-no-unknown': [true, { ignoreTypes: ['left', 'right'] }],
+        'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['target-current'] }],
+      },
+    },
+    {
       // Reduced-motion overrides must beat component animations.
       files: ['app/styles/base.css'],
       rules: { 'declaration-no-important': null },

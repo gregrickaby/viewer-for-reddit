@@ -119,7 +119,7 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
           </p>
         ) : null}
 
-        <PostMedia media={post.media} title={post.title} reveal={reveal} />
+        <PostMedia media={post.media} title={post.title} reveal={reveal} postId={post.id} />
 
         {post.body ? (
           !detail && post.body.length > EXCERPT_CHARS ? (

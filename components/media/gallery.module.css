@@ -1,0 +1,193 @@
+/* Galleries (design §8.10): a CSS-first carousel and a full-screen lightbox. */
+@layer components {
+  .gallery {
+    position: relative; /* the carousel buttons position against the gallery */
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .track {
+    display: flex;
+    max-block-size: 70vh;
+    overflow: auto hidden; /* x only: a y scroller would swallow page scrolling */
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+    scrollbar-width: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  .slide {
+    position: relative;
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    scroll-snap-align: center;
+  }
+
+  .slideMedia {
+    display: grid;
+    place-items: center;
+    min-block-size: 0;
+    overflow: hidden; /* keep tall media inside its row so the caption stays visible */
+
+    & > * {
+      block-size: 100%;
+    }
+  }
+
+  .open {
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    block-size: 100%;
+    cursor: zoom-in;
+  }
+
+  .image {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+
+  .counter {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-end: var(--space-2);
+    padding: 0.1em 0.6em;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface-card) 85%, transparent);
+    color: var(--text-1);
+    font-size: var(--step-minus-2);
+    font-weight: 700;
+  }
+
+  .caption {
+    padding: var(--space-2) var(--space-3);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+  }
+
+  /* CSS Carousel: previous/next buttons and dots, where the browser has them. */
+  @supports selector(::scroll-button(*)) {
+    .track {
+      scroll-marker-group: after;
+    }
+
+    .track::scroll-button(*) {
+      position: absolute;
+      inset-block-start: 50%;
+      translate: 0 -50%;
+      z-index: 1;
+      inline-size: 2.25rem;
+      block-size: 2.25rem;
+      border: 0;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--surface-card) 88%, transparent);
+      box-shadow: var(--shadow-1);
+      color: var(--text-1);
+      font-size: var(--step-1);
+      cursor: pointer;
+    }
+
+    .track::scroll-button(*):disabled {
+      opacity: 0;
+    }
+
+    .track::scroll-button(left) {
+      content: '‹' / 'Previous image';
+      inset-inline-start: var(--space-2);
+    }
+
+    .track::scroll-button(right) {
+      content: '›' / 'Next image';
+      inset-inline-end: var(--space-2);
+    }
+
+    .track::scroll-marker-group {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-1);
+    }
+
+    .slide::scroll-marker {
+      content: '' / attr(aria-label);
+      inline-size: 0.5rem;
+      block-size: 0.5rem;
+      border-radius: 50%;
+      background: var(--border-strong);
+    }
+
+    .slide::scroll-marker:target-current {
+      background: var(--accent);
+    }
+  }
+
+  /* Lightbox: a full-viewport strip of full-size images. */
+  .lightbox {
+    inline-size: 100vw;
+    max-inline-size: none;
+    block-size: 100dvh;
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: color-mix(in srgb, var(--surface-page) 96%, transparent);
+    color: var(--text-1);
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--surface-page) 70%, transparent);
+    }
+  }
+
+  .lightboxTrack {
+    display: flex;
+    block-size: 100%;
+    overflow: auto hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .lightboxSlide {
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    place-items: center;
+    padding: var(--space-4);
+    scroll-snap-align: center;
+  }
+
+  .lightboxImage {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    inline-size: auto;
+    block-size: auto;
+    object-fit: contain;
+  }
+
+  .lightboxCaption {
+    padding-block: var(--space-2);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    text-align: center;
+  }
+
+  .close {
+    position: fixed;
+    inset: var(--space-3) var(--space-3) auto auto;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+    font-size: var(--step-2);
+    cursor: pointer;
+  }
+}

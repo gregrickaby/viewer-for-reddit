@@ -3,9 +3,9 @@ import type { ReactNode } from 'react'
 import { AutoplayVideo } from '@/components/islands/autoplay-video'
 import { EmbedFacade } from '@/components/islands/embed-facade'
 import { RedditVideo } from '@/components/islands/reddit-video'
+import { Gallery } from './gallery'
 import type {
   AnimatedMedia,
-  GalleryItem,
   ImageSet,
   PostMedia as PostMediaView,
   ProviderId,
@@ -37,15 +37,15 @@ const PROVIDER_NAMES: Record<ProviderId, string> = {
   soundcloud: 'SoundCloud',
 }
 
-type Props = { media: PostMediaView; title: string; reveal: RevealReason }
+type Props = { media: PostMediaView; title: string; reveal: RevealReason; postId: string }
 
-export function PostMedia({ media, title, reveal }: Props) {
+export function PostMedia({ media, title, reveal, postId }: Props) {
   if (media.type === 'none') return null
   if (media.type === 'link') {
     // A link card's only media is its thumbnail; hide it rather than wrap the link.
     return <LinkCard {...media} thumbnail={reveal ? null : media.thumbnail} />
   }
-  const content = <MediaBody media={media} title={title} />
+  const content = <MediaBody media={media} title={title} postId={postId} />
   return reveal ? (
     <MediaReveal reason={reveal} blurred={blurredOf(media)}>
       {content}
@@ -58,9 +58,11 @@ export function PostMedia({ media, title, reveal }: Props) {
 function MediaBody({
   media,
   title,
+  postId,
 }: {
   media: Exclude<PostMediaView, { type: 'none' | 'link' }>
   title: string
+  postId: string
 }) {
   switch (media.type) {
     case 'image':
@@ -70,7 +72,7 @@ function MediaBody({
     case 'video':
       return <Video media={media} label={title} />
     case 'gallery':
-      return <Gallery items={media.items} title={title} />
+      return <Gallery items={media.items} title={title} postId={postId} />
     case 'embed':
       return (
         <EmbedFacade
@@ -189,68 +191,6 @@ function Video({ media, label }: { media: VideoMedia; label: string }) {
   )
 }
 
-/** Scroll-snap strip (design §8.10). Phase 7 adds carousel buttons and the lightbox. */
-function Gallery({ items, title }: { items: GalleryItem[]; title: string }) {
-  const first = frameOf(items[0]!.media)
-  const ratio = Math.min(Math.max(first.width / first.height, 4 / 5), 16 / 9)
-  return (
-    <ul
-      role="list"
-      className={styles.gallery}
-      style={{ aspectRatio: String(ratio) }}
-      aria-label={`Gallery, ${items.length} items`}
-      aria-roledescription="carousel"
-      tabIndex={0}
-    >
-      {items.map((item, index) => {
-        const label = `${index + 1} of ${items.length}`
-        const alt = item.caption ?? `${title}, image ${label}`
-        return (
-          <li key={index} className={styles.slide} aria-roledescription="slide" aria-label={label}>
-            <div className={styles.slideMedia}>
-              {item.media.type === 'image' ? (
-                <img
-                  className={styles.slideImage}
-                  src={item.media.image.src}
-                  srcSet={item.media.image.srcSet || undefined}
-                  sizes={SIZES}
-                  width={item.media.image.width}
-                  height={item.media.image.height}
-                  alt={alt}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
-                />
-              ) : item.media.type === 'animated' ? (
-                <Animated media={item.media} alt={alt} />
-              ) : (
-                <Video media={item.media} label={alt} />
-              )}
-            </div>
-            <span className={styles.counter}>{label}</span>
-            {item.caption || item.outboundUrl ? (
-              <p className={styles.caption}>
-                {item.caption}
-                {item.outboundUrl ? (
-                  <>
-                    {item.caption ? ' · ' : null}
-                    <a
-                      href={item.outboundUrl}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow ugc"
-                    >
-                      {hostOf(item.outboundUrl)} ↗
-                    </a>
-                  </>
-                ) : null}
-              </p>
-            ) : null}
-          </li>
-        )
-      })}
-    </ul>
-  )
-}
-
 function LinkCard({
   url,
   domain,
@@ -286,21 +226,6 @@ function LinkCard({
       </span>
     </a>
   )
-}
-
-function frameOf(media: GalleryItem['media']): { width: number; height: number } {
-  switch (media.type) {
-    case 'image':
-      return media.image
-    case 'video':
-      return media.video
-    case 'animated':
-      return media.loop ?? media.gif!
-  }
-}
-
-function hostOf(url: string): string {
-  return new URL(url).hostname.replace(/^www\./, '')
 }
 
 /** The pre-blurred rendition to show behind a reveal, from the media's main image. */

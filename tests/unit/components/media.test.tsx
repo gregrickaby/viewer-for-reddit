@@ -6,7 +6,7 @@ import { blurred, html, imageSet } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
 
 const render = (media: Media, reveal: 'nsfw' | 'spoiler' | null = null) =>
-  renderServer(<PostMedia media={media} title="Title" reveal={reveal} />)
+  renderServer(<PostMedia media={media} title="Title" reveal={reveal} postId="abc" />)
 
 const loop = { mp4: 'https://v.redd.it/a/DASH_480.mp4', width: 480, height: 270 }
 const video = {
@@ -37,7 +37,9 @@ describe('PostMedia', () => {
   it('loops animated media through AutoplayVideo, with a no-JS autoplaying copy', async () => {
     const out = await render({ type: 'animated', loop, gif: null, poster: imageSet() })
     // The scripted <video> gets its src only as it nears the viewport.
-    expect(out).toMatch(/<video class="media scripted"[^>]*poster="https:\/\/i\.redd\.it\/a\.jpg"[^>]*muted=""[^>]*loop=""/)
+    expect(out).toMatch(
+      /<video class="media scripted"[^>]*poster="https:\/\/i\.redd\.it\/a\.jpg"[^>]*muted=""[^>]*loop=""/,
+    )
     expect(out).toContain('<noscript><video class="media" src="https://v.redd.it/a/DASH_480.mp4"')
   })
 

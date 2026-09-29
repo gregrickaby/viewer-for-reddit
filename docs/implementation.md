@@ -1607,6 +1607,30 @@ Links with meaningful text stay links. The allowlist adds `figure`, `figcaption`
 - r/interestingasfuck: v.redd.it plays through hls.js (`blob:`), 4 s in with 9 audio segments fetched.
 - r/gifs: loops play only while at least half visible, pause offscreen, and at most 6 of 9 hold a source.
 
+### Phase 7 status: part 3, galleries
+
+**Built:** `components/media/gallery.tsx` (Server Component), `gallery.module.css`, and the `GalleryLightbox` island. The gallery CSS lives in its own module rather than `base.css`.
+
+**Findings:**
+- **CSS Carousel works in current Chromium:**
+  - `::scroll-button(left|right)` with `content: '‹' / 'Previous image'`
+  - `scroll-marker-group: after`
+  - `::scroll-marker`
+  - `:target-current`
+
+  Stylelint doesn't know the argument and pseudo-class yet, so a file-scoped override allows them. The buttons are positioned absolutely against the gallery section; `position-area` placed them outside the track.
+- **The lightbox:**
+  - The lightbox strip is scrolled with `scrollTo({ left: slide.offsetLeft, behavior: 'instant' })`.
+  - The morph names the tapped image, then the lightbox image, inside `document.startViewTransition`. It is skipped under reduced motion.
+  - Closing (including when Activity hides the route) returns focus.
+- `closedby="any"` is typed by `@types/react` 19.3 and passes through.
+
+**Verified in the browser** (r/pics, 7-image gallery):
+- Dots render and the next button shows; the previous button is hidden at the start because it is disabled.
+- **0** full-size images load before the lightbox opens.
+- Tapping image 2 opens "Image 2 of 7"; → moves to "Image 3 of 7".
+- Closing returns focus to the tapped link.
+
 ### Phase 7 acceptance
 
 - [ ] **Corpus:** `tests/media/corpus/*.json` has at least 2 real samples per resolver and per provider, including NSFW Redgifs (both the transcode and iframe paths), a spoiler, a crossposted video, a gallery with a GIF item, a removed post, thumbnail sentinels, a `v.redd.it` GIF versus a video, an Imgur GIFV, and a Giphy comment. All pass, and `media:unresolved` fires for fewer than 2% of corpus posts.
