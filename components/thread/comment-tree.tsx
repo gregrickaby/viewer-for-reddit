@@ -127,7 +127,9 @@ function Comment({
                 />
               </details>
             ) : null}
-            {comment.mine ? <DeleteComment fullname={comment.fullname} /> : null}
+            {comment.mine ? (
+              <DeleteComment fullname={comment.fullname} permalink={comment.permalink} />
+            ) : null}
             <Link
               href={comment.permalink as Route}
               className={styles.action}
@@ -145,8 +147,9 @@ function Comment({
 }
 
 /** Deleting asks first, in a native popover (design §10.3). Works without JavaScript. */
-function DeleteComment({ fullname }: { fullname: string }) {
+function DeleteComment({ fullname, permalink }: { fullname: string; permalink: string }) {
   const id = useId()
+  const post = /\/comments\/([a-z0-9]+)\//.exec(permalink)?.[1] ?? ''
   return (
     <>
       <button type="button" className={styles.action} popoverTarget={id}>
@@ -166,6 +169,7 @@ function DeleteComment({ fullname }: { fullname: string }) {
           </Button>
           <form action={formAction(deleteComment)}>
             <input type="hidden" name="thing" value={fullname} />
+            <input type="hidden" name="post" value={post} />
             <PendingButton variant="danger">Delete</PendingButton>
           </form>
         </div>

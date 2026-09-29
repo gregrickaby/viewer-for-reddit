@@ -68,8 +68,9 @@ describe('editComment and deleteComment', () => {
   })
 
   it('delete your own comment', async () => {
-    expect((await actions.deleteComment(form({ thing: 't1_abc' }))).ok).toBe(true)
+    expect((await actions.deleteComment(form({ thing: 't1_abc', post: 'p1' }))).ok).toBe(true)
     expect(deleteComment).toHaveBeenCalledWith('t1_abc')
+    expect(waitForComment).toHaveBeenCalledWith('p1', 'abc', 'deleted')
   })
 
   it('reject forms with missing fields', async () => {

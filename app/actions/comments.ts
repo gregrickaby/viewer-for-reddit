@@ -55,10 +55,12 @@ export async function editComment(formData: FormData): Promise<ActionResult> {
 
 export async function deleteComment(formData: FormData): Promise<ActionResult> {
   const thing = String(formData.get('thing') ?? '')
+  const post = String(formData.get('post') ?? '')
   if (!COMMENT.test(thing)) return invalid()
 
   return runAction(async () => {
     await deleteRedditComment(thing)
+    await waitForComment(post, thing.slice(3), 'deleted')
     refresh()
   })
 }

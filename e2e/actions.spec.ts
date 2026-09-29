@@ -67,6 +67,26 @@ test.describe('comments', () => {
     await expect(page.getByText('sending…')).toHaveCount(0)
   })
 
+  test('deleting your comment takes one click on Delete in the dialog', async ({
+    signedIn: page,
+  }) => {
+    await page.locator('main article h2 a').first().click()
+    await expect(page.locator('#comments article').first()).toBeVisible()
+
+    const text = `Delete me ${Date.now()}`
+    await page.getByLabel('Comment', { exact: true }).fill(text)
+    await page.getByRole('button', { name: 'Comment', exact: true }).click()
+    const mine = page.locator('#comments article', { hasText: text })
+    await expect(mine).toBeVisible()
+    await expect(page.getByText('sending…')).toHaveCount(0)
+
+    await mine.getByRole('button', { name: 'Delete' }).click()
+    const dialog = page.getByRole('dialog', { name: 'Delete comment' })
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: 'Delete' }).click()
+    await expect(mine).toHaveCount(0)
+  })
+
   test('a comment on a locked thread keeps the draft and explains', async ({
     signedIn: page,
     mock,

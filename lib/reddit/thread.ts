@@ -86,12 +86,37 @@ async function fetchMoreChildren(
   )
 }
 
+type RawComment = { id?: unknown; author?: unknown; body?: unknown }
+
+/** Finds the comment with `id` anywhere in a raw comments response. */
+function findComment(node: unknown, id: string): RawComment | null {
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const found = findComment(child, id)
+      if (found) return found
+    }
+  } else if (node && typeof node === 'object') {
+    const record = node as Record<string, unknown>
+    if (record.id === id && 'body' in record) return record
+    for (const child of Object.values(record)) {
+      const found = findComment(child, id)
+      if (found) return found
+    }
+  }
+  return null
+}
+
 /**
- * Waits until Reddit's comment listing includes a comment just written. Reddit
- * serves the thread from a cache that can lag the write by a second or two, so
+ * Waits until Reddit's comment listing reflects a write to one comment: it
+ * appears (`'present'`) or is marked deleted (`'deleted'`). Reddit serves the
+ * thread from a cache that can lag the write by a second or two, so
  * re-rendering straight away would show the old tree. Gives up quietly.
  */
-export async function waitForComment(postId: string, commentId: string): Promise<void> {
+export async function waitForComment(
+  postId: string,
+  commentId: string,
+  until: 'present' | 'deleted' = 'present',
+): Promise<void> {
   if (!THING_ID.test(postId)) return
   const { accessToken } = await requireAuth()
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -101,7 +126,8 @@ export async function waitForComment(postId: string, commentId: string): Promise
         token: accessToken,
         query: { sort: 'new', limit: 500 },
       })
-      if (JSON.stringify(json).includes(`"id":"${commentId}"`)) return
+      const found = findComment(json, commentId)
+      if (until === 'present' ? found : !found || found.author === '[deleted]') return
     } catch {
       return
     }

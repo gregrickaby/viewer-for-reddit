@@ -244,8 +244,8 @@ describe('waitForComment', () => {
   })
 
   it('returns as soon as the listing includes the comment', async () => {
-    redditFetch.mockResolvedValueOnce([{}, { data: { id: 'old' } }])
-    redditFetch.mockResolvedValueOnce([{}, { data: { id: 'new1' } }])
+    redditFetch.mockResolvedValueOnce([{}, { data: { id: 'old', body: 'x' } }])
+    redditFetch.mockResolvedValueOnce([{}, { data: { id: 'new1', body: 'x' } }])
     const done = waitForComment('abc', 'new1')
     await vi.runAllTimersAsync()
     await done
@@ -257,11 +257,28 @@ describe('waitForComment', () => {
   })
 
   it('gives up after a few tries', async () => {
-    redditFetch.mockResolvedValue([{}, { data: { id: 'old' } }])
+    redditFetch.mockResolvedValue([{}, { data: { id: 'old', body: 'x' } }])
     const done = waitForComment('abc', 'new1')
     await vi.runAllTimersAsync()
     await done
     expect(redditFetch).toHaveBeenCalledTimes(5)
+  })
+
+  it('waits for a deleted comment to read [deleted], or to disappear', async () => {
+    redditFetch.mockResolvedValueOnce([{}, { data: { id: 'c1', body: 'x', author: 'me' } }])
+    redditFetch.mockResolvedValueOnce([
+      {},
+      { data: { id: 'c1', body: '[deleted]', author: '[deleted]' } },
+    ])
+    const first = waitForComment('abc', 'c1', 'deleted')
+    await vi.runAllTimersAsync()
+    await first
+    expect(redditFetch).toHaveBeenCalledTimes(2)
+
+    redditFetch.mockClear()
+    redditFetch.mockResolvedValue([{}, { data: { id: 'other', body: 'x' } }])
+    await waitForComment('abc', 'c1', 'deleted')
+    expect(redditFetch).toHaveBeenCalledTimes(1)
   })
 
   it('stops quietly when Reddit errors or the id is malformed', async () => {
