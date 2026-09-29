@@ -22,6 +22,28 @@
     overflow: hidden;
   }
 
+  .revealGroup {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .unblur {
+    justify-self: end;
+  }
+
+  .unblurButton {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text-1);
+      background: var(--surface-hover);
+    }
+  }
+
   .revealSummary {
     position: relative;
     display: grid;

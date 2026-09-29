@@ -70,6 +70,7 @@ vi.mock('@/lib/reddit/reads', () => ({
 }))
 vi.mock('@/app/actions/multis', () => ({ setMembership: vi.fn() }))
 vi.mock('@/lib/auth/session', () => ({ getUsername: vi.fn(async () => state.viewer) }))
+vi.mock('@/app/actions/settings', () => ({ setBlurNsfw: vi.fn() }))
 vi.mock('@/lib/settings', () => ({
   getSettings: vi.fn(async () => ({ theme: 'system', blurNsfw: true })),
 }))

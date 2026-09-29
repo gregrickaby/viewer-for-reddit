@@ -14,6 +14,7 @@ const getThread = vi.fn(async () => {
 })
 vi.mock('@/lib/reddit/thread', () => ({ getThread }))
 vi.mock('@/lib/auth/session', () => ({ getUsername: vi.fn(async () => state.username) }))
+vi.mock('@/app/actions/settings', () => ({ setBlurNsfw: vi.fn() }))
 vi.mock('@/lib/settings', () => ({
   getSettings: vi.fn(async () => ({ theme: 'system', blurNsfw: true })),
 }))
