@@ -4,7 +4,7 @@ import { type ChangeEvent, useState } from 'react'
 import { setTheme } from '@/app/actions/settings'
 import type { Theme } from '@/lib/settings'
 import styles from './theme-toggle.module.css'
-import { formAction } from './use-enhanced-form'
+import { formAction } from '@/lib/actions/form-action'
 
 const OPTIONS: Array<{ value: Theme; label: string }> = [
   { value: 'system', label: 'System' },

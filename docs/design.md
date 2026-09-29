@@ -421,6 +421,8 @@ type PostView = {
 }
 ```
 
+`CommentView` mirrors this for comments, and adds `mine` and `bodyMarkdown`. Both are set only for the viewer's own, non-removed comments, so the edit form can be prefilled without sending other users' raw markdown to the client. `ThreadView` is `{ post, comments: CommentNode[], focusCommentId }`.
+
 `SafeHtml` is a branded string type (`string & { readonly __brand: 'SafeHtml' }`). Only the sanitizer can produce one. `dangerouslySetInnerHTML` is used only inside the Server Component `<RedditHtml html={SafeHtml} />`, and an ESLint rule forbids it elsewhere.
 
 ## 8. Rendering, caching, and data flow

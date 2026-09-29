@@ -99,6 +99,10 @@
     }
   }
 
+  .detailTitle {
+    font-size: var(--step-3);
+  }
+
   .crosspost,
   .removed,
   .status {

@@ -1,0 +1,201 @@
+@layer components {
+  .tree {
+    display: grid;
+    gap: var(--space-2);
+
+    /* Nested replies hang off a thread line. */
+    & & {
+      margin-block-start: var(--space-2);
+      padding-inline-start: var(--space-3);
+      border-inline-start: 2px solid var(--border);
+    }
+  }
+
+  .comment {
+    scroll-margin-block-start: calc(var(--header-height, 3.5rem) + var(--space-3));
+
+    &[data-focus],
+    &:target {
+      > .details > .body > :first-child {
+        border-radius: var(--radius-1);
+        background: var(--accent-soft);
+        box-shadow: 0 0 0 var(--space-1) var(--accent-soft);
+      }
+    }
+  }
+
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    padding-block: var(--space-1);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '−';
+      display: inline-grid;
+      place-items: center;
+      inline-size: 1.1rem;
+      block-size: 1.1rem;
+      border: var(--border-width) solid var(--border-strong);
+      border-radius: 50%;
+      font-size: var(--step-minus-2);
+      line-height: 1;
+    }
+
+    .details:not([open]) > &::before {
+      content: '+';
+    }
+  }
+
+  .author {
+    color: var(--text-1);
+    font-weight: 700;
+  }
+
+  .op,
+  .mod,
+  .flair {
+    padding: 0 0.45em;
+    border-radius: var(--radius-pill);
+    font-size: var(--step-minus-2);
+    font-weight: 700;
+  }
+
+  .op {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .mod {
+    background: color-mix(in srgb, var(--focus-ring) 18%, transparent);
+    color: var(--text-1);
+  }
+
+  .flair {
+    background: var(--surface-hover);
+    color: var(--text-2);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-1);
+    padding-inline-start: calc(1.1rem + var(--space-2));
+  }
+
+  .removed {
+    color: var(--text-3);
+    font-style: italic;
+  }
+
+  .actions {
+    --vote-direction: row;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin-inline-start: calc(-1 * var(--space-2));
+  }
+
+  .action {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2rem;
+    padding-inline: var(--space-2);
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--text-2);
+    font: inherit;
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover {
+      background: var(--surface-hover);
+      color: var(--text-1);
+      text-decoration: none;
+    }
+  }
+
+  /* An open reply or edit form takes the full row under the actions. */
+  .inline[open] {
+    display: grid;
+    flex-basis: 100%;
+    gap: var(--space-2);
+    order: 1;
+    padding-block: var(--space-2);
+  }
+
+  .confirm {
+    inline-size: min(22rem, calc(100vw - 2 * var(--space-4)));
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--text-1) 30%, transparent);
+    }
+  }
+
+  .confirmActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+  }
+
+  .more {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2rem;
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  .tree:has(> li > .more [data-pending]) {
+    opacity: 0.7;
+  }
+
+  .skeleton {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .skeletonComment {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .skeletonMeta {
+    display: block;
+    inline-size: 10rem;
+    block-size: 0.9rem;
+  }
+
+  .skeletonLine {
+    display: block;
+    block-size: 1rem;
+  }
+
+  .short {
+    inline-size: 70%;
+  }
+}

@@ -1,0 +1,71 @@
+@layer components {
+  .root {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .text {
+    inline-size: 100%;
+    min-block-size: 5lh;
+    max-block-size: 60vh;
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    color: var(--text-1);
+    font: inherit;
+    line-height: 1.5;
+    resize: vertical;
+    field-sizing: content;
+
+    &::placeholder {
+      color: var(--text-3);
+    }
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .hint {
+    color: var(--text-3);
+    font-size: var(--step-minus-2);
+  }
+
+  .error {
+    color: var(--danger);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+  }
+
+  .pendingList {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .pending {
+    padding: var(--space-2) var(--space-3);
+    border-inline-start: 2px solid var(--border);
+    opacity: 0.6;
+  }
+
+  .pendingMeta {
+    color: var(--text-3);
+    font-size: var(--step-minus-2);
+    font-weight: 600;
+  }
+
+  .pendingText {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}

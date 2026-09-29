@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest'
 import {
+  COMMENT_SORTS,
   HOME_SORTS,
+  MAX_MORE_IDS,
   LISTING_SORTS,
   PAGE_SIZE,
   feedKey,
+  expandMoreHref,
   nextHref,
   pageOffset,
   parseFeedQuery,
+  parseThreadQuery,
   prevHref,
   sortHref,
+  threadSortHref,
   usesTimeRange,
 } from '@/lib/url-state'
 
@@ -96,5 +101,40 @@ describe('hrefs', () => {
   it('exposes the sort lists', () => {
     expect(HOME_SORTS[0]).toBe('best')
     expect(LISTING_SORTS).not.toContain('best')
+  })
+})
+
+describe('thread query', () => {
+  it('defaults to best with nothing expanded', () => {
+    expect(parseThreadQuery({})).toEqual({ sort: 'confidence', more: [] })
+  })
+
+  it('reads the sort and valid, unique more ids up to the cap', () => {
+    const ids = Array.from({ length: 25 }, (_, i) => `m${i}`)
+    expect(parseThreadQuery({ sort: 'qa', more: 'a1,a1,BAD,../x,b2' })).toEqual({
+      sort: 'qa',
+      more: ['a1', 'b2'],
+    })
+    expect(parseThreadQuery({ more: ids.join(',') }).more).toHaveLength(MAX_MORE_IDS)
+    expect(parseThreadQuery({ sort: 'hot' }).sort).toBe('confidence')
+  })
+
+  it('builds sort links that collapse expansions', () => {
+    expect(threadSortHref('/r/a/comments/x/t', 'confidence')).toBe('/r/a/comments/x/t')
+    expect(threadSortHref('/r/a/comments/x/t', 'new')).toBe('/r/a/comments/x/t?sort=new')
+  })
+
+  it('adds a more id, keeping the sort and an anchor', () => {
+    const query = parseThreadQuery({ sort: 'top', more: 'a1' })
+    expect(expandMoreHref('/p', query, 'b2', 'c-xyz')).toBe('/p?sort=top&more=a1%2Cb2#c-xyz')
+    expect(expandMoreHref('/p', parseThreadQuery({ more: 'a1' }), 'a1', 'comments')).toBe(
+      '/p?more=a1#comments',
+    )
+    const full = parseThreadQuery({ more: Array.from({ length: 20 }, (_, i) => `m${i}`).join(',') })
+    expect(expandMoreHref('/p', full, 'z', 'comments')).toBeNull()
+  })
+
+  it('lists every comment sort', () => {
+    expect(COMMENT_SORTS).toContain('controversial')
   })
 })

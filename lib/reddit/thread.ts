@@ -1,0 +1,87 @@
+import 'server-only'
+import { requireAuth } from '@/lib/auth/session'
+import type { ThreadQuery } from '@/lib/url-state'
+import type { ThreadView } from '@/lib/view-models'
+import { redditFetch } from './client'
+import { RedditNotFoundError } from './errors'
+import { parseItems, parseListing, parseResponse } from './listing'
+import { mapComment, mapCommentTree, mapMore } from './mappers/comment'
+import { mapPost } from './mappers/post'
+import { type FlatNode, resolveMore } from './more'
+import { CommentOrMore } from './schemas/comment'
+import { LinkThing } from './schemas/link'
+import { CommentsResponse, FormResponse } from './schemas/responses'
+
+const THING_ID = /^[a-z0-9]{1,12}$/
+
+export type ThreadRequest = {
+  /** The post id, without `t3_`. */
+  id: string
+  query: ThreadQuery
+  /** A comment id, for the single-thread view. */
+  focusCommentId: string | null
+}
+
+/**
+ * A post and its comments in one Reddit call (design §6.1), with any `more`
+ * nodes listed in the URL expanded in place (§8.3).
+ */
+export async function getThread({ id, query, focusCommentId }: ThreadRequest): Promise<ThreadView> {
+  if (!THING_ID.test(id)) throw new RedditNotFoundError()
+  const focus = focusCommentId && THING_ID.test(focusCommentId) ? focusCommentId : null
+  const { accessToken, username } = await requireAuth()
+
+  const path = `/comments/${id}`
+  const json = await redditFetch(path, {
+    token: accessToken,
+    query: {
+      sort: query.sort,
+      limit: 200,
+      depth: 8,
+      comment: focus,
+      context: focus ? 3 : undefined,
+    },
+  })
+  const [postListing, commentListing] = parseResponse(json, CommentsResponse, path)
+  const link = parseListing(postListing, LinkThing, path).items[0]
+  if (!link) throw new RedditNotFoundError()
+
+  const tree = mapCommentTree(commentListing, path, username)
+  const comments =
+    query.more.length > 0
+      ? await resolveMore(tree, query.more, (children) =>
+          fetchMoreChildren(accessToken, username, link.data.name, children, query.sort),
+        )
+      : tree
+
+  return { post: mapPost(link.data), comments, focusCommentId: focus }
+}
+
+async function fetchMoreChildren(
+  token: string,
+  viewer: string,
+  linkId: string,
+  children: string[],
+  sort: ThreadQuery['sort'],
+): Promise<FlatNode[]> {
+  const path = '/api/morechildren'
+  const json = await redditFetch(path, {
+    token,
+    query: {
+      api_type: 'json',
+      link_id: linkId,
+      children: children.join(','),
+      sort,
+      limit_children: false,
+    },
+  })
+  const things = parseResponse(json, FormResponse, path).json.data?.things ?? []
+  return parseItems(things, CommentOrMore, path).map((thing) =>
+    thing.kind === 'more'
+      ? { parentId: thing.data.parent_id, node: mapMore(thing.data) }
+      : {
+          parentId: thing.data.parent_id,
+          node: { kind: 'comment', comment: mapComment(thing.data, viewer), replies: [] },
+        },
+  )
+}

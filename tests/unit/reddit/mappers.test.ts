@@ -240,6 +240,25 @@ describe('mapComment', () => {
     expect(view).toMatchObject({ removal: 'removed', author: null, body: null })
   })
 
+  it('marks the viewer’s own comments and exposes their markdown for editing', () => {
+    const raw = sample(
+      'Comment',
+      (v) => v.body !== '[deleted]' && !String(v.body).startsWith('[ Removed'),
+    )
+    const mine = mapComment(Comment.parse(raw), String(raw.author).toUpperCase())
+    expect(mine).toMatchObject({ mine: true, bodyMarkdown: raw.body })
+    expect(mapComment(Comment.parse(raw), 'someone_else')).toMatchObject({
+      mine: false,
+      bodyMarkdown: null,
+    })
+    expect(mapComment(Comment.parse(raw))).toMatchObject({ mine: false, bodyMarkdown: null })
+  })
+
+  it('never offers editing on a removed comment', () => {
+    const raw = sample('Comment', (v) => v.body === '[ Removed by Reddit ]')
+    expect(mapComment(Comment.parse(raw), String(raw.author)).mine).toBe(false)
+  })
+
   it('links a saved comment back to its post', () => {
     const raw = sample('Comment', (v) => typeof v.link_title === 'string')
     const view = mapComment(Comment.parse(raw))

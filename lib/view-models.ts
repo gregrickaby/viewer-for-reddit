@@ -155,6 +155,18 @@ export type CommentView = {
   depth: number
   /** The post a comment belongs to, when it's listed outside its thread (saved, profiles). */
   context: { postTitle: string; postPermalink: string; subreddit: string } | null
+  /** Written by the signed-in user: they may edit and delete it. */
+  mine: boolean
+  /** The raw markdown, only for the viewer's own comments, to prefill the edit form. */
+  bodyMarkdown: string | null
+}
+
+/** A post with its comment tree. */
+export type ThreadView = {
+  post: PostView
+  comments: CommentNode[]
+  /** Set when viewing a single comment's thread (`…/comments/<post>/<slug>/<comment>`). */
+  focusCommentId: string | null
 }
 
 export type MoreNode = {

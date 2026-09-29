@@ -15,13 +15,16 @@ export type PostCardProps = {
   post: PostView
   /** Omitted on the subreddit's own page. */
   showSubreddit: boolean
+  /** `detail` is the post page: an h1 title, the full body, and comments below. */
+  variant?: 'feed' | 'detail'
   blurNsfw: boolean
   /** Request time, for relative ages. */
   now: number
 }
 
 /** A feed item (design §10.2). A Server Component; only voting and saving hydrate. */
-export function PostCard({ post, showSubreddit, blurNsfw, now }: PostCardProps) {
+export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' }: PostCardProps) {
+  const detail = variant === 'detail'
   const titleId = `post-${post.id}-title`
   const reveal: RevealReason = post.flags.spoiler
     ? 'spoiler'
@@ -89,11 +92,17 @@ export function PostCard({ post, showSubreddit, blurNsfw, now }: PostCardProps) 
           ) : null}
         </p>
 
-        <h2 id={titleId} className={styles.title}>
-          <Link href={post.permalink as Route} transitionTypes={['nav-forward']}>
+        {detail ? (
+          <h1 id={titleId} className={`${styles.title} ${styles.detailTitle}`}>
             {post.title}
-          </Link>
-        </h2>
+          </h1>
+        ) : (
+          <h2 id={titleId} className={styles.title}>
+            <Link href={post.permalink as Route} transitionTypes={['nav-forward']}>
+              {post.title}
+            </Link>
+          </h2>
+        )}
 
         {post.crosspostFrom ? (
           <p className={styles.crosspost}>
@@ -113,7 +122,7 @@ export function PostCard({ post, showSubreddit, blurNsfw, now }: PostCardProps) 
         <PostMedia media={post.media} title={post.title} reveal={reveal} />
 
         {post.body ? (
-          post.body.length > EXCERPT_CHARS ? (
+          !detail && post.body.length > EXCERPT_CHARS ? (
             <div className={styles.excerpt}>
               <RedditHtml html={post.body} className={styles.excerptBody} />
               <details className={styles.more}>
@@ -127,9 +136,9 @@ export function PostCard({ post, showSubreddit, blurNsfw, now }: PostCardProps) 
 
         <div className={styles.actions}>
           <Link
-            href={post.permalink as Route}
+            href={(detail ? '#comments' : post.permalink) as Route}
             className={styles.action}
-            transitionTypes={['nav-forward']}
+            transitionTypes={detail ? undefined : ['nav-forward']}
           >
             <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">
               <path d="M3 4h14v9H8l-4 3v-3H3z" />

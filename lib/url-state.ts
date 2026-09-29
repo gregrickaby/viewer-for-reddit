@@ -131,3 +131,48 @@ export function prevHref(
     count: offset + 1,
   })
 }
+
+// ── Threads (design §8.3) ─────────────────────────────────────────────────────
+
+export const COMMENT_SORTS = ['confidence', 'top', 'new', 'controversial', 'old', 'qa'] as const
+export type CommentSort = (typeof COMMENT_SORTS)[number]
+
+/** How many `more` ids the URL may carry (lib/reddit/more.ts resolves them). */
+export const MAX_MORE_IDS = 20
+
+export type ThreadQuery = { sort: CommentSort; more: string[] }
+
+const MORE_ID = /^[a-z0-9]{1,12}$/
+
+export function parseThreadQuery(params: SearchParams): ThreadQuery {
+  const sort = first(params.sort)
+  const more = (first(params.more) ?? '')
+    .split(',')
+    .filter((id) => MORE_ID.test(id))
+    .slice(0, MAX_MORE_IDS)
+  return {
+    sort: COMMENT_SORTS.find((value) => value === sort) ?? 'confidence',
+    more: [...new Set(more)],
+  }
+}
+
+/** A thread URL with a comment sort; changing the sort collapses expansions. */
+export function threadSortHref(base: string, sort: CommentSort): string {
+  return withQuery(base, { sort: sort === 'confidence' ? null : sort })
+}
+
+/**
+ * The same thread with one more `more` node expanded, anchored at the
+ * comment it belongs under so the reader stays in place. Returns null at the cap.
+ */
+export function expandMoreHref(
+  base: string,
+  query: ThreadQuery,
+  moreId: string,
+  anchor: string,
+): string | null {
+  if (query.more.length >= MAX_MORE_IDS) return null
+  const more = [...query.more.filter((id) => id !== moreId), moreId].join(',')
+  const href = withQuery(base, { sort: query.sort === 'confidence' ? null : query.sort, more })
+  return `${href}#${anchor}`
+}

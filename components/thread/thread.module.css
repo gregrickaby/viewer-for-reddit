@@ -1,0 +1,84 @@
+@layer components {
+  .breadcrumb {
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  .banner {
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+  }
+
+  .comments {
+    display: grid;
+    gap: var(--space-3);
+    scroll-margin-block-start: calc(var(--header-height, 3.5rem) + var(--space-3));
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .heading {
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2rem;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-pill);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+
+    &:hover,
+    &[aria-current='page'] {
+      background: var(--surface-hover);
+      color: var(--text-1);
+      text-decoration: none;
+    }
+  }
+
+  /* A new sort keeps the old tree visible but dimmed until it arrives. */
+  .tree {
+    transition: opacity var(--duration-exit) var(--ease-out);
+  }
+
+  .comments:has(.tabs [data-pending]) .tree {
+    opacity: 0.6;
+  }
+
+  .empty {
+    padding-block: var(--space-5);
+    color: var(--text-3);
+    text-align: center;
+  }
+
+  .skeleton {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .breadcrumbSkeleton {
+    display: block;
+    inline-size: 6rem;
+    block-size: 1rem;
+  }
+}

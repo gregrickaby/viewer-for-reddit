@@ -5,8 +5,10 @@ import { sanitizeRedditHtml } from '../sanitize'
 import { CommentOrMore, type RedditComment, type RedditMore } from '../schemas/comment'
 import { appPath, authorName, distinguishedFrom, editedAt, flairFrom, toVote } from './shared'
 
-export function mapComment(comment: RedditComment): CommentView {
+/** `viewer` is the signed-in username; it decides whether the comment is editable. */
+export function mapComment(comment: RedditComment, viewer: string | null = null): CommentView {
   const removal = commentRemoval(comment)
+  const mine = viewer !== null && !removal && comment.author.toLowerCase() === viewer.toLowerCase()
   return {
     id: comment.id,
     fullname: `t1_${comment.id}`,
@@ -42,6 +44,8 @@ export function mapComment(comment: RedditComment): CommentView {
             subreddit: comment.subreddit,
           }
         : null,
+    mine,
+    bodyMarkdown: mine ? comment.body : null,
   }
 }
 
@@ -60,23 +64,27 @@ export function mapMore(more: RedditMore): CommentNode {
  * A comment Listing as a tree. The top-level envelope is strict (a bad one is
  * a schema error for the page); nested `replies` degrade to no replies.
  */
-export function mapCommentTree(listing: unknown, endpoint: string): CommentNode[] {
+export function mapCommentTree(
+  listing: unknown,
+  endpoint: string,
+  viewer: string | null = null,
+): CommentNode[] {
   return parseListing(listing, CommentOrMore, endpoint).items.map((child) =>
     child.kind === 'more'
       ? mapMore(child.data)
       : {
           kind: 'comment',
-          comment: mapComment(child.data),
-          replies: mapReplies(child.data.replies, endpoint),
+          comment: mapComment(child.data, viewer),
+          replies: mapReplies(child.data.replies, endpoint, viewer),
         },
   )
 }
 
 /** `replies` is `""` for a leaf, otherwise a Listing of the same shape. */
-function mapReplies(replies: unknown, endpoint: string): CommentNode[] {
+function mapReplies(replies: unknown, endpoint: string, viewer: string | null): CommentNode[] {
   if (typeof replies !== 'object' || replies === null) return []
   try {
-    return mapCommentTree(replies, endpoint)
+    return mapCommentTree(replies, endpoint, viewer)
   } catch (error) {
     console.warn('[reddit:schema]', endpoint, 'dropped malformed replies', error)
     return []

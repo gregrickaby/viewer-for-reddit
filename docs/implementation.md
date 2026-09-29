@@ -1193,10 +1193,37 @@ export function CommentComposer({ parent, me }: { parent: string; me: string }) 
 
 **R7 check:** confirm that the `refresh()` render includes the just-posted comment on a busy thread. If it doesn't, have `postComment` `redirect()` to the new comment's permalink instead.
 
+### Phase 4 status (2026-09-29)
+
+**Built:**
+- `lib/reddit/thread.ts` (`getThread`) and `lib/reddit/more.ts` (`resolveMore`).
+- `submitComment`, `editComment`, and `deleteComment` in `lib/reddit/writes.ts`.
+- `app/actions/comments.ts`.
+- `parseThreadQuery`, `threadSortHref`, and `expandMoreHref` in `lib/url-state.ts`.
+- `components/thread/{comment-tree,thread-section}.tsx`, the `CommentComposer` and `PendingButton` islands, and the post route `app/(app)/r/[subreddit]/comments/[id]/[[...rest]]`.
+- `PostCard` gained `variant="detail"`: an h1 title, the full body, and a comment count that links to `#comments`.
+
+**Decisions and findings:**
+
+- **`resolveMore` never drops replies.** A `more` node with more than 100 children is requested in slices of 100. The remainder stays as a `more` node (still wanted), so the next round continues it, up to 3 rounds per request. Two `more` nodes under the same parent don't duplicate subtrees, because each claims its parent's fetched roots.
+- **Form errors are typed.** Reddit's `api_type=json` endpoints report failures such as `THREAD_LOCKED` inside a 200 as `json.errors`. `submitForm` raises the first one as a `RedditApiError` with its code and field, and `runAction` maps it to a friendly message.
+- **Ownership is decided on the server.** `mapComment(comment, viewer)` sets `mine` and includes `bodyMarkdown` only for the viewer's own comments that aren't removed. Nothing else about the raw body reaches the client.
+- **Delete works without JavaScript.** It is a popover confirm holding a plain `<form action={formAction(deleteComment)}>`. `formAction` moved to `lib/actions/form-action.ts` so Server Components can use it too.
+- **The composer hides elapsed time.** A pending comment shows "sending…" and no timestamp, because the server re-render replaces it within the same transition.
+
+**Verified in the browser** on an AskReddit thread with 3.4k comments:
+- The tree renders with thread lines and `<details>` collapse.
+- "Load 7 more replies" added exactly 7 comments in place without moving the scroll position.
+- A second expansion accumulates in the URL (`more=a,b`).
+- Switching the comment sort works in place.
+- A comment's "Link" opens the single-thread view, with the parent context, the focus highlight, and the banner.
+
+`next build` marks the post route as Partial Prerender (◐). Posting, editing, and deleting are covered by action and island tests (pending card, draft restore on failure, ⌘/Ctrl+Enter, the edit form closing), but **were not run against the live account**. That includes the R7 check (does the `refresh()` render include a just-posted comment?) and the no-JS post.
+
 ### Phase 4 acceptance
 
 - [ ] Threads with more than 500 comments render, with "Load N more" expanding in place without losing scroll, and "Continue this thread" navigating forward.
-- [ ] Comment sort links crossfade.
+- [x] Comment sort links crossfade.
 - [ ] A comment or reply shows a pending card immediately, which is replaced by the real comment without flicker. On an error (a locked thread), the draft is restored and the reason is shown.
 - [ ] Editing and deleting your own comments work, and the delete confirm is a popover.
 - [ ] With JS disabled, you can post a comment, and the page re-renders with it.
