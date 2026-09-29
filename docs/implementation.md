@@ -1052,7 +1052,7 @@ export async function vote(formData: FormData): Promise<ActionResult> {
 - **`app/actions/settings.ts`:**
   - `setTheme(formData)` validates, sets `rv_theme` (not httpOnly, `Secure`, `SameSite=Lax`, one year), and returns `{ ok: true }`. It **doesn't** call `refresh()`, because the client already applied the theme. This action is the no-JS path.
   - `setBlurNsfw(formData)` sets `rv_blur_nsfw` (httpOnly, one year) and calls `refresh()`.
-- **`ThemeToggle`** (island): a three-way radio group with System, Light, and Dark. On change it runs:
+- **`ThemeToggle`** (island): a labelled "Dark mode" switch (`SwitchRow`, shared with `SettingSwitch`) whose state is the theme in effect (`system` mirrors `prefers-color-scheme` through `useSyncExternalStore`), plus a "Match my device" link once the reader has chosen. On change it runs:
 
   ```ts
   const apply = () => {

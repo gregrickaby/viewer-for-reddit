@@ -12,11 +12,19 @@ const { PopoverDismiss } = await import('@/components/islands/popover-dismiss')
 const { LinkPendingHint } = await import('@/components/islands/link-pending-hint')
 
 let reducedMotion = false
+let deviceDark = false
+const deviceListeners = new Set<() => void>()
 beforeEach(() => {
   reducedMotion = false
+  deviceDark = false
+  deviceListeners.clear()
   vi.stubGlobal(
     'matchMedia',
-    vi.fn(() => ({ matches: reducedMotion })),
+    vi.fn((query: string) => ({
+      matches: query.includes('prefers-color-scheme') ? deviceDark : reducedMotion,
+      addEventListener: (_: string, listener: () => void) => deviceListeners.add(listener),
+      removeEventListener: (_: string, listener: () => void) => deviceListeners.delete(listener),
+    })),
   )
   document.documentElement.dataset.theme = 'system'
   document.cookie = 'rv_theme=; Max-Age=0; Path=/'
@@ -24,29 +32,54 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('ThemeToggle', () => {
-  it('starts from the server’s theme', () => {
-    render(<ThemeToggle theme="dark" />)
-    expect((screen.getByLabelText('Dark') as HTMLInputElement).checked).toBe(true)
+  it('mirrors the device while following it', () => {
+    deviceDark = true
+    render(<ThemeToggle theme="system" />)
+    expect(screen.getByRole('switch').getAttribute('aria-checked')).toBe('true')
+    expect(screen.getByText('Matches your device')).toBeTruthy()
+    expect(screen.queryByText('Match my device')).toBeNull()
   })
 
-  it('applies the theme inside a view transition and remembers it', () => {
+  it('starts from a saved choice, whatever the device says', () => {
+    deviceDark = true
+    render(<ThemeToggle theme="light" />)
+    expect(screen.getByRole('switch').getAttribute('aria-checked')).toBe('false')
+    expect(screen.getByText('Always light')).toBeTruthy()
+  })
+
+  it('applies the choice inside a view transition and remembers it', () => {
     const startViewTransition = vi.fn((apply: () => void) => apply())
     Object.assign(document, { startViewTransition })
     render(<ThemeToggle theme="system" />)
-    fireEvent.click(screen.getByLabelText('Light'))
+    fireEvent.click(screen.getByRole('switch'))
     expect(startViewTransition).toHaveBeenCalledOnce()
-    expect(document.documentElement.dataset.theme).toBe('light')
-    expect((screen.getByLabelText('Light') as HTMLInputElement).checked).toBe(true)
+    expect(document.documentElement.dataset.theme).toBe('dark')
+    expect(document.cookie).toContain('rv_theme=dark')
+    expect(screen.getByRole('switch').getAttribute('aria-checked')).toBe('true')
+    expect(screen.getByText('Always dark')).toBeTruthy()
   })
 
-  it('skips the crossfade under reduced motion', () => {
+  it('skips the crossfade under reduced motion, and can hand control back to the device', () => {
     reducedMotion = true
     const startViewTransition = vi.fn()
     Object.assign(document, { startViewTransition })
-    render(<ThemeToggle theme="system" />)
-    fireEvent.click(screen.getByLabelText('Dark'))
+    render(<ThemeToggle theme="dark" />)
+    fireEvent.click(screen.getByRole('switch'))
+    expect(document.documentElement.dataset.theme).toBe('light')
+    fireEvent.click(screen.getByText('Match my device'))
+    expect(document.documentElement.dataset.theme).toBe('system')
     expect(startViewTransition).not.toHaveBeenCalled()
-    expect(document.documentElement.dataset.theme).toBe('dark')
+    expect(screen.queryByText('Match my device')).toBeNull()
+  })
+
+  it('follows the device when it changes while set to system', () => {
+    render(<ThemeToggle theme="system" />)
+    expect(screen.getByRole('switch').getAttribute('aria-checked')).toBe('false')
+    act(() => {
+      deviceDark = true
+      for (const listener of deviceListeners) listener()
+    })
+    expect(screen.getByRole('switch').getAttribute('aria-checked')).toBe('true')
   })
 })
 

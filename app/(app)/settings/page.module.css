@@ -10,23 +10,16 @@
     font-weight: 700;
   }
 
-  .setting {
+  .card {
     display: grid;
-    gap: var(--space-2);
-    padding: var(--space-4);
+    padding: var(--space-2) var(--space-4);
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-2);
     background: var(--surface-card);
-  }
 
-  .heading {
-    font-size: var(--step-1);
-    font-weight: 700;
-  }
-
-  .help {
-    color: var(--text-2);
-    font-size: var(--step-minus-1);
+    & > * + * {
+      border-block-start: var(--border-width) solid var(--border);
+    }
   }
 
   .skeleton {

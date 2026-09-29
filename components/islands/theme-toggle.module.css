@@ -1,45 +1,20 @@
 @layer components {
   .root {
-    display: inline-grid;
-    grid-auto-flow: column;
-    gap: var(--space-1);
-    padding: var(--space-1);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-pill);
-    background: var(--surface-sunken);
+    display: grid;
   }
 
-  .option {
-    position: relative;
-    display: grid;
-    place-items: center;
-    min-block-size: 2rem;
-    padding-inline: var(--space-3);
-    border-radius: var(--radius-pill);
-    color: var(--text-2);
+  .match {
+    justify-self: start;
+    padding: 0 0 var(--space-3);
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
     font-size: var(--step-minus-1);
-    font-weight: 600;
     cursor: pointer;
 
-    &:has(:checked) {
-      background: var(--surface-card);
-      box-shadow: var(--shadow-1);
-      color: var(--text-1);
+    &:hover {
+      text-decoration: underline;
     }
-
-    &:has(:focus-visible) {
-      outline: 2px solid var(--focus-ring);
-      outline-offset: 2px;
-    }
-  }
-
-  .input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .submit {
-    margin-block-start: var(--space-2);
   }
 }

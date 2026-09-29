@@ -34,9 +34,9 @@
     position-anchor: --settings-menu;
     position-area: bottom span-left;
     position-try-fallbacks: flip-inline;
-    inline-size: min(18rem, calc(100vw - 2 * var(--space-4)));
+    inline-size: min(21rem, calc(100vw - 2 * var(--space-4)));
     margin: var(--space-2) 0 0;
-    padding: var(--space-3);
+    padding: var(--space-3) var(--space-4);
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-2);
     background: var(--surface-card);
@@ -46,7 +46,22 @@
     /* Only while open: a display on the base rule would defeat the hidden state. */
     &:popover-open {
       display: grid;
-      gap: var(--space-3);
+      gap: var(--space-2);
+    }
+  }
+
+  .title {
+    font-size: var(--step-0);
+    font-weight: 700;
+  }
+
+  .rows {
+    display: grid;
+    margin-inline: calc(-1 * var(--space-1));
+    padding-inline: var(--space-1);
+
+    & > * + * {
+      border-block-start: var(--border-width) solid var(--border);
     }
   }
 

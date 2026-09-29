@@ -14,8 +14,15 @@ export async function SettingsMenu() {
     <div className={styles.root}>
       <GearButton />
       <div id="settings-menu" popover="auto" className={styles.menu}>
-        <ThemeToggle theme={settings.theme} />
-        <SettingSwitch checked={settings.blurNsfw} label="Blur NSFW media" />
+        <h2 className={styles.title}>Settings</h2>
+        <div className={styles.rows}>
+          <ThemeToggle theme={settings.theme} />
+          <SettingSwitch
+            checked={settings.blurNsfw}
+            label="Blur NSFW media"
+            description="Hides adult images and videos until you choose to show them"
+          />
+        </div>
       </div>
     </div>
   )

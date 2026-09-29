@@ -214,7 +214,10 @@ describe('SettingsMenu', () => {
     const out = await renderServer(<SettingsMenu />)
     expect(out).toContain('aria-label="Settings"')
     expect(out).toContain('popoverTarget="settings-menu"')
-    expect(out).toContain('checked="" value="dark"')
+    expect(out).toContain('Dark mode')
+    expect(out).toContain('Always dark')
+    expect(out).toContain('aria-checked="true"')
+    expect(out).toContain('Hides adult images and videos')
     expect(out).toContain('aria-checked="false"')
     expect(out).toContain('Blur NSFW media')
     expect(await renderServer(<SettingsMenuSkeleton />)).toContain('aria-hidden="true"')
@@ -225,7 +228,7 @@ describe('settings and status pages', () => {
   it('shows both settings with their current values', async () => {
     expect(settingsMetadata).toEqual({ title: 'Settings' })
     const out = await renderServer(<SettingsPage />)
-    expect(out).toContain('checked="" value="dark"')
+    expect(out).toContain('Dark mode')
     expect(out).toContain('Blur NSFW media')
   })
 

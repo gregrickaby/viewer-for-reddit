@@ -66,7 +66,7 @@ Every Reddit response is **validated at runtime against Zod schemas generated fr
 | F19 | Rich media in posts: images, **animated GIFs that animate**, Reddit-hosted video **with audio** (HLS), and mixed galleries of images, GIFs, and video. | P0 |
 | F20 | Third-party embeds: YouTube, Vimeo, Streamable, Twitch clips, **Redgifs (including NSFW)**, Giphy, Imgur (GIFV and albums), TikTok, Spotify, and SoundCloud. Any other provider Reddit supplies an oEmbed for falls back to Reddit's sandboxed embed wrapper or a link card. | P0 |
 | F21 | Inline media inside self text and comments (uploaded images, GIFs, Giphy-picker GIFs) renders inline. | P0 |
-| F23 | **Settings, toggleable and retained between browser sessions:** a theme choice (System, Light, or Dark) and "Blur NSFW media" (on or off). They are reachable from the user menu and `/settings`, apply instantly, and cause no theme flash on load (§8.8). | P0 |
+| F23 | **Settings, toggleable and retained between browser sessions:** a "Dark mode" switch and a "Blur NSFW media" switch. They are reachable from the settings cog in the header's top right and from `/settings`, apply instantly, and cause no theme flash on load (§8.8). | P0 |
 | F24 | **Self-text and rich HTML.** Self posts (for example r/AskReddit) and comments render Reddit's full markdown-generated HTML: headings, lists, tables, code blocks, quotes, spoilers, superscript, strikethrough, links, and inline media. Link posts that also carry body text show both (§8.9). | P0 |
 | F25 | **Image galleries.** Reddit gallery posts (up to 20 items, mixing images, GIFs, and video) render as a swipeable carousel with per-item captions and outbound links, an "i / n" position, and a full-screen lightbox with keyboard navigation (§8.10). Single-item galleries render as a plain image. | P0 |
 | F22 | Media detection is robust. A post never renders broken or empty media. Every post resolves to the richest renderable form, down to a link card. | P0 |
@@ -698,7 +698,7 @@ The result is a `<span data-inline-media>` (a block; `<figure>` isn't allowed in
 - Reading a cookie in the root layout would make every route dynamic and block the shell under Cache Components, so the root layout stays static. It renders `<html data-theme="system" suppressHydrationWarning>`.
 - A tiny inline `<head>` script reads `rv_theme` from `document.cookie` and sets `data-theme` synchronously, before paint.
 - CSS tokens use `light-dark()`, so each color is defined **once**. `data-theme` only sets `color-scheme`: `:root { color-scheme: light dark }` for `system`, `[data-theme='light'] { color-scheme: light }`, and `[data-theme='dark'] { color-scheme: dark }`. Native form controls and scrollbars follow automatically, and no `dark:` variants or duplicate token blocks exist (§10.4).
-- **Switching** uses the `ThemeToggle` island (System, Light, or Dark). It sets `data-theme` inside `document.startViewTransition()`, which gives a crossfade and is skipped under reduced motion, and writes the cookie. There is no server round trip and nothing re-renders.
+- **Switching** uses the `ThemeToggle` island: one "Dark mode" switch that shows the theme in effect, with a caption saying whether it "Matches your device" or is set by the user, and a "Match my device" link that returns to `system`. (Stored values stay `system`, `light`, and `dark`; the UI never asks a reader to understand "system".) It sets `data-theme` inside `document.startViewTransition()`, which gives a crossfade and is skipped under reduced motion, and writes the cookie. There is no server round trip and nothing re-renders.
 - **Without JS,** the toggle is a `<form action={setTheme}>` that sets the cookie server-side, but the head script can't run, so no-JS users get the system theme. This is an accepted limitation.
 
 **Blur NSFW media.**
@@ -709,7 +709,7 @@ The result is a `<span data-inline-media>` (a block; `<figure>` isn't allowed in
 
 **Where the settings appear.**
 
-- The user menu has a compact theme segmented control and the blur switch.
+- The settings cog opens a popover with the two switches as labelled rows, each with a one-line explanation. `/settings` shows the same rows. The account menu holds only account links.
 - `/settings` has the same controls with short explanations.
 
 ### 8.9 Rich text: self-text and comment HTML

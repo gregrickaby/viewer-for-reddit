@@ -1,62 +1,75 @@
 'use client'
 
-import { type ChangeEvent, useState } from 'react'
+import { type FormEvent, useState, useSyncExternalStore } from 'react'
 import { setTheme } from '@/app/actions/settings'
-import type { Theme } from '@/lib/settings'
-import styles from './theme-toggle.module.css'
 import { formAction } from '@/lib/actions/form-action'
-
-const OPTIONS: Array<{ value: Theme; label: string }> = [
-  { value: 'system', label: 'System' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-]
+import type { Theme } from '@/lib/settings'
+import { SwitchRow } from './switch-row'
+import styles from './theme-toggle.module.css'
 
 const ONE_YEAR = 60 * 60 * 24 * 365
+const DARK_QUERY = '(prefers-color-scheme: dark)'
+
+function subscribeToDevice(onChange: () => void) {
+  const query = matchMedia(DARK_QUERY)
+  query.addEventListener('change', onChange)
+  return () => query.removeEventListener('change', onChange)
+}
 
 /**
- * System / Light / Dark (design §8.8). With JS it applies the theme at once,
- * crossfading with a view transition, and writes the cookie itself. Without
- * JS it's a form post; the server sets the cookie for the next load.
+ * "Dark mode" (design §8.8): a switch that shows what you see now. Until it is
+ * touched the site follows the device, and the switch mirrors the device; once
+ * flipped, the choice is remembered, and "Match my device" undoes it. With JS
+ * the theme applies at once, crossfading with a view transition, and the
+ * cookie is written here. Without JS each button is a form post.
  */
 export function ThemeToggle({ theme }: { theme: Theme }) {
   const [current, setCurrent] = useState(theme)
+  const deviceIsDark = useSyncExternalStore(
+    subscribeToDevice,
+    () => matchMedia(DARK_QUERY).matches,
+    () => false,
+  )
+  const dark = current === 'system' ? deviceIsDark : current === 'dark'
 
-  function onChange(event: ChangeEvent<HTMLInputElement>) {
-    const next = event.currentTarget.value as Theme
+  function apply(next: Theme) {
     setCurrent(next)
-    const apply = () => {
+    const write = () => {
       document.documentElement.dataset.theme = next
       document.cookie = `rv_theme=${next}; Path=/; Max-Age=${ONE_YEAR}; SameSite=Lax; Secure`
     }
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (document.startViewTransition && !reduced) document.startViewTransition(apply)
-    else apply()
+    if (document.startViewTransition && !reduced) document.startViewTransition(write)
+    else write()
+  }
+
+  function submit(next: Theme) {
+    return (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      apply(next)
+    }
   }
 
   return (
-    <form action={formAction(setTheme)}>
-      <fieldset className={styles.root}>
-        <legend className="visually-hidden">Theme</legend>
-        {OPTIONS.map((option) => (
-          <label key={option.value} className={styles.option}>
-            <input
-              type="radio"
-              name="theme"
-              value={option.value}
-              checked={current === option.value}
-              onChange={onChange}
-              className={styles.input}
-            />
-            <span>{option.label}</span>
-          </label>
-        ))}
-      </fieldset>
-      <noscript>
-        <button type="submit" className={styles.submit}>
-          Apply theme
-        </button>
-      </noscript>
-    </form>
+    <div className={styles.root}>
+      <form action={formAction(setTheme)} onSubmit={submit(dark ? 'light' : 'dark')}>
+        <input type="hidden" name="theme" value={dark ? 'light' : 'dark'} />
+        <SwitchRow
+          label="Dark mode"
+          description={
+            current === 'system' ? 'Matches your device' : dark ? 'Always dark' : 'Always light'
+          }
+          checked={dark}
+        />
+      </form>
+      {current === 'system' ? null : (
+        <form action={formAction(setTheme)} onSubmit={submit('system')}>
+          <input type="hidden" name="theme" value="system" />
+          <button type="submit" className={styles.match}>
+            Match my device
+          </button>
+        </form>
+      )}
+    </div>
   )
 }

@@ -11,25 +11,14 @@ export const metadata: Metadata = { title: 'Settings' }
 async function Controls() {
   const settings = await getSettings()
   return (
-    <>
-      <section className={styles.setting} aria-labelledby="theme-heading">
-        <h2 id="theme-heading" className={styles.heading}>
-          Theme
-        </h2>
-        <p className={styles.help}>System follows your device. Saved on this browser for a year.</p>
-        <ThemeToggle theme={settings.theme} />
-      </section>
-      <section className={styles.setting} aria-labelledby="blur-heading">
-        <h2 id="blur-heading" className={styles.heading}>
-          NSFW media
-        </h2>
-        <p className={styles.help}>
-          When on, NSFW images and videos stay blurred until you choose to show them, and nothing
-          loads before that. Spoilers are always hidden. Saved on this browser for a year.
-        </p>
-        <SettingSwitch checked={settings.blurNsfw} label="Blur NSFW media" />
-      </section>
-    </>
+    <div className={styles.card}>
+      <ThemeToggle theme={settings.theme} />
+      <SettingSwitch
+        checked={settings.blurNsfw}
+        label="Blur NSFW media"
+        description="Hides adult images and videos until you choose to show them. Spoilers are always hidden."
+      />
+    </div>
   )
 }
 
