@@ -1,0 +1,154 @@
+/* Shared by /multis and /multis/[multi]. */
+@layer components {
+  .list {
+    display: grid;
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+
+    & + & {
+      border-block-start: var(--border-width) solid var(--border);
+    }
+
+    /* The row's action (Edit, Add, Remove) sits at the far end. */
+    & > :last-child:not(:first-child) {
+      margin-inline-start: auto;
+    }
+  }
+
+  .text {
+    flex: 1;
+    display: grid;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+
+  .name {
+    color: var(--text-1);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .meta {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+  }
+
+  .edit {
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  .panel {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+  }
+
+  .danger {
+    border-color: color-mix(in srgb, var(--danger) 50%, var(--border));
+  }
+
+  .heading {
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-1);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+  }
+
+  .input {
+    inline-size: 100%;
+    min-block-size: 2.5rem;
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    color: var(--text-1);
+    font: inherit;
+    font-size: var(--step-0);
+    font-weight: 400;
+    field-sizing: content;
+    min-inline-size: min(100%, 14rem);
+  }
+
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    border: 0;
+    padding: 0;
+
+    & legend {
+      margin-block-end: var(--space-1);
+      color: var(--text-2);
+      font-size: var(--step-minus-1);
+      font-weight: 600;
+    }
+
+    & label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+  }
+
+  .help {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+  }
+
+  .confirm {
+    inline-size: min(22rem, calc(100vw - 2 * var(--space-4)));
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--text-1) 30%, transparent);
+    }
+  }
+
+  .confirmActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+  }
+
+  .skeleton {
+    display: block;
+    block-size: 16rem;
+    border-radius: var(--radius-2);
+  }
+}

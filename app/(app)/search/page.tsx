@@ -10,6 +10,7 @@ import {
 } from '@/components/motion/transitions'
 import { SubredditRows, SubredditRowsSkeleton } from '@/components/subreddit/subreddit-row'
 import { searchSubreddits } from '@/lib/reddit/people'
+import { getMyMultis } from '@/lib/reddit/reads'
 import { parseFeedQuery, parseText } from '@/lib/url-state'
 import feed from '@/components/feed/feed.module.css'
 import styles from '../feed-page.module.css'
@@ -32,7 +33,10 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
   }
 
   const query = parseFeedQuery(params, SORTS)
-  const results = await searchSubreddits(q, query)
+  const [results, multis] = await Promise.all([
+    searchSubreddits(q, query),
+    getMyMultis().catch(() => undefined),
+  ])
   return (
     <section className={feed.feed} aria-label={`Communities matching ${q}`}>
       <ContentReveal
@@ -41,7 +45,7 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
       >
         <div className={feed.list}>
           {results.items.length > 0 ? (
-            <SubredditRows items={results.items} showDescription />
+            <SubredditRows items={results.items} showDescription multis={multis} />
           ) : (
             <div className={feed.notice}>
               <p className={feed.noticeTitle}>No communities match “{q}”</p>

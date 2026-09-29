@@ -1298,6 +1298,27 @@ export function CommentComposer({ parent, me }: { parent: string; me: string }) 
   - **`AddToMultiMenu`** (subreddit header and search results): a `popover` listing multis, each a `MembershipToggle` form with an optimistic checkmark.
 - **Skeleton:** `MultiEditorSkeleton`.
 
+### Phase 6 status (2026-09-29)
+
+**Built:**
+- `lib/reddit/multis.ts`: `multiSlug`, `getMulti`, `createMulti`, `updateMulti`, `deleteMulti`, and `setMultiMembership`.
+- `app/actions/multis.ts`: `createMultiForm`, `updateMultiForm`, `deleteMulti`, `setMembership`, and `addToMultiForm`.
+- The `ActionForm` and `MembershipToggle` islands, and the `AddToMultiMenu` Server Component.
+- `/multis` (list and create) and `/multis/[multi]` (details, members, add form, suggestions, and a delete popover).
+- "+ Multi" on subreddit headers and search results.
+
+**Decisions and findings:**
+
+- **The multipath comes from the session** (`/api/multi/user/<me>/m/<name>`). Actions accept only a multi name, validated against `^[A-Za-z0-9_]{2,50}$`.
+- **Updates re-read the multi first.** Reddit's `PUT` replaces the whole model, so `updateMulti` sends the current subreddits along with the edited details. Subreddits themselves change one at a time through `PUT` and `DELETE` on `…/r/{sr}`.
+- **Adding validates existence.** `setMembership` first looks the subreddit up (`/r/{sr}/about`), which also gives Reddit's own capitalization. A 404 becomes "r/x doesn't exist." and nothing is written. Input may be `pics`, `r/pics`, or `/r/pics/`.
+- **Reddit error bodies are kept.** The client parses `{ reason, explanation }` from non-2xx responses into `RedditApiError.code` and `.explanation`. `runAction` prefers our own message for known codes (`MULTI_EXISTS`, `BAD_MULTI_NAME`, `MULTI_TOO_MANY`), then Reddit's explanation, then a generic line.
+- **Form errors without JavaScript.** Forms that need to show an error use `ActionForm` (`useActionState` with the Server Action passed directly), so errors render with or without JavaScript. The `…Form` action variants take the previous state as their first argument. Create redirects to the new multi's editor, and delete redirects to `/multis`.
+- **Menus anchor to their own trigger.** The "+ Multi" popovers rely on the implicit anchor of their `popovertarget` invoker, because a named `anchor-name` repeated per search result would anchor every menu to the last trigger.
+- **Rows animate.** Member and suggestion rows fade in and out on `list-change`.
+
+**Verified in the browser:** `/multis` lists all 7 multis with counts and visibility, and `/multis/six` renders the editor with 8 communities. **Not run against the live account:** create, rename, add, remove, or delete. They are covered by data, action, component, and island tests.
+
 ### Phase 6 acceptance
 
 - [ ] The full CRUD cycle works: create, rename, change visibility, add 3 subreddits (via the form, a suggestion, and the subreddit header menu), remove 1, view the multi feed, and delete.

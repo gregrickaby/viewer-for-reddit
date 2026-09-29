@@ -84,6 +84,14 @@
     mask-image: linear-gradient(to bottom, currentcolor 60%, transparent);
   }
 
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
   .nameSkeleton {
     display: block;
     inline-size: 9rem;

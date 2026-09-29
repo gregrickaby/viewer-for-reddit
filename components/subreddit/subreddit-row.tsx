@@ -3,9 +3,10 @@ import type { Route } from 'next'
 import Link from 'next/link'
 import { ViewTransition } from 'react'
 import { SubscribeButton } from '@/components/islands/subscribe-button'
+import { AddToMultiMenu } from '@/components/multi/add-to-multi-menu'
 import { RedditHtml } from '@/components/reddit-html'
 import { compactNumber } from '@/lib/format'
-import type { SubredditView } from '@/lib/view-models'
+import type { MultiView, SubredditView } from '@/lib/view-models'
 import styles from './subreddit-row.module.css'
 
 const LIST_CHANGE = { 'list-change': 'fade-in', default: 'none' }
@@ -16,10 +17,13 @@ export function SubredditRows({
   items,
   confirmLeave = false,
   showDescription = false,
+  multis,
 }: {
   items: SubredditView[]
   confirmLeave?: boolean
   showDescription?: boolean
+  /** The viewer's multis, to offer "+ Multi" on communities. */
+  multis?: MultiView[]
 }) {
   return (
     <ul role="list" className={styles.list}>
@@ -63,13 +67,18 @@ export function SubredditRows({
                 <RedditHtml html={item.description} className={styles.description} />
               ) : null}
             </div>
-            <SubscribeButton
-              key={String(item.subscribed)}
-              name={item.name}
-              kind={item.kind}
-              subscribed={item.subscribed}
-              confirmLeave={confirmLeave}
-            />
+            <div className={styles.actions}>
+              <SubscribeButton
+                key={String(item.subscribed)}
+                name={item.name}
+                kind={item.kind}
+                subscribed={item.subscribed}
+                confirmLeave={confirmLeave}
+              />
+              {multis && item.kind === 'community' ? (
+                <AddToMultiMenu subreddit={item.name} multis={multis} />
+              ) : null}
+            </div>
           </li>
         </ViewTransition>
       ))}

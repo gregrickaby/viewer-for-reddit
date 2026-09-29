@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element -- Reddit-hosted icon and banner; see components/media/post-media.tsx */
 import { SubscribeButton } from '@/components/islands/subscribe-button'
+import { AddToMultiMenu } from '@/components/multi/add-to-multi-menu'
 import { RedditHtml } from '@/components/reddit-html'
 import { compactNumber } from '@/lib/format'
-import { getSubreddit } from '@/lib/reddit/reads'
+import { getMyMultis, getSubreddit } from '@/lib/reddit/reads'
 import { handleReadError } from '@/lib/reddit/read-errors'
-import type { SubredditView } from '@/lib/view-models'
+import type { MultiView, SubredditView } from '@/lib/view-models'
 import styles from './subreddit-header.module.css'
 
 /** `r/popular` and `r/all` are feeds, not communities: they have no about page. */
@@ -30,6 +31,8 @@ export async function SubredditHeader({ params }: { params: Promise<{ subreddit:
     handleReadError(error)
     return <PlainHeader title={`r/${name}`} />
   }
+  // The menu is optional: without multis (or if Reddit fails), the header still works.
+  const multis: MultiView[] | null = await getMyMultis().catch(() => null)
 
   return (
     <header className={styles.root}>
@@ -60,12 +63,15 @@ export async function SubredditHeader({ params }: { params: Promise<{ subreddit:
             {subreddit.nsfw ? <span className={styles.nsfw}>NSFW</span> : null}
           </p>
         </div>
-        <SubscribeButton
-          key={String(subreddit.subscribed)}
-          name={subreddit.name}
-          kind="community"
-          subscribed={subreddit.subscribed}
-        />
+        <div className={styles.actions}>
+          <SubscribeButton
+            key={String(subreddit.subscribed)}
+            name={subreddit.name}
+            kind="community"
+            subscribed={subreddit.subscribed}
+          />
+          {multis ? <AddToMultiMenu subreddit={subreddit.name} multis={multis} /> : null}
+        </div>
       </div>
       {subreddit.description ? (
         <RedditHtml html={subreddit.description} className={styles.description} />

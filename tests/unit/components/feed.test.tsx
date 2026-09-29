@@ -18,7 +18,10 @@ const getSubreddit = vi.fn(async (name: string) => {
   if (state.subredditError) throw state.subredditError
   return subredditView({ name })
 })
-vi.mock('@/lib/reddit/reads', () => ({ getFeed, getSubreddit }))
+const getMyMultis = vi.fn(async (): Promise<unknown[]> => [])
+vi.mock('@/lib/reddit/reads', () => ({ getFeed, getSubreddit, getMyMultis }))
+vi.mock('@/app/actions/multis', () => ({ setMembership: vi.fn() }))
+vi.mock('@/app/actions/subscriptions', () => ({ setSubscription: vi.fn() }))
 vi.mock('@/lib/settings', () => ({
   getSettings: vi.fn(async () => ({ theme: 'system', blurNsfw: state.blurNsfw })),
 }))
@@ -246,6 +249,14 @@ describe('SubredditHeader', () => {
     expect(out).not.toContain('background-image')
     expect(out).not.toContain('members')
     expect(out).toContain('NSFW')
+  })
+
+  it('offers + Multi when the multis load, and still works when they don’t', async () => {
+    expect(await header('pics')).toContain('aria-label="Add r/pics to a multireddit"')
+    getMyMultis.mockRejectedValueOnce(new Error('rate limited'))
+    const out = await header('pics')
+    expect(out).toContain('<h1 class="title">r/<!-- -->pics</h1>')
+    expect(out).not.toContain('to a multireddit')
   })
 
   it('keeps r/popular and r/all as plain titles without calling Reddit', async () => {

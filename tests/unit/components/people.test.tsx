@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CommentView, ListItem, Page, ProfileView, SubredditView } from '@/lib/view-models'
-import { html, postView, subredditView } from '@/tests/helpers/views'
+import { html, multiView, postView, subredditView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
 
 function commentView(overrides: Partial<CommentView> = {}): CommentView {
@@ -47,6 +47,7 @@ const state = {
   subscriptions: [] as SubredditView[],
   search: { items: [] as SubredditView[], after: null as string | null, before: null },
   viewer: 'spez' as string | null,
+  multisError: false,
 }
 
 const getSaved = vi.fn(async (): Promise<Page<ListItem>> => state.saved)
@@ -62,7 +63,12 @@ const searchSubreddits = vi.fn(async () => state.search)
 vi.mock('@/lib/reddit/people', () => ({ getSaved, getUserListing, getProfile, searchSubreddits }))
 vi.mock('@/lib/reddit/reads', () => ({
   getMySubscriptions: vi.fn(async () => state.subscriptions),
+  getMyMultis: vi.fn(async () => {
+    if (state.multisError) throw new Error('down')
+    return [multiView()]
+  }),
 }))
+vi.mock('@/app/actions/multis', () => ({ setMembership: vi.fn() }))
 vi.mock('@/lib/auth/session', () => ({ getUsername: vi.fn(async () => state.viewer) }))
 vi.mock('@/lib/settings', () => ({
   getSettings: vi.fn(async () => ({ theme: 'system', blurNsfw: true })),
@@ -114,6 +120,7 @@ beforeEach(() => {
   state.subscriptions = []
   state.search = { items: [], after: null, before: null }
   state.viewer = 'spez'
+  state.multisError = false
 })
 
 describe('CommentCard', () => {
@@ -407,6 +414,24 @@ describe('/search', () => {
     expect(out).toContain('value="typescript"')
     expect(out).toContain('r/<!-- -->typescript')
     expect(out).toContain('href="/search?q=typescript&amp;after=t5_ts&amp;count=25"')
+    expect(out).toContain('aria-label="Add r/typescript to a multireddit"')
+  })
+
+  it('still shows results when multis fail to load', async () => {
+    state.multisError = true
+    state.search = {
+      items: [subredditView({ name: 'typescript', fullname: 't5_ts', href: '/r/typescript' })],
+      after: null,
+      before: null,
+    }
+    const out = await renderServer(
+      <searchPage.default
+        params={Promise.resolve({})}
+        searchParams={search({ q: 'typescript' })}
+      />,
+    )
+    expect(out).toContain('r/<!-- -->typescript')
+    expect(out).not.toContain('to a multireddit')
   })
 
   it('says when nothing matches', async () => {

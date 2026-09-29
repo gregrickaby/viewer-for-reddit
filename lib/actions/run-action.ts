@@ -21,6 +21,9 @@ const REDDIT_MESSAGES: Record<string, string> = {
   NO_TEXT: 'Write something first.',
   USER_REQUIRED: 'Reddit needs you to sign in again.',
   SUBREDDIT_NOEXIST: 'That community doesn’t exist.',
+  MULTI_EXISTS: 'You already have a multireddit with that name.',
+  BAD_MULTI_NAME: 'That name won’t work. Use letters, numbers, and underscores (2–50).',
+  MULTI_TOO_MANY: 'Reddit limits how many multireddits you can have.',
 }
 
 export function invalid(message = 'That request wasn’t valid.'): ActionResult<never> {
@@ -60,7 +63,10 @@ function describe(error: unknown): ActionError {
   }
   if (error instanceof RedditApiError) {
     const known = error.code ? REDDIT_MESSAGES[error.code] : undefined
-    return { code: 'REDDIT', message: known ?? 'Reddit couldn’t do that. Try again.' }
+    return {
+      code: 'REDDIT',
+      message: known ?? error.explanation ?? 'Reddit couldn’t do that. Try again.',
+    }
   }
   console.error('[action] unexpected failure', error)
   return { code: 'UNKNOWN', message: 'Something went wrong. Try again.' }

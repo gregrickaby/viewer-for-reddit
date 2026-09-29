@@ -23,6 +23,11 @@ export type RedditRequest = {
 
 const ForbiddenBody = z.object({ reason: z.string().optional() }).loose()
 
+/** The JSON error body of Reddit's REST-style endpoints (multis, subscribe, …). */
+const ErrorBody = z
+  .object({ reason: z.string().optional(), explanation: z.string().optional() })
+  .loose()
+
 const FORBIDDEN_REASONS: Record<string, ForbiddenReason> = {
   private: 'private',
   quarantined: 'quarantined',
@@ -89,7 +94,14 @@ export async function redditFetch(path: string, request: RedditRequest): Promise
     throw new RedditApiError(`Unexpected redirect from ${path}`, response.status)
   }
   if (!response.ok) {
-    throw new RedditApiError(`Reddit returned ${response.status} for ${path}`, response.status)
+    const body = ErrorBody.safeParse(await response.json().catch(() => ({})))
+    throw new RedditApiError(
+      `Reddit returned ${response.status} for ${path}`,
+      response.status,
+      body.success ? body.data.reason : undefined,
+      null,
+      body.success ? body.data.explanation : undefined,
+    )
   }
 
   const text = await response.text()

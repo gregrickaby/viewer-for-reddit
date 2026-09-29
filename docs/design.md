@@ -145,6 +145,7 @@ These rules are binding. Code review rejects violations.
 | `MembershipToggle` | `useOptimistic` checkmark and row state for adding or removing a subreddit in a multi | Same |
 | `SectionError` | The `catchError` fallback must be a Client Component, to offer `retry()` | Route-level `error.tsx` |
 | `LinkPendingHint` | `useLinkStatus` inside a `<Link>`. Sets `data-pending` so ancestors can dim stale content via CSS `:has()`. | Normal navigation |
+| `ActionForm` | `useActionState` keeps the last `ActionResult`, so a Server Action's error (for example "r/x doesn't exist") shows under the form. The action is passed straight to `useActionState`, so Next posts it and re-renders with that state. | The same message, rendered after the POST |
 | `PopoverDismiss` | Closes open popovers (the account menu, the mobile nav drawer) when the pathname changes. They live in the persistent layout, so a link inside them would otherwise leave them open over the new page. Renders nothing. | Full page loads close them anyway |
 | `RedditVideo` | HLS playback with audio: native where supported, otherwise a lazily imported `hls.js`. Pauses when its route is hidden by `<Activity>`. | `<video>` with the MP4 fallback (no audio) and an "Open on Reddit" note |
 | `AutoplayVideo` | Plays GIF-style muted loops only while ≥50% visible (IntersectionObserver). Honors `prefers-reduced-motion` and pauses when hidden by Activity. | Native `autoplay muted loop` |

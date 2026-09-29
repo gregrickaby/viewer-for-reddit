@@ -1,0 +1,15 @@
+@layer components {
+  .error,
+  .success {
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+  }
+
+  .error {
+    color: var(--danger);
+  }
+
+  .success {
+    color: var(--text-2);
+  }
+}

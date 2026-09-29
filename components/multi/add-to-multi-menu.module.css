@@ -1,0 +1,66 @@
+@layer components {
+  .root {
+    display: inline-block;
+  }
+
+  .trigger {
+    min-block-size: 2rem;
+    padding-inline: var(--space-3);
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface-card);
+    color: var(--text-1);
+    font: inherit;
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+  }
+
+  /* Many triggers share a page (search results), so no named anchor: a popover
+     opened through `popovertarget` anchors to its own invoker implicitly. */
+  .menu {
+    position-area: bottom span-left;
+    position-try-fallbacks: flip-block, flip-inline;
+    inline-size: min(18rem, calc(100vw - 2 * var(--space-4)));
+    margin: var(--space-1) 0 0;
+    padding: var(--space-2);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+  }
+
+  .heading {
+    padding: var(--space-1) var(--space-2) var(--space-2);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  .list {
+    display: grid;
+    max-block-size: 50vh;
+    overflow-y: auto;
+  }
+
+  .empty {
+    padding: var(--space-2);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+  }
+
+  .manage {
+    display: block;
+    margin-block-start: var(--space-2);
+    padding: var(--space-2);
+    border-block-start: var(--border-width) solid var(--border);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+  }
+}

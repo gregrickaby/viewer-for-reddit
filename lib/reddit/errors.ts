@@ -48,6 +48,8 @@ export class RedditApiError extends RedditError {
     status: number,
     readonly code?: string,
     readonly field?: string | null,
+    /** Reddit's own human-readable reason, when it sends one (e.g. for multi names). */
+    readonly explanation?: string,
   ) {
     super(message, status)
   }
