@@ -1,0 +1,91 @@
+@layer components {
+  .root {
+    position: relative;
+    display: flex;
+    flex-direction: var(--vote-direction, column);
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text-2);
+  }
+
+  .arrow {
+    display: grid;
+    place-items: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-exit) var(--ease-out),
+      color var(--duration-exit) var(--ease-out);
+
+    & svg {
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 1.6;
+      stroke-linejoin: round;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--surface-hover);
+    }
+  }
+
+  .down svg {
+    rotate: 180deg;
+  }
+
+  .up:hover:not(:disabled),
+  .up[aria-pressed='true'] {
+    color: var(--upvote);
+  }
+
+  .down:hover:not(:disabled),
+  .down[aria-pressed='true'] {
+    color: var(--downvote);
+  }
+
+  .arrow[aria-pressed='true'] svg {
+    fill: currentcolor;
+  }
+
+  .score {
+    min-inline-size: 3ch;
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  .root[data-vote='1'] .score {
+    color: var(--upvote);
+  }
+
+  .root[data-vote='-1'] .score {
+    color: var(--downvote);
+  }
+
+  .error {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    z-index: var(--z-sticky);
+    inline-size: max-content;
+    max-inline-size: 16rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-1);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--danger);
+    font-size: var(--step-minus-2);
+  }
+}

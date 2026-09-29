@@ -47,6 +47,13 @@
     --nsfw: light-dark(#c4122f, #ff585b);
     --spoiler: light-dark(#5c5f66, #a6a7ab);
 
+    /* Badge fills carry white text, so they stay dark enough in both themes */
+    --badge-nsfw: #c4122f;
+    --badge-spoiler: #5c5f66;
+
+    /* Text on a light-colored surface we don't control (Reddit flair colors) */
+    --text-on-light: #1c1c1c;
+
     /* Type */
     --font-sans:
       var(--font-reddit-sans), -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, helvetica,

@@ -1,0 +1,18 @@
+/* Shared by the feed routes: home, subreddit, and multi pages. */
+@layer components {
+  .page {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .title {
+    font-size: var(--step-2);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .subtitle {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+  }
+}

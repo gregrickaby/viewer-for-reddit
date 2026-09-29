@@ -1,0 +1,153 @@
+@layer components {
+  .feed {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  /* Same-route navigation (sort, page) keeps the old list visible but dimmed (design §8.4). */
+  .list {
+    transition: opacity var(--duration-exit) var(--ease-out);
+  }
+
+  .feed:has([data-pending]) .list {
+    opacity: 0.6;
+  }
+
+  .items {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .item {
+    container-type: inline-size;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .tab,
+  .rangeButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: 2rem;
+    padding-inline: var(--space-3);
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--text-2);
+    font: inherit;
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--surface-hover);
+      color: var(--text-1);
+      text-decoration: none;
+    }
+  }
+
+  .tab[aria-current='page'] {
+    background: var(--surface-hover);
+    color: var(--text-1);
+  }
+
+  .rangeButton {
+    anchor-name: --time-range;
+    border: var(--border-width) solid var(--border);
+  }
+
+  /* Time range menu: a popover anchored under its button (design §10.4 Menu). */
+  .menu {
+    position-anchor: --time-range;
+    position-area: bottom span-right;
+    position-try-fallbacks: flip-block;
+    min-inline-size: 10rem;
+    margin: var(--space-1) 0 0;
+    padding: var(--space-1);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+  }
+
+  .menuItem {
+    display: flex;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-1);
+    color: var(--text-1);
+
+    &:hover,
+    &[aria-current='page'] {
+      background: var(--surface-hover);
+      text-decoration: none;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+  }
+
+  .pageLink {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.5rem;
+    padding-inline: var(--space-4);
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface-card);
+    color: var(--text-1);
+    font-weight: 600;
+
+    &:hover {
+      background: var(--surface-hover);
+      text-decoration: none;
+    }
+  }
+
+  .end {
+    padding-block: var(--space-4);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+    text-align: center;
+  }
+
+  .notice {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-6) var(--space-5);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    color: var(--text-2);
+    text-align: center;
+  }
+
+  .noticeTitle {
+    color: var(--text-1);
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+
+  .tabsSkeleton {
+    display: block;
+    inline-size: 18rem;
+    block-size: 2rem;
+    border-radius: var(--radius-pill);
+  }
+}

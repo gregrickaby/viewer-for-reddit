@@ -1,23 +1,38 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { getUsername } from '@/lib/auth/session'
-import styles from './page.module.css'
+import { FeedSection, FeedSkeleton } from '@/components/feed/feed-section'
+import { SectionError } from '@/components/islands/section-error'
+import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
+import { HOME_SORTS } from '@/lib/url-state'
+import styles from '../feed-page.module.css'
 
 export const metadata: Metadata = { title: 'Home' }
 
-async function Greeting() {
-  const username = await getUsername()
-  return <p className={styles.lede}>Signed in as u/{username}.</p>
-}
-
-// Phase 1 placeholder: the feed arrives in Phase 3 (docs/implementation.md).
-export default function HomePage() {
+export default function HomePage({ searchParams }: PageProps<'/home'>) {
   return (
-    <section className={styles.root}>
-      <h1 className={styles.title}>Home</h1>
-      <Suspense fallback={<p className={`skeleton ${styles.lineSkeleton}`} aria-busy="true" />}>
-        <Greeting />
-      </Suspense>
-    </section>
+    <PageTransition>
+      <div className={styles.page}>
+        <h1 className={styles.title}>Home</h1>
+        <SectionError title="Couldn’t load your home feed">
+          <Suspense
+            fallback={
+              <SkeletonExit>
+                <FeedSkeleton />
+              </SkeletonExit>
+            }
+          >
+            <Reveal>
+              <FeedSection
+                source={{ type: 'home' }}
+                base="/home"
+                sorts={HOME_SORTS}
+                searchParams={searchParams}
+                showSubreddit
+              />
+            </Reveal>
+          </Suspense>
+        </SectionError>
+      </div>
+    </PageTransition>
   )
 }

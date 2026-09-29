@@ -42,11 +42,10 @@ export function resolveMedia(link: RedditLink): PostMedia {
   }
 
   if (MEDIA_HINTS.has(target.post_hint ?? '') || target.secure_media) {
-    console.info('[media:unresolved]', {
-      domain: target.domain,
-      post_hint: target.post_hint ?? null,
-      media_type: target.secure_media?.type ?? null,
-    })
+    // One string, so log collectors that drop structured arguments keep the details.
+    console.info(
+      `[media:unresolved] domain=${target.domain} post_hint=${target.post_hint ?? '-'} media_type=${target.secure_media?.type ?? '-'}`,
+    )
   }
   return resolveLinkCard(target)
 }

@@ -1067,9 +1067,40 @@ export async function vote(formData: FormData): Promise<ActionResult> {
 - **`SettingSwitch`** (island): `useOptimistic(checked)` plus `useEnhancedForm(setBlurNsfw)`, rendered as `role="switch" aria-checked`.
 - **`/settings` page:** both controls with short descriptions. When the blur cookie is absent it defaults to `on`, and nothing is read from Reddit preferences.
 
+### Phase 3 status (2026-09-29)
+
+**Built:** `lib/url-state.ts`, `lib/reddit/{reads,writes,names,read-errors}.ts`, `lib/actions/{result,run-action}.ts`, `lib/settings.ts`, `lib/format.ts`, `lib/request-time.ts`, `app/actions/{things,settings}.ts`, the `(app)` layout, `/home`, `/r/[subreddit]`, `/m/[multi]`, `/user/[username]/m/[multi]`, `/settings`, route `error.tsx` and `not-found.tsx`, and `components/{feed,media,motion,shell,subreddit,islands}`.
+
+**Decisions and findings made while building:**
+
+- **Spike (1), `preventDefault` versus a function `action`, is settled.** In React DOM's form action event plugin, a submit whose default was prevented skips the action and only records pending form status. So `useEnhancedForm` keeps `action={serverAction}` for the no-JS path and intercepts in `onSubmit` once hydrated. `formAction()` types a Server Action returning `ActionResult` as a form `action`, passing the same function reference through.
+- **Pagination offsets are normalized.** Reddit's `count` means "seen so far" after an `after` jump but "first index + 1" after a `before` jump. `pageOffset()` turns both into "items before this page", and Previous goes straight to the first page when that is where it would land. **Verified live:** 5 pages of r/pics top/week gave 125 unique posts, and Previous from page 5 reproduced page 4 exactly.
+- **Error handling:** `handleReadError` sends a 401 to sign-out, a 404 to `notFound()`, and returns the reason for a 403 so an inline `ForbiddenPanel` can show it. Everything else goes to `SectionError`. Server error messages are redacted in production, so section fallbacks use generic copy.
+- **`ThemeToggle` gets its initial value from the server.** It only renders inside request-time components (the user menu and `/settings`), so `getSettings()` passes the cookie's theme as a prop. That avoids a lazy initializer and any hydration mismatch.
+- **One sidebar element in two modes.** Below 64rem it is a `popover` drawer. Above, it is a sticky column that overrides the UA popover styles. `display` is set only for `:popover-open` and the desktop media query, so the UA's `[popover]:not(:popover-open) { display: none }` still wins on narrow screens.
+- **Popovers close on navigation.** The time-range menu is keyed by the selected range, so it remounts closed. Layout popovers close through the new `PopoverDismiss` island (design §4.1). Menu ids come from `useId()`, because Activity keeps earlier routes mounted.
+- **Media baseline before Phase 7.** Everything below works without JavaScript, and Phase 7 layers islands on top.
+  - Images use native `<img srcset>`.
+  - Animated media uses native muted `autoplay loop` MP4s, or a GIF `<picture>` with a reduced-motion still.
+  - Reddit video is a `<video>` listing the HLS source first, so Safari plays it with audio, and the MP4 second.
+  - Galleries are an x-only scroll-snap strip. `overflow: auto hidden` is required, because a y-scroller would swallow page scrolling.
+  - NSFW and spoilers use a `<details>` reveal with Reddit's pre-blurred rendition.
+- **Contrast:** the new `--badge-nsfw`, `--badge-spoiler`, and `--text-on-light` tokens exist. The contrast test also covers the hover and sunken surfaces.
+- **`[media:unresolved]` logs a single string,** because the dev log file drops structured arguments.
+
+**Verified in the browser** (the user's session, running `next dev`):
+- Home, subreddit, r/popular, and multi feeds render real data.
+- The Top tab and time-range menu work, as does pagination.
+- The mobile drawer opens and closes after navigating.
+- The theme and blur settings apply and persist across reloads (both were restored afterwards).
+
+`next build` marks every feed route and `/settings` as Partial Prerender (◐). Voting and saving are covered by unit and island tests (optimistic update, confirm, rollback) but were **not** exercised against the live account.
+
+**Known dev-only noise:** `InvalidStateError: Transition was aborted because of invalid state. Document hidden` appears when a navigation happens in a background tab. The browser refuses view transitions in hidden documents, and React leaves the rejection unhandled. It is not app code.
+
 ### Phase 3 acceptance
 
-- [ ] All feed routes render, with sorts and the time range working, and Next and Previous pagination correct against Reddit (no duplicate or skipped posts over 5 pages).
+- [x] All feed routes render, with sorts and the time range working, and Next and Previous pagination correct against Reddit (no duplicate or skipped posts over 5 pages).
 - [ ] The dev overlay shows **zero** instant-navigation insights for these routes.
 - [ ] A client navigation from `/home` to `/r/x` paints the header and feed skeletons on the click frame, then reveals the content with slide-up. A forward link slides left, and a breadcrumb back slides right. The header and sidebar stay fixed.
 - [ ] Changing the sort dims the list and then crossfades it, with no skeleton flash.
@@ -1077,7 +1108,7 @@ export async function vote(formData: FormData): Promise<ActionResult> {
 - [ ] Voting is instant, persists after reload, and an injected failure rolls back with an inline message. With JS disabled, voting works via a full POST.
 - [ ] Lighthouse on `/home` passes accessibility and has zero CLS from skeleton → content.
 - [ ] Styling: there are no Tailwind or PostCSS dependencies, all component CSS is in `@layer components` modules with generated `.d.ts` types, Stylelint is clean, and the token contrast test passes in both themes. The UI primitives in design §10.4 exist, and none of them is a client component unless listed as an island.
-- [ ] Theme: switching crossfades, reloading shows **no flash** in the chosen theme, and the choice survives a full browser restart. The blur toggle survives a restart too (both are one-year cookies).
+- [x] Theme: switching crossfades, reloading shows **no flash** in the chosen theme, and the choice survives a full browser restart. The blur toggle survives a restart too (both are one-year cookies). Reloads were verified in the browser. A restart follows from the one-year `Max-Age`, which the action tests assert.
 
 ---
 

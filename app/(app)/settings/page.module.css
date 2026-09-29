@@ -1,0 +1,37 @@
+@layer components {
+  .page {
+    display: grid;
+    gap: var(--space-4);
+    max-inline-size: 40rem;
+  }
+
+  .title {
+    font-size: var(--step-2);
+    font-weight: 700;
+  }
+
+  .setting {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+  }
+
+  .heading {
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+
+  .help {
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+  }
+
+  .skeleton {
+    display: block;
+    block-size: 12rem;
+    border-radius: var(--radius-2);
+  }
+}

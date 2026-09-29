@@ -1,26 +1,63 @@
 @layer components {
   .shell {
+    --header-height: 3.5rem;
+    --sidebar-width: 16rem;
+
     min-block-size: 100dvh;
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template: 'header' var(--header-height) 'main' 1fr / minmax(0, 1fr);
+
+    @media (width >= 64rem) {
+      grid-template:
+        'header header' var(--header-height)
+        'sidebar main' 1fr / var(--sidebar-width) minmax(0, 1fr);
+    }
   }
 
   .header {
+    grid-area: header;
     position: sticky;
     inset-block-start: 0;
     z-index: var(--z-sticky);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding: var(--space-2) var(--space-4);
+    gap: var(--space-3);
+    padding-inline: var(--space-3);
     border-block-end: var(--border-width) solid var(--border);
     background: color-mix(in srgb, var(--surface-card) 88%, transparent);
     backdrop-filter: blur(12px);
     view-transition-name: site-header;
   }
 
+  .menuButton {
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--text-1);
+    cursor: pointer;
+
+    & svg {
+      stroke: currentcolor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+    }
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+
+    @media (width >= 64rem) {
+      display: none;
+    }
+  }
+
   .brand {
+    flex: none;
     color: inherit;
 
     &:hover {
@@ -28,9 +65,93 @@
     }
   }
 
+  .search {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-inline-size: 0;
+  }
+
+  .searchInput {
+    inline-size: min(100%, 32rem);
+    min-block-size: 2.5rem;
+    padding-inline: var(--space-4);
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface-sunken);
+    color: var(--text-1);
+    font: inherit;
+    font-size: var(--step-minus-1);
+
+    &::placeholder {
+      color: var(--text-3);
+    }
+  }
+
+  /*
+   * One sidebar, two modes: a popover drawer below 64rem (hidden until opened,
+   * light-dismissed natively) and a sticky column above, where it's always shown.
+   */
+  .sidebar {
+    /* No `display` here: the UA's `[popover]:not(:popover-open) { display: none }` must win on narrow screens. */
+    align-content: start;
+    gap: var(--space-3);
+    overflow-y: auto;
+    padding: var(--space-3);
+    background: var(--surface-page);
+    color: var(--text-1);
+    view-transition-name: sidebar;
+
+    &:popover-open {
+      display: grid;
+      position: fixed;
+      inset: 0 auto 0 0;
+      inline-size: min(20rem, 85vw);
+      block-size: 100dvh;
+      max-block-size: none;
+      margin: 0;
+      border: 0;
+      border-inline-end: var(--border-width) solid var(--border);
+      box-shadow: var(--shadow-2);
+      transition:
+        translate var(--duration-enter) var(--ease-out),
+        overlay var(--duration-enter) allow-discrete,
+        display var(--duration-enter) allow-discrete;
+      translate: 0 0;
+
+      @starting-style {
+        translate: -100% 0;
+      }
+    }
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--text-1) 30%, transparent);
+    }
+
+    /* Always shown: override the UA popover styles (display, position, inset, margin, size). */
+    @media (width >= 64rem) {
+      grid-area: sidebar;
+      position: sticky;
+      inset: var(--header-height) auto auto;
+      display: grid;
+      inline-size: auto;
+      block-size: calc(100dvh - var(--header-height));
+      margin: 0;
+      border: 0;
+      border-inline-end: var(--border-width) solid var(--border);
+      box-shadow: none;
+      translate: none;
+    }
+  }
+
   .main {
-    inline-size: min(100%, 72rem);
+    grid-area: main;
+    inline-size: min(100%, 48rem);
     margin-inline: auto;
-    padding: var(--space-5) var(--space-4);
+    padding: var(--space-4) var(--space-3) var(--space-7);
+
+    @media (width >= 40rem) {
+      padding-inline: var(--space-5);
+    }
   }
 }

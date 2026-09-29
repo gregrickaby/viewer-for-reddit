@@ -1,0 +1,220 @@
+@layer components {
+  /* The feed list item is the size container (post cards adapt to column width). */
+  .card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-2);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+  }
+
+  .votes {
+    padding-block-start: var(--space-1);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-2);
+    min-inline-size: 0;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+
+    & a {
+      color: var(--text-2);
+    }
+  }
+
+  .meta .subreddit {
+    color: var(--text-1);
+    font-weight: 700;
+  }
+
+  .badge,
+  .mod,
+  .nsfw,
+  .spoiler,
+  .flair {
+    padding: 0.05em 0.5em;
+    border-radius: var(--radius-pill);
+    font-size: var(--step-minus-2);
+    font-weight: 700;
+  }
+
+  .badge {
+    background: var(--surface-hover);
+    color: var(--text-2);
+  }
+
+  .mod {
+    background: color-mix(in srgb, var(--focus-ring) 18%, transparent);
+    color: var(--text-1);
+  }
+
+  .nsfw {
+    background: var(--badge-nsfw);
+    color: var(--accent-contrast);
+  }
+
+  .spoiler {
+    background: var(--badge-spoiler);
+    color: var(--accent-contrast);
+  }
+
+  .flair {
+    background: var(--surface-hover);
+    color: var(--text-1);
+
+    /* Reddit tells us which text color reads on its background. */
+    &[data-text='light'] {
+      color: var(--accent-contrast);
+    }
+
+    &[data-text='dark'] {
+      color: var(--text-on-light);
+    }
+  }
+
+  .title {
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+
+    & a {
+      color: var(--text-1);
+    }
+
+    & a:visited {
+      color: var(--text-2);
+    }
+  }
+
+  .crosspost,
+  .removed,
+  .status {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+  }
+
+  .removed {
+    font-style: italic;
+  }
+
+  /* Feed excerpt: clamped until "Read more" opens (design §8.9, no JS). */
+  .excerpt {
+    display: grid;
+    gap: var(--space-1);
+
+    &:not(:has(.more[open])) .excerptBody {
+      max-block-size: 12lh;
+      overflow: hidden;
+      mask-image: linear-gradient(to bottom, currentcolor 70%, transparent);
+    }
+  }
+
+  .more {
+    & summary {
+      inline-size: fit-content;
+      color: var(--accent);
+      font-size: var(--step-minus-1);
+      font-weight: 600;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    &[open] summary {
+      display: none;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin-inline-start: calc(-1 * var(--space-2));
+  }
+
+  .action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: 2rem;
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-pill);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+
+    & svg {
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 1.6;
+      stroke-linejoin: round;
+    }
+
+    &:hover {
+      background: var(--surface-hover);
+      color: var(--text-1);
+      text-decoration: none;
+    }
+  }
+
+  /* Skeleton shapes: same boxes as the card */
+  .voteSkeleton {
+    display: block;
+    inline-size: 2rem;
+    block-size: 5rem;
+  }
+
+  .metaSkeleton {
+    display: block;
+    inline-size: 12rem;
+    block-size: 0.9rem;
+  }
+
+  .titleSkeleton {
+    display: block;
+    inline-size: 100%;
+    block-size: 1.2rem;
+  }
+
+  .short {
+    inline-size: 60%;
+  }
+
+  .mediaSkeleton {
+    display: block;
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-2);
+  }
+
+  @container (inline-size < 30rem) {
+    .card {
+      grid-template-columns: minmax(0, 1fr);
+      padding-inline: var(--space-3);
+    }
+
+    .votes {
+      order: 1;
+
+      --vote-direction: row;
+    }
+
+    .voteSkeleton {
+      inline-size: 6rem;
+      block-size: 2rem;
+    }
+  }
+}

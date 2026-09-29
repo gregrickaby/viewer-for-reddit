@@ -1,0 +1,188 @@
+@layer components {
+  .frame {
+    display: grid;
+    place-items: center;
+    max-block-size: 80vh;
+    overflow: hidden;
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+  }
+
+  .media {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    max-block-size: 80vh;
+    object-fit: contain;
+  }
+
+  /* NSFW / spoiler reveal */
+  .reveal {
+    border-radius: var(--radius-2);
+    overflow: hidden;
+  }
+
+  .revealSummary {
+    position: relative;
+    display: grid;
+    place-items: center;
+    max-block-size: 60vh;
+    overflow: hidden;
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .reveal[open] > .revealSummary {
+    display: none;
+  }
+
+  .blurred {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    max-block-size: 60vh;
+    object-fit: cover;
+  }
+
+  .placeholder {
+    display: block;
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .revealLabel {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+    font-weight: 700;
+  }
+
+  .nsfw,
+  .spoiler {
+    padding: 0.1em 0.5em;
+    border-radius: var(--radius-1);
+    color: var(--accent-contrast);
+    font-size: var(--step-minus-2);
+    letter-spacing: 0.04em;
+  }
+
+  .nsfw {
+    background: var(--badge-nsfw);
+  }
+
+  .spoiler {
+    background: var(--badge-spoiler);
+  }
+
+  /* Gallery: a scroll-snap strip (design §8.10) */
+  .gallery {
+    display: flex;
+    max-block-size: 70vh;
+    overflow: auto hidden; /* x only: a y scroller would swallow page scrolling */
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+    scrollbar-width: thin;
+  }
+
+  .slide {
+    position: relative;
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    scroll-snap-align: center;
+  }
+
+  .slideMedia {
+    display: grid;
+    place-items: center;
+    min-block-size: 0;
+    overflow: hidden; /* keep tall media inside its row so the caption stays visible */
+
+    & .frame {
+      block-size: 100%;
+      background: transparent;
+    }
+  }
+
+  .slideImage {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+
+  .counter {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-end: var(--space-2);
+    padding: 0.1em 0.6em;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface-card) 85%, transparent);
+    color: var(--text-1);
+    font-size: var(--step-minus-2);
+    font-weight: 700;
+  }
+
+  .caption {
+    padding: var(--space-2) var(--space-3);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+  }
+
+  /* Link card */
+  .linkCard {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    color: var(--text-2);
+
+    &:hover {
+      background: var(--surface-hover);
+      text-decoration: none;
+    }
+  }
+
+  .linkThumb {
+    flex: none;
+    inline-size: 8rem;
+    block-size: 4.5rem;
+    border-radius: var(--radius-1);
+    object-fit: cover;
+  }
+
+  .linkText {
+    display: grid;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+
+  .linkDomain {
+    color: var(--text-1);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+  }
+
+  .linkUrl {
+    overflow: hidden;
+    color: var(--text-3);
+    font-size: var(--step-minus-2);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

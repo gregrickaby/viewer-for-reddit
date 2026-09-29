@@ -1,0 +1,33 @@
+@layer components {
+  .root {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
+    padding-block: var(--space-7);
+  }
+
+  .title {
+    font-size: var(--step-3);
+    font-weight: 700;
+  }
+
+  .detail {
+    max-inline-size: var(--measure);
+    color: var(--text-2);
+  }
+
+  .retry {
+    min-block-size: 2.5rem;
+    padding-inline: var(--space-4);
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface-card);
+    color: var(--text-1);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+  }
+}

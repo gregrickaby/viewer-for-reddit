@@ -83,6 +83,11 @@ const pairs: Array<[foreground: string, background: string, minimum: number]> = 
   ['--downvote', '--surface-card', TEXT],
   ['--danger', '--surface-card', TEXT],
   ['--nsfw', '--surface-card', TEXT],
+  ['--accent-contrast', '--badge-nsfw', TEXT],
+  ['--accent-contrast', '--badge-spoiler', TEXT],
+  ['--text-1', '--surface-hover', TEXT],
+  ['--text-2', '--surface-hover', TEXT],
+  ['--text-2', '--surface-sunken', TEXT],
   ['--focus-ring', '--surface-page', UI],
   ['--border-strong', '--surface-card', UI],
 ]

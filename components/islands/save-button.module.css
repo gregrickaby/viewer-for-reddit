@@ -1,0 +1,47 @@
+@layer components {
+  .root {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: 2rem;
+    padding-inline: var(--space-2);
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+    cursor: pointer;
+
+    & svg {
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 1.6;
+      stroke-linejoin: round;
+    }
+
+    &:hover {
+      background: var(--surface-hover);
+      color: var(--text-1);
+    }
+
+    &[aria-pressed='true'] {
+      color: var(--accent);
+
+      & svg {
+        fill: currentcolor;
+      }
+    }
+  }
+
+  .error {
+    color: var(--danger);
+    font-size: var(--step-minus-2);
+  }
+}

@@ -115,11 +115,9 @@ describe('resolveMedia: real posts', () => {
     const youtube = expectType(resolveMedia(post((v) => v.domain === 'youtube.com')), 'link')
     expect(youtube.url).toMatch(/^https:\/\/(www\.)?youtube\.com\//)
     expect(youtube.thumbnail?.src).toMatch(/^https:\/\/external-preview\.redd\.it\//)
-    expect(info).toHaveBeenCalledWith('[media:unresolved]', {
-      domain: 'youtube.com',
-      post_hint: 'rich:video',
-      media_type: 'youtube.com',
-    })
+    expect(info).toHaveBeenCalledWith(
+      '[media:unresolved] domain=youtube.com post_hint=rich:video media_type=youtube.com',
+    )
   })
 
   it('keeps plain links quiet', () => {

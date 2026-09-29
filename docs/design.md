@@ -145,6 +145,7 @@ These rules are binding. Code review rejects violations.
 | `MembershipToggle` | `useOptimistic` checkmark and row state for adding or removing a subreddit in a multi | Same |
 | `SectionError` | The `catchError` fallback must be a Client Component, to offer `retry()` | Route-level `error.tsx` |
 | `LinkPendingHint` | `useLinkStatus` inside a `<Link>`. Sets `data-pending` so ancestors can dim stale content via CSS `:has()`. | Normal navigation |
+| `PopoverDismiss` | Closes open popovers (the account menu, the mobile nav drawer) when the pathname changes. They live in the persistent layout, so a link inside them would otherwise leave them open over the new page. Renders nothing. | Full page loads close them anyway |
 | `RedditVideo` | HLS playback with audio: native where supported, otherwise a lazily imported `hls.js`. Pauses when its route is hidden by `<Activity>`. | `<video>` with the MP4 fallback (no audio) and an "Open on Reddit" note |
 | `AutoplayVideo` | Plays GIF-style muted loops only while ≥50% visible (IntersectionObserver). Honors `prefers-reduced-motion` and pauses when hidden by Activity. | Native `autoplay muted loop` |
 | `EmbedFacade` | Shows a poster plus a ▶ button. The third-party `<iframe>` is injected only on click. | An `<a>` link to the original URL |
@@ -926,7 +927,9 @@ Mobile <768px: header + single column. The sidebar is a `popover` drawer opened 
 | `--upvote` | `#cb3400` | `#ff4500` | Reddit orangered, darkened in light mode for AA text contrast |
 | `--downvote` | `#4d62d6` | `#7193ff` | Reddit periwinkle, darkened in light mode (**VERIFY** ≥4.5:1 in Phase 3) |
 | `--focus-ring` | `#0079d3` | `#4fbcff` | |
-| `--nsfw` / `--spoiler` | `#d9254a` / `#6a6a6a` | `#ff585b` / `#a6a7ab` | badges |
+| `--nsfw` / `--spoiler` | `#c4122f` / `#5c5f66` | `#ff585b` / `#a6a7ab` | NSFW and spoiler text |
+| `--badge-nsfw` / `--badge-spoiler` | `#c4122f` / `#5c5f66` | same | Badge fills under white text. The dark-theme `--nsfw` is only about 3:1 against white, so fills don't change with the theme. |
+| `--text-on-light` | `#1c1c1c` | same | Text on light colors we don't control (Reddit flair backgrounds) |
 
 The light-mode neutrals are new values chosen to match reddit.com's light chrome, because the old app used Mantine's light defaults. The dark values come straight from the old app. All pairs are checked against AA contrast by a unit test over the token file (Phase 3).
 

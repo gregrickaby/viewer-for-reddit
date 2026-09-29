@@ -1,0 +1,60 @@
+@layer components {
+  .root {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    inline-size: 100%;
+    min-block-size: 2.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-1);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .label {
+    font-weight: 600;
+  }
+
+  .track {
+    flex: none;
+    display: flex;
+    align-items: center;
+    inline-size: 2.75rem;
+    block-size: 1.5rem;
+    padding: 0.1875rem;
+    border-radius: var(--radius-pill);
+    background: var(--border-strong);
+    transition: background-color var(--duration-exit) var(--ease-out);
+  }
+
+  .thumb {
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    border-radius: 50%;
+    background: var(--surface-card);
+    box-shadow: var(--shadow-1);
+    transition: translate var(--duration-exit) var(--ease-out);
+  }
+
+  .switch[aria-checked='true'] .track {
+    background: var(--accent-fill);
+  }
+
+  .switch[aria-checked='true'] .thumb {
+    translate: 1.25rem 0;
+  }
+
+  .error {
+    color: var(--danger);
+    font-size: var(--step-minus-2);
+  }
+}
