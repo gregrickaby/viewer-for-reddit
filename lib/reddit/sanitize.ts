@@ -12,7 +12,6 @@ import { resolveRedditLink } from './links'
 
 const ALIGNMENTS = new Set(['left', 'center', 'right'])
 
-/** Keep `align` only when it is a known value (sanitize-html would leave a bare `align`). */
 type Attributes = sanitizeHtml.Attributes
 
 /** Keep `align` only when it is a known value (sanitize-html would leave a bare `align`). */

@@ -44,7 +44,7 @@ const eslintConfig = defineConfig([
         {
           patterns: [
             {
-              group: ['@/lib/reddit/*', '@/lib/auth/*', '@/lib/env'],
+              group: ['@/lib/reddit/*', '@/lib/media/*', '@/lib/auth/*', '@/lib/env'],
               allowTypeImports: true,
               message: 'Islands may only import types from server modules.',
             },
@@ -55,7 +55,7 @@ const eslintConfig = defineConfig([
   },
   {
     // Server-only modules must say so.
-    files: ['lib/reddit/**/*.ts', 'lib/auth/**/*.ts', 'lib/env.ts'],
+    files: ['lib/reddit/**/*.ts', 'lib/media/**/*.ts', 'lib/auth/**/*.ts', 'lib/env.ts'],
     rules: {
       'no-restricted-syntax': [
         'error',

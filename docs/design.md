@@ -393,7 +393,7 @@ As a bonus, Zod 4's `z.toJSONSchema()` exports the curated schemas to `docs/redd
 
 ### View models
 
-Server Components render view models, never raw Reddit objects. Islands receive only primitives taken from them (ids, counts, booleans).
+Server Components render view models, never raw Reddit objects. All of them live in `lib/view-models.ts` (`PostView`, `CommentView`, `CommentNode`, `SubredditView`, `UserView`, `MeView`, `MultiView`, `Page<T>`, and the media types in §8.7). Islands receive only primitives taken from them (ids, counts, booleans).
 
 ```ts
 type PostView = {
@@ -404,12 +404,15 @@ type PostView = {
   title: string
   permalink: string          // app-internal path: /r/nextjs/comments/abc123/slug
   createdUtc: number
+  editedUtc: number | null
   score: number
   hideScore: boolean
   likes: Vote                // -1 | 0 | 1
   numComments: number
   saved: boolean
   flags: { nsfw: boolean; spoiler: boolean; stickied: boolean; locked: boolean; archived: boolean }
+  distinguished: 'moderator' | 'admin' | null
+  removal: 'removed' | 'deleted' | null   // drives the "removed" notice; body and media are empty
   flair: FlairView | null
   body: SafeHtml | null      // self text, with inline media already resolved (§8.7)
   media: PostMedia           // see §8.7
@@ -576,7 +579,7 @@ type PostMedia =
 
 type ImageSet    = { src: string; srcSet: string; width: number; height: number; blurred: { src: string; srcSet: string } | null }
 type LoopVideo   = { mp4: string; width: number; height: number }
-type StreamVideo = { hls: string; mp4Fallback: string; width: number; height: number; durationSec: number | null }
+type StreamVideo = { hls: string; mp4Fallback: string | null; width: number; height: number; durationSec: number | null } // gallery video has no MP4
 type EmbedView   = { provider: ProviderId; title: string; iframeSrc: string; aspectRatio: number;
                      allow: string; sandbox: string; originalUrl: string }
 type GalleryItem = { media: Extract<PostMedia, { type: 'image' | 'animated' | 'video' }>; caption: string | null; outboundUrl: string | null }
@@ -1026,7 +1029,7 @@ Section-level boundaries use `catchError` from `next/error`, so a failure in the
 
 | Layer | Tool | What |
 |---|---|---|
-| Schemas | Vitest | Every committed sample in `fixtures/reddit/things` parses with the curated schemas. Snapshot tests of mapper output for each `PostContent` type, deleted and removed comments, and crossposts. |
+| Schemas | Vitest | Every committed sample in `fixtures/reddit/things` parses with the curated schemas. Mapper tests on real samples for each `PostMedia` type, deleted and removed posts and comments, and crossposts. A rich-text test checks that sanitizing keeps every word, structural tag, and spoiler across all captured self text and comments. |
 | Pure logic | Vitest | Score math, `next` sanitization, cursor math, `?more=` resolution and tree splicing, sanitizer allowlist (XSS corpus), link rewriting, token-expiry decisions. |
 | Auth and proxy | Vitest | `proxy()` against mocked `fetch`: refresh on expiry, `invalid_grant` clears cookies, gating redirects, non-GET pass-through. |
 | Server Actions | Vitest | Called directly with a mocked session and a mocked Reddit. Asserts input validation, error mapping, and `refresh()` versus no-refresh behavior. |

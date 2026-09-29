@@ -610,7 +610,7 @@ Rules (`prepare`):
 2. The first 15 samples are kept as a baseline.
 3. Then samples are added greedily, each time taking the one that contributes the most unseen features, until every feature is covered or the kind reaches 250.
 
-The result is small and complete: 36 Links, 24 Comments, 15 Mores, 23 Subreddits, 7 LabeledMultis, 20 MediaMetadataItems, and one each of Me and Account. Every field and value type seen anywhere in the capture is represented, including the optional-ness of each field. The script writes `fixtures/reddit/things/<Dir>/<id>.json`, clearing the directory first, and creates the schema output directory for quicktype.
+The result is small and complete: 36 Links, 24 Comments, 15 Mores, 23 Subreddits, 7 LabeledMultis, 20 MediaMetadataItems, and one each of Me and Account. Every field and value type seen anywhere in the capture is represented, including the optional-ness of each field. The script writes `fixtures/reddit/things/<Dir>/0000.json`, `0001.json`, … in selection order, clearing the directory first, and creates the schema output directory for quicktype.
 
 **Checked on 2026-09-29:** quicktype 26 merges all files in `--src <dir>/<TypeName>/` into one schema named `<TypeName>Schema`. Absent-in-some fields become `.optional()`, and mixed types become `z.union` (for example `edited: z.union([z.boolean(), z.number()])`). Output uses `import * as z from "zod"`, which works with Zod 4.
 
@@ -692,17 +692,20 @@ If `pick` names a key the generated schema doesn't have, **typecheck fails**. Th
 
 The same approach applies to the other schemas:
 
-- **`comment.ts`** (`Comment`, with `replies: z.unknown()`, parsed recursively in `comment-tree.ts`)
-- **`more.ts`**
-- **`subreddit.ts`**
-- **`account.ts`** (includes `subreddit.user_is_subscriber`)
-- **`multi.ts`** (`LabeledMulti`: `name`, `display_name`, `description_md`, `visibility`, `path`, `icon_url`, `subreddits: [{ name }]`, `can_edit`)
-- **`me.ts`**
+- **`media.ts`**: media shapes shared by links and comments: `PreviewImage`, `RedditVideo`, `Preview`, `Oembed` (without `html`), `MediaObject`, and `MediaMetadataItem`. `media_metadata` itself is `z.record(z.string(), z.unknown())`, and each entry is parsed on its own by the media code, so a malformed entry drops only that entry.
+- **`link.ts`**: also exports `crosspostParent(link)`, which parses `crosspost_parent_list[0]` with `Link` (one level deep) or returns null.
+- **`comment.ts`**: `Comment` (with `replies: z.unknown()`, parsed recursively by the comment mapper, and `body` for the `[deleted]`/`[removed]` markers), `More`, and the discriminated `CommentOrMore` union.
+- **`subreddit.ts`**: icons, banners, colors, and subscription state are all `nullish`, because private communities and followed-user entries omit them.
+- **`account.ts`**: `Account` (includes the profile `subreddit.user_is_subscriber`, which is the follow state) and `Me`.
+- **`multi.ts`**: `Multi` (`LabeledMulti`) with `subreddits: [{ name }]`.
 - **`responses.ts`**:
   - `CommentsResponse = z.tuple([ListingEnvelope, ListingEnvelope])`
-  - `MoreChildrenResponse = z.object({ json: z.object({ errors: z.array(z.tuple([z.string(), z.string(), z.string().nullable()])), data: z.object({ things: z.array(z.unknown()) }).optional() }) })`
-  - `FormResponse` (the same `json.errors` envelope) for `/api/comment` and `/api/editusertext`
+  - `FormError = z.tuple([code, message], field | null)`: Reddit sends the field only sometimes
+  - `FormResponse` (the `api_type=json` envelope with `json.errors` and optional `json.data.things`) for `/api/comment`, `/api/editusertext`, and `/api/morechildren`
+  - `MultiListResponse` (a bare array, parsed per item with `MultiThing`)
   - `EmptyResponse = z.object({}).loose()`
+
+**Verified on 2026-09-29 against the full local capture:** 2,738 links, 6,711 comments, 2,379 `more` nodes, 152 subreddits, 7 multis, 1 account, and 724 `media_metadata` entries all parse, with zero drops. `tests/unit/reddit/schemas.test.ts` repeats this check whenever `fixtures/reddit/raw` exists, and always checks the committed samples.
 
 **Schema docs (optional):** `scripts/reddit/export-json-schema.ts` runs `z.toJSONSchema()` over the curated schemas and writes `docs/reddit-schemas.json`. Hook it onto the end of `types:generate`.
 
@@ -722,21 +725,23 @@ export function parseListing<T extends z.ZodType>(json: unknown, item: T, endpoi
 }
 ```
 
+`parseItems(values, item, endpoint)` applies the same per-item tolerance to bare arrays such as `/api/multi/mine`. `parseResponse(json, schema, endpoint)` is the strict variant for single-object responses. Drop logs name the kind and fullname only (`t3 t3_abc123`), never content.
+
 ### 2.6 View models and mappers
 
-- **`lib/view-models.ts`** defines `Vote`, `SafeHtml`, `ImageSet`, `GalleryItem`, `VideoSources`, `PostContent`, `PostView`, `CommentView`, `CommentNode = { kind: 'comment'; comment: CommentView; replies: CommentNode[] } | { kind: 'more'; id: string; parentId: string; count: number; children: string[] }`, `SubredditView`, `UserView`, `MultiView`, and `Page<T> = { items: T[]; after: string | null; before: string | null }`. These match §7.
-- **`lib/media/`** (the full design is in §8.7) is implemented in Phase 7. Phase 2 lands the schemas and the fixture corpus it needs. Comments pick `media_metadata` too, for inline media.
-- **`mappers/media.ts`** builds `ImageSet` (`src`, `srcSet`, `width`, `height`, `alt`) from `preview.images[0]`. It builds gallery items from `gallery_data.items` joined to `media_metadata[id].s` and `.p` (each parsed with a small schema and dropped if invalid). Video comes from `media.reddit_video`.
-- **`mappers/post.ts`** classifies `PostContent` in this order:
-  1. `crosspost_parent_list[0]` parses as `Link` → `crosspost`
-  2. gallery
-  3. `is_video` → `video`
-  4. `post_hint === 'image'` → `image`
-  5. `is_self` → `self`
-  6. `post_hint` is `rich:video` or there is an oembed → `embed`
-  7. otherwise → `link`
+- **`lib/view-models.ts`** defines `Vote`, `SafeHtml`, `Page<T>`, `Removal`, `Distinguished`, `FlairView`, the media types (`ImageSet`, `LoopVideo`, `StreamVideo`, `EmbedView`, `ProviderId`, `GalleryItem`, `PostMedia`), `PostView`, `CommentView`, `CommentNode = { kind: 'comment'; comment; replies } | MoreNode`, `SubredditView`, `UserView`, `MeView`, and `MultiView`. These match design §7 and §8.7. The module holds types only, so islands may import it.
+- **The core of `lib/media/` lands here, not in Phase 7**, because `PostView.media` needs it from the first feed onward. It includes:
+  - `url.ts`: `safeMediaUrl` (https only, with http upgraded, no credentials, and the host must match exactly or by `.suffix`; the default list is `.redd.it`, `.redditmedia.com`, `.redditstatic.com`) and `safeLinkUrl` for outbound links.
+  - `images.ts`: builds an `ImageSet` from `preview.images[i]` or from `media_metadata` entries. The srcset is deduplicated and sorted by width. The blur comes from `variants.obfuscated`/`variants.nsfw` or `o[]`. Unsafe renditions are dropped.
+  - `detect.ts`: the resolver chain, with removed (2), gallery (3), Reddit video (4), video preview (6), animated variants (7), image (9), self (11), and link card (12). Crossposts (1) resolve through `crosspostParent`. It logs `[media:unresolved]` when a post with a media hint falls through to the link card.
+  - `resolvers/{gallery,reddit-video,preview,link-card}.ts`. `metadataMedia(entry)` in `gallery.ts` turns one `media_metadata` entry into image, animated, or video media. Phase 7 reuses it for inline media.
 
-  It also rewrites `permalink` to the app route and maps `likes: true/false/null` to `1/-1/0`.
+  Phase 7 adds known providers (5), direct files (8), the oEmbed fallback (10), `inline.ts`, and every component. Until then, provider posts render as link cards, and Redgifs/Imgur clips use Reddit's silent transcode.
+- **`lib/reddit/mappers/`**:
+  - `shared.ts`: `toVote`, `editedAt`, `authorName` (`[deleted]` → null), `removalFrom` (`deleted` → deleted, any other category → removed), `distinguishedFrom`, `hexColor` (the only way a Reddit color reaches a style attribute), `flairFrom`, and `appPath` (a permalink as an app route, with a canonical fallback).
+  - `post.ts`: `mapPost(link): PostView`. The body is null when the post is removed, and a crosspost of a text post borrows the original's text.
+  - `comment.ts`: `mapComment`, `mapMore`, and `mapCommentTree(listing, endpoint)`. The top-level envelope is strict. Malformed nested `replies` degrade to none, with a warning. The removal markers are `[removed]` and `[ Removed by Reddit ]` (removed) and `[deleted]` with a `[deleted]` author (deleted).
+  - `community.ts`: `mapSubreddit` (followed users become `kind: 'user'` with `href: /user/<name>`), `mapUser`, `mapMe`, and `mapMulti(multi, viewer)` (the viewer's own multis link to `/m/<name>`).
 - **`lib/reddit/sanitize.ts`** uses `sanitize-html` (design §8.9) with:
   - an allowlist of `p`, `a`, `em`, `strong`, `del`, `sup`, `sub`, `code`, `pre`, `blockquote`, `ul`, `ol`, `li`, `hr`, `br`, `h1`–`h6`, `table`, `thead`, `tbody`, `tr`, `th[align]`, `td[align]`, and `span` (class `md-spoiler-text` only)
   - `a[href]` only, with schemes `http`, `https`, and `mailto`
@@ -750,11 +755,11 @@ export function parseListing<T extends z.ZodType>(json: unknown, item: T, endpoi
 
 ### Phase 2 acceptance
 
-- [ ] Hitting `/api/dev/capture` writes at least 25 raw fixtures, and `npm run types:generate` produces `generated.ts` deterministically (running it twice gives no diff).
-- [ ] `tests/unit/schemas.test.ts` shows every raw fixture parsing, and envelope failures equal 0. Per-item drops are logged and asserted to be below 1%.
-- [ ] Mapper snapshot tests cover every `PostContent` variant, a deleted author, a removed post, and a crosspost.
-- [ ] The sanitizer test runs an XSS corpus (`<script>`, `onerror`, `javascript:` hrefs, `<img>`, `style`, SVG) and all are stripped. Reddit links are rewritten.
-- [ ] A rich-text snapshot corpus from real AskReddit and ELI5 fixtures (tables, nested lists, code blocks, spoilers, superscript, headings) renders faithfully.
+- [x] Hitting `/api/dev/capture` writes at least 25 raw fixtures (62 on 2026-09-29), and `npm run types:generate` produces `generated.ts` deterministically (running it twice gives no diff).
+- [x] `tests/unit/reddit/schemas.test.ts` shows every committed sample parsing, and (when the raw capture exists) every raw fixture parsing with envelope failures equal to 0. Per-item drops are logged and asserted to be below 1%; they are currently 0.
+- [x] Mapper tests (`tests/unit/reddit/mappers.test.ts`, `tests/unit/media/detect.test.ts`) cover every Phase 2 `PostMedia` variant on real samples, plus a deleted author, a removed post, and a crosspost. They assert structure instead of snapshots, so a re-capture doesn't churn them.
+- [x] The sanitizer test runs an XSS corpus (`<script>`, `onerror`, `javascript:` hrefs, `<img>`, `style`, SVG) and all are stripped. Reddit links are rewritten.
+- [x] A rich-text corpus from real fixtures (AskReddit, ELI5, and everything else captured) renders faithfully. `tests/unit/reddit/rich-text.test.ts` asserts that every word, every structural tag (tables, lists, code, quotes, headings, superscript, and so on), and every spoiler survives, and that nothing outside the allowlist is emitted.
 
 ---
 
@@ -1217,7 +1222,7 @@ export function CommentComposer({ parent, me }: { parent: string; me: string }) 
 
 ## Phase 7: Media detection and playback
 
-**Goal:** implement design §8.7 end to end. After this phase, GIFs animate, Reddit video plays with audio, embeds work (including NSFW Redgifs), inline media renders in comments, and no post renders broken media.
+**Goal:** implement design §8.7 end to end. The pure core (URL safety, image sets, and the chain without providers) already landed in Phase 2 (§2.6); this phase adds providers, direct files, the oEmbed fallback, inline media, and all playback components. After this phase, GIFs animate, Reddit video plays with audio, embeds work (including NSFW Redgifs), inline media renders in comments, and no post renders broken media.
 
 ### 7.0 Spikes (do these first, about half a day)
 
