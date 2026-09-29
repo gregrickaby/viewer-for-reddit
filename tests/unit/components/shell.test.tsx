@@ -35,6 +35,7 @@ vi.mock('@/app/actions/things', () => ({ vote: vi.fn(), setSaved: vi.fn() }))
 vi.mock('@/app/actions/settings', () => ({ setTheme: vi.fn(), setBlurNsfw: vi.fn() }))
 
 const { UserMenu, UserMenuSkeleton } = await import('@/components/shell/user-menu')
+const { SettingsMenu, SettingsMenuSkeleton } = await import('@/components/shell/settings-menu')
 const { SidebarFeeds, SidebarLists, SidebarSkeleton } = await import('@/components/shell/sidebar')
 const { default: AppLayout } = await import('@/app/(app)/layout')
 const { default: HomePage, metadata: homeMetadata } = await import('@/app/(app)/home/page')
@@ -67,8 +68,7 @@ describe('UserMenu', () => {
     for (const href of ['/user/spez', '/saved', '/multis', '/subreddits', '/settings']) {
       expect(out).toContain(`href="${href}"`)
     }
-    expect(out).toContain('checked="" value="dark"')
-    expect(out).toContain('aria-checked="false"')
+    expect(out).not.toContain('Blur NSFW media')
     expect(out).toContain('Sign out')
   })
 
@@ -206,6 +206,18 @@ describe('feed pages', () => {
       />,
     )
     expect(out).not.toContain('m/<!-- -->news')
+  })
+})
+
+describe('SettingsMenu', () => {
+  it('is a gear in the header with the theme and NSFW blur toggles', async () => {
+    const out = await renderServer(<SettingsMenu />)
+    expect(out).toContain('aria-label="Settings"')
+    expect(out).toContain('popoverTarget="settings-menu"')
+    expect(out).toContain('checked="" value="dark"')
+    expect(out).toContain('aria-checked="false"')
+    expect(out).toContain('Blur NSFW media')
+    expect(await renderServer(<SettingsMenuSkeleton />)).toContain('aria-hidden="true"')
   })
 })
 

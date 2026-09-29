@@ -1,0 +1,54 @@
+@layer components {
+  .root {
+    display: flex;
+    align-items: center;
+  }
+
+  .trigger {
+    anchor-name: --settings-menu;
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--text-1);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+
+    & svg {
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+    }
+  }
+
+  .menu {
+    position-anchor: --settings-menu;
+    position-area: bottom span-left;
+    position-try-fallbacks: flip-inline;
+    display: grid;
+    gap: var(--space-3);
+    inline-size: min(18rem, calc(100vw - 2 * var(--space-4)));
+    margin: var(--space-2) 0 0;
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+  }
+
+  .skeleton {
+    display: block;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: 50%;
+  }
+}

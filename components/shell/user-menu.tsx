@@ -2,12 +2,9 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { signOut } from '@/app/actions/auth'
-import { SettingSwitch } from '@/components/islands/setting-switch'
-import { ThemeToggle } from '@/components/islands/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { getUsername } from '@/lib/auth/session'
 import { getMe } from '@/lib/reddit/reads'
-import { getSettings } from '@/lib/settings'
 import styles from './user-menu.module.css'
 
 /** The avatar, or null when Reddit can't be reached: the menu still works without it. */
@@ -26,7 +23,7 @@ async function avatar(): Promise<string | null> {
 export async function UserMenu() {
   const username = await getUsername()
   if (!username) return null
-  const [icon, settings] = await Promise.all([avatar(), getSettings()])
+  const icon = await avatar()
 
   return (
     <div className={styles.root}>
@@ -64,10 +61,6 @@ export async function UserMenu() {
             Settings
           </Link>
         </nav>
-        <div className={styles.settings}>
-          <ThemeToggle theme={settings.theme} />
-          <SettingSwitch checked={settings.blurNsfw} label="Blur NSFW media" />
-        </div>
         <form action={signOut} className={styles.signOut}>
           <Button type="submit" variant="secondary" size="sm">
             Sign out

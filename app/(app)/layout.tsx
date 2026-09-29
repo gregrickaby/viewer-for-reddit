@@ -4,6 +4,7 @@ import { Logo } from '@/components/brand/logo'
 import { PopoverDismiss } from '@/components/islands/popover-dismiss'
 import { SectionError } from '@/components/islands/section-error'
 import { SidebarFeeds, SidebarLists, SidebarSkeleton } from '@/components/shell/sidebar'
+import { SettingsMenu, SettingsMenuSkeleton } from '@/components/shell/settings-menu'
 import { UserMenu, UserMenuSkeleton } from '@/components/shell/user-menu'
 import styles from './layout.module.css'
 
@@ -44,6 +45,9 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
             enterKeyHint="search"
           />
         </form>
+        <Suspense fallback={<SettingsMenuSkeleton />}>
+          <SettingsMenu />
+        </Suspense>
         <Suspense fallback={<UserMenuSkeleton />}>
           <UserMenu />
         </Suspense>
