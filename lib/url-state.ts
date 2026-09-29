@@ -44,7 +44,8 @@ export function parseFeedQuery(
 
   return {
     sort: sorts.find((value) => value === sort) ?? sorts[0]!,
-    t: TIME_RANGES.find((value) => value === t) ?? 'day',
+    // Top opens on the past week: a single day is often empty in smaller communities.
+    t: TIME_RANGES.find((value) => value === t) ?? 'week',
     // Reddit takes one cursor at a time; `after` wins if both are present.
     after: after.success ? after.data : null,
     before: after.success ? null : before.success ? before.data : null,

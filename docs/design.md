@@ -786,7 +786,7 @@ Reddit gallery posts (`is_gallery`, up to 20 items) are first-class. The detecti
 | Route | Page | URL state |
 |---|---|---|
 | `/` | Landing and sign-in | `error`, `next`. Signed-in visitors are redirected to `/home`. |
-| `/home` | Home feed | `sort=best\|hot\|new\|top\|rising`, `t=hour\|day\|week\|month\|year\|all`, `after`, `before`, `count` |
+| `/home` | Home feed | `sort=best\|hot\|new\|top\|rising`, `t=hour\|day\|week\|month\|year\|all` (default `week`), `after`, `before`, `count` |
 | `/r/[subreddit]` | Subreddit feed | Same as home. `/r/popular` and `/r/all` work here too. |
 | `/r/[subreddit]/comments/[id]/[[...rest]]` | Post and comments | `rest = [slug?, commentId?]`. `sort=confidence\|top\|new\|controversial\|old\|qa`, `more` |
 | `/user/[username]` | Profile | `tab=overview\|submitted\|comments`, `sort=new\|hot\|top`, cursors |

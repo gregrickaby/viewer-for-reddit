@@ -37,7 +37,7 @@ test.describe('feeds', () => {
     expect(second.some((title) => first.includes(title))).toBe(false)
 
     await page.getByRole('link', { name: 'Top', exact: true }).click()
-    await page.waitForURL(/sort=top&t=day$/)
+    await page.waitForURL(/sort=top&t=week$/)
     await expect(page.getByRole('link', { name: 'Top', exact: true })).toHaveAttribute(
       'aria-current',
       'page',

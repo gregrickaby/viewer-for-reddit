@@ -28,7 +28,7 @@ describe('parseFeedQuery', () => {
   it('defaults everything', () => {
     expect(parseFeedQuery({})).toEqual({
       sort: 'best',
-      t: 'day',
+      t: 'week',
       after: null,
       before: null,
       count: 0,
@@ -48,7 +48,7 @@ describe('parseFeedQuery', () => {
         { sort: 'best', t: 'decade', after: 'javascript:', before: 'x', count: '-3' },
         LISTING_SORTS,
       ),
-    ).toEqual({ sort: 'hot', t: 'day', after: null, before: null, count: 0 })
+    ).toEqual({ sort: 'hot', t: 'week', after: null, before: null, count: 0 })
     expect(parseFeedQuery({ count: '1.5' }).count).toBe(0)
     expect(parseFeedQuery({ count: '20000' }).count).toBe(0)
   })
