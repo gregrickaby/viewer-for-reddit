@@ -72,7 +72,8 @@ export function feedKey(query: FeedQuery): string {
   return `${query.sort}:${usesTimeRange(query.sort) ? query.t : '-'}:${cursor}`
 }
 
-type HrefQuery = Record<string, string | number | null | undefined>
+/** Other URL state to carry through (a saved-items filter, a profile tab, a search query). */
+export type HrefQuery = Record<string, string | number | null | undefined>
 
 function withQuery(base: string, query: HrefQuery): string {
   const params = new URLSearchParams()
@@ -89,8 +90,10 @@ export function sortHref(
   sort: FeedSort,
   t: TimeRange | null,
   defaultSort: FeedSort,
+  extra: HrefQuery = {},
 ): string {
   return withQuery(base, {
+    ...extra,
     sort: sort === defaultSort ? null : sort,
     t: usesTimeRange(sort) ? t : null,
   })
@@ -108,8 +111,10 @@ export function nextHref(
   query: FeedQuery,
   after: string,
   defaultSort: FeedSort,
+  extra: HrefQuery = {},
 ): string {
   return withQuery(base, {
+    ...extra,
     ...keepSort(query, defaultSort),
     after,
     count: pageOffset(query) + PAGE_SIZE,
@@ -122,10 +127,12 @@ export function prevHref(
   query: FeedQuery,
   firstFullname: string,
   defaultSort: FeedSort,
+  extra: HrefQuery = {},
 ): string {
   const offset = pageOffset(query)
-  if (offset <= PAGE_SIZE) return withQuery(base, keepSort(query, defaultSort))
+  if (offset <= PAGE_SIZE) return withQuery(base, { ...extra, ...keepSort(query, defaultSort) })
   return withQuery(base, {
+    ...extra,
     ...keepSort(query, defaultSort),
     before: firstFullname,
     count: offset + 1,
@@ -175,4 +182,35 @@ export function expandMoreHref(
   const more = [...query.more.filter((id) => id !== moreId), moreId].join(',')
   const href = withQuery(base, { sort: query.sort === 'confidence' ? null : query.sort, more })
   return `${href}#${anchor}`
+}
+
+// ── Saved, profiles, subscriptions, search (design §9) ───────────────────────
+
+export const SAVED_TYPES = ['all', 'links', 'comments'] as const
+export type SavedType = (typeof SAVED_TYPES)[number]
+
+export const PROFILE_TABS = ['overview', 'submitted', 'comments'] as const
+export type ProfileTab = (typeof PROFILE_TABS)[number]
+export const PROFILE_SORTS = ['new', 'hot', 'top'] as const satisfies readonly FeedSort[]
+
+export const SUBSCRIPTION_TABS = ['communities', 'people'] as const
+export type SubscriptionTab = (typeof SUBSCRIPTION_TABS)[number]
+
+/** One value from a fixed list, or the list's first (the default). */
+export function pick<T extends string>(
+  values: readonly T[],
+  value: string | string[] | undefined,
+): T {
+  const wanted = first(value)
+  return values.find((candidate) => candidate === wanted) ?? values[0]!
+}
+
+/** A free-text query (search, filter): trimmed and capped; empty is "". */
+export function parseText(value: string | string[] | undefined, max = 100): string {
+  return (first(value) ?? '').trim().slice(0, max)
+}
+
+/** A plain link to `base` with the given query (defaults left out by the caller). */
+export function href(base: string, query: HrefQuery): string {
+  return withQuery(base, query)
 }

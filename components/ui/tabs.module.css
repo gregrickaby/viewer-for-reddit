@@ -1,0 +1,25 @@
+@layer components {
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2rem;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-pill);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+
+    &:hover,
+    &[aria-current='page'] {
+      background: var(--surface-hover);
+      color: var(--text-1);
+      text-decoration: none;
+    }
+  }
+}

@@ -59,5 +59,10 @@ export const Me = MeSchema.pick({
 
 export const AccountThing = thing('t2', Account)
 
+/** Reddit returns only the name for a suspended account. */
+export const SuspendedAccount = z.object({ name: z.string(), is_suspended: z.literal(true) })
+
+export const ProfileThing = thing('t2', z.union([SuspendedAccount, Account]))
+
 export type RedditAccount = z.infer<typeof Account>
 export type RedditMe = z.infer<typeof Me>

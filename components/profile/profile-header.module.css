@@ -2,52 +2,38 @@
   .root {
     display: grid;
     gap: var(--space-3);
-    overflow: hidden;
-    padding-block-end: var(--space-4);
+    padding: var(--space-4);
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-2);
     background: var(--surface-card);
   }
 
-  .plain {
-    padding-block: var(--space-2);
-  }
-
-  .banner {
-    display: block;
-    block-size: 6rem;
-    background-color: var(--accent-fill);
-    background-position: center;
-    background-size: cover;
-  }
-
   .identity {
     display: flex;
-    align-items: flex-end;
+    flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-3);
-    margin-block-start: calc(-1 * var(--space-6));
-    padding-inline: var(--space-4);
   }
 
-  .icon,
-  .iconFallback {
+  .avatar,
+  .avatarFallback {
     flex: none;
-    inline-size: 4rem;
-    block-size: 4rem;
-    border: 3px solid var(--surface-card);
+    inline-size: 4.5rem;
+    block-size: 4.5rem;
     border-radius: 50%;
-    background: var(--surface-card);
   }
 
-  .icon {
+  .avatar {
     object-fit: cover;
+    background: var(--surface-hover);
   }
 
-  .iconFallback {
+  .avatarFallback {
     display: grid;
     place-items: center;
     background: var(--accent-fill);
     color: var(--accent-contrast);
+    font-size: var(--step-2);
     font-weight: 700;
   }
 
@@ -56,10 +42,9 @@
     display: grid;
     gap: var(--space-1);
     min-inline-size: 0;
-    padding-block-end: var(--space-1);
   }
 
-  .title {
+  .name {
     font-size: var(--step-2);
     font-weight: 700;
     overflow-wrap: anywhere;
@@ -81,13 +66,16 @@
     font-weight: 700;
   }
 
-  .description {
-    padding-inline: var(--space-4);
+  .bio {
     color: var(--text-2);
-    font-size: var(--step-minus-1);
+    white-space: pre-line;
   }
 
-  .titleSkeleton {
+  .suspended {
+    color: var(--text-2);
+  }
+
+  .nameSkeleton {
     display: block;
     inline-size: 10rem;
     block-size: 1.5rem;

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
   COMMENT_SORTS,
+  PROFILE_SORTS,
+  PROFILE_TABS,
+  SAVED_TYPES,
+  SUBSCRIPTION_TABS,
+  href,
+  parseText,
+  pick,
   HOME_SORTS,
   MAX_MORE_IDS,
   LISTING_SORTS,
@@ -136,5 +143,40 @@ describe('thread query', () => {
 
   it('lists every comment sort', () => {
     expect(COMMENT_SORTS).toContain('controversial')
+  })
+})
+
+describe('list state', () => {
+  it('picks from fixed lists with a default', () => {
+    expect(pick(SAVED_TYPES, 'comments')).toBe('comments')
+    expect(pick(SAVED_TYPES, ['links', 'x'])).toBe('links')
+    expect(pick(PROFILE_TABS, 'nope')).toBe('overview')
+    expect(pick(SUBSCRIPTION_TABS, undefined)).toBe('communities')
+    expect(PROFILE_SORTS).toEqual(['new', 'hot', 'top'])
+  })
+
+  it('trims and caps free text', () => {
+    expect(parseText('  typescript  ')).toBe('typescript')
+    expect(parseText(undefined)).toBe('')
+    expect(parseText('x'.repeat(200), 10)).toHaveLength(10)
+  })
+
+  it('keeps extra state in every link', () => {
+    expect(href('/saved', { type: 'links', q: null })).toBe('/saved?type=links')
+    const query = parseFeedQuery({ after: 't1_a', count: '50' }, ['new'])
+    expect(nextHref('/saved', query, 't1_b', 'new', { type: 'comments' })).toBe(
+      '/saved?type=comments&after=t1_b&count=75',
+    )
+    expect(prevHref('/saved', query, 't1_first', 'new', { type: 'comments' })).toBe(
+      '/saved?type=comments&before=t1_first&count=51',
+    )
+    expect(
+      prevHref('/saved', parseFeedQuery({ after: 't1_a', count: '25' }, ['new']), 't1_f', 'new', {
+        type: 'links',
+      }),
+    ).toBe('/saved?type=links')
+    expect(sortHref('/user/spez', 'top', 'week', 'new', { tab: 'comments' })).toBe(
+      '/user/spez?tab=comments&sort=top&t=week',
+    )
   })
 })

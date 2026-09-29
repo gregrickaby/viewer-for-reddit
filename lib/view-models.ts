@@ -218,6 +218,12 @@ export type UserView = {
 
 export type MeView = { name: string; icon: string | null }
 
+/** A profile page's subject: an active account, or one Reddit suspended. */
+export type ProfileView = { kind: 'active'; user: UserView } | { kind: 'suspended'; name: string }
+
+/** An entry in a mixed listing (saved items, a profile's overview). */
+export type ListItem = { kind: 'post'; post: PostView } | { kind: 'comment'; comment: CommentView }
+
 export type MultiView = {
   name: string
   displayName: string

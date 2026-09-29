@@ -139,7 +139,7 @@ These rules are binding. Code review rejects violations.
 |---|---|---|
 | `VoteButtons` | `useOptimistic` score and arrow state | Form POST re-renders the page with the new vote |
 | `SaveButton` | `useOptimistic` toggle | Same |
-| `SubscribeButton` (subreddits and users) | `useOptimistic` toggle and pending state | Same |
+| `SubscribeButton` (subreddits and users) | `useOptimistic` toggle and pending state. With `confirmLeave` (the manage page), leaving goes through a popover confirm inside the same form. | Same |
 | `CommentComposer` | `useOptimistic` pending comment, form reset, ⌘/Ctrl+Enter | Plain form POST |
 | `PendingButton` | `useFormStatus` spinner and disabled state for any submit button | Plain submit button |
 | `MembershipToggle` | `useOptimistic` checkmark and row state for adding or removing a subreddit in a multi | Same |

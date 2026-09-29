@@ -68,7 +68,13 @@ export async function FeedSection({
           )}
         </div>
       </ContentReveal>
-      <Pagination base={base} query={query} page={page} defaultSort={sorts[0]!} />
+      <Pagination
+        base={base}
+        query={query}
+        after={page.after}
+        firstFullname={page.items[0]?.fullname}
+        defaultSort={sorts[0]!}
+      />
     </section>
   )
 }

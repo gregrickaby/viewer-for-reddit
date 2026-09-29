@@ -1,10 +1,15 @@
 /* eslint-disable @next/next/no-img-element -- tiny Reddit-hosted icons; see components/media/post-media.tsx */
 import type { Route } from 'next'
 import Link from 'next/link'
+import { ViewTransition } from 'react'
 import { getMyMultis, getMySubscriptions } from '@/lib/reddit/reads'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import type { MultiView, SubredditView } from '@/lib/view-models'
 import styles from './sidebar.module.css'
+
+/** Rows fade in and out when a subscription changes (design §8.5, list-change). */
+const LIST_ENTER = { 'list-change': 'fade-in', default: 'none' }
+const LIST_EXIT = { 'list-change': 'fade-out', default: 'none' }
 
 /** How many communities the sidebar lists before "Manage →". */
 const COMMUNITY_LIMIT = 50
@@ -85,12 +90,20 @@ export async function SidebarLists() {
         {communities.length > 0 ? (
           <ul role="list" className={styles.list}>
             {communities.slice(0, COMMUNITY_LIMIT).map((community) => (
-              <li key={community.fullname}>
-                <Link href={community.href as Route} className={styles.link}>
-                  <Icon src={community.icon} fallback="r" />
-                  <span className={styles.label}>r/{community.name}</span>
-                </Link>
-              </li>
+              <ViewTransition
+                key={community.fullname}
+                enter={LIST_ENTER}
+                exit={LIST_EXIT}
+                default="none"
+              >
+                {' '}
+                <li>
+                  <Link href={community.href as Route} className={styles.link}>
+                    <Icon src={community.icon} fallback="r" />
+                    <span className={styles.label}>r/{community.name}</span>
+                  </Link>
+                </li>{' '}
+              </ViewTransition>
             ))}
           </ul>
         ) : (
@@ -108,12 +121,20 @@ export async function SidebarLists() {
           <h2 className={styles.heading}>People</h2>
           <ul role="list" className={styles.list}>
             {people.map((person) => (
-              <li key={person.fullname}>
-                <Link href={person.href as Route} className={styles.link}>
-                  <Icon src={person.icon} fallback="u" />
-                  <span className={styles.label}>u/{person.name}</span>
-                </Link>
-              </li>
+              <ViewTransition
+                key={person.fullname}
+                enter={LIST_ENTER}
+                exit={LIST_EXIT}
+                default="none"
+              >
+                {' '}
+                <li>
+                  <Link href={person.href as Route} className={styles.link}>
+                    <Icon src={person.icon} fallback="u" />
+                    <span className={styles.label}>u/{person.name}</span>
+                  </Link>
+                </li>{' '}
+              </ViewTransition>
             ))}
           </ul>
         </nav>

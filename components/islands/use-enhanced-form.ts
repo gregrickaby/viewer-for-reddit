@@ -1,6 +1,6 @@
 'use client'
 
-import { type FormEvent, startTransition, useState, useTransition } from 'react'
+import { type FormEvent, addTransitionType, startTransition, useState, useTransition } from 'react'
 import { type ServerAction, formAction } from '@/lib/actions/form-action'
 import type { ActionResult } from '@/lib/actions/result'
 
@@ -9,6 +9,8 @@ type Handlers<T> = {
   optimistic: (formData: FormData) => void
   /** Runs when the action returns, in a new transition: commit confirmed state here. */
   settled?: (result: ActionResult<T>, formData: FormData) => void
+  /** Tags the transition, so only matching `<ViewTransition>`s animate (e.g. `list-change`). */
+  transitionType?: string
 }
 
 /**
@@ -28,6 +30,7 @@ export function useEnhancedForm<T>(serverAction: ServerAction<T>, handlers: Hand
     const submitter = (event.nativeEvent as SubmitEvent).submitter
     const formData = new FormData(event.currentTarget, submitter)
     startPending(async () => {
+      if (handlers.transitionType) addTransitionType(handlers.transitionType)
       setError(null)
       handlers.optimistic(formData)
       const result = await serverAction(formData)

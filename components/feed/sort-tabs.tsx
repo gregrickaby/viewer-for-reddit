@@ -5,6 +5,7 @@ import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import {
   type FeedQuery,
   type FeedSort,
+  type HrefQuery,
   TIME_RANGES,
   type TimeRange,
   sortHref,
@@ -37,10 +38,13 @@ export function SortTabs({
   base,
   sorts,
   query,
+  extra,
 }: {
   base: string
   sorts: readonly FeedSort[]
   query: FeedQuery
+  /** Other URL state to keep, such as a profile tab. */
+  extra?: HrefQuery
 }) {
   const defaultSort = sorts[0]!
   // Unique per instance: Activity keeps earlier routes mounted (hidden) with their own menus.
@@ -51,7 +55,7 @@ export function SortTabs({
         {sorts.map((sort) => (
           <Link
             key={sort}
-            href={sortHref(base, sort, query.t, defaultSort) as Route}
+            href={sortHref(base, sort, query.t, defaultSort, extra) as Route}
             className={styles.tab}
             aria-current={sort === query.sort ? 'page' : undefined}
           >
@@ -72,7 +76,7 @@ export function SortTabs({
               {TIME_RANGES.map((range) => (
                 <li key={range}>
                   <Link
-                    href={sortHref(base, query.sort, range, defaultSort) as Route}
+                    href={sortHref(base, query.sort, range, defaultSort, extra) as Route}
                     className={styles.menuItem}
                     aria-current={range === query.t ? 'page' : undefined}
                   >

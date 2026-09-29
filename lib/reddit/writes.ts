@@ -70,3 +70,17 @@ export async function deleteComment(fullname: string): Promise<void> {
   })
   parseResponse(json, EmptyResponse, '/api/del')
 }
+
+/**
+ * Joins or leaves a community. Following a person is the same call on their
+ * profile subreddit, `u_<name>` (design §6.1).
+ */
+export async function setSubscription(srName: string, subscribe: boolean): Promise<void> {
+  const { accessToken } = await requireAuth()
+  const json = await redditFetch('/api/subscribe', {
+    token: accessToken,
+    method: 'POST',
+    form: { action: subscribe ? 'sub' : 'unsub', sr_name: srName, skip_initial_defaults: true },
+  })
+  parseResponse(json, EmptyResponse, '/api/subscribe')
+}

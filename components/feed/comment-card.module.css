@@ -1,0 +1,64 @@
+@layer components {
+  .card {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+  }
+
+  .context {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+    overflow-wrap: anywhere;
+  }
+
+  .post {
+    color: var(--text-1);
+    font-weight: 700;
+  }
+
+  .meta {
+    display: flex;
+    gap: var(--space-2);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+
+    & a {
+      color: var(--text-2);
+    }
+  }
+
+  .removed {
+    color: var(--text-3);
+    font-style: italic;
+  }
+
+  .actions {
+    --vote-direction: row;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin-inline-start: calc(-1 * var(--space-2));
+  }
+
+  .action {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2rem;
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-pill);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+
+    &:hover {
+      background: var(--surface-hover);
+      color: var(--text-1);
+      text-decoration: none;
+    }
+  }
+}

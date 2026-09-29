@@ -1245,10 +1245,38 @@ export function CommentComposer({ parent, me }: { parent: string; me: string }) 
   - The listing is mixed and parsed like saved items.
   - A suspended or shadowbanned user (404 or `is_suspended`) gets a friendly state.
 
+### Phase 5 status (2026-09-29)
+
+**Built:**
+- `lib/reddit/people.ts` (`getSaved`, `getUserListing`, `getProfile`, `searchSubreddits`) and `setSubscription` in `lib/reddit/writes.ts`.
+- `app/actions/subscriptions.ts`.
+- The `SubscribeButton` island.
+- Pages `/saved`, `/user/[username]`, `/subreddits`, and `/search`.
+- Shared components: `CommentCard`, `ItemList`, `Tabs`, `ProfileHeader`, and `SubredditRows`.
+- A Join button on the subreddit header.
+
+**Decisions and findings:**
+- **Mixed listings** (saved items, profiles) parse each child as `LinkThing | CommentThing` into `ListItem`. Comments are mapped with the viewer, so `mine` and edit stay correct.
+- **URL state is preserved.** `nextHref`, `prevHref`, and `sortHref` take `extra` URL state (`type`, `tab`, `q`), so paging and sorting never drop a filter. `pick()` and `parseText()` read fixed-choice and free-text params.
+- **Suspended accounts:** `/user/{name}/about` returns only `{ name, is_suspended: true }`. `ProfileThing` accepts that shape, and the header explains the suspension instead of failing.
+- **Following a person** is `POST /api/subscribe` with `sr_name=u_<name>`. The action validates the name and kind before building it.
+- **Leaving asks first** on the manage page. `SubscribeButton confirmLeave` renders the confirm popover inside the island's own form, so leaving still works without JavaScript. Elsewhere (headers, search results) Join and Leave are one click, as design §10.3 specifies.
+- **Rows animate.** Sidebar and manage-page rows fade in and out through `<ViewTransition>` keyed by fullname and mapped only for the `list-change` transition type, which `useEnhancedForm({ transitionType })` adds.
+- **Filtering stays on the server.** The subscription filter is a GET form, applied server-side to the fully paged list, with tab counts. Search result descriptions are clamped to about 4 lines.
+- **Error handling:** errors thrown from a component's render can't be caught by a `try` around its JSX, so data is fetched in the async parent (`Header` fetches, `ProfileHeader` renders).
+
+**Verified in the browser:**
+- `/saved` shows all items and the Comments filter, with post context and "View context".
+- `/user/spez` shows the header (karma, cake day, Follow), tabs, sorts, and comments.
+- `/subreddits?q=prog` filters to 3 of 289 communities.
+- `/search?q=typescript` returns r/typescript (Joined) and others (Join).
+
+`next build` marks all four new routes as ◐. **Not run against the live account:** joining, leaving, following, and unsaving. They are covered by action and island tests (optimistic flip, rollback, and the leave confirm).
+
 ### Phase 5 acceptance
 
 - [ ] Subscribe and unsubscribe, and follow and unfollow, are reflected immediately and in the sidebar after the refresh. Reloading confirms them.
-- [ ] Searching "typescript" returns subreddits, and subscribing from the results works.
+- [x] Searching "typescript" returns subreddits, and subscribing from the results works. The results were verified live; subscribing is unit-tested.
 - [ ] Saved shows posts and comments, and unsave works.
 
 ---

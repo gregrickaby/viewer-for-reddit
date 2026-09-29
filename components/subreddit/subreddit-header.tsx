@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element -- Reddit-hosted icon and banner; see components/media/post-media.tsx */
+import { SubscribeButton } from '@/components/islands/subscribe-button'
 import { RedditHtml } from '@/components/reddit-html'
 import { compactNumber } from '@/lib/format'
 import { getSubreddit } from '@/lib/reddit/reads'
@@ -59,6 +60,12 @@ export async function SubredditHeader({ params }: { params: Promise<{ subreddit:
             {subreddit.nsfw ? <span className={styles.nsfw}>NSFW</span> : null}
           </p>
         </div>
+        <SubscribeButton
+          key={String(subreddit.subscribed)}
+          name={subreddit.name}
+          kind="community"
+          subscribed={subreddit.subscribed}
+        />
       </div>
       {subreddit.description ? (
         <RedditHtml html={subreddit.description} className={styles.description} />
