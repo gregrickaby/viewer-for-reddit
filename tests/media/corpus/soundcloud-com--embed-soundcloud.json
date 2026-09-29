@@ -1,0 +1,152 @@
+[
+  {
+    "note": "soundcloud.com → embed:soundcloud",
+    "expected": {
+      "type": "embed",
+      "provider": "soundcloud"
+    },
+    "post": {
+      "id": "1wde4sx",
+      "name": "t3_1wde4sx",
+      "subreddit": "mastodonband",
+      "subreddit_name_prefixed": "r/mastodonband",
+      "author": "ComicAcolyte",
+      "title": "Brent Hinds Interview from 2018 Describing his feelings about Touring w/ Mastodon",
+      "permalink": "/r/mastodonband/comments/1wde4sx/brent_hinds_interview_from_2018_describing_his/",
+      "url": "https://soundcloud.com/deandelray/432-brent-hinds-mastodon",
+      "domain": "soundcloud.com",
+      "created_utc": 1789127719,
+      "edited": false,
+      "score": 246,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 195,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/FaG53Zu3lvg0tHoAz70zfVvVgSVTeJJSZPF1BRWO_YY.jpeg?width=140&height=140&auto=webp&s=6a5850b2dc657f3ddd9972618b8981638aa297ad",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>&quot;When are you guys going to work on a new album?&quot;</p>\n\n<blockquote>\n<p>&quot;What I really wanna do and what I hope people will let me do is take some ***&#39; time off and let me breathe. That&#39;s how shitty the music industry is. Because you&#39;ve got to work your dick into the dirt before you can see any worms. &quot;This is definitely the most brutal job I&#39;ve ever had. I would definitely rather frame houses again. Like, no one&#39;s looking at me. It&#39;s like, &#39;Stop looking at me just because I ***&#39; play a goddamn show on the stage.&#39; I don&#39;t give a ***. Honestly, I just don&#39;t care. Never have cared. &quot;But when the opportunity&#39;s there and you strike and it happens and then they milk you... I feel like I&#39;m being milked like a dry hyena titty. I have nothing left for anyone. They&#39;ve worked me to my ***&#39; soul, it is almost gone. &quot;My next thing that&#39;s gonna happen for me is I&#39;m not gonna play music for a year or two. I need to go regather myself.&quot;</p>\n</blockquote>\n\n<p>&quot;After this Tour?&quot;</p>\n\n<blockquote>\n<p>&quot;Never said that. I said that&#39;s what&#39;s next for me. As far as me, what&#39;s next for me, is that. &quot;Now, what&#39;s next for me in my job - I couldn&#39;t tell ya. They probably got tours booked up their ***&#39;... Their bank accounts. I don&#39;t know. They got me booked as long as they need to eat. Or as long as they need to shop. Or whatever they do with their money. &quot;I don&#39;t care. All I care about is my peace of mind, which is leaving me. So I need to stop and recalculate myself. I need to decompress from all this and I need to press the restart button and just kind of reboot myself in a way. &quot;I just got married about a year or so ago. I gotta go down there and meet all her family. I&#39;ve been on tour constantly. It&#39;s just not healthy. My next thing to me is to go get healthy and just to get away from the music business for hopefully over a year. &quot;It&#39;s okay. It&#39;ll be okay. I can still play music. If people want me to play good music they need to let me go for a year. If anyone that had a half of mind that was in charge of anything that I did would listen to what I say and not ignore what I say. Which happens a lot.&quot;</p>\n</blockquote>\n</div><!-- SC_ON -->",
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://soundcloud.com/deandelray/432-brent-hinds-mastodon",
+      "link_flair_text": "Brent",
+      "link_flair_background_color": "#ea0027",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/FaG53Zu3lvg0tHoAz70zfVvVgSVTeJJSZPF1BRWO_YY.jpeg?auto=webp&s=b565f63a7f12b0a4799aa4aad09dfc5de729019a",
+              "width": 500,
+              "height": 500
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/FaG53Zu3lvg0tHoAz70zfVvVgSVTeJJSZPF1BRWO_YY.jpeg?width=108&crop=smart&auto=webp&s=639c3138b139dcc33f2b006d31d7b27d1d4e861c",
+                "width": 108,
+                "height": 108
+              },
+              {
+                "url": "https://external-preview.redd.it/FaG53Zu3lvg0tHoAz70zfVvVgSVTeJJSZPF1BRWO_YY.jpeg?width=216&crop=smart&auto=webp&s=7cbca822b7296087112b292a04ef4855af758c2c",
+                "width": 216,
+                "height": 216
+              },
+              {
+                "url": "https://external-preview.redd.it/FaG53Zu3lvg0tHoAz70zfVvVgSVTeJJSZPF1BRWO_YY.jpeg?width=320&crop=smart&auto=webp&s=fdfc457682b9d3986d41519aa47b161ef2645fdd",
+                "width": 320,
+                "height": 320
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "soundcloud.com → embed:soundcloud",
+    "expected": {
+      "type": "embed",
+      "provider": "soundcloud"
+    },
+    "post": {
+      "id": "1wi94q1",
+      "name": "t3_1wi94q1",
+      "subreddit": "skrillex",
+      "subreddit_name_prefixed": "r/skrillex",
+      "author": "Good4Josh2",
+      "title": "[NOW ON SOUNDCLOUD] Skrillex @ Navy Pier Chicago (Full 5 Hours)",
+      "permalink": "/r/skrillex/comments/1wi94q1/now_on_soundcloud_skrillex_navy_pier_chicago_full/",
+      "url": "https://soundcloud.com/user-732111887/skrillex-from-open-to-close",
+      "domain": "soundcloud.com",
+      "created_utc": 1789591160,
+      "edited": false,
+      "score": 116,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 11,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/nR8kUySk7Jzi0pmgBduheo-yBwAIjS9Y9aQkfIu1JZQ.jpeg?width=140&height=140&auto=webp&s=8f8b3b0ae0f898dae2fcb38423aa06b9b5323831",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://soundcloud.com/user-732111887/skrillex-from-open-to-close",
+      "link_flair_text": "Live Set / Mix",
+      "link_flair_background_color": "#ef7422",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/nR8kUySk7Jzi0pmgBduheo-yBwAIjS9Y9aQkfIu1JZQ.jpeg?auto=webp&s=efbe960b705924723cfb61fe20c523fd7e54927c",
+              "width": 500,
+              "height": 500
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/nR8kUySk7Jzi0pmgBduheo-yBwAIjS9Y9aQkfIu1JZQ.jpeg?width=108&crop=smart&auto=webp&s=cf6e05a23af7f1b5b6b797b032b68b6fb5586e59",
+                "width": 108,
+                "height": 108
+              },
+              {
+                "url": "https://external-preview.redd.it/nR8kUySk7Jzi0pmgBduheo-yBwAIjS9Y9aQkfIu1JZQ.jpeg?width=216&crop=smart&auto=webp&s=a7e137681c82cf4e8badfaf1db463a827b32baf7",
+                "width": 216,
+                "height": 216
+              },
+              {
+                "url": "https://external-preview.redd.it/nR8kUySk7Jzi0pmgBduheo-yBwAIjS9Y9aQkfIu1JZQ.jpeg?width=320&crop=smart&auto=webp&s=facfa0b815818c1fa28e29591be104c332a64967",
+                "width": 320,
+                "height": 320
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

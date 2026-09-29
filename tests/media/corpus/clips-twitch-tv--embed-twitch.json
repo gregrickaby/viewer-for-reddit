@@ -1,0 +1,210 @@
+[
+  {
+    "note": "clips.twitch.tv → embed:twitch",
+    "expected": {
+      "type": "embed",
+      "provider": "twitch"
+    },
+    "post": {
+      "id": "1w6gspk",
+      "name": "t3_1w6gspk",
+      "subreddit": "wow",
+      "subreddit_name_prefixed": "r/wow",
+      "author": "YourResidentFeral",
+      "title": "Congratulations to the Winner of Venomous Abyss RWF",
+      "permalink": "/r/wow/comments/1w6gspk/congratulations_to_the_winner_of_venomous_abyss/",
+      "url": "https://clips.twitch.tv/create/MiniatureGoodSardineBatChest-fR8NgTGRhbX2hN8-",
+      "domain": "clips.twitch.tv",
+      "created_utc": 1788462356,
+      "edited": false,
+      "score": 747,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 654,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/pBgDB-nWlH1d9nm0GMhb7-1kZNBZKPjWWWJL-GlPp0E.jpeg?width=140&height=106&auto=webp&s=c4b184f862a202a2840fd6cd8ddb8ea9c0ecdce5",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://clips.twitch.tv/create/MiniatureGoodSardineBatChest-fR8NgTGRhbX2hN8-",
+      "link_flair_text": "Video",
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 106,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/pBgDB-nWlH1d9nm0GMhb7-1kZNBZKPjWWWJL-GlPp0E.jpeg?auto=webp&s=6d49a7ce7c272b0b1d1bf95c189a67022bd4300c",
+              "width": 262,
+              "height": 200
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/pBgDB-nWlH1d9nm0GMhb7-1kZNBZKPjWWWJL-GlPp0E.jpeg?width=108&crop=smart&auto=webp&s=ef12229d326637c521ef91d7b83cfcab33ae1b22",
+                "width": 108,
+                "height": 82
+              },
+              {
+                "url": "https://external-preview.redd.it/pBgDB-nWlH1d9nm0GMhb7-1kZNBZKPjWWWJL-GlPp0E.jpeg?width=216&crop=smart&auto=webp&s=b05dd8ccc1607b590f4f5dac40fab3a140d9f72e",
+                "width": 216,
+                "height": 164
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "clips.twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DMiniatureGoodSardineBatChest-fR8NgTGRhbX2hN8-%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fclips.twitch.tv%2Fcreate%2FMiniatureGoodSardineBatChest-fR8NgTGRhbX2hN8-&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Fttv-static-metadata%2Ftwitch_logo3.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/ttv-static-metadata/twitch_logo3.jpg",
+          "thumbnail_width": 262,
+          "thumbnail_height": 200,
+          "width": 600,
+          "height": 340
+        }
+      },
+      "secure_media": {
+        "type": "clips.twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DMiniatureGoodSardineBatChest-fR8NgTGRhbX2hN8-%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fclips.twitch.tv%2Fcreate%2FMiniatureGoodSardineBatChest-fR8NgTGRhbX2hN8-&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Fttv-static-metadata%2Ftwitch_logo3.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/ttv-static-metadata/twitch_logo3.jpg",
+          "thumbnail_width": 262,
+          "thumbnail_height": 200,
+          "width": 600,
+          "height": 340
+        }
+      }
+    }
+  },
+  {
+    "note": "clips.twitch.tv → embed:twitch",
+    "expected": {
+      "type": "embed",
+      "provider": "twitch"
+    },
+    "post": {
+      "id": "1wie5g9",
+      "name": "t3_1wie5g9",
+      "subreddit": "RPClipsGTA",
+      "subreddit_name_prefixed": "r/RPClipsGTA",
+      "author": "Nostalgiadrivee",
+      "title": "[Buddha] Rats pocketwipe skipper",
+      "permalink": "/r/RPClipsGTA/comments/1wie5g9/buddha_rats_pocketwipe_skipper/",
+      "url": "http://clips.twitch.tv/CuteInexpensiveMouseDerp-1AR3NlSp3PhUNxzu",
+      "domain": "clips.twitch.tv",
+      "created_utc": 1789603391,
+      "edited": false,
+      "score": 519,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 25,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?width=140&height=78&auto=webp&s=857ed12467b64ec3fbfd1c13b4856f60b645be53",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "http://clips.twitch.tv/CuteInexpensiveMouseDerp-1AR3NlSp3PhUNxzu",
+      "link_flair_text": ":twitch: buddha",
+      "link_flair_background_color": "#8b67c2",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?auto=webp&s=b2159777f5959098f05a263847a84916e39a1cb5",
+              "width": 1920,
+              "height": 1080
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?width=108&crop=smart&auto=webp&s=fe00dfabe0be4701e690adcc434188b85de3235a",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?width=216&crop=smart&auto=webp&s=5f6289ff2aa962604d9bef2cdb8d57b2c8b19121",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?width=320&crop=smart&auto=webp&s=874da82416d7c9de13e14844f07f00880c8f7c2e",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?width=640&crop=smart&auto=webp&s=28b514f925f3ce1d744cda93e28c38e784ca3ec5",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?width=960&crop=smart&auto=webp&s=e1db92f761ce49bcc7c015eb85fc0ae92985228e",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/q7ef1pn0nGrYfvhfgeJDCnXM_6NsZ0SpdbGq_KqqrgQ.jpeg?width=1080&crop=smart&auto=webp&s=e6a84f57ef62a80838e3b3ac3ad69f62334f4790",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "clips.twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DCuteInexpensiveMouseDerp-1AR3NlSp3PhUNxzu%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fclips.twitch.tv%2FCuteInexpensiveMouseDerp-1AR3NlSp3PhUNxzu&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F2c28b02a-fdd5-4d6e-b785-676de8d3e7cb%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "ratJAM - buddha on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/2c28b02a-fdd5-4d6e-b785-676de8d3e7cb/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      },
+      "secure_media": {
+        "type": "clips.twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DCuteInexpensiveMouseDerp-1AR3NlSp3PhUNxzu%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fclips.twitch.tv%2FCuteInexpensiveMouseDerp-1AR3NlSp3PhUNxzu&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F2c28b02a-fdd5-4d6e-b785-676de8d3e7cb%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "ratJAM - buddha on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/2c28b02a-fdd5-4d6e-b785-676de8d3e7cb/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      }
+    }
+  }
+]

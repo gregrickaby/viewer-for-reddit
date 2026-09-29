@@ -1,0 +1,129 @@
+[
+  {
+    "note": "reddit.com → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wsjh2t",
+      "name": "t3_1wsjh2t",
+      "subreddit": "multihub",
+      "subreddit_name_prefixed": "r/multihub",
+      "author": "Vegetable_Gear_4880",
+      "title": "Safeforwork girls",
+      "permalink": "/r/multihub/comments/1wsjh2t/safeforwork_girls/",
+      "url": "https://www.reddit.com/user/vegetable_gear_4880/m/safeforwork/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button",
+      "domain": "reddit.com",
+      "created_utc": 1790613211,
+      "edited": false,
+      "score": 15,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 0,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "default",
+      "selftext_html": null,
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.reddit.com/user/vegetable_gear_4880/m/safeforwork/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": null,
+      "thumbnail_height": null,
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "reddit.com → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wt7frh",
+      "name": "t3_1wt7frh",
+      "subreddit": "classicwow",
+      "subreddit_name_prefixed": "r/classicwow",
+      "author": "koci53z",
+      "title": "Blizzard confiscated Ziqo’s gold instead of banning him.",
+      "permalink": "/r/classicwow/comments/1wt7frh/blizzard_confiscated_ziqos_gold_instead_of/",
+      "url": "https://www.reddit.com/r/LivestreamFail/comments/1wt78i9/ziqoftw_blizzard_took_donated_gold/?share_id=AvMJ-cqiV6GJvMybmZ7O5&utm_content=share_button&utm_medium=web3x&utm_name=web3xcss&utm_source=share&utm_term=1",
+      "domain": "reddit.com",
+      "created_utc": 1790680829,
+      "edited": false,
+      "score": 1547,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 902,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/NTU2YnoyY2t5ZnNoMSl8dYGIcSeYMVGXy33ivMm5SeVh63EciwafjPku5o9m.png?width=140&height=140&crop=1:1,smart&auto=webp&s=668221ac221d4c43472044d92c6c3b9aaac35a66",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.reddit.com/r/LivestreamFail/comments/1wt78i9/ziqoftw_blizzard_took_donated_gold/?share_id=AvMJ-cqiV6GJvMybmZ7O5&utm_content=share_button&utm_medium=web3x&utm_name=web3xcss&utm_source=share&utm_term=1",
+      "link_flair_text": "Forever",
+      "link_flair_background_color": "#c99336",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/NTU2YnoyY2t5ZnNoMSl8dYGIcSeYMVGXy33ivMm5SeVh63EciwafjPku5o9m.png?auto=webp&s=99bd93d0c791f1556c6e0389495a47b130aba187",
+              "width": 990,
+              "height": 1760
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/NTU2YnoyY2t5ZnNoMSl8dYGIcSeYMVGXy33ivMm5SeVh63EciwafjPku5o9m.png?width=108&crop=smart&auto=webp&s=8babd0cc85287ecaf1c34830f94315eea30aa45c",
+                "width": 108,
+                "height": 192
+              },
+              {
+                "url": "https://external-preview.redd.it/NTU2YnoyY2t5ZnNoMSl8dYGIcSeYMVGXy33ivMm5SeVh63EciwafjPku5o9m.png?width=216&crop=smart&auto=webp&s=77d3f7dc0c119a6041e44f21448ecbda374025b6",
+                "width": 216,
+                "height": 384
+              },
+              {
+                "url": "https://external-preview.redd.it/NTU2YnoyY2t5ZnNoMSl8dYGIcSeYMVGXy33ivMm5SeVh63EciwafjPku5o9m.png?width=320&crop=smart&auto=webp&s=47d0c09ff4c428c820a734246e04e5ee2d641cb5",
+                "width": 320,
+                "height": 568
+              },
+              {
+                "url": "https://external-preview.redd.it/NTU2YnoyY2t5ZnNoMSl8dYGIcSeYMVGXy33ivMm5SeVh63EciwafjPku5o9m.png?width=640&crop=smart&auto=webp&s=4ac4e2695e45a470e1b2412ab534da5a81b3698d",
+                "width": 640,
+                "height": 1137
+              },
+              {
+                "url": "https://external-preview.redd.it/NTU2YnoyY2t5ZnNoMSl8dYGIcSeYMVGXy33ivMm5SeVh63EciwafjPku5o9m.png?width=960&crop=smart&auto=webp&s=bd4edb74bd69416253a5ba56fd6ed06c94c1d0d0",
+                "width": 960,
+                "height": 1706
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

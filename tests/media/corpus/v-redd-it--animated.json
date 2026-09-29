@@ -1,0 +1,214 @@
+[
+  {
+    "note": "v.redd.it → animated",
+    "expected": {
+      "type": "animated"
+    },
+    "post": {
+      "id": "1wo9v2u",
+      "name": "t3_1wo9v2u",
+      "subreddit": "HighQualityGifs",
+      "subreddit_name_prefixed": "r/HighQualityGifs",
+      "author": "hero0fwar",
+      "title": "Something tells me you're going to upvote this...",
+      "permalink": "/r/HighQualityGifs/comments/1wo9v2u/something_tells_me_youre_going_to_upvote_this/",
+      "url": "https://v.redd.it/hsvqw3fxkarh1",
+      "domain": "v.redd.it",
+      "created_utc": 1790178903,
+      "edited": false,
+      "score": 1119,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 26,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": true,
+      "thumbnail": "https://external-preview.redd.it/N3VyYTg3ZnhrYXJoMW-emt6ZvpPOYznNUYLNkcjEvLD0iz8kFKGKmqzaz12a.png?width=140&height=78&format=jpg&auto=webp&s=5234507c035de31f5aaac88a457c99e3c0f5f670",
+      "selftext_html": null,
+      "post_hint": "hosted:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://v.redd.it/hsvqw3fxkarh1",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/N3VyYTg3ZnhrYXJoMW-emt6ZvpPOYznNUYLNkcjEvLD0iz8kFKGKmqzaz12a.png?format=pjpg&auto=webp&s=95e284e51f6eb5e3992bdcc70273be181e885c4f",
+              "width": 740,
+              "height": 416
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/N3VyYTg3ZnhrYXJoMW-emt6ZvpPOYznNUYLNkcjEvLD0iz8kFKGKmqzaz12a.png?width=108&crop=smart&format=pjpg&auto=webp&s=772d3ad863e832503f47a929875188a722146839",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/N3VyYTg3ZnhrYXJoMW-emt6ZvpPOYznNUYLNkcjEvLD0iz8kFKGKmqzaz12a.png?width=216&crop=smart&format=pjpg&auto=webp&s=5a46cd34d3fdf6dfcdd77350109ddb5accf1b6c7",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/N3VyYTg3ZnhrYXJoMW-emt6ZvpPOYznNUYLNkcjEvLD0iz8kFKGKmqzaz12a.png?width=320&crop=smart&format=pjpg&auto=webp&s=1984b9e448f3701b6e9c7068faffc7c1712b8a49",
+                "width": 320,
+                "height": 179
+              },
+              {
+                "url": "https://external-preview.redd.it/N3VyYTg3ZnhrYXJoMW-emt6ZvpPOYznNUYLNkcjEvLD0iz8kFKGKmqzaz12a.png?width=640&crop=smart&format=pjpg&auto=webp&s=fc0a6822ba2f25b51b37286a29ad9ebde41b1128",
+                "width": 640,
+                "height": 359
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/hsvqw3fxkarh1/HLSPlaylist.m3u8?a=1793285369%2CYmM0ZTE2NjBjMmMzM2I5M2U4MDNiMWU4NDNhNzI0MWQ2NWQyYWM3YTNmYjAzOTMwNTM1ZjYzOWNjZTkwOWYzYQ%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/hsvqw3fxkarh1/CMAF_360.mp4?source=fallback",
+          "width": 640,
+          "height": 360,
+          "dash_url": "https://v.redd.it/hsvqw3fxkarh1/DASHPlaylist.mpd?a=1793285369%2CYTJiYmY0MDgxZDBkNDIwZmM3OWZjNmRhOTFhZmI4MjkxNmVkZDI2ZjIwNjdiMTY4MWU2ODIxNzFkZjEyMjE1YQ%3D%3D&v=1&f=sd",
+          "duration": 2,
+          "is_gif": true,
+          "has_audio": false
+        }
+      },
+      "secure_media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/hsvqw3fxkarh1/HLSPlaylist.m3u8?a=1793285369%2CYmM0ZTE2NjBjMmMzM2I5M2U4MDNiMWU4NDNhNzI0MWQ2NWQyYWM3YTNmYjAzOTMwNTM1ZjYzOWNjZTkwOWYzYQ%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/hsvqw3fxkarh1/CMAF_360.mp4?source=fallback",
+          "width": 640,
+          "height": 360,
+          "dash_url": "https://v.redd.it/hsvqw3fxkarh1/DASHPlaylist.mpd?a=1793285369%2CYTJiYmY0MDgxZDBkNDIwZmM3OWZjNmRhOTFhZmI4MjkxNmVkZDI2ZjIwNjdiMTY4MWU2ODIxNzFkZjEyMjE1YQ%3D%3D&v=1&f=sd",
+          "duration": 2,
+          "is_gif": true,
+          "has_audio": false
+        }
+      }
+    }
+  },
+  {
+    "note": "v.redd.it → animated",
+    "expected": {
+      "type": "animated"
+    },
+    "post": {
+      "id": "1wpy40m",
+      "name": "t3_1wpy40m",
+      "subreddit": "HighQualityGifs",
+      "subreddit_name_prefixed": "r/HighQualityGifs",
+      "author": "IamHQG",
+      "title": "Only have 15 years experience and all...",
+      "permalink": "/r/HighQualityGifs/comments/1wpy40m/only_have_15_years_experience_and_all/",
+      "url": "https://v.redd.it/dvf13m3fhorh1",
+      "domain": "v.redd.it",
+      "created_utc": 1790347225,
+      "edited": false,
+      "score": 706,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 14,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": true,
+      "thumbnail": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?width=140&height=105&format=jpg&auto=webp&s=5bf8fe067af0b1b5bc301b78f13100d9ec326174",
+      "selftext_html": null,
+      "post_hint": "hosted:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://v.redd.it/dvf13m3fhorh1",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?format=pjpg&auto=webp&s=d17623a9930498927d4f7430beae884792833a6a",
+              "width": 1440,
+              "height": 1080
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?width=108&crop=smart&format=pjpg&auto=webp&s=e5f24b024d396a43175aca56b609ffc5c552c713",
+                "width": 108,
+                "height": 81
+              },
+              {
+                "url": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?width=216&crop=smart&format=pjpg&auto=webp&s=da20d6cd4214da1ce6506f8e9fd1cf511cd45257",
+                "width": 216,
+                "height": 162
+              },
+              {
+                "url": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?width=320&crop=smart&format=pjpg&auto=webp&s=bd68be2eaf5e7e3e642b55c22c9321a279ed834d",
+                "width": 320,
+                "height": 240
+              },
+              {
+                "url": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?width=640&crop=smart&format=pjpg&auto=webp&s=1716c3e3682190f7410c4555282a46635b580ee5",
+                "width": 640,
+                "height": 480
+              },
+              {
+                "url": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?width=960&crop=smart&format=pjpg&auto=webp&s=002e7d6c841e4a39acb08d36109f6304cfe6df42",
+                "width": 960,
+                "height": 720
+              },
+              {
+                "url": "https://external-preview.redd.it/d3lxNTIzNGZob3JoMRHa6cyvkVEc66MclztOqPFwfK3wnMfzrhODcPnQjntw.png?width=1080&crop=smart&format=pjpg&auto=webp&s=a0ad783fe4350c45b09d90bf9d0a4ae6c6cc467d",
+                "width": 1080,
+                "height": 810
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/dvf13m3fhorh1/HLSPlaylist.m3u8?a=1793285369%2CMWUzODZjZTc0Y2NiOGJjYTc3NWU4NTdkMWUxMmM2YjZkYWM4YmNhNGM0MjI4Y2Q0NWMyMzNjNDY2NGQ2ZTQxNw%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/dvf13m3fhorh1/CMAF_1080.mp4?source=fallback",
+          "width": 1440,
+          "height": 1080,
+          "dash_url": "https://v.redd.it/dvf13m3fhorh1/DASHPlaylist.mpd?a=1793285369%2CMGMxYmE1NjE2ZjMxNWU1ZDBjMzgwODNhOTZiNWFhNmI2ZjRjNDE1NzVmM2RlMDMzMGU3N2ZiODQ2Njc2YjNiYw%3D%3D&v=1&f=sd",
+          "duration": 4,
+          "is_gif": true,
+          "has_audio": false
+        }
+      },
+      "secure_media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/dvf13m3fhorh1/HLSPlaylist.m3u8?a=1793285369%2CMWUzODZjZTc0Y2NiOGJjYTc3NWU4NTdkMWUxMmM2YjZkYWM4YmNhNGM0MjI4Y2Q0NWMyMzNjNDY2NGQ2ZTQxNw%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/dvf13m3fhorh1/CMAF_1080.mp4?source=fallback",
+          "width": 1440,
+          "height": 1080,
+          "dash_url": "https://v.redd.it/dvf13m3fhorh1/DASHPlaylist.mpd?a=1793285369%2CMGMxYmE1NjE2ZjMxNWU1ZDBjMzgwODNhOTZiNWFhNmI2ZjRjNDE1NzVmM2RlMDMzMGU3N2ZiODQ2Njc2YjNiYw%3D%3D&v=1&f=sd",
+          "duration": 4,
+          "is_gif": true,
+          "has_audio": false
+        }
+      }
+    }
+  }
+]

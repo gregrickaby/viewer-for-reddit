@@ -1,0 +1,45 @@
+[
+  {
+    "note": "i.giphy.com → animated",
+    "expected": {
+      "type": "animated"
+    },
+    "post": {
+      "id": "1w22sx6",
+      "name": "t3_1w22sx6",
+      "subreddit": "LowSodiumCyberpunk",
+      "subreddit_name_prefixed": "r/LowSodiumCyberpunk",
+      "author": "Brittle_Hollow",
+      "title": "Me hightailing it as fast as possible to El Coyote Cojo after The Heist so I can pick up Jackie's Arch",
+      "permalink": "/r/LowSodiumCyberpunk/comments/1w22sx6/me_hightailing_it_as_fast_as_possible_to_el/",
+      "url": "https://i.giphy.com/qdCvfMnUMb7gRPIQYu.webp",
+      "domain": "i.giphy.com",
+      "created_utc": 1788049898,
+      "edited": false,
+      "score": 22,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 8,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "default",
+      "selftext_html": null,
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://i.giphy.com/qdCvfMnUMb7gRPIQYu.webp",
+      "link_flair_text": "Meme",
+      "link_flair_background_color": "#646d73",
+      "link_flair_text_color": "light",
+      "thumbnail_width": null,
+      "thumbnail_height": null,
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

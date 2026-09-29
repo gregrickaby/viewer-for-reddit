@@ -1,0 +1,150 @@
+[
+  {
+    "note": "open.spotify.com → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wpamzq",
+      "name": "t3_1wpamzq",
+      "subreddit": "spotify",
+      "subreddit_name_prefixed": "r/spotify",
+      "author": "walton747",
+      "title": "I Built THE best 90s playlist",
+      "permalink": "/r/spotify/comments/1wpamzq/i_built_the_best_90s_playlist/",
+      "url": "https://open.spotify.com/s/BvDhwsU",
+      "domain": "open.spotify.com",
+      "created_utc": 1790276952,
+      "edited": false,
+      "score": 18,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 8,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/AowLTF5YmhmxT7hlFRIeOpOPcBSlN5ILT2ASiaorwiw.jpeg?width=140&height=140&auto=webp&s=ce1e1459b1a78c4e8caae40f457c4cad61193c1f",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>I built what I think is the ultimate 90s playlist — I’m sure there are a few obvious ones I’ve somehow missed, so hit me with your picks!!</p>\n</div><!-- SC_ON -->",
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://open.spotify.com/s/BvDhwsU",
+      "link_flair_text": "Pop / Indie Pop / R&B / Top 40 ",
+      "link_flair_background_color": "#20d9df",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/AowLTF5YmhmxT7hlFRIeOpOPcBSlN5ILT2ASiaorwiw.jpeg?auto=webp&s=396d411ea0096d3f4c670527f880bc91c0a3f719",
+              "width": 888,
+              "height": 888
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/AowLTF5YmhmxT7hlFRIeOpOPcBSlN5ILT2ASiaorwiw.jpeg?width=108&crop=smart&auto=webp&s=f34df2b9671ec456beab306dcd5b24b522e615b9",
+                "width": 108,
+                "height": 108
+              },
+              {
+                "url": "https://external-preview.redd.it/AowLTF5YmhmxT7hlFRIeOpOPcBSlN5ILT2ASiaorwiw.jpeg?width=216&crop=smart&auto=webp&s=4fe04bf620ebfd3f415b91d83982faca078328e3",
+                "width": 216,
+                "height": 216
+              },
+              {
+                "url": "https://external-preview.redd.it/AowLTF5YmhmxT7hlFRIeOpOPcBSlN5ILT2ASiaorwiw.jpeg?width=320&crop=smart&auto=webp&s=368af5445541c24d568c7271c21968e25a51eaad",
+                "width": 320,
+                "height": 320
+              },
+              {
+                "url": "https://external-preview.redd.it/AowLTF5YmhmxT7hlFRIeOpOPcBSlN5ILT2ASiaorwiw.jpeg?width=640&crop=smart&auto=webp&s=a3143357268462a9db6186aa3c664b399106215c",
+                "width": 640,
+                "height": 640
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "open.spotify.com → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wrgr0a",
+      "name": "t3_1wrgr0a",
+      "subreddit": "spotify",
+      "subreddit_name_prefixed": "r/spotify",
+      "author": "illlegalsmile",
+      "title": "A little bit of everything",
+      "permalink": "/r/spotify/comments/1wrgr0a/a_little_bit_of_everything/",
+      "url": "https://open.spotify.com/s/Iz5Ekj1",
+      "domain": "open.spotify.com",
+      "created_utc": 1790504678,
+      "edited": false,
+      "score": 1,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 0,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/ko87vNL3ht1_1nmaVoFxc23QJWP39EdKtj0411So3Fw.jpeg?width=140&height=140&auto=webp&s=61e588af2823d0a861ea683b39f91d9a630205e7",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://open.spotify.com/s/Iz5Ekj1",
+      "link_flair_text": "Rock / Metal / Punk / Indie Rock / Alternative",
+      "link_flair_background_color": "#fb8f1b",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/ko87vNL3ht1_1nmaVoFxc23QJWP39EdKtj0411So3Fw.jpeg?auto=webp&s=7d9adaed5364829c9e49538f86d323d6f16eb62a",
+              "width": 300,
+              "height": 300
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/ko87vNL3ht1_1nmaVoFxc23QJWP39EdKtj0411So3Fw.jpeg?width=108&crop=smart&auto=webp&s=a10dd1317c704dc18e103cdc0474a45948b5282e",
+                "width": 108,
+                "height": 108
+              },
+              {
+                "url": "https://external-preview.redd.it/ko87vNL3ht1_1nmaVoFxc23QJWP39EdKtj0411So3Fw.jpeg?width=216&crop=smart&auto=webp&s=200b502b4ee6bd01dc8c2e06c2feac6da0f20406",
+                "width": 216,
+                "height": 216
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

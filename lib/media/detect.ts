@@ -1,9 +1,11 @@
 import 'server-only'
 import { type RedditLink, crosspostParent } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
+import { resolveDirectFile } from './resolvers/direct-file'
 import { resolveGallery } from './resolvers/gallery'
 import { resolveLinkCard } from './resolvers/link-card'
 import { resolveAnimatedVariants, resolveImage } from './resolvers/preview'
+import { resolveProvider } from './resolvers/provider'
 import { resolveRedditVideo, resolveVideoPreview } from './resolvers/reddit-video'
 
 type Resolver = (link: RedditLink) => PostMedia | null
@@ -12,15 +14,17 @@ const NONE: PostMedia = { type: 'none' }
 
 /**
  * The resolver chain from design §8.7; the first match wins. Numbers follow
- * the design's table. Known providers (5), direct files (8), and the oEmbed
- * fallback (10) join at their positions with the provider registry.
+ * the design's table. The oEmbed fallback (10) runs inside the provider step
+ * (5), so a provider's own player beats Reddit's silent transcode (6).
  */
 const CHAIN: readonly Resolver[] = [
   (link) => (link.removed_by_category ? NONE : null), // 2
   resolveGallery, // 3
   resolveRedditVideo, // 4
+  resolveProvider, // 5 and 10
   resolveVideoPreview, // 6
   resolveAnimatedVariants, // 7
+  resolveDirectFile, // 8
   resolveImage, // 9
   (link) => (link.is_self ? NONE : null), // 11
 ]

@@ -1,0 +1,215 @@
+[
+  {
+    "note": "tiktok.com → embed:tiktok",
+    "expected": {
+      "type": "embed",
+      "provider": "tiktok"
+    },
+    "post": {
+      "id": "1wdtljs",
+      "name": "t3_1wdtljs",
+      "subreddit": "marvelstudios",
+      "subreddit_name_prefixed": "r/marvelstudios",
+      "author": "MarvelsGrantMan136",
+      "title": "Inde Navarrette says she will draw from her Texan roots & visit Mississippi for inspiration on Rogue's accent for ‘X-Men’: \"I grew up in Texas for a good majority of my life. So honestly, those Southern women are really my favorite\"",
+      "permalink": "/r/marvelstudios/comments/1wdtljs/inde_navarrette_says_she_will_draw_from_her_texan/",
+      "url": "https://www.tiktok.com/@entertainmenttonight/video/7684387604531399967",
+      "domain": "tiktok.com",
+      "created_utc": 1789162657,
+      "edited": false,
+      "score": 4117,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 263,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/YZU_xJDR4Myxer_mOxl5eHhp1rUJfvdkjM5ppCZbXvI.png?width=140&height=140&crop=1:1,smart&auto=webp&s=d0d40630d1442ff2d93dded6cc817a7459aec2fd",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.tiktok.com/@entertainmenttonight/video/7684387604531399967",
+      "link_flair_text": "Other",
+      "link_flair_background_color": "#c1c1c1",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/YZU_xJDR4Myxer_mOxl5eHhp1rUJfvdkjM5ppCZbXvI.png?auto=webp&s=14d90f6e7717dfd6e58efb7da754e731b71e7e07",
+              "width": 486,
+              "height": 648
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/YZU_xJDR4Myxer_mOxl5eHhp1rUJfvdkjM5ppCZbXvI.png?width=108&crop=smart&auto=webp&s=54f286fcef8afa877abbabcf59c82083a928a39a",
+                "width": 108,
+                "height": 144
+              },
+              {
+                "url": "https://external-preview.redd.it/YZU_xJDR4Myxer_mOxl5eHhp1rUJfvdkjM5ppCZbXvI.png?width=216&crop=smart&auto=webp&s=6d23a021c86d8fcb406304154391a7ee81167a7d",
+                "width": 216,
+                "height": 288
+              },
+              {
+                "url": "https://external-preview.redd.it/YZU_xJDR4Myxer_mOxl5eHhp1rUJfvdkjM5ppCZbXvI.png?width=320&crop=smart&auto=webp&s=7e7265b3e1851f00eaf8450825e65737aab0089b",
+                "width": 320,
+                "height": 426
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7684387604531399967?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Inde Navarrette reveals how the women of Corpus Christi, Texas, are inspiring her as she takes on the role of a lifetime as Rogue in 'X-Men' #indenavarrette #xmen #rogue #obsession",
+          "thumbnail_url": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/okkA0uAPiRtCRm8qBAoGaRbiEAhAbtrNvlIAl~tplv-tiktokx-origin.image?dr=9636&x-expires=1789333200&x-signature=5AJfUEnlbNfbaOJcHEW76txoj38%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      },
+      "secure_media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7684387604531399967?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Inde Navarrette reveals how the women of Corpus Christi, Texas, are inspiring her as she takes on the role of a lifetime as Rogue in 'X-Men' #indenavarrette #xmen #rogue #obsession",
+          "thumbnail_url": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/okkA0uAPiRtCRm8qBAoGaRbiEAhAbtrNvlIAl~tplv-tiktokx-origin.image?dr=9636&x-expires=1789333200&x-signature=5AJfUEnlbNfbaOJcHEW76txoj38%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      }
+    }
+  },
+  {
+    "note": "tiktok.com → embed:tiktok",
+    "expected": {
+      "type": "embed",
+      "provider": "tiktok"
+    },
+    "post": {
+      "id": "1wk669g",
+      "name": "t3_1wk669g",
+      "subreddit": "SLOMWsnark",
+      "subreddit_name_prefixed": "r/SLOMWsnark",
+      "author": "EnvironmentalFish840",
+      "title": "Miranda is ON ONE",
+      "permalink": "/r/SLOMWsnark/comments/1wk669g/miranda_is_on_one/",
+      "url": "https://www.tiktok.com/t/ZTUvG6wwt/",
+      "domain": "tiktok.com",
+      "created_utc": 1789774773,
+      "edited": false,
+      "score": 1247,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 107,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=e392805043393fdd763c2ad1544e27241a2277a8",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>No I’m sat</p>\n</div><!-- SC_ON -->",
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.tiktok.com/t/ZTUvG6wwt/",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?auto=webp&s=ee284fa212ae762b506f9175033c5bf58869e4d4",
+              "width": 1080,
+              "height": 1920
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?width=108&crop=smart&auto=webp&s=fdd6e716f3b40b890f88b2f70cae856addc29c24",
+                "width": 108,
+                "height": 192
+              },
+              {
+                "url": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?width=216&crop=smart&auto=webp&s=2002c00f182d64df79d07db348261e7d290a1ca6",
+                "width": 216,
+                "height": 384
+              },
+              {
+                "url": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?width=320&crop=smart&auto=webp&s=c59b1ad87094e941fad0dfae99bbe4352dd6b0ca",
+                "width": 320,
+                "height": 568
+              },
+              {
+                "url": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?width=640&crop=smart&auto=webp&s=993a0cc1899eb83be9064f1ca8dd72071aad331a",
+                "width": 640,
+                "height": 1137
+              },
+              {
+                "url": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?width=960&crop=smart&auto=webp&s=182b85be1290dac209e98d46610592eab43f609d",
+                "width": 960,
+                "height": 1706
+              },
+              {
+                "url": "https://external-preview.redd.it/x9LP6991D8fDsS0IhE0Q2UcFYuaMmPN8f-xPDvGKHwo.jpeg?width=1080&crop=smart&auto=webp&s=6a770ffeb3455ffd9f54f9381d7b7e6eee2b2c89",
+                "width": 1080,
+                "height": 1920
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7687022870748253470?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "i’m tryna irish goodbye this party ",
+          "thumbnail_url": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/o8qMIaiGQyVfGDjtEDBAIir3RQqAyBSEgciUfQ~tplv-tiktokx-origin.image?dr=9636&x-expires=1789945200&x-signature=Il2ccpVXf7FiyO7qBMNQ%2FGVn8LI%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      },
+      "secure_media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7687022870748253470?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "i’m tryna irish goodbye this party ",
+          "thumbnail_url": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/o8qMIaiGQyVfGDjtEDBAIir3RQqAyBSEgciUfQ~tplv-tiktokx-origin.image?dr=9636&x-expires=1789945200&x-signature=Il2ccpVXf7FiyO7qBMNQ%2FGVn8LI%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      }
+    }
+  }
+]

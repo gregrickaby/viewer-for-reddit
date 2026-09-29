@@ -1,0 +1,44 @@
+[
+  {
+    "note": "removed (reddit.com → none)",
+    "expected": {
+      "type": "none"
+    },
+    "post": {
+      "id": "1wsxldl",
+      "name": "t3_1wsxldl",
+      "subreddit": "mildlyinteresting",
+      "subreddit_name_prefixed": "r/mildlyinteresting",
+      "author": "Icy_Sheepherder3011",
+      "title": "[ Removed by Reddit ]",
+      "permalink": "/r/mildlyinteresting/comments/1wsxldl/removed_by_reddit/",
+      "url": "https://www.reddit.com/r/mildlyinteresting/comments/1wsxldl/removed_by_reddit/",
+      "domain": "self.mildlyinteresting",
+      "created_utc": 1790647137,
+      "edited": false,
+      "score": 29836,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 3559,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": true,
+      "is_video": false,
+      "thumbnail": "self",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>[ Removed by Reddit on account of violating the <a href=\"/help/contentpolicy\">content policy</a>. ]</p>\n</div><!-- SC_ON -->",
+      "distinguished": null,
+      "removed_by_category": "content_takedown",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

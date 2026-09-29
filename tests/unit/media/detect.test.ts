@@ -97,10 +97,11 @@ describe('resolveMedia: real posts', () => {
     expect(poster?.src).toBeTruthy()
   })
 
-  it('uses Reddit’s transcode for clips hosted elsewhere (Imgur, Redgifs)', () => {
-    const imgur = expectType(resolveMedia(post((v) => v.domain === 'imgur.com')), 'animated')
-    expect(imgur.loop?.mp4).toMatch(/^https:\/\/v\.redd\.it\//)
-    const redgifs = expectType(resolveMedia(post((v) => v.domain === 'redgifs.com')), 'animated')
+  it('prefers the provider’s own player (with sound) to Reddit’s silent transcode', () => {
+    const imgur = expectType(resolveMedia(post((v) => v.domain === 'imgur.com')), 'embed')
+    expect(imgur.embed.provider).toBe('imgur')
+    const redgifs = expectType(resolveMedia(post((v) => v.domain === 'redgifs.com')), 'embed')
+    expect(redgifs.embed.provider).toBe('redgifs')
     expect(redgifs.poster?.blurred).not.toBeNull()
   })
 
@@ -112,17 +113,47 @@ describe('resolveMedia: real posts', () => {
   })
 
   it('falls back to a link card and reports media it could not resolve', () => {
-    const youtube = expectType(resolveMedia(post((v) => v.domain === 'youtube.com')), 'link')
-    expect(youtube.url).toMatch(/^https:\/\/(www\.)?youtube\.com\//)
-    expect(youtube.thumbnail?.src).toMatch(/^https:\/\/external-preview\.redd\.it\//)
+    const unknown = expectType(
+      resolveMedia(
+        post(
+          (v) => v.domain === 'youtube.com',
+          (v) => {
+            Object.assign(v, {
+              url: 'https://video.example/watch/1',
+              url_overridden_by_dest: 'https://video.example/watch/1',
+              domain: 'video.example',
+            })
+            v.secure_media = { type: 'video.example' }
+            v.media = null
+          },
+        ),
+      ),
+      'link',
+    )
+    expect(unknown.thumbnail?.src).toMatch(/^https:\/\/external-preview\.redd\.it\//)
     expect(info).toHaveBeenCalledWith(
-      '[media:unresolved] domain=youtube.com post_hint=rich:video media_type=youtube.com',
+      '[media:unresolved] domain=video.example post_hint=rich:video media_type=video.example',
     )
   })
 
   it('keeps plain links quiet', () => {
-    const spotify = expectType(resolveMedia(post((v) => v.domain === 'open.spotify.com')), 'link')
-    expect(spotify.domain).toBe('open.spotify.com')
+    const article = expectType(
+      resolveMedia(
+        post(
+          (v) => v.domain === 'open.spotify.com',
+          (v) => {
+            Object.assign(v, {
+              url: 'https://news.example/story',
+              url_overridden_by_dest: 'https://news.example/story',
+              domain: 'news.example',
+              post_hint: 'link',
+            })
+          },
+        ),
+      ),
+      'link',
+    )
+    expect(article.domain).toBe('news.example')
     expect(info).not.toHaveBeenCalled()
   })
 })
@@ -315,7 +346,11 @@ describe('resolveMedia: degraded data', () => {
         },
       ),
     )
-    expect(media.type).toBe('image')
+    // The post links an i.redd.it .gif directly, so it still animates (resolver 8).
+    expect(expectType(media, 'animated')).toMatchObject({
+      loop: null,
+      gif: { src: expect.stringMatching(/\.gif$/) },
+    })
   })
 
   it('treats an image post without a preview as a link with its thumbnail', () => {

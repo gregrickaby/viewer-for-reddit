@@ -1,7 +1,7 @@
 import 'server-only'
 import type { RedditMediaMetadataItem, RedditPreviewImage } from '@/lib/reddit/schemas/media'
 import type { ImageSet, LoopVideo } from '@/lib/view-models'
-import { safeMediaUrl } from './url'
+import { REDDIT_MEDIA_HOSTS, safeMediaUrl } from './url'
 
 /** A single image rendition, normalized from Reddit's two spellings. */
 export type Rendition = { url: string; width: number; height: number }
@@ -16,12 +16,13 @@ export function imageSet(
   source: Rendition,
   resolutions: readonly Rendition[] = [],
   blurred: Renditions | null = null,
+  hosts: readonly string[] = REDDIT_MEDIA_HOSTS,
 ): ImageSet | null {
-  const src = safeMediaUrl(source.url)
+  const src = safeMediaUrl(source.url, hosts)
   if (!src || !hasSize(source)) return null
   return {
     src,
-    srcSet: srcSet([...resolutions, source]),
+    srcSet: srcSet([...resolutions, source], hosts),
     width: source.width,
     height: source.height,
     blurred: blurredSet(blurred),
@@ -58,8 +59,9 @@ export function loopVideo(
   url: string | undefined,
   width: number,
   height: number,
+  hosts: readonly string[] = REDDIT_MEDIA_HOSTS,
 ): LoopVideo | null {
-  const mp4 = safeMediaUrl(url)
+  const mp4 = safeMediaUrl(url, hosts)
   return mp4 && hasSize({ width, height }) ? { mp4, width, height } : null
 }
 
@@ -79,10 +81,13 @@ function blurredSet(renditions: Renditions | null): ImageSet['blurred'] {
   return src ? { src, srcSet: srcSet([...renditions.resolutions, renditions.source]) } : null
 }
 
-function srcSet(renditions: readonly Rendition[]): string {
+function srcSet(
+  renditions: readonly Rendition[],
+  hosts: readonly string[] = REDDIT_MEDIA_HOSTS,
+): string {
   const byWidth = new Map<number, string>()
   for (const rendition of renditions) {
-    const url = safeMediaUrl(rendition.url)
+    const url = safeMediaUrl(rendition.url, hosts)
     if (url && hasSize(rendition) && !byWidth.has(rendition.width))
       byWidth.set(rendition.width, url)
   }

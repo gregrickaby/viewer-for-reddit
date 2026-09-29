@@ -1,0 +1,152 @@
+[
+  {
+    "note": "open.spotify.com → embed:spotify",
+    "expected": {
+      "type": "embed",
+      "provider": "spotify"
+    },
+    "post": {
+      "id": "1wrr481",
+      "name": "t3_1wrr481",
+      "subreddit": "spotify",
+      "subreddit_name_prefixed": "r/spotify",
+      "author": "5PQR",
+      "title": "Hidden gems (6.5k tunes, mostly 21st century tunes, mostly with fewer than 500k streams, very diverse)",
+      "permalink": "/r/spotify/comments/1wrr481/hidden_gems_65k_tunes_mostly_21st_century_tunes/",
+      "url": "https://open.spotify.com/playlist/7hUN0wnQzHrNvWzYtcXGAS",
+      "domain": "open.spotify.com",
+      "created_utc": 1790532480,
+      "edited": false,
+      "score": 6,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 2,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/MbhchoaZMUqhqm6_LU0Z7uylADQumsXy0MjRsOgoIFQ.jpeg?width=140&height=140&auto=webp&s=990c11a1bf3798ef8a77a61c2ef6da0f7dfafcaa",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://open.spotify.com/playlist/7hUN0wnQzHrNvWzYtcXGAS",
+      "link_flair_text": "Theme/Setting  (Songs I Like, Workout, Party, Covers, Beach etc)",
+      "link_flair_background_color": "#ffd635",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/MbhchoaZMUqhqm6_LU0Z7uylADQumsXy0MjRsOgoIFQ.jpeg?auto=webp&s=3d2f2758efa4b68b08d27e9adcf649ccadf0c172",
+              "width": 640,
+              "height": 640
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/MbhchoaZMUqhqm6_LU0Z7uylADQumsXy0MjRsOgoIFQ.jpeg?width=108&crop=smart&auto=webp&s=4c5969d08b4335db185e2126e397a09dc4364809",
+                "width": 108,
+                "height": 108
+              },
+              {
+                "url": "https://external-preview.redd.it/MbhchoaZMUqhqm6_LU0Z7uylADQumsXy0MjRsOgoIFQ.jpeg?width=216&crop=smart&auto=webp&s=918124931accb06ec99a01dcdb30b4699e7f7ccc",
+                "width": 216,
+                "height": 216
+              },
+              {
+                "url": "https://external-preview.redd.it/MbhchoaZMUqhqm6_LU0Z7uylADQumsXy0MjRsOgoIFQ.jpeg?width=320&crop=smart&auto=webp&s=dffac3d6e33167094c62c46b4710c83477d28a05",
+                "width": 320,
+                "height": 320
+              },
+              {
+                "url": "https://external-preview.redd.it/MbhchoaZMUqhqm6_LU0Z7uylADQumsXy0MjRsOgoIFQ.jpeg?width=640&crop=smart&auto=webp&s=6e15c4d6bf546e6d5a329b3afb20fa8ea406a064",
+                "width": 640,
+                "height": 640
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "open.spotify.com → embed:spotify",
+    "expected": {
+      "type": "embed",
+      "provider": "spotify"
+    },
+    "post": {
+      "id": "1wqlti1",
+      "name": "t3_1wqlti1",
+      "subreddit": "spotify",
+      "subreddit_name_prefixed": "r/spotify",
+      "author": "StarGuy777",
+      "title": "Retro Synth 80s & 90s Classic Alternative",
+      "permalink": "/r/spotify/comments/1wqlti1/retro_synth_80s_90s_classic_alternative/",
+      "url": "https://open.spotify.com/playlist/3oKWAAAyF2qQUNLHOoEwQc?si%3D-OMOM4LGQg6kYOej9e-xXw%26utm_source%3Dnative-share-menu%26pi%3DjPfPIWAEQC6N0",
+      "domain": "open.spotify.com",
+      "created_utc": 1790413448,
+      "edited": false,
+      "score": 3,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 0,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/4p5-offUgcvnIVD4q9P7BNCpybi9w_I3QTccYTQwaf0.jpeg?width=140&height=78&auto=webp&s=337380c4f969021d4b44cd095801cad614ec59b4",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>Made this playlist for all retro, 1st wave &amp; synth fans like me</p>\n</div><!-- SC_ON -->",
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://open.spotify.com/playlist/3oKWAAAyF2qQUNLHOoEwQc?si%3D-OMOM4LGQg6kYOej9e-xXw%26utm_source%3Dnative-share-menu%26pi%3DjPfPIWAEQC6N0",
+      "link_flair_text": "Throwback - Flashback - Decades - Nostalgia",
+      "link_flair_background_color": "#a06324",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/4p5-offUgcvnIVD4q9P7BNCpybi9w_I3QTccYTQwaf0.jpeg?auto=webp&s=93e7eafbd58d1e80152f21e82f32ffb83e1a937b",
+              "width": 300,
+              "height": 168
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/4p5-offUgcvnIVD4q9P7BNCpybi9w_I3QTccYTQwaf0.jpeg?width=108&crop=smart&auto=webp&s=aa8f15a42834b7ad1255aea3550b75085460a006",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/4p5-offUgcvnIVD4q9P7BNCpybi9w_I3QTccYTQwaf0.jpeg?width=216&crop=smart&auto=webp&s=3f919531f7e3cf0065c9d50bf632bb01586cbe8c",
+                "width": 216,
+                "height": 120
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

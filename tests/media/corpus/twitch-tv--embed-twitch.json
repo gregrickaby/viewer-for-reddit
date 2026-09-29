@@ -1,0 +1,230 @@
+[
+  {
+    "note": "twitch.tv → embed:twitch",
+    "expected": {
+      "type": "embed",
+      "provider": "twitch"
+    },
+    "post": {
+      "id": "1wq8lwg",
+      "name": "t3_1wq8lwg",
+      "subreddit": "LivestreamFail",
+      "subreddit_name_prefixed": "r/LivestreamFail",
+      "author": "browsk",
+      "title": "XQC ego betting back to back all in vs Soda",
+      "permalink": "/r/LivestreamFail/comments/1wq8lwg/xqc_ego_betting_back_to_back_all_in_vs_soda/",
+      "url": "https://www.twitch.tv/sodapoppin/clip/ColdbloodedRacyKathySquadGoals-aA2jucezLpNde7Sr",
+      "domain": "twitch.tv",
+      "created_utc": 1790372032,
+      "edited": false,
+      "score": 696,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 84,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?width=140&height=78&auto=webp&s=52c2ad621e682ff24e52f2b536ec86d20590e99c",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.twitch.tv/sodapoppin/clip/ColdbloodedRacyKathySquadGoals-aA2jucezLpNde7Sr",
+      "link_flair_text": "Funny:lul:",
+      "link_flair_background_color": "#00e1ff",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?auto=webp&s=6aa27ded69067d163cdd45aff336b770d5f2b9e0",
+              "width": 1920,
+              "height": 1080
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?width=108&crop=smart&auto=webp&s=54a0786de14b15b1bf73c9d0cf57d7c5de515264",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?width=216&crop=smart&auto=webp&s=0062b223adc69f95b52e9c20b625449c7c019d99",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?width=320&crop=smart&auto=webp&s=e95a06d8c4f7afdde3cc9ad01c0491bba14b601f",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?width=640&crop=smart&auto=webp&s=2546084d88514ebd9c360924b569c67f8349c024",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?width=960&crop=smart&auto=webp&s=c59f7d69d3dd734b2109718277fb6b3c34eb29bd",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/kEmEKeJDjzc2wrOQeLHB7HsrgUBxELgIHbVRCZmoZmI.jpeg?width=1080&crop=smart&auto=webp&s=ff0ce6f2ac3055e5b4b7799faa5fb298ac570344",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DColdbloodedRacyKathySquadGoals-aA2jucezLpNde7Sr%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fwww.twitch.tv%2Fsodapoppin%2Fclip%2FColdbloodedRacyKathySquadGoals-aA2jucezLpNde7Sr&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F30ee5737-b5b7-48d5-abef-6daf382853a6%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "EGO BETTING - sodapoppin on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/30ee5737-b5b7-48d5-abef-6daf382853a6/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      },
+      "secure_media": {
+        "type": "twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DColdbloodedRacyKathySquadGoals-aA2jucezLpNde7Sr%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fwww.twitch.tv%2Fsodapoppin%2Fclip%2FColdbloodedRacyKathySquadGoals-aA2jucezLpNde7Sr&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F30ee5737-b5b7-48d5-abef-6daf382853a6%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "EGO BETTING - sodapoppin on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/30ee5737-b5b7-48d5-abef-6daf382853a6/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      }
+    }
+  },
+  {
+    "note": "twitch.tv → embed:twitch",
+    "expected": {
+      "type": "embed",
+      "provider": "twitch"
+    },
+    "post": {
+      "id": "1wqjwsy",
+      "name": "t3_1wqjwsy",
+      "subreddit": "LivestreamFail",
+      "subreddit_name_prefixed": "r/LivestreamFail",
+      "author": "trippingrainbow",
+      "title": "After an emergency overnight engine swap the twitch chat funded rally car is alive again.",
+      "permalink": "/r/LivestreamFail/comments/1wqjwsy/after_an_emergency_overnight_engine_swap_the/",
+      "url": "https://www.twitch.tv/pablogztv/clip/CoweringBetterCatPeoplesChamp-2ei6WfY3EjmiBmmF",
+      "domain": "twitch.tv",
+      "created_utc": 1790406224,
+      "edited": false,
+      "score": 622,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 22,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?width=140&height=78&auto=webp&s=6ab2b777cdec0fca8f0b8099d2910f0c5ccc5c64",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.twitch.tv/pablogztv/clip/CoweringBetterCatPeoplesChamp-2ei6WfY3EjmiBmmF",
+      "link_flair_text": "Hype:pog:",
+      "link_flair_background_color": "#ff4800",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?auto=webp&s=06de239c85bce01cae6270f3cd0d3fb02c1c422b",
+              "width": 1920,
+              "height": 1080
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?width=108&crop=smart&auto=webp&s=d811392f08b54c512c82e0ac58d0a6b8e8f1455c",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?width=216&crop=smart&auto=webp&s=94ee5b72da58f6012e6532eaa315d2e798290558",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?width=320&crop=smart&auto=webp&s=b3b61082cfe71d3186383481958ae3def03fe9c9",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?width=640&crop=smart&auto=webp&s=296c7e337147437bc73b083688bab6eb1494121c",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?width=960&crop=smart&auto=webp&s=34df38a78d0ce0ed202eba3ffb063264e3ae7fb0",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/wyK48t0EG_6NlEUbtnfqdryi_QD2sWhm1w2wfieTkIg.jpeg?width=1080&crop=smart&auto=webp&s=3cbe5c2c193ce194779675789a764d308e0a2fa4",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DCoweringBetterCatPeoplesChamp-2ei6WfY3EjmiBmmF%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fwww.twitch.tv%2Fpablogztv%2Fclip%2FCoweringBetterCatPeoplesChamp-2ei6WfY3EjmiBmmF&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F8996af94-2b34-47c6-81a6-a46528da7362%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "giga stage - PabloGzTv on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/8996af94-2b34-47c6-81a6-a46528da7362/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      },
+      "secure_media": {
+        "type": "twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DCoweringBetterCatPeoplesChamp-2ei6WfY3EjmiBmmF%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fwww.twitch.tv%2Fpablogztv%2Fclip%2FCoweringBetterCatPeoplesChamp-2ei6WfY3EjmiBmmF&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F8996af94-2b34-47c6-81a6-a46528da7362%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "giga stage - PabloGzTv on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/8996af94-2b34-47c6-81a6-a46528da7362/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      }
+    }
+  }
+]

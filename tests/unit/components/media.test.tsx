@@ -173,6 +173,7 @@ describe('PostMedia', () => {
         title: 't',
         iframeSrc: 'https://www.youtube-nocookie.com/embed/x',
         aspectRatio: 1.7,
+        height: null,
         allow: '',
         sandbox: '',
         originalUrl: 'https://youtu.be/x',

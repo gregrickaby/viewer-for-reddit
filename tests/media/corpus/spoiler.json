@@ -1,0 +1,265 @@
+[
+  {
+    "note": "spoiler (i.redd.it → image)",
+    "expected": {
+      "type": "image"
+    },
+    "post": {
+      "id": "1wt2foq",
+      "name": "t3_1wt2foq",
+      "subreddit": "Marvel",
+      "subreddit_name_prefixed": "r/Marvel",
+      "author": "JuggernautPrudent623",
+      "title": "Why does his mask keep changing??",
+      "permalink": "/r/Marvel/comments/1wt2foq/why_does_his_mask_keep_changing/",
+      "url": "https://i.redd.it/r6cz3rjriesh1.png",
+      "domain": "i.redd.it",
+      "created_utc": 1790662434,
+      "edited": false,
+      "score": 1317,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 366,
+      "saved": false,
+      "over_18": false,
+      "spoiler": true,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "spoiler",
+      "selftext_html": null,
+      "post_hint": "image",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://i.redd.it/r6cz3rjriesh1.png",
+      "link_flair_text": "Film/Television",
+      "link_flair_background_color": "#0079d3",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://preview.redd.it/r6cz3rjriesh1.png?auto=webp&s=04f91e879cf3e60959d43fb6445e65c5b371978f",
+              "width": 644,
+              "height": 979
+            },
+            "resolutions": [
+              {
+                "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=108&crop=smart&auto=webp&s=ccac00611968c2ae1b884f8cbc272e93078985fd",
+                "width": 108,
+                "height": 164
+              },
+              {
+                "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=216&crop=smart&auto=webp&s=62df6085c1757d9ebfe65c71cada9a2707d7ea40",
+                "width": 216,
+                "height": 328
+              },
+              {
+                "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=320&crop=smart&auto=webp&s=b35961fa37aece194c8f4bc9203f4895e081a9d2",
+                "width": 320,
+                "height": 486
+              },
+              {
+                "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=640&crop=smart&auto=webp&s=7ea4d075a6c1f84c6bbbfa57e92372ad05e87ffc",
+                "width": 640,
+                "height": 972
+              }
+            ],
+            "variants": {
+              "obfuscated": {
+                "source": {
+                  "url": "https://preview.redd.it/r6cz3rjriesh1.png?blur=40&format=pjpg&auto=webp&s=947ffeda8eb1f3e580ab19ef182def601e64d417",
+                  "width": 644,
+                  "height": 979
+                },
+                "resolutions": [
+                  {
+                    "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=108&crop=smart&blur=10&format=pjpg&auto=webp&s=1a03282ad331ea92c353e48b1283c74eb6056bc0",
+                    "width": 108,
+                    "height": 164
+                  },
+                  {
+                    "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=216&crop=smart&blur=21&format=pjpg&auto=webp&s=6df3d71e0033c640777ed9f04d35a5ee8b84fd18",
+                    "width": 216,
+                    "height": 328
+                  },
+                  {
+                    "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=320&crop=smart&blur=32&format=pjpg&auto=webp&s=2abfa884bb93ad805831b2e626e8ab6e4208f165",
+                    "width": 320,
+                    "height": 486
+                  },
+                  {
+                    "url": "https://preview.redd.it/r6cz3rjriesh1.png?width=640&crop=smart&blur=40&format=pjpg&auto=webp&s=11d70054a889e115fc1629aa4df26b9a31f026c5",
+                    "width": 640,
+                    "height": 972
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "enabled": true
+      },
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "spoiler (twitch.tv → embed:twitch)",
+    "expected": {
+      "type": "embed",
+      "provider": "twitch"
+    },
+    "post": {
+      "id": "1wqc0i4",
+      "name": "t3_1wqc0i4",
+      "subreddit": "LivestreamFail",
+      "subreddit_name_prefixed": "r/LivestreamFail",
+      "author": "vandamnbo",
+      "title": "Spoilers - Hyped Ludwig in underpants",
+      "permalink": "/r/LivestreamFail/comments/1wqc0i4/spoilers_hyped_ludwig_in_underpants/",
+      "url": "https://www.twitch.tv/caedrel/clip/TriangularTolerantGarbagePeoplesChamp-Wp-VbvHY1w5yyQ0p?range=7d",
+      "domain": "twitch.tv",
+      "created_utc": 1790381093,
+      "edited": false,
+      "score": 48,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 12,
+      "saved": false,
+      "over_18": false,
+      "spoiler": true,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "spoiler",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>Hyped Ludwig forgets his in underpants :) </p>\n</div><!-- SC_ON -->",
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.twitch.tv/caedrel/clip/TriangularTolerantGarbagePeoplesChamp-Wp-VbvHY1w5yyQ0p?range=7d",
+      "link_flair_text": "Hype:pog:",
+      "link_flair_background_color": "#ff4800",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?auto=webp&s=808a77037b65e6415720f77186f7f70141bfdd50",
+              "width": 1920,
+              "height": 1080
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=108&crop=smart&auto=webp&s=519d0a598dfb2d6dc96bbfda050fefdbc190938f",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=216&crop=smart&auto=webp&s=e51acf3a1fb3b351e0c08ece0f6889f2f550813e",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=320&crop=smart&auto=webp&s=1a9f3808b8c29a8a37c79066fda48f00f7dda0ee",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=640&crop=smart&auto=webp&s=7512c02b1b76219471e75d67a75077f12d1e524d",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=960&crop=smart&auto=webp&s=a4023f077bdb7e48effef7339cee867ed47700d3",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=1080&crop=smart&auto=webp&s=db32ea565cfa0e7c0531c9fd1b8f519340fab779",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {
+              "obfuscated": {
+                "source": {
+                  "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?blur=40&format=pjpg&auto=webp&s=968b8994d4c1fd1439920d862893f668b772d603",
+                  "width": 1920,
+                  "height": 1080
+                },
+                "resolutions": [
+                  {
+                    "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=108&crop=smart&blur=10&format=pjpg&auto=webp&s=6c89b821d53a4ff6bb61c584f96c304ce431acf6",
+                    "width": 108,
+                    "height": 60
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=216&crop=smart&blur=21&format=pjpg&auto=webp&s=a7624d89911f98c28a647d4db4471fc0974ced4d",
+                    "width": 216,
+                    "height": 121
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=320&crop=smart&blur=32&format=pjpg&auto=webp&s=6eac18151f2b07355885ebb5dc9918e4a565374a",
+                    "width": 320,
+                    "height": 180
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=640&crop=smart&blur=40&format=pjpg&auto=webp&s=3b29198470c77dd0374a6b1cc572f4ed046103cf",
+                    "width": 640,
+                    "height": 360
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=960&crop=smart&blur=40&format=pjpg&auto=webp&s=d7213c547604231e2da6ad4f9b2e51cdc372f804",
+                    "width": 960,
+                    "height": 540
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/kbwr-pV6cUyE2VAiUHHv8P7KrgKLxNtVKl0KyZWU4bA.jpeg?width=1080&crop=smart&blur=40&format=pjpg&auto=webp&s=47e035a88ac26850d2f69533d0853e67eb5ba265",
+                    "width": 1080,
+                    "height": 607
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DTriangularTolerantGarbagePeoplesChamp-Wp-VbvHY1w5yyQ0p%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fwww.twitch.tv%2Fcaedrel%2Fclip%2FTriangularTolerantGarbagePeoplesChamp-Wp-VbvHY1w5yyQ0p%3Frange%3D7d&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F2c86aab0-77f3-4397-a160-8387743dc974%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "Underwear: crazy play by SR - Caedrel on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/2c86aab0-77f3-4397-a160-8387743dc974/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      },
+      "secure_media": {
+        "type": "twitch.tv",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv%2Fembed%3Fclip%3DTriangularTolerantGarbagePeoplesChamp-Wp-VbvHY1w5yyQ0p%26parent%3Dcdn.embedly.com%26parent%3Dreddit.com%26parent%3Dwww.reddit.com%26parent%3Dold.reddit.com%26parent%3Dnew.reddit.com%26parent%3Dredditmedia.com%26muted%3Dtrue%26autoplay%3Dfalse&display_name=Twitch.tv&url=https%3A%2F%2Fwww.twitch.tv%2Fcaedrel%2Fclip%2FTriangularTolerantGarbagePeoplesChamp-Wp-VbvHY1w5yyQ0p%3Frange%3D7d&image=https%3A%2F%2Fstatic-cdn.jtvnw.net%2Ftwitch-video-assets%2Ftwitch-vap-video-assets-prod-us-west-2%2F2c86aab0-77f3-4397-a160-8387743dc974%2Flandscape%2Fthumb%2Fthumb-0000000000-1920x1080.jpg&type=text%2Fhtml&schema=twitch\" width=\"600\" height=\"340\" scrolling=\"no\" title=\"Twitch.tv embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Twitch.tv",
+          "title": "Underwear: crazy play by SR - Caedrel on Twitch",
+          "thumbnail_url": "https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/2c86aab0-77f3-4397-a160-8387743dc974/landscape/thumb/thumb-0000000000-1920x1080.jpg",
+          "thumbnail_width": 1920,
+          "thumbnail_height": 1080,
+          "width": 600,
+          "height": 340
+        }
+      }
+    }
+  }
+]

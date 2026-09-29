@@ -1,0 +1,270 @@
+[
+  {
+    "note": "vm.tiktok.com → embed:tiktok",
+    "expected": {
+      "type": "embed",
+      "provider": "tiktok"
+    },
+    "post": {
+      "id": "1wdrzv1",
+      "name": "t3_1wdrzv1",
+      "subreddit": "SecretsOfMormonWives",
+      "subreddit_name_prefixed": "r/SecretsOfMormonWives",
+      "author": "BiscuitMcGuire",
+      "title": "Mikayla posted her live reaction on TikTok",
+      "permalink": "/r/SecretsOfMormonWives/comments/1wdrzv1/mikayla_posted_her_live_reaction_on_tiktok/",
+      "url": "https://vm.tiktok.com/ZGdQhsHnH/",
+      "domain": "vm.tiktok.com",
+      "created_utc": 1789158987,
+      "edited": 1789201334,
+      "score": 538,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 57,
+      "saved": false,
+      "over_18": false,
+      "spoiler": true,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "spoiler",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>What a legend. It’s very interesting to see her just stop talking as she relives the Taylor argument. These poor women facing this sh*t while filming. Watching Taylor call her an idiot and a bitch was rough!</p>\n</div><!-- SC_ON -->",
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vm.tiktok.com/ZGdQhsHnH/",
+      "link_flair_text": ":Mikayla: Mikayla :Mikayla:",
+      "link_flair_background_color": "#76b649",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?auto=webp&s=155962c55fa1c132ed005a7d4080bc4fe81eaaad",
+              "width": 1233,
+              "height": 1764
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=108&crop=smart&auto=webp&s=19ea07ddcc25342bff2820ce54836eaf5de1a112",
+                "width": 108,
+                "height": 154
+              },
+              {
+                "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=216&crop=smart&auto=webp&s=f1b0dfc40edb416a07cfd0ab4f8f05f41430267c",
+                "width": 216,
+                "height": 309
+              },
+              {
+                "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=320&crop=smart&auto=webp&s=e50a35ddfb3fb1858cb6eb91ffaf11298f5fc205",
+                "width": 320,
+                "height": 457
+              },
+              {
+                "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=640&crop=smart&auto=webp&s=4391ed203ae4b1fc6be2f207db6e6d675edee609",
+                "width": 640,
+                "height": 915
+              },
+              {
+                "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=960&crop=smart&auto=webp&s=961579f054d445cc0ff88135097bd3edd5758eb3",
+                "width": 960,
+                "height": 1373
+              },
+              {
+                "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=1080&crop=smart&auto=webp&s=4f46a4e9c5de9c01e497812c181111a0a2dc730e",
+                "width": 1080,
+                "height": 1545
+              }
+            ],
+            "variants": {
+              "obfuscated": {
+                "source": {
+                  "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?blur=40&format=pjpg&auto=webp&s=f14833241a23e78d8c18f0af5dda1ec2e3d7be8a",
+                  "width": 1233,
+                  "height": 1764
+                },
+                "resolutions": [
+                  {
+                    "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=108&crop=smart&blur=10&format=pjpg&auto=webp&s=69d3e9d47d8269781ada2252b984f525db78e5fd",
+                    "width": 108,
+                    "height": 154
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=216&crop=smart&blur=21&format=pjpg&auto=webp&s=af02862219964efd4ee7ec28613d60022c82762f",
+                    "width": 216,
+                    "height": 309
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=320&crop=smart&blur=32&format=pjpg&auto=webp&s=c0ff477b6696bf94dd8feee9f7d00300d3aec258",
+                    "width": 320,
+                    "height": 457
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=640&crop=smart&blur=40&format=pjpg&auto=webp&s=e7c81ac964a362f99e485db007e4bddf12049eef",
+                    "width": 640,
+                    "height": 915
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=960&crop=smart&blur=40&format=pjpg&auto=webp&s=e3780cc9e7763a73bdda90c7c4b491030bb26183",
+                    "width": 960,
+                    "height": 1373
+                  },
+                  {
+                    "url": "https://external-preview.redd.it/cEdVRoHoKGnwLQv6-zbKwepPO5CCKO02a5gA6dSTgas.jpeg?width=1080&crop=smart&blur=40&format=pjpg&auto=webp&s=ab39170d86ffc8959a564715d0b88451513b47a9",
+                    "width": 1080,
+                    "height": 1545
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7684370407817760031?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Sorry the truth gets me in trouble🫪 so if you don’t like to hear it.. you can ask kindly in the comments to be blocked and I’ll kindly oblige 🫶🏼",
+          "thumbnail_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/osb746AVEEfJvvAEFXqEkDjCpIzWVGAfAAGFCR~tplv-tiktokx-dmt-logom:tos-useast8-i-0068-tx2/oUIIeK1AiJ7HpOGkBiEjFUiCSAABzAvyiXCAUj.image?dr=9634&x-expires=1789329600&x-signature=jrq%2B2DJct0BAMVu99fsV9vPKi5o%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      },
+      "secure_media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7684370407817760031?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Sorry the truth gets me in trouble🫪 so if you don’t like to hear it.. you can ask kindly in the comments to be blocked and I’ll kindly oblige 🫶🏼",
+          "thumbnail_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/osb746AVEEfJvvAEFXqEkDjCpIzWVGAfAAGFCR~tplv-tiktokx-dmt-logom:tos-useast8-i-0068-tx2/oUIIeK1AiJ7HpOGkBiEjFUiCSAABzAvyiXCAUj.image?dr=9634&x-expires=1789329600&x-signature=jrq%2B2DJct0BAMVu99fsV9vPKi5o%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast5",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      }
+    }
+  },
+  {
+    "note": "vm.tiktok.com → embed:tiktok",
+    "expected": {
+      "type": "embed",
+      "provider": "tiktok"
+    },
+    "post": {
+      "id": "1wkyui4",
+      "name": "t3_1wkyui4",
+      "subreddit": "popping",
+      "subreddit_name_prefixed": "r/popping",
+      "author": "Becks200200",
+      "title": "Dr Derm freaks out at our Hero",
+      "permalink": "/r/popping/comments/1wkyui4/dr_derm_freaks_out_at_our_hero/",
+      "url": "https://vm.tiktok.com/ZGdQxVJnH/",
+      "domain": "vm.tiktok.com",
+      "created_utc": 1789855059,
+      "edited": false,
+      "score": 387,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 41,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=aa15fbff11413e39fbc30b43bdc35de41a3f9ffd",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>The King &amp; the doc. </p>\n</div><!-- SC_ON -->",
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vm.tiktok.com/ZGdQxVJnH/",
+      "link_flair_text": "Cyst",
+      "link_flair_background_color": "#00a6a5",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?auto=webp&s=c1c6e3c076f3a62b45d53d62224d99baf23854f9",
+              "width": 1080,
+              "height": 1920
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?width=108&crop=smart&auto=webp&s=f1fd77ba8adc6df35034207723fac0b16c4894cf",
+                "width": 108,
+                "height": 192
+              },
+              {
+                "url": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?width=216&crop=smart&auto=webp&s=6a7a6beba5b2e8a5a09c4a409a0ff93ecd6dd06b",
+                "width": 216,
+                "height": 384
+              },
+              {
+                "url": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?width=320&crop=smart&auto=webp&s=cbcc4def527414448509efb8ee28146a716b2cef",
+                "width": 320,
+                "height": 568
+              },
+              {
+                "url": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?width=640&crop=smart&auto=webp&s=1a58d5d3dd672779cc47db43a32b5648f52af380",
+                "width": 640,
+                "height": 1137
+              },
+              {
+                "url": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?width=960&crop=smart&auto=webp&s=c2aae27995bd6096e7b2668b1a17585d29164884",
+                "width": 960,
+                "height": 1706
+              },
+              {
+                "url": "https://external-preview.redd.it/PGVxLCXwHUdvJ0gsvHgnBcYqJWYFhw4tkeVmN9QTG2w.jpeg?width=1080&crop=smart&auto=webp&s=8d93d4b334e96db91a756b64ec92bbea0ea763a3",
+                "width": 1080,
+                "height": 1920
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1024\" width= \"576\" src=\"https://www.tiktok.com/player/v1/7118175727589117227?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Terrible technique here -1/10 #dermdoctor #pimplepopping",
+          "thumbnail_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/d54a8dd87ff843f0a222217faa36881b_1657329446~tplv-tiktokx-origin.image?dr=9636&x-expires=1790024400&x-signature=0CYbcsHQfytwFNqc0%2BT8W6i3bno%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 576,
+          "thumbnail_height": 1024,
+          "width": 576,
+          "height": 1024
+        }
+      },
+      "secure_media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1024\" width= \"576\" src=\"https://www.tiktok.com/player/v1/7118175727589117227?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Terrible technique here -1/10 #dermdoctor #pimplepopping",
+          "thumbnail_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/d54a8dd87ff843f0a222217faa36881b_1657329446~tplv-tiktokx-origin.image?dr=9636&x-expires=1790024400&x-signature=0CYbcsHQfytwFNqc0%2BT8W6i3bno%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 576,
+          "thumbnail_height": 1024,
+          "width": 576,
+          "height": 1024
+        }
+      }
+    }
+  }
+]

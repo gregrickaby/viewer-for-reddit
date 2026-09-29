@@ -1,0 +1,210 @@
+[
+  {
+    "note": "vt.tiktok.com → embed:tiktok",
+    "expected": {
+      "type": "embed",
+      "provider": "tiktok"
+    },
+    "post": {
+      "id": "1wqr0af",
+      "name": "t3_1wqr0af",
+      "subreddit": "BeautyGuruChatter",
+      "subreddit_name_prefixed": "r/BeautyGuruChatter",
+      "author": "BaddRincewind",
+      "title": "Jeffree star keeps spiralling and I am here for it",
+      "permalink": "/r/BeautyGuruChatter/comments/1wqr0af/jeffree_star_keeps_spiralling_and_i_am_here_for_it/",
+      "url": "https://vt.tiktok.com/ZSbYPXhLt/",
+      "domain": "vt.tiktok.com",
+      "created_utc": 1790430492,
+      "edited": false,
+      "score": 1816,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 405,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/ZNSAsTZOFKIgc81uH3yOzyDhZxszzUPfx7Qv_cnnHtA.png?width=140&height=140&crop=1:1,smart&auto=webp&s=b83e6057055b9d1ca159ada2130108650a848f2c",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>Best part when he pulled his black credit card lol</p>\n</div><!-- SC_ON -->",
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vt.tiktok.com/ZSbYPXhLt/",
+      "link_flair_text": "Discussion",
+      "link_flair_background_color": "#f37cb8",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/ZNSAsTZOFKIgc81uH3yOzyDhZxszzUPfx7Qv_cnnHtA.png?auto=webp&s=23b51119647dc47f9d641834aabb0c87156e557e",
+              "width": 942,
+              "height": 1256
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/ZNSAsTZOFKIgc81uH3yOzyDhZxszzUPfx7Qv_cnnHtA.png?width=108&crop=smart&auto=webp&s=c868beeef0f7242392542cd763f4bbaa9871a440",
+                "width": 108,
+                "height": 144
+              },
+              {
+                "url": "https://external-preview.redd.it/ZNSAsTZOFKIgc81uH3yOzyDhZxszzUPfx7Qv_cnnHtA.png?width=216&crop=smart&auto=webp&s=22db641ff9a976f19863703d44acd4c44d02fa68",
+                "width": 216,
+                "height": 288
+              },
+              {
+                "url": "https://external-preview.redd.it/ZNSAsTZOFKIgc81uH3yOzyDhZxszzUPfx7Qv_cnnHtA.png?width=320&crop=smart&auto=webp&s=4195bd4c4534c0bd1d5c05213bedda20796c4f91",
+                "width": 320,
+                "height": 426
+              },
+              {
+                "url": "https://external-preview.redd.it/ZNSAsTZOFKIgc81uH3yOzyDhZxszzUPfx7Qv_cnnHtA.png?width=640&crop=smart&auto=webp&s=94b22753693e93b149244b1577ada9ff494c57a9",
+                "width": 640,
+                "height": 853
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7688541379273690381?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Replying to @lakittygurl  I didn't think it got that snowy in Wyoming this time of year 😏 #jeffreestar #dollartree #tjmaxx #controversy #expiredmakeup ",
+          "thumbnail_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/oYZADEEl5WDAjjASeXAfFyzHf1kACVIILzEcaI~tplv-tiktokx-dmt-logom:tos-useast5-i-0068-tx/oQL5zA5GySA1aiIqCsifDCgrZL0AfvEhRAB3EO.image?dr=9634&x-expires=1790600400&x-signature=NMLBZ6gqMo6SaNOy4O%2FJZxc%2B1Rs%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      },
+      "secure_media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"1280\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7688541379273690381?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "Replying to @lakittygurl  I didn't think it got that snowy in Wyoming this time of year 😏 #jeffreestar #dollartree #tjmaxx #controversy #expiredmakeup ",
+          "thumbnail_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/oYZADEEl5WDAjjASeXAfFyzHf1kACVIILzEcaI~tplv-tiktokx-dmt-logom:tos-useast5-i-0068-tx/oQL5zA5GySA1aiIqCsifDCgrZL0AfvEhRAB3EO.image?dr=9634&x-expires=1790600400&x-signature=NMLBZ6gqMo6SaNOy4O%2FJZxc%2B1Rs%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 720,
+          "thumbnail_height": 1280,
+          "width": 720,
+          "height": 1280
+        }
+      }
+    }
+  },
+  {
+    "note": "vt.tiktok.com → embed:tiktok",
+    "expected": {
+      "type": "embed",
+      "provider": "tiktok"
+    },
+    "post": {
+      "id": "1wi92w5",
+      "name": "t3_1wi92w5",
+      "subreddit": "TheNinthHouse",
+      "subreddit_name_prefixed": "r/TheNinthHouse",
+      "author": "Naive_Door_8877",
+      "title": "[meme] I just feel like John’s not giving his all with political puppetry anymore :(",
+      "permalink": "/r/TheNinthHouse/comments/1wi92w5/meme_i_just_feel_like_johns_not_giving_his_all/",
+      "url": "https://vt.tiktok.com/ZSqbtBkQ8/",
+      "domain": "vt.tiktok.com",
+      "created_utc": 1789591042,
+      "edited": false,
+      "score": 520,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 30,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/oAV8-VNcTO0lEf73_B8JGt_M-LOlksgk-zB-JUIN7-I.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=3382b4891ea1acad692c41effaf95f32dceb91af",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>A billion dollars and a suitcase nuke… for that!?</p>\n</div><!-- SC_ON -->",
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vt.tiktok.com/ZSqbtBkQ8/",
+      "link_flair_text": "Nona the Ninth Spoilers",
+      "link_flair_background_color": "#0dd3bb",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/oAV8-VNcTO0lEf73_B8JGt_M-LOlksgk-zB-JUIN7-I.jpeg?auto=webp&s=2feb861e68ed51dc066c5b66d261db2c30ae5b66",
+              "width": 900,
+              "height": 1082
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/oAV8-VNcTO0lEf73_B8JGt_M-LOlksgk-zB-JUIN7-I.jpeg?width=108&crop=smart&auto=webp&s=dd3259e0d9f7375b72e1f4eaf9c62fd3379ee7f3",
+                "width": 108,
+                "height": 129
+              },
+              {
+                "url": "https://external-preview.redd.it/oAV8-VNcTO0lEf73_B8JGt_M-LOlksgk-zB-JUIN7-I.jpeg?width=216&crop=smart&auto=webp&s=0204c938ffb2d386a483b1c438f909c37b131a41",
+                "width": 216,
+                "height": 259
+              },
+              {
+                "url": "https://external-preview.redd.it/oAV8-VNcTO0lEf73_B8JGt_M-LOlksgk-zB-JUIN7-I.jpeg?width=320&crop=smart&auto=webp&s=42fd4a8dcd3430f3c95d3be97279f1d0fd8257f4",
+                "width": 320,
+                "height": 384
+              },
+              {
+                "url": "https://external-preview.redd.it/oAV8-VNcTO0lEf73_B8JGt_M-LOlksgk-zB-JUIN7-I.jpeg?width=640&crop=smart&auto=webp&s=acc57ebcba4ab5c4bc052bc5c3afaef616b1def7",
+                "width": 640,
+                "height": 769
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"866\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7685755286941912333?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "🤪United States Senator Mitch McConnell Of Kentucky Sporting A Smile As He Makes First Public Appearance In Nearly 3 Months After Health Scare Is Asked By A Journalist “Are You Feeling Good Mitch?”  #MitchMcConnell #Kentucky #Senate #usa #healthcare ",
+          "thumbnail_url": "https://p19-common-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/o0AFhQpfVHeek8JrAMCNF9sUXCOQkg8j9Ii7SI~tplv-tiktokx-origin.image?dr=9636&x-expires=1789761600&x-signature=vgXvsqEUS3KdRGP6PZb059v2XdM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 720,
+          "thumbnail_height": 866,
+          "width": 720,
+          "height": 866
+        }
+      },
+      "secure_media": {
+        "type": "tiktok.com",
+        "oembed": {
+          "html": "<iframe height=\"866\" width= \"720\" src=\"https://www.tiktok.com/player/v1/7685755286941912333?&autoplay=0&timestamp=0&rel=0\" sandbox=\"allow-scripts allow-same-origin allow-popups\" allow=\"fullscreen\" title=\"Tiktok Video\"></iframe>",
+          "provider_name": "TikTok",
+          "title": "🤪United States Senator Mitch McConnell Of Kentucky Sporting A Smile As He Makes First Public Appearance In Nearly 3 Months After Health Scare Is Asked By A Journalist “Are You Feeling Good Mitch?”  #MitchMcConnell #Kentucky #Senate #usa #healthcare ",
+          "thumbnail_url": "https://p19-common-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/o0AFhQpfVHeek8JrAMCNF9sUXCOQkg8j9Ii7SI~tplv-tiktokx-origin.image?dr=9636&x-expires=1789761600&x-signature=vgXvsqEUS3KdRGP6PZb059v2XdM%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8",
+          "thumbnail_width": 720,
+          "thumbnail_height": 866,
+          "width": 720,
+          "height": 866
+        }
+      }
+    }
+  }
+]

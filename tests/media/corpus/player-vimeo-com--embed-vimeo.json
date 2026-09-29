@@ -1,0 +1,160 @@
+[
+  {
+    "note": "player.vimeo.com → embed:vimeo",
+    "expected": {
+      "type": "embed",
+      "provider": "vimeo"
+    },
+    "post": {
+      "id": "1wiswyp",
+      "name": "t3_1wiswyp",
+      "subreddit": "chicagofire",
+      "subreddit_name_prefixed": "r/chicagofire",
+      "author": "mr09e",
+      "title": "Chicago Fire have put out a stadium update video from Nate Engel",
+      "permalink": "/r/chicagofire/comments/1wiswyp/chicago_fire_have_put_out_a_stadium_update_video/",
+      "url": "https://player.vimeo.com/video/1226744768",
+      "domain": "player.vimeo.com",
+      "created_utc": 1789648877,
+      "edited": false,
+      "score": 73,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 5,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?width=140&height=78&auto=webp&s=eb4b5562f2d9635a8321b80d46fa5e44812de9e1",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://player.vimeo.com/video/1226744768",
+      "link_flair_text": "Official",
+      "link_flair_background_color": "#ff0000",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?auto=webp&s=405a418a26a121252d612932e40c113532569054",
+              "width": 1280,
+              "height": 720
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?width=108&crop=smart&auto=webp&s=2b1d8ab914ce6969869394b2e8a2b2a8ebaca304",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?width=216&crop=smart&auto=webp&s=eec4c1ddd889612baef6968dc99e74e4e7fa6e56",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?width=320&crop=smart&auto=webp&s=8e0c1461c16a61c39bd1eff53bbff44677f248b2",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?width=640&crop=smart&auto=webp&s=71c026f73002e1f31f59935b5a07c55fc1b24660",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?width=960&crop=smart&auto=webp&s=90c64a730475b70efe105ff124cd88548d559de2",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/nIx7xAURitjrrMDFCDb6pNFbXCuWxA0GjoIon37-8_Q.jpeg?width=1080&crop=smart&auto=webp&s=ec24006b7559dde44c482436e42d132b390edb5c",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "player.vimeo.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F1226744768%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F1226744768&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2200806255-f77a3d37daedc1bebd0201c7dfbb0ba2df297306749054927dc08e1110adf797-d_1280%3Fregion%3Dus&type=text%2Fhtml&schema=vimeo\" width=\"600\" height=\"338\" scrolling=\"no\" title=\"Vimeo embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Vimeo",
+          "title": "McDonald's Park Update - Nate",
+          "thumbnail_url": "https://i.vimeocdn.com/video/2200806255-f77a3d37daedc1bebd0201c7dfbb0ba2df297306749054927dc08e1110adf797-d_1280?region=us",
+          "thumbnail_width": 1280,
+          "thumbnail_height": 720,
+          "width": 600,
+          "height": 338
+        }
+      },
+      "secure_media": {
+        "type": "player.vimeo.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F1226744768%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F1226744768&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2200806255-f77a3d37daedc1bebd0201c7dfbb0ba2df297306749054927dc08e1110adf797-d_1280%3Fregion%3Dus&type=text%2Fhtml&schema=vimeo\" width=\"600\" height=\"338\" scrolling=\"no\" title=\"Vimeo embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Vimeo",
+          "title": "McDonald's Park Update - Nate",
+          "thumbnail_url": "https://i.vimeocdn.com/video/2200806255-f77a3d37daedc1bebd0201c7dfbb0ba2df297306749054927dc08e1110adf797-d_1280?region=us",
+          "thumbnail_width": 1280,
+          "thumbnail_height": 720,
+          "width": 600,
+          "height": 338
+        }
+      }
+    }
+  },
+  {
+    "note": "player.vimeo.com → embed:vimeo",
+    "expected": {
+      "type": "embed",
+      "provider": "vimeo"
+    },
+    "post": {
+      "id": "1w6gyxt",
+      "name": "t3_1w6gyxt",
+      "subreddit": "OpenAI",
+      "subreddit_name_prefixed": "r/OpenAI",
+      "author": "marcocastignoli",
+      "title": "Astra presentation! Vimeo",
+      "permalink": "/r/OpenAI/comments/1w6gyxt/astra_presentation_vimeo/",
+      "url": "https://player.vimeo.com/video/1222553704?h=ee86f55524",
+      "domain": "player.vimeo.com",
+      "created_utc": 1788462724,
+      "edited": false,
+      "score": 32,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 12,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "default",
+      "selftext_html": null,
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://player.vimeo.com/video/1222553704?h=ee86f55524",
+      "link_flair_text": "Video",
+      "link_flair_background_color": "#edeff1",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": null,
+      "thumbnail_height": null,
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

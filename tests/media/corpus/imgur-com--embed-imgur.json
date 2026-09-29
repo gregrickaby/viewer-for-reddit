@@ -1,0 +1,172 @@
+[
+  {
+    "note": "imgur.com → embed:imgur",
+    "expected": {
+      "type": "embed",
+      "provider": "imgur"
+    },
+    "post": {
+      "id": "1wq7onm",
+      "name": "t3_1wq7onm",
+      "subreddit": "oddlysatisfying",
+      "subreddit_name_prefixed": "r/oddlysatisfying",
+      "author": "nutznboltsguy",
+      "title": "Flattening the head of an engine block",
+      "permalink": "/r/oddlysatisfying/comments/1wq7onm/flattening_the_head_of_an_engine_block/",
+      "url": "https://imgur.com/gallery/very-satisfying-C9391gR",
+      "domain": "imgur.com",
+      "created_utc": 1790369769,
+      "edited": false,
+      "score": 17843,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 768,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/EwuU5oQFMAEYPljzO45_pSVgh5A4Z_TsJsHGnBnZwWM.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=90a7c68c71a44f84695639e46017880f873db0c2",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://imgur.com/gallery/very-satisfying-C9391gR",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/EwuU5oQFMAEYPljzO45_pSVgh5A4Z_TsJsHGnBnZwWM.jpeg?auto=webp&s=c01d97b5acb3f222a392fd04c527f2263df16eb3",
+              "width": 480,
+              "height": 854
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/EwuU5oQFMAEYPljzO45_pSVgh5A4Z_TsJsHGnBnZwWM.jpeg?width=108&crop=smart&auto=webp&s=a7d5fa4ddae3da7ad9f4f83f47766c9aa69cd70f",
+                "width": 108,
+                "height": 192
+              },
+              {
+                "url": "https://external-preview.redd.it/EwuU5oQFMAEYPljzO45_pSVgh5A4Z_TsJsHGnBnZwWM.jpeg?width=216&crop=smart&auto=webp&s=5cae854a5678c57692f924d56b4b2a78d2ec8aff",
+                "width": 216,
+                "height": 384
+              },
+              {
+                "url": "https://external-preview.redd.it/EwuU5oQFMAEYPljzO45_pSVgh5A4Z_TsJsHGnBnZwWM.jpeg?width=320&crop=smart&auto=webp&s=ba39d0040230b2d8e34eceb59cc0cd531ea63f8f",
+                "width": 320,
+                "height": 569
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "reddit_video_preview": {
+          "hls_url": "https://v.redd.it/hmgdlo1jcqrh1/HLSPlaylist.m3u8",
+          "fallback_url": "https://v.redd.it/hmgdlo1jcqrh1/CMAF_480.mp4",
+          "width": 480,
+          "height": 854,
+          "dash_url": "https://v.redd.it/hmgdlo1jcqrh1/DASHPlaylist.mpd",
+          "duration": 95,
+          "is_gif": true,
+          "has_audio": true
+        },
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "imgur.com → embed:imgur",
+    "expected": {
+      "type": "embed",
+      "provider": "imgur"
+    },
+    "post": {
+      "id": "1wqur4s",
+      "name": "t3_1wqur4s",
+      "subreddit": "oddlysatisfying",
+      "subreddit_name_prefixed": "r/oddlysatisfying",
+      "author": "nutznboltsguy",
+      "title": "Machine making barbed wire",
+      "permalink": "/r/oddlysatisfying/comments/1wqur4s/machine_making_barbed_wire/",
+      "url": "https://imgur.com/gallery/maquina-de-alambre-espinoso-sonido-mr-dayal-zone-RSCMIWO",
+      "domain": "imgur.com",
+      "created_utc": 1790439987,
+      "edited": false,
+      "score": 705,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 39,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/gWdJxPeibtLLgSoRXjJfLpbZUbZD4rahe56ybEwvUzQ.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=67ecd7c891841fcd3c933174029a18c1261ba0a0",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>Interesting rhythmic sound.</p>\n</div><!-- SC_ON -->",
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://imgur.com/gallery/maquina-de-alambre-espinoso-sonido-mr-dayal-zone-RSCMIWO",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/gWdJxPeibtLLgSoRXjJfLpbZUbZD4rahe56ybEwvUzQ.jpeg?auto=webp&s=59b5ada2ee372fe1aa5492dc730d3fe6aaaf94bf",
+              "width": 480,
+              "height": 854
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/gWdJxPeibtLLgSoRXjJfLpbZUbZD4rahe56ybEwvUzQ.jpeg?width=108&crop=smart&auto=webp&s=3660a0348e437281acfebe619f776dda0521a31b",
+                "width": 108,
+                "height": 192
+              },
+              {
+                "url": "https://external-preview.redd.it/gWdJxPeibtLLgSoRXjJfLpbZUbZD4rahe56ybEwvUzQ.jpeg?width=216&crop=smart&auto=webp&s=02be6189f4366a6d68072c3b6c0f0ca2c04db354",
+                "width": 216,
+                "height": 384
+              },
+              {
+                "url": "https://external-preview.redd.it/gWdJxPeibtLLgSoRXjJfLpbZUbZD4rahe56ybEwvUzQ.jpeg?width=320&crop=smart&auto=webp&s=cd28ff840745038dedb7d0765734b844cad3fbb8",
+                "width": 320,
+                "height": 569
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "reddit_video_preview": {
+          "hls_url": "https://v.redd.it/tuwja5nb5wrh1/HLSPlaylist.m3u8",
+          "fallback_url": "https://v.redd.it/tuwja5nb5wrh1/CMAF_480.mp4",
+          "width": 480,
+          "height": 854,
+          "dash_url": "https://v.redd.it/tuwja5nb5wrh1/DASHPlaylist.mpd",
+          "duration": 13,
+          "is_gif": true,
+          "has_audio": true
+        },
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

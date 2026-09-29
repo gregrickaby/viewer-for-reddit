@@ -1,0 +1,81 @@
+[
+  {
+    "note": "reddit.com → embed:youtube",
+    "expected": {
+      "type": "embed",
+      "provider": "youtube"
+    },
+    "post": {
+      "id": "1t4nr7v",
+      "name": "t3_1t4nr7v",
+      "subreddit": "u_spez",
+      "subreddit_name_prefixed": "u/spez",
+      "author": "spez",
+      "title": "Reddit looked old the day it was born. I joined my friend D. Scott Phoenix on the Progress podcast to discuss communities, AI, and what makes the internet feel human.",
+      "permalink": "/r/u_spez/comments/1t4nr7v/reddit_looked_old_the_day_it_was_born_i_joined_my/",
+      "url": "https://www.reddit.com/r/u_spez/comments/1t4nr7v/reddit_looked_old_the_day_it_was_born_i_joined_my/",
+      "domain": "self.spez",
+      "created_utc": 1778005142,
+      "edited": false,
+      "score": 64,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 47,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": true,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/rN0SdiLzAu2mYCHqczDDm0G-pijedoAK8O10MGAYnqI.jpeg?width=140&height=105&auto=webp&s=cdd4db22fe0da83a2346aa7e5a13ff75f462e960",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p><a href=\"https://reddit.com/link/1t4nr7v/video/v3crs8lt1dzg1/player\">https://reddit.com/link/1t4nr7v/video/v3crs8lt1dzg1/player</a></p>\n\n<p>Watch the full episode here: <a href=\"https://youtu.be/eAu9gTilxA0\">https://youtu.be/eAu9gTilxA0</a></p>\n</div><!-- SC_ON -->",
+      "distinguished": "admin",
+      "removed_by_category": null,
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/eAu9gTilxA0?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"Reddit&#39;s CEO: &#39;We&#39;re meant to die&#39; and other things he&#39;s right about (Steve Huffman)\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "Reddit's CEO: 'We're meant to die' and other things he's right about (Steve Huffman)",
+          "thumbnail_url": "https://i.ytimg.com/vi/eAu9gTilxA0/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      },
+      "secure_media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/eAu9gTilxA0?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"Reddit&#39;s CEO: &#39;We&#39;re meant to die&#39; and other things he&#39;s right about (Steve Huffman)\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "Reddit's CEO: 'We're meant to die' and other things he's right about (Steve Huffman)",
+          "thumbnail_url": "https://i.ytimg.com/vi/eAu9gTilxA0/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      },
+      "media_metadata": {
+        "v3crs8lt1dzg1": {
+          "status": "valid",
+          "e": "RedditVideo",
+          "dashUrl": "https://v.redd.it/link/1t4nr7v/asset/v3crs8lt1dzg1/DASHPlaylist.mpd?a=1793285417%2CYmE3YWQ4NTU4ZTEwMWFhZGM1OWNmZGNjNjc3YmQ1MjI2NDI0OTI1YTM0YzBlNjhjOTUzZjJiZTMxZmM3ZThmZQ%3D%3D&v=1&f=sd",
+          "x": 1920,
+          "y": 1080,
+          "hlsUrl": "https://v.redd.it/link/1t4nr7v/asset/v3crs8lt1dzg1/HLSPlaylist.m3u8?a=1793285417%2CNGI1ODFmZmFmOThhZGUxMDYyY2JiMGU5ZmE4NGZmMTg2YzU2YTE0MmM2YWIyMDUyNTQ5NTkwZDIwZGU1OWEyZg%3D%3D&v=1&f=sd",
+          "id": "v3crs8lt1dzg1",
+          "isGif": false
+        }
+      }
+    }
+  }
+]

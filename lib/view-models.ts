@@ -71,6 +71,8 @@ export type EmbedView = {
   title: string
   iframeSrc: string
   aspectRatio: number
+  /** A fixed player height in px (audio players); when set, `aspectRatio` is ignored. */
+  height: number | null
   allow: string
   sandbox: string
   originalUrl: string

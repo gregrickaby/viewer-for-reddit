@@ -1,0 +1,268 @@
+[
+  {
+    "note": "reddit.com → gallery",
+    "expected": {
+      "type": "gallery"
+    },
+    "post": {
+      "id": "1wspd93",
+      "name": "t3_1wspd93",
+      "subreddit": "Damnthatsinteresting",
+      "subreddit_name_prefixed": "r/Damnthatsinteresting",
+      "author": "brat_3434",
+      "title": "British sculptor Willard wagan creates a sculpture of the last supper inside the eye of an needle",
+      "permalink": "/r/Damnthatsinteresting/comments/1wspd93/british_sculptor_willard_wagan_creates_a/",
+      "url": "https://www.reddit.com/gallery/1wspd93",
+      "domain": "reddit.com",
+      "created_utc": 1790626080,
+      "edited": false,
+      "score": 22488,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 532,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://preview.redd.it/ihz23gsnibsh1.jpg?width=140&height=140&crop=1:1,smart&auto=webp&s=f5f013a8f12b2363899d0c35c2a69980761caefb",
+      "selftext_html": null,
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.reddit.com/gallery/1wspd93",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "is_gallery": true,
+      "media": null,
+      "secure_media": null,
+      "gallery_data": {
+        "items": [
+          {
+            "media_id": "ihz23gsnibsh1",
+            "caption": ""
+          },
+          {
+            "media_id": "upfilwynibsh1",
+            "caption": ""
+          }
+        ]
+      },
+      "media_metadata": {
+        "ihz23gsnibsh1": {
+          "status": "valid",
+          "e": "Image",
+          "m": "image/jpg",
+          "p": [
+            {
+              "y": 134,
+              "x": 108,
+              "u": "https://preview.redd.it/ihz23gsnibsh1.jpg?width=108&crop=smart&auto=webp&s=8a4543a22e9a1176e7f207033c88fa6cb9e36823"
+            },
+            {
+              "y": 269,
+              "x": 216,
+              "u": "https://preview.redd.it/ihz23gsnibsh1.jpg?width=216&crop=smart&auto=webp&s=dc3416802fc3e731b3bb497d560de52001d763f5"
+            },
+            {
+              "y": 399,
+              "x": 320,
+              "u": "https://preview.redd.it/ihz23gsnibsh1.jpg?width=320&crop=smart&auto=webp&s=a6fcc356a51197c75ac579daa1c53e7f3ae8995f"
+            },
+            {
+              "y": 799,
+              "x": 640,
+              "u": "https://preview.redd.it/ihz23gsnibsh1.jpg?width=640&crop=smart&auto=webp&s=5503ecb1fd54954af0884a151b78ece1fa1fc7d8"
+            }
+          ],
+          "s": {
+            "y": 1024,
+            "x": 820,
+            "u": "https://preview.redd.it/ihz23gsnibsh1.jpg?width=820&format=pjpg&auto=webp&s=4e19268c3fcb69395dfa27e020568761e374ef59"
+          },
+          "id": "ihz23gsnibsh1"
+        },
+        "upfilwynibsh1": {
+          "status": "valid",
+          "e": "Image",
+          "m": "image/jpg",
+          "p": [
+            {
+              "y": 135,
+              "x": 108,
+              "u": "https://preview.redd.it/upfilwynibsh1.jpg?width=108&crop=smart&auto=webp&s=619747c7a042ceef231ab49c8796ea6c20c5fc93"
+            },
+            {
+              "y": 270,
+              "x": 216,
+              "u": "https://preview.redd.it/upfilwynibsh1.jpg?width=216&crop=smart&auto=webp&s=9ec4dd5d6ea2ff44ea3af2f2b68c41a58c6de7c0"
+            },
+            {
+              "y": 400,
+              "x": 320,
+              "u": "https://preview.redd.it/upfilwynibsh1.jpg?width=320&crop=smart&auto=webp&s=19bc2c21982d5b3c2dcbaf80bdc4059fcc08344b"
+            },
+            {
+              "y": 800,
+              "x": 640,
+              "u": "https://preview.redd.it/upfilwynibsh1.jpg?width=640&crop=smart&auto=webp&s=2313aa7511607820d405ddeee8c00dc67d430a5c"
+            }
+          ],
+          "s": {
+            "y": 1024,
+            "x": 819,
+            "u": "https://preview.redd.it/upfilwynibsh1.jpg?width=819&format=pjpg&auto=webp&s=65d1294089fe5b4cfda702c143eb3c0c61bba1ac"
+          },
+          "id": "upfilwynibsh1"
+        }
+      }
+    }
+  },
+  {
+    "note": "reddit.com → gallery",
+    "expected": {
+      "type": "gallery"
+    },
+    "post": {
+      "id": "1wswwcn",
+      "name": "t3_1wswwcn",
+      "subreddit": "aww",
+      "subreddit_name_prefixed": "r/aww",
+      "author": "Ghrumphy2810",
+      "title": "No job. No rent. Just blue eyes with pretty privilege 😁🐾🐈",
+      "permalink": "/r/aww/comments/1wswwcn/no_job_no_rent_just_blue_eyes_with_pretty/",
+      "url": "https://www.reddit.com/gallery/1wswwcn",
+      "domain": "reddit.com",
+      "created_utc": 1790645177,
+      "edited": false,
+      "score": 21361,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 173,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=140&height=140&crop=1:1,smart&auto=webp&s=3b94f2f7cb0ed0734c7653f8e80e35af6d54293c",
+      "selftext_html": null,
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.reddit.com/gallery/1wswwcn",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "is_gallery": true,
+      "media": null,
+      "secure_media": null,
+      "gallery_data": {
+        "items": [
+          {
+            "media_id": "nbowyf7g3dsh1"
+          },
+          {
+            "media_id": "59x57d7g3dsh1"
+          }
+        ]
+      },
+      "media_metadata": {
+        "59x57d7g3dsh1": {
+          "status": "valid",
+          "e": "Image",
+          "m": "image/jpg",
+          "p": [
+            {
+              "y": 113,
+              "x": 108,
+              "u": "https://preview.redd.it/59x57d7g3dsh1.jpg?width=108&crop=smart&auto=webp&s=ea631162246fe308160adbabccfaaebbc96307f5"
+            },
+            {
+              "y": 226,
+              "x": 216,
+              "u": "https://preview.redd.it/59x57d7g3dsh1.jpg?width=216&crop=smart&auto=webp&s=6b0a9028ca7817f2f6aca6623800c00f7799e1c9"
+            },
+            {
+              "y": 336,
+              "x": 320,
+              "u": "https://preview.redd.it/59x57d7g3dsh1.jpg?width=320&crop=smart&auto=webp&s=f7bce53014a10c1c22acf8bd9ee54e8d00c613ec"
+            },
+            {
+              "y": 672,
+              "x": 640,
+              "u": "https://preview.redd.it/59x57d7g3dsh1.jpg?width=640&crop=smart&auto=webp&s=ad9057416713b608436051624c5446cf7efcd2ec"
+            },
+            {
+              "y": 1008,
+              "x": 960,
+              "u": "https://preview.redd.it/59x57d7g3dsh1.jpg?width=960&crop=smart&auto=webp&s=53abf840bd3e497a25a2bc514e639e3f85ba1b78"
+            },
+            {
+              "y": 1134,
+              "x": 1080,
+              "u": "https://preview.redd.it/59x57d7g3dsh1.jpg?width=1080&crop=smart&auto=webp&s=b899f6ae41f9f5562135bc536fda3b6843912f07"
+            }
+          ],
+          "s": {
+            "y": 2427,
+            "x": 2311,
+            "u": "https://preview.redd.it/59x57d7g3dsh1.jpg?width=2311&format=pjpg&auto=webp&s=1d270e21a3cde0085bc33284b7cc542f6530e1c9"
+          },
+          "id": "59x57d7g3dsh1"
+        },
+        "nbowyf7g3dsh1": {
+          "status": "valid",
+          "e": "Image",
+          "m": "image/jpg",
+          "p": [
+            {
+              "y": 144,
+              "x": 108,
+              "u": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=108&crop=smart&auto=webp&s=4b59c0b7a1d5bf953cf5c83af7dac4e73f4b1e13"
+            },
+            {
+              "y": 288,
+              "x": 216,
+              "u": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=216&crop=smart&auto=webp&s=e97d021209a46038c589161bf1432adf6163bfaf"
+            },
+            {
+              "y": 426,
+              "x": 320,
+              "u": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=320&crop=smart&auto=webp&s=c3ad30d3cbfbfbf4bdae6aae484ffedf75117ef6"
+            },
+            {
+              "y": 853,
+              "x": 640,
+              "u": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=640&crop=smart&auto=webp&s=5fd2f3c901590646201b11a34d27782979cc2d34"
+            },
+            {
+              "y": 1280,
+              "x": 960,
+              "u": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=960&crop=smart&auto=webp&s=8fb9c4a08a866e01254fff2670b7cf77cea8bab2"
+            },
+            {
+              "y": 1440,
+              "x": 1080,
+              "u": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=1080&crop=smart&auto=webp&s=c79ecce772972674c5e8bb8a3aacc85ecd2e4d72"
+            }
+          ],
+          "s": {
+            "y": 4032,
+            "x": 3024,
+            "u": "https://preview.redd.it/nbowyf7g3dsh1.jpg?width=3024&format=pjpg&auto=webp&s=fb2d2a4c1fb732afd93b9f796c294b4b1dc90b46"
+          },
+          "id": "nbowyf7g3dsh1"
+        }
+      }
+    }
+  }
+]

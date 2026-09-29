@@ -1,0 +1,175 @@
+[
+  {
+    "note": "other-site → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wsojmn",
+      "name": "t3_1wsojmn",
+      "subreddit": "todayilearned",
+      "subreddit_name_prefixed": "r/todayilearned",
+      "author": "ubcstaffer123",
+      "title": "TIL Driving for more than two hours each day can steadily decrease the IQ of middle-aged drivers",
+      "permalink": "/r/todayilearned/comments/1wsojmn/til_driving_for_more_than_two_hours_each_day_can/",
+      "url": "https://www.readersdigest.ca/cars/road-trips/driving-commute-brain-health/",
+      "domain": "readersdigest.ca",
+      "created_utc": 1790624294,
+      "edited": false,
+      "score": 23992,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 1464,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/Btg4bWGu3zf3y0n97ArXQdfpMUknaZKTLw_qPOPOWCY.jpeg?width=140&height=105&auto=webp&s=6a52fcf6321f1177e0ab27057e4f1f6a5edafbcd",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.readersdigest.ca/cars/road-trips/driving-commute-brain-health/",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/Btg4bWGu3zf3y0n97ArXQdfpMUknaZKTLw_qPOPOWCY.jpeg?auto=webp&s=acbd7b0518cb633fbea07ab4467d8d8dfaa636fa",
+              "width": 1000,
+              "height": 750
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/Btg4bWGu3zf3y0n97ArXQdfpMUknaZKTLw_qPOPOWCY.jpeg?width=108&crop=smart&auto=webp&s=18cdee4762989aa9987087218b17e9b97ae58dcb",
+                "width": 108,
+                "height": 81
+              },
+              {
+                "url": "https://external-preview.redd.it/Btg4bWGu3zf3y0n97ArXQdfpMUknaZKTLw_qPOPOWCY.jpeg?width=216&crop=smart&auto=webp&s=363d4f1727ead06c21c28f5bb09bb7db16ffd6f1",
+                "width": 216,
+                "height": 162
+              },
+              {
+                "url": "https://external-preview.redd.it/Btg4bWGu3zf3y0n97ArXQdfpMUknaZKTLw_qPOPOWCY.jpeg?width=320&crop=smart&auto=webp&s=3b1a500f895c2b972b7dc4edc3aa1146cc2cd633",
+                "width": 320,
+                "height": 240
+              },
+              {
+                "url": "https://external-preview.redd.it/Btg4bWGu3zf3y0n97ArXQdfpMUknaZKTLw_qPOPOWCY.jpeg?width=640&crop=smart&auto=webp&s=0bd1bb7ff10b7e7209f363fe99bd30d728e848d2",
+                "width": 640,
+                "height": 480
+              },
+              {
+                "url": "https://external-preview.redd.it/Btg4bWGu3zf3y0n97ArXQdfpMUknaZKTLw_qPOPOWCY.jpeg?width=960&crop=smart&auto=webp&s=9b9de9b589d8a8e40ac500b4d6a2f03a5b7aff39",
+                "width": 960,
+                "height": 720
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "other-site → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wss9h1",
+      "name": "t3_1wss9h1",
+      "subreddit": "science",
+      "subreddit_name_prefixed": "r/science",
+      "author": "mvea",
+      "title": "As Florida considers dropping its measles, mumps and rubella (MMR) vaccine mandate for school attendance, a new study predicts that such a policy change could spark the largest measles epidemic in the United States in nearly 500 years, with striking 650% increase in cases just between 2024 and 2025.",
+      "permalink": "/r/science/comments/1wss9h1/as_florida_considers_dropping_its_measles_mumps/",
+      "url": "https://cmns.umd.edu/news-events/news/measles-epidemic-risk-florida-Gumel-Oveson",
+      "domain": "cmns.umd.edu",
+      "created_utc": 1790632720,
+      "edited": false,
+      "score": 18064,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 873,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?width=140&height=105&auto=webp&s=9a8a39b91239a15f76035dfed5c0c92d1699695e",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://cmns.umd.edu/news-events/news/measles-epidemic-risk-florida-Gumel-Oveson",
+      "link_flair_text": "Epidemiology (article first stated 500, corrected to 50 years)",
+      "link_flair_background_color": "#c17aaf",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?auto=webp&s=475a70c97a123e13ff4d5e3ed331ba2bbde539ed",
+              "width": 5000,
+              "height": 3750
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?width=108&crop=smart&auto=webp&s=507c4348b41cd9c0362ded63bc98c902f1f3960a",
+                "width": 108,
+                "height": 81
+              },
+              {
+                "url": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?width=216&crop=smart&auto=webp&s=95e22dceb55b3a34eeae8d9c3a24a515df8b028f",
+                "width": 216,
+                "height": 162
+              },
+              {
+                "url": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?width=320&crop=smart&auto=webp&s=822aef39b05bc691707e17a4bd8c6349d5c42a77",
+                "width": 320,
+                "height": 240
+              },
+              {
+                "url": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?width=640&crop=smart&auto=webp&s=7a9bd5f6a2f9434abeb124ee202ac0e5557b0132",
+                "width": 640,
+                "height": 480
+              },
+              {
+                "url": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?width=960&crop=smart&auto=webp&s=4c159ab53f4df7684e9c490715dc341d5942c487",
+                "width": 960,
+                "height": 720
+              },
+              {
+                "url": "https://external-preview.redd.it/yDzQEaZhMBOe366z1f44XRoAnVe2EWcoWNzYtC6NGnE.jpeg?width=1080&crop=smart&auto=webp&s=deb511eb2254494d3bd86c809b3feb9f37898401",
+                "width": 1080,
+                "height": 810
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

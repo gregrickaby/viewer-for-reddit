@@ -1,0 +1,200 @@
+[
+  {
+    "note": "youtu.be → embed:youtube",
+    "expected": {
+      "type": "embed",
+      "provider": "youtube"
+    },
+    "post": {
+      "id": "1wsw7ur",
+      "name": "t3_1wsw7ur",
+      "subreddit": "videos",
+      "subreddit_name_prefixed": "r/videos",
+      "author": "MoneyLibrarian9032",
+      "title": "Trump Attacks Joe Biden as \"Sleepy,\" Then Passes Out During Televised Meeting",
+      "permalink": "/r/videos/comments/1wsw7ur/trump_attacks_joe_biden_as_sleepy_then_passes_out/",
+      "url": "https://youtu.be/8GLyn3aASv4?si=NWi6pIyWwxt2aQJN",
+      "domain": "youtu.be",
+      "created_utc": 1790643240,
+      "edited": false,
+      "score": 14713,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 762,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/vx1Cb03kxNFyCzE99kGgBZdKx-fsR4fHQJehB-gpYpk.jpeg?width=140&height=105&auto=webp&s=ebe9607499bceb9974065734deacf751537ba50b",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://youtu.be/8GLyn3aASv4?si=NWi6pIyWwxt2aQJN",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/vx1Cb03kxNFyCzE99kGgBZdKx-fsR4fHQJehB-gpYpk.jpeg?auto=webp&s=b588f5b41510a25484c46374764aa3d3bd796072",
+              "width": 480,
+              "height": 360
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/vx1Cb03kxNFyCzE99kGgBZdKx-fsR4fHQJehB-gpYpk.jpeg?width=108&crop=smart&auto=webp&s=8e3f41d1051e5684e085c772f188ee2d15d046e0",
+                "width": 108,
+                "height": 81
+              },
+              {
+                "url": "https://external-preview.redd.it/vx1Cb03kxNFyCzE99kGgBZdKx-fsR4fHQJehB-gpYpk.jpeg?width=216&crop=smart&auto=webp&s=9c07b3425deb78c76dc792fe186e9be531e5c0e5",
+                "width": 216,
+                "height": 162
+              },
+              {
+                "url": "https://external-preview.redd.it/vx1Cb03kxNFyCzE99kGgBZdKx-fsR4fHQJehB-gpYpk.jpeg?width=320&crop=smart&auto=webp&s=d5008d69b637a37aba5f3c94bf4725f42d388ef1",
+                "width": 320,
+                "height": 240
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/8GLyn3aASv4?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"Trump Attacks Joe Biden as &quot;Sleepy,&quot; Then Passes Out During Televised Meeting\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "Trump Attacks Joe Biden as \"Sleepy,\" Then Passes Out During Televised Meeting",
+          "thumbnail_url": "https://i.ytimg.com/vi/8GLyn3aASv4/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      },
+      "secure_media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/8GLyn3aASv4?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"Trump Attacks Joe Biden as &quot;Sleepy,&quot; Then Passes Out During Televised Meeting\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "Trump Attacks Joe Biden as \"Sleepy,\" Then Passes Out During Televised Meeting",
+          "thumbnail_url": "https://i.ytimg.com/vi/8GLyn3aASv4/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      }
+    }
+  },
+  {
+    "note": "youtu.be → embed:youtube",
+    "expected": {
+      "type": "embed",
+      "provider": "youtube"
+    },
+    "post": {
+      "id": "1wtbzi4",
+      "name": "t3_1wtbzi4",
+      "subreddit": "videos",
+      "subreddit_name_prefixed": "r/videos",
+      "author": "Bishopkilljoy",
+      "title": "A breakdown of the Hugging Face hack",
+      "permalink": "/r/videos/comments/1wtbzi4/a_breakdown_of_the_hugging_face_hack/",
+      "url": "https://youtu.be/_HBLAdk-5uc?is=To2FnSOGtuGWuhMZ",
+      "domain": "youtu.be",
+      "created_utc": 1790692951,
+      "edited": false,
+      "score": 0,
+      "hide_score": true,
+      "likes": null,
+      "num_comments": 1,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/VRpSbk0HFgCvZ3EoG5HBmC9Fz9T291ibEKho1ACrg8w.jpeg?width=140&height=105&auto=webp&s=015e8f74ab33aa78c0b51897e1b4de8c4e65ea0a",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://youtu.be/_HBLAdk-5uc?is=To2FnSOGtuGWuhMZ",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/VRpSbk0HFgCvZ3EoG5HBmC9Fz9T291ibEKho1ACrg8w.jpeg?auto=webp&s=7dd7f95e67774df16cede21daade0c7924371a4c",
+              "width": 480,
+              "height": 360
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/VRpSbk0HFgCvZ3EoG5HBmC9Fz9T291ibEKho1ACrg8w.jpeg?width=108&crop=smart&auto=webp&s=e1da8cc2713dd9ad909c5da5928deef14435f892",
+                "width": 108,
+                "height": 81
+              },
+              {
+                "url": "https://external-preview.redd.it/VRpSbk0HFgCvZ3EoG5HBmC9Fz9T291ibEKho1ACrg8w.jpeg?width=216&crop=smart&auto=webp&s=858a6fe73a80de8e525cc0976adbe0a132ddcc82",
+                "width": 216,
+                "height": 162
+              },
+              {
+                "url": "https://external-preview.redd.it/VRpSbk0HFgCvZ3EoG5HBmC9Fz9T291ibEKho1ACrg8w.jpeg?width=320&crop=smart&auto=webp&s=7fd085da5766d3ba6d2f7dd902700ec9e93a0028",
+                "width": 320,
+                "height": 240
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/_HBLAdk-5uc?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"The Hugging Face hack is worse than you think\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "The Hugging Face hack is worse than you think",
+          "thumbnail_url": "https://i.ytimg.com/vi/_HBLAdk-5uc/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      },
+      "secure_media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/_HBLAdk-5uc?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"The Hugging Face hack is worse than you think\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "The Hugging Face hack is worse than you think",
+          "thumbnail_url": "https://i.ytimg.com/vi/_HBLAdk-5uc/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      }
+    }
+  }
+]

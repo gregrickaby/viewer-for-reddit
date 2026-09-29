@@ -1,0 +1,134 @@
+[
+  {
+    "note": "vimeo.com → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wap67j",
+      "name": "t3_1wap67j",
+      "subreddit": "Iceland",
+      "subreddit_name_prefixed": "r/Iceland",
+      "author": "birkir",
+      "title": "Kynningarfundur Menntavísindasviðs um niðurstöður PISA 2025 [Bein útsending frá 14:00-16:00]",
+      "permalink": "/r/Iceland/comments/1wap67j/kynningarfundur_menntavísindasviðs_um_niðurstöður/",
+      "url": "https://vimeo.com/event/6148560",
+      "domain": "vimeo.com",
+      "created_utc": 1788875899,
+      "edited": false,
+      "score": 21,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 15,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?width=140&height=78&auto=webp&s=d7ff921740e8d2663fa1693be86511eae1613cfc",
+      "selftext_html": null,
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vimeo.com/event/6148560",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?auto=webp&s=13b800fb0a21d11582ca5e98d0809124fddc815f",
+              "width": 1920,
+              "height": 1080
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?width=108&crop=smart&auto=webp&s=7a44560fe4e351265706f46257626300838ecb95",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?width=216&crop=smart&auto=webp&s=eb4d2dbb422c91ddd657246901cf5d7fcf92bac0",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?width=320&crop=smart&auto=webp&s=8a7ae890e76bae51d4525a59311a7d4ffcace20a",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?width=640&crop=smart&auto=webp&s=171aa919ba279a8353bbff41b767fb25d01384a0",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?width=960&crop=smart&auto=webp&s=be45b90585350b8387c235fa88fbd6aa47c16482",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/fiFpyCuuJ64_PM9aU1nAZjz4y6JNJgnwsjwtgoMquog.jpeg?width=1080&crop=smart&auto=webp&s=dc58c41a64802541259269c18574c57d82df042d",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  },
+  {
+    "note": "vimeo.com → link",
+    "expected": {
+      "type": "link"
+    },
+    "post": {
+      "id": "1wly6c7",
+      "name": "t3_1wly6c7",
+      "subreddit": "gloveandboots",
+      "subreddit_name_prefixed": "r/gloveandboots",
+      "author": "backwards_watch",
+      "title": "Their outtakes always makes me laugh so much",
+      "permalink": "/r/gloveandboots/comments/1wly6c7/their_outtakes_always_makes_me_laugh_so_much/",
+      "url": "https://vimeo.com/showcase/5750972",
+      "domain": "vimeo.com",
+      "created_utc": 1789951830,
+      "edited": false,
+      "score": 16,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 0,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "default",
+      "selftext_html": null,
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vimeo.com/showcase/5750972",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": null,
+      "thumbnail_height": null,
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

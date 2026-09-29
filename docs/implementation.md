@@ -1565,10 +1565,37 @@ Links with meaningful text stay links. The allowlist adds `figure`, `figcaption`
 - **Relative time** is computed on the server (`format.ts`) in request-time components, with a `<time dateTime title>` element.
 - **Popover hygiene:** a `usePopoverAutoClose` cleanup in the menu islands closes any open popover when the route is hidden by Activity. **VERIFY** whether a native `popover` inside a `display: none` Activity subtree is already hidden. If it is, skip this.
 
+### Phase 7 status (2026-09-29): part 1, providers
+
+**Built:**
+- `lib/media/providers/`:
+  - `registry.ts` (`PROVIDERS`, `findProvider`, `resolveWithProviders`, `cspSources`)
+  - `youtube.ts`
+  - `video-hosts.ts` (Vimeo, Streamable, Twitch, TikTok)
+  - `animated-hosts.ts` (Redgifs, Giphy, Imgur)
+  - `audio-and-social.ts` (Spotify, SoundCloud, and the link-only social sites)
+  - `shared.ts` (`embed`, `EMBED_SANDBOX`, `posterOf`, `aspectOf`)
+- New resolvers: `resolvers/provider.ts` and `resolvers/direct-file.ts`.
+- `EmbedView.height`, for fixed-height audio players.
+- `imageSet` and `loopVideo` take a host allowlist.
+- The media corpus: `npm run media:corpus` (`scripts/reddit/corpus.ts` and `extract-corpus.ts`) writes `tests/media/corpus/*.json`.
+
+**Decisions and findings:**
+- **oEmbed merges into the provider step.** The oEmbed fallback (10) is part of the provider step (5): each post tries its own URL, then the `src` of Reddit's oEmbed iframe, against the registry. This resolves vanity and short URLs (`vimeo.com/<user>/<slug>`, `vm.tiktok.com/…`, Twitch `/create/…`). Reddit wraps most oEmbed players in Embedly (`cdn.embedly.com/widgets/media.html?src=…`), which is unwrapped. Only the `src` is read; the markup is never rendered.
+- **URL forms verified against the capture:**
+  - TikTok's player is `tiktok.com/player/v1/<id>` (not `embed/v2`).
+  - Unlisted Vimeo videos need their `h` hash.
+  - Newer Imgur gallery URLs prefix a slug (`<slug>-<id>`).
+  - Giphy media URLs may carry a `v1.<token>` segment before the id.
+  - SoundCloud share links (`on.soundcloud.com/<code>`) are passed to the widget as-is.
+  - Gfycat (shut down) and kick.com stay link cards.
+- **Result over the full capture:** every one of 2,637 posts resolves, with **0 unresolved**. The corpus (75 real posts in 39 buckets, 2 per host × media type plus the named cases NSFW, spoiler, crosspost, removed, and thumbnail sentinels) is committed and checked on every test run. Regenerating it is the review point for any change in detection.
+- **Scripts with `server-only` imports** run with `tsx --conditions=react-server --env-file=.env.local`.
+
 ### Phase 7 acceptance
 
 - [ ] **Corpus:** `tests/media/corpus/*.json` has at least 2 real samples per resolver and per provider, including NSFW Redgifs (both the transcode and iframe paths), a spoiler, a crossposted video, a gallery with a GIF item, a removed post, thumbnail sentinels, a `v.redd.it` GIF versus a video, an Imgur GIFV, and a Giphy comment. All pass, and `media:unresolved` fires for fewer than 2% of corpus posts.
-- [ ] **URL safety:** spoofed hosts (`youtube.com.evil.com`, `evil.com/youtube.com/watch?v=…`, `https://youtube.com@evil.com`), `javascript:` and `data:` URLs, and over-long or odd ids are all rejected.
+- [x] **URL safety:** spoofed hosts (`youtube.com.evil.com`, `evil.com/youtube.com/watch?v=…`, `https://youtube.com@evil.com`), `javascript:` and `data:` URLs, and over-long or odd ids are all rejected.
 - [ ] **Playback (Playwright, Chromium and WebKit):**
   - A GIF loop's `currentTime` advances while it is visible and pauses offscreen.
   - Reddit video plays with an audio track.

@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "types:extract": "tsx scripts/reddit/extract-things.ts",
     "types:generate": "npm run types:extract && quicktype --lang typescript-zod --src fixtures/reddit/things --no-enums --no-date-times --no-integer-strings --no-boolean-strings --no-uuids -o lib/reddit/schemas/generated.ts && tsx scripts/reddit/postprocess-generated.ts",
-    "check": "npm run css:types && npm run typecheck && npm run lint && npm run test"
+    "check": "npm run css:types && npm run typecheck && npm run lint && npm run test",
+    "media:corpus": "tsx --conditions=react-server --env-file=.env.local scripts/reddit/extract-corpus.ts"
   },
   "dependencies": {
     "hls.js": "1.7.3",

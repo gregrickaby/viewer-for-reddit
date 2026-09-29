@@ -46,8 +46,10 @@ export const Preview = PreviewSchema.pick({
   enabled: z.boolean().optional(),
 })
 
-// `html` is deliberately not picked: oEmbed markup is never rendered (design §8.7).
+// `html` is read only to extract its iframe `src`, which must then match a provider
+// (lib/media/resolvers/provider.ts). The markup itself is never rendered (design §8.7).
 export const Oembed = OembedSchema.pick({
+  html: true,
   provider_name: true,
   title: true,
   thumbnail_url: true,

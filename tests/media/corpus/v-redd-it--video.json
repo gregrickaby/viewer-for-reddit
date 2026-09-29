@@ -1,0 +1,194 @@
+[
+  {
+    "note": "v.redd.it → video",
+    "expected": {
+      "type": "video"
+    },
+    "post": {
+      "id": "1wsqga2",
+      "name": "t3_1wsqga2",
+      "subreddit": "interestingasfuck",
+      "subreddit_name_prefixed": "r/interestingasfuck",
+      "author": "Kidd__Video",
+      "title": "The dog who supported his best friend in his first steps",
+      "permalink": "/r/interestingasfuck/comments/1wsqga2/the_dog_who_supported_his_best_friend_in_his/",
+      "url": "https://v.redd.it/t6zwolkxpbsh1",
+      "domain": "v.redd.it",
+      "created_utc": 1790628525,
+      "edited": false,
+      "score": 36399,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 339,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": true,
+      "thumbnail": "https://external-preview.redd.it/dTVmb25qY3hwYnNoMRY0ILMMYP_8_pIfDoIfnykmysiHbbkClCw2493C41u5.png?width=140&height=140&crop=1:1,smart&format=jpg&auto=webp&s=5a28a28d5b26adb02d7b49bfa6545b40f549fc18",
+      "selftext_html": null,
+      "post_hint": "hosted:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://v.redd.it/t6zwolkxpbsh1",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/dTVmb25qY3hwYnNoMRY0ILMMYP_8_pIfDoIfnykmysiHbbkClCw2493C41u5.png?format=pjpg&auto=webp&s=a8b12039a9b4303b14188c7e61dba162d8caeca1",
+              "width": 540,
+              "height": 720
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/dTVmb25qY3hwYnNoMRY0ILMMYP_8_pIfDoIfnykmysiHbbkClCw2493C41u5.png?width=108&crop=smart&format=pjpg&auto=webp&s=7bf534d9716844c6b4e07945977cf9d5a4354d2d",
+                "width": 108,
+                "height": 144
+              },
+              {
+                "url": "https://external-preview.redd.it/dTVmb25qY3hwYnNoMRY0ILMMYP_8_pIfDoIfnykmysiHbbkClCw2493C41u5.png?width=216&crop=smart&format=pjpg&auto=webp&s=9519265d30c4eafa9669e8d9bbd70e1081c0a768",
+                "width": 216,
+                "height": 288
+              },
+              {
+                "url": "https://external-preview.redd.it/dTVmb25qY3hwYnNoMRY0ILMMYP_8_pIfDoIfnykmysiHbbkClCw2493C41u5.png?width=320&crop=smart&format=pjpg&auto=webp&s=8b5effa169406af96aa14f8340859821eec014c5",
+                "width": 320,
+                "height": 426
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/t6zwolkxpbsh1/HLSPlaylist.m3u8?a=1793285358%2CNGViMDExMDAyMmNiYzY1YzFlNjc4OTViNjI1MzMyZTQ5ZDFlNmU1NGYxNjMwZTk5NjVmNWQyOWRmMzdlZGI5Mw%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/t6zwolkxpbsh1/CMAF_720.mp4?source=fallback",
+          "width": 720,
+          "height": 960,
+          "dash_url": "https://v.redd.it/t6zwolkxpbsh1/DASHPlaylist.mpd?a=1793285358%2COTUyYjUyMzFiNjBlMjhjY2NmOThlNjNiMmE2NWZkYzIzMTAzYjA1OTUxYTZmYWNhMzVkNDliNmYwNjJiN2IxNQ%3D%3D&v=1&f=sd",
+          "duration": 35,
+          "is_gif": false,
+          "has_audio": true
+        }
+      },
+      "secure_media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/t6zwolkxpbsh1/HLSPlaylist.m3u8?a=1793285358%2CNGViMDExMDAyMmNiYzY1YzFlNjc4OTViNjI1MzMyZTQ5ZDFlNmU1NGYxNjMwZTk5NjVmNWQyOWRmMzdlZGI5Mw%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/t6zwolkxpbsh1/CMAF_720.mp4?source=fallback",
+          "width": 720,
+          "height": 960,
+          "dash_url": "https://v.redd.it/t6zwolkxpbsh1/DASHPlaylist.mpd?a=1793285358%2COTUyYjUyMzFiNjBlMjhjY2NmOThlNjNiMmE2NWZkYzIzMTAzYjA1OTUxYTZmYWNhMzVkNDliNmYwNjJiN2IxNQ%3D%3D&v=1&f=sd",
+          "duration": 35,
+          "is_gif": false,
+          "has_audio": true
+        }
+      }
+    }
+  },
+  {
+    "note": "v.redd.it → video",
+    "expected": {
+      "type": "video"
+    },
+    "post": {
+      "id": "1wsjv05",
+      "name": "t3_1wsjv05",
+      "subreddit": "TikTokCringe",
+      "subreddit_name_prefixed": "r/TikTokCringe",
+      "author": "mindyour",
+      "title": "Amazing how fast his spatial awareness improved once her dad switched spots.",
+      "permalink": "/r/TikTokCringe/comments/1wsjv05/amazing_how_fast_his_spatial_awareness_improved/",
+      "url": "https://v.redd.it/ysvsftpziash1",
+      "domain": "v.redd.it",
+      "created_utc": 1790614085,
+      "edited": false,
+      "score": 30006,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 3029,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": true,
+      "thumbnail": "https://external-preview.redd.it/dnRwczJyanppYXNoMY0Nd32hk3BFbWTIyzCSNpUwLQzToNruAHLVDAQbmoen.jpeg?width=140&height=140&crop=1:1,smart&format=jpg&auto=webp&s=211fe2717ad02b845fea33d3de169da68f70646c",
+      "selftext_html": null,
+      "post_hint": "hosted:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://v.redd.it/ysvsftpziash1",
+      "link_flair_text": "Discussion",
+      "link_flair_background_color": "#0dd3bb",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/dnRwczJyanppYXNoMY0Nd32hk3BFbWTIyzCSNpUwLQzToNruAHLVDAQbmoen.jpeg?format=pjpg&auto=webp&s=cf7fe798e2260acbca87c64048f300733b2b9c19",
+              "width": 405,
+              "height": 720
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/dnRwczJyanppYXNoMY0Nd32hk3BFbWTIyzCSNpUwLQzToNruAHLVDAQbmoen.jpeg?width=108&crop=smart&format=pjpg&auto=webp&s=c7a2e2e456920301eaaf00abcf2593f569964b02",
+                "width": 108,
+                "height": 192
+              },
+              {
+                "url": "https://external-preview.redd.it/dnRwczJyanppYXNoMY0Nd32hk3BFbWTIyzCSNpUwLQzToNruAHLVDAQbmoen.jpeg?width=216&crop=smart&format=pjpg&auto=webp&s=9fa377567f9b9474f066427c3070536dc47e9240",
+                "width": 216,
+                "height": 384
+              },
+              {
+                "url": "https://external-preview.redd.it/dnRwczJyanppYXNoMY0Nd32hk3BFbWTIyzCSNpUwLQzToNruAHLVDAQbmoen.jpeg?width=320&crop=smart&format=pjpg&auto=webp&s=bccdb0a87abb705db1e2b26504b833d6885d5257",
+                "width": 320,
+                "height": 568
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/ysvsftpziash1/HLSPlaylist.m3u8?a=1793285358%2CNzJkZGY2N2JlZTI3MDVhODdhMDA4YTZiODMyYzJiZDA1ZjBkYmFkZTA0MThjN2FhZmY5ZWQ2ODY3MWQyNjYxNg%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/ysvsftpziash1/CMAF_480.mp4?source=fallback",
+          "width": 480,
+          "height": 854,
+          "dash_url": "https://v.redd.it/ysvsftpziash1/DASHPlaylist.mpd?a=1793285358%2CNWU2MTg0MTEyMjdmY2QyNmQwNTQxOTdlMzE4ZDYyM2U3NWNkYTYwZTI2MzhiMjI4YWU5YjVmOGExZmQyYTEyMA%3D%3D&v=1&f=sd",
+          "duration": 46,
+          "is_gif": false,
+          "has_audio": true
+        }
+      },
+      "secure_media": {
+        "reddit_video": {
+          "hls_url": "https://v.redd.it/ysvsftpziash1/HLSPlaylist.m3u8?a=1793285358%2CNzJkZGY2N2JlZTI3MDVhODdhMDA4YTZiODMyYzJiZDA1ZjBkYmFkZTA0MThjN2FhZmY5ZWQ2ODY3MWQyNjYxNg%3D%3D&v=1&f=sd",
+          "fallback_url": "https://v.redd.it/ysvsftpziash1/CMAF_480.mp4?source=fallback",
+          "width": 480,
+          "height": 854,
+          "dash_url": "https://v.redd.it/ysvsftpziash1/DASHPlaylist.mpd?a=1793285358%2CNWU2MTg0MTEyMjdmY2QyNmQwNTQxOTdlMzE4ZDYyM2U3NWNkYTYwZTI2MzhiMjI4YWU5YjVmOGExZmQyYTEyMA%3D%3D&v=1&f=sd",
+          "duration": 46,
+          "is_gif": false,
+          "has_audio": true
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,225 @@
+[
+  {
+    "note": "streamable.com → embed:streamable",
+    "expected": {
+      "type": "embed",
+      "provider": "streamable"
+    },
+    "post": {
+      "id": "1wfa382",
+      "name": "t3_1wfa382",
+      "subreddit": "formula1",
+      "subreddit_name_prefixed": "r/formula1",
+      "author": "randomseocb",
+      "title": "Lando being told off for drinking coke in the cooldown room: \"I just did a race. So I'm allowed to drink what I would like. thank you so much.\"",
+      "permalink": "/r/formula1/comments/1wfa382/lando_being_told_off_for_drinking_coke_in_the/",
+      "url": "https://streamable.com/ewyo0w",
+      "domain": "streamable.com",
+      "created_utc": 1789311807,
+      "edited": false,
+      "score": 28705,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 1613,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/reImTqrEHB-_BJ_VwH9MWVSNyne8HOxN9v5aHS3y-Fo.jpeg?width=140&height=97&auto=webp&s=9d946cbedc0a7169d945e53dc17a041cdd67d888",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://streamable.com/ewyo0w",
+      "link_flair_text": ":post-video: Video",
+      "link_flair_background_color": "#ecf1f5",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 97,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/reImTqrEHB-_BJ_VwH9MWVSNyne8HOxN9v5aHS3y-Fo.jpeg?auto=webp&s=ba0f09b19590bb07202314a980b4837cb1e68450",
+              "width": 1038,
+              "height": 720
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/reImTqrEHB-_BJ_VwH9MWVSNyne8HOxN9v5aHS3y-Fo.jpeg?width=108&crop=smart&auto=webp&s=8ee6b0d72a6ceae324f8945d951c5c5aded37fa8",
+                "width": 108,
+                "height": 74
+              },
+              {
+                "url": "https://external-preview.redd.it/reImTqrEHB-_BJ_VwH9MWVSNyne8HOxN9v5aHS3y-Fo.jpeg?width=216&crop=smart&auto=webp&s=27442dcd4b1eb8a9c6716c0ced31b0318027dfe9",
+                "width": 216,
+                "height": 149
+              },
+              {
+                "url": "https://external-preview.redd.it/reImTqrEHB-_BJ_VwH9MWVSNyne8HOxN9v5aHS3y-Fo.jpeg?width=320&crop=smart&auto=webp&s=3a984a3638b0e16eb06c13651b0206859ac77145",
+                "width": 320,
+                "height": 221
+              },
+              {
+                "url": "https://external-preview.redd.it/reImTqrEHB-_BJ_VwH9MWVSNyne8HOxN9v5aHS3y-Fo.jpeg?width=640&crop=smart&auto=webp&s=0276316ff28f04dc5a81a41cf59cb80519dda5a2",
+                "width": 640,
+                "height": 443
+              },
+              {
+                "url": "https://external-preview.redd.it/reImTqrEHB-_BJ_VwH9MWVSNyne8HOxN9v5aHS3y-Fo.jpeg?width=960&crop=smart&auto=webp&s=6be095a4bac010a77a455c7a266ded5d4f671a13",
+                "width": 960,
+                "height": 665
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "streamable.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fstreamable.com%2Fo%2Fewyo0w&display_name=Streamable&url=https%3A%2F%2Fstreamable.com%2Fewyo0w&image=https%3A%2F%2Fcdn-cf-east.streamable.com%2Fimage%2Fewyo0w.jpg%3FExpires%3D1789318980050%26Key-Pair-Id%3DAPKAIEYUVEN4EVB2OKEQ%26Signature%3DfSrmsOlXesqT1HgOOj4JKGO%7EucZ9f6ZsL7gU1y5wrkfqmBM0h5rXl3tKQinF0r%7EyYSlXkTFwGtYGAJNTvDELXJbrdWgEebjY2i68U9bErflJDUXmL2roMVOADLVb7h63nOiRvRoZyt7h8JfunCSFgLa8dOIP81BivEn2-5rml0Oi6aV33woO9rrFSAUjjedxfeOFQ5MVw24ZD8ZFcHBjZxFFLXBUypJs8GXSW1kMVZf1JP7004-6kaWoVuOPTkRhZWgntJ6XibwLuLCj8DIq9tGmq3kp21kL%7EtVykgH-wDR1fDQH26cOxYDdpzeM2Ig1wHOV%7EVZXlG7C0AuiyB6ssg__&type=text%2Fhtml&schema=streamable\" width=\"600\" height=\"416\" scrolling=\"no\" title=\"Streamable embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Streamable",
+          "title": "_RZdfL6434iDiQVw",
+          "thumbnail_url": "https://cdn-cf-east.streamable.com/image/ewyo0w.jpg?Expires=1789318980050&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=fSrmsOlXesqT1HgOOj4JKGO~ucZ9f6ZsL7gU1y5wrkfqmBM0h5rXl3tKQinF0r~yYSlXkTFwGtYGAJNTvDELXJbrdWgEebjY2i68U9bErflJDUXmL2roMVOADLVb7h63nOiRvRoZyt7h8JfunCSFgLa8dOIP81BivEn2-5rml0Oi6aV33woO9rrFSAUjjedxfeOFQ5MVw24ZD8ZFcHBjZxFFLXBUypJs8GXSW1kMVZf1JP7004-6kaWoVuOPTkRhZWgntJ6XibwLuLCj8DIq9tGmq3kp21kL~tVykgH-wDR1fDQH26cOxYDdpzeM2Ig1wHOV~VZXlG7C0AuiyB6ssg__",
+          "thumbnail_width": 1038,
+          "thumbnail_height": 720,
+          "width": 600,
+          "height": 416
+        }
+      },
+      "secure_media": {
+        "type": "streamable.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fstreamable.com%2Fo%2Fewyo0w&display_name=Streamable&url=https%3A%2F%2Fstreamable.com%2Fewyo0w&image=https%3A%2F%2Fcdn-cf-east.streamable.com%2Fimage%2Fewyo0w.jpg%3FExpires%3D1789318980050%26Key-Pair-Id%3DAPKAIEYUVEN4EVB2OKEQ%26Signature%3DfSrmsOlXesqT1HgOOj4JKGO%7EucZ9f6ZsL7gU1y5wrkfqmBM0h5rXl3tKQinF0r%7EyYSlXkTFwGtYGAJNTvDELXJbrdWgEebjY2i68U9bErflJDUXmL2roMVOADLVb7h63nOiRvRoZyt7h8JfunCSFgLa8dOIP81BivEn2-5rml0Oi6aV33woO9rrFSAUjjedxfeOFQ5MVw24ZD8ZFcHBjZxFFLXBUypJs8GXSW1kMVZf1JP7004-6kaWoVuOPTkRhZWgntJ6XibwLuLCj8DIq9tGmq3kp21kL%7EtVykgH-wDR1fDQH26cOxYDdpzeM2Ig1wHOV%7EVZXlG7C0AuiyB6ssg__&type=text%2Fhtml&schema=streamable\" width=\"600\" height=\"416\" scrolling=\"no\" title=\"Streamable embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Streamable",
+          "title": "_RZdfL6434iDiQVw",
+          "thumbnail_url": "https://cdn-cf-east.streamable.com/image/ewyo0w.jpg?Expires=1789318980050&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=fSrmsOlXesqT1HgOOj4JKGO~ucZ9f6ZsL7gU1y5wrkfqmBM0h5rXl3tKQinF0r~yYSlXkTFwGtYGAJNTvDELXJbrdWgEebjY2i68U9bErflJDUXmL2roMVOADLVb7h63nOiRvRoZyt7h8JfunCSFgLa8dOIP81BivEn2-5rml0Oi6aV33woO9rrFSAUjjedxfeOFQ5MVw24ZD8ZFcHBjZxFFLXBUypJs8GXSW1kMVZf1JP7004-6kaWoVuOPTkRhZWgntJ6XibwLuLCj8DIq9tGmq3kp21kL~tVykgH-wDR1fDQH26cOxYDdpzeM2Ig1wHOV~VZXlG7C0AuiyB6ssg__",
+          "thumbnail_width": 1038,
+          "thumbnail_height": 720,
+          "width": 600,
+          "height": 416
+        }
+      }
+    }
+  },
+  {
+    "note": "streamable.com → embed:streamable",
+    "expected": {
+      "type": "embed",
+      "provider": "streamable"
+    },
+    "post": {
+      "id": "1w45ods",
+      "name": "t3_1w45ods",
+      "subreddit": "europe",
+      "subreddit_name_prefixed": "r/europe",
+      "author": "paneuropeanism_",
+      "title": "Von der Leyen: €300 billion in European savings flown overseas every year, primarily  to the US, will be invested in Europe from now on. All 27 EU states agreed to establish the S&I Union, a step toward the full Capital Market Union",
+      "permalink": "/r/europe/comments/1w45ods/von_der_leyen_300_billion_in_european_savings/",
+      "url": "https://streamable.com/4h43qk",
+      "domain": "streamable.com",
+      "created_utc": 1788250846,
+      "edited": false,
+      "score": 24968,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 1582,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?width=140&height=78&auto=webp&s=052f965a2390790e5a79c8d32d7b75e37591cba8",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://streamable.com/4h43qk",
+      "link_flair_text": "News",
+      "link_flair_background_color": "#005ba1",
+      "link_flair_text_color": "light",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?auto=webp&s=4808d9e57ead3ff09de3fb532925b16f61abb691",
+              "width": 1280,
+              "height": 720
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?width=108&crop=smart&auto=webp&s=f0ae047ebf07c5b2f1e4de4203995710217a43f0",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?width=216&crop=smart&auto=webp&s=fb6b832955594d83e80586d0d239cc7871cc1b26",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?width=320&crop=smart&auto=webp&s=b8baaf088089177a997e1fd4c4eff40a37f3f97c",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?width=640&crop=smart&auto=webp&s=e458c4fc5f3351500a16c1d9be2cb01868ac6a7b",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?width=960&crop=smart&auto=webp&s=1f1092f763eff62155f8da1024cf6983ba6852d1",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/oWUbqsroMHcWA4kqNi4qr4lqETcUp6c4l9oqvdrKXx4.jpeg?width=1080&crop=smart&auto=webp&s=ab8be799c46478d6b823bb613f7bdb4416bdb103",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "streamable.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fstreamable.com%2Fo%2F4h43qk&display_name=Streamable&url=https%3A%2F%2Fstreamable.com%2F4h43qk&image=https%3A%2F%2Fcdn-cf-east.streamable.com%2Fimage%2F4h43qk-screenshot114290.jpg%3FExpires%3D1788257877384%26Key-Pair-Id%3DAPKAIEYUVEN4EVB2OKEQ%26Signature%3DW6igPkH5xf12iQw5B9FsfZ5QiOcH2Sr8eiAtruQTJanlU6RMOuh1Kdv32QF3XgE8KIdC0QU5BzEJ9Lxrdc7nriJ5BtMaBLAz7U1qftg8AqIzTrt6hPJ1eKmjbeNuylCxhXODa1hxDAroSgagEbHjhqtPGFW3VE5MNpf1jBPxmSIfoNDf%7EL945oFTd7HY%7Eg5OcD9Ngt1LvQVefxFMja39vCB-BHX9jG8NhDgDCHN2GR1-CyEF2PC-GO%7EMs3hp-mbSLCz0V7aGh7OtM1QMSe7UvHin9%7E7obfgluLScQIhttvoMsof3MNouicgcSeMfBXKI3kJeZ9oyBFyd0UIPZ6Ub9Q__&type=text%2Fhtml&schema=streamable\" width=\"600\" height=\"338\" scrolling=\"no\" title=\"Streamable embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Streamable",
+          "title": "Von der Leyen: €400 billion in European savings flown overseas every year, including to the US, will be invested in Europe from now on. All 27 EU states agreed to establish the S&I Union, a step towa",
+          "thumbnail_url": "https://cdn-cf-east.streamable.com/image/4h43qk-screenshot114290.jpg?Expires=1788257877384&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=W6igPkH5xf12iQw5B9FsfZ5QiOcH2Sr8eiAtruQTJanlU6RMOuh1Kdv32QF3XgE8KIdC0QU5BzEJ9Lxrdc7nriJ5BtMaBLAz7U1qftg8AqIzTrt6hPJ1eKmjbeNuylCxhXODa1hxDAroSgagEbHjhqtPGFW3VE5MNpf1jBPxmSIfoNDf~L945oFTd7HY~g5OcD9Ngt1LvQVefxFMja39vCB-BHX9jG8NhDgDCHN2GR1-CyEF2PC-GO~Ms3hp-mbSLCz0V7aGh7OtM1QMSe7UvHin9~7obfgluLScQIhttvoMsof3MNouicgcSeMfBXKI3kJeZ9oyBFyd0UIPZ6Ub9Q__",
+          "thumbnail_width": 1280,
+          "thumbnail_height": 720,
+          "width": 600,
+          "height": 338
+        }
+      },
+      "secure_media": {
+        "type": "streamable.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fstreamable.com%2Fo%2F4h43qk&display_name=Streamable&url=https%3A%2F%2Fstreamable.com%2F4h43qk&image=https%3A%2F%2Fcdn-cf-east.streamable.com%2Fimage%2F4h43qk-screenshot114290.jpg%3FExpires%3D1788257877384%26Key-Pair-Id%3DAPKAIEYUVEN4EVB2OKEQ%26Signature%3DW6igPkH5xf12iQw5B9FsfZ5QiOcH2Sr8eiAtruQTJanlU6RMOuh1Kdv32QF3XgE8KIdC0QU5BzEJ9Lxrdc7nriJ5BtMaBLAz7U1qftg8AqIzTrt6hPJ1eKmjbeNuylCxhXODa1hxDAroSgagEbHjhqtPGFW3VE5MNpf1jBPxmSIfoNDf%7EL945oFTd7HY%7Eg5OcD9Ngt1LvQVefxFMja39vCB-BHX9jG8NhDgDCHN2GR1-CyEF2PC-GO%7EMs3hp-mbSLCz0V7aGh7OtM1QMSe7UvHin9%7E7obfgluLScQIhttvoMsof3MNouicgcSeMfBXKI3kJeZ9oyBFyd0UIPZ6Ub9Q__&type=text%2Fhtml&schema=streamable\" width=\"600\" height=\"338\" scrolling=\"no\" title=\"Streamable embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Streamable",
+          "title": "Von der Leyen: €400 billion in European savings flown overseas every year, including to the US, will be invested in Europe from now on. All 27 EU states agreed to establish the S&I Union, a step towa",
+          "thumbnail_url": "https://cdn-cf-east.streamable.com/image/4h43qk-screenshot114290.jpg?Expires=1788257877384&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=W6igPkH5xf12iQw5B9FsfZ5QiOcH2Sr8eiAtruQTJanlU6RMOuh1Kdv32QF3XgE8KIdC0QU5BzEJ9Lxrdc7nriJ5BtMaBLAz7U1qftg8AqIzTrt6hPJ1eKmjbeNuylCxhXODa1hxDAroSgagEbHjhqtPGFW3VE5MNpf1jBPxmSIfoNDf~L945oFTd7HY~g5OcD9Ngt1LvQVefxFMja39vCB-BHX9jG8NhDgDCHN2GR1-CyEF2PC-GO~Ms3hp-mbSLCz0V7aGh7OtM1QMSe7UvHin9~7obfgluLScQIhttvoMsof3MNouicgcSeMfBXKI3kJeZ9oyBFyd0UIPZ6Ub9Q__",
+          "thumbnail_width": 1280,
+          "thumbnail_height": 720,
+          "width": 600,
+          "height": 338
+        }
+      }
+    }
+  }
+]

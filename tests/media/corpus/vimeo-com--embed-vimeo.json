@@ -1,0 +1,206 @@
+[
+  {
+    "note": "vimeo.com → embed:vimeo",
+    "expected": {
+      "type": "embed",
+      "provider": "vimeo"
+    },
+    "post": {
+      "id": "1wghn04",
+      "name": "t3_1wghn04",
+      "subreddit": "Documentaries",
+      "subreddit_name_prefixed": "r/Documentaries",
+      "author": "stammerton",
+      "title": "Flying Paper (2014) | Palestinian children in Gaza take to the skies in pursuit of a world record [00:52:00]",
+      "permalink": "/r/Documentaries/comments/1wghn04/flying_paper_2014_palestinian_children_in_gaza/",
+      "url": "https://vimeo.com/flyingpaper/film?share=copy&fl=cl&fe=ci",
+      "domain": "vimeo.com",
+      "created_utc": 1789423431,
+      "edited": false,
+      "score": 349,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 42,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?width=140&height=93&auto=webp&s=08f48bdf93b03c8237e9debe2ed1034ad03793c4",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>Flying Paper follows a group of Palestinian children in Gaza as they pursue an apparently simple ambition: building and flying enough kites to help break the Guinness World Record for the most kites flown simultaneously.</p>\n\n<p>At the centre of the film are Musa, a teenage kite-maker from the northern Gaza village of Seifa, his wonderfully competitive sister Widad, and Abeer, a young aspiring journalist from Jabalia refugee camp. Around them, thousands of children prepare handmade kites for a mass flight on Gaza&#39;s Mediterranean coast. The result is funny, intimate and frequently beautiful, allowing ordinary childhood rivalries, ambitions and friendships to take centre stage.</p>\n\n<p>What makes Flying Paper particularly interesting is how it was made. Directors Nitin Sawhney and Roger Hill worked with young Palestinians in Gaza through the Voices Beyond Walls youth media programme, training participants who then became part of the film&#39;s production. Rather than simply pointing a camera at Palestinian children, the documentary incorporates young Palestinians into the process of telling their own stories.</p>\n\n<p>The occupation and blockade are never far from the film&#39;s world, particularly for families living close to Gaza&#39;s border areas, but Flying Paper refuses to make Palestinian childhood<br/>\nsynonymous only with suffering. Its kites become something much simpler and perhaps more powerful: competition, creativity, freedom, pride and the sheer pleasure of seeing how high something handmade can fly.</p>\n\n<p>IMDb: <a href=\"https://www.imdb.com/title/tt2524004/\">Flying Paper</a></p>\n\n<p>Trailer: <a href=\"https://www.imdb.com/video/vi835823385\">Flying Paper Trailer</a></p>\n</div><!-- SC_ON -->",
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vimeo.com/flyingpaper/film?share=copy&fl=cl&fe=ci",
+      "link_flair_text": "Society",
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 93,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?auto=webp&s=69dd6101cb41e1ad4e9ea2d15a2b35bfc171aa91",
+              "width": 1280,
+              "height": 853
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?width=108&crop=smart&auto=webp&s=2da0543cb6311d4131b7f915e2d81d8fe71d2017",
+                "width": 108,
+                "height": 71
+              },
+              {
+                "url": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?width=216&crop=smart&auto=webp&s=3fc8a88ad8a661e942073ee4c9e8afc6af68a4a2",
+                "width": 216,
+                "height": 143
+              },
+              {
+                "url": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?width=320&crop=smart&auto=webp&s=334fac40dc04b8adef61c1e80069be26da8e6f37",
+                "width": 320,
+                "height": 213
+              },
+              {
+                "url": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?width=640&crop=smart&auto=webp&s=cae7b8c9ce2b0631bfb7107c0f48f2b36d5655bf",
+                "width": 640,
+                "height": 426
+              },
+              {
+                "url": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?width=960&crop=smart&auto=webp&s=cb24624d9bf68299264a84a755f04e6270989ebb",
+                "width": 960,
+                "height": 639
+              },
+              {
+                "url": "https://external-preview.redd.it/RviXHEU7BPDxRpRKGVNwLQBGErr0CQgf1RStDAXp9Dk.jpeg?width=1080&crop=smart&auto=webp&s=a1c4192071c997f8f12235e37490c0a40e48f781",
+                "width": 1080,
+                "height": 719
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "vimeo.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F95679262%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F95679262&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F1739710699-c1c7c1a5c291fd34a482746e0f9c081376d776aaf68dec90666ef8a2eab98626-d_1280%3Fregion%3Dus&type=text%2Fhtml&schema=vimeo\" width=\"600\" height=\"338\" scrolling=\"no\" title=\"Vimeo embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Vimeo",
+          "title": "Flying Paper",
+          "thumbnail_url": "https://i.vimeocdn.com/video/1739710699-c1c7c1a5c291fd34a482746e0f9c081376d776aaf68dec90666ef8a2eab98626-d_1280?region=us",
+          "thumbnail_width": 1280,
+          "thumbnail_height": 853,
+          "width": 600,
+          "height": 338
+        }
+      },
+      "secure_media": {
+        "type": "vimeo.com",
+        "oembed": {
+          "html": "<iframe class=\"embedly-embed\" src=\"https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F95679262%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F95679262&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F1739710699-c1c7c1a5c291fd34a482746e0f9c081376d776aaf68dec90666ef8a2eab98626-d_1280%3Fregion%3Dus&type=text%2Fhtml&schema=vimeo\" width=\"600\" height=\"338\" scrolling=\"no\" title=\"Vimeo embed\" frameborder=\"0\" allow=\"autoplay; fullscreen; encrypted-media; picture-in-picture\" allowfullscreen=\"true\"></iframe>",
+          "provider_name": "Vimeo",
+          "title": "Flying Paper",
+          "thumbnail_url": "https://i.vimeocdn.com/video/1739710699-c1c7c1a5c291fd34a482746e0f9c081376d776aaf68dec90666ef8a2eab98626-d_1280?region=us",
+          "thumbnail_width": 1280,
+          "thumbnail_height": 853,
+          "width": 600,
+          "height": 338
+        }
+      }
+    }
+  },
+  {
+    "note": "vimeo.com → embed:vimeo",
+    "expected": {
+      "type": "embed",
+      "provider": "vimeo"
+    },
+    "post": {
+      "id": "1wjmj6w",
+      "name": "t3_1wjmj6w",
+      "subreddit": "Weird",
+      "subreddit_name_prefixed": "r/Weird",
+      "author": "Superb_Mail_9622",
+      "title": "The Dean of the prestigious Tisch school of the arts in NYC, dancing to R.E.M.'s \"Losing My Religion\" as a response to students calling for partial refunds due to virtual-only lessons 3/22/2020.",
+      "permalink": "/r/Weird/comments/1wjmj6w/the_dean_of_the_prestigious_tisch_school_of_the/",
+      "url": "https://vimeo.com/399761785/befce790d7?fl=pl&fe=sh",
+      "domain": "vimeo.com",
+      "created_utc": 1789727462,
+      "edited": false,
+      "score": 345,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 30,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?width=140&height=78&auto=webp&s=1d52770168cb256d1987f7311a1011a85fbce100",
+      "selftext_html": "<!-- SC_OFF --><div class=\"md\"><p>The transition led students at the arts school to call for a partial tuition refund for the remainder of their semester. Spring 2020 tuition and fees at Tisch typically cost $29,276, according to the school&#39;s website.</p>\n\n<p>Students have argued that their tuition covers in-person teaching and equipment for classes on acting, dance, production, and film, which remote learning cannot provide.</p>\n\n<p>The Dean, who is a &quot;choreographer, visual artist, curator and arts educator&quot; attached a <a href=\"https://vimeo.com/399761785/befce790d7?fbclid=IwAR0dJpmV1ntow6p9Pc08OxsJ1DVeNVP-5j3jz-ag69bmJDf6lzZOeA6HntI\">video of herself</a> dancing to the song &quot;Losing my Religion.&quot; She wrote that it is the song she plays to &quot;keep going in times of distress,&quot; and invited students to &quot;dance along.&quot;</p>\n</div><!-- SC_ON -->",
+      "post_hint": "link",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://vimeo.com/399761785/befce790d7?fl=pl&fe=sh",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 78,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?auto=webp&s=3da6c76d6447696c0179e025b88265664b255809",
+              "width": 1280,
+              "height": 720
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?width=108&crop=smart&auto=webp&s=8bca44e2c0ba2abbf9b8ad586ab227042be2a441",
+                "width": 108,
+                "height": 60
+              },
+              {
+                "url": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?width=216&crop=smart&auto=webp&s=fbcb1c53449ceb20b214805d8a7b8fdaabd8a0b6",
+                "width": 216,
+                "height": 121
+              },
+              {
+                "url": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?width=320&crop=smart&auto=webp&s=2874dc86169f5b3a7d2b95947c0c65990bd655da",
+                "width": 320,
+                "height": 180
+              },
+              {
+                "url": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?width=640&crop=smart&auto=webp&s=86342cc197b32d08acf6a5ed91df650836766232",
+                "width": 640,
+                "height": 360
+              },
+              {
+                "url": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?width=960&crop=smart&auto=webp&s=c7f93ea9e73127b30855d005090f3cca7b35f06b",
+                "width": 960,
+                "height": 540
+              },
+              {
+                "url": "https://external-preview.redd.it/INSLA-TtyGNZlpBKggEDUCVusQX9KfN4KdYRVBI9LDw.jpeg?width=1080&crop=smart&auto=webp&s=99dca3fce269e4c32d4829bbc2d63ba5c14b5ea0",
+                "width": 1080,
+                "height": 607
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": null,
+      "secure_media": null
+    }
+  }
+]

@@ -1,0 +1,496 @@
+[
+  {
+    "note": "crosspost (i.redd.it → image)",
+    "expected": {
+      "type": "image"
+    },
+    "post": {
+      "id": "1wstwrm",
+      "name": "t3_1wstwrm",
+      "subreddit": "therewasanattempt",
+      "subreddit_name_prefixed": "r/therewasanattempt",
+      "author": "TheDigitalBuilder",
+      "title": "By the Republicans to find a suitable influencer",
+      "permalink": "/r/therewasanattempt/comments/1wstwrm/by_the_republicans_to_find_a_suitable_influencer/",
+      "url": "https://i.redd.it/75mnpp74bcsh1.jpeg",
+      "domain": "i.redd.it",
+      "created_utc": 1790636938,
+      "edited": false,
+      "score": 11361,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 102,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=083c6133022cf33ac1e38f888050605f1c14cfa8",
+      "selftext_html": null,
+      "post_hint": "image",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://i.redd.it/75mnpp74bcsh1.jpeg",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "crosspost_parent": "t3_1wstexo",
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?auto=webp&s=3cce5c009a1c5be436f13aeef967c2e8596765e8",
+              "width": 1439,
+              "height": 1670
+            },
+            "resolutions": [
+              {
+                "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=108&crop=smart&auto=webp&s=f4b9cbea6d686e3e811fde4cc81187c43a9557eb",
+                "width": 108,
+                "height": 125
+              },
+              {
+                "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=216&crop=smart&auto=webp&s=1368332f68b477d37c85e2249828eed1d48fda7f",
+                "width": 216,
+                "height": 250
+              },
+              {
+                "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=320&crop=smart&auto=webp&s=c18526ba3edeaff13d987c145ec016a304be6313",
+                "width": 320,
+                "height": 371
+              },
+              {
+                "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=640&crop=smart&auto=webp&s=adbb00168e5fe59d410dad2a768fa39293b941a1",
+                "width": 640,
+                "height": 742
+              },
+              {
+                "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=960&crop=smart&auto=webp&s=91902703b03b81ea305af59d406679eb464fe46c",
+                "width": 960,
+                "height": 1114
+              },
+              {
+                "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=1080&crop=smart&auto=webp&s=c26cd80e75f4f1cb595ad0e8e70761278d43c7ae",
+                "width": 1080,
+                "height": 1253
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": true
+      },
+      "media": null,
+      "secure_media": null,
+      "crosspost_parent_list": [
+        {
+          "approved_at_utc": null,
+          "subreddit": "PoursTea",
+          "selftext": "",
+          "author_fullname": "t2_2j7opevgh7",
+          "saved": false,
+          "mod_reason_title": null,
+          "gilded": 0,
+          "clicked": false,
+          "title": "The irony is palpable...",
+          "link_flair_richtext": [],
+          "subreddit_name_prefixed": "r/PoursTea",
+          "hidden": false,
+          "pwls": 6,
+          "link_flair_css_class": "",
+          "downs": 0,
+          "thumbnail_height": 140,
+          "top_awarded_type": null,
+          "hide_score": false,
+          "name": "t3_1wstexo",
+          "quarantine": false,
+          "link_flair_text_color": "light",
+          "upvote_ratio": 0.98,
+          "author_flair_background_color": "#03fc0b",
+          "ups": 14687,
+          "total_awards_received": 0,
+          "media_embed": {},
+          "thumbnail_width": 140,
+          "author_flair_template_id": "63e58aae-2911-11f1-a581-62624003b463",
+          "is_original_content": false,
+          "user_reports": [],
+          "secure_media": null,
+          "is_reddit_media_domain": true,
+          "is_meta": false,
+          "category": null,
+          "secure_media_embed": {},
+          "link_flair_text": "PoliticalTea 🗳️",
+          "can_mod_post": false,
+          "score": 14687,
+          "approved_by": null,
+          "is_created_from_ads_ui": false,
+          "author_premium": false,
+          "thumbnail": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=083c6133022cf33ac1e38f888050605f1c14cfa8",
+          "edited": false,
+          "author_flair_css_class": null,
+          "author_flair_richtext": [],
+          "gildings": {},
+          "post_hint": "image",
+          "content_categories": null,
+          "is_self": false,
+          "subreddit_type": "public",
+          "created": 1790635647,
+          "link_flair_type": "text",
+          "wls": 6,
+          "removed_by_category": null,
+          "banned_by": null,
+          "author_flair_type": "text",
+          "domain": "i.redd.it",
+          "allow_live_comments": false,
+          "selftext_html": null,
+          "likes": null,
+          "suggested_sort": null,
+          "banned_at_utc": null,
+          "url_overridden_by_dest": "https://i.redd.it/75mnpp74bcsh1.jpeg",
+          "view_count": null,
+          "archived": false,
+          "no_follow": false,
+          "is_crosspostable": true,
+          "pinned": false,
+          "over_18": false,
+          "preview": {
+            "images": [
+              {
+                "source": {
+                  "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?auto=webp&s=3cce5c009a1c5be436f13aeef967c2e8596765e8",
+                  "width": 1439,
+                  "height": 1670
+                },
+                "resolutions": [
+                  {
+                    "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=108&crop=smart&auto=webp&s=f4b9cbea6d686e3e811fde4cc81187c43a9557eb",
+                    "width": 108,
+                    "height": 125
+                  },
+                  {
+                    "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=216&crop=smart&auto=webp&s=1368332f68b477d37c85e2249828eed1d48fda7f",
+                    "width": 216,
+                    "height": 250
+                  },
+                  {
+                    "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=320&crop=smart&auto=webp&s=c18526ba3edeaff13d987c145ec016a304be6313",
+                    "width": 320,
+                    "height": 371
+                  },
+                  {
+                    "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=640&crop=smart&auto=webp&s=adbb00168e5fe59d410dad2a768fa39293b941a1",
+                    "width": 640,
+                    "height": 742
+                  },
+                  {
+                    "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=960&crop=smart&auto=webp&s=91902703b03b81ea305af59d406679eb464fe46c",
+                    "width": 960,
+                    "height": 1114
+                  },
+                  {
+                    "url": "https://preview.redd.it/75mnpp74bcsh1.jpeg?width=1080&crop=smart&auto=webp&s=c26cd80e75f4f1cb595ad0e8e70761278d43c7ae",
+                    "width": 1080,
+                    "height": 1253
+                  }
+                ],
+                "variants": {},
+                "id": "75mnpp74bcsh1"
+              }
+            ],
+            "enabled": true
+          },
+          "all_awardings": [],
+          "awarders": [],
+          "media_only": false,
+          "link_flair_template_id": "24c7319c-28b2-11f1-93bd-de4e5ce76218",
+          "can_gild": false,
+          "spoiler": false,
+          "locked": false,
+          "author_flair_text": "Timendi Causa Est Nescire",
+          "treatment_tags": [],
+          "visited": false,
+          "removed_by": null,
+          "mod_note": null,
+          "distinguished": null,
+          "subreddit_id": "t5_h4rtoz",
+          "author_is_blocked": false,
+          "mod_reason_by": null,
+          "num_reports": null,
+          "removal_reason": null,
+          "link_flair_background_color": "#c13e63",
+          "id": "1wstexo",
+          "is_robot_indexable": true,
+          "report_reasons": null,
+          "author": "Veshaad",
+          "discussion_type": null,
+          "num_comments": 399,
+          "send_replies": true,
+          "contest_mode": false,
+          "mod_reports": [],
+          "author_patreon_flair": false,
+          "author_flair_text_color": "dark",
+          "permalink": "/r/PoursTea/comments/1wstexo/the_irony_is_palpable/",
+          "stickied": false,
+          "url": "https://i.redd.it/75mnpp74bcsh1.jpeg",
+          "subreddit_subscribers": 104701,
+          "created_utc": 1790635647,
+          "num_crossposts": 17,
+          "media": null,
+          "is_video": false
+        }
+      ]
+    }
+  },
+  {
+    "note": "crosspost (i.redd.it → image)",
+    "expected": {
+      "type": "image"
+    },
+    "post": {
+      "id": "1wsxsab",
+      "name": "t3_1wsxsab",
+      "subreddit": "wisconsin",
+      "subreddit_name_prefixed": "r/wisconsin",
+      "author": "dainomite",
+      "title": "Out of sight, out of mind.",
+      "permalink": "/r/wisconsin/comments/1wsxsab/out_of_sight_out_of_mind/",
+      "url": "https://i.redd.it/v4anwzj2tash1.jpeg",
+      "domain": "i.redd.it",
+      "created_utc": 1790647664,
+      "edited": false,
+      "score": 503,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 20,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=e3f3ea249d800e28b6af05a668c31dc2698a49a2",
+      "selftext_html": null,
+      "post_hint": "image",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://i.redd.it/v4anwzj2tash1.jpeg",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 140,
+      "crosspost_parent": "t3_1wslei0",
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?auto=webp&s=f11355d0d6bc8126e9172c6f425a79245e2971c1",
+              "width": 1425,
+              "height": 1810
+            },
+            "resolutions": [
+              {
+                "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=108&crop=smart&auto=webp&s=57f56bb3c0cfa6d8f878b700e304793fb764b434",
+                "width": 108,
+                "height": 137
+              },
+              {
+                "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=216&crop=smart&auto=webp&s=b7a84add3fa3dc1ac40d9d6030f088de5edaf192",
+                "width": 216,
+                "height": 274
+              },
+              {
+                "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=320&crop=smart&auto=webp&s=6b04a022784e938482afc721e7ff9b1470826d92",
+                "width": 320,
+                "height": 406
+              },
+              {
+                "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=640&crop=smart&auto=webp&s=be8dd95aa0b400916aa1b1e25d47c4c7543d84ed",
+                "width": 640,
+                "height": 812
+              },
+              {
+                "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=960&crop=smart&auto=webp&s=e0a881d340e6033295b1743300c011186f0cd728",
+                "width": 960,
+                "height": 1219
+              },
+              {
+                "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=1080&crop=smart&auto=webp&s=afe471dde9269d8e1fd159566765dd6b2372ce69",
+                "width": 1080,
+                "height": 1371
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": true
+      },
+      "media": null,
+      "secure_media": null,
+      "crosspost_parent_list": [
+        {
+          "approved_at_utc": null,
+          "subreddit": "PoursTea",
+          "selftext": "",
+          "author_fullname": "t2_2j7opevgh7",
+          "saved": false,
+          "mod_reason_title": null,
+          "gilded": 0,
+          "clicked": false,
+          "title": "Out of sight, out of mind.",
+          "link_flair_richtext": [],
+          "subreddit_name_prefixed": "r/PoursTea",
+          "hidden": false,
+          "pwls": 6,
+          "link_flair_css_class": "",
+          "downs": 0,
+          "thumbnail_height": 140,
+          "top_awarded_type": null,
+          "hide_score": false,
+          "name": "t3_1wslei0",
+          "quarantine": false,
+          "link_flair_text_color": "light",
+          "upvote_ratio": 0.97,
+          "author_flair_background_color": "#03fc0b",
+          "ups": 25405,
+          "total_awards_received": 0,
+          "media_embed": {},
+          "thumbnail_width": 140,
+          "author_flair_template_id": "63e58aae-2911-11f1-a581-62624003b463",
+          "is_original_content": false,
+          "user_reports": [],
+          "secure_media": null,
+          "is_reddit_media_domain": true,
+          "is_meta": false,
+          "category": null,
+          "secure_media_embed": {},
+          "link_flair_text": "FinancialTea 💵 ",
+          "can_mod_post": false,
+          "score": 25405,
+          "approved_by": null,
+          "is_created_from_ads_ui": false,
+          "author_premium": false,
+          "thumbnail": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=140&height=140&crop=1:1,smart&auto=webp&s=e3f3ea249d800e28b6af05a668c31dc2698a49a2",
+          "edited": false,
+          "author_flair_css_class": null,
+          "author_flair_richtext": [],
+          "gildings": {},
+          "post_hint": "image",
+          "content_categories": null,
+          "is_self": false,
+          "subreddit_type": "public",
+          "created": 1790617471,
+          "link_flair_type": "text",
+          "wls": 6,
+          "removed_by_category": null,
+          "banned_by": null,
+          "author_flair_type": "text",
+          "domain": "i.redd.it",
+          "allow_live_comments": false,
+          "selftext_html": null,
+          "likes": null,
+          "suggested_sort": null,
+          "banned_at_utc": null,
+          "url_overridden_by_dest": "https://i.redd.it/v4anwzj2tash1.jpeg",
+          "view_count": null,
+          "archived": false,
+          "no_follow": false,
+          "is_crosspostable": true,
+          "pinned": false,
+          "over_18": false,
+          "preview": {
+            "images": [
+              {
+                "source": {
+                  "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?auto=webp&s=f11355d0d6bc8126e9172c6f425a79245e2971c1",
+                  "width": 1425,
+                  "height": 1810
+                },
+                "resolutions": [
+                  {
+                    "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=108&crop=smart&auto=webp&s=57f56bb3c0cfa6d8f878b700e304793fb764b434",
+                    "width": 108,
+                    "height": 137
+                  },
+                  {
+                    "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=216&crop=smart&auto=webp&s=b7a84add3fa3dc1ac40d9d6030f088de5edaf192",
+                    "width": 216,
+                    "height": 274
+                  },
+                  {
+                    "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=320&crop=smart&auto=webp&s=6b04a022784e938482afc721e7ff9b1470826d92",
+                    "width": 320,
+                    "height": 406
+                  },
+                  {
+                    "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=640&crop=smart&auto=webp&s=be8dd95aa0b400916aa1b1e25d47c4c7543d84ed",
+                    "width": 640,
+                    "height": 812
+                  },
+                  {
+                    "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=960&crop=smart&auto=webp&s=e0a881d340e6033295b1743300c011186f0cd728",
+                    "width": 960,
+                    "height": 1219
+                  },
+                  {
+                    "url": "https://preview.redd.it/v4anwzj2tash1.jpeg?width=1080&crop=smart&auto=webp&s=afe471dde9269d8e1fd159566765dd6b2372ce69",
+                    "width": 1080,
+                    "height": 1371
+                  }
+                ],
+                "variants": {},
+                "id": "v4anwzj2tash1"
+              }
+            ],
+            "enabled": true
+          },
+          "all_awardings": [],
+          "awarders": [],
+          "media_only": false,
+          "link_flair_template_id": "e13818b2-28be-11f1-8e53-f6ae98620841",
+          "can_gild": false,
+          "spoiler": false,
+          "locked": true,
+          "author_flair_text": "Timendi Causa Est Nescire",
+          "treatment_tags": [],
+          "visited": false,
+          "removed_by": null,
+          "mod_note": null,
+          "distinguished": null,
+          "subreddit_id": "t5_h4rtoz",
+          "author_is_blocked": false,
+          "mod_reason_by": null,
+          "num_reports": null,
+          "removal_reason": null,
+          "link_flair_background_color": "#7f949f",
+          "id": "1wslei0",
+          "is_robot_indexable": true,
+          "report_reasons": null,
+          "author": "Veshaad",
+          "discussion_type": null,
+          "num_comments": 565,
+          "send_replies": true,
+          "contest_mode": false,
+          "mod_reports": [],
+          "author_patreon_flair": false,
+          "author_flair_text_color": "dark",
+          "permalink": "/r/PoursTea/comments/1wslei0/out_of_sight_out_of_mind/",
+          "stickied": false,
+          "url": "https://i.redd.it/v4anwzj2tash1.jpeg",
+          "subreddit_subscribers": 104701,
+          "created_utc": 1790617471,
+          "num_crossposts": 10,
+          "media": null,
+          "is_video": false
+        }
+      ]
+    }
+  }
+]

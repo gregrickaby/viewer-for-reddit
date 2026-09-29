@@ -1,0 +1,200 @@
+[
+  {
+    "note": "youtube.com → embed:youtube",
+    "expected": {
+      "type": "embed",
+      "provider": "youtube"
+    },
+    "post": {
+      "id": "1wsw24m",
+      "name": "t3_1wsw24m",
+      "subreddit": "videos",
+      "subreddit_name_prefixed": "r/videos",
+      "author": "Ilikeinvestigating",
+      "title": "Cards Against Humanity to build \"Elon Musk is a sad little bitch with no friends Monument\" near SpaceX Executive Building, with $10 Donation from anyone who donates.",
+      "permalink": "/r/videos/comments/1wsw24m/cards_against_humanity_to_build_elon_musk_is_a/",
+      "url": "https://youtube.com/shorts/oEJdx5Wztxc?si=P9xi_rLMNTpo0NLn",
+      "domain": "youtube.com",
+      "created_utc": 1790642774,
+      "edited": false,
+      "score": 18671,
+      "hide_score": false,
+      "likes": null,
+      "num_comments": 485,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/urDEtefazq5sk8_so29Gn-q8e1bI2Xo_8v8c5AacKxs.jpeg?width=140&height=105&auto=webp&s=bf5699d2ec5a77fa8e903851e44a33f17fdff042",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://youtube.com/shorts/oEJdx5Wztxc?si=P9xi_rLMNTpo0NLn",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/urDEtefazq5sk8_so29Gn-q8e1bI2Xo_8v8c5AacKxs.jpeg?auto=webp&s=74fa81ecc49c678c921a0144890cb25bac539b30",
+              "width": 480,
+              "height": 360
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/urDEtefazq5sk8_so29Gn-q8e1bI2Xo_8v8c5AacKxs.jpeg?width=108&crop=smart&auto=webp&s=c483d0c6956a315e17c71ac0c865974bf45c1ed4",
+                "width": 108,
+                "height": 81
+              },
+              {
+                "url": "https://external-preview.redd.it/urDEtefazq5sk8_so29Gn-q8e1bI2Xo_8v8c5AacKxs.jpeg?width=216&crop=smart&auto=webp&s=83b00b16c9ef2e88a5bee99429d6a135b389e2a9",
+                "width": 216,
+                "height": 162
+              },
+              {
+                "url": "https://external-preview.redd.it/urDEtefazq5sk8_so29Gn-q8e1bI2Xo_8v8c5AacKxs.jpeg?width=320&crop=smart&auto=webp&s=e3da77aceb8be5ec667fa5eafc6be3d73fad2104",
+                "width": 320,
+                "height": 240
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"113\" height=\"200\" src=\"https://www.youtube.com/embed/oEJdx5Wztxc?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"Cards Against Humanity builds monument to annoy Elon Musk.\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "Cards Against Humanity builds monument to annoy Elon Musk.",
+          "thumbnail_url": "https://i.ytimg.com/vi/oEJdx5Wztxc/hq2.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 113,
+          "height": 200
+        }
+      },
+      "secure_media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"113\" height=\"200\" src=\"https://www.youtube.com/embed/oEJdx5Wztxc?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"Cards Against Humanity builds monument to annoy Elon Musk.\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "Cards Against Humanity builds monument to annoy Elon Musk.",
+          "thumbnail_url": "https://i.ytimg.com/vi/oEJdx5Wztxc/hq2.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 113,
+          "height": 200
+        }
+      }
+    }
+  },
+  {
+    "note": "youtube.com → embed:youtube",
+    "expected": {
+      "type": "embed",
+      "provider": "youtube"
+    },
+    "post": {
+      "id": "1wtc1p9",
+      "name": "t3_1wtc1p9",
+      "subreddit": "videos",
+      "subreddit_name_prefixed": "r/videos",
+      "author": "pradeep23",
+      "title": "Janja Garnbret : How I Became a 10-Time World Champion",
+      "permalink": "/r/videos/comments/1wtc1p9/janja_garnbret_how_i_became_a_10time_world/",
+      "url": "https://www.youtube.com/watch?v=w5qrRp6cFS4",
+      "domain": "youtube.com",
+      "created_utc": 1790693103,
+      "edited": false,
+      "score": 3,
+      "hide_score": true,
+      "likes": null,
+      "num_comments": 0,
+      "saved": false,
+      "over_18": false,
+      "spoiler": false,
+      "stickied": false,
+      "locked": false,
+      "archived": false,
+      "is_self": false,
+      "is_video": false,
+      "thumbnail": "https://external-preview.redd.it/yXTZCxA-i6Ozs8I730pHwXHS9_3D3tJ0gRT2f2Ar0wk.jpeg?width=140&height=105&auto=webp&s=7fa1e11efae3f464de6cbade9fa1a54817283aaf",
+      "selftext_html": null,
+      "post_hint": "rich:video",
+      "distinguished": null,
+      "removed_by_category": null,
+      "url_overridden_by_dest": "https://www.youtube.com/watch?v=w5qrRp6cFS4",
+      "link_flair_text": null,
+      "link_flair_background_color": "",
+      "link_flair_text_color": "dark",
+      "thumbnail_width": 140,
+      "thumbnail_height": 105,
+      "preview": {
+        "images": [
+          {
+            "source": {
+              "url": "https://external-preview.redd.it/yXTZCxA-i6Ozs8I730pHwXHS9_3D3tJ0gRT2f2Ar0wk.jpeg?auto=webp&s=bef04349c3252b17a216fe50f5ba39e36897c84e",
+              "width": 480,
+              "height": 360
+            },
+            "resolutions": [
+              {
+                "url": "https://external-preview.redd.it/yXTZCxA-i6Ozs8I730pHwXHS9_3D3tJ0gRT2f2Ar0wk.jpeg?width=108&crop=smart&auto=webp&s=369254793829ed765912279c02baad2b47bc6d6a",
+                "width": 108,
+                "height": 81
+              },
+              {
+                "url": "https://external-preview.redd.it/yXTZCxA-i6Ozs8I730pHwXHS9_3D3tJ0gRT2f2Ar0wk.jpeg?width=216&crop=smart&auto=webp&s=cd538c698367744495f1d8c7b4219985eb2e8ef3",
+                "width": 216,
+                "height": 162
+              },
+              {
+                "url": "https://external-preview.redd.it/yXTZCxA-i6Ozs8I730pHwXHS9_3D3tJ0gRT2f2Ar0wk.jpeg?width=320&crop=smart&auto=webp&s=8a610092757c14b77bca2da7e39cdc04831dd4f1",
+                "width": 320,
+                "height": 240
+              }
+            ],
+            "variants": {}
+          }
+        ],
+        "enabled": false
+      },
+      "media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/w5qrRp6cFS4?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"How I Became a 10-Time World Champion\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "How I Became a 10-Time World Champion",
+          "thumbnail_url": "https://i.ytimg.com/vi/w5qrRp6cFS4/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      },
+      "secure_media": {
+        "type": "youtube.com",
+        "oembed": {
+          "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/w5qrRp6cFS4?feature=oembed&enablejsapi=1\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen title=\"How I Became a 10-Time World Champion\"></iframe>",
+          "provider_name": "YouTube",
+          "title": "How I Became a 10-Time World Champion",
+          "thumbnail_url": "https://i.ytimg.com/vi/w5qrRp6cFS4/hqdefault.jpg",
+          "thumbnail_width": 480,
+          "thumbnail_height": 360,
+          "width": 356,
+          "height": 200
+        }
+      }
+    }
+  }
+]

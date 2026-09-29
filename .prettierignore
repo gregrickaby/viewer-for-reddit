@@ -7,3 +7,4 @@ package-lock.json
 docs
 fixtures
 lib/reddit/schemas/generated.ts
+tests/media/corpus
