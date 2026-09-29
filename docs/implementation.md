@@ -1592,6 +1592,21 @@ Links with meaningful text stay links. The allowlist adds `figure`, `figcaption`
 - **Result over the full capture:** every one of 2,637 posts resolves, with **0 unresolved**. The corpus (75 real posts in 39 buckets, 2 per host × media type plus the named cases NSFW, spoiler, crosspost, removed, and thumbnail sentinels) is committed and checked on every test run. Regenerating it is the review point for any change in detection.
 - **Scripts with `server-only` imports** run with `tsx --conditions=react-server --env-file=.env.local`.
 
+### Phase 7 status: part 2, players
+
+**Built:**
+- `components/islands/player-registry.ts`, the `AutoplayVideo`, `RedditVideo`, and `EmbedFacade` islands, and `use-reduced-motion.ts` (`useSyncExternalStore` over `matchMedia`).
+- `PostMedia` renders loops, Reddit video, and embeds through them. Each island keeps a `<noscript>` copy for readers without JavaScript. The JS-only element hides under `@media (scripting: none)`.
+
+**Findings:**
+- **Native HLS isn't trustworthy.** This Chrome build answers `canPlayType('application/vnd.apple.mpegurl')` with `"maybe"`, then fails Reddit's streams with `MEDIA_ERR_SRC_NOT_SUPPORTED`. So `RedditVideo` uses hls.js wherever `Hls.isSupported()` (Media Source Extensions), native HLS only without MSE (with an `error` listener), and the silent MP4 with a "No audio" badge when both fail. This reverses the order in §7.2.
+- **Embed focus** moves to the iframe in an effect after activation; `requestAnimationFrame` could run before the iframe existed.
+
+**Verified in the browser:**
+- r/youtubehaiku: 11 facades and **zero** requests to YouTube before a click. After the click, the `youtube-nocookie` iframe (sandboxed, `strict-origin-when-cross-origin`, 16:9) loads and takes focus.
+- r/interestingasfuck: v.redd.it plays through hls.js (`blob:`), 4 s in with 9 audio segments fetched.
+- r/gifs: loops play only while at least half visible, pause offscreen, and at most 6 of 9 hold a source.
+
 ### Phase 7 acceptance
 
 - [ ] **Corpus:** `tests/media/corpus/*.json` has at least 2 real samples per resolver and per provider, including NSFW Redgifs (both the transcode and iframe paths), a spoiler, a crossposted video, a gallery with a GIF item, a removed post, thumbnail sentinels, a `v.redd.it` GIF versus a video, an Imgur GIFV, and a Giphy comment. All pass, and `media:unresolved` fires for fewer than 2% of corpus posts.

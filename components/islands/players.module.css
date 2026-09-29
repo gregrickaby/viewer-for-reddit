@@ -1,0 +1,115 @@
+/* Shared by AutoplayVideo, RedditVideo, and EmbedFacade (design §8.7). */
+@layer components {
+  .frame {
+    position: relative;
+    display: grid;
+    place-items: center;
+    max-block-size: 80vh;
+    overflow: hidden;
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+  }
+
+  .media {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    max-block-size: 80vh;
+    object-fit: contain;
+  }
+
+  /* Elements that only make sense with JavaScript; <noscript> has the fallback. */
+  .scripted {
+    @media (scripting: none) {
+      display: none;
+    }
+  }
+
+  .playToggle,
+  .badge {
+    position: absolute;
+    padding: var(--space-1) var(--space-3);
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface-card) 88%, transparent);
+    color: var(--text-1);
+    font: inherit;
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  .playToggle {
+    inset: auto auto var(--space-2) var(--space-2);
+    cursor: pointer;
+  }
+
+  .badge {
+    inset: var(--space-2) var(--space-2) auto auto;
+  }
+
+  .embed,
+  .facade {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    max-block-size: 80vh;
+    overflow: hidden;
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+  }
+
+  .iframe {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    border: 0;
+  }
+
+  .facade {
+    display: grid;
+    place-items: center;
+    color: var(--text-1);
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .facadePoster {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .facadeBadge {
+    position: absolute;
+    inset: var(--space-2) auto auto var(--space-2);
+    padding: 0.1em 0.6em;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface-card) 88%, transparent);
+    font-size: var(--step-minus-2);
+    font-weight: 700;
+  }
+
+  .facadePlay {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+    padding-inline-start: 0.2em;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--surface-card) 88%, transparent);
+    box-shadow: var(--shadow-2);
+    font-size: var(--step-2);
+    transition: background-color var(--duration-exit) var(--ease-out);
+  }
+
+  .facade:hover .facadePlay,
+  .facade:focus-visible .facadePlay {
+    background: var(--accent-fill);
+    color: var(--accent-contrast);
+  }
+}

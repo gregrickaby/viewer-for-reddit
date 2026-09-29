@@ -1,10 +1,14 @@
 /* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets (design §4.2); the image optimizer would add a hop and a server cache of NSFW media. */
 import type { ReactNode } from 'react'
+import { AutoplayVideo } from '@/components/islands/autoplay-video'
+import { EmbedFacade } from '@/components/islands/embed-facade'
+import { RedditVideo } from '@/components/islands/reddit-video'
 import type {
   AnimatedMedia,
   GalleryItem,
   ImageSet,
   PostMedia as PostMediaView,
+  ProviderId,
   VideoMedia,
 } from '@/lib/view-models'
 import styles from './media.module.css'
@@ -19,6 +23,19 @@ import styles from './media.module.css'
 export type RevealReason = 'nsfw' | 'spoiler' | null
 
 const SIZES = '(min-width: 1024px) 40rem, 100vw'
+
+const PROVIDER_NAMES: Record<ProviderId, string> = {
+  youtube: 'YouTube',
+  vimeo: 'Vimeo',
+  streamable: 'Streamable',
+  twitch: 'Twitch',
+  redgifs: 'Redgifs',
+  giphy: 'Giphy',
+  imgur: 'Imgur',
+  tiktok: 'TikTok',
+  spotify: 'Spotify',
+  soundcloud: 'SoundCloud',
+}
 
 type Props = { media: PostMediaView; title: string; reveal: RevealReason }
 
@@ -51,15 +68,15 @@ function MediaBody({
     case 'animated':
       return <Animated media={media} alt={title} />
     case 'video':
-      return <Video media={media} />
+      return <Video media={media} label={title} />
     case 'gallery':
       return <Gallery items={media.items} title={title} />
     case 'embed':
       return (
-        <LinkCard
-          url={media.embed.originalUrl}
-          domain={media.embed.provider}
-          thumbnail={media.poster}
+        <EmbedFacade
+          {...media.embed}
+          providerName={PROVIDER_NAMES[media.embed.provider]}
+          poster={media.poster?.src ?? null}
         />
       )
   }
@@ -128,24 +145,14 @@ export function MediaImage({ image, alt }: { image: ImageSet; alt: string }) {
 
 function Animated({ media, alt }: { media: AnimatedMedia; alt: string }) {
   if (media.loop) {
-    const { mp4, width, height } = media.loop
     return (
-      <div className={styles.frame} style={{ aspectRatio: `${width} / ${height}` }}>
-        <video
-          className={styles.media}
-          width={width}
-          height={height}
-          poster={media.poster?.src}
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="metadata"
-          aria-label={alt}
-        >
-          <source src={mp4} type="video/mp4" />
-        </video>
-      </div>
+      <AutoplayVideo
+        mp4={media.loop.mp4}
+        width={media.loop.width}
+        height={media.loop.height}
+        poster={media.poster?.src ?? null}
+        label={alt}
+      />
     )
   }
   const gif = media.gif!
@@ -169,23 +176,16 @@ function Animated({ media, alt }: { media: AnimatedMedia; alt: string }) {
   )
 }
 
-function Video({ media }: { media: VideoMedia }) {
-  const { hls, mp4Fallback, width, height } = media.video
+function Video({ media, label }: { media: VideoMedia; label: string }) {
   return (
-    <div className={styles.frame} style={{ aspectRatio: `${width} / ${height}` }}>
-      <video
-        className={styles.media}
-        width={width}
-        height={height}
-        poster={media.poster?.src}
-        controls
-        playsInline
-        preload="none"
-      >
-        <source src={hls} type="application/vnd.apple.mpegurl" />
-        {mp4Fallback ? <source src={mp4Fallback} type="video/mp4" /> : null}
-      </video>
-    </div>
+    <RedditVideo
+      hls={media.video.hls}
+      mp4Fallback={media.video.mp4Fallback}
+      width={media.video.width}
+      height={media.video.height}
+      poster={media.poster?.src ?? null}
+      label={label}
+    />
   )
 }
 
@@ -223,7 +223,7 @@ function Gallery({ items, title }: { items: GalleryItem[]; title: string }) {
               ) : item.media.type === 'animated' ? (
                 <Animated media={item.media} alt={alt} />
               ) : (
-                <Video media={item.media} />
+                <Video media={item.media} label={alt} />
               )}
             </div>
             <span className={styles.counter}>{label}</span>

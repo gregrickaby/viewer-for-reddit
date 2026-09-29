@@ -34,11 +34,11 @@ describe('PostMedia', () => {
     expect(await render({ type: 'image', image: imageSet({ srcSet: '' }) })).not.toContain('srcSet')
   })
 
-  it('loops animated media as a muted, inline MP4', async () => {
+  it('loops animated media through AutoplayVideo, with a no-JS autoplaying copy', async () => {
     const out = await render({ type: 'animated', loop, gif: null, poster: imageSet() })
-    expect(out).toMatch(/<video[^>]*muted[^>]*loop[^>]*playsInline[^>]*autoPlay/)
-    expect(out).toContain('poster="https://i.redd.it/a.jpg"')
-    expect(out).toContain('<source src="https://v.redd.it/a/DASH_480.mp4" type="video/mp4"/>')
+    // The scripted <video> gets its src only as it nears the viewport.
+    expect(out).toMatch(/<video class="media scripted"[^>]*poster="https:\/\/i\.redd\.it\/a\.jpg"[^>]*muted=""[^>]*loop=""/)
+    expect(out).toContain('<noscript><video class="media" src="https://v.redd.it/a/DASH_480.mp4"')
   })
 
   it('falls back to the GIF, with a still for reduced motion', async () => {
