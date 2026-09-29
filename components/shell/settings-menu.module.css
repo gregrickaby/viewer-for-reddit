@@ -24,7 +24,8 @@
     & svg {
       fill: none;
       stroke: currentcolor;
-      stroke-width: 1.6;
+      stroke-width: 1.8;
+      stroke-linejoin: round;
       stroke-linecap: round;
     }
   }
