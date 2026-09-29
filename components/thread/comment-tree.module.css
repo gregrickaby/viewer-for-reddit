@@ -142,6 +142,11 @@
   }
 
   .confirm {
+    /* A global reset zeroes the UA's auto margins, so centre it explicitly. */
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    block-size: fit-content;
     inline-size: min(22rem, calc(100vw - 2 * var(--space-4)));
     padding: var(--space-4);
     border: var(--border-width) solid var(--border);
