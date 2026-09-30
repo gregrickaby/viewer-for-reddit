@@ -3,9 +3,10 @@ import type { PostView } from '@/lib/view-models'
 import { postView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
 
-const getFeed = vi.fn(async (..._: unknown[]) => ({
-  items: [postView({ id: 'b', fullname: 't3_b' })] as PostView[],
-  after: 't3_b' as string | null,
+type Page = { items: PostView[]; after: string | null; before: null }
+const getFeed = vi.fn<(source: unknown, query: unknown) => Promise<Page>>(async () => ({
+  items: [postView({ id: 'b', fullname: 't3_b' })],
+  after: 't3_b',
   before: null,
 }))
 vi.mock('@/lib/reddit/reads', () => ({ getFeed }))
