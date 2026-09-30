@@ -1,0 +1,78 @@
+@layer components {
+  .page {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--space-6);
+    min-block-size: 100dvh;
+    padding: var(--space-4);
+    background: var(--surface-page);
+  }
+
+  .header {
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+  }
+
+  .article {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+    color: var(--text-1);
+    line-height: 1.6;
+
+    & h1 {
+      font-size: var(--step-3);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    & h2 {
+      margin-block-start: var(--space-4);
+      font-size: var(--step-1);
+    }
+
+    & h3 {
+      font-size: var(--step-0);
+    }
+
+    & ul {
+      display: grid;
+      gap: var(--space-2);
+      padding-inline-start: var(--space-5);
+      list-style: disc;
+    }
+
+    & a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+  }
+
+  .lede {
+    color: var(--text-2);
+    font-size: var(--step-1);
+  }
+
+  .footer {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: center;
+    padding-block: var(--space-5);
+    border-block-start: var(--border-width) solid var(--border);
+    text-align: center;
+  }
+
+  .disclaimer {
+    max-inline-size: 48ch;
+    color: var(--text-3);
+    font-size: var(--step-minus-2);
+  }
+}

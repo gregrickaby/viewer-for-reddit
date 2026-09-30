@@ -7,20 +7,23 @@
 
   .mark {
     flex: none;
-
-    & rect {
-      fill: var(--orangered-6);
-    }
-
-    & path {
-      fill: var(--accent-contrast);
-    }
+    display: block;
   }
 
   .wordmark {
     font-size: var(--step-1);
     font-weight: 700;
+    line-height: 1;
     letter-spacing: -0.01em;
     color: var(--text-1);
+  }
+
+  /* Only on wide screens, where the header has room for it. */
+  .wide {
+    display: none;
+
+    @media (width >= 64rem) {
+      display: inline;
+    }
   }
 }

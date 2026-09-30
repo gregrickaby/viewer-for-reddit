@@ -4,7 +4,7 @@ const config = {
   plugins: ['./stylelint/require-components-layer.mjs'],
   ignoreFiles: ['.next/**', 'coverage/**', 'node_modules/**'],
   rules: {
-    'reddit-viewer/require-components-layer': true,
+    'viewer-for-reddit/require-components-layer': true,
     // CSS Modules are consumed from TS as `styles.fooBar`.
     'selector-class-pattern': [
       '^[a-z][a-zA-Z0-9]*$',

@@ -81,3 +81,31 @@ test.describe('instant navigation', () => {
     await expect(page.locator('main article').first()).toBeVisible()
   })
 })
+
+test.describe('header', () => {
+  for (const { width, wordmark } of [
+    { width: 390, wordmark: false },
+    { width: 1280, wordmark: true },
+  ]) {
+    test(`at ${width}px the logo is centred and the name is ${wordmark ? 'shown' : 'hidden'}`, async ({
+      signedIn: page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 })
+      await expect(page.getByRole('button', { name: /^Account menu/ })).toBeVisible()
+      const header = page.locator('header').first()
+      // The search box keeps a usable width, even on a phone.
+      const search = await page.getByRole('searchbox', { name: 'Search subreddits' }).boundingBox()
+      expect(search!.width).toBeGreaterThanOrEqual(150)
+      const logo = page.getByRole('link', { name: 'Viewer for Reddit home' }).locator('img')
+      const [bar, mark] = await Promise.all([header.boundingBox(), logo.boundingBox()])
+      const offset = mark!.y + mark!.height / 2 - (bar!.y + bar!.height / 2)
+      expect(Math.abs(offset)).toBeLessThanOrEqual(1)
+      const name = page
+        .getByRole('link', { name: 'Viewer for Reddit home' })
+        .getByText('Viewer for Reddit')
+      await (wordmark ? expect(name).toBeVisible() : expect(name).toBeHidden())
+      if (process.env.HEADER_SHOTS)
+        await header.screenshot({ path: `${process.env.HEADER_SHOTS}/header-${width}.png` })
+    })
+  }
+})

@@ -7,6 +7,7 @@ import './styles/utilities.css'
 import type { Metadata, Viewport } from 'next'
 import { Reddit_Mono, Reddit_Sans } from 'next/font/google'
 import { env } from '@/lib/env'
+import { OPEN_GRAPH, SHARE_IMAGE, SITE } from '@/lib/site'
 
 const redditSans = Reddit_Sans({
   subsets: ['latin'],
@@ -28,12 +29,30 @@ const redditMono = Reddit_Mono({
  */
 const THEME_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|; )rv_theme=(system|light|dark)(?:;|$)/);if(m)document.documentElement.setAttribute("data-theme",m[1])}catch(e){}})()`
 
+/*
+ * Site-wide SEO. The icons come from the `favicon`, `icon`, and `apple-icon`
+ * files beside this layout; the share image is in `lib/site.ts`. Only the
+ * public pages are indexable: the signed-in shell opts out.
+ */
 export const metadata: Metadata = {
+  metadataBase: new URL(env.BASE_URL),
+  applicationName: SITE.name,
   title: {
-    default: 'Reddit Viewer',
-    template: '%s · Reddit Viewer',
+    default: `${SITE.name}: ${SITE.tagline}`,
+    template: `%s · ${SITE.name}`,
   },
-  description: 'A fast, server-first Reddit client.',
+  description: SITE.description,
+  authors: [SITE.author],
+  creator: SITE.author.name,
+  // Each public page sets its own canonical URL; one here would leak to every page.
+  openGraph: OPEN_GRAPH,
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE.name,
+    description: SITE.description,
+    images: [SHARE_IMAGE],
+  },
+  robots: { index: true, follow: true },
   verification: env.GOOGLE_SITE_VERIFICATION ? { google: env.GOOGLE_SITE_VERIFICATION } : undefined,
 }
 

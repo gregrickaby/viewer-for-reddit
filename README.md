@@ -1,13 +1,15 @@
-# Reddit Viewer
+# Viewer for Reddit
 
-A fast, server-first Reddit client built on Next.js (canary during development) and React 19. It signs in with Reddit's official OAuth. The browser never talks to Reddit's API: every read and write happens on the server, through Server Components and Server Actions.
+Surf Reddit without ads or algorithms: **<https://reddit-viewer.com>**
+
+Viewer for Reddit is a Reddit client built on Next.js and React Server Components. It signs in with Reddit’s official OAuth. The browser never calls Reddit’s API: the server makes every read and write, through Server Components and Server Actions, and sends pages already rendered.
 
 - **Feeds:** home, popular, subreddits, multireddits, user profiles, saved posts, search.
-- **Actions:** vote, save, comment, reply, edit and delete, subscribe to communities and follow users, and create and edit multireddits. All of them are optimistic, with rollback.
-- **Media:** images, galleries with a lightbox, GIF loops, Reddit video with sound (HLS), and click-to-load embeds (YouTube, Vimeo, Streamable, Twitch, Redgifs, Giphy, Imgur, TikTok, Spotify, SoundCloud, and more), plus inline images and GIFs in comments.
+- **Actions:** vote, save, comment, reply, edit and delete, subscribe to communities and follow users, and create and edit multireddits. Each one updates the page at once and rolls back if Reddit refuses.
+- **Media:** images, galleries with a lightbox, GIF loops, Reddit video with sound (HLS), and click-to-load embeds (YouTube, Vimeo, Streamable, Twitch, Redgifs, Giphy, Imgur, TikTok, Spotify, SoundCloud), plus inline images and GIFs in comments.
 - **Settings:** light, dark, or system theme, and "Blur NSFW media". Both are stored in cookies.
 
-The design is in [`docs/design.md`](docs/design.md), and the phase-by-phase build plan and status are in [`docs/implementation.md`](docs/implementation.md).
+Version 10 is a ground-up rewrite. Version 9 and earlier (built with Mantine) are in the [`9.1.0` tag](https://github.com/gregrickaby/viewer-for-reddit/tree/9.1.0).
 
 ## Setup
 
@@ -22,7 +24,7 @@ Requirements: Node 24 and npm.
    cp .env.example .env.local
    ```
 
-   Fill in the client id and secret, a `USER_AGENT` such as `web:reddit-viewer:0.1.0 (by /u/yourname)`, and two secrets:
+   Fill in the client id and secret, a `USER_AGENT` such as `web:viewer-for-reddit:10.0.0 (by /u/yourname)`, and two secrets:
 
    ```sh
    openssl rand -base64 48   # SESSION_SECRET (32+ characters)
@@ -67,13 +69,27 @@ Curated schemas in `lib/reddit/schemas` sit on top of the generated ones.
 ## Testing and CI
 
 - **Unit tests** (Vitest, in `tests/unit`) render Server Components to HTML with `prerender`, and test client islands in happy-dom.
-- **End-to-end tests** (Playwright, in `e2e/`) run against `e2e/mock-reddit/server.ts`. It is an in-memory Reddit that records writes and can inject latency and failures, so the optimistic-update and rollback paths are tested for real.
+- **End-to-end tests** (Playwright, in `e2e/`) run against `e2e/mock-reddit/server.ts`. It is an in-memory Reddit that records writes and can inject latency and failures. The tests use it to check optimistic updates and their rollback.
 - **GitHub Actions:**
   - `ci.yml` runs the checks and e2e on every push and PR.
-  - `canary.yml` tries the newest `next@canary` weekly, and opens a PR when everything passes.
+  - `canary.yml` tries the newest `next@canary` every Monday and opens a PR when the checks and e2e pass.
 
 ## Security
 
 - OAuth tokens live only in sealed, httpOnly cookies. `proxy.ts` refreshes them.
 - All Reddit HTML is sanitized before it renders.
-- Every response carries a static Content Security Policy and the standard hardening headers, from `lib/security/headers.ts`. The policy has no nonces, which keeps Partial Prerendering working.
+- Every response carries a static Content Security Policy plus `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, and (over HTTPS) `Strict-Transport-Security`, all set in `lib/security/headers.ts`.
+- The policy has no nonces. A nonce needs every page rendered per request, and Partial Prerendering serves a prerendered shell.
+
+## Support
+
+- Report bugs and request features in [GitHub Issues](https://github.com/gregrickaby/viewer-for-reddit/issues).
+- Support the project: [Buy Me a Coffee](https://buymeacoffee.com/gregrickaby), [Venmo](https://venmo.com/u/GregRickaby), [PayPal](https://www.paypal.com/paypalme/GregRickaby).
+
+## License
+
+MIT © [Greg Rickaby](https://gregrickaby.com). See [LICENSE](LICENSE).
+
+---
+
+_Viewer for Reddit is an independent project not affiliated with Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc. See Reddit’s [brand guidelines](https://redditinc.com/brand), [API terms](https://redditinc.com/policies/data-api-terms), and [API documentation](https://www.reddit.com/dev/api/)._

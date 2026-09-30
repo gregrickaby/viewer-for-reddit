@@ -1,7 +1,18 @@
 {
-  "name": "reddit-viewer",
-  "version": "0.1.0",
+  "name": "@gregrickaby/viewer-for-reddit",
+  "description": "Surf Reddit without ads or algorithms",
+  "version": "10.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gregrickaby/viewer-for-reddit.git"
+  },
+  "author": "Greg Rickaby <greg@gregrickaby.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gregrickaby/viewer-for-reddit/issues"
+  },
+  "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
     "dev": "next dev --experimental-https",
     "build": "next build",

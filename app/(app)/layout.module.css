@@ -57,7 +57,10 @@
   }
 
   .brand {
+    /* Flex, not inline: an inline link sits on a text line and pushes the logo off centre. */
     flex: none;
+    display: flex;
+    align-items: center;
     color: inherit;
 
     &:hover {

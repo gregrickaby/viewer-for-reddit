@@ -14,8 +14,12 @@ import {
 import { refreshAccessToken } from '@/lib/auth/oauth'
 import { env } from '@/lib/env'
 import { securityHeaders } from '@/lib/security/headers'
+import { PUBLIC_PAGES } from '@/lib/site'
 
-const isPublicPath = (pathname: string) => pathname === '/' || pathname.startsWith('/api/auth/')
+const PUBLIC_PATHS = new Set<string>([...PUBLIC_PAGES, '/manifest.webmanifest'])
+
+const isPublicPath = (pathname: string) =>
+  PUBLIC_PATHS.has(pathname) || pathname.startsWith('/api/auth/')
 
 type OutgoingCookie = { name: string; value: string; maxAge: number }
 

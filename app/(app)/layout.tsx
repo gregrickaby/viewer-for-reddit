@@ -1,12 +1,22 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { Logo } from '@/components/brand/logo'
 import { PopoverDismiss } from '@/components/islands/popover-dismiss'
 import { SectionError } from '@/components/islands/section-error'
-import { SidebarFeeds, SidebarLists, SidebarSkeleton } from '@/components/shell/sidebar'
+import {
+  SidebarFeeds,
+  SidebarLists,
+  SidebarSiteLinks,
+  SidebarSkeleton,
+} from '@/components/shell/sidebar'
 import { SettingsMenu, SettingsMenuSkeleton } from '@/components/shell/settings-menu'
 import { UserMenu, UserMenuSkeleton } from '@/components/shell/user-menu'
+import { SITE } from '@/lib/site'
 import styles from './layout.module.css'
+
+/** Signed-in pages are one person's Reddit: nothing here belongs in a search index. */
+export const metadata: Metadata = { robots: { index: false, follow: false } }
 
 /**
  * The signed-in shell (design §10.1). The header and nav frame prerender;
@@ -28,8 +38,8 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
             <path d="M3 5h14M3 10h14M3 15h14" />
           </svg>
         </button>
-        <Link href="/home" className={styles.brand} aria-label="Reddit Viewer home">
-          <Logo size={32} withWordmark />
+        <Link href="/home" className={styles.brand} aria-label={`${SITE.name} home`}>
+          <Logo size={32} withWordmark="wide" />
         </Link>
         <form action="/search" method="get" role="search" className={styles.search}>
           <label htmlFor="site-search" className="visually-hidden">
@@ -60,6 +70,7 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
             <SidebarLists />
           </Suspense>
         </SectionError>
+        <SidebarSiteLinks />
       </aside>
 
       <main className={styles.main}>{children}</main>

@@ -20,10 +20,10 @@ export default function GlobalError({
           color: 'CanvasText',
         }}
       >
-        <title>Something went wrong · Reddit Viewer</title>
+        <title>Something went wrong · Viewer for Reddit</title>
         <main style={{ maxWidth: '40rem', margin: '0 auto', padding: '4rem 1rem' }} role="alert">
           <h1>Something went wrong</h1>
-          <p>Reddit Viewer hit an unexpected error. Trying again usually works.</p>
+          <p>Viewer for Reddit hit an unexpected error. Trying again usually works.</p>
           <button
             type="button"
             onClick={() => retry()}

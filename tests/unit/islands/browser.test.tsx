@@ -133,7 +133,7 @@ describe('error fallbacks', () => {
     const retry = vi.fn()
     const html = renderToStaticMarkup(<GlobalError error={new Error('x')} retry={retry} />)
     expect(html).toMatch(/^<html lang="en"/)
-    expect(html).toContain('<title>Something went wrong · Reddit Viewer</title>')
+    expect(html).toContain('<title>Something went wrong · Viewer for Reddit</title>')
     expect(html).toContain('role="alert"')
     // A whole document can't mount in the test DOM, so press the button's handler directly.
     const button = findByType(GlobalError({ error: new Error('x'), retry }), 'button')

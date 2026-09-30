@@ -103,5 +103,10 @@
     display: block;
     inline-size: 6rem;
     block-size: 1rem;
+
+    /* Matches `.name`, so the header doesn't shift when the menu arrives. */
+    @media (width < 40rem) {
+      display: none;
+    }
   }
 }

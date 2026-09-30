@@ -20,7 +20,7 @@ const appEnv = {
   REDDIT_CLIENT_ID: 'e2e-client',
   REDDIT_CLIENT_SECRET: 'e2e-secret',
   SESSION_SECRET: 'e2e-session-secret-that-is-long-enough-000',
-  USER_AGENT: 'web-app:reddit-viewer:e2e (by u/fixture_user)',
+  USER_AGENT: 'web-app:viewer-for-reddit:e2e (by u/fixture_user)',
 }
 
 export default defineConfig({

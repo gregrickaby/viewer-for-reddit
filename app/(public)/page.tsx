@@ -1,8 +1,17 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { Logo } from '@/components/brand/logo'
+import { SiteLinks } from '@/components/site/site-links'
 import { Button } from '@/components/ui/button'
 import { safeNext } from '@/lib/auth/next-param'
+import { OPEN_GRAPH } from '@/lib/site'
 import styles from './page.module.css'
+
+/** The title and description are the site defaults (app/layout.tsx). */
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { ...OPEN_GRAPH, url: '/' },
+}
 
 const ERROR_MESSAGES = {
   denied: 'Sign-in was cancelled on Reddit. You can try again whenever you’re ready.',
@@ -72,6 +81,7 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
           .
         </p>
       </section>
+      <SiteLinks />
     </main>
   )
 }

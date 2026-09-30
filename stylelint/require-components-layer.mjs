@@ -5,7 +5,7 @@ const {
   utils: { report, ruleMessages },
 } = stylelint
 
-const ruleName = 'reddit-viewer/require-components-layer'
+const ruleName = 'viewer-for-reddit/require-components-layer'
 const messages = ruleMessages(ruleName, {
   rejected: 'CSS Module rules must live inside a top-level `@layer components { … }` block.',
 })

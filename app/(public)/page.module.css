@@ -2,6 +2,8 @@
   .page {
     display: grid;
     place-items: center;
+    align-content: center;
+    gap: var(--space-5);
     min-block-size: 100dvh;
     padding: var(--space-5) var(--space-4);
     background:

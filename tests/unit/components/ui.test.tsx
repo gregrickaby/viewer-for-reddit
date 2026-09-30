@@ -37,12 +37,15 @@ describe('LinkButton', () => {
 describe('Logo', () => {
   it('renders a decorative mark, optionally with the wordmark', async () => {
     const mark = await renderServer(<Logo />)
-    expect(mark).toContain('aria-hidden="true"')
+    expect(mark).toContain('alt=""')
     expect(mark).toContain('width="40"')
-    expect(mark).not.toContain('Reddit Viewer')
+    expect(mark).not.toContain('Viewer for Reddit')
 
     const full = await renderServer(<Logo size={24} withWordmark />)
     expect(full).toContain('width="24"')
-    expect(full).toContain('<span class="wordmark">Reddit Viewer</span>')
+    expect(full).toContain('<span class="wordmark">Viewer for Reddit</span>')
+
+    const wide = await renderServer(<Logo withWordmark="wide" />)
+    expect(wide).toContain('<span class="wordmark wide">Viewer for Reddit</span>')
   })
 })

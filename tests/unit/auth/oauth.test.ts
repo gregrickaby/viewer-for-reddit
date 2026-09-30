@@ -60,7 +60,7 @@ describe('token endpoint', () => {
     expect(headers.get('authorization')).toBe(
       `Basic ${Buffer.from('test-client-id:test-client-secret').toString('base64')}`,
     )
-    expect(headers.get('user-agent')).toBe('web-app:reddit-viewer:test (by u/test)')
+    expect(headers.get('user-agent')).toBe('web-app:viewer-for-reddit:test (by u/test)')
     expect(Object.fromEntries(init.body as URLSearchParams)).toEqual({
       grant_type: 'authorization_code',
       code: 'the-code',

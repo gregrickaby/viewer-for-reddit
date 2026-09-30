@@ -86,6 +86,23 @@
     font-weight: 600;
   }
 
+  .siteLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    padding-inline: var(--space-2);
+  }
+
+  .siteLink {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+
+    &:hover {
+      color: var(--text-1);
+      text-decoration: underline;
+    }
+  }
+
   .rowSkeleton {
     display: block;
     block-size: 1.5rem;

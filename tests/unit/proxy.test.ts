@@ -55,7 +55,14 @@ describe('proxy: auth gating', () => {
   })
 
   it('lets signed-out visitors reach public paths', async () => {
-    for (const path of ['/', '/api/auth/login', '/api/auth/callback/reddit?code=x']) {
+    for (const path of [
+      '/',
+      '/about',
+      '/donate',
+      '/manifest.webmanifest',
+      '/api/auth/login',
+      '/api/auth/callback/reddit?code=x',
+    ]) {
       const response = await proxy(request(path))
       expect(response.headers.get('location')).toBeNull()
     }

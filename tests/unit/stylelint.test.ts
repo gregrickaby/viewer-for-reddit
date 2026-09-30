@@ -6,12 +6,12 @@ async function lint(code: string, codeFilename: string, enabled = true) {
   const { results } = await stylelint.lint({
     code,
     codeFilename,
-    config: { plugins: [plugin], rules: { 'reddit-viewer/require-components-layer': enabled } },
+    config: { plugins: [plugin], rules: { 'viewer-for-reddit/require-components-layer': enabled } },
   })
   return results[0]!.warnings.map((w) => w.text)
 }
 
-describe('reddit-viewer/require-components-layer', () => {
+describe('viewer-for-reddit/require-components-layer', () => {
   it('accepts CSS Modules wrapped in @layer components (comments allowed)', async () => {
     expect(
       await lint('/* hi */\n@layer components { .a { color: red; } }', 'x.module.css'),
@@ -29,7 +29,7 @@ describe('reddit-viewer/require-components-layer', () => {
     expect(await lint('.a { color: red; }', 'x.module.css', false)).toEqual([])
     const { results } = await stylelint.lint({
       code: '.a {}',
-      config: { plugins: [plugin], rules: { 'reddit-viewer/require-components-layer': true } },
+      config: { plugins: [plugin], rules: { 'viewer-for-reddit/require-components-layer': true } },
     })
     expect(results[0]!.warnings).toEqual([])
   })

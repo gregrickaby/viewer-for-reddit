@@ -30,7 +30,7 @@ describe('redditFetch', () => {
     expect(url.href).toBe('https://oauth.reddit.test/r/pics/hot?limit=25&raw_json=1')
     const headers = new Headers(init.headers)
     expect(headers.get('authorization')).toBe('Bearer tok')
-    expect(headers.get('user-agent')).toBe('web-app:reddit-viewer:test (by u/test)')
+    expect(headers.get('user-agent')).toBe('web-app:viewer-for-reddit:test (by u/test)')
     expect(init.method).toBe('GET')
   })
 

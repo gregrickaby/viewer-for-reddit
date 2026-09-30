@@ -2,6 +2,7 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { ViewTransition } from 'react'
+import { SiteLinks } from '@/components/site/site-links'
 import { getMyMultis, getMySubscriptions } from '@/lib/reddit/reads'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import type { MultiView, SubredditView } from '@/lib/view-models'
@@ -35,6 +36,15 @@ export function SidebarFeeds() {
         ))}
       </ul>
     </nav>
+  )
+}
+
+/** About, Donate, and GitHub at the foot of the sidebar. Static, like `SidebarFeeds`. */
+export function SidebarSiteLinks() {
+  return (
+    <div className={styles.section}>
+      <SiteLinks className={styles.siteLinks} linkClassName={styles.siteLink} />
+    </div>
   )
 }
 

@@ -144,6 +144,10 @@ describe('AppLayout', () => {
     expect(out).toContain('<form role="search" class="search" action="/search" method="get">')
     expect(out).toContain('id="app-nav" popover="auto"')
     expect(out).toContain('<main class="main"><p>content</p></main>')
+    expect(out).toContain('aria-label="Viewer for Reddit home"')
+    expect(out).toContain('<a class="siteLink" href="/about">About</a>')
+    expect(out).toContain('<a class="siteLink" href="/donate">Donate</a>')
+    expect(out).toContain('href="https://github.com/gregrickaby/viewer-for-reddit"')
   })
 })
 
