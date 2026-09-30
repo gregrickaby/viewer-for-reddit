@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
-import { ContentPage } from '@/components/site/content-page'
+import { SiteShell } from '@/components/site/site-shell'
 import { LinkButton } from '@/components/ui/button'
-import styles from '@/components/site/content-page.module.css'
+import { SITE } from '@/lib/site'
+import site from '@/components/site/site.module.css'
 
 export const metadata: Metadata = { title: 'Not found' }
 
@@ -12,12 +13,24 @@ export const metadata: Metadata = { title: 'Not found' }
  */
 export default function NotFound() {
   return (
-    <ContentPage>
-      <h1>This page doesn’t exist</h1>
-      <p className={styles.lede}>Check the address, or head back to the start.</p>
-      <div>
-        <LinkButton href="/">Back to Home</LinkButton>
-      </div>
-    </ContentPage>
+    <SiteShell>
+      <section className={`${site.inner} ${site.pageHero}`} aria-labelledby="not-found-title">
+        <p className={site.bigNumber} aria-hidden="true">
+          404
+        </p>
+        <h1 id="not-found-title" className={site.title}>
+          This page doesn’t exist
+        </h1>
+        <p className={site.lede}>Check the address, or head back to the start.</p>
+        <div className={site.actions}>
+          <LinkButton href="/" size="lg">
+            Back to Home
+          </LinkButton>
+          <LinkButton href="/about" variant="secondary" size="lg">
+            About {SITE.name}
+          </LinkButton>
+        </div>
+      </section>
+    </SiteShell>
   )
 }

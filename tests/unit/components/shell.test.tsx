@@ -251,5 +251,7 @@ describe('settings and status pages', () => {
     expect(out).toContain('<header')
     expect(out).toContain('aria-label="Viewer for Reddit home"')
     expect(out).toContain('<footer')
+    expect(out).toContain('404')
+    expect(out).toContain('About <!-- -->Viewer for Reddit')
   })
 })

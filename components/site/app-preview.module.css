@@ -1,0 +1,107 @@
+@layer components {
+  .frame {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-3);
+    background: var(--surface-page);
+    box-shadow: var(--shadow-2);
+    text-align: start;
+    user-select: none;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--surface-sunken);
+  }
+
+  .search {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tab {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 600;
+  }
+
+  .active {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .posts {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  .post {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+  }
+
+  .votes {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-1);
+    min-inline-size: 2.5rem;
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  .arrow {
+    color: var(--upvote);
+    font-size: var(--step-minus-2);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .title {
+    color: var(--text-1);
+    font-size: var(--step-0);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .meta {
+    color: var(--text-3);
+    font-size: var(--step-minus-2);
+  }
+
+  .thumb {
+    inline-size: 4.5rem;
+    block-size: 3.5rem;
+    border-radius: var(--radius-1);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--orangered-6) 55%, var(--surface-sunken)),
+      var(--surface-sunken)
+    );
+  }
+}
