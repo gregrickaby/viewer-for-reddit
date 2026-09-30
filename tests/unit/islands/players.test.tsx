@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { Activity } from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -352,6 +353,22 @@ describe('EmbedFacade', () => {
     expect(iframe.getAttribute('sandbox')).toBe(embed.sandbox)
     expect(iframe.getAttribute('referrerpolicy')).toBe('strict-origin-when-cross-origin')
     expect(document.activeElement).toBe(iframe)
+  })
+
+  it('unloads the player when its page is hidden, so it stops playing', () => {
+    const page = (mode: 'visible' | 'hidden') => (
+      <Activity mode={mode}>
+        <EmbedFacade {...embed} />
+      </Activity>
+    )
+    const { container, rerender } = render(page('visible'))
+    fireEvent.click(screen.getByRole('link', { name: 'Play A video (YouTube)' }))
+    expect(container.querySelector('iframe')).not.toBeNull()
+    rerender(page('hidden'))
+    expect(container.querySelector('iframe')).toBeNull()
+    rerender(page('visible'))
+    expect(container.querySelector('iframe')).toBeNull()
+    expect(screen.getByRole('link', { name: 'Play A video (YouTube)' })).toBeTruthy()
   })
 
   it('lets modified clicks open the original, and sizes audio players by height', () => {

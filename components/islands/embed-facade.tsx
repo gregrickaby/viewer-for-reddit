@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable @next/next/no-img-element -- the poster is Reddit's own resized preview */
-import { type MouseEvent, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styles from './players.module.css'
 
 export type EmbedFacadeProps = {
@@ -34,6 +34,10 @@ export function EmbedFacade(props: EmbedFacadeProps) {
   useEffect(() => {
     if (active) iframeRef.current?.focus()
   }, [active])
+
+  // Activity hides a page you leave with display: none, and a hidden iframe keeps
+  // playing. Dropping back to the facade unloads the player.
+  useLayoutEffect(() => () => setActive(false), [])
 
   function activate(event: MouseEvent<HTMLAnchorElement>) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return
