@@ -1,7 +1,0 @@
-@layer components {
-  .page {
-    max-inline-size: var(--measure);
-    margin-inline: auto;
-    padding-inline: var(--space-4);
-  }
-}

@@ -50,7 +50,8 @@
       list-style: disc;
     }
 
-    & a {
+    /* Plain links only: a button inside the article keeps its own colors. */
+    & a:not([class]) {
       color: var(--accent);
       text-decoration: underline;
     }

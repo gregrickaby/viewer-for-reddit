@@ -244,6 +244,12 @@ describe('settings and status pages', () => {
     expect(rootNotFound.metadata).toEqual({ title: 'Not found' })
     const out = await renderServer(<rootNotFound.default />)
     expect(out).toContain('This page doesn’t exist')
-    expect(out).toContain('href="/home"')
+    // Not `/home`: this page can't tell whether the reader is signed in.
+    expect(out).toMatch(/href="\/"[^>]*>Back to Home/)
+    expect(out).not.toContain('href="/home"')
+    // Framed like the public pages: a brand header linking home, and the site links.
+    expect(out).toContain('<header')
+    expect(out).toContain('aria-label="Viewer for Reddit home"')
+    expect(out).toContain('<footer')
   })
 })
