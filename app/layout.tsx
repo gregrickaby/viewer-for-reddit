@@ -9,7 +9,7 @@ import { DatadogAppRouter } from '@datadog/browser-rum-nextjs'
 import { Suspense } from 'react'
 import { Reddit_Mono, Reddit_Sans } from 'next/font/google'
 import { env } from '@/lib/env'
-import { OPEN_GRAPH, SHARE_IMAGE, SITE } from '@/lib/site'
+import { OPEN_GRAPH, SITE, TWITTER } from '@/lib/site'
 
 const redditSans = Reddit_Sans({
   subsets: ['latin'],
@@ -48,12 +48,7 @@ export const metadata: Metadata = {
   creator: SITE.author.name,
   // Each public page sets its own canonical URL; one here would leak to every page.
   openGraph: OPEN_GRAPH,
-  twitter: {
-    card: 'summary_large_image',
-    title: SITE.name,
-    description: SITE.description,
-    images: [SHARE_IMAGE],
-  },
+  twitter: TWITTER,
   robots: { index: true, follow: true },
   verification: env.GOOGLE_SITE_VERIFICATION ? { google: env.GOOGLE_SITE_VERIFICATION } : undefined,
 }
