@@ -189,6 +189,16 @@ describe('FeedSection', () => {
     expect(out).toContain('aria-current="page"')
     expect(out).toContain('href="/home?after=t3_def&amp;count=25"')
     expect(out).not.toContain('rel="prev"')
+    // The island loads the next page; the link is only for readers without JavaScript.
+    expect(out).toContain('<noscript><nav')
+  })
+
+  it('keeps Previous in view and puts only Next behind noscript', async () => {
+    state.page = { items: [postView()], after: 't3_x', before: 't3_abc' }
+    const out = await section({ after: 't3_x', count: '50' })
+    expect(out).toContain('rel="prev"')
+    expect(out).toContain('<noscript><a')
+    expect(out).not.toContain('<noscript><nav')
   })
 
   it('offers Previous past the first page and ends when there is no cursor', async () => {

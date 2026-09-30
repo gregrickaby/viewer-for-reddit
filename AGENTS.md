@@ -41,6 +41,7 @@ npm run build         # Production build
 - **Failed reads** go through `handleReadError()` (`lib/reddit/read-errors.ts`): 401 signs out, 404 is `notFound()`, 403 returns a reason for `ForbiddenPanel`, anything else reaches the section's `SectionError` boundary.
 - **Server Actions** validate input, run their work in `runAction()`, and return an `ActionResult`. Nothing raw reaches the client. Forms that must show errors without JavaScript use a `…Form` action with `ActionForm` (`useActionState`); optimistic islands use `useEnhancedForm`.
 - **Reddit HTML** reaches the page only as `SafeHtml` from `sanitizeRedditHtml()`, rendered by `RedditHtml`. Every media URL passes `safeMediaUrl()` / `safeLinkUrl()` (`lib/media/url.ts`).
+- **Infinite scroll.** `FeedSection` renders the first page; `InfiniteFeed` (an island) watches a sentinel and appends pages that `loadMoreFeed` (`app/actions/feed.tsx`) renders on the server. The Previous and Next links stay in the HTML, with Next inside `<noscript>`.
 - **URL state.** Sorts, cursors, tabs, and expanded comments live in the URL (`lib/url-state.ts`), so every view is a link.
 - **SEO.** Only `/`, `/about`, and `/donate` are indexable (`PUBLIC_PAGES` in `lib/site.ts`, shared by `proxy.ts`, `app/robots.ts`, and `app/sitemap.ts`). The signed-in shell is `noindex`. Site name, copy, and links live in `lib/site.ts`.
 

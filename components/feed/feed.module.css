@@ -120,6 +120,15 @@
     }
   }
 
+  /* The infinite-scroll sentinel: it keeps a little height so it can come into view. */
+  .more {
+    display: grid;
+    place-items: center;
+    min-block-size: 3rem;
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+  }
+
   .end {
     padding-block: var(--space-4);
     color: var(--text-3);

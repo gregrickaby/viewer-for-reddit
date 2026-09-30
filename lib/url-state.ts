@@ -26,7 +26,7 @@ export type FeedQuery = {
 
 type SearchParams = Record<string, string | string[] | undefined>
 
-const Fullname = z.string().regex(/^t[1-6]_[a-z0-9]+$/)
+export const Fullname = z.string().regex(/^t[1-6]_[a-z0-9]+$/)
 
 function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value

@@ -21,9 +21,11 @@ export type PaginationProps = {
   defaultSort: FeedSort
   /** Other URL state to keep, such as `type`, `tab`, or `q`. */
   extra?: HrefQuery
+  /** An infinite-scroll island loads the next page, so Next is only for readers without JavaScript. */
+  infinite?: boolean
 }
 
-/** Previous and Next cursor links (design §8.3). No infinite scroll: that would need client fetching. */
+/** Previous and Next cursor links (design §8.3). */
 export function Pagination({
   base,
   query,
@@ -31,13 +33,25 @@ export function Pagination({
   firstFullname,
   defaultSort,
   extra,
+  infinite = false,
 }: PaginationProps) {
   const hasPrevious = pageOffset(query) > 0 && firstFullname !== undefined
   if (!hasPrevious && !after) {
     return firstFullname ? <p className={styles.end}>You’ve reached the end.</p> : null
   }
 
-  return (
+  const next = after ? (
+    <Link
+      href={nextHref(base, query, after, defaultSort, extra) as Route}
+      className={styles.pageLink}
+      rel="next"
+    >
+      Next →
+      <LinkPendingHint />
+    </Link>
+  ) : null
+
+  const nav = (
     <nav aria-label="Pages" className={styles.pagination}>
       {hasPrevious ? (
         <Link
@@ -51,16 +65,9 @@ export function Pagination({
       ) : (
         <span />
       )}
-      {after ? (
-        <Link
-          href={nextHref(base, query, after, defaultSort, extra) as Route}
-          className={styles.pageLink}
-          rel="next"
-        >
-          Next →
-          <LinkPendingHint />
-        </Link>
-      ) : null}
+      {infinite ? <noscript>{next}</noscript> : next}
     </nav>
   )
+  // With no Previous link, a script-enabled reader has nothing to show here.
+  return infinite && !hasPrevious ? <noscript>{nav}</noscript> : nav
 }

@@ -23,18 +23,23 @@ test.describe('sign in and out', () => {
 })
 
 test.describe('feeds', () => {
-  test('home lists posts, sorts, and pages without repeats', async ({ signedIn: page }) => {
+  test('home lists posts, loads more as you scroll, and sorts', async ({ signedIn: page }) => {
     const titles = () => page.locator('main article h2').allTextContents()
     await expect(page.locator('main article').first()).toBeVisible()
     const first = await titles()
     expect(first).toHaveLength(25)
 
-    await page.getByRole('link', { name: 'Next →' }).click()
-    await page.waitForURL(/after=t3_/)
-    await expect(page.getByRole('link', { name: '← Previous' })).toBeVisible()
-    const second = await titles()
-    expect(second.length).toBeGreaterThan(0)
-    expect(second.some((title) => first.includes(title))).toBe(false)
+    // The next page is appended without a navigation, and the pager links are hidden.
+    await expect(page.getByRole('link', { name: 'Next →' })).toBeHidden()
+    const end = page.getByText('You’ve reached the end.')
+    await expect(async () => {
+      await page.mouse.wheel(0, 4000)
+      await expect(end).toBeVisible({ timeout: 500 })
+    }).toPass()
+    const all = await titles()
+    expect(all.length).toBeGreaterThan(first.length)
+    expect(new Set(all).size).toBe(all.length)
+    expect(page.url()).not.toContain('after=')
 
     await page.getByRole('link', { name: 'Top', exact: true }).click()
     await page.waitForURL(/sort=top&t=week$/)
