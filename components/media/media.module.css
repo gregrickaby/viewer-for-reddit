@@ -1,10 +1,12 @@
 @layer components {
+  /* Full width even when the height cap shrinks a tall image's box; the image is centred inside. */
   .frame {
     display: grid;
     place-items: center;
+    inline-size: 100%;
     max-block-size: 80vh;
     overflow: hidden;
-    border-radius: var(--radius-2);
+    border-radius: var(--radius-3);
     background: var(--surface-sunken);
   }
 

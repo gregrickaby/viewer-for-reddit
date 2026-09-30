@@ -64,7 +64,7 @@ describe('PostCard', () => {
     expect(out).toContain('>3h</time>')
     expect(out).toContain('title="Nov 14, 2023, 10:13 PM UTC"')
     expect(out).toContain('href="/r/pics/comments/abc/a_post"')
-    expect(out).toContain('12 comments')
+    expect(out).toContain('12<span class="narrowHidden"> comments</span>')
     expect(out).toContain('href="https://www.reddit.com/r/pics/comments/abc/a_post"')
     expect(out).toContain('aria-label="Upvote post, score 1,234"')
     expect(out).toContain('>1.2k</span>')

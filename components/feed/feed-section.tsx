@@ -51,7 +51,7 @@ export async function FeedSection({
       <ContentReveal name="feed-content" contentKey={feedKey(query)}>
         <div className={styles.list}>
           {page.items.length > 0 ? (
-            <ol role="list" className={styles.items}>
+            <ol role="list" className={`${styles.items} ${styles.posts}`}>
               <FeedItems
                 posts={page.items}
                 showSubreddit={showSubreddit}

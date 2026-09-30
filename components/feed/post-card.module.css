@@ -1,26 +1,58 @@
 @layer components {
-  /* The feed list item is the size container (post cards adapt to column width). */
+  /*
+   * One layout at every width, like reddit.com: meta, title, media, then a row
+   * of pills (votes, comments, save, link). `.body` dissolves into the card's
+   * grid so the votes, which come first in the markup, sit beside the actions.
+   * The feed list item is the size container.
+   */
   .card {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-2);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-2);
-    background: var(--surface-card);
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-3);
+
+    /* Translucent, so the pills stay visible on the hovered card in both themes. */
+    --pill: color-mix(in srgb, var(--text-1) 8%, transparent);
+    --pill-hover: color-mix(in srgb, var(--text-1) 14%, transparent);
   }
 
-  .votes {
-    padding-block-start: var(--space-1);
+  /* A feed card lifts slightly under the pointer, like reddit.com. */
+  .interactive {
+    transition: background-color var(--duration-exit) var(--ease-out);
+
+    @media (hover: hover) {
+      &:hover {
+        background: color-mix(in srgb, var(--text-1) 4%, transparent);
+      }
+    }
   }
 
   .body {
-    display: grid;
-    gap: var(--space-2);
-    min-inline-size: 0;
+    display: contents;
   }
 
+  .body > * {
+    grid-column: 1 / -1;
+  }
+
+  .votes {
+    grid-column: 1;
+    order: 1;
+
+    --vote-direction: row;
+
+    & form {
+      padding: var(--space-1);
+      border-radius: var(--radius-pill);
+      background: var(--pill);
+    }
+  }
+
+  /* Closer to the title than the other rows are to each other. */
   .meta {
+    margin-block-end: calc(-1 * var(--space-1));
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -142,20 +174,23 @@
   }
 
   .actions {
+    grid-column: 2;
+    order: 2;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-1);
-    margin-inline-start: calc(-1 * var(--space-2));
+    gap: var(--space-2);
   }
 
-  .action {
+  .action,
+  .actions button {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    min-block-size: 2rem;
-    padding-inline: var(--space-2);
+    min-block-size: 2.5rem;
+    padding-inline: var(--space-3);
     border-radius: var(--radius-pill);
+    background: var(--pill);
     color: var(--text-2);
     font-size: var(--step-minus-1);
     font-weight: 600;
@@ -168,7 +203,7 @@
     }
 
     &:hover {
-      background: var(--surface-hover);
+      background: var(--pill-hover);
       color: var(--text-1);
       text-decoration: none;
     }
@@ -177,8 +212,8 @@
   /* Skeleton shapes: same boxes as the card */
   .voteSkeleton {
     display: block;
-    inline-size: 2rem;
-    block-size: 5rem;
+    inline-size: 6rem;
+    block-size: 2.5rem;
   }
 
   .metaSkeleton {
@@ -206,19 +241,28 @@
 
   @container (inline-size < 30rem) {
     .card {
-      grid-template-columns: minmax(0, 1fr);
       padding-inline: var(--space-3);
     }
+  }
 
-    .votes {
-      order: 1;
+  /* The counts and icons carry the meaning; the words stay for screen readers. */
+  .narrowHidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 
-      --vote-direction: row;
-    }
-
-    .voteSkeleton {
-      inline-size: 6rem;
-      block-size: 2rem;
+  /* Wide cards have room for the link's name; narrow ones show only its arrow. */
+  @container (inline-size >= 30rem) {
+    .linkText {
+      position: static;
+      inline-size: auto;
+      block-size: auto;
+      overflow: visible;
+      clip-path: none;
     }
   }
 }

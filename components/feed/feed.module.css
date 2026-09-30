@@ -22,6 +22,16 @@
     container-type: inline-size;
   }
 
+  /* Posts are rows split by a hairline, like reddit.com; the card inside lifts on hover. */
+  .posts {
+    gap: 0;
+  }
+
+  .post {
+    padding-block: var(--space-1);
+    border-block-end: var(--border-width) solid var(--border);
+  }
+
   .toolbar {
     display: flex;
     flex-wrap: wrap;

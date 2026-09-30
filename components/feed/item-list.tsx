@@ -28,7 +28,7 @@ export function ItemList({
       {items.map((item) => (
         <li
           key={item.kind === 'post' ? item.post.fullname : item.comment.fullname}
-          className={styles.item}
+          className={item.kind === 'post' ? `${styles.item} ${styles.post}` : styles.item}
         >
           {item.kind === 'post' ? (
             <PostCard post={item.post} showSubreddit blurNsfw={blurNsfw} now={now} />

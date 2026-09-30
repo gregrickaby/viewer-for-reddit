@@ -15,7 +15,7 @@ export function FeedItems({
   now: number
 }) {
   return posts.map((post) => (
-    <li key={post.id} className={styles.item}>
+    <li key={post.id} className={`${styles.item} ${styles.post}`}>
       <PostCard post={post} showSubreddit={showSubreddit} blurNsfw={blurNsfw} now={now} />
     </li>
   ))

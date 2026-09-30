@@ -48,7 +48,7 @@ export function InfiniteFeed({ request }: { request: MoreFeedRequest }) {
   return (
     <>
       {pages.length > 0 ? (
-        <ol role="list" className={styles.items}>
+        <ol role="list" className={`${styles.items} ${styles.posts}`}>
           {pages.map((items, index) => (
             <Fragment key={index}>{items}</Fragment>
           ))}

@@ -4,7 +4,7 @@ import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { MediaReveal, PostMedia, type RevealReason } from '@/components/media/post-media'
 import { RedditHtml } from '@/components/reddit-html'
-import { absoluteTime, isoTime, plural, timeAgo } from '@/lib/format'
+import { absoluteTime, compactNumber, isoTime, timeAgo } from '@/lib/format'
 import { hasInlineMedia } from '@/lib/media/inline'
 import type { PostView, SafeHtml } from '@/lib/view-models'
 import styles from './post-card.module.css'
@@ -35,7 +35,10 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
   const inactive = post.flags.archived || post.flags.locked
 
   return (
-    <article className={styles.card} aria-labelledby={titleId}>
+    <article
+      className={detail ? styles.card : `${styles.card} ${styles.interactive}`}
+      aria-labelledby={titleId}
+    >
       <div className={styles.votes}>
         <VoteButtons
           key={`${post.likes}:${post.score}`}
@@ -133,7 +136,10 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
             <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">
               <path d="M3 4h14v9H8l-4 3v-3H3z" />
             </svg>
-            {plural(post.numComments, 'comment')}
+            {compactNumber(post.numComments)}
+            <span className={styles.narrowHidden}>
+              {` ${post.numComments === 1 ? 'comment' : 'comments'}`}
+            </span>
           </Link>
           <SaveButton key={String(post.saved)} fullname={post.fullname} saved={post.saved} />
           <a
@@ -142,7 +148,7 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
             target="_blank"
             rel="noopener noreferrer"
           >
-            Open on Reddit ↗
+            <span className={`${styles.narrowHidden} ${styles.linkText}`}>Open on Reddit </span>↗
           </a>
           {inactive ? (
             <span className={styles.status}>
