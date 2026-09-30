@@ -8,9 +8,21 @@ test.describe('sign in and out', () => {
     void mock
     await page.goto('/r/pics')
     await expect(page).toHaveURL(/\/\?next=%2Fr%2Fpics$/)
-    await page.getByRole('button', { name: 'Sign in with Reddit' }).click()
+    await page.getByRole('button', { name: 'Sign in with Reddit' }).first().click()
     await page.waitForURL('**/r/pics')
     await expect(page.getByRole('heading', { level: 1, name: /r\/pics/i })).toBeVisible()
+  })
+
+  test('a signed-out visit to an address the site does not have shows the 404 page', async ({
+    page,
+    mock,
+  }) => {
+    void mock
+    const response = await page.goto('/no-such-page')
+    expect(response?.status()).toBe(404)
+    await expect(page).toHaveURL(/\/no-such-page$/)
+    await expect(page.getByRole('heading', { level: 1, name: /doesn.t exist/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Back to Home' })).toHaveAttribute('href', '/')
   })
 
   test('signing out ends the session', async ({ signedIn: page }) => {

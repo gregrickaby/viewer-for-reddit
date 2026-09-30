@@ -54,6 +54,20 @@ describe('proxy: auth gating', () => {
     expect(location.searchParams.get('next')).toBe('/r/nextjs?sort=top')
   })
 
+  it('shows signed-out visitors the 404 page for an address the site does not have', async () => {
+    for (const path of ['/404', '/no-such-page', '/homes', '/about/team']) {
+      const response = await proxy(request(path))
+      expect(response.headers.get('location')).toBeNull()
+    }
+  })
+
+  it('still sends signed-out readers of every signed-in route to sign in', async () => {
+    for (const path of ['/home', '/r/pics', '/user/spez', '/m/me/feed', '/saved', '/settings']) {
+      const response = await proxy(request(path))
+      expect(new URL(response.headers.get('location')!).pathname).toBe('/')
+    }
+  })
+
   it('lets signed-out visitors reach public paths', async () => {
     for (const path of [
       '/',

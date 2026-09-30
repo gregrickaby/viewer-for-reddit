@@ -25,7 +25,7 @@ async function blockExternal(page: Page) {
 
 export async function signIn(page: Page) {
   await page.goto('/')
-  await page.getByRole('button', { name: 'Sign in with Reddit' }).click()
+  await page.getByRole('button', { name: 'Sign in with Reddit' }).first().click()
   await page.waitForURL('**/home')
 }
 

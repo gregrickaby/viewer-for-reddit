@@ -14,7 +14,7 @@ import {
 import { refreshAccessToken } from '@/lib/auth/oauth'
 import { env } from '@/lib/env'
 import { securityHeaders } from '@/lib/security/headers'
-import { PUBLIC_PAGES } from '@/lib/site'
+import { PUBLIC_PAGES, isPrivatePath } from '@/lib/site'
 
 const PUBLIC_PATHS = new Set<string>([...PUBLIC_PAGES, '/manifest.webmanifest'])
 
@@ -72,7 +72,9 @@ export async function proxy(request: NextRequest) {
   const signedIn = refresh !== null
   let response: NextResponse
 
-  if (!signedIn && !isPublicPath(pathname) && request.method === 'GET') {
+  // Only signed-in routes send a signed-out reader to sign in. An address the site
+  // doesn't have falls through to the 404 page, which anyone can see.
+  if (!signedIn && !isPublicPath(pathname) && isPrivatePath(pathname) && request.method === 'GET') {
     const url = new URL('/', request.url)
     url.searchParams.set('next', `${pathname}${search}`)
     response = NextResponse.redirect(url)
