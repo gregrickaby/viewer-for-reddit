@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import icon from '@/app/icon.png'
+import icon from './snoo.svg'
 import { SITE } from '@/lib/site'
 import styles from './logo.module.css'
 
@@ -10,13 +10,16 @@ import styles from './logo.module.css'
 export function Logo({
   size = 40,
   withWordmark = false,
+  mark = true,
 }: {
   size?: number
   withWordmark?: boolean | 'wide'
+  /** Set to false for the name alone, when the mark sits elsewhere. */
+  mark?: boolean
 }) {
   return (
     <span className={styles.root}>
-      <Image className={styles.mark} src={icon} alt="" width={size} height={size} />
+      {mark ? <Image className={styles.mark} src={icon} alt="" width={size} height={size} /> : null}
       {withWordmark ? (
         <span
           className={
