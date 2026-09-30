@@ -25,7 +25,8 @@ if (applicationId && clientToken) {
     ...shared,
     applicationId,
     sessionSampleRate: 100,
-    sessionReplaySampleRate: 20,
+    // No session replays: the About page tells readers none are recorded.
+    sessionReplaySampleRate: 0,
     trackResources: true,
     trackUserInteractions: true,
     trackLongTasks: true,
