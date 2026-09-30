@@ -21,17 +21,31 @@
     background-size: cover;
   }
 
+  /*
+   * On a phone the icon and the buttons share one row over the banner, and the name
+   * gets its own full-width row below. One row for all three squeezes the name into a
+   * few characters and stretches it up into the banner.
+   */
   .identity {
-    display: flex;
-    align-items: flex-end;
-    gap: var(--space-3);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'icon actions'
+      'names names';
+    align-items: end;
+    gap: var(--space-2) var(--space-3);
     margin-block-start: calc(-1 * var(--space-6));
     padding-inline: var(--space-4);
+
+    @media (width >= 40rem) {
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas: 'icon names actions';
+    }
   }
 
   .icon,
   .iconFallback {
-    flex: none;
+    grid-area: icon;
     inline-size: 4rem;
     block-size: 4rem;
     border: 3px solid var(--surface-card);
@@ -52,7 +66,7 @@
   }
 
   .names {
-    flex: 1;
+    grid-area: names;
     display: grid;
     gap: var(--space-1);
     min-inline-size: 0;
@@ -82,10 +96,16 @@
   }
 
   .actions {
+    grid-area: actions;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: var(--space-2);
+
+    /* The buttons are taller than the icon's part below the banner: keep them off the image. */
+    @media (width < 40rem) {
+      margin-block-end: calc(-1 * var(--space-2));
+    }
   }
 
   .description {
