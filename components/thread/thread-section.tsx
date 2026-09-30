@@ -4,10 +4,9 @@ import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { PostCard, PostCardSkeleton } from '@/components/feed/post-card'
 import { CommentComposer } from '@/components/islands/comment-composer'
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
-import { LiveComments, LiveThread } from '@/components/islands/live-thread'
+import { LiveComments, LiveCount, LiveThread } from '@/components/islands/live-thread'
 import { ContentReveal } from '@/components/motion/transitions'
 import { getUsername } from '@/lib/auth/session'
-import { plural } from '@/lib/format'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getThread } from '@/lib/reddit/thread'
 import { bodyHashOf, cursorFromTree, WATCH_WINDOW_SECONDS } from '@/lib/reddit/thread-live'
@@ -96,7 +95,7 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
       <section id="comments" className={styles.comments} aria-labelledby="comments-heading">
         <div className={styles.toolbar}>
           <h2 id="comments-heading" className={styles.heading}>
-            {plural(post.numComments, 'comment')}
+            <LiveCount initial={post.numComments} noun="comment" />
           </h2>
           <nav aria-label="Sort comments" className={styles.tabs}>
             {COMMENT_SORTS.map((sort) => (

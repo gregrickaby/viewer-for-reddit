@@ -5,7 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const pollThreadLive = vi.fn()
 vi.mock('@/app/actions/thread-live', () => ({ pollThreadLive }))
 
-const { LiveBody, LiveComments, LiveThread } = await import('@/components/islands/live-thread')
+const { LiveBody, LiveComments, LiveCount, LiveThread } =
+  await import('@/components/islands/live-thread')
 
 const cursor = { since: 100, seen: ['a'] }
 
@@ -82,6 +83,36 @@ describe('LiveThread', () => {
     expect(pollThreadLive).toHaveBeenCalledTimes(4)
     await tick(1_000)
     expect(pollThreadLive).toHaveBeenCalledTimes(5)
+  })
+
+  it('polls when the page is shown again, even without a visibilitychange', async () => {
+    pollThreadLive.mockResolvedValue(result([]))
+    thread()
+    await act(async () => {
+      window.dispatchEvent(new Event('pageshow'))
+      window.dispatchEvent(new Event('focus'))
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    // The three events are one return.
+    expect(pollThreadLive).toHaveBeenCalledTimes(1)
+  })
+
+  it('counts the comments Reddit reports, in the header and on the post', async () => {
+    pollThreadLive.mockResolvedValue(result([], { numComments: 72 }))
+    render(
+      <LiveThread id="abc123" cursor={cursor} bodyHash="h1">
+        <h2>
+          <LiveCount initial={42} noun="comment" />
+        </h2>
+        <a href="#comments">
+          <LiveCount initial={42} noun="comment" hiddenClass="narrow" />
+        </a>
+      </LiveThread>,
+    )
+    expect(screen.getByText('42 comments')).toBeTruthy()
+    await tick()
+    expect(screen.getByText('72 comments')).toBeTruthy()
+    expect(screen.getByRole('link').textContent).toBe('72 comments')
   })
 
   it('swaps in an edited post body', async () => {

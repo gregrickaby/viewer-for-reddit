@@ -4,7 +4,7 @@ import { createContext, Fragment, type ReactNode, useContext, useRef, useState }
 import { pollThreadLive } from '@/app/actions/thread-live'
 import { usePolling } from '@/components/islands/use-polling'
 import { Button } from '@/components/ui/button'
-import { plural } from '@/lib/format'
+import { compactNumber, plural } from '@/lib/format'
 import styles from '@/components/live/live.module.css'
 
 /** Past this scroll offset, new comments wait behind a button instead of pushing the page down. */
@@ -17,6 +17,8 @@ type Watch = {
   batches: Batch[]
   /** The post's body after an edit, or null while it is the one the page rendered. */
   body: { node: ReactNode } | null
+  /** Reddit's comment total from the latest poll, or null before the first one. */
+  numComments: number | null
   waiting: number
   showWaiting: () => void
   paused: boolean
@@ -42,6 +44,7 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
   const [batches, setBatches] = useState<Batch[]>([])
   const [body, setBody] = useState<Watch['body']>(null)
   const [paused, setPaused] = useState(false)
+  const [numComments, setNumComments] = useState<number | null>(null)
   const cursorRef = useRef(cursor)
   const hashRef = useRef(bodyHash)
   const batchId = useRef(0)
@@ -54,7 +57,15 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
     })
     if (!result.ok) return 'fail'
 
-    const { items, count, cursor: next, bodyHash: nextHash, body: changed } = result.data
+    const {
+      items,
+      count,
+      cursor: next,
+      bodyHash: nextHash,
+      body: changed,
+      numComments: total,
+    } = result.data
+    setNumComments(total)
     cursorRef.current = next
     hashRef.current = nextHash
     if (changed) setBody(changed)
@@ -75,6 +86,7 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
   const watch: Watch = {
     batches,
     body,
+    numComments,
     waiting,
     showWaiting: () => setBatches((current) => current.map((batch) => ({ ...batch, shown: true }))),
     paused,
@@ -89,6 +101,29 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
 export function LiveBody({ children }: { children: ReactNode }) {
   const watch = useContext(WatchContext)
   return watch?.body ? watch.body.node : children
+}
+
+/**
+ * The thread's comment count: what the page rendered, then Reddit's total from each
+ * poll. With `hiddenClass` the noun is a span that class can hide on narrow screens.
+ */
+export function LiveCount({
+  initial,
+  noun,
+  hiddenClass,
+}: {
+  initial: number
+  noun: string
+  hiddenClass?: string
+}) {
+  const count = useContext(WatchContext)?.numComments ?? initial
+  if (!hiddenClass) return plural(count, noun)
+  return (
+    <>
+      {compactNumber(count)}
+      <span className={hiddenClass}>{` ${noun}${count === 1 ? '' : 's'}`}</span>
+    </>
+  )
 }
 
 /** The comments that arrived since the page loaded, newest first, with the controls. */

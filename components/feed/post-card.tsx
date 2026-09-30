@@ -1,6 +1,6 @@
 import type { Route } from 'next'
 import Link from 'next/link'
-import { LiveBody } from '@/components/islands/live-thread'
+import { LiveBody, LiveCount } from '@/components/islands/live-thread'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { MediaReveal, PostMedia, type RevealReason } from '@/components/media/post-media'
@@ -146,10 +146,20 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
             <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">
               <path d="M3 4h14v9H8l-4 3v-3H3z" />
             </svg>
-            {compactNumber(post.numComments)}
-            <span className={styles.narrowHidden}>
-              {` ${post.numComments === 1 ? 'comment' : 'comments'}`}
-            </span>
+            {detail ? (
+              <LiveCount
+                initial={post.numComments}
+                noun="comment"
+                hiddenClass={styles.narrowHidden}
+              />
+            ) : (
+              <>
+                {compactNumber(post.numComments)}
+                <span className={styles.narrowHidden}>
+                  {` ${post.numComments === 1 ? 'comment' : 'comments'}`}
+                </span>
+              </>
+            )}
           </Link>
           <SaveButton key={String(post.saved)} fullname={post.fullname} saved={post.saved} />
           <a
