@@ -25,7 +25,7 @@ export async function getSettings(): Promise<Settings> {
   const theme = jar.get(THEME_COOKIE)?.value
   return {
     theme: isTheme(theme) ? theme : 'system',
-    // Absent means on (design §8.8).
-    blurNsfw: jar.get(BLUR_COOKIE)?.value !== 'off',
+    // Absent means off (design §8.8).
+    blurNsfw: jar.get(BLUR_COOKIE)?.value === 'on',
   }
 }

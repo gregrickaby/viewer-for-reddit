@@ -59,15 +59,15 @@ describe('setBlurNsfw', () => {
 })
 
 describe('getSettings', () => {
-  it('defaults to the system theme with blur on', async () => {
-    expect(await getSettings()).toEqual({ theme: 'system', blurNsfw: true })
+  it('defaults to the system theme with blur off', async () => {
+    expect(await getSettings()).toEqual({ theme: 'system', blurNsfw: false })
   })
 
   it('reads saved values and ignores junk', async () => {
-    jar.current = fakeCookieJar({ rv_theme: 'light', rv_blur_nsfw: 'off' })
-    expect(await getSettings()).toEqual({ theme: 'light', blurNsfw: false })
+    jar.current = fakeCookieJar({ rv_theme: 'light', rv_blur_nsfw: 'on' })
+    expect(await getSettings()).toEqual({ theme: 'light', blurNsfw: true })
     jar.current = fakeCookieJar({ rv_theme: 'neon', rv_blur_nsfw: 'nope' })
-    expect(await getSettings()).toEqual({ theme: 'system', blurNsfw: true })
+    expect(await getSettings()).toEqual({ theme: 'system', blurNsfw: false })
   })
 })
 
