@@ -48,6 +48,8 @@ next-env.d.ts
 /certificates/
 /test-results/
 /playwright-report/
+# agent plans are internal and never committed
+/.plans/
 
 # keep the env template
 !.env.example

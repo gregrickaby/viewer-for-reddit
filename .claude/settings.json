@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run check)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint)",
+      "Bash(npm run test)",
+      "Bash(npm run format:check)",
+      "Bash(npm run format)",
+      "Bash(npm run build)",
+      "Bash(npm run css:types)",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__claude-in-chrome__tabs_create_mcp",
+      "mcp__claude-in-chrome__navigate",
+      "mcp__claude-in-chrome__computer",
+      "mcp__claude-in-chrome__read_page",
+      "mcp__claude-in-chrome__find",
+      "mcp__claude-in-chrome__get_page_text",
+      "mcp__claude-in-chrome__read_console_messages",
+      "mcp__claude-in-chrome__read_network_requests"
+    ],
+    "ask": ["Bash(git commit:*)", "Bash(git push:*)", "Bash(npm install:*)"],
+    "deny": ["Bash(npm run dev)", "Bash(next dev:*)", "Bash(npx next dev:*)"]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -n \"$(git status --porcelain -- '*.ts' '*.tsx' '*.css' 2>/dev/null)\" ]; then echo '{\"systemMessage\":\"Code changed: run npm run check before declaring work complete.\"}'; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

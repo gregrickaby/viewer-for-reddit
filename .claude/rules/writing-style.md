@@ -5,7 +5,7 @@ Avoid patterns characteristic of AI-generated text.
 ## Formatting
 
 - No emoji
-- No em dashes (—) use commas, colons, or parentheses
+- No em dashes (—): use commas, colons, or parentheses
 
 ## Words to Avoid
 
