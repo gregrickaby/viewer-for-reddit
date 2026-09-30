@@ -94,9 +94,7 @@ describe('landing page', () => {
       'https://www.reddit.com/prefs/apps',
       'https://github.com/gregrickaby/viewer-for-reddit#setup',
     ]) {
-      expect(html).toMatch(
-        new RegExp(`<a href="${href}" target="_blank" rel="noopener noreferrer"`),
-      )
+      expect(html).toContain(`<a href="${href}" target="_blank" rel="noopener noreferrer"`)
     }
     // Pages on this site use client links, without opening a new tab.
     expect(html).toMatch(/<a href="\/about">About page<\/a>/)
