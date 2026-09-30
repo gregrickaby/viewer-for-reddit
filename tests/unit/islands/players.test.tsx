@@ -194,6 +194,18 @@ const stream = {
 }
 
 describe('RedditVideo', () => {
+  it('pauses when it scrolls out of the viewport', async () => {
+    const { container } = render(<RedditVideo {...stream} />)
+    const frame = container.firstElementChild!
+    show(frame)
+    await vi.waitFor(() => expect(hlsInstances).toHaveLength(1))
+    const video = container.querySelector('video[controls]:not(noscript *)')! as HTMLVideoElement
+    show(frame, { ratio: 1 })
+    expect(video.pause).not.toHaveBeenCalled()
+    show(frame, { ratio: 0.2 })
+    expect(video.pause).toHaveBeenCalled()
+  })
+
   it('shows the poster, then attaches hls.js near the viewport', async () => {
     const { container } = render(<RedditVideo {...stream} />)
     expect(container.querySelector('img')?.getAttribute('src')).toBe(stream.poster)
@@ -353,6 +365,18 @@ describe('EmbedFacade', () => {
     expect(iframe.getAttribute('sandbox')).toBe(embed.sandbox)
     expect(iframe.getAttribute('referrerpolicy')).toBe('strict-origin-when-cross-origin')
     expect(document.activeElement).toBe(iframe)
+  })
+
+  it('unloads the player once it has scrolled out of the viewport', () => {
+    const { container } = render(<EmbedFacade {...embed} />)
+    fireEvent.click(screen.getByRole('link', { name: 'Play A video (YouTube)' }))
+    const box = container.querySelector('iframe')!.parentElement!
+    show(box, { ratio: 0 })
+    expect(container.querySelector('iframe')).not.toBeNull()
+    show(box, { ratio: 1 })
+    show(box, { ratio: 0.2 })
+    expect(container.querySelector('iframe')).toBeNull()
+    expect(screen.getByRole('link', { name: 'Play A video (YouTube)' })).toBeTruthy()
   })
 
   it('unloads the player when its page is hidden, so it stops playing', () => {

@@ -25,7 +25,7 @@ type Hls = {
  * A v.redd.it video with sound (design §8.7). The poster shows until the
  * player nears the viewport; then HLS plays through a lazily loaded hls.js,
  * or natively where Media Source Extensions are missing. If HLS fails, the
- * silent MP4 plays with a "no audio" note. Leaving the page (or Activity
+ * silent MP4 plays with a "no audio" note. Scrolling it out of view pauses it. Leaving the page (or Activity
  * hiding it) releases the decoder.
  */
 export function RedditVideo({ hls, mp4Fallback, width, height, poster, label }: RedditVideoProps) {
@@ -40,6 +40,9 @@ export function RedditVideo({ hls, mp4Fallback, width, height, poster, label }: 
     return registerPlayer(frame, {
       attach: () => setAttached(true),
       detach: () => setAttached(false),
+      visibility: (visible) => {
+        if (!visible) videoRef.current?.pause()
+      },
       yieldAudio: () => videoRef.current?.pause(),
     })
   }, [])

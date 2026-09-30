@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- the poster is Reddit's own resized preview */
 import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { registerPlayer } from './player-registry'
 import styles from './players.module.css'
 
 export type EmbedFacadeProps = {
@@ -21,11 +22,13 @@ export type EmbedFacadeProps = {
 /**
  * A click-to-load embed (design §8.7): until the reader presses play, it is
  * a plain link with Reddit's preview, and no request reaches the provider.
- * Without JavaScript the link opens the original.
+ * Without JavaScript the link opens the original. Scrolling the player out of
+ * view unloads it, which stops the audio.
  */
 export function EmbedFacade(props: EmbedFacadeProps) {
   const [active, setActive] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  const boxRef = useRef<HTMLDivElement>(null)
   const box = props.height
     ? { blockSize: props.height }
     : { aspectRatio: String(props.aspectRatio) }
@@ -33,6 +36,21 @@ export function EmbedFacade(props: EmbedFacadeProps) {
   // Move focus into the player once it exists, so keyboard users land on it.
   useEffect(() => {
     if (active) iframeRef.current?.focus()
+  }, [active])
+
+  // A cross-origin player can't be paused, so scrolling it out of view drops back
+  // to the facade, which unloads it. Only after it was seen, so a tall embed that
+  // never reaches half visible isn't unloaded on arrival.
+  useEffect(() => {
+    const element = boxRef.current
+    if (!active || !element) return
+    let seen = false
+    return registerPlayer(element, {
+      visibility: (visible) => {
+        if (visible) seen = true
+        else if (seen) setActive(false)
+      },
+    })
   }, [active])
 
   // Activity hides a page you leave with display: none, and a hidden iframe keeps
@@ -47,7 +65,7 @@ export function EmbedFacade(props: EmbedFacadeProps) {
 
   if (active) {
     return (
-      <div className={styles.embed} style={box}>
+      <div ref={boxRef} className={styles.embed} style={box}>
         <iframe
           ref={iframeRef}
           className={styles.iframe}
