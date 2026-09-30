@@ -71,6 +71,12 @@ test.describe('instant navigation', () => {
     const link = page
       .getByRole('navigation', { name: 'Feeds' })
       .getByRole('link', { name: 'Popular' })
+    // Sign-in returns while /home is still streaming and the router is still prefetching
+    // /r/popular. Let both finish, or the click can be answered by a full payload instead
+    // of the prefetched shell, and there is no skeleton left to see.
+    await expect(page.locator('main article').first()).toBeVisible()
+    await link.hover()
+    await page.waitForLoadState('networkidle')
     await instant(page, async () => {
       await link.click()
       await expect(page).toHaveURL(/\/r\/popular$/)
