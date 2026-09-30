@@ -1,13 +1,26 @@
 /* Galleries (design §8.10): a CSS-first carousel and a full-screen lightbox. */
 @layer components {
   .gallery {
+    --markers: 1.5rem; /* the dots row, which the arrows' centering has to leave out */
+
     position: relative; /* the carousel buttons position against the gallery */
     display: grid;
     gap: var(--space-2);
   }
 
+  /* A `<ul role="region">` isn't covered by the list reset, so it keeps the browser's 40px indent. */
+  .track,
+  .lightboxTrack {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
   .track {
     display: flex;
+
+    /* The frame fills the card. Its ratio sets the height, which the viewport still caps. */
+    inline-size: 100%;
     max-block-size: 70vh;
     overflow: auto hidden; /* x only: a y scroller would swallow page scrolling */
     overscroll-behavior-x: contain;
@@ -29,22 +42,23 @@
     scroll-snap-align: center;
   }
 
+  /*
+   * The media fills the frame by position, not by percentage: the frame's height comes
+   * from its ratio and the viewport cap, which percentages can't resolve against.
+   */
   .slideMedia {
-    display: grid;
-    place-items: center;
+    position: relative;
     min-block-size: 0;
     overflow: hidden; /* keep tall media inside its row so the caption stays visible */
 
     & > * {
-      block-size: 100%;
+      position: absolute;
+      inset: 0;
     }
   }
 
   .open {
-    display: grid;
-    place-items: center;
-    inline-size: 100%;
-    block-size: 100%;
+    display: block;
     cursor: zoom-in;
   }
 
@@ -80,18 +94,37 @@
 
     .track::scroll-button(*) {
       position: absolute;
-      inset-block-start: 50%;
+
+      /* The middle of the frame: the gallery minus the gap and the dots row below it. */
+      inset-block-start: calc((100% - var(--markers) - var(--space-2)) / 2);
       translate: 0 -50%;
       z-index: 1;
-      inline-size: 2.25rem;
-      block-size: 2.25rem;
-      border: 0;
+      display: grid;
+      place-items: center;
+      inline-size: 2.75rem;
+      block-size: 2.75rem;
+      padding: 0 0 0.15em; /* the chevron sits low in its line box */
+      border: 2px solid var(--surface-card);
       border-radius: 50%;
-      background: color-mix(in srgb, var(--surface-card) 88%, transparent);
-      box-shadow: var(--shadow-1);
-      color: var(--text-1);
-      font-size: var(--step-1);
+
+      /* Solid and inverted (light on dark, dark on light), so it reads over any photo. */
+      background: var(--text-1);
+      box-shadow: var(--shadow-2);
+      color: var(--surface-page);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
       cursor: pointer;
+    }
+
+    .track::scroll-button(*):hover {
+      background: var(--accent-fill);
+      color: var(--accent-contrast);
+    }
+
+    .track::scroll-button(*):focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
     }
 
     .track::scroll-button(*):disabled {
@@ -110,8 +143,10 @@
 
     .track::scroll-marker-group {
       display: flex;
+      align-items: center;
       justify-content: center;
-      gap: var(--space-1);
+      gap: var(--space-2);
+      block-size: var(--markers);
     }
 
     .slide::scroll-marker {

@@ -24,8 +24,34 @@ function samples(kind: string): Json[] {
     .map((file) => JSON.parse(readFileSync(path.join(dir, file), 'utf8')) as Json)
 }
 
+/**
+ * The samples' gallery posts lost their image metadata when they were scrubbed, so they'd
+ * render with no slides. This gives each item an image (tall, then wide) on an allowed host.
+ */
+function galleryMetadata(link: Json): Json {
+  const items = (link.gallery_data as { items: Array<{ media_id: string }> }).items
+  return Object.fromEntries(
+    items.map((item, position) => {
+      const [x, y] = position % 2 === 0 ? [640, 853] : [640, 426]
+      const src = `https://preview.redd.it/e2e-${item.media_id}.jpg`
+      return [
+        item.media_id,
+        {
+          status: 'valid',
+          e: 'Image',
+          m: 'image/jpg',
+          id: item.media_id,
+          s: { u: src, x, y },
+          p: [{ u: `${src}?width=320`, x: 320, y: Math.round((320 * y) / x) }],
+        },
+      ]
+    }),
+  )
+}
+
 const LINKS: Json[] = samples('Link').map((link, index) => ({
   ...link,
+  ...(link.is_gallery && link.gallery_data ? { media_metadata: galleryMetadata(link) } : {}),
   // Unique, stable ids so paging and votes are predictable.
   id: `e2e${index.toString(36)}`,
   name: `t3_e2e${index.toString(36)}`,

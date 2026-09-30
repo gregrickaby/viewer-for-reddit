@@ -34,3 +34,38 @@ test.describe('community header', () => {
     expect(Math.abs(button!.y - title!.y)).toBeLessThan(80)
   })
 })
+
+test.describe('gallery', () => {
+  for (const width of [390, 1280]) {
+    test(`at ${width}px the frame fills the card and the slides have no indent`, async ({
+      signedIn: page,
+    }) => {
+      await page.setViewportSize({ width, height: 900 })
+      // A gallery post from the mock's samples (the 18th link, id "e2eh").
+      await page.goto('/r/Damnthatsinteresting/comments/e2eh/post_17')
+      const gallery = page.locator('section[data-gallery]').first()
+      await gallery.scrollIntoViewIfNeeded()
+      const track = gallery.locator('ul[aria-roledescription="carousel"]')
+      const slide = track.locator('li').first()
+      const image = track.locator('img').first()
+      await expect(image).toBeVisible()
+
+      const [outer, frame, first, picture] = await Promise.all([
+        gallery.boundingBox(),
+        track.boundingBox(),
+        slide.boundingBox(),
+        image.boundingBox(),
+      ])
+      // The frame spans the whole card, and a slide spans the frame: a list's default
+      // indent would shift the slides right and leave the frame wider than its content.
+      expect(Math.abs(frame!.width - outer!.width)).toBeLessThanOrEqual(1)
+      expect(Math.abs(first!.x - frame!.x)).toBeLessThanOrEqual(1)
+      expect(Math.abs(first!.width - frame!.width)).toBeLessThanOrEqual(1)
+      // The photo stays inside the frame, whatever its shape.
+      expect(picture!.x).toBeGreaterThanOrEqual(frame!.x - 1)
+      expect(picture!.x + picture!.width).toBeLessThanOrEqual(frame!.x + frame!.width + 1)
+      expect(picture!.y).toBeGreaterThanOrEqual(frame!.y - 1)
+      expect(picture!.y + picture!.height).toBeLessThanOrEqual(frame!.y + frame!.height + 1)
+    })
+  }
+})
