@@ -211,8 +211,10 @@ export const PUBLIC_PAGES = ['/', '/about', '/donate'] as const
  * and gets the 404 page. Add a prefix here when you add a signed-in route.
  */
 export const PRIVATE_PREFIXES = [
+  '/active',
   '/api/',
   '/home',
+  '/live/',
   '/m/',
   '/multis',
   '/r/',

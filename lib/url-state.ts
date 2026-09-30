@@ -148,7 +148,8 @@ export type CommentSort = (typeof COMMENT_SORTS)[number]
 /** How many `more` ids the URL may carry (lib/reddit/more.ts resolves them). */
 export const MAX_MORE_IDS = 20
 
-export type ThreadQuery = { sort: CommentSort; more: string[] }
+/** `sort` is null when the URL names none: the thread's own suggested sort applies. */
+export type ThreadQuery = { sort: CommentSort | null; more: string[] }
 
 const MORE_ID = /^[a-z0-9]{1,12}$/
 
@@ -159,14 +160,21 @@ export function parseThreadQuery(params: SearchParams): ThreadQuery {
     .filter((id) => MORE_ID.test(id))
     .slice(0, MAX_MORE_IDS)
   return {
-    sort: COMMENT_SORTS.find((value) => value === sort) ?? 'confidence',
+    sort: COMMENT_SORTS.find((value) => value === sort) ?? null,
     more: [...new Set(more)],
   }
 }
 
-/** A thread URL with a comment sort; changing the sort collapses expansions. */
-export function threadSortHref(base: string, sort: CommentSort): string {
-  return withQuery(base, { sort: sort === 'confidence' ? null : sort })
+/**
+ * A thread URL with a comment sort; changing the sort collapses expansions. The thread's
+ * default sort (`confidence`, or what its moderators suggest) is left out of the URL.
+ */
+export function threadSortHref(
+  base: string,
+  sort: CommentSort,
+  defaultSort: CommentSort = 'confidence',
+): string {
+  return withQuery(base, { sort: sort === defaultSort ? null : sort })
 }
 
 /**
@@ -181,7 +189,7 @@ export function expandMoreHref(
 ): string | null {
   if (query.more.length >= MAX_MORE_IDS) return null
   const more = [...query.more.filter((id) => id !== moreId), moreId].join(',')
-  const href = withQuery(base, { sort: query.sort === 'confidence' ? null : query.sort, more })
+  const href = withQuery(base, { sort: query.sort, more })
   return `${href}#${anchor}`
 }
 

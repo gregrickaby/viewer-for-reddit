@@ -5,12 +5,13 @@ import { deleteCommentForm } from '@/app/actions/comments'
 import { ActionForm } from '@/components/islands/action-form'
 import { CommentComposer } from '@/components/islands/comment-composer'
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
+import { LiveTime } from '@/components/islands/live-time'
 import { PendingButton } from '@/components/islands/pending-button'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { Button } from '@/components/ui/button'
 import { RedditHtml } from '@/components/reddit-html'
-import { absoluteTime, compactNumber, isoTime, timeAgo } from '@/lib/format'
+import { absoluteTime, compactNumber } from '@/lib/format'
 import { type ThreadQuery, expandMoreHref } from '@/lib/url-state'
 import type { CommentNode, CommentView, MoreNode } from '@/lib/view-models'
 import styles from './comment-tree.module.css'
@@ -78,9 +79,8 @@ function Comment({
             </span>
           ) : null}
           {comment.flair ? <span className={styles.flair}>{comment.flair.text}</span> : null}
-          <time dateTime={isoTime(comment.createdUtc)} title={absoluteTime(comment.createdUtc)}>
-            {timeAgo(comment.createdUtc, ctx.now)}
-          </time>
+          {/* The poll renders comments with this same component, so the route has to bundle it. */}
+          <LiveTime utc={comment.createdUtc} now={ctx.now} />
           {comment.editedUtc ? <span title={absoluteTime(comment.editedUtc)}>edited</span> : null}
           {comment.flags.stickied ? <span className={styles.op}>Pinned</span> : null}
         </summary>

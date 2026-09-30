@@ -1,0 +1,165 @@
+@layer components {
+  .breadcrumb {
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  .header {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .title {
+    font-size: var(--step-2);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+
+  /* A radar ping: the ring spreads from the dot and fades, so "watching" reads as active. */
+  .dot {
+    position: relative;
+    flex: none;
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--success);
+
+    @media (prefers-reduced-motion: no-preference) {
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--success);
+        animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+      }
+    }
+  }
+
+  @keyframes ping {
+    0% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+
+    75%,
+    100% {
+      opacity: 0;
+      transform: scale(3.2);
+    }
+  }
+
+  /* The same dot with the ping and the color taken out, so pausing doesn't move the text. */
+  .dotOff {
+    flex: none;
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--text-3);
+  }
+
+  .banner {
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-sunken);
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+  }
+
+  .resources {
+    color: var(--text-2);
+    font-size: var(--step-minus-1);
+  }
+
+  .watch {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .waiting {
+    position: sticky;
+    inset-block-start: calc(var(--header-height, 3.5rem) + var(--space-2));
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .updates {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .update {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-2);
+    background: var(--surface-card);
+
+    &[data-stricken] {
+      color: var(--text-3);
+      text-decoration: line-through;
+    }
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+
+    & a {
+      color: var(--text-2);
+    }
+  }
+
+  .more {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+  }
+
+  .end {
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+    text-align: center;
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    font-weight: 700;
+  }
+
+  .skeleton {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .titleSkeleton {
+    block-size: 2rem;
+    inline-size: 70%;
+    border-radius: var(--radius-2);
+  }
+
+  .updateSkeleton {
+    block-size: 5rem;
+    border-radius: var(--radius-2);
+  }
+}

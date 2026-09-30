@@ -47,6 +47,9 @@ export const Link = LinkSchema.pick({
   is_gallery: true,
   crosspost_parent: true,
 }).extend({
+  suggested_sort: z.string().nullish(),
+  subreddit_type: z.string().nullish(),
+  quarantine: z.boolean().nullish(),
   selftext_html: z.string().nullish(),
   thumbnail: z.string().optional(),
   thumbnail_width: z.number().nullish(),

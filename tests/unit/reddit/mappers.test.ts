@@ -94,6 +94,24 @@ describe('mapPost', () => {
     return mapPost(Link.parse(value))
   }
 
+  it.each([
+    ['new', 'new'],
+    ['live', 'new'],
+    ['qa', 'qa'],
+    ['confidence', 'confidence'],
+    ['random', null],
+    ['', null],
+    [null, null],
+  ])('reads the suggested sort %j as %j', (suggested, expected) => {
+    const view = post(
+      () => true,
+      (value) => {
+        value.suggested_sort = suggested
+      },
+    )
+    expect(view.suggestedSort).toBe(expected)
+  })
+
   it('maps an image post', () => {
     const raw = sample('Link', (v) => v.post_hint === 'image' && v.over_18 === false)
     const view = mapPost(Link.parse(raw))

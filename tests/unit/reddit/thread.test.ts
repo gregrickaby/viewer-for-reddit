@@ -41,12 +41,38 @@ describe('getThread', () => {
 
     expect(redditFetch).toHaveBeenCalledWith('/comments/abc123', {
       token: 'tok',
-      query: { sort: 'confidence', limit: 200, depth: 8, comment: null, context: undefined },
+      query: { sort: undefined, limit: 200, depth: 8, comment: null, context: undefined },
     })
+    expect(thread.sort).toBe('confidence')
     expect(thread.post.id).toBe(post.id)
     expect(thread.focusCommentId).toBeNull()
     const [node] = thread.comments
     expect(node?.kind === 'comment' && node.comment.mine).toBe(true)
+  })
+
+  it('leaves the sort to Reddit, and reports the thread’s suggested one', async () => {
+    redditFetch.mockResolvedValue([
+      listing([{ kind: 't3', data: { ...post, suggested_sort: 'new' } }]),
+      listing([]),
+    ])
+    const thread = await getThread({ id: 'abc', query: parseThreadQuery({}), focusCommentId: null })
+    expect(redditFetch.mock.calls[0]![1].query.sort).toBeUndefined()
+    expect(thread.sort).toBe('new')
+    expect(thread.post.suggestedSort).toBe('new')
+  })
+
+  it('lets the URL override the suggested sort', async () => {
+    redditFetch.mockResolvedValue([
+      listing([{ kind: 't3', data: { ...post, suggested_sort: 'new' } }]),
+      listing([]),
+    ])
+    const thread = await getThread({
+      id: 'abc',
+      query: parseThreadQuery({ sort: 'confidence' }),
+      focusCommentId: null,
+    })
+    expect(redditFetch.mock.calls[0]![1].query.sort).toBe('confidence')
+    expect(thread.sort).toBe('confidence')
   })
 
   it('focuses a single comment thread with context', async () => {

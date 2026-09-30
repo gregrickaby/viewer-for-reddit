@@ -82,6 +82,7 @@ const pairs: Array<[foreground: string, background: string, minimum: number]> = 
   ['--upvote', '--surface-card', TEXT],
   ['--downvote', '--surface-card', TEXT],
   ['--danger', '--surface-card', TEXT],
+  ['--success', '--surface-card', UI],
   ['--nsfw', '--surface-card', TEXT],
   ['--accent-contrast', '--badge-nsfw', TEXT],
   ['--accent-contrast', '--badge-spoiler', TEXT],

@@ -42,6 +42,7 @@ export function postView(overrides: Partial<PostView> = {}): PostView {
     body: null,
     media: { type: 'none' },
     crosspostFrom: null,
+    suggestedSort: null,
     ...overrides,
   }
 }

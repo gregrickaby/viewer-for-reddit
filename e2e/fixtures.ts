@@ -13,7 +13,16 @@ type Fixtures = {
   /** A page signed in through the mock OAuth flow, starting on /home. */
   signedIn: Page
   mock: {
-    control(options: { delayMs?: number; failNext?: number }): Promise<void>
+    control(options: {
+      delayMs?: number
+      failNext?: number
+      /** Post a comment to the busy game thread, /r/pics/comments/e2elive. */
+      addLiveComment?: string
+      /** Replace that thread's body, like a score bot editing it. */
+      liveBody?: string
+      /** Add an update to the live thread /live/e2elivethread1. */
+      addLiveUpdate?: string
+    }): Promise<void>
     state(): Promise<MockState>
   }
 }

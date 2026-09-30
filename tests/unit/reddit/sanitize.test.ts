@@ -105,6 +105,7 @@ describe('resolveRedditLink', () => {
     ],
     ['https://np.reddit.com/u/spez', '/user/spez'],
     ['/user/spez/m/news', '/user/spez/m/news'],
+    ['https://www.reddit.com/live/1HNBHSGIY1DHH/', '/live/1hnbhsgiy1dhh'],
   ])('internalizes %s', (input, expected) => {
     expect(resolveRedditLink(input)).toEqual({ href: expected, internal: true })
   })
@@ -113,6 +114,7 @@ describe('resolveRedditLink', () => {
     ['/r/pics/wiki/index', 'https://www.reddit.com/r/pics/wiki/index'],
     ['http://old.reddit.com/message/compose', 'https://www.reddit.com/message/compose'],
     ['https://redd.it/abc123', 'https://redd.it/abc123'],
+    ['/live/short', 'https://www.reddit.com/live/short'],
     ['https://example.com', 'https://example.com/'],
   ])('keeps %s external', (input, expected) => {
     expect(resolveRedditLink(input)).toEqual({ href: expected, internal: false })

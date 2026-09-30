@@ -1,5 +1,6 @@
 import 'server-only'
 import { resolveMedia } from '@/lib/media/detect'
+import { COMMENT_SORTS, type CommentSort } from '@/lib/url-state'
 import type { PostView } from '@/lib/view-models'
 import { sanitizeRedditHtml } from '../sanitize'
 import { type RedditLink, crosspostParent } from '../schemas/link'
@@ -12,6 +13,11 @@ import {
   removalFrom,
   toVote,
 } from './shared'
+
+/** Reddit's `live` suggested sort is the same newest-first order as `new`. */
+function suggestedSort(value: string | null | undefined): CommentSort | null {
+  return value === 'live' ? 'new' : (COMMENT_SORTS.find((sort) => sort === value) ?? null)
+}
 
 export function mapPost(link: RedditLink): PostView {
   const parent = crosspostParent(link)
@@ -47,6 +53,7 @@ export function mapPost(link: RedditLink): PostView {
     ),
     body: removal ? null : postBody(link, parent),
     media: resolveMedia(link),
+    suggestedSort: suggestedSort(link.suggested_sort),
     crosspostFrom: parent
       ? {
           subreddit: parent.subreddit,

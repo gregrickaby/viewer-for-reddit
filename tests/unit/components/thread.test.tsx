@@ -19,6 +19,7 @@ vi.mock('@/lib/settings', () => ({
 }))
 vi.mock('@/lib/request-time', () => ({ requestTime: vi.fn(async () => 1_700_003_600_000) }))
 vi.mock('@/app/actions/things', () => ({ vote: vi.fn(), setSaved: vi.fn() }))
+vi.mock('@/app/actions/thread-live', () => ({ pollThreadLive: vi.fn() }))
 vi.mock('@/app/actions/comments', () => ({
   postComment: vi.fn(),
   editComment: vi.fn(),
@@ -94,7 +95,12 @@ const tree = (nodes: CommentNode[], overrides: Partial<typeof ctx> = {}) =>
   renderServer(<CommentTree nodes={nodes} ctx={{ ...ctx, ...overrides }} />)
 
 beforeEach(() => {
-  state.thread = { post: postView(), comments: [node(commentView())], focusCommentId: null }
+  state.thread = {
+    post: postView(),
+    sort: 'confidence',
+    comments: [node(commentView())],
+    focusCommentId: null,
+  }
   state.error = null
   state.username = 'spez'
 })
@@ -215,7 +221,7 @@ describe('ThreadSection', () => {
     const out = await section(['a_post'])
     expect(getThread).toHaveBeenLastCalledWith({
       id: 'abc',
-      query: { sort: 'confidence', more: [] },
+      query: { sort: null, more: [] },
       focusCommentId: null,
     })
     expect(out).toContain('← r/<!-- -->pics')
@@ -225,6 +231,57 @@ describe('ThreadSection', () => {
     expect(out).toContain('href="/r/pics/comments/abc/a_post?sort=qa"')
     expect(out).toContain('placeholder="What are your thoughts?"')
     expect(out).toContain('id="c-c1"')
+  })
+
+  describe('watching for new comments', () => {
+    const WATCHING = 'Watching for new comments'
+    const asNew = (overrides: Partial<ThreadView> = {}) => {
+      state.thread = { ...state.thread!, sort: 'new', ...overrides }
+    }
+
+    it('starts on a recent thread in new order', async () => {
+      asNew()
+      expect(await section(['a_post'], { sort: 'new' })).toContain(WATCHING)
+    })
+
+    it('starts when the thread suggests new and the URL names no sort', async () => {
+      asNew({ post: postView({ suggestedSort: 'new' }) })
+      expect(await section(['a_post'])).toContain(WATCHING)
+    })
+
+    it.each([
+      ['another sort', {}],
+      [
+        'a thread older than two days',
+        { post: postView({ createdUtc: 1_700_000_000 - 3 * 86_400 }) },
+      ],
+    ])('stays off for %s', async (name, overrides) => {
+      asNew(overrides)
+      if (name === 'another sort') state.thread = { ...state.thread!, sort: 'top' }
+      expect(await section(['a_post'], { sort: 'top' })).not.toContain(WATCHING)
+    })
+
+    it('stays off for a locked thread and for a single comment thread', async () => {
+      asNew({
+        post: postView({
+          flags: { nsfw: false, spoiler: false, stickied: false, archived: false, locked: true },
+        }),
+      })
+      expect(await section(['a_post'], { sort: 'new' })).not.toContain(WATCHING)
+      asNew({ focusCommentId: 'c1' })
+      expect(await section(['a_post', 'c1'], { sort: 'new' })).not.toContain(WATCHING)
+    })
+  })
+
+  it('opens on the sort the thread suggests, and links Best explicitly', async () => {
+    state.thread = { ...state.thread!, sort: 'new', post: postView({ suggestedSort: 'new' }) }
+    const out = await section(['a_post'])
+    // Only New is current, and it is the one link without a sort in it.
+    expect(out.match(/aria-current="page"/g)).toHaveLength(1)
+    const current = out.match(/<a [^>]*aria-current="page"[^>]*>/)![0]
+    expect(current).toContain('href="/r/pics/comments/abc/a_post"')
+    expect(out).toContain('href="/r/pics/comments/abc/a_post?sort=confidence"')
+    expect(out).toContain('href="/r/pics/comments/abc/a_post"')
   })
 
   it('shows the single-thread banner and passes the focus id', async () => {
@@ -241,6 +298,7 @@ describe('ThreadSection', () => {
   ])('explains read-only threads and hides the composer (%o)', async (flags, text) => {
     state.thread = {
       post: postView({ flags: { nsfw: false, spoiler: false, stickied: false, ...flags } }),
+      sort: 'confidence',
       comments: [],
       focusCommentId: null,
     }

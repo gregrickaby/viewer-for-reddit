@@ -1,5 +1,6 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+import { LiveBody } from '@/components/islands/live-thread'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { MediaReveal, PostMedia, type RevealReason } from '@/components/media/post-media'
@@ -23,15 +24,16 @@ export type PostCardProps = {
   now: number
 }
 
+/** Why a post's media waits behind a "Show", if it does. */
+export function revealReason(post: PostView, blurNsfw: boolean): RevealReason {
+  return post.flags.spoiler ? 'spoiler' : post.flags.nsfw && blurNsfw ? 'nsfw' : null
+}
+
 /** A feed item (design §10.2). A Server Component; only voting and saving hydrate. */
 export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' }: PostCardProps) {
   const detail = variant === 'detail'
   const titleId = `post-${post.id}-title`
-  const reveal: RevealReason = post.flags.spoiler
-    ? 'spoiler'
-    : post.flags.nsfw && blurNsfw
-      ? 'nsfw'
-      : null
+  const reveal = revealReason(post, blurNsfw)
   const inactive = post.flags.archived || post.flags.locked
 
   return (
@@ -125,7 +127,15 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
 
         <PostMedia media={post.media} title={post.title} reveal={reveal} postId={post.id} />
 
-        {post.body ? <PostBody html={post.body} excerpt={!detail} reveal={reveal} /> : null}
+        {post.body ? (
+          detail ? (
+            <LiveBody>
+              <PostBody html={post.body} excerpt={false} reveal={reveal} />
+            </LiveBody>
+          ) : (
+            <PostBody html={post.body} excerpt reveal={reveal} />
+          )
+        ) : null}
 
         <div className={styles.actions}>
           <Link
@@ -166,7 +176,7 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
  * spoiler reveal, like its other media (design §8.7), so a body with inline
  * media waits behind the same "Show".
  */
-function PostBody({
+export function PostBody({
   html,
   excerpt,
   reveal,

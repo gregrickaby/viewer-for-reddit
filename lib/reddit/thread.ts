@@ -1,6 +1,6 @@
 import 'server-only'
 import { requireAuth } from '@/lib/auth/session'
-import type { ThreadQuery } from '@/lib/url-state'
+import type { CommentSort, ThreadQuery } from '@/lib/url-state'
 import type { ThreadView } from '@/lib/view-models'
 import { redditFetch } from './client'
 import { RedditNotFoundError } from './errors'
@@ -35,7 +35,8 @@ export async function getThread({ id, query, focusCommentId }: ThreadRequest): P
   const json = await redditFetch(path, {
     token: accessToken,
     query: {
-      sort: query.sort,
+      // Left out, Reddit applies the thread's suggested sort.
+      sort: query.sort ?? undefined,
       limit: 200,
       depth: 8,
       comment: focus,
@@ -46,15 +47,17 @@ export async function getThread({ id, query, focusCommentId }: ThreadRequest): P
   const link = parseListing(postListing, LinkThing, path).items[0]
   if (!link) throw new RedditNotFoundError()
 
+  const post = mapPost(link.data)
+  const sort = query.sort ?? post.suggestedSort ?? 'confidence'
   const tree = mapCommentTree(commentListing, path, username)
   const comments =
     query.more.length > 0
       ? await resolveMore(tree, query.more, (children) =>
-          fetchMoreChildren(accessToken, username, link.data.name, children, query.sort),
+          fetchMoreChildren(accessToken, username, link.data.name, children, sort),
         )
       : tree
 
-  return { post: mapPost(link.data), comments, focusCommentId: focus }
+  return { post, sort, comments, focusCommentId: focus }
 }
 
 async function fetchMoreChildren(
@@ -62,7 +65,7 @@ async function fetchMoreChildren(
   viewer: string,
   linkId: string,
   children: string[],
-  sort: ThreadQuery['sort'],
+  sort: CommentSort,
 ): Promise<FlatNode[]> {
   const path = '/api/morechildren'
   const json = await redditFetch(path, {

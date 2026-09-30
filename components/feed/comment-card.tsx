@@ -1,9 +1,9 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+import { LiveTime } from '@/components/islands/live-time'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { RedditHtml } from '@/components/reddit-html'
-import { absoluteTime, isoTime, timeAgo } from '@/lib/format'
 import type { CommentView } from '@/lib/view-models'
 import styles from './comment-card.module.css'
 
@@ -11,7 +11,16 @@ import styles from './comment-card.module.css'
  * A comment listed outside its thread (saved items, profiles): the post it
  * belongs to, the comment, and a link to see it in context (design §10.2).
  */
-export function CommentCard({ comment, now }: { comment: CommentView; now: number }) {
+export function CommentCard({
+  comment,
+  now,
+  replyTo,
+}: {
+  comment: CommentView
+  now: number
+  /** The author this comment answers, for comments shown out of place (a thread's live stream). */
+  replyTo?: string | null
+}) {
   const context = comment.context
   return (
     <article className={styles.card} aria-label={`Comment by ${comment.author ?? '[deleted]'}`}>
@@ -32,6 +41,7 @@ export function CommentCard({ comment, now }: { comment: CommentView; now: numbe
           </>
         ) : null}
       </p>
+      {replyTo ? <p className={styles.context}>Replying to u/{replyTo}</p> : null}
       <p className={styles.meta}>
         {comment.author ? (
           <Link href={`/user/${comment.author}` as Route} transitionTypes={['nav-forward']}>
@@ -40,9 +50,7 @@ export function CommentCard({ comment, now }: { comment: CommentView; now: numbe
         ) : (
           '[deleted]'
         )}
-        <time dateTime={isoTime(comment.createdUtc)} title={absoluteTime(comment.createdUtc)}>
-          {timeAgo(comment.createdUtc, now)}
-        </time>
+        <LiveTime utc={comment.createdUtc} now={now} />
       </p>
       {comment.body ? (
         <RedditHtml html={comment.body} />

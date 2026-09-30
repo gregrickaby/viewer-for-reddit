@@ -8,6 +8,8 @@
  * Sanitized HTML. Only `lib/reddit/sanitize.ts` can produce one; it is rendered
  * only by `components/reddit-html.tsx`.
  */
+import type { CommentSort } from '@/lib/url-state'
+
 export type SafeHtml = string & { readonly __brand: 'SafeHtml' }
 
 /** Reddit's `likes`: true → 1, false → -1, null → 0. */
@@ -128,6 +130,8 @@ export type PostView = {
   body: SafeHtml | null
   media: PostMedia
   crosspostFrom: { subreddit: string; author: string | null; permalink: string } | null
+  /** The comment sort the moderators chose for this thread, if any (game threads: new). */
+  suggestedSort: CommentSort | null
 }
 
 export type CommentView = {
@@ -166,6 +170,8 @@ export type CommentView = {
 /** A post with its comment tree. */
 export type ThreadView = {
   post: PostView
+  /** The sort the comments are in: the URL's, else the thread's suggested one, else Best. */
+  sort: CommentSort
   comments: CommentNode[]
   /** Set when viewing a single comment's thread (`…/comments/<post>/<slug>/<comment>`). */
   focusCommentId: string | null
@@ -183,6 +189,29 @@ export type MoreNode = {
 
 export type CommentNode =
   { kind: 'comment'; comment: CommentView; replies: CommentNode[] } | MoreNode
+
+// ── Live threads ──────────────────────────────────────────────────────────────
+
+export type LiveEventView = {
+  id: string
+  title: string
+  description: SafeHtml | null
+  resources: SafeHtml | null
+  /** false once the thread is closed: there is nothing left to poll for. */
+  live: boolean
+  viewers: number | null
+  nsfw: boolean
+  createdUtc: number
+}
+
+export type LiveUpdateView = {
+  /** The listing cursor, `LiveUpdate_<uuid>`. */
+  name: string
+  author: string | null
+  body: SafeHtml | null
+  createdUtc: number
+  stricken: boolean
+}
 
 // ── Communities, people, multis ───────────────────────────────────────────────
 

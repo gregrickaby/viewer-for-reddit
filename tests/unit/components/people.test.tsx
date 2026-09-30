@@ -136,6 +136,16 @@ describe('CommentCard', () => {
     expect(out).toContain('aria-pressed="true"')
   })
 
+  it('says who a comment answers when it is shown out of place', async () => {
+    const out = await renderServer(
+      <CommentCard comment={commentView({ context: null })} now={now} replyTo="bob" />,
+    )
+    expect(out).toContain('Replying to u/<!-- -->bob')
+    expect(await renderServer(<CommentCard comment={commentView()} now={now} />)).not.toContain(
+      'Replying to',
+    )
+  })
+
   it('handles missing context, deleted authors, and removed bodies', async () => {
     const deleted = await renderServer(
       <CommentCard

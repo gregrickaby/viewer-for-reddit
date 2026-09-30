@@ -113,7 +113,7 @@ describe('hrefs', () => {
 
 describe('thread query', () => {
   it('defaults to best with nothing expanded', () => {
-    expect(parseThreadQuery({})).toEqual({ sort: 'confidence', more: [] })
+    expect(parseThreadQuery({})).toEqual({ sort: null, more: [] })
   })
 
   it('reads the sort and valid, unique more ids up to the cap', () => {
@@ -123,12 +123,17 @@ describe('thread query', () => {
       more: ['a1', 'b2'],
     })
     expect(parseThreadQuery({ more: ids.join(',') }).more).toHaveLength(MAX_MORE_IDS)
-    expect(parseThreadQuery({ sort: 'hot' }).sort).toBe('confidence')
+    expect(parseThreadQuery({ sort: 'hot' }).sort).toBeNull()
   })
 
   it('builds sort links that collapse expansions', () => {
     expect(threadSortHref('/r/a/comments/x/t', 'confidence')).toBe('/r/a/comments/x/t')
     expect(threadSortHref('/r/a/comments/x/t', 'new')).toBe('/r/a/comments/x/t?sort=new')
+    // A thread that suggests new leaves new out, and so must name Best.
+    expect(threadSortHref('/r/a/comments/x/t', 'new', 'new')).toBe('/r/a/comments/x/t')
+    expect(threadSortHref('/r/a/comments/x/t', 'confidence', 'new')).toBe(
+      '/r/a/comments/x/t?sort=confidence',
+    )
   })
 
   it('adds a more id, keeping the sort and an anchor', () => {

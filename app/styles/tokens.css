@@ -44,6 +44,7 @@
     /* Status */
     --focus-ring: light-dark(#0079d3, #4fbcff);
     --danger: light-dark(#c4122f, #ff585b);
+    --success: light-dark(#0f7b3f, #3ddc84);
     --nsfw: light-dark(#c4122f, #ff585b);
     --spoiler: light-dark(#5c5f66, #a6a7ab);
 

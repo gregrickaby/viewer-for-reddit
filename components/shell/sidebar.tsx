@@ -19,6 +19,7 @@ const FEEDS: Array<{ href: Route; label: string }> = [
   { href: '/home', label: 'Home' },
   { href: '/r/popular' as Route, label: 'Popular' },
   { href: '/r/all' as Route, label: 'All' },
+  { href: '/active' as Route, label: 'Active' },
   { href: '/saved' as Route, label: 'Saved' },
 ]
 

@@ -39,7 +39,18 @@ const [ME] = samples('Me')
 const [ACCOUNT] = samples('Account')
 const VIEWER = String(ME!.name)
 
+/** A recent, busy game thread, served only at /comments/e2elive so feed counts stay put. */
+const LIVE_ID = 'e2elive'
+const LIVE_EVENT_ID = 'e2elivethread1'
+const SELF_POST = LINKS.find((link) => link.is_self === true && !link.removed_by_category)!
+
+const isoNow = () => Math.floor(Date.now() / 1000)
+
 type State = {
+  liveBody: string
+  liveComments: Json[]
+  liveUpdates: Json[]
+  liveCreated: number
   votes: Map<string, number>
   saved: Set<string>
   subscribed: Set<string>
@@ -56,6 +67,10 @@ type State = {
 
 function freshState(): State {
   return {
+    liveBody: 'Score: 0-0',
+    liveComments: [],
+    liveUpdates: [],
+    liveCreated: isoNow() - 600,
     votes: new Map(),
     saved: new Set(),
     subscribed: new Set(
@@ -151,6 +166,106 @@ function threadComments(link: Json): Json[] {
     })
 }
 
+// ── Live: a game thread that keeps moving, and a /live/ thread ───────────────
+
+function liveLink(overrides: Json = {}): Json {
+  return {
+    ...SELF_POST,
+    id: LIVE_ID,
+    name: `t3_${LIVE_ID}`,
+    subreddit: 'pics',
+    subreddit_name_prefixed: 'r/pics',
+    subreddit_type: 'public',
+    quarantine: false,
+    permalink: `/r/pics/comments/${LIVE_ID}/game_thread/`,
+    title: 'Game Thread: Pics @ Memes',
+    suggested_sort: 'new',
+    selftext: state.liveBody,
+    selftext_html: `<div class="md"><p>${state.liveBody}</p></div>`,
+    created_utc: state.liveCreated,
+    num_comments: 500 + state.liveComments.length,
+    locked: false,
+    archived: false,
+    crosspost_parent_list: [],
+    ...overrides,
+  }
+}
+
+function liveComment(index: number, text: string, created: number): Json {
+  return {
+    ...COMMENTS[0]!,
+    id: `live${index}`,
+    name: `t1_live${index}`,
+    link_id: `t3_${LIVE_ID}`,
+    parent_id: `t3_${LIVE_ID}`,
+    author: 'fan',
+    body: text,
+    body_html: `<div class="md"><p>${text}</p></div>`,
+    created_utc: created,
+    depth: 0,
+    replies: '',
+    stickied: false,
+    likes: null,
+    saved: false,
+    permalink: `/r/pics/comments/${LIVE_ID}/game_thread/live${index}/`,
+  }
+}
+
+function liveThread(): Json {
+  const start = state.liveCreated
+  const all = [
+    liveComment(0, 'Kickoff', start + 60),
+    liveComment(1, 'Early chance', start + 120),
+    ...state.liveComments,
+  ].sort((a, b) => Number(b.created_utc) - Number(a.created_utc))
+  return [listing('t3', [liveLink()]), listing('t1', all)] as unknown as Json
+}
+
+const updateName = (index: number) =>
+  `LiveUpdate_00000000-0000-4000-8000-${index.toString(16).padStart(12, '0')}`
+
+function liveUpdate(index: number, text: string): Json {
+  return {
+    name: updateName(index),
+    id: updateName(index).slice('LiveUpdate_'.length),
+    author: 'reporter',
+    body: text,
+    body_html: `<div class="md"><p>${text}</p></div>`,
+    created_utc: isoNow() - 60 + index,
+    stricken: false,
+    embeds: [],
+    mobile_embeds: [],
+  }
+}
+
+function liveUpdates(query: URLSearchParams): Json {
+  // Newest first, like Reddit: `before` means newer than the cursor, `after` older.
+  const all = state.liveUpdates
+  const before = query.get('before')
+  const after = query.get('after')
+  let slice = all
+  if (before)
+    slice = all.slice(
+      0,
+      Math.max(
+        0,
+        all.findIndex((item) => item.name === before),
+      ),
+    )
+  if (after) slice = all.slice(all.findIndex((item) => item.name === after) + 1)
+  return {
+    kind: 'Listing',
+    data: {
+      after: null,
+      before: null,
+      children: slice.slice(0, Number(query.get('limit') ?? 25)).map((data) => ({
+        kind: 'LiveUpdate',
+        data,
+      })),
+    },
+  }
+}
+
 function multiThing(name: string): Json | null {
   const multi = state.multis.get(name)
   if (!multi) return null
@@ -202,6 +317,14 @@ async function handle(request: IncomingMessage, response: ServerResponse) {
   if (p === '/__mock/control') {
     state.delayMs = Number(form.delayMs ?? 0)
     state.failNext = Number(form.failNext ?? 0)
+    if (typeof form.liveBody === 'string') state.liveBody = form.liveBody
+    if (typeof form.addLiveComment === 'string') {
+      const index = 2 + state.liveComments.length
+      state.liveComments.push(liveComment(index, form.addLiveComment, isoNow()))
+    }
+    if (typeof form.addLiveUpdate === 'string') {
+      state.liveUpdates.unshift(liveUpdate(state.liveUpdates.length + 1, form.addLiveUpdate))
+    }
     return send(response, 200, { ok: true })
   }
   if (p === '/__mock/reset') {
@@ -267,6 +390,36 @@ async function handle(request: IncomingMessage, response: ServerResponse) {
     return send(response, 200, page(LINKS, q))
   if ((match = /^\/r\/([^/]+)\/about$/.exec(p)))
     return send(response, 200, { kind: 't5', data: subreddit(match[1]!) })
+  if (p === `/comments/${LIVE_ID}`) return send(response, 200, liveThread())
+  if (p === `/live/${LIVE_EVENT_ID}/about`)
+    return send(response, 200, {
+      kind: 'LiveUpdateEvent',
+      data: {
+        id: LIVE_EVENT_ID,
+        title: 'Election Night',
+        description_html: '<div class="md"><p>Results as they come in</p></div>',
+        resources_html: '',
+        state: 'live',
+        viewer_count: 12,
+        nsfw: false,
+        created_utc: isoNow() - 3600,
+      },
+    })
+  if (p === `/live/${LIVE_EVENT_ID}`) return send(response, 200, liveUpdates(q))
+  if (p === '/search')
+    return send(
+      response,
+      200,
+      listing('t3', [
+        liveLink(),
+        liveLink({
+          id: 'e2estale',
+          name: 't3_e2estale',
+          title: 'Game Thread: Old',
+          created_utc: isoNow() - 3 * 86_400,
+        }),
+      ]),
+    )
   if ((match = /^\/comments\/([a-z0-9]+)$/.exec(p))) {
     const link = LINKS.find((candidate) => candidate.id === match![1])
     if (!link) return send(response, 404, { message: 'Not Found' })

@@ -4,16 +4,21 @@ import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { PostCard, PostCardSkeleton } from '@/components/feed/post-card'
 import { CommentComposer } from '@/components/islands/comment-composer'
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
+import { LiveComments, LiveThread } from '@/components/islands/live-thread'
 import { ContentReveal } from '@/components/motion/transitions'
 import { getUsername } from '@/lib/auth/session'
 import { plural } from '@/lib/format'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getThread } from '@/lib/reddit/thread'
+import { bodyHashOf, cursorFromTree, WATCH_WINDOW_SECONDS } from '@/lib/reddit/thread-live'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
 import { COMMENT_SORTS, type CommentSort, parseThreadQuery, threadSortHref } from '@/lib/url-state'
 import type { ThreadView } from '@/lib/view-models'
 import { CommentTree, CommentTreeSkeleton } from './comment-tree'
+// New comments are rendered by `pollThreadLive` after the page loads, so their card styles
+// have to ship with the page instead.
+import '@/components/feed/comment-card.module.css'
 import styles from './thread.module.css'
 
 const SORT_LABELS: Record<CommentSort, string> = {
@@ -46,11 +51,18 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
   }
   const [{ blurNsfw }, now, me] = await Promise.all([getSettings(), requestTime(), getUsername()])
 
-  const { post, comments, focusCommentId } = thread
+  const { post, comments, focusCommentId, sort: current } = thread
+  const defaultSort = post.suggestedSort ?? 'confidence'
   const readOnly = post.flags.locked || post.flags.archived
   const threadBase = focusCommentId ? `${post.permalink}/${focusCommentId}` : post.permalink
+  // New comments only make sense in the order they arrive, and only on a thread still moving.
+  const watching =
+    current === 'new' &&
+    !readOnly &&
+    !focusCommentId &&
+    now / 1000 - post.createdUtc < WATCH_WINDOW_SECONDS
 
-  return (
+  const content = (
     <>
       <nav aria-label="Breadcrumb">
         <Link
@@ -90,9 +102,9 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
             {COMMENT_SORTS.map((sort) => (
               <Link
                 key={sort}
-                href={threadSortHref(threadBase, sort) as Route}
+                href={threadSortHref(threadBase, sort, defaultSort) as Route}
                 className={styles.tab}
-                aria-current={sort === query.sort ? 'page' : undefined}
+                aria-current={sort === current ? 'page' : undefined}
                 scroll={false}
               >
                 {SORT_LABELS[sort]}
@@ -106,7 +118,9 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
           <CommentComposer mode="reply" parent={post.fullname} me={me} label="Comment" />
         )}
 
-        <ContentReveal name="comment-tree" contentKey={query.sort}>
+        {watching ? <LiveComments /> : null}
+
+        <ContentReveal name="comment-tree" contentKey={current}>
           <div className={styles.tree}>
             {comments.length > 0 ? (
               <CommentTree
@@ -128,6 +142,14 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
         </ContentReveal>
       </section>
     </>
+  )
+
+  return watching ? (
+    <LiveThread id={post.id} cursor={cursorFromTree(comments)} bodyHash={bodyHashOf(post.body)}>
+      {content}
+    </LiveThread>
+  ) : (
+    content
   )
 }
 

@@ -26,6 +26,7 @@ const INTERNAL_ROUTES: Array<[pattern: RegExp, toPath: (m: RegExpExecArray) => s
   [new RegExp(`^/(?:u|user)/(${NAME})/m/(${NAME})/?$`, 'i'), (m) => `/user/${m[1]}/m/${m[2]}`],
   [new RegExp(`^/(?:u|user)/(${NAME})/?$`, 'i'), (m) => `/user/${m[1]}`],
   [new RegExp(`^/r/(${NAME})/?$`, 'i'), (m) => `/r/${m[1]}`],
+  [/^\/live\/([a-z0-9]{10,16})\/?$/i, (m) => `/live/${m[1]!.toLowerCase()}`],
 ]
 
 export type ResolvedLink = { href: string; internal: boolean }
