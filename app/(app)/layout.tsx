@@ -38,22 +38,28 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
             <path d="M3 5h14M3 10h14M3 15h14" />
           </svg>
         </button>
-        <Link href="/home" className={styles.brand} aria-label={`${SITE.name} home`}>
-          <Logo size={32} withWordmark="wide" />
+        {/* The name beside the bar is decoration: the logo inside the bar is the home link. */}
+        <Link href="/home" className={styles.brand} aria-hidden="true" tabIndex={-1}>
+          <Logo mark={false} withWordmark="wide" />
         </Link>
         <form action="/search" method="get" role="search" className={styles.search}>
           <label htmlFor="site-search" className="visually-hidden">
             Search subreddits
           </label>
-          <input
-            id="site-search"
-            name="q"
-            type="search"
-            placeholder="Search subreddits…"
-            className={styles.searchInput}
-            autoComplete="off"
-            enterKeyHint="search"
-          />
+          <div className={styles.field}>
+            <Link href="/home" className={styles.searchLogo} aria-label={`${SITE.name} home`}>
+              <Logo size={28} />
+            </Link>
+            <input
+              id="site-search"
+              name="q"
+              type="search"
+              placeholder="Search subreddits…"
+              className={styles.searchInput}
+              autoComplete="off"
+              enterKeyHint="search"
+            />
+          </div>
         </form>
         <Suspense fallback={<SettingsMenuSkeleton />}>
           <SettingsMenu />

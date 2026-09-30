@@ -75,16 +75,37 @@
     min-inline-size: 0;
   }
 
-  .searchInput {
+  /* The logo sits inside the bar, like reddit.com; it links home. */
+  .field {
+    position: relative;
     inline-size: min(100%, 32rem);
+  }
+
+  .searchLogo {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0.6875rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .searchInput {
+    inline-size: 100%;
     min-block-size: 2.5rem;
-    padding-inline: var(--space-4);
+
+    /* Room for the logo on the left. */
+    padding-inline: 3rem var(--space-2);
     border: var(--border-width) solid var(--border-strong);
     border-radius: var(--radius-pill);
     background: var(--surface-sunken);
     color: var(--text-1);
     font: inherit;
     font-size: var(--step-minus-1);
+
+    /* The prompt is centred, as on reddit.com; typed text starts at the left. */
+    &:placeholder-shown {
+      text-align: center;
+    }
 
     &::placeholder {
       color: var(--text-3);

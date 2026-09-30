@@ -98,11 +98,12 @@ test.describe('header', () => {
       expect(search!.width).toBeGreaterThanOrEqual(150)
       const logo = page.getByRole('link', { name: 'Viewer for Reddit home' }).locator('img')
       const [bar, mark] = await Promise.all([header.boundingBox(), logo.boundingBox()])
+      // The logo sits inside the search bar, at its left edge.
+      expect(mark!.x).toBeGreaterThanOrEqual(search!.x)
+      expect(mark!.x + mark!.width).toBeLessThan(search!.x + 60)
       const offset = mark!.y + mark!.height / 2 - (bar!.y + bar!.height / 2)
       expect(Math.abs(offset)).toBeLessThanOrEqual(1)
-      const name = page
-        .getByRole('link', { name: 'Viewer for Reddit home' })
-        .getByText('Viewer for Reddit')
+      const name = header.getByText('Viewer for Reddit', { exact: true })
       await (wordmark ? expect(name).toBeVisible() : expect(name).toBeHidden())
       if (process.env.HEADER_SHOTS)
         await header.screenshot({ path: `${process.env.HEADER_SHOTS}/header-${width}.png` })
