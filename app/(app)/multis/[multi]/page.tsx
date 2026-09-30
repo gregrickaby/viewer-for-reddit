@@ -1,14 +1,13 @@
 import type { Metadata, Route } from 'next'
 import Link from 'next/link'
 import { Suspense, ViewTransition, useId } from 'react'
-import { addToMultiForm, deleteMulti, updateMultiForm } from '@/app/actions/multis'
+import { addToMultiForm, deleteMultiForm, updateMultiForm } from '@/app/actions/multis'
 import { ActionForm } from '@/components/islands/action-form'
 import { MembershipToggle } from '@/components/islands/membership-toggle'
 import { PendingButton } from '@/components/islands/pending-button'
 import { Button } from '@/components/ui/button'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
-import { formAction } from '@/lib/actions/form-action'
 import { getMulti } from '@/lib/reddit/multis'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMySubscriptions } from '@/lib/reddit/reads'
@@ -223,10 +222,10 @@ function DangerZone({ multi }: { multi: MultiView }) {
           <Button variant="secondary" size="sm" popoverTarget={id} popoverTargetAction="hide">
             Cancel
           </Button>
-          <form action={formAction(deleteMulti)}>
+          <ActionForm action={deleteMultiForm}>
             <input type="hidden" name="name" value={multi.name} />
             <PendingButton variant="danger">Delete</PendingButton>
-          </form>
+          </ActionForm>
         </div>
       </div>
     </section>

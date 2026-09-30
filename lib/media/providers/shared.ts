@@ -2,6 +2,7 @@ import 'server-only'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { EmbedView, ImageSet, PostMedia } from '@/lib/view-models'
 import { previewImageSet } from '../images'
+import { safeLinkUrl } from '../url'
 
 /** Every embed iframe gets this sandbox (design §11). */
 export const EMBED_SANDBOX = 'allow-scripts allow-same-origin allow-presentation allow-popups'
@@ -38,7 +39,10 @@ export function embed(link: RedditLink, options: EmbedOptions): PostMedia {
       height: options.height ?? null,
       allow: options.allow ?? VIDEO_ALLOW,
       sandbox: EMBED_SANDBOX,
-      originalUrl: link.url_overridden_by_dest ?? link.url,
+      // A provider may match the oEmbed player while the post's own URL is unusable.
+      originalUrl:
+        safeLinkUrl(link.url_overridden_by_dest ?? link.url) ??
+        `https://www.reddit.com${link.permalink}`,
     },
   }
 }

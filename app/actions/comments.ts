@@ -64,3 +64,11 @@ export async function deleteComment(formData: FormData): Promise<ActionResult> {
     refresh()
   })
 }
+
+/** `deleteComment` with `useActionState`'s previous state first, so `ActionForm` shows errors. */
+export async function deleteCommentForm(
+  _: ActionResult<unknown> | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  return deleteComment(formData)
+}

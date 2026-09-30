@@ -2,12 +2,15 @@ import type { Metadata, Route } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { createMultiForm } from '@/app/actions/multis'
+import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { ActionForm } from '@/components/islands/action-form'
 import { PendingButton } from '@/components/islands/pending-button'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { SubredditRowsSkeleton } from '@/components/subreddit/subreddit-row'
+import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMyMultis } from '@/lib/reddit/reads'
+import type { MultiView } from '@/lib/view-models'
 import feed from '@/components/feed/feed.module.css'
 import styles from '../feed-page.module.css'
 import multis from './multis.module.css'
@@ -21,7 +24,12 @@ const VISIBILITY: Record<string, string> = {
 }
 
 async function MultiList() {
-  const all = await getMyMultis()
+  let all: MultiView[]
+  try {
+    all = await getMyMultis()
+  } catch (error) {
+    return <ForbiddenPanel reason={handleReadError(error)} />
+  }
   if (all.length === 0) {
     return (
       <div className={feed.notice}>

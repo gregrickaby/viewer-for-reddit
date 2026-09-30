@@ -95,6 +95,8 @@ const profilePage = await import('@/app/(app)/user/[username]/page')
 const subscriptionsPage = await import('@/app/(app)/subreddits/page')
 const searchPage = await import('@/app/(app)/search/page')
 const errors = await import('@/lib/reddit/errors')
+const { getMySubscriptions } = await import('@/lib/reddit/reads')
+const { redirect } = await import('next/navigation')
 
 const now = 1_700_003_600_000
 const user = {
@@ -439,5 +441,41 @@ describe('/search', () => {
       <searchPage.default params={Promise.resolve({})} searchParams={search({ q: 'zzz' })} />,
     )
     expect(out).toContain('No communities match “<!-- -->zzz<!-- -->”')
+  })
+})
+
+describe('failed reads', () => {
+  const empty = Promise.resolve({})
+  const sections = [
+    {
+      name: '/saved',
+      read: getSaved,
+      render: () => renderServer(<savedPage.default params={empty} searchParams={search({})} />),
+    },
+    {
+      name: '/subreddits',
+      read: vi.mocked(getMySubscriptions),
+      render: () =>
+        renderServer(<subscriptionsPage.default params={empty} searchParams={search({})} />),
+    },
+    {
+      name: '/search',
+      read: searchSubreddits,
+      render: () =>
+        renderServer(<searchPage.default params={empty} searchParams={search({ q: 'x' })} />),
+    },
+  ]
+
+  it.each(sections)('$name shows why Reddit refused', async ({ read, render }) => {
+    read.mockRejectedValueOnce(new errors.RedditForbiddenError('unknown'))
+    expect(await render()).toContain('Reddit won’t show this')
+  })
+
+  it.each(sections)('$name signs out when the session is gone', async ({ read, render }) => {
+    read.mockRejectedValueOnce(new errors.RedditAuthError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    // `redirect` is mocked not to throw, so the error reaches the section boundary.
+    await render().catch(() => {})
+    expect(redirect).toHaveBeenCalledWith('/api/auth/signout?reason=expired')
   })
 })

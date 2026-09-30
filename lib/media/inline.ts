@@ -148,6 +148,14 @@ function render(inline: Inline): string {
   )
 }
 
+/**
+ * Whether sanitized HTML holds inline media. Only `render` above emits the
+ * marker: the sanitizer drops `data-*` attributes from Reddit's own markup.
+ */
+export function hasInlineMedia(html: string): boolean {
+  return html.includes('<span data-inline-media>')
+}
+
 /** Replaces bare media links in sanitized HTML with inline images and GIF loops. */
 export function inlineMedia(
   html: string,

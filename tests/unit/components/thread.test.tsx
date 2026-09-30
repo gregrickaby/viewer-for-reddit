@@ -22,7 +22,7 @@ vi.mock('@/app/actions/things', () => ({ vote: vi.fn(), setSaved: vi.fn() }))
 vi.mock('@/app/actions/comments', () => ({
   postComment: vi.fn(),
   editComment: vi.fn(),
-  deleteComment: vi.fn(),
+  deleteCommentForm: vi.fn(),
 }))
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(),

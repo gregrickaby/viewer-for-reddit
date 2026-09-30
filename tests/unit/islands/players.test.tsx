@@ -103,6 +103,7 @@ afterEach(() => {
 })
 
 const { AutoplayVideo } = await import('@/components/islands/autoplay-video')
+const { InlineLoopMotion } = await import('@/components/islands/inline-loop-motion')
 const { RedditVideo } = await import('@/components/islands/reddit-video')
 const { EmbedFacade } = await import('@/components/islands/embed-facade')
 const { MAX_ATTACHED, claimAudio, registerPlayer } =
@@ -149,6 +150,33 @@ describe('AutoplayVideo', () => {
     unmount()
     expect(video.getAttribute('src')).toBeNull()
     expect(video.load).toHaveBeenCalled()
+  })
+})
+
+describe('InlineLoopMotion', () => {
+  const block = () => (
+    <>
+      <div>
+        <span data-inline-media>
+          <video src={loop.mp4} muted loop autoPlay />
+        </span>
+      </div>
+      <InlineLoopMotion />
+    </>
+  )
+
+  it('pauses inline loops and shows their controls under reduced motion', () => {
+    reducedMotion = true
+    const { container } = render(block())
+    const video = container.querySelector('video')!
+    expect(video.pause).toHaveBeenCalled()
+    expect(video.controls).toBe(true)
+  })
+
+  it('leaves them looping otherwise', () => {
+    const { container } = render(block())
+    expect(HTMLMediaElement.prototype.pause).not.toHaveBeenCalled()
+    expect(container.querySelector('video')!.controls).toBe(false)
   })
 })
 

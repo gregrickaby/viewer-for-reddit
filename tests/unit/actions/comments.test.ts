@@ -12,7 +12,7 @@ vi.mock('next/navigation', () => ({ redirect: vi.fn(), unstable_rethrow: vi.fn()
 vi.mock('@/lib/auth/session', () => ({ SessionUnavailableError: class extends Error {} }))
 
 const actions = await import('@/app/actions/comments')
-const { RedditApiError } = await import('@/lib/reddit/errors')
+const { RedditApiError, RedditRateLimitError } = await import('@/lib/reddit/errors')
 
 const form = (values: Record<string, string>) => {
   const data = new FormData()
@@ -71,6 +71,13 @@ describe('editComment and deleteComment', () => {
     expect((await actions.deleteComment(form({ thing: 't1_abc', post: 'p1' }))).ok).toBe(true)
     expect(deleteComment).toHaveBeenCalledWith('t1_abc')
     expect(waitForComment).toHaveBeenCalledWith('p1', 'abc', 'deleted')
+  })
+
+  it('reports a failed delete to the confirmation form', async () => {
+    deleteComment.mockRejectedValueOnce(new RedditRateLimitError(3))
+    const result = await actions.deleteCommentForm(null, form({ thing: 't1_abc', post: 'p1' }))
+    expect(result.ok).toBe(false)
+    expect(refresh).not.toHaveBeenCalled()
   })
 
   it('reject forms with missing fields', async () => {

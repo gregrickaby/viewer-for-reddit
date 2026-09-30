@@ -2,10 +2,11 @@ import type { Route } from 'next'
 import Link from 'next/link'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
-import { PostMedia, type RevealReason } from '@/components/media/post-media'
+import { MediaReveal, PostMedia, type RevealReason } from '@/components/media/post-media'
 import { RedditHtml } from '@/components/reddit-html'
 import { absoluteTime, isoTime, plural, timeAgo } from '@/lib/format'
-import type { PostView } from '@/lib/view-models'
+import { hasInlineMedia } from '@/lib/media/inline'
+import type { PostView, SafeHtml } from '@/lib/view-models'
 import styles from './post-card.module.css'
 
 /** Self text longer than this gets a "Read more" (the clamp is ~12 lines). */
@@ -121,18 +122,7 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
 
         <PostMedia media={post.media} title={post.title} reveal={reveal} postId={post.id} />
 
-        {post.body ? (
-          !detail && post.body.length > EXCERPT_CHARS ? (
-            <div className={styles.excerpt}>
-              <RedditHtml html={post.body} className={styles.excerptBody} />
-              <details className={styles.more}>
-                <summary>Read more</summary>
-              </details>
-            </div>
-          ) : (
-            <RedditHtml html={post.body} />
-          )
-        ) : null}
+        {post.body ? <PostBody html={post.body} excerpt={!detail} reveal={reveal} /> : null}
 
         <div className={styles.actions}>
           <Link
@@ -162,6 +152,40 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
         </div>
       </div>
     </article>
+  )
+}
+
+/**
+ * Self text, clamped in feeds. Images inside it follow the post's NSFW and
+ * spoiler reveal, like its other media (design §8.7), so a body with inline
+ * media waits behind the same "Show".
+ */
+function PostBody({
+  html,
+  excerpt,
+  reveal,
+}: {
+  html: SafeHtml
+  excerpt: boolean
+  reveal: RevealReason
+}) {
+  const body =
+    excerpt && html.length > EXCERPT_CHARS ? (
+      <div className={styles.excerpt}>
+        <RedditHtml html={html} className={styles.excerptBody} />
+        <details className={styles.more}>
+          <summary>Read more</summary>
+        </details>
+      </div>
+    ) : (
+      <RedditHtml html={html} />
+    )
+  return reveal && hasInlineMedia(html) ? (
+    <MediaReveal reason={reveal} blurred={null}>
+      {body}
+    </MediaReveal>
+  ) : (
+    body
   )
 }
 

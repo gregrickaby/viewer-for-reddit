@@ -1,11 +1,14 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { SubredditRows, SubredditRowsSkeleton } from '@/components/subreddit/subreddit-row'
 import { Tabs } from '@/components/ui/tabs'
+import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMySubscriptions } from '@/lib/reddit/reads'
 import { SUBSCRIPTION_TABS, type SubscriptionTab, href, parseText, pick } from '@/lib/url-state'
+import type { SubredditView } from '@/lib/view-models'
 import feed from '@/components/feed/feed.module.css'
 import styles from '../feed-page.module.css'
 import page from './page.module.css'
@@ -18,7 +21,12 @@ async function Subscriptions({ searchParams }: Pick<PageProps<'/subreddits'>, 's
   const params = await searchParams
   const tab = pick(SUBSCRIPTION_TABS, params.tab)
   const q = parseText(params.q, 50)
-  const all = await getMySubscriptions()
+  let all: SubredditView[]
+  try {
+    all = await getMySubscriptions()
+  } catch (error) {
+    return <ForbiddenPanel reason={handleReadError(error)} />
+  }
 
   const kind = tab === 'people' ? 'user' : 'community'
   const needle = q.toLowerCase()

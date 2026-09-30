@@ -1,3 +1,4 @@
+import { InlineLoopMotion } from '@/components/islands/inline-loop-motion'
 import type { SafeHtml } from '@/lib/view-models'
 import styles from './reddit-html.module.css'
 
@@ -7,5 +8,11 @@ import styles from './reddit-html.module.css'
  */
 export function RedditHtml({ html, className }: { html: SafeHtml; className?: string }) {
   const classes = className ? `${styles.root} ${className}` : styles.root
-  return <div className={classes} dangerouslySetInnerHTML={{ __html: html }} />
+  return (
+    <>
+      <div className={classes} dangerouslySetInnerHTML={{ __html: html }} />
+      {/* The sanitizer drops <video>, so any here is an inline loop (lib/media/inline.ts). */}
+      {html.includes('<video') ? <InlineLoopMotion /> : null}
+    </>
+  )
 }

@@ -1,7 +1,8 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useId } from 'react'
-import { deleteComment } from '@/app/actions/comments'
+import { deleteCommentForm } from '@/app/actions/comments'
+import { ActionForm } from '@/components/islands/action-form'
 import { CommentComposer } from '@/components/islands/comment-composer'
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import { PendingButton } from '@/components/islands/pending-button'
@@ -9,7 +10,6 @@ import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { Button } from '@/components/ui/button'
 import { RedditHtml } from '@/components/reddit-html'
-import { formAction } from '@/lib/actions/form-action'
 import { absoluteTime, compactNumber, isoTime, timeAgo } from '@/lib/format'
 import { type ThreadQuery, expandMoreHref } from '@/lib/url-state'
 import type { CommentNode, CommentView, MoreNode } from '@/lib/view-models'
@@ -167,11 +167,11 @@ function DeleteComment({ fullname, permalink }: { fullname: string; permalink: s
           <Button variant="secondary" size="sm" popoverTarget={id} popoverTargetAction="hide">
             Cancel
           </Button>
-          <form action={formAction(deleteComment)}>
+          <ActionForm action={deleteCommentForm}>
             <input type="hidden" name="thing" value={fullname} />
             <input type="hidden" name="post" value={post} />
             <PendingButton variant="danger">Delete</PendingButton>
-          </form>
+          </ActionForm>
         </div>
       </div>
     </>

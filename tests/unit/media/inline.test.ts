@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { inlineFor, inlineMedia } from '@/lib/media/inline'
+import { hasInlineMedia, inlineFor, inlineMedia } from '@/lib/media/inline'
 import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
 import { sample, samples } from '@/tests/helpers/fixtures'
 
@@ -138,5 +138,15 @@ describe('sanitizeRedditHtml with inline media', () => {
     expect(
       sanitizeRedditHtml(String(comment.body_html), { inlineMedia: { metadata: null } }),
     ).toContain('giphy.mp4')
+  })
+})
+
+describe('hasInlineMedia', () => {
+  it('spots inline media, which Reddit’s own markup can’t imitate', () => {
+    const url = 'https://i.redd.it/abc.png'
+    expect(hasInlineMedia(inlineMedia(`<p>${bare(url)}</p>`, {}))).toBe(true)
+    expect(hasInlineMedia(`<p>${bare(url).replace(`>${url}<`, '>a picture<')}</p>`)).toBe(false)
+    const forged = sanitizeRedditHtml('<p><span data-inline-media>not media</span></p>')
+    expect(hasInlineMedia(forged!)).toBe(false)
   })
 })

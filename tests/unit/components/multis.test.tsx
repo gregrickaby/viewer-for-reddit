@@ -27,7 +27,7 @@ vi.mock('@/app/actions/multis', () => ({
   createMultiForm: vi.fn(),
   updateMultiForm: vi.fn(),
   addToMultiForm: vi.fn(),
-  deleteMulti: vi.fn(),
+  deleteMultiForm: vi.fn(),
   setMembership: vi.fn(),
 }))
 vi.mock('next/navigation', () => ({
@@ -108,6 +108,12 @@ describe('/multis', () => {
 
   it('explains multis when there are none', async () => {
     expect(await renderServer(<listPage.default />)).toContain('No multireddits yet')
+  })
+
+  it('shows why Reddit refused the list', async () => {
+    const { getMyMultis } = await import('@/lib/reddit/reads')
+    vi.mocked(getMyMultis).mockRejectedValueOnce(new errors.RedditForbiddenError('unknown'))
+    expect(await renderServer(<listPage.default />)).toContain('Reddit won’t show this')
   })
 })
 

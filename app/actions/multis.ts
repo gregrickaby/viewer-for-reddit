@@ -78,6 +78,11 @@ export async function deleteMulti(formData: FormData): Promise<ActionResult> {
   redirect('/multis')
 }
 
+/** The delete confirmation: `deleteMulti` with form state. */
+export async function deleteMultiForm(_: FormState, formData: FormData): Promise<FormState> {
+  return deleteMulti(formData)
+}
+
 /**
  * Adds or removes one subreddit. Adding checks the subreddit exists first
  * (and uses its canonical capitalization), so nothing is written for a typo.

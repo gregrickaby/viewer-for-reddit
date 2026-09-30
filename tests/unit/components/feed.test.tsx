@@ -118,6 +118,21 @@ describe('PostCard', () => {
     expect(await card(spoiler, false)).toContain('<details class="reveal">')
   })
 
+  it('puts self text with inline media behind the same reveal', async () => {
+    const inline = html(
+      '<p><span data-inline-media><a href="https://i.redd.it/a.jpg"><img src="https://i.redd.it/a.jpg"></a></span></p>',
+    )
+    const flags = { nsfw: true, spoiler: false, stickied: false, locked: false, archived: false }
+    const hidden = await card(postView({ media: { type: 'none' }, body: inline, flags }))
+    expect(hidden).toMatch(/<details class="reveal">.*<img src="https:\/\/i\.redd\.it\/a\.jpg">/)
+    expect(
+      await card(postView({ media: { type: 'none' }, body: inline, flags }), false),
+    ).not.toContain('<details class="reveal">')
+    // Plain text isn't media: it stays readable.
+    const text = await card(postView({ media: { type: 'none' }, body: html('<p>Hi</p>'), flags }))
+    expect(text).not.toContain('<details class="reveal">')
+  })
+
   it('clamps long self text behind "Read more" and shows short text whole', async () => {
     const long = await card(postView({ body: html(`<p>${'word '.repeat(300)}</p>`) }))
     expect(long).toContain('<summary>Read more</summary>')

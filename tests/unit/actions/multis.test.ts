@@ -142,6 +142,12 @@ describe('deleteMulti', () => {
     expect((await actions.deleteMulti(form({ name: '' }))).ok).toBe(false)
     expect(redirect).not.toHaveBeenCalled()
   })
+
+  it('reports a failure to the confirmation form', async () => {
+    deleteMulti.mockRejectedValueOnce(new RedditRateLimitError(3))
+    const result = await actions.deleteMultiForm(null, form({ name: 'news' }))
+    expect(result && !result.ok && result.error.code).toBe('RATE_LIMITED')
+  })
 })
 
 describe('setMembership', () => {

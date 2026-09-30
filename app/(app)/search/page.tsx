@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { Pagination } from '@/components/feed/pagination'
 import { SectionError } from '@/components/islands/section-error'
 import {
@@ -10,8 +11,10 @@ import {
 } from '@/components/motion/transitions'
 import { SubredditRows, SubredditRowsSkeleton } from '@/components/subreddit/subreddit-row'
 import { searchSubreddits } from '@/lib/reddit/people'
+import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMyMultis } from '@/lib/reddit/reads'
 import { parseFeedQuery, parseText } from '@/lib/url-state'
+import type { MultiView, Page, SubredditView } from '@/lib/view-models'
 import feed from '@/components/feed/feed.module.css'
 import styles from '../feed-page.module.css'
 import page from '../subreddits/page.module.css'
@@ -33,10 +36,16 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
   }
 
   const query = parseFeedQuery(params, SORTS)
-  const [results, multis] = await Promise.all([
-    searchSubreddits(q, query),
-    getMyMultis().catch(() => undefined),
-  ])
+  let results: Page<SubredditView>
+  let multis: MultiView[] | undefined
+  try {
+    ;[results, multis] = await Promise.all([
+      searchSubreddits(q, query),
+      getMyMultis().catch(() => undefined),
+    ])
+  } catch (error) {
+    return <ForbiddenPanel reason={handleReadError(error)} />
+  }
   return (
     <section className={feed.feed} aria-label={`Communities matching ${q}`}>
       <ContentReveal

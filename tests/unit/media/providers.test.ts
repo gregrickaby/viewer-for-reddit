@@ -332,6 +332,17 @@ describe('oEmbed fallback', () => {
       'link',
     )
   })
+
+  it('links the facade to the post on Reddit when the post’s own URL is unsafe', () => {
+    const link = withOembed(
+      '<iframe src="https://www.tiktok.com/player/v1/7684370407817760031"></iframe>',
+      'javascript:alert(1)',
+    )
+    expect(resolveMedia(link)).toMatchObject({
+      type: 'embed',
+      embed: { originalUrl: `https://www.reddit.com${link.permalink}` },
+    })
+  })
 })
 
 describe('direct files', () => {

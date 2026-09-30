@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { FeedSkeleton } from '@/components/feed/feed-section'
+import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { ItemList, firstFullname } from '@/components/feed/item-list'
 import { Pagination } from '@/components/feed/pagination'
 import { SectionError } from '@/components/islands/section-error'
@@ -12,9 +13,11 @@ import {
 } from '@/components/motion/transitions'
 import { Tabs } from '@/components/ui/tabs'
 import { getSaved } from '@/lib/reddit/people'
+import { handleReadError } from '@/lib/reddit/read-errors'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
 import { SAVED_TYPES, type SavedType, href, parseFeedQuery, pick } from '@/lib/url-state'
+import type { ListItem, Page } from '@/lib/view-models'
 import feed from '@/components/feed/feed.module.css'
 import styles from '../feed-page.module.css'
 
@@ -28,11 +31,14 @@ async function SavedSection({ searchParams }: Pick<PageProps<'/saved'>, 'searchP
   const params = await searchParams
   const type = pick(SAVED_TYPES, params.type)
   const query = parseFeedQuery(params, SORTS)
-  const [page, { blurNsfw }, now] = await Promise.all([
-    getSaved(type, query),
-    getSettings(),
-    requestTime(),
-  ])
+
+  let page: Page<ListItem>
+  try {
+    page = await getSaved(type, query)
+  } catch (error) {
+    return <ForbiddenPanel reason={handleReadError(error)} />
+  }
+  const [{ blurNsfw }, now] = await Promise.all([getSettings(), requestTime()])
   const extra = { type: type === 'all' ? null : type }
 
   return (
