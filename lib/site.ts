@@ -43,6 +43,7 @@ export type FeatureIconName =
   | 'star'
   | 'bug'
   | 'share'
+  | 'live'
 
 /** The landing page's reasons to sign in: a short title and one sentence each. */
 export const FEATURES: ReadonlyArray<{ icon: FeatureIconName; title: string; text: string }> = [
@@ -55,6 +56,21 @@ export const FEATURES: ReadonlyArray<{ icon: FeatureIconName; title: string; tex
     icon: 'sort',
     title: 'You pick the sort',
     text: 'Choose Best, Hot, New, Top, or Rising. Pick New to read posts in the order they were made.',
+  },
+  {
+    icon: 'live',
+    title: 'Live comments',
+    text: 'Open a game or daily thread sorted by New and watch comments arrive as people post them. There is nothing to reload.',
+  },
+  {
+    icon: 'star',
+    title: 'Active threads',
+    text: 'One list of the busiest game, match, and daily threads of the last 12 hours.',
+  },
+  {
+    icon: 'read',
+    title: 'Reddit live threads',
+    text: 'Follow a live thread as it happens. Each update appears when it is posted.',
   },
   {
     icon: 'layers',
@@ -146,6 +162,18 @@ export const FAQ: ReadonlyArray<{
       'Yes, and it has no ads. Donations pay for hosting, the domain, and development tools. See ',
       { text: 'how to donate', page: '/donate' },
       '.',
+    ],
+  },
+  {
+    question: 'Do comments update on their own?',
+    answer: [
+      'Yes, on a thread sorted by New that is less than two days old. About every 15 seconds, new comments appear above the thread, and so do edits to the post, such as a live score. You can pause it anytime. Game and match threads open sorted by New, and the Active page in the sidebar lists the busiest ones.',
+    ],
+  },
+  {
+    question: 'Does it support Reddit live threads?',
+    answer: [
+      'Yes. A link to a Reddit live thread opens in the app, and new updates are added as they are posted. Most game threads are ordinary posts, not live threads, and the live comments above cover those.',
     ],
   },
   {

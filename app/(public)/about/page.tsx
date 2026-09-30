@@ -33,6 +33,16 @@ const CAPABILITIES = [
     text: 'Images, galleries, GIFs, and Reddit video with sound.',
   },
   {
+    icon: 'live',
+    title: 'Follow along',
+    text: 'Watch new comments arrive on game, match, and daily threads, and follow Reddit live threads as updates are posted.',
+  },
+  {
+    icon: 'star',
+    title: 'Find busy threads',
+    text: 'The Active page lists the busiest game, match, and daily threads of the last 12 hours.',
+  },
+  {
     icon: 'moon',
     title: 'Pick a theme',
     text: 'Switch between light and dark mode on any screen size.',

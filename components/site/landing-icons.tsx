@@ -48,6 +48,12 @@ const PATHS: Record<FeatureIconName, ReactNode> = {
   bug: (
     <path d="M9 9h6v6a3 3 0 0 1-6 0zM9 9a3 3 0 0 1 6 0M4 13h3M17 13h3M5 6l3 2M19 6l-3 2M5 20l3-2M19 20l-3-2" />
   ),
+  live: (
+    <>
+      <circle cx="12" cy="12" r="2" />
+      <path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19 5a10 10 0 0 1 0 14M5 19a10 10 0 0 1 0-14" />
+    </>
+  ),
   share: (
     <>
       <circle cx="6" cy="12" r="3" />

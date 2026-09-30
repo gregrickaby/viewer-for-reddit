@@ -72,7 +72,9 @@ describe('landing page', () => {
       <LandingPage params={Promise.resolve({})} searchParams={params({})} />,
     )
     expect(html).toContain('id="how-it-works"')
-    expect(html.match(/<details/g)).toHaveLength(6)
+    expect(html.match(/<details/g)).toHaveLength(8)
+    expect(html).toContain('Do comments update on their own?')
+    expect(html).toContain('Does it support Reddit live threads?')
     expect(html).toContain('Why do I have to sign in?')
     expect(html).toContain('Reddit ended public access to its API in June 2026')
     // One h1, with the sections below it as h2s.
@@ -191,6 +193,16 @@ describe('site pages', () => {
       expect(html.match(/<h1/g)).toHaveLength(1)
       expect(html.match(/<h2/g)?.length).toBeGreaterThanOrEqual(3)
     }
+  })
+
+  it('tells readers about live comments, active threads, and live threads', async () => {
+    const landing = await renderServer(
+      <LandingPage params={Promise.resolve({})} searchParams={params({})} />,
+    )
+    for (const title of ['Live comments', 'Active threads', 'Reddit live threads'])
+      expect(landing).toContain(title)
+    const about = await renderServer(<AboutPage />)
+    for (const title of ['Follow along', 'Find busy threads']) expect(about).toContain(title)
   })
 
   it('renders Donate with every way to give', async () => {

@@ -7,6 +7,7 @@ Viewer for Reddit is a Reddit client built on Next.js and React Server Component
 - **Feeds:** home, popular, subreddits, multireddits, user profiles, saved posts, search.
 - **Actions:** vote, save, comment, reply, edit and delete, subscribe to communities and follow users, and create and edit multireddits. Each one updates the page at once and rolls back if Reddit refuses.
 - **Media:** images, galleries with a lightbox, GIF loops, Reddit video with sound (HLS), and click-to-load embeds (YouTube, Vimeo, Streamable, Twitch, Redgifs, Giphy, Imgur, TikTok, Spotify, SoundCloud), plus inline images and GIFs in comments.
+- **Live:** a thread sorted by New polls for new comments and for edits to the post, such as a score, every 15 seconds. Reddit live threads (`/live/…`) show updates as they are posted, and `/active` lists the busiest game, match, and daily threads. The server does the polling through Server Actions, so the browser still never calls Reddit, and public threads are cached for 10 seconds to stay inside Reddit's shared request limit.
 - **Settings:** light, dark, or system theme, and "Blur NSFW media". Both are stored in cookies.
 
 Version 10 is a ground-up rewrite. Version 9 and earlier (built with Mantine) are in the [`9.1.0` tag](https://github.com/gregrickaby/viewer-for-reddit/tree/9.1.0).
