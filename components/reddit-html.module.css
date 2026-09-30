@@ -11,6 +11,11 @@
       margin-block-start: var(--space-3);
     }
 
+    /* The reset sets break-word on these directly, which beats the inherited anywhere and lets a long URL widen a grid track. */
+    & :is(p, h1, h2, h3, h4, h5, h6) {
+      overflow-wrap: anywhere;
+    }
+
     & :is(h1, h2, h3, h4, h5, h6) {
       line-height: 1.3;
       text-wrap: balance;

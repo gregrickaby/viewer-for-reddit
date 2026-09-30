@@ -69,3 +69,17 @@ test.describe('gallery', () => {
     })
   }
 })
+
+test.describe('comments', () => {
+  test('a long unbroken link wraps inside the column on a phone', async ({
+    signedIn: page,
+    mock,
+  }) => {
+    await mock.control({ addLiveComment: `https://example.com/${'a'.repeat(120)}` })
+    await page.setViewportSize({ width: 390, height: 800 })
+    await page.goto('/r/pics/comments/e2elive/game_thread')
+    await expect(page.getByText('https://example.com/aaaa', { exact: false })).toBeVisible()
+    const width = await page.evaluate(() => document.documentElement.scrollWidth)
+    expect(width).toBeLessThanOrEqual(390)
+  })
+})
