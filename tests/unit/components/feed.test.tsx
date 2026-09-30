@@ -1,3 +1,4 @@
+import { type ReactElement, type ReactNode, isValidElement } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FeedSort } from '@/lib/url-state'
 import type { Page, PostView } from '@/lib/view-models'
@@ -39,6 +40,7 @@ vi.mock('next/navigation', () => ({
 
 const { PostCard, PostCardSkeleton } = await import('@/components/feed/post-card')
 const { FeedSection, FeedSkeleton } = await import('@/components/feed/feed-section')
+const { InfiniteFeed } = await import('@/components/islands/infinite-feed')
 const { SubredditHeader, SubredditHeaderSkeleton, isPseudoSubreddit } =
   await import('@/components/subreddit/subreddit-header')
 const { ForbiddenPanel } = await import('@/components/feed/forbidden-panel')
@@ -191,6 +193,31 @@ describe('FeedSection', () => {
     expect(out).not.toContain('rel="prev"')
     // The island loads the next page; the link is only for readers without JavaScript.
     expect(out).toContain('<noscript><nav')
+  })
+
+  it('restarts the infinite feed when the blur setting changes', async () => {
+    const infiniteKey = (node: ReactNode): string | null => {
+      if (!isValidElement<{ children?: ReactNode }>(node)) {
+        return Array.isArray(node) ? (node.map(infiniteKey).find(Boolean) ?? null) : null
+      }
+      if (node.type === InfiniteFeed) return String((node as ReactElement).key)
+      return infiniteKey(node.props.children)
+    }
+    state.page = { items: [postView()], after: 't3_x', before: null }
+    const props = {
+      source: { type: 'home' },
+      base: '/home',
+      sorts: HOME_SORTS,
+      searchParams: Promise.resolve({}),
+      showSubreddit: true,
+    } as const
+    state.blurNsfw = true
+    const blurred = infiniteKey(await FeedSection(props))
+    state.blurNsfw = false
+    const revealed = infiniteKey(await FeedSection(props))
+    expect(blurred).toBeTruthy()
+    expect(revealed).toBeTruthy()
+    expect(blurred).not.toBe(revealed)
   })
 
   it('keeps Previous in view and puts only Next behind noscript', async () => {
