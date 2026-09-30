@@ -1,5 +1,6 @@
 import 'server-only'
 import * as z from 'zod'
+import { logger } from '@/lib/datadog/server'
 import { RedditSchemaError } from './errors'
 import { ListingEnvelope } from './schemas/things'
 
@@ -34,7 +35,12 @@ export function parseItems<T extends z.ZodType>(
   for (const value of values) {
     const result = item.safeParse(value)
     if (result.success) items.push(result.data)
-    else console.warn('[reddit:schema]', endpoint, describe(value), z.prettifyError(result.error))
+    else
+      logger.warn('[reddit:schema]', {
+        endpoint,
+        item: describe(value),
+        error: z.prettifyError(result.error),
+      })
   }
   return items
 }

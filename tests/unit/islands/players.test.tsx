@@ -2,6 +2,9 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+const warnLog = vi.fn()
+vi.mock('@/lib/datadog/client', () => ({ logger: { warn: warnLog } }))
+
 /* A controllable IntersectionObserver: tests decide what is in view. */
 type Observer = {
   callback: IntersectionObserverCallback
@@ -236,11 +239,12 @@ describe('RedditVideo', () => {
 
   it('keeps the element empty when nothing can play it and there is no MP4', async () => {
     hlsState.supported = false
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     vi.spyOn(HTMLMediaElement.prototype, 'canPlayType').mockReturnValue('')
     const { container } = render(<RedditVideo {...stream} mp4Fallback={null} />)
     show(container.firstElementChild!)
-    await vi.waitFor(() => expect(warn).toHaveBeenCalled())
+    await vi.waitFor(() =>
+      expect(warnLog).toHaveBeenCalledWith('[media:video_error]', expect.anything()),
+    )
     expect(screen.queryByText('No audio')).toBeNull()
   })
 

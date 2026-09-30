@@ -20,6 +20,10 @@ const appEnv = {
   REDDIT_CLIENT_ID: 'e2e-client',
   REDDIT_CLIENT_SECRET: 'e2e-secret',
   SESSION_SECRET: 'e2e-session-secret-that-is-long-enough-000',
+  // Blank, so a developer's .env.local can't turn on Datadog during e2e.
+  DD_APPLICATION_ID: '',
+  DD_CLIENT_TOKEN: '',
+  DD_API_KEY: '',
   USER_AGENT: 'web-app:viewer-for-reddit:e2e (by u/fixture_user)',
 }
 

@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- the poster is Reddit's own resized preview */
 import { useEffect, useRef, useState } from 'react'
+import { logger } from '@/lib/datadog/client'
 import { claimAudio, registerPlayer } from './player-registry'
 import styles from './players.module.css'
 
@@ -52,7 +53,7 @@ export function RedditVideo({ hls, mp4Fallback, width, height, poster, label }: 
     const fallBack = (reason: unknown) => {
       player?.destroy()
       player = null
-      console.warn('[media:video_error]', hls, reason)
+      logger.warn('[media:video_error]', { hls, reason: String(reason) })
       if (mp4Fallback) {
         video.src = mp4Fallback
         setNoAudio(true)

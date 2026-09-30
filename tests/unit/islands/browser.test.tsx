@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const nav = { pathname: '/home', pending: false }
 vi.mock('next/navigation', () => ({ usePathname: () => nav.pathname }))
 vi.mock('next/link', () => ({ useLinkStatus: () => ({ pending: nav.pending }) }))
+const addNextjsError = vi.fn()
+vi.mock('@datadog/browser-rum-nextjs', () => ({ addNextjsError }))
 vi.mock('@/app/actions/settings', () => ({ setTheme: vi.fn(), setBlurNsfw: vi.fn() }))
 
 const { ThemeToggle } = await import('@/components/islands/theme-toggle')
@@ -127,32 +129,19 @@ describe('error fallbacks', () => {
     expect(retry).toHaveBeenCalledOnce()
   })
 
-  it('renders its own document and offers a retry when the root layout fails', async () => {
-    const { renderToStaticMarkup } = await import('react-dom/server')
+  it('renders its own document, reports the error, and offers a retry when the root layout fails', async () => {
     const { default: GlobalError } = await import('@/app/global-error')
     const retry = vi.fn()
-    const html = renderToStaticMarkup(<GlobalError error={new Error('x')} retry={retry} />)
-    expect(html).toMatch(/^<html lang="en"/)
-    expect(html).toContain('<title>Something went wrong · Viewer for Reddit</title>')
-    expect(html).toContain('role="alert"')
-    // A whole document can't mount in the test DOM, so press the button's handler directly.
-    const button = findByType(GlobalError({ error: new Error('x'), retry }), 'button')
-    button.props.onClick()
+    const error = new Error('x')
+    // The page brings its own <html>, which React flags as misplaced inside the test's <div>.
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    render(<GlobalError error={error} retry={retry} />)
+    expect(document.querySelector('title')?.textContent).toBe(
+      'Something went wrong · Viewer for Reddit',
+    )
+    expect(screen.getByRole('alert')).toBeTruthy()
+    expect(addNextjsError).toHaveBeenCalledWith(error)
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Try again' })))
     expect(retry).toHaveBeenCalledOnce()
   })
 })
-
-type Element = { type: unknown; props: { children?: unknown; onClick: () => void } }
-
-function findByType(node: unknown, type: string): Element {
-  const found = walk(node)
-  if (!found) throw new Error(`no <${type}>`)
-  return found
-
-  function walk(value: unknown): Element | undefined {
-    if (Array.isArray(value)) return value.map(walk).find(Boolean)
-    if (!value || typeof value !== 'object' || !('props' in value)) return undefined
-    const element = value as Element
-    return element.type === type ? element : walk(element.props.children)
-  }
-}

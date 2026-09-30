@@ -131,9 +131,11 @@ describe('resolveMedia: real posts', () => {
       'link',
     )
     expect(unknown.thumbnail?.src).toMatch(/^https:\/\/external-preview\.redd\.it\//)
-    expect(info).toHaveBeenCalledWith(
-      '[media:unresolved] domain=video.example post_hint=rich:video media_type=video.example',
-    )
+    expect(info).toHaveBeenCalledWith('[media:unresolved]', {
+      domain: 'video.example',
+      post_hint: 'rich:video',
+      media_type: 'video.example',
+    })
   })
 
   it('keeps plain links quiet', () => {

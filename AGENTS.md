@@ -31,7 +31,7 @@ npm run test:e2e      # Playwright: builds the app and runs it against e2e/mock-
 npm run build         # Production build
 ```
 
-**Secrets**: copy `.env.example` to `.env.local`: `BASE_URL`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_REDIRECT_URI`, `SESSION_SECRET`, `USER_AGENT`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, optional `GOOGLE_SITE_VERIFICATION`. `lib/env.ts` validates them at startup, except the encryption key, which Next reads itself.
+**Secrets**: copy `.env.example` to `.env.local`: `BASE_URL`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_REDIRECT_URI`, `SESSION_SECRET`, `USER_AGENT`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, optional `GOOGLE_SITE_VERIFICATION`, optional Datadog (`DD_API_KEY`, `DD_APPLICATION_ID`, `DD_CLIENT_TOKEN`, `DD_SITE`, `DD_SERVICE`, `DD_ENV`). Server code logs through `lib/datadog/server.ts` (never `console`); browser code through `lib/datadog/client.ts`. `lib/env.ts` validates them at startup, except the encryption key, which Next reads itself.
 
 ## Architecture rules
 

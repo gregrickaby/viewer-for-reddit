@@ -1,15 +1,21 @@
 'use client'
 
+import { addNextjsError } from '@datadog/browser-rum-nextjs'
+import { useEffect } from 'react'
+
 /**
  * The last-resort error page: it replaces the root layout, so it brings its own
  * <html> and minimal styling, following the OS color scheme (design §12).
  */
 export default function GlobalError({
+  error,
   retry,
 }: {
   error: Error & { digest?: string }
   retry: () => void
 }) {
+  useEffect(() => addNextjsError(error), [error])
+
   return (
     <html lang="en" style={{ colorScheme: 'light dark' }}>
       <body

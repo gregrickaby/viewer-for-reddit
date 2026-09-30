@@ -1,4 +1,5 @@
 import 'server-only'
+import { logger } from '@/lib/datadog/server'
 import { type RedditLink, crosspostParent } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
 import { resolveDirectFile } from './resolvers/direct-file'
@@ -46,10 +47,11 @@ export function resolveMedia(link: RedditLink): PostMedia {
   }
 
   if (MEDIA_HINTS.has(target.post_hint ?? '') || target.secure_media) {
-    // One string, so log collectors that drop structured arguments keep the details.
-    console.info(
-      `[media:unresolved] domain=${target.domain} post_hint=${target.post_hint ?? '-'} media_type=${target.secure_media?.type ?? '-'}`,
-    )
+    logger.info('[media:unresolved]', {
+      domain: target.domain,
+      post_hint: target.post_hint ?? '-',
+      media_type: target.secure_media?.type ?? '-',
+    })
   }
   return resolveLinkCard(target)
 }

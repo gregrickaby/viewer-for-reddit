@@ -5,6 +5,8 @@ import './styles/base.css'
 import './styles/utilities.css'
 
 import type { Metadata, Viewport } from 'next'
+import { DatadogAppRouter } from '@datadog/browser-rum-nextjs'
+import { Suspense } from 'react'
 import { Reddit_Mono, Reddit_Sans } from 'next/font/google'
 import { env } from '@/lib/env'
 import { OPEN_GRAPH, SHARE_IMAGE, SITE } from '@/lib/site'
@@ -74,7 +76,14 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {env.DD_APPLICATION_ID && env.DD_CLIENT_TOKEN ? (
+          <Suspense>
+            <DatadogAppRouter />
+          </Suspense>
+        ) : null}
+        {children}
+      </body>
     </html>
   )
 }

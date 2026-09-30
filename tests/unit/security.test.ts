@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contentSecurityPolicy, securityHeaders } from '@/lib/security/headers'
 
 const directives = (policy: string) =>
@@ -37,6 +37,34 @@ describe('content security policy', () => {
     expect(dev['upgrade-insecure-requests']).toBeUndefined()
     expect(contentSecurityPolicy({ dev: false, https: false })).not.toContain(
       'upgrade-insecure-requests',
+    )
+  })
+})
+
+describe('content security policy with Datadog', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.resetModules()
+  })
+
+  async function connectSrc(env: Record<string, string>) {
+    for (const [key, value] of Object.entries(env)) vi.stubEnv(key, value)
+    vi.resetModules()
+    const { contentSecurityPolicy: policy } = await import('@/lib/security/headers')
+    return directives(policy({ dev: false, https: true }))['connect-src']
+  }
+
+  it('allows the browser intake only when Datadog is configured', async () => {
+    expect(await connectSrc({ DD_APPLICATION_ID: '', DD_CLIENT_TOKEN: '' })).toEqual([
+      "'self'",
+      'https://v.redd.it',
+    ])
+    const configured = { DD_APPLICATION_ID: 'app', DD_CLIENT_TOKEN: 'token' }
+    expect(await connectSrc({ ...configured, DD_SITE: 'datadoghq.com' })).toContain(
+      'https://browser-intake-datadoghq.com',
+    )
+    expect(await connectSrc({ ...configured, DD_SITE: 'us5.datadoghq.com' })).toContain(
+      'https://browser-intake-us5-datadoghq.com',
     )
   })
 })

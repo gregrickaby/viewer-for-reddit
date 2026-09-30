@@ -14,9 +14,9 @@
   },
   "homepage": "https://github.com/gregrickaby/viewer-for-reddit#readme",
   "scripts": {
-    "dev": "next dev --experimental-https",
+    "dev": "NODE_OPTIONS='--require dd-trace/init' next dev --experimental-https",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_OPTIONS='--require dd-trace/init' next start",
     "lint": "eslint && stylelint \"**/*.css\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -32,6 +32,10 @@
     "media:corpus": "tsx --conditions=react-server --env-file=.env.local scripts/reddit/extract-corpus.ts"
   },
   "dependencies": {
+    "@datadog/browser-logs": "7.15.0",
+    "@datadog/browser-rum": "7.15.0",
+    "@datadog/browser-rum-nextjs": "7.15.0",
+    "dd-trace": "6.18.0",
     "hls.js": "1.7.3",
     "iron-session": "9.0.1",
     "next": "16.4.0-canary.52",
@@ -63,5 +67,10 @@
     "tsx": "4.23.15",
     "typescript": "^5",
     "vitest": "5.0.2"
+  },
+  "overrides": {
+    "@datadog/browser-rum-nextjs": {
+      "next": "$next"
+    }
   }
 }

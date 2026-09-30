@@ -1,4 +1,5 @@
 import 'server-only'
+import { logger } from '@/lib/datadog/server'
 import { redirect, unstable_rethrow } from 'next/navigation'
 import { SessionUnavailableError } from '@/lib/auth/session'
 import {
@@ -68,6 +69,9 @@ function describe(error: unknown): ActionError {
       message: known ?? error.explanation ?? 'Reddit couldn’t do that. Try again.',
     }
   }
-  console.error('[action] unexpected failure', error)
+  logger.error('[action] unexpected failure', {
+    error: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined,
+  })
   return { code: 'UNKNOWN', message: 'Something went wrong. Try again.' }
 }

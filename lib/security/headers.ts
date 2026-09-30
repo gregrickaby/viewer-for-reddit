@@ -20,6 +20,13 @@ const REDDIT_MEDIA = [
   'https://*.redditstatic.com',
 ]
 
+/** Datadog's browser intake: `us5.datadoghq.com` posts to `browser-intake-us5-datadoghq.com`. */
+function datadogIntake(): string[] {
+  if (!env.DD_APPLICATION_ID || !env.DD_CLIENT_TOKEN) return []
+  const host = env.DD_SITE.replace(/\.(?=.*\.)/g, '-')
+  return [`https://browser-intake-${host}`]
+}
+
 function join(values: readonly string[]): string {
   return [...new Set(values)].join(' ')
 }
@@ -38,8 +45,11 @@ export function contentSecurityPolicy({ dev, https }: HeaderOptions): string {
     ['style-src', ["'self'", "'unsafe-inline'"]],
     ['img-src', ["'self'", 'data:', 'blob:', ...REDDIT_MEDIA, ...cspSources('imgSrc')]],
     ['media-src', ["'self'", 'blob:', ...REDDIT_MEDIA, ...cspSources('mediaSrc')]],
-    // hls.js fetches playlists and segments from v.redd.it itself; dev adds the HMR socket.
-    ['connect-src', ["'self'", 'https://v.redd.it', ...(dev ? ['ws:', 'wss:'] : [])]],
+    // hls.js fetches playlists and segments from v.redd.it itself; Datadog's browser SDK posts to its intake; dev adds the HMR socket.
+    [
+      'connect-src',
+      ["'self'", 'https://v.redd.it', ...datadogIntake(), ...(dev ? ['ws:', 'wss:'] : [])],
+    ],
     // hls.js may run its demuxer in a blob: worker.
     ['worker-src', ["'self'", 'blob:']],
     ['font-src', ["'self'"]],

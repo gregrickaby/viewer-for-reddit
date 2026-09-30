@@ -1,5 +1,8 @@
 'use client'
 
+import { addNextjsError } from '@datadog/browser-rum-nextjs'
+import { useEffect } from 'react'
+
 import { type ErrorInfo, catchError } from 'next/error'
 import { Button } from '@/components/ui/button'
 import styles from './section-error.module.css'
@@ -9,7 +12,11 @@ import styles from './section-error.module.css'
  * blank the page, and `retry()` re-fetches just that section. Server error
  * messages are redacted in production, so the copy is generic.
  */
-function SectionErrorFallback({ title }: { title: string }, { retry }: ErrorInfo) {
+function SectionErrorFallback({ title }: { title: string }, { error, retry }: ErrorInfo) {
+  useEffect(() => {
+    if (error instanceof Error) addNextjsError(error)
+  }, [error])
+
   return (
     <div className={styles.root} role="alert">
       <p className={styles.title}>{title}</p>

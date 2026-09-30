@@ -41,7 +41,12 @@ describe('parseListing', () => {
     )
     expect(result.items).toHaveLength(1)
     expect(warn).toHaveBeenCalledTimes(4)
-    expect(warn.mock.calls.map((call) => call[2])).toEqual(['t3 t3_bad', 't1 ?', 'string', '? ?'])
+    expect(warn.mock.calls.map((call) => (call[1] as { item: string }).item)).toEqual([
+      't3 t3_bad',
+      't1 ?',
+      'string',
+      '? ?',
+    ])
   })
 
   it('throws a schema error for a bad envelope', () => {

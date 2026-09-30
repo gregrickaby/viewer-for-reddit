@@ -1,4 +1,5 @@
 import 'server-only'
+import { logger } from '@/lib/datadog/server'
 import type { CommentNode, CommentView, Removal } from '@/lib/view-models'
 import { parseListing } from '../listing'
 import { sanitizeRedditHtml } from '../sanitize'
@@ -90,7 +91,10 @@ function mapReplies(replies: unknown, endpoint: string, viewer: string | null): 
   try {
     return mapCommentTree(replies, endpoint, viewer)
   } catch (error) {
-    console.warn('[reddit:schema]', endpoint, 'dropped malformed replies', error)
+    logger.warn('[reddit:schema] dropped malformed replies', {
+      endpoint,
+      error: error instanceof Error ? error.message : String(error),
+    })
     return []
   }
 }
