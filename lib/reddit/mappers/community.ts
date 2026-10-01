@@ -49,6 +49,27 @@ export function mapUser(account: RedditAccount): UserView {
   }
 }
 
+/** A people-search result as a row. `fullname` only keys the row: the account's id, not a `t5`. */
+export function mapAccountRow(account: RedditAccount): SubredditView {
+  const profile = account.subreddit
+  return {
+    name: account.name,
+    fullname: `t5_${account.id}`,
+    title: profile?.title?.trim() ?? '',
+    href: `/user/${account.name}`,
+    kind: 'user',
+    description: null,
+    subscribers: null,
+    icon: userIcon(account),
+    banner: null,
+    color: null,
+    nsfw: profile?.over_18 ?? false,
+    quarantined: false,
+    subscribed: profile?.user_is_subscriber ?? false,
+    favorited: false,
+  }
+}
+
 export function mapMe(me: RedditMe): MeView {
   return { name: me.name, icon: userIcon(me) }
 }

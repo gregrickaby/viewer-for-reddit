@@ -100,7 +100,7 @@ test.describe('header', () => {
       await expect(page.getByRole('button', { name: /^Account menu/ })).toBeVisible()
       const header = page.locator('header').first()
       // The search box keeps a usable width, even on a phone.
-      const search = await page.getByRole('searchbox', { name: 'Search subreddits' }).boundingBox()
+      const search = await page.getByRole('searchbox', { name: 'Search Reddit' }).boundingBox()
       expect(search!.width).toBeGreaterThanOrEqual(150)
       const logo = page.getByRole('link', { name: 'Viewer for Reddit home' }).locator('img')
       const [bar, mark] = await Promise.all([header.boundingBox(), logo.boundingBox()])

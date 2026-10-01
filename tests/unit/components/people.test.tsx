@@ -60,7 +60,16 @@ const getProfile = vi.fn(async () => {
   return state.profile!
 })
 const searchSubreddits = vi.fn(async () => state.search)
-vi.mock('@/lib/reddit/people', () => ({ getSaved, getUserListing, getProfile, searchSubreddits }))
+const searchPeople = vi.fn(async () => state.search)
+const searchPosts = vi.fn(async (): Promise<Page<ListItem>> => state.saved)
+vi.mock('@/lib/reddit/people', () => ({
+  getSaved,
+  getUserListing,
+  getProfile,
+  searchSubreddits,
+  searchPeople,
+  searchPosts,
+}))
 vi.mock('@/lib/reddit/reads', () => ({
   getMySubscriptions: vi.fn(async () => state.subscriptions),
   getMyMultis: vi.fn(async () => {
@@ -406,7 +415,7 @@ describe('/search', () => {
     const out = await renderServer(
       <searchPage.default params={Promise.resolve({})} searchParams={search({})} />,
     )
-    expect(out).toContain('Find communities')
+    expect(out).toContain('Find communities, people, and posts')
     expect(searchSubreddits).not.toHaveBeenCalled()
   })
 
@@ -423,7 +432,6 @@ describe('/search', () => {
       />,
     )
     expect(searchSubreddits).toHaveBeenLastCalledWith('typescript', expect.any(Object))
-    expect(out).toContain('value="typescript"')
     expect(out).toContain('r/<!-- -->typescript')
     expect(out).toContain('href="/search?q=typescript&amp;after=t5_ts&amp;count=25"')
     expect(out).toContain('aria-label="Add r/typescript to a multireddit"')
@@ -446,11 +454,57 @@ describe('/search', () => {
     expect(out).not.toContain('to a multireddit')
   })
 
+  it('searches people and posts from their tabs, and keeps the tab in its links', async () => {
+    state.search = {
+      items: [subredditView({ name: 'spez', fullname: 't5_u', href: '/user/spez', kind: 'user' })],
+      after: null,
+      before: null,
+    }
+    const people = await renderServer(
+      <searchPage.default
+        params={Promise.resolve({})}
+        searchParams={search({ q: 'spez', tab: 'people' })}
+      />,
+    )
+    expect(searchPeople).toHaveBeenLastCalledWith('spez', expect.any(Object))
+    expect(people).toContain('u/<!-- -->spez')
+    expect(people).not.toContain('to a multireddit')
+
+    state.saved = { items: [{ kind: 'post', post: postView() }], after: null, before: null }
+    const posts = await renderServer(
+      <searchPage.default
+        params={Promise.resolve({})}
+        searchParams={search({ q: 'news', tab: 'posts' })}
+      />,
+    )
+    expect(searchPosts).toHaveBeenLastCalledWith('news', expect.any(Object))
+    expect(posts).toContain('aria-current="page"')
+  })
+
+  it('says when no posts or people match', async () => {
+    state.saved = { items: [], after: null, before: null }
+    state.search = { items: [], after: null, before: null }
+    const posts = await renderServer(
+      <searchPage.default
+        params={Promise.resolve({})}
+        searchParams={search({ q: 'zzz', tab: 'posts' })}
+      />,
+    )
+    expect(posts).toContain('No posts match “zzz”')
+    const people = await renderServer(
+      <searchPage.default
+        params={Promise.resolve({})}
+        searchParams={search({ q: 'zzz', tab: 'people' })}
+      />,
+    )
+    expect(people).toContain('No people match “zzz”')
+  })
+
   it('says when nothing matches', async () => {
     const out = await renderServer(
       <searchPage.default params={Promise.resolve({})} searchParams={search({ q: 'zzz' })} />,
     )
-    expect(out).toContain('No communities match “<!-- -->zzz<!-- -->”')
+    expect(out).toContain('No communities match “zzz”')
   })
 })
 

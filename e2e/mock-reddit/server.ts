@@ -469,6 +469,8 @@ async function handle(request: IncomingMessage, response: ServerResponse) {
         SUBREDDITS.map((sr) => subreddit(String(sr.display_name))),
       ),
     )
+  if (p === '/users/search')
+    return send(response, 200, listing('t2', [{ ...ACCOUNT, name: q.get('q') ?? 'someone' }]))
   if (p === '/api/multi/mine') return send(response, 200, [...state.multis.keys()].map(multiThing))
   if ((match = /^\/api\/multi\/user\/[^/]+\/m\/([^/]+)(?:\/r\/([^/]+))?$/.exec(p))) {
     const [, name, sr] = match as unknown as [string, string, string | undefined]

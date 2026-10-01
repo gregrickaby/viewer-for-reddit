@@ -13,10 +13,10 @@ import { redditFetch } from './client'
 import { RedditNotFoundError } from './errors'
 import { parseListing, parseResponse } from './listing'
 import { mapComment } from './mappers/comment'
-import { mapSubreddit, mapUser } from './mappers/community'
+import { mapAccountRow, mapSubreddit, mapUser } from './mappers/community'
 import { mapPost } from './mappers/post'
 import { isUsername } from './names'
-import { ProfileThing } from './schemas/account'
+import { AccountThing, ProfileThing } from './schemas/account'
 import { CommentThing } from './schemas/comment'
 import { LinkThing } from './schemas/link'
 import { SubredditThing } from './schemas/subreddit'
@@ -100,6 +100,38 @@ export async function searchSubreddits(q: string, query: FeedQuery): Promise<Pag
   const listing = parseListing(json, SubredditThing, path)
   return {
     items: listing.items.map((thing) => mapSubreddit(thing.data)),
+    after: listing.after,
+    before: listing.before,
+  }
+}
+
+/** People matching `q`, as rows with a Follow button. */
+export async function searchPeople(q: string, query: FeedQuery): Promise<Page<SubredditView>> {
+  const { accessToken } = await requireAuth()
+  const path = '/users/search'
+  const json = await redditFetch(path, {
+    token: accessToken,
+    query: { ...cursors(query), q, include_over_18: 'on' },
+  })
+  const listing = parseListing(json, AccountThing, path)
+  return {
+    items: listing.items.map((thing) => mapAccountRow(thing.data)),
+    after: listing.after,
+    before: listing.before,
+  }
+}
+
+/** Posts matching `q` across Reddit, most relevant first. */
+export async function searchPosts(q: string, query: FeedQuery): Promise<Page<ListItem>> {
+  const { accessToken } = await requireAuth()
+  const path = '/search'
+  const json = await redditFetch(path, {
+    token: accessToken,
+    query: { ...cursors(query), q, type: 'link', sort: 'relevance', include_over_18: 'on' },
+  })
+  const listing = parseListing(json, LinkThing, path)
+  return {
+    items: listing.items.map((thing): ListItem => ({ kind: 'post', post: mapPost(thing.data) })),
     after: listing.after,
     before: listing.before,
   }

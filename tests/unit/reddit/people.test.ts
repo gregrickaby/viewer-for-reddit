@@ -7,7 +7,7 @@ vi.mock('@/lib/auth/session', () => ({
   requireAuth: vi.fn(async () => ({ accessToken: 'tok', username: 'fixture_user' })),
 }))
 
-const { getProfile, getSaved, getUserListing, searchSubreddits } =
+const { getProfile, getSaved, getUserListing, searchPeople, searchPosts, searchSubreddits } =
   await import('@/lib/reddit/people')
 const { setSubscription } = await import('@/lib/reddit/writes')
 const { RedditNotFoundError } = await import('@/lib/reddit/errors')
@@ -104,6 +104,34 @@ describe('searchSubreddits', () => {
     })
     expect(page.items).toHaveLength(1)
     expect(page.after).toBe('t5_next')
+  })
+})
+
+describe('searchPeople', () => {
+  it('searches accounts and maps them to follow rows', async () => {
+    const account = sample('Account')
+    redditFetch.mockResolvedValue(listing([{ kind: 't2', data: account }], 't2_next'))
+    const page = await searchPeople('spez', parseFeedQuery({}, ['new']))
+    expect(redditFetch.mock.calls[0]![0]).toBe('/users/search')
+    expect(redditFetch.mock.calls[0]![1].query).toMatchObject({ q: 'spez', include_over_18: 'on' })
+    expect(page.items[0]).toMatchObject({ kind: 'user', name: account.name })
+    expect(page.items[0]!.href).toBe(`/user/${account.name}`)
+    expect(page.after).toBe('t2_next')
+  })
+})
+
+describe('searchPosts', () => {
+  it('searches all of Reddit for links, most relevant first', async () => {
+    redditFetch.mockResolvedValue(listing([{ kind: 't3', data: sample('Link') }], 't3_next'))
+    const page = await searchPosts('typescript', parseFeedQuery({}, ['new']))
+    expect(redditFetch.mock.calls[0]![0]).toBe('/search')
+    expect(redditFetch.mock.calls[0]![1].query).toMatchObject({
+      q: 'typescript',
+      type: 'link',
+      sort: 'relevance',
+    })
+    expect(page.items[0]!.kind).toBe('post')
+    expect(page.after).toBe('t3_next')
   })
 })
 

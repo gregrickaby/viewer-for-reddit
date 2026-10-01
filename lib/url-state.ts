@@ -205,6 +205,9 @@ export const PROFILE_SORTS = ['new', 'hot', 'top'] as const satisfies readonly F
 export const SUBSCRIPTION_TABS = ['communities', 'people'] as const
 export type SubscriptionTab = (typeof SUBSCRIPTION_TABS)[number]
 
+export const SEARCH_TABS = ['communities', 'people', 'posts'] as const
+export type SearchTab = (typeof SEARCH_TABS)[number]
+
 /** One value from a fixed list, or the list's first (the default). */
 export function pick<T extends string>(
   values: readonly T[],

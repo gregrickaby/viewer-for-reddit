@@ -27,6 +27,29 @@
     background: color-mix(in srgb, var(--surface-card) 88%, transparent);
     backdrop-filter: blur(12px);
     view-transition-name: site-header;
+
+    /*
+     * Beside the sidebar the header uses the page's own columns, so the search bar
+     * starts where the content below it starts.
+     */
+    @media (width >= 64rem) {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      gap: 0;
+      padding-inline: 0;
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+
+    @media (width >= 64rem) {
+      grid-area: 1 / 2;
+      justify-self: end;
+      padding-inline-end: var(--space-3);
+    }
   }
 
   .menuButton {
@@ -66,6 +89,11 @@
     &:hover {
       text-decoration: none;
     }
+
+    @media (width >= 64rem) {
+      grid-area: 1 / 1;
+      padding-inline-start: var(--space-3);
+    }
   }
 
   .search {
@@ -73,6 +101,15 @@
     display: flex;
     justify-content: center;
     min-inline-size: 0;
+
+    /* The same width and padding as `.main`, with the bar at its left edge. */
+    @media (width >= 64rem) {
+      grid-area: 1 / 2;
+      inline-size: min(100%, 48rem);
+      margin-inline: auto;
+      padding-inline: var(--space-5);
+      justify-content: flex-start;
+    }
   }
 
   /* The logo sits inside the bar, like reddit.com; it links home. */

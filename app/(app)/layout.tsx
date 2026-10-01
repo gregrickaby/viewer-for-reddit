@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { Logo } from '@/components/brand/logo'
 import { PopoverDismiss } from '@/components/islands/popover-dismiss'
+import { SiteSearchFallback, SiteSearchInput } from '@/components/islands/site-search-input'
 import { SectionError } from '@/components/islands/section-error'
 import {
   SidebarFeeds,
@@ -44,29 +45,25 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
         </Link>
         <form action="/search" method="get" role="search" className={styles.search}>
           <label htmlFor="site-search" className="visually-hidden">
-            Search subreddits
+            Search Reddit
           </label>
           <div className={styles.field}>
             <Link href="/home" className={styles.searchLogo} aria-label={`${SITE.name} home`}>
               <Logo size={28} />
             </Link>
-            <input
-              id="site-search"
-              name="q"
-              type="search"
-              placeholder="Search subreddits…"
-              className={styles.searchInput}
-              autoComplete="off"
-              enterKeyHint="search"
-            />
+            <Suspense fallback={<SiteSearchFallback className={styles.searchInput} />}>
+              <SiteSearchInput className={styles.searchInput} />
+            </Suspense>
           </div>
         </form>
-        <Suspense fallback={<SettingsMenuSkeleton />}>
-          <SettingsMenu />
-        </Suspense>
-        <Suspense fallback={<UserMenuSkeleton />}>
-          <UserMenu />
-        </Suspense>
+        <div className={styles.actions}>
+          <Suspense fallback={<SettingsMenuSkeleton />}>
+            <SettingsMenu />
+          </Suspense>
+          <Suspense fallback={<UserMenuSkeleton />}>
+            <UserMenu />
+          </Suspense>
+        </div>
       </header>
 
       <aside id="app-nav" popover="auto" className={styles.sidebar} aria-label="Navigation">

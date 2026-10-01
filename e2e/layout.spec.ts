@@ -95,4 +95,38 @@ test.describe('search results', () => {
     }))
     expect(scroll).toBeLessThanOrEqual(client)
   })
+
+  for (const width of [1024, 1727]) {
+    test(`at ${width}px the results start where the search bar does`, async ({
+      signedIn: page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 })
+      await page.goto('/search?q=pics')
+      const bar = await page.locator('form[role="search"]').first().locator('> div').boundingBox()
+      const title = await page.getByRole('main').getByRole('heading', { level: 1 }).boundingBox()
+      expect(Math.abs(bar!.x - title!.x)).toBeLessThan(2)
+    })
+  }
+
+  test('switches between communities, people, and posts', async ({ signedIn: page }) => {
+    await page.goto('/search?q=pics')
+    const header = page.getByRole('searchbox', { name: 'Search Reddit' })
+    await expect(header).toHaveValue('pics')
+    await expect(page.getByRole('main').getByRole('searchbox')).toHaveCount(0)
+    const tabs = page.getByRole('navigation', { name: 'Search types' })
+    await expect(tabs.getByRole('link', { name: 'Communities' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    await tabs.getByRole('link', { name: 'People' }).click()
+    await expect(page).toHaveURL(/tab=people/)
+    await expect(header).toHaveValue('pics')
+    await header.fill('spez')
+    await header.press('Enter')
+    await expect(page).toHaveURL(/q=spez.*tab=people|tab=people.*q=spez/)
+    await expect(page.getByRole('link', { name: 'u/spez' })).toBeVisible()
+    await tabs.getByRole('link', { name: 'Posts' }).click()
+    await expect(page).toHaveURL(/tab=posts/)
+    await expect(page.getByRole('article').first()).toBeVisible()
+  })
 })
