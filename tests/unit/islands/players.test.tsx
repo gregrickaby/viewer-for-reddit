@@ -379,6 +379,22 @@ describe('EmbedFacade', () => {
     expect(screen.getByRole('link', { name: 'Play A video (YouTube)' })).toBeTruthy()
   })
 
+  it('keeps the player loaded while it is fullscreen, even if the page reads as scrolled away', () => {
+    const { container } = render(<EmbedFacade {...embed} />)
+    fireEvent.click(screen.getByRole('link', { name: 'Play A video (YouTube)' }))
+    const box = container.querySelector('iframe')!.parentElement!
+    show(box, { ratio: 1 })
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: box })
+    try {
+      show(box, { ratio: 0 })
+      expect(container.querySelector('iframe')).not.toBeNull()
+    } finally {
+      Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: null })
+    }
+    show(box, { ratio: 0.2 })
+    expect(container.querySelector('iframe')).toBeNull()
+  })
+
   it('unloads the player when its page is hidden, so it stops playing', () => {
     const page = (mode: 'visible' | 'hidden') => (
       <Activity mode={mode}>

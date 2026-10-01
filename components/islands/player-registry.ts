@@ -31,6 +31,12 @@ export type PlayerHandlers = {
 
 type Entry = PlayerHandlers & { attached: boolean; visible: boolean; lastSeen: number }
 
+/** Fullscreen hides the rest of the page, so every player reads as scrolled away. */
+function inFullscreen() {
+  const doc = document as Document & { webkitFullscreenElement?: Element | null }
+  return Boolean(document.fullscreenElement ?? doc.webkitFullscreenElement)
+}
+
 const entries = new Map<Element, Entry>()
 let attachObserver: IntersectionObserver | null = null
 let visibilityObserver: IntersectionObserver | null = null
@@ -48,6 +54,8 @@ function observers(): [IntersectionObserver, IntersectionObserver] {
         const entry = entries.get(change.target)
         if (!entry) continue
         const visible = change.intersectionRatio >= VISIBLE_RATIO
+        // Rotating a fullscreen player fires this too; the change after exit corrects it.
+        if (!visible && inFullscreen()) continue
         entry.visible = visible
         if (visible) entry.lastSeen = performance.now()
         entry.visibility?.(visible)
