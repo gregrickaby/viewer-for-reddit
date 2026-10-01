@@ -18,6 +18,30 @@
     & + & {
       border-block-start: var(--border-width) solid var(--border);
     }
+
+    /* On a phone a community's buttons drop under the text, so the text gets the whole row. People have one button and a name, so they stay on one line. */
+    @media (width < 40rem) {
+      &:not(.person) {
+        display: grid;
+        grid-template-columns: 2.5rem minmax(0, 1fr);
+        align-items: start;
+        padding: var(--space-3);
+
+        & > .text {
+          grid-column: 2;
+        }
+
+        & > .actions {
+          grid-column: 2;
+          justify-content: flex-start;
+        }
+      }
+    }
+  }
+
+  .person {
+    /* Marks a row that keeps its button beside the name; see `.row`. */
+    align-items: center;
   }
 
   .icon,

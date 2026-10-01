@@ -29,7 +29,7 @@ export function SubredditRows({
     <ul role="list" className={styles.list}>
       {items.map((item) => (
         <ViewTransition key={item.fullname} enter={LIST_CHANGE} exit={LIST_EXIT} default="none">
-          <li className={styles.row}>
+          <li className={item.kind === 'user' ? `${styles.row} ${styles.person}` : styles.row}>
             {item.icon ? (
               <img
                 className={styles.icon}
