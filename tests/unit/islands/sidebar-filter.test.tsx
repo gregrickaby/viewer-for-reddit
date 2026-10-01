@@ -99,18 +99,18 @@ describe('SidebarFilter', () => {
     expect(push).not.toHaveBeenCalled()
   })
 
-  it('skips the filter for a short list', () => {
+  it('skips the filter for a list of ten or fewer', () => {
     render(
       <SidebarFilter
         noun="communities"
         fallback="r"
         manageHref="/subreddits"
-        items={communities(3)}
+        items={communities(10)}
         limit={50}
       />,
     )
     expect(screen.queryByRole('searchbox')).toBeNull()
-    expect(screen.getAllByRole('link')).toHaveLength(3)
+    expect(screen.getAllByRole('link')).toHaveLength(10)
   })
 
   it('submits to the Subscriptions page without JavaScript', () => {

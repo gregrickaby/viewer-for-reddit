@@ -11,9 +11,6 @@ import styles from '@/components/shell/sidebar.module.css'
 const LIST_ENTER = { 'list-change': 'fade-in', default: 'none' }
 const LIST_EXIT = { 'list-change': 'fade-out', default: 'none' }
 
-/** Below this many rows, finding one by eye is quicker than a filter. */
-const FILTER_MIN = 10
-
 export type SidebarItem = {
   key: string
   /** What the filter matches against. */
@@ -23,6 +20,9 @@ export type SidebarItem = {
   href: string
   icon: string | null
 }
+
+/** A list this short is quicker to scan than to filter. */
+const FILTER_OVER = 10
 
 type Props = {
   items: SidebarItem[]
@@ -65,7 +65,7 @@ export function SidebarFilter({
 
   return (
     <>
-      {items.length >= FILTER_MIN ? (
+      {items.length > FILTER_OVER ? (
         <form action={manageHref} method="get" role="search" onSubmit={open}>
           {Object.entries(manageFields).map(([name, value]) => (
             <input key={name} type="hidden" name={name} value={value} />
