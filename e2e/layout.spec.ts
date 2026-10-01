@@ -83,3 +83,16 @@ test.describe('comments', () => {
     expect(width).toBeLessThanOrEqual(390)
   })
 })
+
+test.describe('search results', () => {
+  test('fit a phone without scrolling sideways', async ({ signedIn: page }) => {
+    await page.setViewportSize({ width: 360, height: 740 })
+    await page.goto('/search?q=pics')
+    await expect(page.getByRole('list').first()).toBeVisible()
+    const { scroll, client } = await page.evaluate(() => ({
+      scroll: document.documentElement.scrollWidth,
+      client: document.documentElement.clientWidth,
+    }))
+    expect(scroll).toBeLessThanOrEqual(client)
+  })
+})

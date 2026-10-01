@@ -1,6 +1,9 @@
 @layer components {
   .list {
     display: grid;
+
+    /* A bare auto track grows to the widest no-wrap title instead of the card. */
+    grid-template-columns: minmax(0, 1fr);
     border: var(--border-width) solid var(--border);
     border-radius: var(--radius-2);
     background: var(--surface-card);
@@ -42,6 +45,7 @@
   .text {
     flex: 1;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-1);
     min-inline-size: 0;
   }
