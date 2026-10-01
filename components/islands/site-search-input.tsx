@@ -3,7 +3,7 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 import { SEARCH_TABS, parseText, pick } from '@/lib/url-state'
 
-type Props = { className: string }
+type Props = { className?: string }
 
 /**
  * The header's search field. On the results page it shows the query and keeps
