@@ -12,6 +12,7 @@ import {
   SkeletonExit,
 } from '@/components/motion/transitions'
 import { Tabs } from '@/components/ui/tabs'
+import { BackLink } from '@/components/ui/back-link'
 import { getSaved } from '@/lib/reddit/people'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { requestTime } from '@/lib/request-time'
@@ -83,6 +84,7 @@ export default function SavedPage({ searchParams }: PageProps<'/saved'>) {
   return (
     <PageTransition>
       <div className={styles.page}>
+        <BackLink href="/home">Home</BackLink>
         <h1 className={styles.title}>Saved</h1>
         <SectionError title="Couldn’t load your saved items">
           <Suspense

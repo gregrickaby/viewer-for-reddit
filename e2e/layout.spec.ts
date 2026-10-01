@@ -130,3 +130,44 @@ test.describe('search results', () => {
     await expect(page.getByRole('article').first()).toBeVisible()
   })
 })
+
+test.describe('navigation helpers', () => {
+  for (const path of [
+    '/active',
+    '/multis',
+    '/saved',
+    '/settings',
+    '/subreddits',
+    '/search?q=pics',
+    '/r/pics',
+    '/r/popular',
+    '/user/spez',
+    '/m/one',
+    '/live/e2elivethread1',
+  ]) {
+    test(`${path} has a way back home`, async ({ signedIn: page }) => {
+      await page.goto(path)
+      await expect(page.getByRole('main').getByRole('link', { name: '← Home' })).toBeVisible()
+    })
+  }
+
+  test('a multi and a profile link back home', async ({ signedIn: page }) => {
+    await page.goto('/user/spez')
+    await page.getByRole('link', { name: '← Home' }).click()
+    await expect(page).toHaveURL(/\/home$/)
+  })
+
+  test('the scroll-to-top button appears past 200px and returns to the top', async ({
+    signedIn: page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 700 })
+    await page.goto('/home')
+    const button = page.getByRole('button', { name: 'Scroll to top', includeHidden: true })
+    await expect(button).toHaveAttribute('data-visible', 'false')
+    await page.evaluate(() => window.scrollTo(0, 600))
+    await expect(button).toHaveAttribute('data-visible', 'true')
+    await button.click()
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5)
+    await expect(button).toHaveAttribute('data-visible', 'false')
+  })
+})

@@ -12,6 +12,7 @@ import {
   SkeletonExit,
 } from '@/components/motion/transitions'
 import { ProfileHeader, ProfileHeaderSkeleton } from '@/components/profile/profile-header'
+import { BackLink } from '@/components/ui/back-link'
 import { Tabs } from '@/components/ui/tabs'
 import { getUsername } from '@/lib/auth/session'
 import { getProfile, getUserListing } from '@/lib/reddit/people'
@@ -116,6 +117,7 @@ export default function ProfilePage({ params, searchParams }: Props) {
   return (
     <PageTransition>
       <div className={styles.page}>
+        <BackLink href="/home">Home</BackLink>
         <SectionError title="Couldn’t load this profile">
           <Suspense
             fallback={

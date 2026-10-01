@@ -320,6 +320,8 @@ describe('/user/[username]', () => {
       expect.objectContaining({ sort: 'top', t: 'week' }),
     )
     expect(out).toContain('Cake day')
+    expect(out).toContain('href="/home"')
+    expect(out).toContain('← Home')
     expect(out).toContain('href="/user/kn0thing?tab=comments"')
     expect(out).toContain('href="/user/kn0thing?tab=submitted&amp;sort=hot"')
     expect(out).toContain(

@@ -1,0 +1,6 @@
+@layer components {
+  .link {
+    font-size: var(--step-minus-1);
+    font-weight: 700;
+  }
+}

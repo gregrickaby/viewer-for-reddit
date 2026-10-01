@@ -8,6 +8,7 @@ import { PendingButton } from '@/components/islands/pending-button'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { SubredditRowsSkeleton } from '@/components/subreddit/subreddit-row'
+import { BackLink } from '@/components/ui/back-link'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMyMultis } from '@/lib/reddit/reads'
 import type { MultiView } from '@/lib/view-models'
@@ -75,6 +76,7 @@ export default function MultisPage() {
   return (
     <PageTransition>
       <div className={styles.page}>
+        <BackLink href="/home">Home</BackLink>
         <h1 className={styles.title}>Multireddits</h1>
         <SectionError title="Couldn’t load your multireddits">
           <Suspense

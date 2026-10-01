@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { Logo } from '@/components/brand/logo'
 import { PopoverDismiss } from '@/components/islands/popover-dismiss'
 import { SiteSearchFallback, SiteSearchInput } from '@/components/islands/site-search-input'
+import { ScrollToTop } from '@/components/islands/scroll-to-top'
 import { SectionError } from '@/components/islands/section-error'
 import {
   SidebarFeeds,
@@ -77,6 +78,7 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
       </aside>
 
       <main className={styles.main}>{children}</main>
+      <ScrollToTop />
       <Suspense fallback={null}>
         <PopoverDismiss />
       </Suspense>

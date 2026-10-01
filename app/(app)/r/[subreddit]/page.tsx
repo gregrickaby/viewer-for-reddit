@@ -4,6 +4,7 @@ import { FeedSection, FeedSkeleton } from '@/components/feed/feed-section'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { SubredditHeader, SubredditHeaderSkeleton } from '@/components/subreddit/subreddit-header'
+import { BackLink } from '@/components/ui/back-link'
 import { LISTING_SORTS } from '@/lib/url-state'
 import styles from '../../feed-page.module.css'
 
@@ -33,6 +34,7 @@ export default function SubredditPage({ params, searchParams }: PageProps<'/r/[s
   return (
     <PageTransition>
       <div className={styles.page}>
+        <BackLink href="/home">Home</BackLink>
         <SectionError title="Couldn’t load this community">
           <Suspense
             fallback={

@@ -4,6 +4,7 @@ import { ActiveSection } from '@/components/feed/active-section'
 import { FeedSkeleton } from '@/components/feed/feed-section'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
+import { BackLink } from '@/components/ui/back-link'
 import styles from '../feed-page.module.css'
 
 export const metadata: Metadata = { title: 'Active threads' }
@@ -12,6 +13,7 @@ export default function ActivePage() {
   return (
     <PageTransition>
       <div className={styles.page}>
+        <BackLink href="/home">Home</BackLink>
         <div>
           <h1 className={styles.title}>Active threads</h1>
           <p className={styles.subtitle}>

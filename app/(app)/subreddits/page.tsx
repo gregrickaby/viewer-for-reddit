@@ -5,6 +5,7 @@ import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { SubredditRows, SubredditRowsSkeleton } from '@/components/subreddit/subreddit-row'
 import { Tabs } from '@/components/ui/tabs'
+import { BackLink } from '@/components/ui/back-link'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMySubscriptions } from '@/lib/reddit/reads'
 import { SUBSCRIPTION_TABS, type SubscriptionTab, href, parseText, pick } from '@/lib/url-state'
@@ -96,6 +97,7 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subreddi
   return (
     <PageTransition>
       <div className={styles.page}>
+        <BackLink href="/home">Home</BackLink>
         <h1 className={styles.title}>Subscriptions</h1>
         <SectionError title="Couldn’t load your subscriptions">
           <Suspense

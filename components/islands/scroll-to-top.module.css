@@ -1,0 +1,44 @@
+@layer components {
+  .button {
+    position: fixed;
+    inset-block-end: max(var(--space-4), env(safe-area-inset-bottom));
+    inset-inline-end: max(var(--space-4), env(safe-area-inset-right));
+    z-index: var(--z-sticky);
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    padding: 0;
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: 50%;
+    background: var(--surface-card);
+    box-shadow: var(--shadow-2);
+    color: var(--text-1);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    translate: 0 0.5rem;
+    transition:
+      opacity var(--duration-exit) var(--ease-out),
+      translate var(--duration-exit) var(--ease-out),
+      background-color var(--duration-exit) var(--ease-out);
+
+    & svg {
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    &:hover {
+      background: var(--surface-hover);
+    }
+
+    &[data-visible='true'] {
+      opacity: 1;
+      pointer-events: auto;
+      translate: 0 0;
+    }
+  }
+}

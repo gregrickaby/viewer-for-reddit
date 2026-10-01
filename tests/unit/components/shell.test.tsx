@@ -195,6 +195,9 @@ describe('feed pages', () => {
     )
     expect(mine).toContain('m/<!-- -->news')
     expect(mine).not.toContain('by u/')
+    expect(mine).toContain('aria-label="Breadcrumb"')
+    expect(mine).toContain('href="/home"')
+    expect(mine).toContain('← Home')
 
     const theirs = Promise.resolve({ username: 'kn0thing', multi: 'tech' })
     expect(await userMultiPage.generateMetadata({ params: theirs, searchParams })).toEqual({

@@ -1,10 +1,26 @@
 // @vitest-environment happy-dom
+import type { ReactNode } from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const nav = { pathname: '/home', pending: false }
 vi.mock('next/navigation', () => ({ usePathname: () => nav.pathname }))
-vi.mock('next/link', () => ({ useLinkStatus: () => ({ pending: nav.pending }) }))
+vi.mock('next/link', () => ({
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string
+    children: ReactNode
+    className?: string
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+  useLinkStatus: () => ({ pending: nav.pending }),
+}))
 const addNextjsError = vi.fn()
 vi.mock('@datadog/browser-rum-nextjs', () => ({ addNextjsError }))
 vi.mock('@/app/actions/settings', () => ({ setTheme: vi.fn(), setBlurNsfw: vi.fn() }))
@@ -127,6 +143,7 @@ describe('error fallbacks', () => {
     render(<AppError error={new Error('x')} retry={retry} />)
     await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Try again' })))
     expect(retry).toHaveBeenCalledOnce()
+    expect(screen.getByRole('link', { name: 'Home' }).getAttribute('href')).toBe('/home')
   })
 
   it('renders its own document, reports the error, and offers a retry when the root layout fails', async () => {
