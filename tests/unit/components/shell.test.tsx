@@ -1,3 +1,4 @@
+import type * as Navigation from 'next/navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MultiView, SubredditView } from '@/lib/view-models'
 import { multiView, postView, subredditView } from '@/tests/helpers/views'
@@ -30,6 +31,10 @@ vi.mock('@/lib/settings', () => ({
   getSettings: vi.fn(async () => ({ theme: 'dark', blurNsfw: false })),
 }))
 vi.mock('@/lib/request-time', () => ({ requestTime: vi.fn(async () => 1_700_000_000_000) }))
+vi.mock('next/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof Navigation>()),
+  useRouter: () => ({ push: vi.fn() }),
+}))
 vi.mock('@/app/actions/auth', () => ({ signOut: vi.fn() }))
 vi.mock('@/app/actions/things', () => ({ vote: vi.fn(), setSaved: vi.fn() }))
 vi.mock('@/app/actions/settings', () => ({ setTheme: vi.fn(), setBlurNsfw: vi.fn() }))
@@ -106,9 +111,9 @@ describe('Sidebar', () => {
     const out = await renderServer(<SidebarLists />)
     expect(out.indexOf('Multis')).toBeLessThan(out.indexOf('Communities'))
     expect(out).toContain('href="/m/news"')
-    expect(out).toContain('r/<!-- -->nextjs')
+    expect(out).toContain('r/nextjs')
     expect(out).toContain('aria-label="People"')
-    expect(out).toContain('u/<!-- -->spez')
+    expect(out).toContain('u/spez')
     expect(out).toContain('class="iconFallback"')
   })
 
@@ -117,7 +122,7 @@ describe('Sidebar', () => {
       subredditView({ name: `sub${i}`, fullname: `t5_${i}`, href: `/r/sub${i}` }),
     )
     const many = await renderServer(<SidebarLists />)
-    expect(many).toContain('All <!-- -->51<!-- --> communities →')
+    expect(many).toContain('All <!-- -->51<!-- --> <!-- -->communities<!-- --> →')
     expect(many).not.toContain('sub50<')
     state.subscriptions = []
     const none = await renderServer(<SidebarLists />)

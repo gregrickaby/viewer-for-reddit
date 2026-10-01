@@ -1,19 +1,14 @@
-/* eslint-disable @next/next/no-img-element -- tiny Reddit-hosted icons; see components/media/post-media.tsx */
 import type { Route } from 'next'
 import Link from 'next/link'
-import { ViewTransition } from 'react'
+import { SidebarFilter } from '@/components/islands/sidebar-filter'
 import { SiteLinks } from '@/components/site/site-links'
 import { getMyMultis, getMySubscriptions } from '@/lib/reddit/reads'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import type { MultiView, SubredditView } from '@/lib/view-models'
 import styles from './sidebar.module.css'
 
-/** Rows fade in and out when a subscription changes (design §8.5, list-change). */
-const LIST_ENTER = { 'list-change': 'fade-in', default: 'none' }
-const LIST_EXIT = { 'list-change': 'fade-out', default: 'none' }
-
-/** How many communities the sidebar lists before "Manage →". */
-const COMMUNITY_LIMIT = 50
+/** How many rows each sidebar list shows before the filter or "All N". */
+const LIST_LIMIT = 50
 
 const FEEDS: Array<{ href: Route; label: string }> = [
   { href: '/home', label: 'Home' },
@@ -76,16 +71,19 @@ export async function SidebarLists() {
           </Link>
         </h2>
         {multis.length > 0 ? (
-          <ul role="list" className={styles.list}>
-            {multis.map((multi) => (
-              <li key={multi.href}>
-                <Link href={multi.href as Route} className={styles.link}>
-                  <Icon src={multi.icon} fallback="m" />
-                  <span className={styles.label}>{multi.displayName}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <SidebarFilter
+            items={multis.map((multi) => ({
+              key: multi.href,
+              name: multi.displayName,
+              label: multi.displayName,
+              href: multi.href,
+              icon: multi.icon,
+            }))}
+            limit={LIST_LIMIT}
+            noun="multis"
+            fallback="m"
+            manageHref="/multis"
+          />
         ) : (
           <p className={styles.empty}>No multis yet.</p>
         )}
@@ -99,76 +97,44 @@ export async function SidebarLists() {
           </Link>
         </h2>
         {communities.length > 0 ? (
-          <ul role="list" className={styles.list}>
-            {communities.slice(0, COMMUNITY_LIMIT).map((community) => (
-              <ViewTransition
-                key={community.fullname}
-                enter={LIST_ENTER}
-                exit={LIST_EXIT}
-                default="none"
-              >
-                {' '}
-                <li>
-                  <Link href={community.href as Route} className={styles.link}>
-                    <Icon src={community.icon} fallback="r" />
-                    <span className={styles.label}>r/{community.name}</span>
-                  </Link>
-                </li>{' '}
-              </ViewTransition>
-            ))}
-          </ul>
+          <SidebarFilter
+            items={communities.map((community) => ({
+              key: community.fullname,
+              name: community.name,
+              label: `r/${community.name}`,
+              href: community.href,
+              icon: community.icon,
+            }))}
+            limit={LIST_LIMIT}
+            noun="communities"
+            fallback="r"
+            manageHref="/subreddits"
+          />
         ) : (
           <p className={styles.empty}>You haven’t joined any communities.</p>
         )}
-        {communities.length > COMMUNITY_LIMIT ? (
-          <Link href={'/subreddits' as Route} className={styles.more}>
-            All {communities.length} communities →
-          </Link>
-        ) : null}
       </nav>
 
       {people.length > 0 ? (
         <nav aria-label="People" className={styles.section}>
           <h2 className={styles.heading}>People</h2>
-          <ul role="list" className={styles.list}>
-            {people.map((person) => (
-              <ViewTransition
-                key={person.fullname}
-                enter={LIST_ENTER}
-                exit={LIST_EXIT}
-                default="none"
-              >
-                {' '}
-                <li>
-                  <Link href={person.href as Route} className={styles.link}>
-                    <Icon src={person.icon} fallback="u" />
-                    <span className={styles.label}>u/{person.name}</span>
-                  </Link>
-                </li>{' '}
-              </ViewTransition>
-            ))}
-          </ul>
+          <SidebarFilter
+            items={people.map((person) => ({
+              key: person.fullname,
+              name: person.name,
+              label: `u/${person.name}`,
+              href: person.href,
+              icon: person.icon,
+            }))}
+            limit={LIST_LIMIT}
+            noun="people"
+            fallback="u"
+            manageHref="/subreddits"
+            manageFields={{ tab: 'people' }}
+          />
         </nav>
       ) : null}
     </>
-  )
-}
-
-function Icon({ src, fallback }: { src: string | null; fallback: string }) {
-  return src ? (
-    <img
-      className={styles.icon}
-      src={src}
-      alt=""
-      width={20}
-      height={20}
-      loading="lazy"
-      decoding="async"
-    />
-  ) : (
-    <span className={styles.iconFallback} aria-hidden="true">
-      {fallback}
-    </span>
   )
 }
 

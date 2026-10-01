@@ -74,6 +74,22 @@
     font-weight: 700;
   }
 
+  .filter {
+    inline-size: 100%;
+    min-block-size: 2.25rem;
+    padding-inline: var(--space-2);
+    border: var(--border-width) solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface-sunken);
+    color: var(--text-1);
+    font: inherit;
+    font-size: var(--step-minus-1);
+
+    &::placeholder {
+      color: var(--text-3);
+    }
+  }
+
   .empty {
     padding-inline: var(--space-2);
     color: var(--text-3);
