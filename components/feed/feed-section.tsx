@@ -72,6 +72,8 @@ export async function FeedSection({
           // Appended pages are rendered once and held in client state, so a
           // changed blur setting has to restart them.
           key={`${feedKey(query)}:${blurNsfw}`}
+          base={base}
+          defaultSort={sorts[0]!}
           request={{
             source,
             sort: query.sort,

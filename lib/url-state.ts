@@ -100,11 +100,23 @@ export function sortHref(
   })
 }
 
-function keepSort(query: FeedQuery, defaultSort: FeedSort): HrefQuery {
+function keepSort(query: Pick<FeedQuery, 'sort' | 't'>, defaultSort: FeedSort): HrefQuery {
   return {
     sort: query.sort === defaultSort ? null : query.sort,
     t: usesTimeRange(query.sort) ? query.t : null,
   }
+}
+
+/** The page after `after`, with `count` items already seen. */
+export function afterHref(
+  base: string,
+  query: Pick<FeedQuery, 'sort' | 't'>,
+  after: string,
+  count: number,
+  defaultSort: FeedSort,
+  extra: HrefQuery = {},
+): string {
+  return withQuery(base, { ...extra, ...keepSort(query, defaultSort), after, count })
 }
 
 export function nextHref(
@@ -114,12 +126,7 @@ export function nextHref(
   defaultSort: FeedSort,
   extra: HrefQuery = {},
 ): string {
-  return withQuery(base, {
-    ...extra,
-    ...keepSort(query, defaultSort),
-    after,
-    count: pageOffset(query) + PAGE_SIZE,
-  })
+  return afterHref(base, query, after, pageOffset(query) + PAGE_SIZE, defaultSort, extra)
 }
 
 /** Returns to the first page when going back would land there anyway. */

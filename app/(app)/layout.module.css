@@ -28,6 +28,12 @@
     backdrop-filter: blur(12px);
     view-transition-name: site-header;
 
+    /* Phones re-blur everything under the header on every scroll frame: go solid there. */
+    @media (pointer: coarse) {
+      background: var(--surface-card);
+      backdrop-filter: none;
+    }
+
     /*
      * Beside the sidebar the header uses the page's own columns, so the search bar
      * starts where the content below it starts.

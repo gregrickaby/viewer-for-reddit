@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { useId } from 'react'
 import { deleteCommentForm } from '@/app/actions/comments'
 import { ActionForm } from '@/components/islands/action-form'
-import { CommentComposer } from '@/components/islands/comment-composer'
+import type { CommentComposerProps } from '@/components/islands/comment-composer'
+import { ComposerDetails } from '@/components/islands/composer-details'
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import { LiveTime } from '@/components/islands/live-time'
 import { PendingButton } from '@/components/islands/pending-button'
@@ -14,6 +15,7 @@ import { RedditHtml } from '@/components/reddit-html'
 import { absoluteTime, compactNumber } from '@/lib/format'
 import { type ThreadQuery, expandMoreHref } from '@/lib/url-state'
 import type { CommentNode, CommentView, MoreNode } from '@/lib/view-models'
+import { ComposerForm } from './composer-form'
 import styles from './comment-tree.module.css'
 
 export type TreeContext = {
@@ -112,20 +114,16 @@ function Comment({
               />
             )}
             {locked || gone ? null : (
-              <details className={styles.inline}>
-                <summary className={styles.action}>Reply</summary>
-                <CommentComposer mode="reply" parent={comment.fullname} me={ctx.me} label="Reply" />
-              </details>
+              <Composer
+                summary="Reply"
+                props={{ mode: 'reply', parent: comment.fullname, me: ctx.me, label: 'Reply' }}
+              />
             )}
             {comment.mine && !locked && comment.bodyMarkdown !== null ? (
-              <details className={styles.inline}>
-                <summary className={styles.action}>Edit</summary>
-                <CommentComposer
-                  mode="edit"
-                  thing={comment.fullname}
-                  initial={comment.bodyMarkdown}
-                />
-              </details>
+              <Composer
+                summary="Edit"
+                props={{ mode: 'edit', thing: comment.fullname, initial: comment.bodyMarkdown }}
+              />
             ) : null}
             {comment.mine ? (
               <DeleteComment fullname={comment.fullname} permalink={comment.permalink} />
@@ -143,6 +141,18 @@ function Comment({
         </div>
       </details>
     </article>
+  )
+}
+
+function Composer({ summary, props }: { summary: string; props: CommentComposerProps }) {
+  return (
+    <ComposerDetails
+      summary={summary}
+      className={styles.inline}
+      summaryClassName={styles.action}
+      composer={props}
+      fallback={<ComposerForm {...props} />}
+    />
   )
 }
 

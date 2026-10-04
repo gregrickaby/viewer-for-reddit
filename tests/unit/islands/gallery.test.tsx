@@ -162,4 +162,43 @@ describe('GalleryLightbox', () => {
     unmount()
     expect(dialog.open).toBe(false)
   })
+
+  it('loads the full-size images only while the lightbox is open', () => {
+    const { unmount } = render(
+      <Gallery
+        items={[
+          items[0]!,
+          {
+            media: {
+              type: 'image',
+              image: imageSet({ src: 'https://i.redd.it/2.jpg', srcSet: '' }),
+            },
+            caption: null,
+            outboundUrl: null,
+          },
+        ]}
+        title="Trip"
+        postId="p1"
+      />,
+    )
+    const dialog = document.querySelector('dialog')!
+    const [first, second] = dialog.querySelectorAll('img')
+    expect(first!.getAttribute('src')).toBeNull()
+    expect(first!.dataset.src).toBe('https://i.redd.it/1.jpg')
+
+    openAt(0)
+    expect(first!.getAttribute('src')).toBe('https://i.redd.it/1.jpg')
+    expect(first!.getAttribute('srcset')).toContain('320w')
+    expect(first!.getAttribute('sizes')).toBe('100vw')
+    expect(second!.getAttribute('src')).toBe('https://i.redd.it/2.jpg')
+    expect(second!.getAttribute('srcset')).toBeNull()
+
+    act(() => dialog.close())
+    expect(first!.getAttribute('src')).toBeNull()
+    expect(first!.getAttribute('srcset')).toBeNull()
+
+    openAt(0)
+    unmount()
+    expect(first!.getAttribute('src')).toBeNull()
+  })
 })

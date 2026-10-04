@@ -147,6 +147,15 @@ describe('AutoplayVideo', () => {
     expect(screen.getByRole('button', { name: '▶ Play' })).toBeTruthy()
   })
 
+  it('unloads once it is far from view', () => {
+    const { container } = render(<AutoplayVideo {...loop} />)
+    const frame = container.firstElementChild!
+    const video = container.querySelector('video')!
+    show(frame)
+    show(frame, { near: false, ratio: 0 })
+    expect(video.getAttribute('src')).toBeNull()
+  })
+
   it('releases the decoder on unmount', () => {
     const { container, unmount } = render(<AutoplayVideo {...loop} />)
     show(container.firstElementChild!)
@@ -175,12 +184,41 @@ describe('InlineLoopMotion', () => {
     const video = container.querySelector('video')!
     expect(video.pause).toHaveBeenCalled()
     expect(video.controls).toBe(true)
+    expect(video.autoplay).toBe(false)
+    show(video.parentElement!, { ratio: 1 })
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled()
   })
 
-  it('leaves them looping otherwise', () => {
+  it('leaves them looping otherwise, playing while visible', () => {
     const { container } = render(block())
+    const video = container.querySelector('video')!
     expect(HTMLMediaElement.prototype.pause).not.toHaveBeenCalled()
-    expect(container.querySelector('video')!.controls).toBe(false)
+    expect(video.controls).toBe(false)
+    show(video.parentElement!, { ratio: 1 })
+    expect(video.play).toHaveBeenCalled()
+    expect(video.getAttribute('src')).toBe(loop.mp4)
+    show(video.parentElement!, { ratio: 0.2 })
+    expect(video.pause).toHaveBeenCalled()
+  })
+
+  it('unloads a loop once it is far from view, and reloads it on the way back', () => {
+    const { container } = render(block())
+    const video = container.querySelector('video')!
+    show(video.parentElement!, { near: false, ratio: 0 })
+    expect(video.getAttribute('src')).toBeNull()
+    expect(video.load).toHaveBeenCalled()
+    show(video.parentElement!, { ratio: 1 })
+    expect(video.getAttribute('src')).toBe(loop.mp4)
+  })
+
+  it('releases its loops when the block goes away, and picks them up again', () => {
+    const { container, rerender } = render(<Activity mode="visible">{block()}</Activity>)
+    const video = container.querySelector('video')!
+    rerender(<Activity mode="hidden">{block()}</Activity>)
+    expect(video.getAttribute('src')).toBeNull()
+    rerender(<Activity mode="visible">{block()}</Activity>)
+    show(video.parentElement!)
+    expect(video.getAttribute('src')).toBe(loop.mp4)
   })
 })
 
@@ -321,6 +359,25 @@ describe('player registry', () => {
     claimAudio(a)
     expect(yieldA).toHaveBeenCalledOnce()
     cleanups.forEach((cleanup) => cleanup())
+  })
+
+  it('unloads players that ask for it once they leave the attach margin', () => {
+    const [keep, drop] = [document.createElement('div'), document.createElement('div')]
+    const detached: string[] = []
+    const cleanups = [
+      registerPlayer(keep, { attach: () => {}, detach: () => detached.push('keep') }),
+      registerPlayer(
+        drop,
+        { attach: () => {}, detach: () => detached.push('drop') },
+        { attached: true, release: true },
+      ),
+    ]
+    show(keep)
+    show(keep, { near: false, ratio: 0 })
+    show(drop, { near: false, ratio: 0 })
+    show(drop, { near: false, ratio: 0 })
+    expect(detached).toEqual(['drop'])
+    for (const cleanup of cleanups) cleanup()
   })
 
   it('ignores reports for elements it no longer tracks', () => {

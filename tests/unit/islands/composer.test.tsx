@@ -21,6 +21,8 @@ vi.mock('@/app/actions/comments', () => ({ postComment, editComment, deleteComme
 
 const { CommentComposer } = await import('@/components/islands/comment-composer')
 const { PendingButton } = await import('@/components/islands/pending-button')
+const { ComposerDetails } = await import('@/components/islands/composer-details')
+const { ComposerForm } = await import('@/components/thread/composer-form')
 
 const locked = {
   ok: false as const,
@@ -133,5 +135,47 @@ describe('PendingButton', () => {
     )
     expect(screen.getByText('Go').getAttribute('aria-busy')).toBe('false')
     expect(screen.getByText('Busy').hasAttribute('disabled')).toBe(true)
+  })
+})
+
+describe('ComposerDetails', () => {
+  const reply = { mode: 'reply', parent: 't1_c1', me: 'spez', label: 'Reply' } as const
+
+  it('holds the server-rendered form until it first opens, then mounts the composer', async () => {
+    const { container } = render(
+      <ComposerDetails summary="Reply" composer={reply} fallback={<ComposerForm {...reply} />} />,
+    )
+    const details = container.querySelector('details')!
+    expect(container.querySelector('summary')!.textContent).toBe('Reply')
+    expect(screen.getByPlaceholderText('Write a reply…')).toBeTruthy()
+
+    details.open = true
+    fireEvent(details, new Event('toggle'))
+    await typeAndSend('Agreed')
+    expect(postComment).toHaveBeenCalledOnce()
+    expect(screen.getByText('u/spez · sending…')).toBeTruthy()
+
+    // Closing keeps the composer: its pending comment and draft survive.
+    details.open = false
+    fireEvent(details, new Event('toggle'))
+    expect(screen.getByText('u/spez · sending…')).toBeTruthy()
+  })
+})
+
+describe('ComposerForm', () => {
+  it('renders a reply form that posts without JavaScript', () => {
+    const { container } = render(
+      <ComposerForm mode="reply" parent="t3_abc" me="spez" label="Comment" />,
+    )
+    expect(screen.getByPlaceholderText('What are your thoughts?')).toBeTruthy()
+    expect(container.querySelector<HTMLInputElement>('input[name="parent"]')!.value).toBe('t3_abc')
+    expect(screen.getByRole('button', { name: 'Comment' }).getAttribute('type')).toBe('submit')
+  })
+
+  it('renders an edit form with the current text', () => {
+    const { container } = render(<ComposerForm mode="edit" thing="t1_c1" initial="Hello" />)
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('Hello')
+    expect(container.querySelector<HTMLInputElement>('input[name="thing"]')!.value).toBe('t1_c1')
+    expect(screen.getByRole('button', { name: 'Save edit' })).toBeTruthy()
   })
 })

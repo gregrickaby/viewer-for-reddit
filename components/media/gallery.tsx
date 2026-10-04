@@ -26,7 +26,7 @@ function hostOf(url: string): string {
 /**
  * A gallery (design §8.10): a server-rendered scroll-snap strip with CSS
  * Carousel buttons and dots where supported, and a full-screen `<dialog>`
- * whose full-size images load only once it opens. Without JavaScript each
+ * whose images load only while it is open. Without JavaScript each
  * image links to its full-size original.
  */
 export function Gallery({
@@ -141,9 +141,12 @@ export function Gallery({
           {items.map((item, index) =>
             item.media.type === 'image' ? (
               <li key={index} className={styles.lightboxSlide} data-index={index}>
+                {/* No `src` until the lightbox opens: `GalleryLightbox` loads these and drops them on close. */}
                 <img
                   className={styles.lightboxImage}
-                  src={item.media.image.src}
+                  data-src={item.media.image.src}
+                  data-srcset={item.media.image.srcSet || undefined}
+                  sizes="100vw"
                   width={item.media.image.width}
                   height={item.media.image.height}
                   alt={altFor(item, index)}

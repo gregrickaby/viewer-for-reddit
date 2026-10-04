@@ -116,6 +116,13 @@
     }
   }
 
+  .trimmed {
+    padding-block: var(--space-2);
+    color: var(--text-3);
+    font-size: var(--step-minus-1);
+    text-align: center;
+  }
+
   .meta {
     display: flex;
     flex-wrap: wrap;

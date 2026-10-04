@@ -24,6 +24,8 @@ const READING_OFFSET = 240
 const SPREAD_MS = POLL_MS * 0.8
 /** The most time between two comments posted in the same second. */
 const MAX_GAP_MS = 400
+/** New comments kept on the page. A game thread can add thousands in an evening. */
+export const MAX_LIVE_COMMENTS = 200
 
 type Cursor = { since: number; seen: string[] }
 
@@ -46,8 +48,10 @@ export function paceComments(items: LiveItem[]): number[] {
 }
 
 type Watch = {
-  /** The comments shown so far, newest first. */
+  /** The comments shown so far, newest first, at most `MAX_LIVE_COMMENTS`. */
   comments: LiveItem[]
+  /** Older new comments were dropped to stay under the cap. */
+  trimmed: boolean
   /** The post's body after an edit, or null while it is the one the page rendered. */
   body: { node: ReactNode } | null
   /** Reddit's comment total from the latest poll, or null before the first one. */
@@ -76,6 +80,8 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
   const [body, setBody] = useState<Watch['body']>(null)
   const [paused, setPaused] = useState(false)
   const [numComments, setNumComments] = useState<number | null>(null)
+  const [trimmed, setTrimmed] = useState(false)
+  const shown = useRef(0)
   const cursorRef = useRef(cursor)
   const hashRef = useRef(bodyHash)
   const timers = useRef(new Set<ReturnType<typeof setTimeout>>())
@@ -96,7 +102,13 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
     queuedUntil.current = start + (delays.at(-1) ?? 0)
     oldestFirst.forEach((item, index) => {
       // A transition lets the comment's ViewTransition play instead of popping in.
-      const show = () => startTransition(() => setComments((current) => [item, ...current]))
+      const show = () => {
+        shown.current += 1
+        startTransition(() => {
+          setComments((current) => [item, ...current].slice(0, MAX_LIVE_COMMENTS))
+          if (shown.current > MAX_LIVE_COMMENTS) setTrimmed(true)
+        })
+      }
       const delay = start - Date.now() + (delays[index] ?? 0)
       if (delay <= 0) return show()
       const timer = setTimeout(() => {
@@ -133,6 +145,7 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
 
   const watch: Watch = {
     comments,
+    trimmed,
     body,
     numComments,
     paused,
@@ -195,7 +208,7 @@ export function LiveComments() {
   })
 
   if (!watch) return null
-  const { comments, paused, setPaused, gaveUp } = watch
+  const { comments, trimmed, paused, setPaused, gaveUp } = watch
 
   return (
     <div ref={root} className={styles.watch}>
@@ -217,6 +230,11 @@ export function LiveComments() {
             <Fragment key={comment.id}>{comment.node}</Fragment>
           ))}
         </ol>
+      ) : null}
+      {trimmed ? (
+        <p className={styles.status}>
+          Showing the newest {MAX_LIVE_COMMENTS} new comments. Reload the page to see the rest.
+        </p>
       ) : null}
     </div>
   )

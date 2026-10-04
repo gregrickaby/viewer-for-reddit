@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const pollThreadLive = vi.fn()
 vi.mock('@/app/actions/thread-live', () => ({ pollThreadLive }))
 
-const { LiveBody, LiveComments, LiveCount, LiveThread, paceComments } =
+const { LiveBody, LiveComments, LiveCount, LiveThread, MAX_LIVE_COMMENTS, paceComments } =
   await import('@/components/islands/live-thread')
 
 const cursor = { since: 100, seen: ['a'] }
@@ -66,6 +66,24 @@ describe('LiveThread', () => {
       cursor: { since: 200, seen: ['z'] },
       bodyHash: 'h2',
     })
+  })
+
+  it(`keeps only the newest ${MAX_LIVE_COMMENTS} new comments, and says so`, async () => {
+    const texts = Array.from({ length: MAX_LIVE_COMMENTS + 5 }, (_, index) => `c${index}`)
+    pollThreadLive.mockResolvedValueOnce(result(texts)).mockResolvedValue(result([]))
+    thread()
+    await tick()
+    expect(screen.queryByText(/Showing the newest/)).toBeNull()
+    await tick(14_000)
+    expect(screen.getAllByRole('listitem')).toHaveLength(MAX_LIVE_COMMENTS)
+    // Newest first: the oldest five are the ones gone.
+    expect(screen.getByText('c0')).toBeTruthy()
+    expect(screen.queryByText(`c${MAX_LIVE_COMMENTS + 4}`)).toBeNull()
+    expect(
+      screen.getByText(
+        `Showing the newest ${MAX_LIVE_COMMENTS} new comments. Reload the page to see the rest.`,
+      ),
+    ).toBeTruthy()
   })
 
   it('polls at once when the reader comes back to a slowed-down thread', async () => {

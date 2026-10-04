@@ -115,14 +115,13 @@
     animation: var(--duration-exit) ease-in both fade reverse;
   }
 
+  /* Opacity only: blurring full-page snapshots is slow on phones, and slower the longer the page. */
   @keyframes fade {
     from {
-      filter: blur(3px);
       opacity: 0;
     }
 
     to {
-      filter: blur(0);
       opacity: 1;
     }
   }

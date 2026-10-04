@@ -3,6 +3,7 @@
 import { type KeyboardEvent, useOptimistic, useRef } from 'react'
 import { editComment, postComment } from '@/app/actions/comments'
 import styles from './comment-composer.module.css'
+import { COMMENT_MAX_CHARS, EDIT_HINT, REPLY_HINT, placeholderFor } from './composer-copy'
 import { PendingButton } from './pending-button'
 import { useEnhancedForm } from './use-enhanced-form'
 
@@ -71,8 +72,8 @@ function ReplyComposer({ parent, me, label }: Extract<CommentComposerProps, { mo
           id={`text-${parent}`}
           name="text"
           className={styles.text}
-          placeholder={parent.startsWith('t3_') ? 'What are your thoughts?' : 'Write a reply…'}
-          maxLength={10_000}
+          placeholder={placeholderFor(parent)}
+          maxLength={COMMENT_MAX_CHARS}
           required
           rows={3}
           onKeyDown={submitOnShortcut}
@@ -83,7 +84,7 @@ function ReplyComposer({ parent, me, label }: Extract<CommentComposerProps, { mo
               {error}
             </p>
           ) : (
-            <span className={styles.hint}>Markdown supported · ⌘/Ctrl+Enter to send</span>
+            <span className={styles.hint}>{REPLY_HINT}</span>
           )}
           <PendingButton pending={isPending}>{label}</PendingButton>
         </div>
@@ -122,7 +123,7 @@ function EditComposer({ thing, initial }: Extract<CommentComposerProps, { mode: 
         name="text"
         className={styles.text}
         defaultValue={initial}
-        maxLength={10_000}
+        maxLength={COMMENT_MAX_CHARS}
         required
         rows={4}
         onKeyDown={submitOnShortcut}
@@ -133,7 +134,7 @@ function EditComposer({ thing, initial }: Extract<CommentComposerProps, { mode: 
             {error}
           </p>
         ) : (
-          <span className={styles.hint}>⌘/Ctrl+Enter to save</span>
+          <span className={styles.hint}>{EDIT_HINT}</span>
         )}
         <PendingButton pending={isPending}>Save edit</PendingButton>
       </div>

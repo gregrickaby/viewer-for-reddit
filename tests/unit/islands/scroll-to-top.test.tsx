@@ -7,7 +7,23 @@ const { ScrollToTop } = await import('@/components/islands/scroll-to-top')
 const scrollTo = vi.fn()
 let reduceMotion = false
 
+/** The sentinel's observer: tests report whether the top of the page is in view. */
+let report: IntersectionObserverCallback | null = null
+let disconnected = false
+class FakeObserver {
+  constructor(callback: IntersectionObserverCallback) {
+    report = callback
+  }
+  observe() {}
+  disconnect() {
+    disconnected = true
+  }
+}
+
 beforeEach(() => {
+  report = null
+  disconnected = false
+  vi.stubGlobal('IntersectionObserver', FakeObserver)
   window.scrollTo = scrollTo as unknown as typeof window.scrollTo
   window.matchMedia = ((query: string) => ({
     matches: reduceMotion && query.includes('reduce'),
@@ -17,44 +33,42 @@ afterEach(() => {
   cleanup()
   scrollTo.mockClear()
   reduceMotion = false
-  Object.defineProperty(window, 'scrollY', { configurable: true, value: 0 })
+  vi.unstubAllGlobals()
 })
 
-function scrollBy(y: number) {
-  Object.defineProperty(window, 'scrollY', { configurable: true, value: y })
-  act(() => {
-    window.dispatchEvent(new Event('scroll'))
-  })
+/** Scrolls so the 200px sentinel at the top of the page is in view, or not. */
+function topInView(inView: boolean) {
+  act(() =>
+    report!([{ isIntersecting: inView } as IntersectionObserverEntry], {} as IntersectionObserver),
+  )
 }
 
 describe('ScrollToTop', () => {
-  it('appears only after scrolling past 200px', () => {
-    render(<ScrollToTop />)
+  it('appears once the top 200px of the page scroll away', () => {
+    const { unmount } = render(<ScrollToTop />)
     const button = document.querySelector('button')!
+    const sentinel = document.querySelector<HTMLElement>('span[aria-hidden]')!
+    expect(sentinel.style.blockSize).toBe('200px')
     expect(button.getAttribute('data-visible')).toBe('false')
     expect(button.inert).toBe(true)
-    scrollBy(200)
+    topInView(true)
     expect(button.getAttribute('data-visible')).toBe('false')
-    scrollBy(201)
+    topInView(false)
     expect(button.getAttribute('data-visible')).toBe('true')
     expect(button.inert).toBe(false)
-    scrollBy(50)
+    topInView(true)
     expect(button.getAttribute('data-visible')).toBe('false')
+    unmount()
+    expect(disconnected).toBe(true)
   })
 
   it('scrolls to the top smoothly, or at once when motion is reduced', () => {
     render(<ScrollToTop />)
-    scrollBy(900)
+    topInView(false)
     fireEvent.click(screen.getByRole('button', { name: 'Scroll to top' }))
     expect(scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior: 'smooth' })
     reduceMotion = true
     fireEvent.click(screen.getByRole('button', { name: 'Scroll to top' }))
     expect(scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior: 'instant' })
-  })
-
-  it('starts visible when the page loads already scrolled', () => {
-    Object.defineProperty(window, 'scrollY', { configurable: true, value: 500 })
-    render(<ScrollToTop />)
-    expect(document.querySelector('button')!.getAttribute('data-visible')).toBe('true')
   })
 })

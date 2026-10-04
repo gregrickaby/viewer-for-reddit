@@ -8,6 +8,8 @@
  *   playing, layer-promoted video);
  * - at most MAX_ATTACHED players hold a decoder; the least recently seen
  *   offscreen one goes back to its poster;
+ * - silent loops have no playback worth keeping, so they also unload as soon
+ *   as they leave the attach margin;
  * - starting an audible video pauses the other audible ones (GIF-style loops
  *   are silent and exempt).
  */
@@ -29,7 +31,19 @@ export type PlayerHandlers = {
   yieldAudio?: () => void
 }
 
-type Entry = PlayerHandlers & { attached: boolean; visible: boolean; lastSeen: number }
+export type PlayerOptions = {
+  /** The media is already loading (server-rendered with a `src`). */
+  attached?: boolean
+  /** Unload whenever the player leaves the attach margin, not only to make room. */
+  release?: boolean
+}
+
+type Entry = PlayerHandlers & {
+  attached: boolean
+  release: boolean
+  visible: boolean
+  lastSeen: number
+}
 
 /** Fullscreen hides the rest of the page, so every player reads as scrolled away. */
 function inFullscreen() {
@@ -44,7 +58,10 @@ let visibilityObserver: IntersectionObserver | null = null
 function observers(): [IntersectionObserver, IntersectionObserver] {
   attachObserver ??= new IntersectionObserver(
     (changes) => {
-      for (const change of changes) if (change.isIntersecting) attach(change.target)
+      for (const change of changes) {
+        if (change.isIntersecting) attach(change.target)
+        else releaseFar(change.target)
+      }
     },
     { rootMargin: ATTACH_MARGIN },
   )
@@ -82,10 +99,21 @@ function attach(element: Element) {
   entry.attach()
 }
 
+function releaseFar(element: Element) {
+  const entry = entries.get(element)
+  if (!entry?.attached || !entry.release) return
+  entry.attached = false
+  entry.detach?.()
+}
+
 /** Tracks a player's wrapper element. Returns the cleanup, which detaches it. */
-export function registerPlayer(element: Element, handlers: PlayerHandlers): () => void {
+export function registerPlayer(
+  element: Element,
+  handlers: PlayerHandlers,
+  { attached = false, release = false }: PlayerOptions = {},
+): () => void {
   const [attaching, visibility] = observers()
-  entries.set(element, { ...handlers, attached: false, visible: false, lastSeen: 0 })
+  entries.set(element, { ...handlers, attached, release, visible: false, lastSeen: 0 })
   attaching.observe(element)
   visibility.observe(element)
 

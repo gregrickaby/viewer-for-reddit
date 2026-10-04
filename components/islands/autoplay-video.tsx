@@ -28,20 +28,24 @@ export function AutoplayVideo({ mp4, width, height, poster, label }: AutoplayVid
     const frame = frameRef.current
     const video = videoRef.current
     if (!frame || !video) return
-    return registerPlayer(frame, {
-      attach: () => {
-        video.src = mp4
+    return registerPlayer(
+      frame,
+      {
+        attach: () => {
+          video.src = mp4
+        },
+        detach: () => {
+          video.pause()
+          video.removeAttribute('src')
+          video.load()
+        },
+        visibility: (visible) => {
+          if (visible && !reduced) void video.play().catch(() => {})
+          else video.pause()
+        },
       },
-      detach: () => {
-        video.pause()
-        video.removeAttribute('src')
-        video.load()
-      },
-      visibility: (visible) => {
-        if (visible && !reduced) void video.play().catch(() => {})
-        else video.pause()
-      },
-    })
+      { release: true },
+    )
   }, [mp4, reduced])
 
   function toggle() {

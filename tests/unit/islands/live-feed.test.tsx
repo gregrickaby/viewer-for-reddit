@@ -7,8 +7,8 @@ const pollLive = vi.fn()
 const loadOlderLive = vi.fn()
 vi.mock('@/app/actions/live', () => ({ pollLive, loadOlderLive }))
 
-const { LiveFeed } = await import('@/components/islands/live-feed')
-const { LiveTime } = await import('@/components/islands/live-time')
+const { LiveFeed, MAX_LIVE_UPDATES, capBatches } = await import('@/components/islands/live-feed')
+const { CHUNK, LiveTime, TICK_MS } = await import('@/components/islands/live-time')
 
 const FIRST = 'LiveUpdate_362ac036-b5eb-11f1-946d-ceb77989b019'
 const SECOND = 'LiveUpdate_6603ce62-b094-11f1-94e4-7ec5abe59ad0'
@@ -220,7 +220,58 @@ describe('LiveFeed older updates', () => {
   })
 })
 
+describe('LiveFeed cap', () => {
+  const batch = (id: number, count: number) => ({ id, items: null, count, shown: true })
+
+  it(`drops the oldest batches past ${MAX_LIVE_UPDATES} updates, but never the newest`, () => {
+    expect(capBatches([batch(3, 150), batch(2, 50), batch(1, 1)]).map((each) => each.id)).toEqual([
+      3, 2,
+    ])
+    expect(capBatches([batch(1, 500)]).map((each) => each.id)).toEqual([1])
+  })
+
+  it('says when older updates from this visit were removed', async () => {
+    pollLive.mockResolvedValue({
+      ok: true,
+      data: { items: <li>batch</li>, count: MAX_LIVE_UPDATES, newest: SECOND, event: null },
+    })
+    feed()
+    await tick()
+    expect(screen.queryByText(/Older updates from this visit/)).toBeNull()
+    await tick()
+    expect(screen.getAllByText('batch')).toHaveLength(1)
+    expect(
+      screen.getByText(
+        'Older updates from this visit were removed. Reload the page to see every update.',
+      ),
+    ).toBeTruthy()
+  })
+})
+
 describe('LiveTime', () => {
+  it(`updates ${CHUNK} timestamps at a time, and none while the tab is hidden`, async () => {
+    const now = Date.now()
+    const count = CHUNK + 10
+    render(
+      <>
+        {Array.from({ length: count }, (_, index) => (
+          <LiveTime key={index} utc={now / 1000 - 30} now={now} />
+        ))}
+      </>,
+    )
+    hidden = true
+    await tick(TICK_MS)
+    expect(screen.getAllByText('now')).toHaveLength(count)
+
+    hidden = false
+    await act(async () => {
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    expect(screen.getAllByText('now')).toHaveLength(10)
+    await tick(0)
+    expect(screen.queryAllByText('now')).toHaveLength(0)
+  })
+
   it('keeps counting after the server rendered it', async () => {
     const now = 1_700_000_000_000
     render(<LiveTime utc={now / 1000 - 30} now={now} />)

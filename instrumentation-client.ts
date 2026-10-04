@@ -27,7 +27,8 @@ if (applicationId && clientToken) {
     sessionSampleRate: 100,
     // No session replays: the About page tells readers none are recorded.
     sessionReplaySampleRate: 0,
-    trackResources: true,
+    // Off: a long feed loads hundreds of images, and each one would be a RUM event.
+    trackResources: false,
     trackUserInteractions: true,
     trackLongTasks: true,
     defaultPrivacyLevel: 'mask-user-input',

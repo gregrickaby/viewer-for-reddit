@@ -11,9 +11,23 @@ import styles from '@/components/live/live.module.css'
 const META_EVERY = 4
 /** Past this scroll offset, new updates wait behind a button instead of pushing the page down. */
 const READING_OFFSET = 240
+/** New updates kept above the first page. A long event can post hundreds. */
+export const MAX_LIVE_UPDATES = 200
 
 type Batch = { id: number; items: ReactNode; count: number; shown: boolean }
 type Older = 'idle' | 'loading' | 'error'
+
+/** Drops the oldest batches past `MAX_LIVE_UPDATES`, always keeping the newest one. */
+export function capBatches(batches: Batch[]): Batch[] {
+  let total = 0
+  return batches.filter((batch, index) => {
+    total += batch.count
+    return index === 0 || total <= MAX_LIVE_UPDATES
+  })
+}
+
+/** New updates, newest batch first, and whether older ones were dropped. */
+type Added = { batches: Batch[]; trimmed: boolean }
 
 type Props = {
   id: string
@@ -33,7 +47,7 @@ type Props = {
  * New updates go above the first page, unless the reader has scrolled away from the top.
  */
 export function LiveFeed({ id, live, viewers, newest, older, children }: Props) {
-  const [batches, setBatches] = useState<Batch[]>([])
+  const [{ batches, trimmed }, setAdded] = useState<Added>({ batches: [], trimmed: false })
   const [olderPages, setOlderPages] = useState<ReactNode[]>([])
   const [cursor, setCursor] = useState<string | null>(older)
   const [olderStatus, setOlderStatus] = useState<Older>('idle')
@@ -51,9 +65,10 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
       const atTop = window.scrollY <= READING_OFFSET
       batchId.current += 1
       const batch = { id: batchId.current, items, count: added, shown: atTop }
-      setBatches((current) => {
-        const next = [batch, ...current]
-        return atTop ? next.map((each) => ({ ...each, shown: true })) : next
+      setAdded((current) => {
+        const next = [batch, ...current.batches]
+        const kept = capBatches(atTop ? next.map((each) => ({ ...each, shown: true })) : next)
+        return { batches: kept, trimmed: current.trimmed || kept.length < next.length }
       })
     }
     if (event) setState(event)
@@ -97,7 +112,10 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
             variant="secondary"
             size="sm"
             onClick={() => {
-              setBatches((current) => current.map((batch) => ({ ...batch, shown: true })))
+              setAdded((current) => ({
+                ...current,
+                batches: current.batches.map((batch) => ({ ...batch, shown: true })),
+              }))
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }}
           >
@@ -111,6 +129,11 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
           .map((batch) => (
             <Fragment key={batch.id}>{batch.items}</Fragment>
           ))}
+        {trimmed ? (
+          <li className={styles.trimmed}>
+            Older updates from this visit were removed. Reload the page to see every update.
+          </li>
+        ) : null}
         {children}
         {olderPages.map((items, index) => (
           <Fragment key={index}>{items}</Fragment>
