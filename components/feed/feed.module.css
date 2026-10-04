@@ -35,7 +35,9 @@
     padding-block: var(--space-1);
     border-block-end: var(--border-width) solid var(--border);
     content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
+
+    /* Height only: one value for both axes would make every skipped post 32rem wide. */
+    contain-intrinsic-block-size: auto 32rem;
   }
 
   /* Containment clips overflow, which would cut off a vote or save error's tooltip. */

@@ -1,5 +1,21 @@
 import { expect, test } from './fixtures'
 
+test.describe('feed', () => {
+  // Off-screen posts skip layout; their placeholder size must not widen the page.
+  for (const path of ['/home', '/r/pics']) {
+    test(`${path} fits a phone without scrolling sideways`, async ({ signedIn: page }) => {
+      await page.setViewportSize({ width: 390, height: 844 })
+      await page.goto(path)
+      await expect(page.locator('main article').first()).toBeVisible()
+      const { scroll, client } = await page.evaluate(() => ({
+        scroll: document.documentElement.scrollWidth,
+        client: document.documentElement.clientWidth,
+      }))
+      expect(scroll).toBeLessThanOrEqual(client)
+    })
+  }
+})
+
 test.describe('community header', () => {
   test('keeps the name below the banner and wide enough to read on a phone', async ({
     signedIn: page,
