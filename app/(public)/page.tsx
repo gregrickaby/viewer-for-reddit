@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { Logo } from '@/components/brand/logo'
 import { JsonLd } from '@/components/site/json-ld'
 import { AppPreview } from '@/components/site/app-preview'
 import { FaqAnswer } from '@/components/site/faq-answer'

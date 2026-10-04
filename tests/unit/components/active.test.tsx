@@ -4,7 +4,7 @@ import { postView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
 
 const state = { posts: [] as PostView[], error: null as unknown }
-const getActiveThreads = vi.fn(async (_now: number) => {
+const getActiveThreads = vi.fn<(now: number) => Promise<PostView[]>>(async () => {
   if (state.error) throw state.error
   return state.posts
 })
