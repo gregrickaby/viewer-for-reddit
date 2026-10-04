@@ -1,7 +1,7 @@
 import { expect, test } from './fixtures'
 
 test.describe('feed', () => {
-  // Off-screen posts skip layout; their placeholder size must not widen the page.
+  // Nothing in a post (media, flair, long links) may widen the page past a phone.
   for (const path of ['/home', '/r/pics']) {
     test(`${path} fits a phone without scrolling sideways`, async ({ signedIn: page }) => {
       await page.setViewportSize({ width: 390, height: 844 })
@@ -14,6 +14,33 @@ test.describe('feed', () => {
       expect(scroll).toBeLessThanOrEqual(client)
     })
   }
+})
+
+test.describe('feed scrolling', () => {
+  test('scrolling back up after a fling never moves what the reader sees', async ({
+    signedIn: page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    // Safari has no scroll anchoring: any post that changes height above the viewport
+    // moves the page. Turning it off here makes Chromium show the same jump.
+    await page.addStyleTag({ content: 'html, body { overflow-anchor: none !important }' })
+    await expect(page.locator('main article').first()).toBeVisible()
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight * 0.7))
+    await page.waitForTimeout(500)
+
+    const drift: number[] = []
+    for (let step = 0; step < 40; step += 1) {
+      const moved = await page.evaluate(async () => {
+        const target = document.elementFromPoint(innerWidth / 2, innerHeight / 2)!
+        const [y, top] = [scrollY, target.getBoundingClientRect().top]
+        scrollBy(0, -60)
+        await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 50)))
+        return target.getBoundingClientRect().top - top - (y - scrollY)
+      })
+      if (Math.abs(moved) > 1) drift.push(Math.round(moved))
+    }
+    expect(drift).toEqual([])
+  })
 })
 
 test.describe('community header', () => {

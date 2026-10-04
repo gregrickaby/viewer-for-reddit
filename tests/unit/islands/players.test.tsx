@@ -167,6 +167,20 @@ describe('AutoplayVideo', () => {
 })
 
 describe('InlineLoopMotion', () => {
+  // happy-dom has no video metadata: each loop reports 480×270 once `loaded`.
+  let loaded = true
+  const metadata = (value: boolean) => (loaded = value)
+  for (const [name, value] of [
+    ['videoWidth', 480],
+    ['videoHeight', 270],
+  ] as const) {
+    Object.defineProperty(HTMLVideoElement.prototype, name, {
+      configurable: true,
+      get: () => (loaded ? value : 0),
+    })
+  }
+  beforeEach(() => metadata(true))
+
   const block = () => (
     <>
       <div>
@@ -204,11 +218,30 @@ describe('InlineLoopMotion', () => {
   it('unloads a loop once it is far from view, and reloads it on the way back', () => {
     const { container } = render(block())
     const video = container.querySelector('video')!
+    // Its box is pinned to the video's own size, so unloading can't change it.
+    expect(video.style.inlineSize).toBe('480px')
+    expect(video.style.aspectRatio).toBe('480 / 270')
     show(video.parentElement!, { near: false, ratio: 0 })
     expect(video.getAttribute('src')).toBeNull()
     expect(video.load).toHaveBeenCalled()
     show(video.parentElement!, { ratio: 1 })
     expect(video.getAttribute('src')).toBe(loop.mp4)
+  })
+
+  it('keeps a loop loaded until its size is known, then pins it', () => {
+    metadata(false)
+    const { container } = render(block())
+    const video = container.querySelector('video')!
+    show(video.parentElement!, { near: false, ratio: 0 })
+    expect(video.getAttribute('src')).toBe(loop.mp4)
+    expect(video.style.aspectRatio).toBe('')
+
+    metadata(true)
+    fireEvent(video, new Event('loadedmetadata'))
+    expect(video.style.aspectRatio).toBe('480 / 270')
+    show(video.parentElement!)
+    show(video.parentElement!, { near: false, ratio: 0 })
+    expect(video.getAttribute('src')).toBeNull()
   })
 
   it('releases its loops when the block goes away, and picks them up again', () => {

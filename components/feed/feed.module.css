@@ -27,22 +27,9 @@
     gap: 0;
   }
 
-  /*
-   * Off-screen posts skip layout and paint, so a long feed costs no more to scroll than a
-   * short one. `auto` remembers each post's real height once it has rendered.
-   */
   .post {
     padding-block: var(--space-1);
     border-block-end: var(--border-width) solid var(--border);
-    content-visibility: auto;
-
-    /* Height only: one value for both axes would make every skipped post 32rem wide. */
-    contain-intrinsic-block-size: auto 32rem;
-  }
-
-  /* Containment clips overflow, which would cut off a vote or save error's tooltip. */
-  .post:has([role='alert']) {
-    content-visibility: visible;
   }
 
   .toolbar {
