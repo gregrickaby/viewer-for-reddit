@@ -1,6 +1,6 @@
 'use server'
 
-import type { ReactNode } from 'react'
+import { type ReactNode, ViewTransition } from 'react'
 import * as z from 'zod'
 import type { ActionResult } from '@/lib/actions/result'
 import { invalid, runAction } from '@/lib/actions/run-action'
@@ -19,9 +19,12 @@ const Request = z.object({
   bodyHash: z.string().max(32),
 })
 
+/** One new comment, rendered, with when it was posted so the island can pace it. */
+export type LiveItem = { id: string; createdUtc: number; node: ReactNode }
+
 export type ThreadPollResult = {
-  items: ReactNode
-  count: number
+  /** Newest first. */
+  items: LiveItem[]
   cursor: { since: number; seen: string[] }
   bodyHash: string
   /** Set only when the post's body changed since `bodyHash`. */
@@ -43,12 +46,17 @@ export async function pollThreadLive(input: unknown): Promise<ActionResult<Threa
     const now = Date.now()
     const changed = poll.bodyHash !== bodyHash
     return {
-      items: poll.comments.map(({ comment, replyTo }) => (
-        <li key={comment.id}>
-          <CommentCard comment={comment} now={now} replyTo={replyTo} />
-        </li>
-      )),
-      count: poll.comments.length,
+      items: poll.comments.map(({ comment, replyTo }) => ({
+        id: comment.id,
+        createdUtc: comment.createdUtc,
+        node: (
+          <ViewTransition enter="slide-up" default="none">
+            <li>
+              <CommentCard comment={comment} now={now} replyTo={replyTo} />
+            </li>
+          </ViewTransition>
+        ),
+      })),
       cursor: poll.cursor,
       bodyHash: poll.bodyHash,
       body: changed

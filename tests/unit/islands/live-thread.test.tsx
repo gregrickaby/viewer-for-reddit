@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const pollThreadLive = vi.fn()
 vi.mock('@/app/actions/thread-live', () => ({ pollThreadLive }))
 
-const { LiveBody, LiveComments, LiveCount, LiveThread } =
+const { LiveBody, LiveComments, LiveCount, LiveThread, paceComments } =
   await import('@/components/islands/live-thread')
 
 const cursor = { since: 100, seen: ['a'] }
@@ -13,8 +13,7 @@ const cursor = { since: 100, seen: ['a'] }
 const result = (texts: string[], extra: Record<string, unknown> = {}) => ({
   ok: true,
   data: {
-    items: texts.map((text) => <li key={text}>{text}</li>),
-    count: texts.length,
+    items: texts.map((text) => ({ id: text, createdUtc: 200, node: <li>{text}</li> })),
     cursor: { since: 200, seen: ['z'] },
     bodyHash: 'h2',
     body: null,
@@ -124,17 +123,61 @@ describe('LiveThread', () => {
     expect(screen.getByText('2-0')).toBeTruthy()
   })
 
-  it('holds comments behind a button while the reader is down the page', async () => {
+  it('adds comments as they arrive, even to a reader down the page', async () => {
     Object.defineProperty(window, 'scrollY', { configurable: true, value: 900 })
-    vi.stubGlobal('scrollTo', vi.fn())
     pollThreadLive.mockResolvedValue(result(['goal!', 'and another']))
     thread()
     await tick()
-    expect(screen.queryByText('goal!')).toBeNull()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Show 2 new comments' }))
+    await tick(400)
     expect(screen.getByText('goal!')).toBeTruthy()
+    expect(screen.getByText('and another')).toBeTruthy()
     expect(screen.queryByRole('button', { name: /new comment/ })).toBeNull()
+  })
+
+  it('scrolls by what was added when the browser has no scroll anchoring', async () => {
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 900 })
+    const scrollBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => {})
+    Object.defineProperty(document.documentElement, 'style', { configurable: true, value: {} })
+    let height = 40
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+      configurable: true,
+      get: () => height,
+    })
+    pollThreadLive.mockResolvedValue(result(['goal!']))
+    thread()
+    height = 140
+    await tick()
+    expect(scrollBy).toHaveBeenCalledWith(0, 100)
+    delete (HTMLElement.prototype as { offsetHeight?: number }).offsetHeight
+    delete (document.documentElement as { style?: unknown }).style
+    scrollBy.mockRestore()
+  })
+
+  it('shows a poll’s comments one at a time, oldest first, at the pace they were posted', async () => {
+    pollThreadLive
+      .mockResolvedValueOnce(
+        result([], {
+          items: [
+            { id: 'c', createdUtc: 210, node: <li>third</li> },
+            { id: 'b', createdUtc: 205, node: <li>second</li> },
+            { id: 'a', createdUtc: 200, node: <li>first</li> },
+          ],
+        }),
+      )
+      .mockResolvedValue(result([]))
+    thread()
+    await tick()
+    expect(screen.getByText('first')).toBeTruthy()
+    expect(screen.queryByText('second')).toBeNull()
+    await tick(5_000)
+    expect(screen.getByText('second')).toBeTruthy()
+    expect(screen.queryByText('third')).toBeNull()
+    await tick(5_000)
+    expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'third',
+      'second',
+      'first',
+    ])
   })
 
   it('pauses and resumes', async () => {
@@ -175,5 +218,31 @@ describe('outside a LiveThread', () => {
     )
     expect(screen.getByText('1-0')).toBeTruthy()
     expect(screen.queryByText('Watching for new comments')).toBeNull()
+  })
+})
+
+describe('paceComments', () => {
+  const at = (...times: number[]) =>
+    paceComments(times.map((createdUtc, index) => ({ id: String(index), createdUtc, node: null })))
+
+  it('keeps the gaps the comments were posted with', () => {
+    expect(at(100, 101, 104)).toEqual([0, 1_000, 4_000])
+  })
+
+  it('squeezes a long stretch to fit before the next poll', () => {
+    expect(at(0, 30, 60)).toEqual([0, 6_000, 12_000])
+  })
+
+  it('spaces comments posted in the same second', () => {
+    expect(at(100, 100, 100)).toEqual([0, 400, 800])
+  })
+
+  it('tightens the spacing so a burst still fits', () => {
+    const delays = at(...Array.from({ length: 60 }, () => 100))
+    expect(delays.at(-1)).toBeLessThanOrEqual(12_000)
+  })
+
+  it('handles an empty poll', () => {
+    expect(at()).toEqual([])
   })
 })

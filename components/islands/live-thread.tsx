@@ -1,26 +1,57 @@
 'use client'
 
-import { createContext, Fragment, type ReactNode, useContext, useRef, useState } from 'react'
-import { pollThreadLive } from '@/app/actions/thread-live'
-import { usePolling } from '@/components/islands/use-polling'
+import {
+  createContext,
+  Fragment,
+  type ReactNode,
+  useContext,
+  useLayoutEffect,
+  startTransition,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import { type LiveItem, pollThreadLive } from '@/app/actions/thread-live'
+import { POLL_MS, usePolling } from '@/components/islands/use-polling'
 import { Button } from '@/components/ui/button'
 import { compactNumber, plural } from '@/lib/format'
 import styles from '@/components/live/live.module.css'
 
-/** Past this scroll offset, new comments wait behind a button instead of pushing the page down. */
+/** Past this scroll offset, the reader is mid-page: new comments must not move what they see. */
 const READING_OFFSET = 240
 
+/** How long one poll's comments take to play out: most of the wait for the next poll. */
+const SPREAD_MS = POLL_MS * 0.8
+/** The most time between two comments posted in the same second. */
+const MAX_GAP_MS = 400
+
 type Cursor = { since: number; seen: string[] }
-type Batch = { id: number; items: ReactNode; count: number; shown: boolean }
+
+/**
+ * When to show each of a poll's comments (oldest first), in ms from the first. They keep
+ * the gaps they were posted with, squeezed to fit `SPREAD_MS`, so a busy thread reads as
+ * a stream instead of a block every poll.
+ */
+export function paceComments(items: LiveItem[]): number[] {
+  const first = items[0]?.createdUtc ?? 0
+  const last = items.at(-1)?.createdUtc ?? 0
+  const span = (last - first) * 1000
+  const scale = span > SPREAD_MS ? SPREAD_MS / span : 1
+  const gap = Math.min(MAX_GAP_MS, SPREAD_MS / items.length)
+  let previous = -gap
+  return items.map((item) => {
+    previous = Math.max((item.createdUtc - first) * 1000 * scale, previous + gap)
+    return previous
+  })
+}
 
 type Watch = {
-  batches: Batch[]
+  /** The comments shown so far, newest first. */
+  comments: LiveItem[]
   /** The post's body after an edit, or null while it is the one the page rendered. */
   body: { node: ReactNode } | null
   /** Reddit's comment total from the latest poll, or null before the first one. */
   numComments: number | null
-  waiting: number
-  showWaiting: () => void
   paused: boolean
   setPaused: (paused: boolean) => void
   gaveUp: boolean
@@ -41,13 +72,40 @@ type Props = {
  * comments into `LiveComments`, an edited post body into `LiveBody`.
  */
 export function LiveThread({ id, cursor, bodyHash, children }: Props) {
-  const [batches, setBatches] = useState<Batch[]>([])
+  const [comments, setComments] = useState<LiveItem[]>([])
   const [body, setBody] = useState<Watch['body']>(null)
   const [paused, setPaused] = useState(false)
   const [numComments, setNumComments] = useState<number | null>(null)
   const cursorRef = useRef(cursor)
   const hashRef = useRef(bodyHash)
-  const batchId = useRef(0)
+  const timers = useRef(new Set<ReturnType<typeof setTimeout>>())
+  /** When the comments already queued finish playing. */
+  const queuedUntil = useRef(0)
+
+  useEffect(() => {
+    const pending = timers.current
+    return () => {
+      for (const timer of pending) clearTimeout(timer)
+    }
+  }, [])
+
+  const play = (items: LiveItem[]) => {
+    const oldestFirst = items.toReversed()
+    const start = Math.max(Date.now(), queuedUntil.current)
+    const delays = paceComments(oldestFirst)
+    queuedUntil.current = start + (delays.at(-1) ?? 0)
+    oldestFirst.forEach((item, index) => {
+      // A transition lets the comment's ViewTransition play instead of popping in.
+      const show = () => startTransition(() => setComments((current) => [item, ...current]))
+      const delay = start - Date.now() + (delays[index] ?? 0)
+      if (delay <= 0) return show()
+      const timer = setTimeout(() => {
+        timers.current.delete(timer)
+        show()
+      }, delay)
+      timers.current.add(timer)
+    })
+  }
 
   const gaveUp = usePolling(async () => {
     const result = await pollThreadLive({
@@ -59,7 +117,6 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
 
     const {
       items,
-      count,
       cursor: next,
       bodyHash: nextHash,
       body: changed,
@@ -69,26 +126,15 @@ export function LiveThread({ id, cursor, bodyHash, children }: Props) {
     cursorRef.current = next
     hashRef.current = nextHash
     if (changed) setBody(changed)
-    if (count === 0 && !changed) return 'idle'
-    if (count > 0) {
-      const atTop = window.scrollY <= READING_OFFSET
-      batchId.current += 1
-      const batch = { id: batchId.current, items, count, shown: atTop }
-      setBatches((current) => {
-        const all = [batch, ...current]
-        return atTop ? all.map((each) => ({ ...each, shown: true })) : all
-      })
-    }
+    if (items.length === 0 && !changed) return 'idle'
+    if (items.length > 0) play(items)
     return 'continue'
   }, !paused)
 
-  const waiting = batches.reduce((total, batch) => total + (batch.shown ? 0 : batch.count), 0)
   const watch: Watch = {
-    batches,
+    comments,
     body,
     numComments,
-    waiting,
-    showWaiting: () => setBatches((current) => current.map((batch) => ({ ...batch, shown: true }))),
     paused,
     setPaused,
     gaveUp,
@@ -126,15 +172,33 @@ export function LiveCount({
   )
 }
 
-/** The comments that arrived since the page loaded, newest first, with the controls. */
+/**
+ * The comments that arrived since the page loaded, newest first, with the controls. They
+ * appear one at a time, paced by `paceComments`. A reader down the page keeps their place: the browser's scroll
+ * anchoring holds it where supported, and this scrolls by what was added where it isn't
+ * (Safari).
+ */
 export function LiveComments() {
   const watch = useContext(WatchContext)
+  const root = useRef<HTMLDivElement>(null)
+  const height = useRef<number | null>(null)
+
+  useLayoutEffect(() => {
+    const next = root.current?.offsetHeight ?? 0
+    const previous = height.current
+    height.current = next
+    if (previous === null) return
+    const anchored = 'overflowAnchor' in document.documentElement.style
+    if (next > previous && !anchored && window.scrollY > READING_OFFSET) {
+      window.scrollBy(0, next - previous)
+    }
+  })
+
   if (!watch) return null
-  const { batches, waiting, showWaiting, paused, setPaused, gaveUp } = watch
-  const shown = batches.filter((batch) => batch.shown)
+  const { comments, paused, setPaused, gaveUp } = watch
 
   return (
-    <div className={styles.watch}>
+    <div ref={root} className={styles.watch}>
       <p className={styles.status}>
         <span className={paused ? styles.dotOff : styles.dot} aria-hidden="true" />
         {paused ? 'Not watching for new comments' : 'Watching for new comments'}
@@ -147,24 +211,10 @@ export function LiveComments() {
           Couldn’t reach Reddit. Pause and resume to try again.
         </p>
       ) : null}
-      {waiting > 0 ? (
-        <div className={styles.waiting}>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              showWaiting()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
-          >
-            Show {plural(waiting, 'new comment')}
-          </Button>
-        </div>
-      ) : null}
-      {shown.length > 0 ? (
+      {comments.length > 0 ? (
         <ol role="list" className={styles.updates}>
-          {shown.map((batch) => (
-            <Fragment key={batch.id}>{batch.items}</Fragment>
+          {comments.map((comment) => (
+            <Fragment key={comment.id}>{comment.node}</Fragment>
           ))}
         </ol>
       ) : null}

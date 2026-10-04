@@ -65,12 +65,12 @@ describe('pollThreadLive', () => {
     const result = await pollThreadLive(request)
     expect(pollThread).toHaveBeenCalledWith('abc123', request.cursor)
     if (!result.ok) throw new Error('expected success')
+    expect(result.data.items).toMatchObject([{ id: 'b' }])
     expect(result.data).toMatchObject({
-      count: 1,
       cursor: { since: 200, seen: ['b'] },
       numComments: 99,
     })
-    const markup = await renderServer(<ol>{result.data.items}</ol>)
+    const markup = await renderServer(<ol>{result.data.items[0]?.node}</ol>)
     expect(markup).toContain('What a goal')
     expect(markup).toContain('Replying to u/')
   })
