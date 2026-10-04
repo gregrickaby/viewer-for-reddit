@@ -50,6 +50,7 @@ export function mapPost(link: RedditLink): PostView {
       link.link_flair_text,
       link.link_flair_background_color,
       link.link_flair_text_color,
+      link.link_flair_richtext,
     ),
     body: removal ? null : postBody(link, parent),
     media: resolveMedia(link),

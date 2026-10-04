@@ -38,6 +38,7 @@ export function mapComment(comment: RedditComment, viewer: string | null = null)
       comment.author_flair_text,
       comment.author_flair_background_color,
       comment.author_flair_text_color,
+      comment.author_flair_richtext,
     ),
     permalink: appPath(comment.permalink, `/r/${comment.subreddit}`),
     depth: comment.depth ?? 0,

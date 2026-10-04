@@ -1,6 +1,6 @@
 import 'server-only'
 import * as z from 'zod'
-import { LinkSchema } from './generated'
+import { FlairRichtextSchema, LinkSchema } from './generated'
 import { MediaMetadata, MediaObject, Preview } from './media'
 import { thing } from './things'
 
@@ -42,6 +42,7 @@ export const Link = LinkSchema.pick({
   link_flair_text: true,
   link_flair_background_color: true,
   link_flair_text_color: true,
+  link_flair_richtext: true,
   thumbnail_width: true,
   thumbnail_height: true,
   is_gallery: true,
@@ -59,6 +60,8 @@ export const Link = LinkSchema.pick({
   link_flair_text: z.string().nullish(),
   link_flair_background_color: z.string().nullish(),
   link_flair_text_color: z.string().nullish(),
+  // Decoration: an unexpected shape drops the emoji, not the whole thing.
+  link_flair_richtext: z.array(FlairRichtextSchema).nullish().catch(null),
   preview: Preview.optional(),
   media: MediaObject.nullish(),
   secure_media: MediaObject.nullish(),

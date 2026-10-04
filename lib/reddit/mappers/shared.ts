@@ -1,6 +1,8 @@
 import 'server-only'
-import type { Distinguished, FlairView, Removal, Vote } from '@/lib/view-models'
+import { safeMediaUrl } from '@/lib/media/url'
+import type { Distinguished, FlairPart, FlairView, Removal, Vote } from '@/lib/view-models'
 import { resolveRedditLink } from '../links'
+import type { FlairRichtext } from '../schemas/generated'
 
 /** Reddit's `likes`: true → 1, false → -1, null → 0. */
 export function toVote(likes: boolean | null | undefined): Vote {
@@ -34,15 +36,49 @@ export function hexColor(value: string | null | undefined): string | null {
   return value && HEX_COLOR.test(value) ? value : null
 }
 
+/**
+ * Reddit's rich flair: text runs and emoji images. An emoji whose image isn't a Reddit
+ * media URL stays as its `:name:` text.
+ */
+function flairParts(richtext: readonly FlairRichtext[]): FlairPart[] {
+  return richtext.flatMap((part): FlairPart[] => {
+    if (part.e === 'emoji' && part.a) {
+      const src = safeMediaUrl(part.u)
+      const name = part.a.replace(/^:|:$/g, '')
+      return src && name ? [{ kind: 'emoji', name, src }] : [{ kind: 'text', text: part.a }]
+    }
+    return part.e === 'text' && part.t ? [{ kind: 'text', text: part.t }] : []
+  })
+}
+
+/** Trims the flair as a whole: the outer text runs, not the spaces between parts. */
+function trimParts(parts: FlairPart[]): FlairPart[] {
+  const trimmed = parts.map((part, index) => {
+    if (part.kind !== 'text') return part
+    let text = part.text
+    if (index === 0) text = text.trimStart()
+    if (index === parts.length - 1) text = text.trimEnd()
+    return { ...part, text }
+  })
+  return trimmed.filter((part) => part.kind !== 'text' || part.text !== '')
+}
+
 export function flairFrom(
   text: string | null | undefined,
   background: string | null | undefined,
   textColor: string | null | undefined,
+  richtext?: readonly FlairRichtext[] | null,
 ): FlairView | null {
+  const rich = trimParts(flairParts(richtext ?? []))
   const trimmed = text?.trim()
-  if (!trimmed) return null
+  const parts: FlairPart[] =
+    rich.length > 0 ? rich : trimmed ? [{ kind: 'text', text: trimmed }] : []
+  if (parts.length === 0) return null
   return {
-    text: trimmed,
+    text:
+      trimmed ||
+      parts.map((part) => (part.kind === 'text' ? part.text : `:${part.name}:`)).join(''),
+    parts,
     backgroundColor: hexColor(background),
     textColor: textColor === 'light' ? 'light' : 'dark',
   }

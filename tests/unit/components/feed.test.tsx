@@ -83,7 +83,12 @@ describe('PostCard', () => {
       postView({
         distinguished: 'admin',
         flags: { nsfw: true, spoiler: true, stickied: true, locked: true, archived: false },
-        flair: { text: 'Meta', backgroundColor: '#ff4500', textColor: 'light' },
+        flair: {
+          text: 'Meta',
+          parts: [{ kind: 'text', text: 'Meta' }],
+          backgroundColor: '#ff4500',
+          textColor: 'light',
+        },
       }),
     )
     for (const text of ['Admin', 'Pinned', 'Locked', 'NSFW', 'Spoiler', 'Comments locked'])
@@ -92,12 +97,33 @@ describe('PostCard', () => {
     const plain = await card(
       postView({
         distinguished: 'moderator',
-        flair: { text: 'Tip', backgroundColor: null, textColor: 'dark' },
+        flair: {
+          text: 'Tip',
+          parts: [{ kind: 'text', text: 'Tip' }],
+          backgroundColor: null,
+          textColor: 'dark',
+        },
         flags: { nsfw: false, spoiler: false, stickied: false, locked: false, archived: true },
       }),
     )
     expect(plain).toContain('>Mod<')
     expect(plain).toContain('<span class="flair">Tip</span>')
+    const emoji = await card(
+      postView({
+        flair: {
+          text: 'Funny:lul:',
+          parts: [
+            { kind: 'text', text: 'Funny' },
+            { kind: 'emoji', name: 'lul', src: 'https://emoji.redditmedia.com/a/lul' },
+          ],
+          backgroundColor: null,
+          textColor: 'dark',
+        },
+      }),
+    )
+    expect(emoji).toContain('Funny<img class="emoji" src="https://emoji.redditmedia.com/a/lul"')
+    expect(emoji).toContain('alt="lul"')
+    expect(emoji).not.toContain(':lul:')
     expect(plain).toContain('Archived')
     expect(plain).toMatch(/<button[^>]*disabled/)
   })

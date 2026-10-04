@@ -1,0 +1,11 @@
+@layer components {
+  /* A fixed square, so an emoji that loads late can't shift the line. */
+  .emoji {
+    display: inline-block;
+    inline-size: 1.4em;
+    block-size: 1.4em;
+    margin-inline: 0.1em;
+    object-fit: contain;
+    vertical-align: middle;
+  }
+}

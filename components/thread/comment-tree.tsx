@@ -11,6 +11,7 @@ import { PendingButton } from '@/components/islands/pending-button'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { Button } from '@/components/ui/button'
+import { FlairText } from '@/components/ui/flair-text'
 import { RedditHtml } from '@/components/reddit-html'
 import { absoluteTime, compactNumber } from '@/lib/format'
 import { type ThreadQuery, expandMoreHref } from '@/lib/url-state'
@@ -80,7 +81,11 @@ function Comment({
               {comment.distinguished === 'admin' ? 'Admin' : 'Mod'}
             </span>
           ) : null}
-          {comment.flair ? <span className={styles.flair}>{comment.flair.text}</span> : null}
+          {comment.flair ? (
+            <span className={styles.flair}>
+              <FlairText flair={comment.flair} />
+            </span>
+          ) : null}
           {/* The poll renders comments with this same component, so the route has to bundle it. */}
           <LiveTime utc={comment.createdUtc} now={ctx.now} />
           {comment.editedUtc ? <span title={absoluteTime(comment.editedUtc)}>edited</span> : null}

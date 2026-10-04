@@ -132,7 +132,12 @@ describe('CommentTree', () => {
             collapsed: true,
           },
           distinguished: 'moderator',
-          flair: { text: 'Expert', backgroundColor: null, textColor: 'dark' },
+          flair: {
+            text: 'Expert',
+            parts: [{ kind: 'text', text: 'Expert' }],
+            backgroundColor: null,
+            textColor: 'dark',
+          },
           editedUtc: 1_700_000_100,
         }),
         [node(commentView({ id: 'c2', fullname: 't1_c2', distinguished: 'admin' }))],

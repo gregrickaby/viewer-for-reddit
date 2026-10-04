@@ -5,6 +5,7 @@ import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { MediaReveal, PostMedia, type RevealReason } from '@/components/media/post-media'
 import { RedditHtml } from '@/components/reddit-html'
+import { FlairText } from '@/components/ui/flair-text'
 import { absoluteTime, compactNumber, isoTime, timeAgo } from '@/lib/format'
 import { hasInlineMedia } from '@/lib/media/inline'
 import type { PostView, SafeHtml } from '@/lib/view-models'
@@ -93,7 +94,7 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
                   : undefined
               }
             >
-              {post.flair.text}
+              <FlairText flair={post.flair} />
             </span>
           ) : null}
         </p>

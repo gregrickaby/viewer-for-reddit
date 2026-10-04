@@ -24,8 +24,14 @@ export type Removal = 'removed' | 'deleted'
 /** `moderator` and `admin` get a badge; Reddit uses other values rarely. */
 export type Distinguished = 'moderator' | 'admin' | null
 
+/** A piece of flair: text, or one of the community's emoji (Reddit writes them `:name:`). */
+export type FlairPart =
+  { kind: 'text'; text: string } | { kind: 'emoji'; name: string; src: string }
+
 export type FlairView = {
+  /** The flair as plain text, with emoji as their `:name:` codes. */
   text: string
+  parts: FlairPart[]
   /** A validated hex color, or null for the default chip. */
   backgroundColor: string | null
   /** Reddit sends which text color reads on the background. */

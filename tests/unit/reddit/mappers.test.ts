@@ -64,17 +64,54 @@ describe('shared mapping rules', () => {
   it('builds flair only when it has text', () => {
     expect(flairFrom('  Discussion ', '#0079d3', 'light')).toEqual({
       text: 'Discussion',
+      parts: [{ kind: 'text', text: 'Discussion' }],
       backgroundColor: '#0079d3',
       textColor: 'light',
     })
     expect(flairFrom('Tip', '', 'dark')).toEqual({
       text: 'Tip',
+      parts: [{ kind: 'text', text: 'Tip' }],
       backgroundColor: null,
       textColor: 'dark',
     })
     expect(flairFrom('Tip', null, null)?.textColor).toBe('dark')
     expect(flairFrom('   ', '#fff', 'dark')).toBeNull()
     expect(flairFrom(null, null, null)).toBeNull()
+  })
+
+  it('turns rich flair into text and emoji images', () => {
+    const emoji = (name: string, u = `https://emoji.redditmedia.com/x/${name}`) => ({
+      e: 'emoji',
+      a: `:${name}:`,
+      u,
+    })
+    expect(
+      flairFrom(':snoo_putback: Good Vibes :snoo_tongue:', null, 'dark', [
+        emoji('snoo_putback'),
+        { e: 'text', t: ' Good Vibes ' },
+        emoji('snoo_tongue'),
+      ])?.parts,
+    ).toEqual([
+      { kind: 'emoji', name: 'snoo_putback', src: 'https://emoji.redditmedia.com/x/snoo_putback' },
+      { kind: 'text', text: ' Good Vibes ' },
+      { kind: 'emoji', name: 'snoo_tongue', src: 'https://emoji.redditmedia.com/x/snoo_tongue' },
+    ])
+    // Outer spaces go; an emoji off Reddit's hosts stays as its code; unknown parts drop.
+    const view = flairFrom(null, null, null, [
+      { e: 'text', t: '  Funny' },
+      emoji('evil', 'https://evil.example/x.png'),
+      { e: 'gif' },
+      { e: 'text', t: ' ' },
+    ])
+    expect(view).toMatchObject({
+      text: 'Funny:evil:',
+      parts: [
+        { kind: 'text', text: 'Funny' },
+        { kind: 'text', text: ':evil:' },
+      ],
+    })
+    expect(flairFrom('Plain', null, null, [])?.parts).toEqual([{ kind: 'text', text: 'Plain' }])
+    expect(flairFrom(null, null, null, [{ e: 'text', t: '  ' }])).toBeNull()
   })
 
   it('turns permalinks into app routes', () => {
@@ -178,6 +215,18 @@ describe('mapPost', () => {
     })
   })
 
+  it('maps rich flair from a real post', () => {
+    const view = post((v) => v.link_flair_text === 'Funny:lul:')
+    expect(view.flair?.parts).toEqual([
+      { kind: 'text', text: 'Funny' },
+      {
+        kind: 'emoji',
+        name: 'lul',
+        src: 'https://emoji.redditmedia.com/a088m47ywba51_t5_38jf0/lul',
+      },
+    ])
+  })
+
   it('attributes a crosspost and borrows the original’s text', () => {
     const original = sample(
       'Link',
@@ -231,6 +280,13 @@ describe('mapComment', () => {
     })
     expect(view.body).toMatch(/^<p>/)
     expect(view.permalink).toMatch(/^\/r\/[^/]+\/comments\/[a-z0-9]+\/[^/]*\/[a-z0-9]+$/)
+  })
+
+  it('maps an author flair made only of emoji', () => {
+    const view = comment(
+      (v) => Array.isArray(v.author_flair_richtext) && v.author_flair_richtext.length > 3,
+    )
+    expect(view.flair?.parts.every((part) => part.kind === 'emoji')).toBe(true)
   })
 
   it('badges moderators and shows author flair', () => {

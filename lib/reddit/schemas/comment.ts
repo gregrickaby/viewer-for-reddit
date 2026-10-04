@@ -1,6 +1,6 @@
 import 'server-only'
 import * as z from 'zod'
-import { CommentSchema, MoreSchema } from './generated'
+import { CommentSchema, FlairRichtextSchema, MoreSchema } from './generated'
 import { MediaMetadata } from './media'
 import { thing } from './things'
 
@@ -31,6 +31,7 @@ export const Comment = CommentSchema.pick({
   author_flair_text: true,
   author_flair_background_color: true,
   author_flair_text_color: true,
+  author_flair_richtext: true,
   // Present on comments listed outside their thread (saved items, profiles).
   depth: true,
   link_title: true,
@@ -42,6 +43,8 @@ export const Comment = CommentSchema.pick({
   author_flair_text: z.string().nullish(),
   author_flair_background_color: z.string().nullish(),
   author_flair_text_color: z.string().nullish(),
+  // Decoration: an unexpected shape drops the emoji, not the whole thing.
+  author_flair_richtext: z.array(FlairRichtextSchema).nullish().catch(null),
   replies: z.unknown(),
   media_metadata: MediaMetadata.nullish(),
 })
