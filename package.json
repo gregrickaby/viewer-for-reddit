@@ -37,7 +37,7 @@
     "@datadog/browser-rum-nextjs": "7.15.0",
     "hls.js": "1.7.3",
     "iron-session": "9.0.1",
-    "next": "16.4.0-canary.59",
+    "next": "16.4.0-canary.60",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "sanitize-html": "2.18.0",
@@ -45,7 +45,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
-    "@next/playwright": "16.4.0-canary.59",
+    "@next/playwright": "16.4.0-canary.60",
     "@playwright/test": "1.63.0",
     "@testing-library/react": "16.3.3",
     "@types/node": "^26",
@@ -55,7 +55,7 @@
     "@vitest/coverage-v8": "5.0.3",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^10",
-    "eslint-config-next": "16.4.0-canary.59",
+    "eslint-config-next": "16.4.0-canary.60",
     "happy-css-modules": "5.0.2",
     "happy-dom": "20.14.5",
     "prettier": "3.9.9",
