@@ -14,7 +14,7 @@ Version 10 of [Viewer for Reddit](https://github.com/gregrickaby/viewer-for-redd
 
 ## Stack
 
-Next.js canary (App Router, Cache Components, Partial Prerendering, typed routes, React Compiler) · React 19.3 · TypeScript (strict) · CSS Modules with cascade layers · Zod 4 · iron-session (sealed cookies) · sanitize-html · hls.js · Vitest 5 + Testing Library + happy-dom · Playwright against a mock Reddit · ESLint + Stylelint + Prettier.
+Next.js 16 (App Router, Cache Components, Partial Prerendering, typed routes, React Compiler) · React 19.3 · TypeScript (strict) · CSS Modules with cascade layers · Zod 4 · iron-session (sealed cookies) · sanitize-html · hls.js · Vitest 5 + Testing Library + happy-dom · Playwright against a mock Reddit · ESLint + Stylelint + Prettier.
 
 ## Not what you know
 

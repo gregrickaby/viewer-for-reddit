@@ -71,9 +71,7 @@ Curated schemas in `lib/reddit/schemas` sit on top of the generated ones.
 
 - **Unit tests** (Vitest, in `tests/unit`) render Server Components to HTML with `prerender`, and test client islands in happy-dom.
 - **End-to-end tests** (Playwright, in `e2e/`) run against `e2e/mock-reddit/server.ts`. It is an in-memory Reddit that records writes and can inject latency and failures. The tests use it to check optimistic updates and their rollback.
-- **GitHub Actions:**
-  - `ci.yml` runs the checks and e2e on every push and PR.
-  - `canary.yml` tries the newest `next@canary` every Monday and opens a PR when the checks and e2e pass.
+- **GitHub Actions:** `ci.yml` runs the checks and e2e on every push and PR.
 
 ## Security
 
