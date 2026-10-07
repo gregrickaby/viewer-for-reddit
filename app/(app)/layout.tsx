@@ -21,6 +21,12 @@ import styles from './layout.module.css'
 export const metadata: Metadata = { robots: { index: false, follow: false } }
 
 /**
+ * Link prefetches into the shell come from static output, so a sidebar full of
+ * links doesn't render the session-dependent menus once per link on the server.
+ */
+export const ensureStatic = 'shell'
+
+/**
  * The signed-in shell (design §10.1). The header and nav frame prerender;
  * the user menu and sidebar lists stream in behind their own boundaries.
  * The sidebar is one element: a static column on wide screens and a
