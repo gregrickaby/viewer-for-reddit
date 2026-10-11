@@ -1,4 +1,5 @@
 import 'server-only'
+import tracer from 'dd-trace'
 import { after } from 'next/server'
 import { env } from '@/lib/env'
 
@@ -16,6 +17,19 @@ const LOGS_URL = `https://http-intake.logs.${env.DD_SITE}/api/v2/logs`
 function toConsole(level: LogLevel, message: string, fields?: LogFields) {
   const write = level === 'error' ? console.error : level === 'warn' ? console.warn : console.info
   write(message, fields ?? '')
+}
+
+/**
+ * `dd.trace_id` and `dd.span_id` of the active span, so Datadog links the entry to its
+ * APM trace. The tracer only adds them on its own to loggers it patches; this one posts
+ * over HTTP. Empty when nothing is traced (dev, tests, or outside a request).
+ */
+function traceFields(): LogFields {
+  const span = tracer.scope().active()
+  if (!span) return {}
+  const record: LogFields = {}
+  tracer.inject(span.context(), 'log', record)
+  return record
 }
 
 async function deliver(level: LogLevel, message: string, fields?: LogFields): Promise<void> {
@@ -44,7 +58,8 @@ function send(level: LogLevel, message: string, fields?: LogFields): void {
     toConsole(level, message, fields)
     return
   }
-  const delivery = deliver(level, message, fields)
+  // Read the span now: by the time `after` runs, the request's span has ended.
+  const delivery = deliver(level, message, { ...traceFields(), ...fields })
   try {
     // Keeps a serverless function alive until the log is sent.
     after(delivery)

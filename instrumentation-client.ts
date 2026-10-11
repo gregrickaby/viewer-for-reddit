@@ -32,6 +32,10 @@ if (applicationId && clientToken) {
     trackUserInteractions: true,
     trackLongTasks: true,
     defaultPrivacyLevel: 'mask-user-input',
+    // Trace headers on the site's own requests (Server Actions, RSC payloads), so a slow
+    // interaction in RUM links to its server trace in APM.
+    allowedTracingUrls: [(url) => url.startsWith(window.location.origin)],
+    traceSampleRate: 100,
     plugins: [nextjsPlugin()],
     beforeSend: (event) =>
       !(

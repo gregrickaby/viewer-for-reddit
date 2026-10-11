@@ -16,7 +16,7 @@ import { env } from '@/lib/env'
 import { securityHeaders } from '@/lib/security/headers'
 import { PUBLIC_PAGES, isPrivatePath } from '@/lib/site'
 
-const PUBLIC_PATHS = new Set<string>([...PUBLIC_PAGES, '/manifest.webmanifest'])
+const PUBLIC_PATHS = new Set<string>([...PUBLIC_PAGES, '/manifest.webmanifest', '/api/health'])
 
 const isPublicPath = (pathname: string) =>
   PUBLIC_PATHS.has(pathname) || pathname.startsWith('/api/auth/')

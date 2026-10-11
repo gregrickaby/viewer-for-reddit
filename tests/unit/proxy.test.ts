@@ -74,6 +74,7 @@ describe('proxy: auth gating', () => {
       '/about',
       '/donate',
       '/manifest.webmanifest',
+      '/api/health',
       '/api/auth/login',
       '/api/auth/callback/reddit?code=x',
     ]) {

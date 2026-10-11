@@ -3,11 +3,23 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 const after = vi.fn()
 vi.mock('next/server', () => ({ after }))
 
+const active = vi.fn((): object | null => null)
+vi.mock('dd-trace', () => ({
+  default: {
+    scope: () => ({ active }),
+    inject: (_context: unknown, _format: string, record: Record<string, unknown>) => {
+      record.dd = { trace_id: '123', span_id: '456' }
+    },
+  },
+}))
+
 afterEach(() => {
   vi.unstubAllEnvs()
   vi.unstubAllGlobals()
   vi.resetModules()
   after.mockReset()
+  active.mockReset()
+  active.mockReturnValue(null)
 })
 
 async function loadLogger(env: Record<string, string> = {}) {
@@ -68,6 +80,21 @@ describe('server logger', () => {
         digest: 'abc',
       },
     ])
+  })
+
+  it('links the entry to the active APM span', async () => {
+    const fetchMock = vi.fn(async () => new Response(null, { status: 202 }))
+    vi.stubGlobal('fetch', fetchMock)
+    active.mockReturnValue({ context: () => ({}) })
+    const logger = await loadLogger({ NODE_ENV: 'production', DD_API_KEY: 'secret' })
+    logger.warn('slow', { ms: 900 })
+    await after.mock.calls[0]![0]
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+    expect(JSON.parse(init.body as string)[0]).toMatchObject({
+      message: 'slow',
+      dd: { trace_id: '123', span_id: '456' },
+      ms: 900,
+    })
   })
 
   it('never throws when delivery fails or there is no request to attach to', async () => {
