@@ -31,7 +31,7 @@ npm run test:e2e      # Playwright: builds the app and runs it against e2e/mock-
 npm run build         # Production build
 ```
 
-**Secrets**: copy `.env.example` to `.env.local`: `BASE_URL`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_REDIRECT_URI`, `SESSION_SECRET`, `USER_AGENT`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, optional `GOOGLE_SITE_VERIFICATION`, optional Datadog (`DD_API_KEY`, `DD_APPLICATION_ID`, `DD_CLIENT_TOKEN`, `DD_SITE`, `DD_SERVICE`, `DD_ENV`). Server code logs through `lib/datadog/server.ts` (never `console`, except inside `lib/datadog/server.ts` itself, which falls back to it); browser code through `lib/datadog/client.ts`. `lib/env.ts` validates them at startup, except the encryption key, which Next reads itself.
+**Secrets**: copy `.env.example` to `.env.local`: `BASE_URL`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_REDIRECT_URI`, `SESSION_SECRET`, `USER_AGENT`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, optional `GOOGLE_SITE_VERIFICATION`, optional Datadog (`DD_API_KEY`, `DD_APPLICATION_ID`, `DD_CLIENT_TOKEN`, `DD_SITE`, `DD_SERVICE`, `DD_ENV`, `DD_AGENT_HOST`, `DD_TRACE_AGENT_PORT`). APM: `npm start` preloads `dd-trace` with `NODE_OPTIONS='--require dd-trace/init'`, because it must patch Node's module loader before Next loads; it sends traces to the Datadog Agent that runs beside the app on Coolify. Server code logs through `lib/datadog/server.ts` (never `console`, except inside `lib/datadog/server.ts` itself, which falls back to it); browser code through `lib/datadog/client.ts`. `lib/env.ts` validates them at startup, except the encryption key, which Next reads itself.
 
 ## Architecture rules
 
@@ -59,6 +59,7 @@ npm run build         # Production build
 - Add superfluous comments. Match the surrounding comment density and cite the reason, not the change.
 - Commit plans. Plans are internal: keep them in the session scratchpad or the gitignored `.plans/`, not in the repo.
 - Skip `npm run check` before declaring work complete.
+- Wax poetic in commit messages, add commit trailers, or add co-authors.
 
 **Always:**
 

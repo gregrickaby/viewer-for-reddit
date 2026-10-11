@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "next dev --experimental-https",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_OPTIONS='--require dd-trace/init' next start",
     "lint": "eslint && stylelint \"**/*.css\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -35,6 +35,7 @@
     "@datadog/browser-logs": "7.15.0",
     "@datadog/browser-rum": "7.15.0",
     "@datadog/browser-rum-nextjs": "7.15.0",
+    "dd-trace": "6.20.1",
     "hls.js": "1.7.3",
     "iron-session": "9.0.1",
     "next": "16.4.0",
