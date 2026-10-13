@@ -57,8 +57,6 @@ export const Me = MeSchema.pick({
   over_18: z.boolean().optional(),
 })
 
-export const AccountThing = thing('t2', Account)
-
 /** Reddit returns only the name for a suspended account. */
 export const SuspendedAccount = z.object({ name: z.string(), is_suspended: z.literal(true) })
 

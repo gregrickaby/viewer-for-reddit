@@ -16,7 +16,7 @@ import { mapComment } from './mappers/comment'
 import { mapAccountRow, mapSubreddit, mapUser } from './mappers/community'
 import { mapPost } from './mappers/post'
 import { isUsername } from './names'
-import { AccountThing, ProfileThing } from './schemas/account'
+import { ProfileThing } from './schemas/account'
 import { CommentThing } from './schemas/comment'
 import { LinkThing } from './schemas/link'
 import { SubredditThing } from './schemas/subreddit'
@@ -113,9 +113,12 @@ export async function searchPeople(q: string, query: FeedQuery): Promise<Page<Su
     token: accessToken,
     query: { ...cursors(query), q, include_over_18: 'on' },
   })
-  const listing = parseListing(json, AccountThing, path)
+  // Suspended accounts come back with only a name, so there is nothing to follow.
+  const listing = parseListing(json, ProfileThing, path)
   return {
-    items: listing.items.map((thing) => mapAccountRow(thing.data)),
+    items: listing.items.flatMap(({ data }) =>
+      'is_suspended' in data ? [] : [mapAccountRow(data)],
+    ),
     after: listing.after,
     before: listing.before,
   }

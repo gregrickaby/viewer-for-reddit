@@ -57,7 +57,13 @@ export const Oembed = OembedSchema.pick({
   thumbnail_height: true,
   width: true,
   height: true,
-}).partial()
+})
+  .partial()
+  .extend({
+    // Some providers send `null` for a size they don't know.
+    width: z.number().nullish(),
+    height: z.number().nullish(),
+  })
 
 export const MediaObject = z.object({
   reddit_video: RedditVideo.optional(),

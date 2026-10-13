@@ -5,7 +5,7 @@ import type * as z from 'zod'
 import { Account, Me } from '@/lib/reddit/schemas/account'
 import { Comment, CommentOrMore, More } from '@/lib/reddit/schemas/comment'
 import { Link, crosspostParent } from '@/lib/reddit/schemas/link'
-import { MediaMetadataItem } from '@/lib/reddit/schemas/media'
+import { MediaMetadataItem, Oembed } from '@/lib/reddit/schemas/media'
 import { Multi, MultiThing } from '@/lib/reddit/schemas/multi'
 import {
   CommentsResponse,
@@ -48,6 +48,10 @@ describe('curated schemas over the committed samples', () => {
     const gallery = sample('Link', (value) => value.is_gallery === true)
     gallery.media_metadata = { good: { status: 'valid' }, bad: 42 }
     expect(Link.parse(gallery).media_metadata).toEqual({ good: { status: 'valid' }, bad: 42 })
+  })
+
+  it('accepts an oembed with null sizes', () => {
+    expect(Oembed.parse({ width: 600, height: null })).toEqual({ width: 600, height: null })
   })
 })
 

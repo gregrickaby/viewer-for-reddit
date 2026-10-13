@@ -118,6 +118,20 @@ describe('searchPeople', () => {
     expect(page.items[0]!.href).toBe(`/user/${account.name}`)
     expect(page.after).toBe('t2_next')
   })
+
+  it('skips suspended accounts without logging them', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const account = sample('Account')
+    redditFetch.mockResolvedValue(
+      listing([
+        { kind: 't2', data: { name: 'gone', is_suspended: true } },
+        { kind: 't2', data: account },
+      ]),
+    )
+    const page = await searchPeople('spez', parseFeedQuery({}, ['new']))
+    expect(page.items.map((item) => item.name)).toEqual([account.name])
+    expect(warn).not.toHaveBeenCalled()
+  })
 })
 
 describe('searchPosts', () => {
