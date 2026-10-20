@@ -70,6 +70,7 @@
   "overrides": {
     "@datadog/browser-rum-nextjs": {
       "next": "$next"
-    }
+    },
+    "stream-json": "^3.6.0"
   }
 }
