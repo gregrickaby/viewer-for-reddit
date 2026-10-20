@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { ItemList, firstFullname } from '@/components/feed/item-list'
 import { Pagination } from '@/components/feed/pagination'
+import { InfiniteFeed } from '@/components/islands/infinite-feed'
 import { SectionError } from '@/components/islands/section-error'
 import {
   ContentReveal,
@@ -20,9 +21,11 @@ import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
 import {
   type FeedQuery,
+  PAGE_SIZE,
   SEARCH_TABS,
   type SearchTab,
   href,
+  pageOffset,
   parseFeedQuery,
   parseText,
   pick,
@@ -82,6 +85,8 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
   const { items } = found.page
   const first =
     found.tab === 'posts' ? firstFullname(found.page.items) : found.page.items[0]?.fullname
+  const extra = { q, tab: tab === 'communities' ? null : tab }
+  const { after } = found.page
 
   return (
     <section className={feed.feed} aria-label={`${LABELS[tab]} matching ${q}`}>
@@ -122,13 +127,30 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
           )}
         </div>
       </ContentReveal>
+      {after ? (
+        <InfiniteFeed
+          key={`${q}:${tab}:${query.after ?? query.before ?? 'first'}:${blurNsfw}`}
+          base="/search"
+          defaultSort="new"
+          extra={extra}
+          request={{
+            source: { type: 'search', q, tab },
+            sort: query.sort,
+            t: query.t,
+            after,
+            count: pageOffset(query) + PAGE_SIZE,
+            showSubreddit: true,
+          }}
+        />
+      ) : null}
       <Pagination
+        infinite
         base="/search"
         query={query}
-        after={found.page.after}
+        after={after}
         firstFullname={first}
         defaultSort="new"
-        extra={{ q, tab: tab === 'communities' ? null : tab }}
+        extra={extra}
       />
     </section>
   )

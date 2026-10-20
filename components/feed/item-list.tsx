@@ -25,20 +25,33 @@ export function ItemList({
   }
   return (
     <ol role="list" className={styles.items}>
-      {items.map((item) => (
-        <li
-          key={item.kind === 'post' ? item.post.fullname : item.comment.fullname}
-          className={item.kind === 'post' ? `${styles.item} ${styles.post}` : styles.item}
-        >
-          {item.kind === 'post' ? (
-            <PostCard post={item.post} showSubreddit blurNsfw={blurNsfw} now={now} />
-          ) : (
-            <CommentCard comment={item.comment} now={now} />
-          )}
-        </li>
-      ))}
+      <ListItems items={items} now={now} blurNsfw={blurNsfw} />
     </ol>
   )
+}
+
+/** The `<li>`s of a mixed list: rendered by the page and by each infinite-scroll page. */
+export function ListItems({
+  items,
+  now,
+  blurNsfw,
+}: {
+  items: ListItem[]
+  now: number
+  blurNsfw: boolean
+}) {
+  return items.map((item) => (
+    <li
+      key={item.kind === 'post' ? item.post.fullname : item.comment.fullname}
+      className={item.kind === 'post' ? `${styles.item} ${styles.post}` : styles.item}
+    >
+      {item.kind === 'post' ? (
+        <PostCard post={item.post} showSubreddit blurNsfw={blurNsfw} now={now} />
+      ) : (
+        <CommentCard comment={item.comment} now={now} />
+      )}
+    </li>
+  ))
 }
 
 /** The fullname of the first item, the cursor for "Previous". */

@@ -4,6 +4,7 @@ import { FeedSkeleton } from '@/components/feed/feed-section'
 import { ItemList, firstFullname } from '@/components/feed/item-list'
 import { Pagination } from '@/components/feed/pagination'
 import { SortTabs } from '@/components/feed/sort-tabs'
+import { InfiniteFeed } from '@/components/islands/infinite-feed'
 import { SectionError } from '@/components/islands/section-error'
 import {
   ContentReveal,
@@ -20,11 +21,13 @@ import { handleReadError } from '@/lib/reddit/read-errors'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
 import {
+  PAGE_SIZE,
   PROFILE_SORTS,
   PROFILE_TABS,
   type ProfileTab,
   feedKey,
   href,
+  pageOffset,
   parseFeedQuery,
   pick,
 } from '@/lib/url-state'
@@ -101,7 +104,24 @@ async function Activity({ params, searchParams }: Pick<Props, 'params' | 'search
           />
         </div>
       </ContentReveal>
+      {page.after ? (
+        <InfiniteFeed
+          key={`${tab}:${feedKey(query)}:${blurNsfw}`}
+          base={base}
+          defaultSort="new"
+          extra={extra}
+          request={{
+            source: { type: 'user', name: username, tab },
+            sort: query.sort,
+            t: query.t,
+            after: page.after,
+            count: pageOffset(query) + PAGE_SIZE,
+            showSubreddit: true,
+          }}
+        />
+      ) : null}
       <Pagination
+        infinite
         base={base}
         query={query}
         after={page.after}

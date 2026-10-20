@@ -4,6 +4,7 @@ import { FeedSkeleton } from '@/components/feed/feed-section'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { ItemList, firstFullname } from '@/components/feed/item-list'
 import { Pagination } from '@/components/feed/pagination'
+import { InfiniteFeed } from '@/components/islands/infinite-feed'
 import { SectionError } from '@/components/islands/section-error'
 import {
   ContentReveal,
@@ -17,7 +18,15 @@ import { getSaved } from '@/lib/reddit/people'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
-import { SAVED_TYPES, type SavedType, href, parseFeedQuery, pick } from '@/lib/url-state'
+import {
+  PAGE_SIZE,
+  SAVED_TYPES,
+  type SavedType,
+  href,
+  pageOffset,
+  parseFeedQuery,
+  pick,
+} from '@/lib/url-state'
 import type { ListItem, Page } from '@/lib/view-models'
 import feed from '@/components/feed/feed.module.css'
 import styles from '../feed-page.module.css'
@@ -68,7 +77,24 @@ async function SavedSection({ searchParams }: Pick<PageProps<'/saved'>, 'searchP
           />
         </div>
       </ContentReveal>
+      {page.after ? (
+        <InfiniteFeed
+          key={`${type}:${query.after ?? query.before ?? 'first'}:${blurNsfw}`}
+          base="/saved"
+          defaultSort="new"
+          extra={extra}
+          request={{
+            source: { type: 'saved', filter: type },
+            sort: query.sort,
+            t: query.t,
+            after: page.after,
+            count: pageOffset(query) + PAGE_SIZE,
+            showSubreddit: true,
+          }}
+        />
+      ) : null}
       <Pagination
+        infinite
         base="/saved"
         query={query}
         after={page.after}

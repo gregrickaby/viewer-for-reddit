@@ -292,6 +292,8 @@ describe('/saved', () => {
     expect(getSaved).toHaveBeenLastCalledWith('comments', expect.objectContaining({ sort: 'new' }))
     expect(out).toContain('href="/saved?type=links"')
     expect(out).toContain('href="/saved?type=comments&amp;after=t1_next&amp;count=25"')
+    // Infinite scroll loads the next page; the link is only for readers without JavaScript.
+    expect(out).toContain('<noscript><nav')
     state.saved = { items: [], after: null, before: null }
     const empty = await renderServer(
       <savedPage.default params={Promise.resolve({})} searchParams={search({})} />,
@@ -327,6 +329,7 @@ describe('/user/[username]', () => {
     expect(out).toContain(
       'href="/user/kn0thing?tab=submitted&amp;sort=top&amp;t=week&amp;after=t3_next&amp;count=25"',
     )
+    expect(out).toContain('<noscript><nav')
   })
 
   it('degrades when Reddit refuses the profile or its activity', async () => {
@@ -436,6 +439,7 @@ describe('/search', () => {
     expect(searchSubreddits).toHaveBeenLastCalledWith('typescript', expect.any(Object))
     expect(out).toContain('r/<!-- -->typescript')
     expect(out).toContain('href="/search?q=typescript&amp;after=t5_ts&amp;count=25"')
+    expect(out).toContain('<noscript><nav')
     expect(out).toContain('aria-label="Add r/typescript to a multireddit"')
   })
 

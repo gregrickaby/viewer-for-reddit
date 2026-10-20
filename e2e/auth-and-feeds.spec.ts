@@ -61,6 +61,25 @@ test.describe('feeds', () => {
     )
   })
 
+  test('a profile loads more activity as you scroll', async ({ signedIn: page }) => {
+    await page.goto('/user/spez')
+    const titles = () => page.locator('main article h2').allTextContents()
+    await expect(page.locator('main article').first()).toBeVisible()
+    const first = await titles()
+    expect(first).toHaveLength(25)
+
+    await expect(page.getByRole('link', { name: 'Next →' })).toBeHidden()
+    const end = page.getByText('You’ve reached the end.')
+    await expect(async () => {
+      await page.mouse.wheel(0, 4000)
+      await expect(end).toBeVisible({ timeout: 500 })
+    }).toPass()
+    const all = await titles()
+    expect(all.length).toBeGreaterThan(first.length)
+    expect(new Set(all).size).toBe(all.length)
+    expect(page.url()).not.toContain('after=')
+  })
+
   test('a post opens with its comments, and the breadcrumb goes back', async ({
     signedIn: page,
   }) => {

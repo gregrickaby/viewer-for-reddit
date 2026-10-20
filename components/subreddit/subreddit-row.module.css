@@ -9,6 +9,18 @@
     background: var(--surface-card);
   }
 
+  /* Infinite scroll appends pages as a second list; it joins the card above so the rows read as one. */
+  .continued {
+    margin-block-start: calc(-1 * var(--space-3) - var(--border-width));
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+  }
+
+  :has(+ .continued) > .list {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
   .row {
     display: flex;
     align-items: center;

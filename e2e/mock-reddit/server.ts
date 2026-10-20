@@ -517,7 +517,7 @@ async function handle(request: IncomingMessage, response: ServerResponse) {
   if ((match = /^\/user\/([^/]+)\/about$/.exec(p)))
     return send(response, 200, { kind: 't2', data: { ...ACCOUNT, name: match[1] } })
   if ((match = /^\/user\/[^/]+\/(overview|submitted|comments)$/.exec(p)))
-    return send(response, 200, page(LINKS.slice(0, 10), q))
+    return send(response, 200, page(LINKS, q))
 
   // Writes
   if (p === '/api/vote') {

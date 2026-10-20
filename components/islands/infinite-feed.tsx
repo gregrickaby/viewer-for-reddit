@@ -6,9 +6,10 @@ import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react'
 import { loadMoreFeed } from '@/app/actions/feed'
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import { Button } from '@/components/ui/button'
-import type { MoreFeedRequest } from '@/lib/feed-more'
-import { type FeedSort, PAGE_SIZE, afterHref } from '@/lib/url-state'
+import { type MoreFeedRequest, listKind } from '@/lib/feed-more'
+import { type FeedSort, type HrefQuery, PAGE_SIZE, afterHref } from '@/lib/url-state'
 import styles from '@/components/feed/feed.module.css'
+import rows from '@/components/subreddit/subreddit-row.module.css'
 
 type Status = 'idle' | 'loading' | 'error'
 
@@ -23,6 +24,8 @@ type Props = {
   /** The feed's route and default sort, for the next-page link once the cap is reached. */
   base: string
   defaultSort: FeedSort
+  /** Other URL state the next-page link keeps, such as `type`, `tab`, or `q`. */
+  extra?: HrefQuery
 }
 
 /**
@@ -32,13 +35,15 @@ type Props = {
  * `MAX_PAGES` it links to the next page, which starts the feed fresh. Without
  * JavaScript the page's Next link works instead.
  */
-export function InfiniteFeed({ request, base, defaultSort }: Props) {
+export function InfiniteFeed({ request, base, defaultSort, extra }: Props) {
   const [pages, setPages] = useState<ReactNode[]>([])
   const [cursor, setCursor] = useState<string | null>(request.after)
   const [status, setStatus] = useState<Status>('idle')
   const sentinel = useRef<HTMLDivElement>(null)
   const seen = request.count + pages.length * PAGE_SIZE
   const full = pages.length >= MAX_PAGES
+  const kind = listKind(request.source)
+  const appended = pages.map((items, index) => <Fragment key={index}>{items}</Fragment>)
 
   useEffect(() => {
     const target = sentinel.current
@@ -65,18 +70,23 @@ export function InfiniteFeed({ request, base, defaultSort }: Props) {
 
   return (
     <>
-      {pages.length > 0 ? (
-        <ol role="list" className={`${styles.items} ${styles.posts}`}>
-          {pages.map((items, index) => (
-            <Fragment key={index}>{items}</Fragment>
-          ))}
+      {pages.length === 0 ? null : kind === 'rows' ? (
+        <ul role="list" className={`${rows.list} ${rows.continued}`}>
+          {appended}
+        </ul>
+      ) : (
+        <ol
+          role="list"
+          className={kind === 'posts' ? `${styles.items} ${styles.posts}` : styles.items}
+        >
+          {appended}
         </ol>
-      ) : null}
+      )}
       {cursor && full ? (
         <nav aria-label="Pages" className={styles.pagination}>
           <span />
           <Link
-            href={afterHref(base, request, cursor, seen, defaultSort) as Route}
+            href={afterHref(base, request, cursor, seen, defaultSort, extra) as Route}
             className={styles.pageLink}
             rel="next"
             // The same route stays on screen, so Next would keep the reader at the bottom.
@@ -88,10 +98,10 @@ export function InfiniteFeed({ request, base, defaultSort }: Props) {
         </nav>
       ) : cursor ? (
         <div ref={sentinel} className={styles.more}>
-          {status === 'loading' ? <p role="status">Loading more posts…</p> : null}
+          {status === 'loading' ? <p role="status">Loading more…</p> : null}
           {status === 'error' ? (
             <p role="alert">
-              Couldn’t load more posts.{' '}
+              Couldn’t load more.{' '}
               <Button variant="secondary" size="sm" onClick={() => setStatus('idle')}>
                 Try again
               </Button>

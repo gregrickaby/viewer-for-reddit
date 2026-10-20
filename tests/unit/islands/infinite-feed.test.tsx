@@ -113,7 +113,7 @@ describe('InfiniteFeed', () => {
     loadMoreFeed.mockReturnValue(new Promise(() => {}))
     render(<Feed />)
     await scrollToEnd()
-    expect(screen.getByRole('status').textContent).toBe('Loading more posts…')
+    expect(screen.getByRole('status').textContent).toBe('Loading more…')
   })
 
   it('offers a retry when a page fails, and tries the same cursor again', async () => {
@@ -121,7 +121,7 @@ describe('InfiniteFeed', () => {
     loadMoreFeed.mockResolvedValueOnce({ ok: true, data: { items: <li>back</li>, after: null } })
     render(<Feed />)
     await scrollToEnd()
-    expect(screen.getByRole('alert').textContent).toContain('Couldn’t load more posts.')
+    expect(screen.getByRole('alert').textContent).toContain('Couldn’t load more.')
 
     await act(async () => screen.getByRole('button', { name: 'Try again' }).click())
     await scrollToEnd()
@@ -149,5 +149,39 @@ describe('InfiniteFeed', () => {
     vi.stubGlobal('scrollTo', scrollTo)
     fireEvent.click(next)
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'instant' })
+  })
+
+  it.each([
+    [{ type: 'saved', filter: 'all' }, 'OL', false],
+    [{ type: 'search', q: 'cats', tab: 'posts' }, 'OL', false],
+    [{ type: 'search', q: 'cats', tab: 'people' }, 'UL', false],
+    [{ type: 'subreddit', name: 'pics' }, 'OL', true],
+  ] as const)('appends %o pages in a matching list', async (source, tag, posts) => {
+    loadMoreFeed.mockResolvedValue({ ok: true, data: { items: <li>more</li>, after: null } })
+    render(<InfiniteFeed request={{ ...request, source }} base="/x" defaultSort="new" />)
+    await scrollToEnd()
+    const list = screen.getByText('more').parentElement!
+    expect(list.tagName).toBe(tag)
+    expect(list.className.includes('posts')).toBe(posts)
+  })
+
+  it('keeps other URL state in the next-page link', async () => {
+    let page = 0
+    loadMoreFeed.mockImplementation(async () => {
+      page += 1
+      return { ok: true, data: { items: <li>page {page}</li>, after: `t3_p${page}` } }
+    })
+    render(
+      <InfiniteFeed
+        request={{ ...request, source: { type: 'search', q: 'cats', tab: 'posts' }, sort: 'new' }}
+        base="/search"
+        defaultSort="new"
+        extra={{ q: 'cats', tab: 'posts' }}
+      />,
+    )
+    for (let index = 0; index < MAX_PAGES; index += 1) await scrollToEnd()
+    expect(screen.getByRole('link', { name: 'Next page →' }).getAttribute('href')).toBe(
+      `/search?q=cats&tab=posts&after=t3_p${MAX_PAGES}&count=200`,
+    )
   })
 })
