@@ -32,9 +32,9 @@
     "media:corpus": "tsx --conditions=react-server --env-file=.env.local scripts/reddit/extract-corpus.ts"
   },
   "dependencies": {
-    "@datadog/browser-logs": "7.16.0",
-    "@datadog/browser-rum": "7.16.0",
-    "@datadog/browser-rum-nextjs": "7.16.0",
+    "@datadog/browser-logs": "7.16.1",
+    "@datadog/browser-rum": "7.16.1",
+    "@datadog/browser-rum-nextjs": "7.16.1",
     "dd-trace": "6.21.0",
     "hls.js": "1.7.3",
     "iron-session": "9.0.1",
@@ -57,7 +57,7 @@
     "eslint": "^10",
     "eslint-config-next": "16.4.2",
     "happy-css-modules": "5.0.2",
-    "happy-dom": "21.0.3",
+    "happy-dom": "21.0.4",
     "prettier": "3.9.10",
     "quicktype": "26.0.0",
     "stylelint": "17.16.0",
