@@ -41,7 +41,16 @@ export function contentSecurityPolicy({ dev, https }: HeaderOptions): string {
   const reddit = new URL(env.REDDIT_WWW_BASE).origin
   const directives: Array<[string, readonly string[]]> = [
     ['default-src', ["'self'"]],
-    ['script-src', ["'self'", "'unsafe-inline'", ...(dev ? ["'unsafe-eval'"] : [])]],
+    // Cloudflare injects its Web Analytics beacon at the edge; the beacon posts to same-origin /cdn-cgi/rum.
+    [
+      'script-src',
+      [
+        "'self'",
+        "'unsafe-inline'",
+        'https://static.cloudflareinsights.com',
+        ...(dev ? ["'unsafe-eval'"] : []),
+      ],
+    ],
     ['style-src', ["'self'", "'unsafe-inline'"]],
     ['img-src', ["'self'", 'data:', 'blob:', ...REDDIT_MEDIA, ...cspSources('imgSrc')]],
     ['media-src', ["'self'", 'blob:', ...REDDIT_MEDIA, ...cspSources('mediaSrc')]],
