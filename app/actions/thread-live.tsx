@@ -7,23 +7,28 @@ import { CommentCard } from '@/components/feed/comment-card'
 import { PostBody, revealReason } from '@/components/feed/post-card'
 import type { ActionResult } from '@/lib/actions/result'
 import { invalid, runAction } from '@/lib/actions/run-action'
+import { THING_ID_PATTERN } from '@/lib/reddit/names'
 import { pollThread } from '@/lib/reddit/thread-live'
 import { getSettings } from '@/lib/settings'
 
 const Request = z.object({
-  id: z.string().regex(/^[a-z0-9]{1,12}$/),
+  id: z.string().regex(THING_ID_PATTERN),
   cursor: z.object({
     since: z.number().int().min(0),
     // The ids sharing the newest second: a handful, never a page.
-    seen: z.array(z.string().regex(/^[a-z0-9]{1,12}$/)).max(100),
+    seen: z.array(z.string().regex(THING_ID_PATTERN)).max(100),
   }),
   bodyHash: z.string().max(32),
 })
 
 /** One new comment, rendered, with when it was posted so the island can pace it. */
-export type LiveItem = { id: string; createdUtc: number; node: ReactNode }
+export interface LiveItem {
+  id: string
+  createdUtc: number
+  node: ReactNode
+}
 
-export type ThreadPollResult = {
+export interface ThreadPollResult {
   /** Newest first. */
   items: LiveItem[]
   cursor: { since: number; seen: string[] }
@@ -51,7 +56,7 @@ export async function pollThreadLive(input: unknown): Promise<ActionResult<Threa
         id: comment.id,
         createdUtc: comment.createdUtc,
         node: (
-          <ViewTransition enter="slide-up" default="none">
+          <ViewTransition default="none" enter="slide-up">
             <li>
               <CommentCard comment={comment} now={now} replyTo={replyTo} />
             </li>
@@ -64,8 +69,8 @@ export async function pollThreadLive(input: unknown): Promise<ActionResult<Threa
         ? {
             node: poll.post.body ? (
               <PostBody
-                html={poll.post.body}
                 excerpt={false}
+                html={poll.post.body}
                 reveal={revealReason(poll.post, blurNsfw)}
               />
             ) : null,

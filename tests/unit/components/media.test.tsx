@@ -7,7 +7,7 @@ import { renderServer } from '@/tests/helpers/render-server'
 import { blurred, html, imageSet } from '@/tests/helpers/views'
 
 const render = (media: Media, reveal: 'nsfw' | 'spoiler' | null = null) =>
-  renderServer(<PostMedia media={media} title="Title" reveal={reveal} postId="abc" />)
+  renderServer(<PostMedia media={media} postId="abc" reveal={reveal} title="Title" />)
 
 const loop = { mp4: 'https://v.redd.it/a/DASH_480.mp4', width: 480, height: 270 }
 const video = {
@@ -39,9 +39,11 @@ describe('PostMedia', () => {
     const out = await render({ type: 'animated', loop, gif: null, poster: imageSet() })
     // The scripted <video> gets its src only as it nears the viewport.
     expect(out).toMatch(
-      /<video class="media scripted"[^>]*poster="https:\/\/i\.redd\.it\/a\.jpg"[^>]*muted=""[^>]*loop=""/,
+      /<video [^>]*class="media scripted"[^>]*loop=""[^>]*muted=""[^>]*poster="https:\/\/i\.redd\.it\/a\.jpg"/,
     )
-    expect(out).toContain('<noscript><video class="media" src="https://v.redd.it/a/DASH_480.mp4"')
+    expect(out).toMatch(
+      /<noscript><video [^>]*class="media"[^>]*src="https:\/\/v\.redd\.it\/a\/DASH_480\.mp4"/,
+    )
   })
 
   it('falls back to the GIF, with a still for reduced motion', async () => {
@@ -145,7 +147,7 @@ describe('PostMedia', () => {
       thumbnail: imageSet(),
     })
     expect(out).toContain(
-      'href="https://example.com/story" target="_blank" rel="noopener noreferrer nofollow ugc"',
+      'href="https://example.com/story" rel="noopener noreferrer nofollow ugc" target="_blank"',
     )
     expect(out).toContain('sizes="8rem"')
     expect(
@@ -158,7 +160,7 @@ describe('PostMedia', () => {
     ).not.toContain('srcSet')
   })
 
-  it('hides a link card’s thumbnail instead of wrapping it in a reveal', async () => {
+  it("hides a link card's thumbnail instead of wrapping it in a reveal", async () => {
     const out = await render(
       { type: 'link', url: 'https://x.com', domain: 'x.com', thumbnail: imageSet() },
       'nsfw',
@@ -228,7 +230,7 @@ describe('RedditHtml', () => {
     expect(await renderServer(<RedditHtml html={html('<p>Hi</p>')} />)).toBe(
       '<div class="root"><p>Hi</p></div>',
     )
-    expect(await renderServer(<RedditHtml html={html('<p>Hi</p>')} className="x" />)).toBe(
+    expect(await renderServer(<RedditHtml className="x" html={html('<p>Hi</p>')} />)).toBe(
       '<div class="root x"><p>Hi</p></div>',
     )
   })

@@ -17,17 +17,17 @@ export function SiteLinks({
 }) {
   return (
     <nav aria-label="About this site" className={className}>
-      <Link href="/about" className={linkClassName}>
+      <Link className={linkClassName} href="/about">
         About
       </Link>
-      <Link href="/donate" className={linkClassName}>
+      <Link className={linkClassName} href="/donate">
         Donate
       </Link>
       <a
-        href={SITE.links.github}
         className={linkClassName}
-        target="_blank"
+        href={SITE.links.github}
         rel="noopener noreferrer"
+        target="_blank"
       >
         GitHub <span aria-hidden="true">↗</span>
       </a>

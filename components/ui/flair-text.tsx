@@ -12,15 +12,15 @@ export function FlairText({ flair }: { flair: FlairView }) {
       <Fragment key={index}>{part.text}</Fragment>
     ) : (
       <img
-        key={index}
-        className={styles.emoji}
-        src={part.src}
         alt={part.name}
+        className={styles.emoji}
+        decoding="async"
+        height={16}
+        key={index}
+        loading="lazy"
+        src={part.src}
         title={part.name}
         width={16}
-        height={16}
-        loading="lazy"
-        decoding="async"
       />
     ),
   )

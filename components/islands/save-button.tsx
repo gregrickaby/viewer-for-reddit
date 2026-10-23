@@ -7,7 +7,7 @@ import { setSaved } from '@/app/actions/things'
 import styles from './save-button.module.css'
 import { useEnhancedForm } from './use-enhanced-form'
 
-/** Save and unsave (design §8.6): the same optimistic pattern as voting, with a boolean. */
+/** Save and unsave: the same optimistic pattern as voting, with a boolean. */
 export function SaveButton({ fullname, saved }: { fullname: string; saved: boolean }) {
   const [confirmed, setConfirmed] = useState(saved)
   const [view, setView] = useOptimistic(confirmed)
@@ -21,10 +21,10 @@ export function SaveButton({ fullname, saved }: { fullname: string; saved: boole
 
   return (
     <form {...formProps} className={styles.root}>
-      <input type="hidden" name="id" value={fullname} />
-      <input type="hidden" name="saved" value={String(!view)} />
-      <button type="submit" className={styles.button} aria-pressed={view}>
-        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">
+      <input name="id" type="hidden" value={fullname} />
+      <input name="saved" type="hidden" value={String(!view)} />
+      <button aria-pressed={view} className={styles.button} type="submit">
+        <svg aria-hidden="true" focusable="false" height="16" viewBox="0 0 20 20" width="16">
           <path d="M5 3h10v14l-5-4-5 4z" />
         </svg>
         {view ? 'Saved' : 'Save'}

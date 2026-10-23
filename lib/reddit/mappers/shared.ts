@@ -1,10 +1,9 @@
 import 'server-only'
 
 import { safeMediaUrl } from '@/lib/media/url'
+import { resolveRedditLink } from '@/lib/reddit/links'
+import type { FlairRichtext } from '@/lib/reddit/schemas/generated'
 import type { Distinguished, FlairPart, FlairView, Removal, Vote } from '@/lib/view-models'
-
-import { resolveRedditLink } from '../links'
-import type { FlairRichtext } from '../schemas/generated'
 
 /** Reddit's `likes`: true → 1, false → -1, null → 0. */
 export function toVote(likes: boolean | null | undefined): Vote {

@@ -34,7 +34,7 @@ describe('landing page', () => {
   it.each([
     ['denied', 'Sign-in was cancelled'],
     ['state', 'expired or was already used'],
-    ['exchange', 'didn’t finish signing you in'],
+    ['exchange', 'didn&#x27;t finish signing you in'],
     ['session_expired', 'Your session ended'],
   ])('explains error=%s', async (error, message) => {
     const html = await renderServer(
@@ -95,7 +95,7 @@ describe('landing page', () => {
       'https://www.reddit.com/prefs/apps',
       'https://github.com/gregrickaby/viewer-for-reddit#setup',
     ]) {
-      expect(html).toContain(`<a href="${href}" target="_blank" rel="noopener noreferrer"`)
+      expect(html).toContain(`<a href="${href}" rel="noopener noreferrer" target="_blank"`)
     }
     // Pages on this site use client links, without opening a new tab.
     expect(html).toMatch(/<a href="\/about">About page<\/a>/)
@@ -149,7 +149,7 @@ describe('root layout', () => {
       </RootLayout>,
     )
     expect(html).toMatch(
-      /^<!DOCTYPE html><html lang="en" data-theme="system" class="font-sans-var font-mono-var">/,
+      /^<!DOCTYPE html><html class="font-sans-var font-mono-var" data-theme="system" lang="en">/,
     )
     expect(html).toContain('rv_theme=(system|light|dark)')
     expect(html).toContain('<body><p>x</p></body>')

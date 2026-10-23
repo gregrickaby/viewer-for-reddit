@@ -7,7 +7,7 @@ const POLL = { timeout: 45_000 }
 test.describe('a game thread', () => {
   test.setTimeout(120_000)
 
-  test('opens on the thread’s suggested sort and watches for new comments', async ({
+  test("opens on the thread's suggested sort and watches for new comments", async ({
     signedIn: page,
     mock,
   }) => {

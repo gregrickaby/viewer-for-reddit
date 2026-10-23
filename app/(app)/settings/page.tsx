@@ -18,8 +18,8 @@ async function Controls() {
       <ThemeToggle theme={settings.theme} />
       <SettingSwitch
         checked={settings.blurNsfw}
-        label="Blur NSFW media"
         description="Hides adult images and videos until you choose to show them. Spoilers are always hidden."
+        label="Blur NSFW media"
       />
     </div>
   )
@@ -31,7 +31,7 @@ export default function SettingsPage() {
       <div className={styles.page}>
         <BackLink href="/home">Home</BackLink>
         <h1 className={styles.title}>Settings</h1>
-        <Suspense fallback={<span className={`skeleton ${styles.skeleton}`} aria-busy="true" />}>
+        <Suspense fallback={<span aria-busy="true" className={`skeleton ${styles.skeleton}`} />}>
           <Controls />
         </Suspense>
       </div>

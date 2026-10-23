@@ -5,7 +5,7 @@ import { addTransitionType, startTransition, useState, useTransition, type FormE
 import { formAction, type ServerAction } from '@/lib/actions/form-action'
 import type { ActionResult } from '@/lib/actions/result'
 
-type Handlers<T> = {
+interface Handlers<T> {
   /** Runs first, inside the transition: set optimistic state here. */
   optimistic: (formData: FormData) => void
   /** Runs when the action returns, in a new transition: commit confirmed state here. */
@@ -17,7 +17,7 @@ type Handlers<T> = {
 /**
  * Keeps a `<form action={serverAction}>` progressively enhanced (it posts
  * before hydration and without JS) and, once hydrated, runs the action in a
- * transition with optimistic state (design §8.6).
+ * transition with optimistic state.
  *
  * Calling `preventDefault()` in `onSubmit` stops React from also running the
  * form's `action`; React only records the pending form status.

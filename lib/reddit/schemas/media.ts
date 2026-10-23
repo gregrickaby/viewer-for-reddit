@@ -14,7 +14,7 @@ import {
 
 /*
  * Media shapes shared by links and comments. Every field here feeds media
- * detection (docs/design.md §8.7), so each one is loosened to what Reddit
+ * detection, so each one is loosened to what Reddit
  * may omit rather than what our samples happened to contain.
  */
 
@@ -49,7 +49,7 @@ export const Preview = PreviewSchema.pick({
 })
 
 // `html` is read only to extract its iframe `src`, which must then match a provider
-// (lib/media/resolvers/provider.ts). The markup itself is never rendered (design §8.7).
+// (lib/media/resolvers/provider.ts). The markup itself is never rendered.
 export const Oembed = OembedSchema.pick({
   html: true,
   provider_name: true,

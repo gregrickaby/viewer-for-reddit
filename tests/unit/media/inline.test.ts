@@ -143,7 +143,7 @@ describe('sanitizeRedditHtml with inline media', () => {
 })
 
 describe('hasInlineMedia', () => {
-  it('spots inline media, which Reddit’s own markup can’t imitate', () => {
+  it("spots inline media, which Reddit's own markup can't imitate", () => {
     const url = 'https://i.redd.it/abc.png'
     expect(hasInlineMedia(inlineMedia(`<p>${bare(url)}</p>`, {}))).toBe(true)
     expect(hasInlineMedia(`<p>${bare(url).replace(`>${url}<`, '>a picture<')}</p>`)).toBe(false)

@@ -2,14 +2,17 @@ import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
 
 /*
- * Picks a small, committed media corpus from the raw capture (design §13,
- * "Media detection"): real posts with the media the resolver chain produced
- * for them when captured, which the tests then hold it to.
+ * Picks a small, committed media corpus from the raw capture: real posts with
+ * the media the resolver chain produced for them when captured, which the
+ * tests then hold it to.
  */
 
-export type Expected = { type: PostMedia['type']; provider?: string }
+export interface Expected {
+  type: PostMedia['type']
+  provider?: string
+}
 
-export type CorpusEntry = {
+export interface CorpusEntry {
   /** Why this post is in the corpus, e.g. `youtu.be → embed:youtube`. */
   note: string
   expected: Expected
@@ -19,7 +22,10 @@ export type CorpusEntry = {
 /** How many posts to keep per bucket. */
 export const PER_BUCKET = 2
 
-type Category = { name: string; matches: (link: RedditLink) => boolean }
+interface Category {
+  name: string
+  matches: (link: RedditLink) => boolean
+}
 
 /** Cases the acceptance list asks for by name, beyond host × media type. */
 const CATEGORIES: readonly Category[] = [

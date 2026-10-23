@@ -28,7 +28,10 @@ const MAX_GAP_MS = 400
 /** New comments kept on the page. A game thread can add thousands in an evening. */
 export const MAX_LIVE_COMMENTS = 200
 
-type Cursor = { since: number; seen: string[] }
+interface Cursor {
+  since: number
+  seen: string[]
+}
 
 /**
  * When to show each of a poll's comments (oldest first), in ms from the first. They keep
@@ -48,7 +51,7 @@ export function paceComments(items: LiveItem[]): number[] {
   })
 }
 
-type Watch = {
+interface Watch {
   /** The comments shown so far, newest first, at most `MAX_LIVE_COMMENTS`. */
   comments: LiveItem[]
   /** Older new comments were dropped to stay under the cap. */
@@ -64,7 +67,7 @@ type Watch = {
 
 const WatchContext = createContext<Watch | null>(null)
 
-type Props = {
+interface Props {
   id: string
   cursor: Cursor
   bodyHash: string
@@ -212,21 +215,21 @@ export function LiveComments() {
   const { comments, trimmed, paused, setPaused, gaveUp } = watch
 
   return (
-    <div ref={root} className={styles.watch}>
+    <div className={styles.watch} ref={root}>
       <p className={styles.status}>
-        <span className={paused ? styles.dotOff : styles.dot} aria-hidden="true" />
+        <span aria-hidden="true" className={paused ? styles.dotOff : styles.dot} />
         {paused ? 'Not watching for new comments' : 'Watching for new comments'}
-        <Button variant="ghost" size="sm" onClick={() => setPaused(!paused)}>
+        <Button onClick={() => setPaused(!paused)} size="sm" variant="ghost">
           {paused ? 'Resume' : 'Pause'}
         </Button>
       </p>
       {gaveUp ? (
         <p className={styles.banner} role="alert">
-          Couldn’t reach Reddit. Pause and resume to try again.
+          Couldn&apos;t reach Reddit. Pause and resume to try again.
         </p>
       ) : null}
       {comments.length > 0 ? (
-        <ol role="list" className={styles.updates}>
+        <ol className={styles.updates} role="list">
           {comments.map((comment) => (
             <Fragment key={comment.id}>{comment.node}</Fragment>
           ))}

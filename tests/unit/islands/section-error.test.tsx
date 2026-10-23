@@ -16,7 +16,7 @@ function Broken(): never {
 describe('SectionError', () => {
   it('renders its children when nothing fails', () => {
     render(
-      <SectionError title="Couldn’t load posts">
+      <SectionError title="Couldn't load posts">
         <p>posts</p>
       </SectionError>,
     )
@@ -28,13 +28,13 @@ describe('SectionError', () => {
     render(
       <div>
         <p>header</p>
-        <SectionError title="Couldn’t load posts">
+        <SectionError title="Couldn't load posts">
           <Broken />
         </SectionError>
       </div>,
     )
     expect(screen.getByText('header')).toBeTruthy()
-    expect(screen.getByRole('alert').textContent).toContain('Couldn’t load posts')
+    expect(screen.getByRole('alert').textContent).toContain("Couldn't load posts")
     expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy()
     expect(addNextjsError).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'Reddit is down' }),

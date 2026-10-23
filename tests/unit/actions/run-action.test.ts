@@ -22,11 +22,11 @@ describe('runAction', () => {
   it.each([
     [new SessionUnavailableError(), 'UNAVAILABLE', /could not be refreshed/],
     [new errors.RedditRateLimitError(8), 'RATE_LIMITED', /Try again in 8s/],
-    [new errors.RedditForbiddenError('banned'), 'FORBIDDEN', /doesn’t allow/],
+    [new errors.RedditForbiddenError('banned'), 'FORBIDDEN', /doesn't allow/],
     [new errors.RedditNotFoundError(), 'NOT_FOUND', /no longer exists/],
     [new errors.RedditApiError('locked', 200, 'THREAD_LOCKED'), 'REDDIT', /locked/],
-    [new errors.RedditApiError('odd', 500, 'SOMETHING_NEW'), 'REDDIT', /couldn’t do that/],
-    [new errors.RedditApiError('odd', 500), 'REDDIT', /couldn’t do that/],
+    [new errors.RedditApiError('odd', 500, 'SOMETHING_NEW'), 'REDDIT', /couldn't do that/],
+    [new errors.RedditApiError('odd', 500), 'REDDIT', /couldn't do that/],
   ])('maps %s', async (error, code, message) => {
     const result = await fail(error)
     expect(result).toMatchObject({ ok: false, error: { code } })
@@ -57,7 +57,7 @@ describe('invalid', () => {
   it('has a default message', () => {
     expect(invalid()).toEqual({
       ok: false,
-      error: { code: 'INVALID', message: 'That request wasn’t valid.' },
+      error: { code: 'INVALID', message: "That request wasn't valid." },
     })
     expect(invalid('Nope')).toMatchObject({ error: { message: 'Nope' } })
   })

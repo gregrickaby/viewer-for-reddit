@@ -1,6 +1,6 @@
 /*
  * Stamps the quicktype output as generated and checks that every expected schema exists
- * (docs/implementation.md §2.3).
+ *.
  */
 
 export const BANNER =

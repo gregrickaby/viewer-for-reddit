@@ -16,9 +16,10 @@ type Resolver = (link: RedditLink) => PostMedia | null
 const NONE: PostMedia = { type: 'none' }
 
 /**
- * The resolver chain from design §8.7; the first match wins. Numbers follow
- * the design's table. The oEmbed fallback (10) runs inside the provider step
- * (5), so a provider's own player beats Reddit's silent transcode (6).
+ * The resolver chain; the first match wins. The numbers name each step, and
+ * the resolver modules use the same ones. The oEmbed fallback (10) runs
+ * inside the provider step (5), so a provider's own player beats Reddit's
+ * silent transcode (6).
  */
 const CHAIN: readonly Resolver[] = [
   (link) => (link.removed_by_category ? NONE : null), // 2

@@ -18,25 +18,25 @@ import type { ActionError, ActionResult } from './result'
 const REDDIT_MESSAGES: Record<string, string> = {
   THREAD_LOCKED: 'This thread is locked.',
   TOO_OLD: 'This is archived and can no longer be changed.',
-  RATELIMIT: 'Reddit says you’re doing that too often. Try again in a bit.',
-  TOO_LONG: 'That’s too long for Reddit.',
+  RATELIMIT: "Reddit says you're doing that too often. Try again in a bit.",
+  TOO_LONG: "That's too long for Reddit.",
   DELETED_COMMENT: 'That comment was deleted.',
   DELETED_LINK: 'That post was deleted.',
   NO_TEXT: 'Write something first.',
   USER_REQUIRED: 'Reddit needs you to sign in again.',
-  SUBREDDIT_NOEXIST: 'That community doesn’t exist.',
+  SUBREDDIT_NOEXIST: "That community doesn't exist.",
   MULTI_EXISTS: 'You already have a multireddit with that name.',
-  BAD_MULTI_NAME: 'That name won’t work. Use letters, numbers, and underscores (2–50).',
+  BAD_MULTI_NAME: "That name won't work. Use letters, numbers, and underscores (2–50).",
   MULTI_TOO_MANY: 'Reddit limits how many multireddits you can have.',
 }
 
-export function invalid(message = 'That request wasn’t valid.'): ActionResult<never> {
+export function invalid(message = "That request wasn't valid."): ActionResult<never> {
   return { ok: false, error: { code: 'INVALID', message } }
 }
 
 /**
  * Runs a Server Action's work and turns every failure into an `ActionResult`
- * (design §8.2): nothing raw reaches the client. An expired session signs the
+ *: nothing raw reaches the client. An expired session signs the
  * user out; Next's own control-flow errors pass through.
  */
 export async function runAction<T>(work: () => Promise<T>): Promise<ActionResult<T>> {
@@ -60,7 +60,7 @@ function describe(error: unknown): ActionError {
     }
   }
   if (error instanceof RedditForbiddenError) {
-    return { code: 'FORBIDDEN', message: 'Reddit doesn’t allow that here.' }
+    return { code: 'FORBIDDEN', message: "Reddit doesn't allow that here." }
   }
   if (error instanceof RedditNotFoundError) {
     return { code: 'NOT_FOUND', message: 'That no longer exists on Reddit.' }
@@ -69,7 +69,7 @@ function describe(error: unknown): ActionError {
     const known = error.code ? REDDIT_MESSAGES[error.code] : undefined
     return {
       code: 'REDDIT',
-      message: known ?? error.explanation ?? 'Reddit couldn’t do that. Try again.',
+      message: known ?? error.explanation ?? "Reddit couldn't do that. Try again.",
     }
   }
   logger.error('[action] unexpected failure', {

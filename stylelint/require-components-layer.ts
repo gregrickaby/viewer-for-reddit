@@ -12,7 +12,7 @@ const messages = ruleMessages(ruleName, {
 
 /**
  * Every rule in a CSS Module must sit inside `@layer components`, so cascade
- * order never depends on import order (docs/design.md §10.4).
+ * order never depends on import order.
  */
 const rule: Rule = (enabled) => (root, result) => {
   if (!enabled) return

@@ -63,7 +63,8 @@ export function usePolling(
       inFlight = true
       polls += 1
       lastPoll.current = Date.now()
-      const outcome = await latest.current(polls)
+      // A rejected poll (a dropped connection, a 5xx from the proxy) is a failure like any other.
+      const outcome = await latest.current(polls).catch((): PollOutcome => 'fail')
       inFlight = false
       if (stopped) return
 

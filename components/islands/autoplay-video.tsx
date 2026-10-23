@@ -6,7 +6,7 @@ import { registerPlayer } from './player-registry'
 import styles from './players.module.css'
 import { useReducedMotion } from './use-reduced-motion'
 
-export type AutoplayVideoProps = {
+export interface AutoplayVideoProps {
   mp4: string
   width: number
   height: number
@@ -15,7 +15,7 @@ export type AutoplayVideoProps = {
 }
 
 /**
- * A GIF-style loop (design §8.7): muted and silent, it plays only while at
+ * A GIF-style loop: muted and silent, it plays only while at
  * least half visible and loads only as it nears the viewport. Under reduced
  * motion it waits for a ▶ press instead of autoplaying.
  */
@@ -58,36 +58,36 @@ export function AutoplayVideo({ mp4, width, height, poster, label }: AutoplayVid
   }
 
   return (
-    <div ref={frameRef} className={styles.frame} style={{ aspectRatio: `${width} / ${height}` }}>
+    <div className={styles.frame} ref={frameRef} style={{ aspectRatio: `${width} / ${height}` }}>
       <video
-        ref={videoRef}
-        className={`${styles.media} ${styles.scripted}`}
-        width={width}
-        height={height}
-        poster={poster ?? undefined}
-        muted
-        loop
-        playsInline
-        preload="metadata"
         aria-label={label}
-        onPlay={() => setPlaying(true)}
+        className={`${styles.media} ${styles.scripted}`}
+        height={height}
+        loop
+        muted
         onPause={() => setPlaying(false)}
+        onPlay={() => setPlaying(true)}
+        playsInline
+        poster={poster ?? undefined}
+        preload="metadata"
+        ref={videoRef}
+        width={width}
       />
       {reduced ? (
-        <button type="button" className={styles.playToggle} onClick={toggle} aria-pressed={playing}>
+        <button aria-pressed={playing} className={styles.playToggle} onClick={toggle} type="button">
           {playing ? 'Pause' : '▶ Play'}
         </button>
       ) : null}
       <noscript>
         <video
-          className={styles.media}
-          src={mp4}
-          poster={poster ?? undefined}
-          muted
-          loop
-          playsInline
-          autoPlay
           aria-label={label}
+          autoPlay
+          className={styles.media}
+          loop
+          muted
+          playsInline
+          poster={poster ?? undefined}
+          src={mp4}
         />
       </noscript>
     </div>

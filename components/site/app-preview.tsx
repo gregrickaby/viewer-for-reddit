@@ -8,7 +8,7 @@ const SORTS = ['Best', 'Hot', 'New', 'Top', 'Rising'] as const
 const POSTS = [
   {
     votes: '2.4k',
-    title: 'I rebuilt my grandfather’s workbench from reclaimed oak',
+    title: "I rebuilt my grandfather's workbench from reclaimed oak",
     meta: 'r/woodworking · 5h · 184 comments',
     thumb: true,
   },
@@ -33,9 +33,9 @@ const POSTS = [
 export function AppPreview() {
   return (
     <div
+      aria-label="A preview of the home feed in Viewer for Reddit, with sort tabs and three posts"
       className={styles.frame}
       role="img"
-      aria-label="A preview of the home feed in Viewer for Reddit, with sort tabs and three posts"
     >
       <div className={styles.bar}>
         <Logo size={22} />
@@ -43,14 +43,14 @@ export function AppPreview() {
       </div>
       <div className={styles.tabs}>
         {SORTS.map((sort, index) => (
-          <span key={sort} className={index === 0 ? `${styles.tab} ${styles.active}` : styles.tab}>
+          <span className={index === 0 ? `${styles.tab} ${styles.active}` : styles.tab} key={sort}>
             {sort}
           </span>
         ))}
       </div>
       <ul className={styles.posts} role="list">
         {POSTS.map((post) => (
-          <li key={post.title} className={styles.post}>
+          <li className={styles.post} key={post.title}>
             <span className={styles.votes}>
               <span className={styles.arrow}>▲</span>
               {post.votes}

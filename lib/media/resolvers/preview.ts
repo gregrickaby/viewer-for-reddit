@@ -1,9 +1,8 @@
 import 'server-only'
 
+import { imageSet, loopVideo, previewImageSet } from '@/lib/media/images'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
-
-import { imageSet, loopVideo, previewImageSet } from '../images'
 
 /** Resolver 7: an animated preview. The MP4 loop is preferred; the GIF is its fallback. */
 export function resolveAnimatedVariants(link: RedditLink): PostMedia | null {
@@ -19,7 +18,7 @@ export function resolveAnimatedVariants(link: RedditLink): PostMedia | null {
 }
 
 /**
- * Resolver 9: a still image. `post_hint` is only a hint (design §8.7), so an
+ * Resolver 9: a still image. `post_hint` is only a hint, so an
  * i.redd.it post with a preview counts even without it.
  */
 export function resolveImage(link: RedditLink): PostMedia | null {

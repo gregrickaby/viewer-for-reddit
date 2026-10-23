@@ -53,9 +53,9 @@ const CAPABILITIES = [
 export default function AboutPage() {
   return (
     <SiteShell>
-      <section className={`${site.inner} ${site.pageHero}`} aria-labelledby="about-title">
+      <section aria-labelledby="about-title" className={`${site.inner} ${site.pageHero}`}>
         <p className={site.eyebrow}>About</p>
-        <h1 id="about-title" className={site.title}>
+        <h1 className={site.title} id="about-title">
           About {SITE.name}
         </h1>
         <p className={site.lede}>
@@ -69,13 +69,13 @@ export default function AboutPage() {
         </p>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="can-title">
-        <h2 id="can-title" className={site.sectionTitle}>
+      <section aria-labelledby="can-title" className={`${site.inner} ${site.section}`}>
+        <h2 className={site.sectionTitle} id="can-title">
           What you can do
         </h2>
         <ul className={site.cardsTwo} role="list">
           {CAPABILITIES.map((item) => (
-            <li key={item.title} className={site.card}>
+            <li className={site.card} key={item.title}>
               <span className={site.icon}>
                 <FeatureIcon name={item.icon} />
               </span>
@@ -86,8 +86,8 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="faq-title">
-        <h2 id="faq-title" className={site.sectionTitle}>
+      <section aria-labelledby="faq-title" className={`${site.inner} ${site.section}`}>
+        <h2 className={site.sectionTitle} id="faq-title">
           Frequently asked questions
         </h2>
         <div className={site.cardsTwo}>
@@ -96,22 +96,22 @@ export default function AboutPage() {
             <p className={site.cardText}>
               There are no ads or promoted posts, and you pick the sort: Best, Hot, New, Top, or
               Rising. The site is built with <a href="https://nextjs.org/">Next.js</a>, so its
-              server makes every request to Reddit and your browser never calls Reddit’s API.
+              server makes every request to Reddit and your browser never calls Reddit&apos;s API.
             </p>
           </article>
           <article className={site.card}>
             <h3 className={site.cardTitle}>Why do I have to sign in?</h3>
             <p className={site.cardText}>
-              Reddit ended public access to its API in June 2026, so apps like this one can’t read
-              anything without your account. Reddit explains how apps get access in its{' '}
-              <a href="https://www.reddit.com/dev/api">API documentation</a>. If you don’t have an
-              account, <a href="https://www.reddit.com/register/">register on Reddit</a>.
+              Reddit ended public access to its API in June 2026, so apps like this one can&apos;t
+              read anything without your account. Reddit explains how apps get access in its{' '}
+              <a href="https://www.reddit.com/dev/api">API documentation</a>. If you don&apos;t have
+              an account, <a href="https://www.reddit.com/register/">register on Reddit</a>.
             </p>
           </article>
           <article className={site.card}>
             <h3 className={site.cardTitle}>What does the site record?</h3>
             <p className={site.cardText}>
-              Sign-in uses Reddit’s{' '}
+              Sign-in uses Reddit&apos;s{' '}
               <a href="https://github.com/reddit-archive/reddit/wiki/oauth2">
                 official OAuth2 flow
               </a>
@@ -123,10 +123,10 @@ export default function AboutPage() {
             <p className={site.cardText}>
               I use <a href="https://www.datadoghq.com/">Datadog</a> to find bugs and slow pages. It
               records page views, clicks, errors, and load times, with your browser type and a
-              location based on your IP address. I don’t record replays of your visits, and I don’t
-              sell your data. Read{' '}
-              <a href="https://www.datadoghq.com/legal/privacy/">Datadog’s privacy policy</a> for
-              how it handles that data.
+              location based on your IP address. I don&apos;t record replays of your visits, and I
+              don&apos;t sell your data. Read{' '}
+              <a href="https://www.datadoghq.com/legal/privacy/">Datadog&apos;s privacy policy</a>{' '}
+              for how it handles that data.
             </p>
           </article>
           <article className={site.card}>
@@ -139,9 +139,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="contribute-title">
+      <section aria-labelledby="contribute-title" className={`${site.inner} ${site.section}`}>
         <div className={site.closing}>
-          <h2 id="contribute-title" className={site.sectionTitle}>
+          <h2 className={site.sectionTitle} id="contribute-title">
             Contributing
           </h2>
           <p className={site.lede}>
@@ -154,10 +154,10 @@ export default function AboutPage() {
               Support the project
             </LinkButton>
             <a
-              href={SITE.links.issues}
               className={site.cardAction}
-              target="_blank"
+              href={SITE.links.issues}
               rel="noopener noreferrer"
+              target="_blank"
             >
               Report a bug
             </a>

@@ -1,5 +1,5 @@
 /*
- * Fixtures are committed, so personal data is removed before writing (docs/design.md §11).
+ * Fixtures are committed, so personal data is removed before writing.
  */
 
 export const FIXTURE_USER = 'fixture_user'

@@ -21,7 +21,7 @@ export function Logo({
 }) {
   return (
     <span className={styles.root}>
-      {mark ? <Image className={styles.mark} src={icon} alt="" width={size} height={size} /> : null}
+      {mark ? <Image alt="" className={styles.mark} height={size} src={icon} width={size} /> : null}
       {withWordmark ? (
         <span
           className={

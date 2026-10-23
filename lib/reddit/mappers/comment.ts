@@ -1,11 +1,11 @@
 import 'server-only'
 
 import { logger } from '@/lib/datadog/server'
+import { parseListing } from '@/lib/reddit/listing'
+import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
+import { CommentOrMore, type RedditComment, type RedditMore } from '@/lib/reddit/schemas/comment'
 import type { CommentNode, CommentView, Removal } from '@/lib/view-models'
 
-import { parseListing } from '../listing'
-import { sanitizeRedditHtml } from '../sanitize'
-import { CommentOrMore, type RedditComment, type RedditMore } from '../schemas/comment'
 import { appPath, authorName, distinguishedFrom, editedAt, flairFrom, toVote } from './shared'
 
 /** `viewer` is the signed-in username; it decides whether the comment is editable. */

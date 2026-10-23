@@ -27,7 +27,7 @@ function pinSize(video: HTMLVideoElement): boolean {
  * visible and unloads once it is far away, so a thread full of GIFs doesn't hold
  * a decoder for every one. A loop unloads only once its size is pinned, so its box
  * never changes. Under reduced motion they wait for their controls instead
- * (design §8.7). Renders an empty, hidden marker.
+ *. Renders an empty, hidden marker.
  */
 export function InlineLoopMotion() {
   const markerRef = useRef<HTMLSpanElement>(null)
@@ -74,5 +74,5 @@ export function InlineLoopMotion() {
     }
   }, [reduced])
 
-  return <span ref={markerRef} hidden />
+  return <span hidden ref={markerRef} />
 }

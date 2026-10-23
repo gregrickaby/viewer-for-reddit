@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
 import { FeedSkeleton } from '@/components/feed/feed-section'
 import feed from '@/components/feed/feed.module.css'
 import { firstFullname, ItemList } from '@/components/feed/item-list'
@@ -34,8 +35,6 @@ import {
   type ProfileTab,
 } from '@/lib/url-state'
 import type { ListItem, Page, ProfileView } from '@/lib/view-models'
-
-import styles from '../../feed-page.module.css'
 
 type Props = PageProps<'/user/[username]'>
 
@@ -76,14 +75,14 @@ async function Activity({ params, searchParams }: Pick<Props, 'params' | 'search
     handleReadError(error)
     return (
       <div className={feed.notice}>
-        <p className={feed.noticeTitle}>Reddit won’t show this profile’s activity</p>
+        <p className={feed.noticeTitle}>Reddit won&apos;t show this profile&apos;s activity</p>
       </div>
     )
   }
   const [{ blurNsfw }, now] = await Promise.all([getSettings(), requestTime()])
 
   return (
-    <section className={feed.feed} aria-label="Activity">
+    <section aria-label="Activity" className={feed.feed}>
       <Tabs
         label="Profile sections"
         tabs={PROFILE_TABS.map((value) => ({
@@ -92,26 +91,26 @@ async function Activity({ params, searchParams }: Pick<Props, 'params' | 'search
           current: value === tab,
         }))}
       />
-      <SortTabs base={base} sorts={PROFILE_SORTS} query={query} extra={extra} />
-      <ContentReveal name="profile-content" contentKey={`${tab}:${feedKey(query)}`}>
+      <SortTabs base={base} extra={extra} query={query} sorts={PROFILE_SORTS} />
+      <ContentReveal contentKey={`${tab}:${feedKey(query)}`} name="profile-content">
         <div className={feed.list}>
           <ItemList
-            items={page.items}
-            now={now}
             blurNsfw={blurNsfw}
             empty={{
               title: 'Nothing here yet',
-              detail: 'This account hasn’t posted anything here.',
+              detail: "This account hasn't posted anything here.",
             }}
+            items={page.items}
+            now={now}
           />
         </div>
       </ContentReveal>
       {page.after ? (
         <InfiniteFeed
-          key={`${tab}:${feedKey(query)}:${blurNsfw}`}
           base={base}
           defaultSort="new"
           extra={extra}
+          key={`${tab}:${feedKey(query)}:${blurNsfw}`}
           request={{
             source: { type: 'user', name: username, tab },
             sort: query.sort,
@@ -123,13 +122,13 @@ async function Activity({ params, searchParams }: Pick<Props, 'params' | 'search
         />
       ) : null}
       <Pagination
-        infinite
-        base={base}
-        query={query}
         after={page.after}
-        firstFullname={firstFullname(page.items)}
+        base={base}
         defaultSort="new"
         extra={extra}
+        firstFullname={firstFullname(page.items)}
+        infinite
+        query={query}
       />
     </section>
   )
@@ -140,7 +139,7 @@ export default function ProfilePage({ params, searchParams }: Props) {
     <PageTransition>
       <div className={styles.page}>
         <BackLink href="/home">Home</BackLink>
-        <SectionError title="Couldn’t load this profile">
+        <SectionError title="Couldn't load this profile">
           <Suspense
             fallback={
               <SkeletonExit>
@@ -153,7 +152,7 @@ export default function ProfilePage({ params, searchParams }: Props) {
             </Reveal>
           </Suspense>
         </SectionError>
-        <SectionError title="Couldn’t load posts and comments">
+        <SectionError title="Couldn't load posts and comments">
           <Suspense
             fallback={
               <SkeletonExit>

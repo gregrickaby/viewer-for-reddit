@@ -13,7 +13,7 @@ import {
 
 import styles from './feed.module.css'
 
-export type PaginationProps = {
+export interface PaginationProps {
   base: string
   query: FeedQuery
   /** Reddit's cursor for the next page, if any. */
@@ -27,7 +27,7 @@ export type PaginationProps = {
   infinite?: boolean
 }
 
-/** Previous and Next cursor links (design §8.3). */
+/** Previous and Next cursor links. */
 export function Pagination({
   base,
   query,
@@ -39,13 +39,13 @@ export function Pagination({
 }: PaginationProps) {
   const hasPrevious = pageOffset(query) > 0 && firstFullname !== undefined
   if (!hasPrevious && !after) {
-    return firstFullname ? <p className={styles.end}>You’ve reached the end.</p> : null
+    return firstFullname ? <p className={styles.end}>You&apos;ve reached the end.</p> : null
   }
 
   const next = after ? (
     <Link
-      href={nextHref(base, query, after, defaultSort, extra) as Route}
       className={styles.pageLink}
+      href={nextHref(base, query, after, defaultSort, extra) as Route}
       rel="next"
     >
       Next →
@@ -57,8 +57,8 @@ export function Pagination({
     <nav aria-label="Pages" className={styles.pagination}>
       {hasPrevious ? (
         <Link
-          href={prevHref(base, query, firstFullname, defaultSort, extra) as Route}
           className={styles.pageLink}
+          href={prevHref(base, query, firstFullname, defaultSort, extra) as Route}
           rel="prev"
         >
           ← Previous

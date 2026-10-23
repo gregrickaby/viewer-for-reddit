@@ -1,7 +1,7 @@
 import * as z from 'zod'
 
 /*
- * Feed state lives in the URL (design §4.1 rule 3, §8.3). Parsing never throws:
+ * Feed state lives in the URL, so every view is a link. Parsing never throws:
  * anything unexpected falls back to a default, so a hand-edited URL still renders.
  */
 
@@ -15,7 +15,7 @@ export type TimeRange = (typeof TIME_RANGES)[number]
 /** Page size for every feed. */
 export const PAGE_SIZE = 25
 
-export type FeedQuery = {
+export interface FeedQuery {
   sort: FeedSort
   t: TimeRange
   after: string | null
@@ -26,6 +26,7 @@ export type FeedQuery = {
 
 type SearchParams = Record<string, string | string[] | undefined>
 
+/** A Reddit fullname such as `t3_abc123`. */
 export const Fullname = z.string().regex(/^t[1-6]_[a-z0-9]+$/)
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -60,7 +61,7 @@ export function usesTimeRange(sort: FeedSort): boolean {
 
 /**
  * Items before the current page. Reddit's `count` means "seen so far" after an
- * `after` jump, but "first index + 1" after a `before` jump (design §8.3).
+ * `after` jump, but "first index + 1" after a `before` jump.
  */
 export function pageOffset(query: FeedQuery): number {
   if (query.before) return Math.max(query.count - PAGE_SIZE - 1, 0)
@@ -147,7 +148,7 @@ export function prevHref(
   })
 }
 
-// ── Threads (design §8.3) ─────────────────────────────────────────────────────
+// ── Threads ──────────────────────────────────────────────────────────────────
 
 export const COMMENT_SORTS = ['confidence', 'top', 'new', 'controversial', 'old', 'qa'] as const
 export type CommentSort = (typeof COMMENT_SORTS)[number]
@@ -156,7 +157,10 @@ export type CommentSort = (typeof COMMENT_SORTS)[number]
 export const MAX_MORE_IDS = 20
 
 /** `sort` is null when the URL names none: the thread's own suggested sort applies. */
-export type ThreadQuery = { sort: CommentSort | null; more: string[] }
+export interface ThreadQuery {
+  sort: CommentSort | null
+  more: string[]
+}
 
 const MORE_ID = /^[a-z0-9]{1,12}$/
 
@@ -200,7 +204,7 @@ export function expandMoreHref(
   return `${href}#${anchor}`
 }
 
-// ── Saved, profiles, subscriptions, search (design §9) ───────────────────────
+// ── Saved, profiles, subscriptions, search ───────────────────────────────────
 
 export const SAVED_TYPES = ['all', 'links', 'comments'] as const
 export type SavedType = (typeof SAVED_TYPES)[number]

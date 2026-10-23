@@ -4,13 +4,13 @@ import { env } from '@/lib/env'
 import { cspSources } from '@/lib/media/providers/registry'
 
 /*
- * Security headers for every response the proxy handles (implementation §8).
+ * Security headers for every response the proxy handles.
  *
  * The CSP is static, without nonces: a nonce needs every page rendered per
  * request, which Partial Prerendering rules out (bundled docs:
  * guides/content-security-policy.md). Next's streamed RSC data uses inline
  * scripts, so `script-src` keeps 'unsafe-inline'. The real XSS defense is the
- * sanitizer and the single `SafeHtml` renderer (design §11); this policy
+ * sanitizer and the single `SafeHtml` renderer; this policy
  * limits what an injection could reach.
  */
 
@@ -32,7 +32,7 @@ function join(values: readonly string[]): string {
   return [...new Set(values)].join(' ')
 }
 
-export type HeaderOptions = {
+export interface HeaderOptions {
   dev: boolean
   /** Served over HTTPS: only then upgrade requests and send HSTS. */
   https: boolean

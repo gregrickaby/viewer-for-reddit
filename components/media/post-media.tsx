@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets (design §4.2); the image optimizer would add a hop and a server cache of NSFW media. */
+/* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets; the image optimizer would add a hop and a server cache of NSFW media. */
 import type { ReactNode } from 'react'
 
 import { AutoplayVideo } from '@/components/islands/autoplay-video'
@@ -16,10 +16,10 @@ import { Gallery } from './gallery'
 import styles from './media.module.css'
 
 /*
- * Server-rendered media for a post (design §8.7). This is the no-JS baseline:
+ * Server-rendered media for a post. This is the no-JS baseline:
  * native <img srcset>, native muted loops, and <video> with HLS listed first
- * (Safari plays it with audio) and the MP4 as the fallback. Phase 7 layers the
- * playback islands and embeds on top.
+ * (Safari plays it with audio) and the MP4 as the fallback. The playback
+ * islands and embeds layer on top.
  */
 
 export type RevealReason = 'nsfw' | 'spoiler' | null
@@ -39,7 +39,12 @@ const PROVIDER_NAMES: Record<ProviderId, string> = {
   soundcloud: 'SoundCloud',
 }
 
-type Props = { media: PostMediaView; title: string; reveal: RevealReason; postId: string }
+interface Props {
+  media: PostMediaView
+  title: string
+  reveal: RevealReason
+  postId: string
+}
 
 export function PostMedia({ media, title, reveal, postId }: Props) {
   if (media.type === 'none') return null
@@ -47,9 +52,9 @@ export function PostMedia({ media, title, reveal, postId }: Props) {
     // A link card's only media is its thumbnail; hide it rather than wrap the link.
     return <LinkCard {...media} thumbnail={reveal ? null : media.thumbnail} />
   }
-  const content = <MediaBody media={media} title={title} postId={postId} />
+  const content = <MediaBody media={media} postId={postId} title={title} />
   return reveal ? (
-    <MediaReveal reason={reveal} blurred={blurredOf(media)}>
+    <MediaReveal blurred={blurredOf(media)} reason={reveal}>
       {content}
     </MediaReveal>
   ) : (
@@ -68,26 +73,26 @@ function MediaBody({
 }) {
   switch (media.type) {
     case 'image':
-      return <MediaImage image={media.image} alt={title} />
+      return <MediaImage alt={title} image={media.image} />
     case 'animated':
-      return <Animated media={media} alt={title} />
+      return <Animated alt={title} media={media} />
     case 'video':
-      return <Video media={media} label={title} />
+      return <Video label={title} media={media} />
     case 'gallery':
-      return <Gallery items={media.items} title={title} postId={postId} />
+      return <Gallery items={media.items} postId={postId} title={title} />
     case 'embed':
       return (
         <EmbedFacade
           {...media.embed}
-          providerName={PROVIDER_NAMES[media.embed.provider]}
           poster={media.poster?.src ?? null}
+          providerName={PROVIDER_NAMES[media.embed.provider]}
         />
       )
   }
 }
 
 /**
- * NSFW and spoiler reveal (design §8.7): a native <details>. Closed content
+ * NSFW and spoiler reveal: a native <details>. Closed content
  * isn't rendered, so the real media isn't requested until the user reveals it.
  */
 export function MediaReveal({
@@ -104,15 +109,15 @@ export function MediaReveal({
       <summary className={styles.revealSummary}>
         {blurred ? (
           <img
+            alt=""
             className={styles.blurred}
+            decoding="async"
+            height={blurred.image.height}
+            loading="lazy"
+            sizes={SIZES}
             src={blurred.blurred.src}
             srcSet={blurred.blurred.srcSet}
-            sizes={SIZES}
             width={blurred.image.width}
-            height={blurred.image.height}
-            alt=""
-            loading="lazy"
-            decoding="async"
           />
         ) : (
           <span className={styles.placeholder} />
@@ -133,15 +138,15 @@ export function MediaImage({ image, alt }: { image: ImageSet; alt: string }) {
   return (
     <div className={styles.frame} style={{ aspectRatio: `${image.width} / ${image.height}` }}>
       <img
+        alt={alt}
         className={styles.media}
+        decoding="async"
+        height={image.height}
+        loading="lazy"
+        sizes={SIZES}
         src={image.src}
         srcSet={image.srcSet || undefined}
-        sizes={SIZES}
         width={image.width}
-        height={image.height}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
       />
     </div>
   )
@@ -151,11 +156,11 @@ function Animated({ media, alt }: { media: AnimatedMedia; alt: string }) {
   if (media.loop) {
     return (
       <AutoplayVideo
-        mp4={media.loop.mp4}
-        width={media.loop.width}
         height={media.loop.height}
-        poster={media.poster?.src ?? null}
         label={alt}
+        mp4={media.loop.mp4}
+        poster={media.poster?.src ?? null}
+        width={media.loop.width}
       />
     )
   }
@@ -167,13 +172,13 @@ function Animated({ media, alt }: { media: AnimatedMedia; alt: string }) {
           <source media="(prefers-reduced-motion: reduce)" srcSet={media.poster.src} />
         ) : null}
         <img
+          alt={alt}
           className={styles.media}
+          decoding="async"
+          height={gif.height}
+          loading="lazy"
           src={gif.src}
           width={gif.width}
-          height={gif.height}
-          alt={alt}
-          loading="lazy"
-          decoding="async"
         />
       </picture>
     </div>
@@ -183,12 +188,12 @@ function Animated({ media, alt }: { media: AnimatedMedia; alt: string }) {
 function Video({ media, label }: { media: VideoMedia; label: string }) {
   return (
     <RedditVideo
-      hls={media.video.hls}
-      mp4Fallback={media.video.mp4Fallback}
-      width={media.video.width}
       height={media.video.height}
-      poster={media.poster?.src ?? null}
+      hls={media.video.hls}
       label={label}
+      mp4Fallback={media.video.mp4Fallback}
+      poster={media.poster?.src ?? null}
+      width={media.video.width}
     />
   )
 }
@@ -206,20 +211,20 @@ function LinkCard({
     <a
       className={styles.linkCard}
       href={url}
-      target="_blank"
       rel="noopener noreferrer nofollow ugc"
+      target="_blank"
     >
       {thumbnail ? (
         <img
+          alt=""
           className={styles.linkThumb}
+          decoding="async"
+          height={thumbnail.height}
+          loading="lazy"
+          sizes="8rem"
           src={thumbnail.src}
           srcSet={thumbnail.srcSet || undefined}
-          sizes="8rem"
           width={thumbnail.width}
-          height={thumbnail.height}
-          alt=""
-          loading="lazy"
-          decoding="async"
         />
       ) : null}
       <span className={styles.linkText}>

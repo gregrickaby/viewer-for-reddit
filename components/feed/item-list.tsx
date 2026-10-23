@@ -25,8 +25,8 @@ export function ItemList({
     )
   }
   return (
-    <ol role="list" className={styles.items}>
-      <ListItems items={items} now={now} blurNsfw={blurNsfw} />
+    <ol className={styles.items} role="list">
+      <ListItems blurNsfw={blurNsfw} items={items} now={now} />
     </ol>
   )
 }
@@ -43,11 +43,11 @@ export function ListItems({
 }) {
   return items.map((item) => (
     <li
-      key={item.kind === 'post' ? item.post.fullname : item.comment.fullname}
       className={item.kind === 'post' ? `${styles.item} ${styles.post}` : styles.item}
+      key={item.kind === 'post' ? item.post.fullname : item.comment.fullname}
     >
       {item.kind === 'post' ? (
-        <PostCard post={item.post} showSubreddit blurNsfw={blurNsfw} now={now} />
+        <PostCard blurNsfw={blurNsfw} now={now} post={item.post} showSubreddit />
       ) : (
         <CommentCard comment={item.comment} now={now} />
       )}

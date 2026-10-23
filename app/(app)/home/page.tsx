@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
 import { FeedSection, FeedSkeleton } from '@/components/feed/feed-section'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { HOME_SORTS } from '@/lib/url-state'
-
-import styles from '../feed-page.module.css'
 
 export const metadata: Metadata = { title: 'Home' }
 
@@ -15,7 +14,7 @@ export default function HomePage({ searchParams }: PageProps<'/home'>) {
     <PageTransition>
       <div className={styles.page}>
         <h1 className={styles.title}>Home</h1>
-        <SectionError title="Couldn’t load your home feed">
+        <SectionError title="Couldn't load your home feed">
           <Suspense
             fallback={
               <SkeletonExit>
@@ -25,11 +24,11 @@ export default function HomePage({ searchParams }: PageProps<'/home'>) {
           >
             <Reveal>
               <FeedSection
-                source={{ type: 'home' }}
                 base="/home"
-                sorts={HOME_SORTS}
                 searchParams={searchParams}
                 showSubreddit
+                sorts={HOME_SORTS}
+                source={{ type: 'home' }}
               />
             </Reveal>
           </Suspense>

@@ -4,7 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ActionResult } from '@/lib/actions/result'
 
-type Deferred<T> = { promise: Promise<T>; resolve: (value: T) => void }
+interface Deferred<T> {
+  promise: Promise<T>
+  resolve: (value: T) => void
+}
 function deferred<T>(): Deferred<T> {
   let resolve!: (value: T) => void
   const promise = new Promise<T>((r) => (resolve = r))
@@ -52,7 +55,7 @@ describe('applyVote', () => {
 
 describe('VoteButtons', () => {
   const renderVote = (hideScore = false) =>
-    render(<VoteButtons fullname="t3_abc" likes={0} score={10} hideScore={hideScore} noun="post" />)
+    render(<VoteButtons fullname="t3_abc" hideScore={hideScore} likes={0} noun="post" score={10} />)
   const up = () => screen.getByRole('button', { name: /^Upvote/ })
   const down = () => screen.getByRole('button', { name: /^Downvote/ })
 

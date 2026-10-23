@@ -21,7 +21,7 @@ afterEach(cleanup)
 
 describe('MembershipToggle', () => {
   it('checks at once and keeps it when Reddit agrees', async () => {
-    render(<MembershipToggle multi="news" subreddit="pics" member={false} label="News" />)
+    render(<MembershipToggle label="News" member={false} multi="news" subreddit="pics" />)
     const button = screen.getByRole('button', { name: /News/ })
     await act(async () => fireEvent.click(button))
     expect(screen.getByRole('button').getAttribute('aria-pressed')).toBe('true')
@@ -35,7 +35,7 @@ describe('MembershipToggle', () => {
   })
 
   it('rolls back with the reason on failure', async () => {
-    render(<MembershipToggle multi="news" subreddit="pics" member label="News" variant="button" />)
+    render(<MembershipToggle label="News" member multi="news" subreddit="pics" variant="button" />)
     await act(async () =>
       fireEvent.click(screen.getByRole('button', { name: 'Remove r/pics from News' })),
     )
@@ -47,7 +47,7 @@ describe('MembershipToggle', () => {
 })
 
 describe('ActionForm', () => {
-  it('shows the action’s error, then its success message', async () => {
+  it("shows the action's error, then its success message", async () => {
     let next: ActionResult<unknown> = {
       ok: false,
       error: { code: 'INVALID', message: 'Give it a name.' },

@@ -1,7 +1,7 @@
 'use client'
 
 /*
- * Shared bookkeeping for every video on the page (design §8.7, "Playback"):
+ * Shared bookkeeping for every video on the page:
  * - one lazily created observer for attaching players as they near the
  *   viewport, and one for visibility, instead of one per video;
  * - observe the wrapper, never the <video> (iOS WebKit stops reporting a
@@ -20,7 +20,7 @@ export const ATTACH_MARGIN = '600px 0px'
 /** How much of a player must show to count as visible. */
 export const VISIBLE_RATIO = 0.5
 
-export type PlayerHandlers = {
+export interface PlayerHandlers {
   /** Load the media (set `src`, start hls.js). */
   attach?: () => void
   /** Release the decoder and go back to the poster. */
@@ -31,7 +31,7 @@ export type PlayerHandlers = {
   yieldAudio?: () => void
 }
 
-export type PlayerOptions = {
+export interface PlayerOptions {
   /** The media is already loading (server-rendered with a `src`). */
   attached?: boolean
   /** Unload whenever the player leaves the attach margin, not only to make room. */

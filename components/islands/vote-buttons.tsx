@@ -9,9 +9,12 @@ import type { Vote } from '@/lib/view-models'
 import { useEnhancedForm } from './use-enhanced-form'
 import styles from './vote-buttons.module.css'
 
-type VoteState = { likes: Vote; score: number }
+interface VoteState {
+  likes: Vote
+  score: number
+}
 
-export type VoteButtonsProps = {
+export interface VoteButtonsProps {
   fullname: string
   likes: Vote
   score: number
@@ -33,7 +36,7 @@ function targetOf(formData: FormData): 1 | -1 {
 }
 
 /**
- * Upvote, score, downvote (design §8.6). The vote shows at once, is confirmed
+ * Upvote, score, downvote. The vote shows at once, is confirmed
  * in the same transition when Reddit accepts it, and rolls back with a
  * message when it doesn't. Without JS it's a plain form post.
  */
@@ -60,30 +63,30 @@ export function VoteButtons({
 
   return (
     <form {...formProps} className={styles.root} data-vote={view.likes}>
-      <input type="hidden" name="id" value={fullname} />
-      <input type="hidden" name="current" value={view.likes} />
+      <input name="id" type="hidden" value={fullname} />
+      <input name="current" type="hidden" value={view.likes} />
       <button
-        type="submit"
-        name="target"
-        value="1"
-        className={`${styles.arrow} ${styles.up}`}
-        aria-pressed={view.likes === 1}
         aria-label={`Upvote ${noun}, ${scoreLabel}`}
+        aria-pressed={view.likes === 1}
+        className={`${styles.arrow} ${styles.up}`}
         disabled={disabled}
+        name="target"
+        type="submit"
+        value="1"
       >
         <Arrow />
       </button>
-      <span className={styles.score} aria-live="polite">
+      <span aria-live="polite" className={styles.score}>
         {scoreText}
       </span>
       <button
-        type="submit"
-        name="target"
-        value="-1"
-        className={`${styles.arrow} ${styles.down}`}
-        aria-pressed={view.likes === -1}
         aria-label={`Downvote ${noun}, ${scoreLabel}`}
+        aria-pressed={view.likes === -1}
+        className={`${styles.arrow} ${styles.down}`}
         disabled={disabled}
+        name="target"
+        type="submit"
+        value="-1"
       >
         <Arrow />
       </button>
@@ -98,7 +101,7 @@ export function VoteButtons({
 
 function Arrow() {
   return (
-    <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">
+    <svg aria-hidden="true" focusable="false" height="20" viewBox="0 0 20 20" width="20">
       <path d="M10 3 17 11h-4v6H7v-6H3z" />
     </svg>
   )

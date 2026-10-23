@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 /*
- * End-to-end tests (implementation §8): a production build of the app talking
+ * End-to-end tests: a production build of the app talking
  * to the mock Reddit server (e2e/mock-reddit/server.ts). Runs over plain HTTP
  * on localhost, which browsers treat as a secure context, so the app's Secure
  * cookies still work.

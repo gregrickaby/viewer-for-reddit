@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { ThreadSection, ThreadSkeleton } from '@/components/thread/thread-section'
-
-import styles from '../../../../../feed-page.module.css'
 
 type Props = PageProps<'/r/[subreddit]/comments/[id]/[[...rest]]'>
 
@@ -20,7 +19,7 @@ export default function PostPage({ params, searchParams }: Props) {
   return (
     <PageTransition>
       <div className={styles.page}>
-        <SectionError title="Couldn’t load this post">
+        <SectionError title="Couldn't load this post">
           <Suspense
             fallback={
               <SkeletonExit>

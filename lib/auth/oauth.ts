@@ -6,7 +6,7 @@ import { env } from '@/lib/env'
 
 /**
  * Every scope is requested at first sign-in so later features never force a
- * re-consent (docs/design.md §5.2).
+ * re-consent.
  */
 export const SCOPES = [
   'identity',
@@ -30,7 +30,7 @@ const TokenOk = z.object({
 const TokenError = z.object({ error: z.string() })
 const Identity = z.object({ name: z.string().min(1) })
 
-export type TokenSet = {
+export interface TokenSet {
   accessToken: string
   expiresAt: number
   refreshToken?: string

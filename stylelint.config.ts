@@ -27,7 +27,7 @@ const config: Config = {
       rules: { 'selector-class-pattern': null },
     },
     {
-      // CSS Carousel (design §8.10) is newer than Stylelint's selector lists:
+      // CSS Carousel is newer than Stylelint's selector lists:
       // `::scroll-button(left|right)` arguments and `:target-current` are spec syntax.
       files: ['components/media/gallery.module.css'],
       rules: {

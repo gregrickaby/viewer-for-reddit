@@ -93,7 +93,7 @@ const ctx = {
   focusCommentId: null as string | null,
 }
 const tree = (nodes: CommentNode[], overrides: Partial<typeof ctx> = {}) =>
-  renderServer(<CommentTree nodes={nodes} ctx={{ ...ctx, ...overrides }} />)
+  renderServer(<CommentTree ctx={{ ...ctx, ...overrides }} nodes={nodes} />)
 
 beforeEach(() => {
   state.thread = {
@@ -109,8 +109,8 @@ beforeEach(() => {
 describe('CommentTree', () => {
   it('renders a collapsible comment with its actions', async () => {
     const out = await tree([node(commentView())])
-    expect(out).toContain('<article id="c-c1"')
-    expect(out).toContain('<details open="" class="details">')
+    expect(out).toMatch(/<article [^>]*id="c-c1"/)
+    expect(out).toContain('<details class="details" open="">')
     expect(out).toContain('u/alice')
     expect(out).toContain('>1h</time>')
     expect(out).toContain('<p>Hello</p>')
@@ -154,8 +154,8 @@ describe('CommentTree', () => {
     const out = await tree([node(commentView({ mine: true, bodyMarkdown: 'Hello' }))])
     expect(out).toContain('<summary class="action">Edit</summary>')
     expect(out).toContain('>Hello</textarea>')
-    expect(out).toMatch(/popoverTarget="[^"]+">Delete<\/button>/)
-    expect(out).toContain('Delete this comment? This can’t be undone.')
+    expect(out).toMatch(/popoverTarget="[^"]+" type="button">Delete<\/button>/)
+    expect(out).toContain('Delete this comment? This can&#x27;t be undone.')
     expect(out).toContain('popoverTargetAction="hide"')
   })
 
@@ -201,7 +201,7 @@ describe('CommentTree', () => {
     })
     expect(await tree([more({})], { query: full })).toContain('Continue this thread →')
     expect(await tree([more({ parentId: 't3_abc', count: 0, children: [] })])).toBe(
-      '<ol role="list" class="tree"><li></li></ol>',
+      '<ol class="tree" role="list"><li></li></ol>',
     )
   })
 
@@ -231,7 +231,7 @@ describe('ThreadSection', () => {
       focusCommentId: null,
     })
     expect(out).toContain('← r/<!-- -->pics')
-    expect(out).toContain('<h1 id="post-abc-title"')
+    expect(out).toMatch(/<h1 [^>]*id="post-abc-title"/)
     expect(out).toContain('href="#comments"')
     expect(out).toContain('12 comments</h2>')
     expect(out).toContain('href="/r/pics/comments/abc/a_post?sort=qa"')
@@ -294,7 +294,7 @@ describe('ThreadSection', () => {
     state.thread = { ...state.thread!, focusCommentId: 'c1' }
     const out = await section(['a_post', 'c1'], { sort: 'new' })
     expect(getThread).toHaveBeenLastCalledWith(expect.objectContaining({ focusCommentId: 'c1' }))
-    expect(out).toContain('You’re viewing a single comment thread.')
+    expect(out).toContain('You&#x27;re viewing a single comment thread.')
     expect(out).toContain('href="/r/pics/comments/abc/a_post/c1?sort=top"')
   })
 

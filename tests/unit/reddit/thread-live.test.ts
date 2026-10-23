@@ -91,7 +91,7 @@ describe('pollThread', () => {
     expect(comments.map((each) => each.replyTo)).toEqual([null, null, null])
   })
 
-  it('tells comments in the cursor’s second apart by id', async () => {
+  it("tells comments in the cursor's second apart by id", async () => {
     respond(comment('late', 100), comment('shown', 100), comment('older', 90))
     const poll = await pollThread(ID, { since: 100, seen: ['shown'] })
     expect(poll.comments.map((each) => each.comment.id)).toEqual(['late'])
@@ -174,7 +174,7 @@ describe('the shared read', () => {
     expect(requireAuth).toHaveBeenCalledTimes(2)
   })
 
-  it('keeps one reader’s votes and saves out of what another reader is shown', async () => {
+  it("keeps one reader's votes and saves out of what another reader is shown", async () => {
     const voted = comment('a', 100)
     Object.assign(voted.data, { likes: true, saved: true })
     readers(voted)
@@ -224,7 +224,7 @@ describe('cursorFromTree', () => {
     replies,
   })
 
-  it('points at the newest comment anywhere in the tree, with its second’s ids', () => {
+  it("points at the newest comment anywhere in the tree, with its second's ids", () => {
     const tree = [
       node('sticky', 50),
       node('a', 90, [node('b', 120), node('c', 120)]),

@@ -24,7 +24,7 @@ const result = (texts: string[], extra: Record<string, unknown> = {}) => ({
 
 const thread = () =>
   render(
-    <LiveThread id="abc123" cursor={cursor} bodyHash="h1">
+    <LiveThread bodyHash="h1" cursor={cursor} id="abc123">
       <LiveBody>
         <p>1-0</p>
       </LiveBody>
@@ -117,12 +117,12 @@ describe('LiveThread', () => {
   it('counts the comments Reddit reports, in the header and on the post', async () => {
     pollThreadLive.mockResolvedValue(result([], { numComments: 72 }))
     render(
-      <LiveThread id="abc123" cursor={cursor} bodyHash="h1">
+      <LiveThread bodyHash="h1" cursor={cursor} id="abc123">
         <h2>
           <LiveCount initial={42} noun="comment" />
         </h2>
         <a href="#comments">
-          <LiveCount initial={42} noun="comment" hiddenClass="narrow" />
+          <LiveCount hiddenClass="narrow" initial={42} noun="comment" />
         </a>
       </LiveThread>,
     )
@@ -171,7 +171,7 @@ describe('LiveThread', () => {
     scrollBy.mockRestore()
   })
 
-  it('shows a poll’s comments one at a time, oldest first, at the pace they were posted', async () => {
+  it("shows a poll's comments one at a time, oldest first, at the pace they were posted", async () => {
     pollThreadLive
       .mockResolvedValueOnce(
         result([], {
@@ -216,7 +216,7 @@ describe('LiveThread', () => {
     pollThreadLive.mockResolvedValue({ ok: false, error: { code: 'REDDIT', message: 'no' } })
     thread()
     await tick(600_000)
-    expect(screen.getByRole('alert').textContent).toContain('Couldn’t reach Reddit')
+    expect(screen.getByRole('alert').textContent).toContain("Couldn't reach Reddit")
 
     fireEvent.click(screen.getByRole('button', { name: 'Pause' }))
     fireEvent.click(screen.getByRole('button', { name: 'Resume' }))

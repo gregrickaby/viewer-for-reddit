@@ -4,7 +4,7 @@
     gap: var(--space-3);
   }
 
-  /* Same-route navigation (sort, page) keeps the old list visible but dimmed (design §8.4). */
+  /* Same-route navigation (sort, page) keeps the old list visible but dimmed. */
   .list {
     transition: opacity var(--duration-exit) var(--ease-out);
   }
@@ -78,7 +78,7 @@
     border: var(--border-width) solid var(--border);
   }
 
-  /* Time range menu: a popover anchored under its button (design §10.4 Menu). */
+  /* Time range menu: a popover anchored under its button. */
   .menu {
     position-anchor: --time-range;
     position-area: bottom span-right;

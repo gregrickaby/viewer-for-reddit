@@ -37,7 +37,7 @@ describe('postComment', () => {
   })
 
   it.each([
-    [{ parent: 't5_abc', text: 'x' }, 'That request wasn’t valid.'],
+    [{ parent: 't5_abc', text: 'x' }, "That request wasn't valid."],
     [{ parent: 't1_abc', text: '   ' }, /Write something first/],
     [{ parent: 't1_abc', text: 'x'.repeat(10_001) }, /Write something first/],
   ])('rejects %o', async (values, message) => {
@@ -47,7 +47,7 @@ describe('postComment', () => {
     expect(submitComment).not.toHaveBeenCalled()
   })
 
-  it('reports Reddit’s reason without re-rendering', async () => {
+  it("reports Reddit's reason without re-rendering", async () => {
     submitComment.mockRejectedValueOnce(new RedditApiError('locked', 200, 'THREAD_LOCKED'))
     expect(await actions.postComment(form({ parent: 't1_abc', text: 'x' }))).toEqual({
       ok: false,

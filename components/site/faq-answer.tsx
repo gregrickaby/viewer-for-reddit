@@ -7,11 +7,11 @@ export function FaqAnswer({ parts }: { parts: ReadonlyArray<string | FaqLink> })
   return parts.map((part, index) => {
     if (typeof part === 'string') return part
     return part.page ? (
-      <Link key={index} href={part.page}>
+      <Link href={part.page} key={index}>
         {part.text}
       </Link>
     ) : (
-      <a key={index} href={part.href} target="_blank" rel="noopener noreferrer">
+      <a href={part.href} key={index} rel="noopener noreferrer" target="_blank">
         {part.text}
       </a>
     )

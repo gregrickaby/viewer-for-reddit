@@ -10,13 +10,12 @@ import { parseItems, parseListing, parseResponse } from './listing'
 import { mapComment, mapCommentTree, mapMore } from './mappers/comment'
 import { mapPost } from './mappers/post'
 import { resolveMore, type FlatNode } from './more'
+import { isThingId } from './names'
 import { CommentOrMore } from './schemas/comment'
 import { LinkThing } from './schemas/link'
 import { CommentsResponse, FormResponse } from './schemas/responses'
 
-const THING_ID = /^[a-z0-9]{1,12}$/
-
-export type ThreadRequest = {
+export interface ThreadRequest {
   /** The post id, without `t3_`. */
   id: string
   query: ThreadQuery
@@ -25,12 +24,12 @@ export type ThreadRequest = {
 }
 
 /**
- * A post and its comments in one Reddit call (design §6.1), with any `more`
- * nodes listed in the URL expanded in place (§8.3).
+ * A post and its comments in one Reddit call, with any `more`
+ * nodes listed in the URL expanded in place.
  */
 export async function getThread({ id, query, focusCommentId }: ThreadRequest): Promise<ThreadView> {
-  if (!THING_ID.test(id)) throw new RedditNotFoundError()
-  const focus = focusCommentId && THING_ID.test(focusCommentId) ? focusCommentId : null
+  if (!isThingId(id)) throw new RedditNotFoundError()
+  const focus = focusCommentId && isThingId(focusCommentId) ? focusCommentId : null
   const { accessToken, username } = await requireAuth()
 
   const path = `/comments/${id}`
@@ -91,7 +90,11 @@ async function fetchMoreChildren(
   )
 }
 
-type RawComment = { id?: unknown; author?: unknown; body?: unknown }
+interface RawComment {
+  id?: unknown
+  author?: unknown
+  body?: unknown
+}
 
 /** Finds the comment with `id` anywhere in a raw comments response. */
 function findComment(node: unknown, id: string): RawComment | null {
@@ -122,7 +125,7 @@ export async function waitForComment(
   commentId: string,
   until: 'present' | 'deleted' = 'present',
 ): Promise<void> {
-  if (!THING_ID.test(postId)) return
+  if (!isThingId(postId)) return
   const { accessToken } = await requireAuth()
   for (let attempt = 0; attempt < 5; attempt++) {
     if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 400 * attempt))

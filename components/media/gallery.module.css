@@ -1,4 +1,4 @@
-/* Galleries (design §8.10): a CSS-first carousel and a full-screen lightbox. */
+/* Galleries: a CSS-first carousel and a full-screen lightbox. */
 @layer components {
   .gallery {
     --markers: 1.5rem; /* the dots row, which the arrows' centering has to leave out */

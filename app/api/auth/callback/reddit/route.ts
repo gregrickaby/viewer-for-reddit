@@ -30,7 +30,7 @@ function sameState(a: string, b: string): boolean {
   return left.length === right.length && timingSafeEqual(left, right)
 }
 
-/** Completes the Reddit OAuth flow and establishes the session (docs/design.md §5.3). */
+/** Completes the Reddit OAuth flow and establishes the session. */
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams
   if (params.get('error')) return toLanding(request, 'denied')

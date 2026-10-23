@@ -1,4 +1,4 @@
-/* A closed set of utilities (docs/design.md §10.4). Adding one needs a design-doc change. */
+/* A closed set of utilities. Style components with a CSS Module class instead of adding one. */
 @layer utilities {
   .visually-hidden {
     position: absolute;

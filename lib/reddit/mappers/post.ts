@@ -1,11 +1,11 @@
 import 'server-only'
 
 import { resolveMedia } from '@/lib/media/detect'
+import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
+import { crosspostParent, type RedditLink } from '@/lib/reddit/schemas/link'
 import { COMMENT_SORTS, type CommentSort } from '@/lib/url-state'
 import type { PostView } from '@/lib/view-models'
 
-import { sanitizeRedditHtml } from '../sanitize'
-import { crosspostParent, type RedditLink } from '../schemas/link'
 import {
   appPath,
   authorName,

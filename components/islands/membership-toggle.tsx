@@ -7,7 +7,7 @@ import { setMembership } from '@/app/actions/multis'
 import styles from './membership-toggle.module.css'
 import { useEnhancedForm } from './use-enhanced-form'
 
-export type MembershipToggleProps = {
+export interface MembershipToggleProps {
   /** The multi's URL name. */
   multi: string
   subreddit: string
@@ -19,7 +19,7 @@ export type MembershipToggleProps = {
 }
 
 /**
- * Adds or removes one subreddit from a multi (design §8.6). The checkmark or
+ * Adds or removes one subreddit from a multi. The checkmark or
  * button flips at once; the action re-renders, so lists settle on Reddit's state.
  */
 export function MembershipToggle({
@@ -42,22 +42,22 @@ export function MembershipToggle({
 
   return (
     <form {...formProps} className={styles.root}>
-      <input type="hidden" name="multi" value={multi} />
-      <input type="hidden" name="subreddit" value={subreddit} />
-      <input type="hidden" name="member" value={String(!view)} />
+      <input name="multi" type="hidden" value={multi} />
+      <input name="subreddit" type="hidden" value={subreddit} />
+      <input name="member" type="hidden" value={String(!view)} />
       {variant === 'check' ? (
-        <button type="submit" className={styles.check} aria-pressed={view} aria-busy={isPending}>
-          <span className={styles.mark} aria-hidden="true">
+        <button aria-busy={isPending} aria-pressed={view} className={styles.check} type="submit">
+          <span aria-hidden="true" className={styles.mark}>
             {view ? '✓' : ''}
           </span>
           {label}
         </button>
       ) : (
         <button
-          type="submit"
-          className={`${styles.button} ${view ? styles.remove : styles.add}`}
-          aria-label={`${view ? 'Remove' : 'Add'} r/${subreddit} ${view ? 'from' : 'to'} ${label}`}
           aria-busy={isPending}
+          aria-label={`${view ? 'Remove' : 'Add'} r/${subreddit} ${view ? 'from' : 'to'} ${label}`}
+          className={`${styles.button} ${view ? styles.remove : styles.add}`}
+          type="submit"
         >
           {view ? 'Remove' : 'Add'}
         </button>

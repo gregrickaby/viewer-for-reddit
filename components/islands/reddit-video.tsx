@@ -8,7 +8,7 @@ import { logger } from '@/lib/datadog/client'
 import { claimAudio, registerPlayer } from './player-registry'
 import styles from './players.module.css'
 
-export type RedditVideoProps = {
+export interface RedditVideoProps {
   hls: string
   mp4Fallback: string | null
   width: number
@@ -17,14 +17,14 @@ export type RedditVideoProps = {
   label: string
 }
 
-type Hls = {
+interface Hls {
   loadSource(src: string): void
   attachMedia(media: HTMLMediaElement): void
   destroy(): void
 }
 
 /**
- * A v.redd.it video with sound (design §8.7). The poster shows until the
+ * A v.redd.it video with sound. The poster shows until the
  * player nears the viewport; then HLS plays through a lazily loaded hls.js,
  * or natively where Media Source Extensions are missing. If HLS fails, the
  * silent MP4 plays with a "no audio" note. Scrolling it out of view pauses it. Leaving the page (or Activity
@@ -98,31 +98,31 @@ export function RedditVideo({ hls, mp4Fallback, width, height, poster, label }: 
   }, [attached, hls, mp4Fallback])
 
   return (
-    <div ref={frameRef} className={styles.frame} style={{ aspectRatio: `${width} / ${height}` }}>
+    <div className={styles.frame} ref={frameRef} style={{ aspectRatio: `${width} / ${height}` }}>
       {attached ? (
         <video
-          ref={videoRef}
-          className={styles.media}
-          width={width}
-          height={height}
-          poster={poster ?? undefined}
-          controls
-          playsInline
-          preload="none"
           aria-label={label}
+          className={styles.media}
+          controls
+          height={height}
           onPlay={() => {
             if (frameRef.current) claimAudio(frameRef.current)
           }}
+          playsInline
+          poster={poster ?? undefined}
+          preload="none"
+          ref={videoRef}
+          width={width}
         />
       ) : poster ? (
         <img
-          className={`${styles.media} ${styles.scripted}`}
-          src={poster}
           alt=""
-          width={width}
+          className={`${styles.media} ${styles.scripted}`}
+          decoding="async"
           height={height}
           loading="lazy"
-          decoding="async"
+          src={poster}
+          width={width}
         />
       ) : (
         <span className={styles.scripted} />
@@ -130,12 +130,12 @@ export function RedditVideo({ hls, mp4Fallback, width, height, poster, label }: 
       {noAudio ? <span className={styles.badge}>No audio</span> : null}
       <noscript>
         <video
+          aria-label={label}
           className={styles.media}
-          poster={poster ?? undefined}
           controls
           playsInline
+          poster={poster ?? undefined}
           preload="none"
-          aria-label={label}
         >
           <source src={hls} type="application/vnd.apple.mpegurl" />
           {mp4Fallback ? <source src={mp4Fallback} type="video/mp4" /> : null}

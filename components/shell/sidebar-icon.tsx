@@ -4,16 +4,16 @@ import styles from './sidebar.module.css'
 export function SidebarIcon({ src, fallback }: { src: string | null; fallback: string }) {
   return src ? (
     <img
-      className={styles.icon}
-      src={src}
       alt=""
-      width={20}
+      className={styles.icon}
+      decoding="async"
       height={20}
       loading="lazy"
-      decoding="async"
+      src={src}
+      width={20}
     />
   ) : (
-    <span className={styles.iconFallback} aria-hidden="true">
+    <span aria-hidden="true" className={styles.iconFallback}>
       {fallback}
     </span>
   )

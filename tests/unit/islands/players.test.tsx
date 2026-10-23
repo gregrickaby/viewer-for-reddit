@@ -7,7 +7,7 @@ const warnLog = vi.fn()
 vi.mock('@/lib/datadog/client', () => ({ logger: { warn: warnLog } }))
 
 /* A controllable IntersectionObserver: tests decide what is in view. */
-type Observer = {
+interface Observer {
   callback: IntersectionObserverCallback
   options: IntersectionObserverInit | undefined
   targets: Set<Element>
@@ -185,7 +185,7 @@ describe('InlineLoopMotion', () => {
     <>
       <div>
         <span data-inline-media>
-          <video src={loop.mp4} muted loop autoPlay />
+          <video autoPlay loop muted src={loop.mp4} />
         </span>
       </div>
       <InlineLoopMotion />
@@ -502,7 +502,7 @@ describe('EmbedFacade', () => {
   })
 
   it('lets modified clicks open the original, and sizes audio players by height', () => {
-    const { container } = render(<EmbedFacade {...embed} poster={null} height={152} />)
+    const { container } = render(<EmbedFacade {...embed} height={152} poster={null} />)
     const link = screen.getByRole('link')
     expect(link.getAttribute('style')).toContain('block-size: 152px')
     fireEvent.click(link, { metaKey: true })

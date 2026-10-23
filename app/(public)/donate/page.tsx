@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 export default function DonatePage() {
   return (
     <SiteShell>
-      <section className={`${site.inner} ${site.pageHero}`} aria-labelledby="donate-title">
+      <section aria-labelledby="donate-title" className={`${site.inner} ${site.pageHero}`}>
         <p className={site.eyebrow}>Support the project</p>
-        <h1 id="donate-title" className={site.title}>
+        <h1 className={site.title} id="donate-title">
           Support {SITE.name}
         </h1>
         <p className={site.lede}>
@@ -28,8 +28,8 @@ export default function DonatePage() {
         </p>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="pays-title">
-        <h2 id="pays-title" className={site.sectionTitle}>
+      <section aria-labelledby="pays-title" className={`${site.inner} ${site.section}`}>
+        <h2 className={site.sectionTitle} id="pays-title">
           What donations pay for
         </h2>
         <ul className={site.cardsTwo} role="list">
@@ -46,29 +46,29 @@ export default function DonatePage() {
             </span>
             <h3 className={site.cardTitle}>Time to build</h3>
             <p className={site.cardText}>
-              Time for new features, bug fixes, and keeping up with Reddit’s API.
+              Time for new features, bug fixes, and keeping up with Reddit&apos;s API.
             </p>
           </li>
         </ul>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="give-title">
-        <h2 id="give-title" className={site.sectionTitle}>
+      <section aria-labelledby="give-title" className={`${site.inner} ${site.section}`}>
+        <h2 className={site.sectionTitle} id="give-title">
           Ways to give
         </h2>
         <ul className={site.cardsThree} role="list">
           {SITE.donate.map((option) => (
-            <li key={option.label} className={site.card}>
+            <li className={site.card} key={option.label}>
               <span className={site.icon}>
                 <FeatureIcon name="heart" />
               </span>
               <h3 className={site.cardTitle}>{option.label}</h3>
               <p className={site.cardText}>{option.handle}</p>
               <a
-                href={option.href}
                 className={site.cardAction}
-                target="_blank"
+                href={option.href}
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 Give with {option.label}
               </a>
@@ -77,11 +77,11 @@ export default function DonatePage() {
         </ul>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="help-title">
-        <h2 id="help-title" className={site.sectionTitle}>
+      <section aria-labelledby="help-title" className={`${site.inner} ${site.section}`}>
+        <h2 className={site.sectionTitle} id="help-title">
           Not ready to donate?
         </h2>
-        <p className={site.lede}>That’s fine. You can still help.</p>
+        <p className={site.lede}>That&apos;s fine. You can still help.</p>
         <ul className={site.cardsThree} role="list">
           <li className={site.card}>
             <span className={site.icon}>
@@ -111,9 +111,9 @@ export default function DonatePage() {
         </ul>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="thanks-title">
+      <section aria-labelledby="thanks-title" className={`${site.inner} ${site.section}`}>
         <div className={site.closing}>
-          <h2 id="thanks-title" className={site.sectionTitle}>
+          <h2 className={site.sectionTitle} id="thanks-title">
             Thank you
           </h2>
           <p className={site.lede}>

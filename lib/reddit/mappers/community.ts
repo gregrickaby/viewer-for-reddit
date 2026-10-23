@@ -1,12 +1,12 @@
 import 'server-only'
 
 import { safeMediaUrl } from '@/lib/media/url'
+import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
+import type { RedditAccount, RedditMe } from '@/lib/reddit/schemas/account'
+import type { RedditMulti } from '@/lib/reddit/schemas/multi'
+import type { RedditSubreddit } from '@/lib/reddit/schemas/subreddit'
 import type { MeView, MultiView, SubredditView, UserView } from '@/lib/view-models'
 
-import { sanitizeRedditHtml } from '../sanitize'
-import type { RedditAccount, RedditMe } from '../schemas/account'
-import type { RedditMulti } from '../schemas/multi'
-import type { RedditSubreddit } from '../schemas/subreddit'
 import { hexColor } from './shared'
 
 /** Communities and followed users (`subreddit_type: "user"`, `display_name: "u_<name>"`). */

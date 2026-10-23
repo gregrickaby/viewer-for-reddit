@@ -2,6 +2,7 @@ import type { Metadata, Route } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
 import { createMultiForm } from '@/app/actions/multis'
 import feed from '@/components/feed/feed.module.css'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
@@ -15,7 +16,6 @@ import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMyMultis } from '@/lib/reddit/reads'
 import type { MultiView } from '@/lib/view-models'
 
-import styles from '../feed-page.module.css'
 import multis from './multis.module.css'
 
 export const metadata: Metadata = { title: 'Multireddits' }
@@ -42,13 +42,13 @@ async function MultiList() {
     )
   }
   return (
-    <ul role="list" className={multis.list}>
+    <ul className={multis.list} role="list">
       {all.map((multi) => (
-        <li key={multi.name} className={multis.row}>
+        <li className={multis.row} key={multi.name}>
           <div className={multis.text}>
             <Link
-              href={multi.href as Route}
               className={multis.name}
+              href={multi.href as Route}
               transitionTypes={['nav-forward']}
             >
               {multi.displayName}
@@ -61,8 +61,8 @@ async function MultiList() {
           </div>
           {multi.canEdit ? (
             <Link
-              href={`/multis/${multi.name}` as Route}
               className={multis.edit}
+              href={`/multis/${multi.name}` as Route}
               transitionTypes={['nav-forward']}
             >
               Edit
@@ -80,7 +80,7 @@ export default function MultisPage() {
       <div className={styles.page}>
         <BackLink href="/home">Home</BackLink>
         <h1 className={styles.title}>Multireddits</h1>
-        <SectionError title="Couldn’t load your multireddits">
+        <SectionError title="Couldn't load your multireddits">
           <Suspense
             fallback={
               <SkeletonExit>
@@ -94,18 +94,18 @@ export default function MultisPage() {
           </Suspense>
         </SectionError>
 
-        <section className={multis.panel} aria-labelledby="new-multi">
-          <h2 id="new-multi" className={multis.heading}>
+        <section aria-labelledby="new-multi" className={multis.panel}>
+          <h2 className={multis.heading} id="new-multi">
             New multireddit
           </h2>
           <ActionForm action={createMultiForm} className={multis.form}>
             <label className={multis.field}>
               <span>Name</span>
-              <input name="displayName" required maxLength={50} className={multis.input} />
+              <input className={multis.input} maxLength={50} name="displayName" required />
             </label>
             <label className={multis.field}>
               <span>Description (optional)</span>
-              <textarea name="description" maxLength={500} rows={2} className={multis.input} />
+              <textarea className={multis.input} maxLength={500} name="description" rows={2} />
             </label>
             <div>
               <PendingButton>Create</PendingButton>

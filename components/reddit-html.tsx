@@ -4,7 +4,7 @@ import type { SafeHtml } from '@/lib/view-models'
 import styles from './reddit-html.module.css'
 
 /**
- * The only place Reddit HTML reaches the page (design §7, §8.9). It accepts
+ * The only place Reddit HTML reaches the page. It accepts
  * `SafeHtml` alone, which only the sanitizer can produce.
  */
 export function RedditHtml({ html, className }: { html: SafeHtml; className?: string }) {

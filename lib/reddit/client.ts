@@ -16,7 +16,7 @@ import { recordRateLimit, secondsUntilAllowed } from './rate-limit'
 
 export type QueryValue = string | number | boolean | undefined | null
 
-export type RedditRequest = {
+export interface RedditRequest {
   token: string
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   query?: Record<string, QueryValue>
@@ -47,7 +47,7 @@ function toSearchParams(values: Record<string, QueryValue> = {}): URLSearchParam
 }
 
 /**
- * The single place the app talks to oauth.reddit.com (docs/design.md §6).
+ * The single place the app talks to oauth.reddit.com.
  * Adds auth, the required User-Agent, and `raw_json=1` (so strings aren't HTML-escaped),
  * enforces the rate-limit budget, and maps failures to typed errors. Returns parsed JSON as
  * `unknown`: callers must validate it with a schema.

@@ -57,12 +57,12 @@ describe('AddToMultiMenu', () => {
   it('lists editable multis with checkmarks for membership', async () => {
     const out = await renderServer(
       <AddToMultiMenu
-        subreddit="News"
         multis={[
           multiView(),
           multiView({ name: 'dev', displayName: 'Dev', subreddits: ['nextjs'] }),
           multiView({ name: 'theirs', displayName: 'Theirs', canEdit: false }),
         ]}
+        subreddit="News"
       />,
     )
     expect(out).toContain('aria-label="Add r/News to a multireddit"')
@@ -74,8 +74,8 @@ describe('AddToMultiMenu', () => {
   })
 
   it('says when there are no multis', async () => {
-    expect(await renderServer(<AddToMultiMenu subreddit="pics" multis={[]} />)).toContain(
-      'You don’t have any multireddits yet.',
+    expect(await renderServer(<AddToMultiMenu multis={[]} subreddit="pics" />)).toContain(
+      'You don&#x27;t have any multireddits yet.',
     )
   })
 })
@@ -114,7 +114,7 @@ describe('/multis', () => {
   it('shows why Reddit refused the list', async () => {
     const { getMyMultis } = await import('@/lib/reddit/reads')
     vi.mocked(getMyMultis).mockRejectedValueOnce(new errors.RedditForbiddenError('unknown'))
-    expect(await renderServer(<listPage.default />)).toContain('Reddit won’t show this')
+    expect(await renderServer(<listPage.default />)).toContain('Reddit won&#x27;t show this')
   })
 })
 
@@ -141,7 +141,7 @@ describe('/multis/[multi]', () => {
     expect(out).toContain('From your subscriptions')
     expect(out).toContain('aria-label="Add r/aww to News"')
     expect(out).not.toContain('r/<!-- -->spez')
-    expect(out).toContain('Delete <!-- -->News<!-- -->? This can’t be undone.')
+    expect(out).toContain('Delete <!-- -->News<!-- -->? This can&#x27;t be undone.')
   })
 
   it('handles an empty multi and missing subscriptions', async () => {
@@ -152,9 +152,9 @@ describe('/multis/[multi]', () => {
     expect(out).not.toContain('From your subscriptions')
   })
 
-  it('refuses multis the viewer can’t edit, and 404s missing ones', async () => {
+  it("refuses multis the viewer can't edit, and 404s missing ones", async () => {
     state.multiError = new errors.RedditForbiddenError('unknown')
-    expect(await render()).toContain('Reddit won’t let you edit this multireddit.')
+    expect(await render()).toContain('Reddit won&#x27;t let you edit this multireddit.')
     state.multiError = new errors.RedditNotFoundError()
     vi.spyOn(console, 'error').mockImplementation(() => {})
     // The section's error boundary receives the 404, and Next renders the not-found page.

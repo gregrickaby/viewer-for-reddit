@@ -1,9 +1,9 @@
 import 'server-only'
 
+import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
+import type { RedditLiveEvent, RedditLiveUpdate } from '@/lib/reddit/schemas/live'
 import type { LiveEventView, LiveUpdateView } from '@/lib/view-models'
 
-import { sanitizeRedditHtml } from '../sanitize'
-import type { RedditLiveEvent, RedditLiveUpdate } from '../schemas/live'
 import { authorName } from './shared'
 
 export function mapLiveEvent(event: RedditLiveEvent): LiveEventView {

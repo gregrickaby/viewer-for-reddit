@@ -15,7 +15,12 @@ const READING_OFFSET = 240
 /** New updates kept above the first page. A long event can post hundreds. */
 export const MAX_LIVE_UPDATES = 200
 
-type Batch = { id: number; items: ReactNode; count: number; shown: boolean }
+interface Batch {
+  id: number
+  items: ReactNode
+  count: number
+  shown: boolean
+}
 type Older = 'idle' | 'loading' | 'error'
 
 /** Drops the oldest batches past `MAX_LIVE_UPDATES`, always keeping the newest one. */
@@ -28,9 +33,12 @@ export function capBatches(batches: Batch[]): Batch[] {
 }
 
 /** New updates, newest batch first, and whether older ones were dropped. */
-type Added = { batches: Batch[]; trimmed: boolean }
+interface Added {
+  batches: Batch[]
+  trimmed: boolean
+}
 
-type Props = {
+interface Props {
   id: string
   live: boolean
   viewers: number | null
@@ -82,8 +90,9 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
   async function loadOlder() {
     if (!cursor) return
     setOlderStatus('loading')
-    const result = await loadOlderLive({ id, after: cursor })
-    if (!result.ok) return setOlderStatus('error')
+    // A dropped connection rejects instead of returning an error result.
+    const result = await loadOlderLive({ id, after: cursor }).catch(() => null)
+    if (!result?.ok) return setOlderStatus('error')
     setOlderPages((current) => [...current, result.data.items])
     setCursor(result.data.after)
     setOlderStatus('idle')
@@ -94,7 +103,7 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
       <p className={styles.status}>
         {state.live ? (
           <>
-            <span className={styles.dot} aria-hidden="true" />
+            <span aria-hidden="true" className={styles.dot} />
             Live
             {state.viewers ? ` · ${plural(state.viewers, 'viewer')}` : null}
           </>
@@ -110,8 +119,6 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
       {waiting > 0 ? (
         <div className={styles.waiting}>
           <Button
-            variant="secondary"
-            size="sm"
             onClick={() => {
               setAdded((current) => ({
                 ...current,
@@ -119,12 +126,14 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
               }))
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }}
+            size="sm"
+            variant="secondary"
           >
             Show {plural(waiting, 'new update')}
           </Button>
         </div>
       ) : null}
-      <ol role="list" className={styles.updates}>
+      <ol className={styles.updates} role="list">
         {batches
           .filter((batch) => batch.shown)
           .map((batch) => (
@@ -142,15 +151,15 @@ export function LiveFeed({ id, live, viewers, newest, older, children }: Props) 
       </ol>
       {cursor ? (
         <div className={styles.more}>
-          <Button variant="secondary" onClick={loadOlder} disabled={olderStatus === 'loading'}>
+          <Button disabled={olderStatus === 'loading'} onClick={loadOlder} variant="secondary">
             {olderStatus === 'loading' ? 'Loading…' : 'Load older updates'}
           </Button>
           {olderStatus === 'error' ? (
-            <p role="alert">Couldn’t load older updates. Try again.</p>
+            <p role="alert">Couldn&apos;t load older updates. Try again.</p>
           ) : null}
         </div>
       ) : (
-        <p className={styles.end}>That’s every update.</p>
+        <p className={styles.end}>That&apos;s every update.</p>
       )}
     </>
   )

@@ -16,7 +16,7 @@ import styles from './post-card.module.css'
 /** Self text longer than this gets a "Read more" (the clamp is ~12 lines). */
 const EXCERPT_CHARS = 900
 
-export type PostCardProps = {
+export interface PostCardProps {
   post: PostView
   /** Omitted on the subreddit's own page. */
   showSubreddit: boolean
@@ -32,7 +32,7 @@ export function revealReason(post: PostView, blurNsfw: boolean): RevealReason {
   return post.flags.spoiler ? 'spoiler' : post.flags.nsfw && blurNsfw ? 'nsfw' : null
 }
 
-/** A feed item (design §10.2). A Server Component; only voting and saving hydrate. */
+/** A feed item. A Server Component; only voting and saving hydrate. */
 export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' }: PostCardProps) {
   const detail = variant === 'detail'
   const titleId = `post-${post.id}-title`
@@ -41,18 +41,18 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
 
   return (
     <article
-      className={detail ? styles.card : `${styles.card} ${styles.interactive}`}
       aria-labelledby={titleId}
+      className={detail ? styles.card : `${styles.card} ${styles.interactive}`}
     >
       <div className={styles.votes}>
         <VoteButtons
-          key={`${post.likes}:${post.score}`}
-          fullname={post.fullname}
-          likes={post.likes}
-          score={post.score}
-          hideScore={post.hideScore}
           disabled={post.flags.archived}
+          fullname={post.fullname}
+          hideScore={post.hideScore}
+          key={`${post.likes}:${post.score}`}
+          likes={post.likes}
           noun="post"
+          score={post.score}
         />
       </div>
 
@@ -60,8 +60,8 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
         <p className={styles.meta}>
           {showSubreddit ? (
             <Link
-              href={`/r/${post.subreddit}` as Route}
               className={styles.subreddit}
+              href={`/r/${post.subreddit}` as Route}
               transitionTypes={['nav-forward']}
             >
               r/{post.subreddit}
@@ -102,11 +102,11 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
         </p>
 
         {detail ? (
-          <h1 id={titleId} className={`${styles.title} ${styles.detailTitle}`}>
+          <h1 className={`${styles.title} ${styles.detailTitle}`} id={titleId}>
             {post.title}
           </h1>
         ) : (
-          <h2 id={titleId} className={styles.title}>
+          <h2 className={styles.title} id={titleId}>
             <Link href={post.permalink as Route} transitionTypes={['nav-forward']}>
               {post.title}
             </Link>
@@ -128,32 +128,32 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
           </p>
         ) : null}
 
-        <PostMedia media={post.media} title={post.title} reveal={reveal} postId={post.id} />
+        <PostMedia media={post.media} postId={post.id} reveal={reveal} title={post.title} />
 
         {post.body ? (
           detail ? (
             <LiveBody>
-              <PostBody html={post.body} excerpt={false} reveal={reveal} />
+              <PostBody excerpt={false} html={post.body} reveal={reveal} />
             </LiveBody>
           ) : (
-            <PostBody html={post.body} excerpt reveal={reveal} />
+            <PostBody excerpt html={post.body} reveal={reveal} />
           )
         ) : null}
 
         <div className={styles.actions}>
           <Link
-            href={(detail ? '#comments' : post.permalink) as Route}
             className={styles.action}
+            href={(detail ? '#comments' : post.permalink) as Route}
             transitionTypes={detail ? undefined : ['nav-forward']}
           >
-            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">
+            <svg aria-hidden="true" focusable="false" height="16" viewBox="0 0 20 20" width="16">
               <path d="M3 4h14v9H8l-4 3v-3H3z" />
             </svg>
             {detail ? (
               <LiveCount
+                hiddenClass={styles.narrowHidden}
                 initial={post.numComments}
                 noun="comment"
-                hiddenClass={styles.narrowHidden}
               />
             ) : (
               <>
@@ -164,12 +164,12 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
               </>
             )}
           </Link>
-          <SaveButton key={String(post.saved)} fullname={post.fullname} saved={post.saved} />
+          <SaveButton fullname={post.fullname} key={String(post.saved)} saved={post.saved} />
           <a
             className={styles.action}
             href={`https://www.reddit.com${post.permalink}`}
-            target="_blank"
             rel="noopener noreferrer"
+            target="_blank"
           >
             <span className={`${styles.narrowHidden} ${styles.linkText}`}>Open on Reddit </span>↗
           </a>
@@ -186,7 +186,7 @@ export function PostCard({ post, showSubreddit, blurNsfw, now, variant = 'feed' 
 
 /**
  * Self text, clamped in feeds. Images inside it follow the post's NSFW and
- * spoiler reveal, like its other media (design §8.7), so a body with inline
+ * spoiler reveal, like its other media, so a body with inline
  * media waits behind the same "Show".
  */
 export function PostBody({
@@ -201,7 +201,7 @@ export function PostBody({
   const body =
     excerpt && html.length > EXCERPT_CHARS ? (
       <div className={styles.excerpt}>
-        <RedditHtml html={html} className={styles.excerptBody} />
+        <RedditHtml className={styles.excerptBody} html={html} />
         <details className={styles.more}>
           <summary>Read more</summary>
         </details>
@@ -210,7 +210,7 @@ export function PostBody({
       <RedditHtml html={html} />
     )
   return reveal && hasInlineMedia(html) ? (
-    <MediaReveal reason={reveal} blurred={null}>
+    <MediaReveal blurred={null} reason={reveal}>
       {body}
     </MediaReveal>
   ) : (
@@ -218,10 +218,10 @@ export function PostBody({
   )
 }
 
-/** Mirrors the card's layout exactly, so the swap causes no layout shift (design §8.4). */
+/** Mirrors the card's layout exactly, so the swap causes no layout shift. */
 export function PostCardSkeleton() {
   return (
-    <div className={styles.card} aria-hidden="true">
+    <div aria-hidden="true" className={styles.card}>
       <div className={styles.votes}>
         <span className={`skeleton ${styles.voteSkeleton}`} />
       </div>

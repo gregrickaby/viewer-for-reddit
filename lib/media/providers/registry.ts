@@ -1,9 +1,9 @@
 import 'server-only'
 
+import { hostMatches } from '@/lib/media/url'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
 
-import { hostMatches } from '../url'
 import { giphy, imgur, redgifs } from './animated-hosts'
 import { social, soundcloud, spotify } from './audio-and-social'
 import type { Provider } from './types'
@@ -44,7 +44,7 @@ export function resolveWithProviders(urls: readonly URL[], link: RedditLink): Po
 
 type CspKey = keyof Provider['csp']
 
-/** CSP sources the providers need, per directive (used by the CSP in Phase 8). */
+/** CSP sources the providers need, per directive, for `lib/security/headers.ts`. */
 export function cspSources(key: CspKey): string[] {
   return [...new Set(PROVIDERS.flatMap((provider) => provider.csp[key] ?? []))].sort()
 }

@@ -34,21 +34,21 @@ export function ScrollToTop() {
   return (
     <>
       <span
-        ref={sentinel}
-        className={styles.sentinel}
-        style={{ blockSize: SHOW_AFTER }}
         aria-hidden="true"
+        className={styles.sentinel}
+        ref={sentinel}
+        style={{ blockSize: SHOW_AFTER }}
       />
       <button
-        type="button"
+        aria-label="Scroll to top"
         className={styles.button}
         data-visible={visible}
-        onClick={top}
-        aria-label="Scroll to top"
         // Inert, not aria-hidden: the button hides itself while it holds focus after a click.
         inert={!visible}
+        onClick={top}
+        type="button"
       >
-        <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+        <svg aria-hidden="true" height="20" viewBox="0 0 20 20" width="20">
           <path d="M10 16V4M4.5 9.5 10 4l5.5 5.5" />
         </svg>
       </button>

@@ -88,7 +88,7 @@
     background: var(--badge-spoiler);
   }
 
-  /* Gallery: a scroll-snap strip (design §8.10) */
+  /* Gallery: a scroll-snap strip */
   .gallery {
     display: flex;
     max-block-size: 70vh;

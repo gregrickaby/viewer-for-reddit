@@ -29,7 +29,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } }
 export const ensureStatic = 'shell'
 
 /**
- * The signed-in shell (design §10.1). The header and nav frame prerender;
+ * The signed-in shell. The header and nav frame prerender;
  * the user menu and sidebar lists stream in behind their own boundaries.
  * The sidebar is one element: a static column on wide screens and a
  * `popover` drawer on narrow ones, so it needs no JavaScript either way.
@@ -39,25 +39,25 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
     <div className={styles.shell}>
       <header className={styles.header}>
         <button
-          type="button"
+          aria-label="Open navigation"
           className={styles.menuButton}
           popoverTarget="app-nav"
-          aria-label="Open navigation"
+          type="button"
         >
-          <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">
+          <svg aria-hidden="true" focusable="false" height="20" viewBox="0 0 20 20" width="20">
             <path d="M3 5h14M3 10h14M3 15h14" />
           </svg>
         </button>
         {/* The name beside the bar is decoration: the logo inside the bar is the home link. */}
-        <Link href="/home" className={styles.brand} aria-hidden="true" tabIndex={-1}>
+        <Link aria-hidden="true" className={styles.brand} href="/home" tabIndex={-1}>
           <Logo mark={false} withWordmark="wide" />
         </Link>
-        <form action="/search" method="get" role="search" className={styles.search}>
-          <label htmlFor="site-search" className="visually-hidden">
+        <form action="/search" className={styles.search} method="get" role="search">
+          <label className="visually-hidden" htmlFor="site-search">
             Search Reddit
           </label>
           <div className={styles.field}>
-            <Link href="/home" className={styles.searchLogo} aria-label={`${SITE.name} home`}>
+            <Link aria-label={`${SITE.name} home`} className={styles.searchLogo} href="/home">
               <Logo size={28} />
             </Link>
             <Suspense fallback={<SiteSearchFallback className={styles.searchInput} />}>
@@ -75,9 +75,9 @@ export default function AppLayout({ children }: LayoutProps<'/'>) {
         </div>
       </header>
 
-      <aside id="app-nav" popover="auto" className={styles.sidebar} aria-label="Navigation">
+      <aside aria-label="Navigation" className={styles.sidebar} id="app-nav" popover="auto">
         <SidebarFeeds />
-        <SectionError title="Couldn’t load your communities">
+        <SectionError title="Couldn't load your communities">
           <Suspense fallback={<SidebarSkeleton />}>
             <SidebarLists />
           </Suspense>

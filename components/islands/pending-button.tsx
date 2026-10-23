@@ -6,7 +6,7 @@ import { useFormStatus } from 'react-dom'
 import { Button } from '@/components/ui/button'
 
 /**
- * A submit button that shows it's working (design §8.6): disabled and
+ * A submit button that shows it's working: disabled and
  * `aria-busy` while its form's action runs. Forms driven by
  * `useEnhancedForm` pass `pending` themselves.
  */
@@ -22,7 +22,7 @@ export function PendingButton({
   const status = useFormStatus()
   const busy = pending ?? status.pending
   return (
-    <Button type="submit" size="sm" variant={variant} disabled={busy} aria-busy={busy}>
+    <Button aria-busy={busy} disabled={busy} size="sm" type="submit" variant={variant}>
       {children}
     </Button>
   )

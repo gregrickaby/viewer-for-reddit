@@ -228,7 +228,7 @@ describe('mapPost', () => {
     ])
   })
 
-  it('attributes a crosspost and borrows the original’s text', () => {
+  it("attributes a crosspost and borrows the original's text", () => {
     const original = sample(
       'Link',
       (v) => v.is_self === true && !v.removed_by_category && Boolean(v.selftext_html),
@@ -315,7 +315,7 @@ describe('mapComment', () => {
     expect(view).toMatchObject({ removal: 'removed', author: null, body: null })
   })
 
-  it('marks the viewer’s own comments and exposes their markdown for editing', () => {
+  it("marks the viewer's own comments and exposes their markdown for editing", () => {
     const raw = sample(
       'Comment',
       (v) => v.body !== '[deleted]' && !String(v.body).startsWith('[ Removed'),
@@ -484,7 +484,7 @@ describe('communities, people, and multis', () => {
     })
   })
 
-  it('routes the viewer’s own multis to /m and others to their owner', () => {
+  it("routes the viewer's own multis to /m and others to their owner", () => {
     const raw = sample('LabeledMulti')
     const multi = Multi.parse(raw)
     const own = mapMulti(multi, 'FIXTURE_USER')

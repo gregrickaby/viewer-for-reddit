@@ -1,6 +1,6 @@
 import 'server-only'
 
-/** Base class for every failure talking to Reddit (docs/design.md §6). */
+/** Base class for every failure talking to Reddit. */
 export class RedditError extends Error {
   constructor(
     message: string,

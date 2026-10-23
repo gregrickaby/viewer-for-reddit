@@ -19,7 +19,7 @@ const PATHS: Record<FeatureIconName, ReactNode> = {
   ),
   lock: (
     <>
-      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <rect height="10" rx="2" width="14" x="5" y="11" />
       <path d="M8 11V8a4 4 0 0 1 8 0v3" />
     </>
   ),
@@ -37,8 +37,8 @@ const PATHS: Record<FeatureIconName, ReactNode> = {
   moon: <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />,
   server: (
     <>
-      <rect x="3" y="4" width="18" height="6" rx="2" />
-      <rect x="3" y="14" width="18" height="6" rx="2" />
+      <rect height="6" rx="2" width="18" x="3" y="4" />
+      <rect height="6" rx="2" width="18" x="3" y="14" />
       <path d="M7 7h.01M7 17h.01" />
     </>
   ),
@@ -69,16 +69,16 @@ const PATHS: Record<FeatureIconName, ReactNode> = {
 export function FeatureIcon({ name }: { name: FeatureIconName }) {
   return (
     <svg
-      viewBox="0 0 24 24"
-      width="22"
-      height="22"
+      aria-hidden="true"
       fill="none"
+      focusable="false"
+      height="22"
       stroke="currentColor"
-      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      width="22"
     >
       {PATHS[name]}
     </svg>

@@ -19,7 +19,7 @@ function subscribeToDevice(onChange: () => void) {
 }
 
 /**
- * "Dark mode" (design §8.8): a switch that shows what you see now. Until it is
+ * "Dark mode": a switch that shows what you see now. Until it is
  * touched the site follows the device, and the switch mirrors the device; once
  * flipped, the choice is remembered, and "Match my device" undoes it. With JS
  * the theme applies at once, crossfading with a view transition, and the
@@ -55,19 +55,19 @@ export function ThemeToggle({ theme }: { theme: Theme }) {
   return (
     <div className={styles.root}>
       <form action={formAction(setTheme)} onSubmit={submit(dark ? 'light' : 'dark')}>
-        <input type="hidden" name="theme" value={dark ? 'light' : 'dark'} />
+        <input name="theme" type="hidden" value={dark ? 'light' : 'dark'} />
         <SwitchRow
-          label="Dark mode"
+          checked={dark}
           description={
             current === 'system' ? 'Matches your device' : dark ? 'Always dark' : 'Always light'
           }
-          checked={dark}
+          label="Dark mode"
         />
       </form>
       {current === 'system' ? null : (
         <form action={formAction(setTheme)} onSubmit={submit('system')}>
-          <input type="hidden" name="theme" value="system" />
-          <button type="submit" className={styles.match}>
+          <input name="theme" type="hidden" value="system" />
+          <button className={styles.match} type="submit">
             Match my device
           </button>
         </form>

@@ -19,7 +19,7 @@ async function avatar(): Promise<string | null> {
 }
 
 /**
- * The account menu (design §8.8, §10.1): a native popover, so it needs no
+ * The account menu: a native popover, so it needs no
  * JavaScript. It reads the session, so it streams in behind a Suspense boundary.
  */
 export async function UserMenu() {
@@ -30,41 +30,41 @@ export async function UserMenu() {
   return (
     <div className={styles.root}>
       <button
-        type="button"
+        aria-label={`Account menu for u/${username}`}
         className={styles.trigger}
         popoverTarget="user-menu"
-        aria-label={`Account menu for u/${username}`}
+        type="button"
       >
         {icon ? (
-          <img className={styles.avatar} src={icon} alt="" width={32} height={32} />
+          <img alt="" className={styles.avatar} height={32} src={icon} width={32} />
         ) : (
-          <span className={styles.avatarFallback} aria-hidden="true">
+          <span aria-hidden="true" className={styles.avatarFallback}>
             {username.slice(0, 1).toUpperCase()}
           </span>
         )}
         <span className={styles.name}>u/{username}</span>
       </button>
 
-      <div id="user-menu" popover="auto" className={styles.menu}>
+      <div className={styles.menu} id="user-menu" popover="auto">
         <nav aria-label="Account" className={styles.links}>
-          <Link href={`/user/${username}` as Route} className={styles.link}>
+          <Link className={styles.link} href={`/user/${username}` as Route}>
             Profile
           </Link>
-          <Link href={'/saved' as Route} className={styles.link}>
+          <Link className={styles.link} href={'/saved' as Route}>
             Saved
           </Link>
-          <Link href={'/multis' as Route} className={styles.link}>
+          <Link className={styles.link} href={'/multis' as Route}>
             Multireddits
           </Link>
-          <Link href={'/subreddits' as Route} className={styles.link}>
+          <Link className={styles.link} href={'/subreddits' as Route}>
             Subscriptions
           </Link>
-          <Link href={'/settings' as Route} className={styles.link}>
+          <Link className={styles.link} href={'/settings' as Route}>
             Settings
           </Link>
         </nav>
         <form action={signOut} className={styles.signOut}>
-          <Button type="submit" variant="secondary" size="sm">
+          <Button size="sm" type="submit" variant="secondary">
             Sign out
           </Button>
         </form>
@@ -75,7 +75,7 @@ export async function UserMenu() {
 
 export function UserMenuSkeleton() {
   return (
-    <div className={styles.root} aria-hidden="true">
+    <div aria-hidden="true" className={styles.root}>
       <span className={`skeleton ${styles.avatarSkeleton}`} />
       <span className={`skeleton ${styles.nameSkeleton}`} />
     </div>

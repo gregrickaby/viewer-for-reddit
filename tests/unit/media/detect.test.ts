@@ -98,7 +98,7 @@ describe('resolveMedia: real posts', () => {
     expect(poster?.src).toBeTruthy()
   })
 
-  it('prefers the provider’s own player (with sound) to Reddit’s silent transcode', () => {
+  it("prefers the provider's own player (with sound) to Reddit's silent transcode", () => {
     const imgur = expectType(resolveMedia(post((v) => v.domain === 'imgur.com')), 'embed')
     expect(imgur.embed.provider).toBe('imgur')
     const redgifs = expectType(resolveMedia(post((v) => v.domain === 'redgifs.com')), 'embed')
@@ -243,7 +243,7 @@ describe('metadataMedia', () => {
     expect(media).toMatchObject({ type: 'video', video: { hls: expect.stringContaining('.m3u8') } })
   })
 
-  it('uses Reddit’s obfuscated renditions as the blur', () => {
+  it("uses Reddit's obfuscated renditions as the blur", () => {
     const media = metadataMedia(metadata((item) => Array.isArray(item.o) && item.o.length > 0)[0])
     expect(media?.type === 'image' && media.image.blurred).not.toBeNull()
   })

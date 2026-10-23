@@ -10,7 +10,7 @@ import {
 } from './errors'
 
 /**
- * What a page section does with a failed Reddit read (design §12):
+ * What a page section does with a failed Reddit read:
  * - an expired session signs out,
  * - a missing thing is the route's not-found page,
  * - a forbidden community returns its reason, for an inline panel,

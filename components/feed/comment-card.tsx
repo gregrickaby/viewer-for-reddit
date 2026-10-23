@@ -11,7 +11,7 @@ import styles from './comment-card.module.css'
 
 /**
  * A comment listed outside its thread (saved items, profiles): the post it
- * belongs to, the comment, and a link to see it in context (design §10.2).
+ * belongs to, the comment, and a link to see it in context.
  */
 export function CommentCard({
   comment,
@@ -25,13 +25,13 @@ export function CommentCard({
 }) {
   const context = comment.context
   return (
-    <article className={styles.card} aria-label={`Comment by ${comment.author ?? '[deleted]'}`}>
+    <article aria-label={`Comment by ${comment.author ?? '[deleted]'}`} className={styles.card}>
       <p className={styles.context}>
         {context ? (
           <>
             <Link
-              href={context.postPermalink as Route}
               className={styles.post}
+              href={context.postPermalink as Route}
               transitionTypes={['nav-forward']}
             >
               {context.postTitle}
@@ -52,7 +52,7 @@ export function CommentCard({
         ) : (
           '[deleted]'
         )}
-        <LiveTime utc={comment.createdUtc} now={now} />
+        <LiveTime now={now} utc={comment.createdUtc} />
       </p>
       {comment.body ? (
         <RedditHtml html={comment.body} />
@@ -63,18 +63,18 @@ export function CommentCard({
       )}
       <div className={styles.actions}>
         <VoteButtons
-          key={`${comment.likes}:${comment.score}`}
-          fullname={comment.fullname}
-          likes={comment.likes}
-          score={comment.score}
-          hideScore={comment.scoreHidden}
           disabled={comment.flags.archived || comment.removal !== null}
+          fullname={comment.fullname}
+          hideScore={comment.scoreHidden}
+          key={`${comment.likes}:${comment.score}`}
+          likes={comment.likes}
           noun="comment"
+          score={comment.score}
         />
-        <SaveButton key={String(comment.saved)} fullname={comment.fullname} saved={comment.saved} />
+        <SaveButton fullname={comment.fullname} key={String(comment.saved)} saved={comment.saved} />
         <Link
-          href={comment.permalink as Route}
           className={styles.action}
+          href={comment.permalink as Route}
           transitionTypes={['nav-forward']}
         >
           View context

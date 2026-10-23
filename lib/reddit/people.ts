@@ -25,7 +25,7 @@ import { LinkThing } from './schemas/link'
 import { SubredditThing } from './schemas/subreddit'
 
 /*
- * Reads for saved items, profiles, and subreddit search (design §6.1).
+ * Reads for saved items, profiles, and subreddit search.
  */
 
 const PostOrComment = z.discriminatedUnion('kind', [LinkThing, CommentThing])
@@ -92,7 +92,7 @@ export async function getProfile(username: string): Promise<ProfileView> {
     : { kind: 'active', user: mapUser(data) }
 }
 
-/** Communities matching `q`, NSFW included (design §8.7). */
+/** Communities matching `q`, NSFW included. */
 export async function searchSubreddits(q: string, query: FeedQuery): Promise<Page<SubredditView>> {
   const { accessToken } = await requireAuth()
   const path = '/subreddits/search'

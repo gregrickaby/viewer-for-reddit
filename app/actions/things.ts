@@ -7,7 +7,7 @@ import { castVote, saveThing } from '@/lib/reddit/writes'
 import type { Vote } from '@/lib/view-models'
 
 /*
- * Votes and saves (design §8.2): no re-render. The island commits its own
+ * Votes and saves: no re-render. The island commits its own
  * confirmed state, and the next navigation shows Reddit's truth.
  */
 

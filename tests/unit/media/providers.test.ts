@@ -187,7 +187,7 @@ describe('animated hosts', () => {
     )
   })
 
-  it('falls back to Reddit’s silent transcode when Redgifs gives no id', () => {
+  it("falls back to Reddit's silent transcode when Redgifs gives no id", () => {
     const post = sample('Link', (v) => v.domain === 'redgifs.com')
     Object.assign(post, {
       url: 'https://www.redgifs.com/',
@@ -221,7 +221,7 @@ describe('animated hosts', () => {
     })
   })
 
-  it('Imgur: GIFV and GIF as MP4 loops, stills via Reddit’s preview, albums embedded', () => {
+  it("Imgur: GIFV and GIF as MP4 loops, stills via Reddit's preview, albums embedded", () => {
     expect(resolveMedia(linkTo('https://i.imgur.com/zNdTy3j.gifv'))).toMatchObject({
       type: 'animated',
       loop: { mp4: 'https://i.imgur.com/zNdTy3j.mp4' },
@@ -239,7 +239,7 @@ describe('animated hosts', () => {
     expect(resolveMedia(linkTo('https://i.imgur.com/bFnEmAn.jpg')).type).toBe('link')
   })
 
-  it('Imgur stills use Reddit’s preview when there is one', () => {
+  it("Imgur stills use Reddit's preview when there is one", () => {
     const post = sample('Link', (v) => v.post_hint === 'image' && v.over_18 === false)
     Object.assign(post, {
       url: 'https://i.imgur.com/bFnEmAn.jpg',
@@ -297,7 +297,7 @@ describe('oEmbed fallback', () => {
       v.secure_media = { type: 'tiktok.com', oembed: { html, width: 720, height: 1280 } }
     })
 
-  it('reads the player URL from Reddit’s oEmbed markup', () => {
+  it("reads the player URL from Reddit's oEmbed markup", () => {
     const link = withOembed(
       '<iframe width="720" src="https://www.tiktok.com/player/v1/7684370407817760031?&amp;autoplay=0" ></iframe>',
     )
@@ -334,7 +334,7 @@ describe('oEmbed fallback', () => {
     )
   })
 
-  it('links the facade to the post on Reddit when the post’s own URL is unsafe', () => {
+  it("links the facade to the post on Reddit when the post's own URL is unsafe", () => {
     const link = withOembed(
       '<iframe src="https://www.tiktok.com/player/v1/7684370407817760031"></iframe>',
       'javascript:alert(1)',

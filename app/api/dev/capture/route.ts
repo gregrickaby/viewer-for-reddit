@@ -14,7 +14,7 @@ import {
 import { scrub, scrubMe } from '@/scripts/reddit/scrub'
 
 /*
- * Development-only fixture capture (docs/implementation.md §2.2). Visit
+ * Development-only fixture capture. Visit
  * https://localhost:3000/api/dev/capture while signed in. The token never leaves the
  * server. Writes scrubbed JSON to fixtures/reddit/raw/. Returns 404 outside `next dev`.
  */
@@ -23,7 +23,11 @@ const OUT_DIR = path.join(process.cwd(), 'fixtures', 'reddit', 'raw')
 /** Spacing between requests keeps us well inside Reddit's per-minute budget. */
 const DELAY_MS = 650
 
-type Result = { name: string; ok: boolean; error?: string }
+interface Result {
+  name: string
+  ok: boolean
+  error?: string
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null

@@ -1,13 +1,14 @@
 import 'server-only'
 
-import { resolveLinkCard } from '../resolvers/link-card'
+import { resolveLinkCard } from '@/lib/media/resolvers/link-card'
+
 import { embed } from './shared'
 import type { Provider } from './types'
 
 /*
  * Audio players have a fixed height rather than an aspect ratio. Social
  * sites are recognized only so they become plain link cards: their embeds
- * need third-party scripts, which the app never loads (design §8.7).
+ * need third-party scripts, which the app never loads.
  */
 
 const SPOTIFY_TYPES = new Set(['track', 'album', 'playlist', 'episode', 'show', 'artist'])

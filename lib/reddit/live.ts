@@ -25,7 +25,7 @@ export async function getLiveEvent(id: string): Promise<LiveEventView> {
   return mapLiveEvent(parseResponse(json, LiveEventThing, path).data)
 }
 
-export type LiveUpdatesQuery = {
+export interface LiveUpdatesQuery {
   /** Older than this update. */
   after?: string | null
   /** Newer than this update: what a poll asks for. */

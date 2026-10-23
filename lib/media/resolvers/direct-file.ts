@@ -1,10 +1,9 @@
 import 'server-only'
 
+import { imageSet, loopVideo, previewImageSet } from '@/lib/media/images'
+import { safeMediaUrl } from '@/lib/media/url'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
-
-import { imageSet, loopVideo, previewImageSet } from '../images'
-import { safeMediaUrl } from '../url'
 
 /**
  * Resolver 8: a link straight to a media file on a Reddit media host, sized

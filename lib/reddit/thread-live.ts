@@ -10,6 +10,7 @@ import { RedditNotFoundError } from './errors'
 import { parseItems, parseListing, parseResponse } from './listing'
 import { mapComment } from './mappers/comment'
 import { mapPost } from './mappers/post'
+import { isThingId } from './names'
 import { CommentOrMore, type RedditComment } from './schemas/comment'
 import { LinkThing, type RedditLink } from './schemas/link'
 import { CommentsResponse } from './schemas/responses'
@@ -18,8 +19,6 @@ import { CommentsResponse } from './schemas/responses'
  * Watching a thread for new comments. Reddit has no "since" parameter, so each poll
  * reads the newest comments (`sort=new`, replies included) and keeps the ones past a cursor.
  */
-
-const THING_ID = /^[a-z0-9]{1,12}$/
 
 /** Only threads this young are watched: game threads last hours, and older ones rarely move. */
 export const WATCH_WINDOW_SECONDS = 48 * 60 * 60
@@ -38,7 +37,10 @@ const POLL_LIMIT = 100
 const CACHE_MS = 10_000
 const CACHE_MAX = 200
 
-type Snapshot = { link: RedditLink; loaded: Flat[] }
+interface Snapshot {
+  link: RedditLink
+  loaded: Flat[]
+}
 const cache = new Map<string, { at: number; snapshot: Snapshot }>()
 
 /** Test hook. */
@@ -46,8 +48,9 @@ export function clearThreadCache(): void {
   cache.clear()
 }
 
-const readableByAnyone = (link: RedditLink) =>
-  link.subreddit_type === 'public' && link.quarantine !== true
+function readableByAnyone(link: RedditLink): boolean {
+  return link.subreddit_type === 'public' && link.quarantine !== true
+}
 
 function cached(id: string, now: number): Snapshot | null {
   const entry = cache.get(id)
@@ -78,15 +81,18 @@ function remember(id: string, snapshot: Snapshot, now: number): void {
  * Everything at or before `since` has been shown. Comments created in that same
  * second are told apart by id, because `created_utc` only has one-second resolution.
  */
-export type WatchCursor = { since: number; seen: string[] }
+export interface WatchCursor {
+  since: number
+  seen: string[]
+}
 
-export type NewComment = {
+export interface NewComment {
   comment: CommentView
   /** The author being replied to, when that comment is in the newest page. */
   replyTo: string | null
 }
 
-export type ThreadPoll = {
+export interface ThreadPoll {
   comments: NewComment[]
   cursor: WatchCursor
   post: PostView
@@ -120,7 +126,10 @@ function cursorFrom(items: Array<{ id: string; created: number }>): WatchCursor 
   return { since, seen: items.filter((item) => item.created === since).map((item) => item.id) }
 }
 
-type Flat = { comment: RedditComment; parentAuthor: string | null }
+interface Flat {
+  comment: RedditComment
+  parentAuthor: string | null
+}
 
 /** Every comment in a response, replies included. A malformed reply listing is skipped. */
 function flatten(listing: unknown, path: string, authors = new Map<string, string>()): Flat[] {
@@ -157,7 +166,7 @@ async function load(id: string, token: string): Promise<Snapshot> {
 }
 
 export async function pollThread(id: string, cursor: WatchCursor): Promise<ThreadPoll> {
-  if (!THING_ID.test(id)) throw new RedditNotFoundError()
+  if (!isThingId(id)) throw new RedditNotFoundError()
   // The session is checked even when the answer comes from the cache.
   const { accessToken, username } = await requireAuth()
 

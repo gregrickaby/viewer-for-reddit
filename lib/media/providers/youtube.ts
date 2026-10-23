@@ -1,6 +1,7 @@
 import 'server-only'
 
-import { imageSet } from '../images'
+import { imageSet } from '@/lib/media/images'
+
 import { embed, posterOf } from './shared'
 import type { Provider } from './types'
 

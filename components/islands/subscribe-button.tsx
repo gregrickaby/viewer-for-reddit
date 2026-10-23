@@ -8,17 +8,17 @@ import { Button } from '@/components/ui/button'
 import styles from './subscribe-button.module.css'
 import { useEnhancedForm } from './use-enhanced-form'
 
-export type SubscribeButtonProps = {
+export interface SubscribeButtonProps {
   /** A subreddit name, or a username for `kind: 'user'`. */
   name: string
   kind: 'community' | 'user'
   subscribed: boolean
-  /** On the manage page, leaving asks first (design §10.3). */
+  /** On the manage page, leaving asks first. */
   confirmLeave?: boolean
 }
 
 /**
- * Join/Joined, or Follow/Following (design §8.6). Flips at once; the action
+ * Join/Joined, or Follow/Following. Flips at once; the action
  * re-renders the page, so the sidebar and every other button settle too.
  */
 export function SubscribeButton({
@@ -47,38 +47,38 @@ export function SubscribeButton({
 
   return (
     <form {...formProps} className={styles.root}>
-      <input type="hidden" name="name" value={name} />
-      <input type="hidden" name="kind" value={kind} />
-      <input type="hidden" name="subscribe" value={String(!view)} />
+      <input name="name" type="hidden" value={name} />
+      <input name="kind" type="hidden" value={kind} />
+      <input name="subscribe" type="hidden" value={String(!view)} />
       {view && confirmLeave ? (
         <>
           <button
-            type="button"
             className={`${styles.button} ${styles.on}`}
             popoverTarget={confirmId}
+            type="button"
           >
             {on}
           </button>
           <div
+            aria-label={`Leave ${label}`}
+            className={styles.confirm}
             id={confirmId}
             popover="auto"
-            className={styles.confirm}
             role="dialog"
-            aria-label={`Leave ${label}`}
           >
             <p>
               {kind === 'user' ? 'Unfollow' : 'Leave'} {label}?
             </p>
             <div className={styles.confirmActions}>
               <Button
-                variant="secondary"
-                size="sm"
                 popoverTarget={confirmId}
                 popoverTargetAction="hide"
+                size="sm"
+                variant="secondary"
               >
                 Cancel
               </Button>
-              <Button type="submit" variant="danger" size="sm">
+              <Button size="sm" type="submit" variant="danger">
                 {kind === 'user' ? 'Unfollow' : 'Leave'}
               </Button>
             </div>
@@ -86,11 +86,11 @@ export function SubscribeButton({
         </>
       ) : (
         <button
-          type="submit"
-          className={`${styles.button} ${view ? styles.on : styles.off}`}
-          aria-pressed={view}
-          aria-label={`${view ? on : off} ${label}`}
           aria-busy={isPending}
+          aria-label={`${view ? on : off} ${label}`}
+          aria-pressed={view}
+          className={`${styles.button} ${view ? styles.on : styles.off}`}
+          type="submit"
         >
           {view ? on : off}
         </button>

@@ -15,19 +15,19 @@ export const metadata: Metadata = { title: 'Not found' }
 export default function NotFound() {
   return (
     <SiteShell>
-      <section className={`${site.inner} ${site.pageHero}`} aria-labelledby="not-found-title">
-        <p className={site.bigNumber} aria-hidden="true">
+      <section aria-labelledby="not-found-title" className={`${site.inner} ${site.pageHero}`}>
+        <p aria-hidden="true" className={site.bigNumber}>
           404
         </p>
-        <h1 id="not-found-title" className={site.title}>
-          This page doesn’t exist
+        <h1 className={site.title} id="not-found-title">
+          This page doesn&apos;t exist
         </h1>
         <p className={site.lede}>Check the address, or head back to the start.</p>
         <div className={site.actions}>
           <LinkButton href="/" size="lg">
             Back to Home
           </LinkButton>
-          <LinkButton href="/about" variant="secondary" size="lg">
+          <LinkButton href="/about" size="lg" variant="secondary">
             About {SITE.name}
           </LinkButton>
         </div>

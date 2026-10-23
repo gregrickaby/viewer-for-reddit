@@ -6,7 +6,7 @@ import styles from './button.module.css'
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 type Size = 'sm' | 'md' | 'lg'
 
-type CommonProps = {
+interface CommonProps {
   variant?: Variant
   size?: Size
   children: ReactNode
@@ -26,7 +26,7 @@ export function Button({
   ...rest
 }: CommonProps & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button type={type} className={classes({ variant, size, className })} {...rest}>
+    <button className={classes({ variant, size, className })} type={type} {...rest}>
       {children}
     </button>
   )

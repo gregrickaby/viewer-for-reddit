@@ -25,7 +25,7 @@ function feed(
   children: ReactNode = <li>first</li>,
 ) {
   return render(
-    <LiveFeed id="abc1234567" live viewers={4} newest={FIRST} older={null} {...props}>
+    <LiveFeed id="abc1234567" live newest={FIRST} older={null} viewers={4} {...props}>
       {children}
     </LiveFeed>,
   )
@@ -157,6 +157,17 @@ describe('LiveFeed polling', () => {
     expect(pollLive).toHaveBeenCalledTimes(5)
   })
 
+  it('treats a dropped connection like a failed poll, and keeps polling', async () => {
+    pollLive
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValue(poll('', null))
+    feed()
+    await tick(15_000)
+    expect(pollLive).toHaveBeenCalledTimes(1)
+    await tick(30_000)
+    expect(pollLive).toHaveBeenCalledTimes(2)
+  })
+
   it('does not poll a tab that is hidden, and catches up when it is shown', async () => {
     pollLive.mockResolvedValue(poll('', null))
     hidden = true
@@ -203,7 +214,7 @@ describe('LiveFeed older updates', () => {
     expect(loadOlderLive).toHaveBeenCalledWith({ id: 'abc1234567', after: SECOND })
     expect(screen.getByText('older')).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Load older updates' })).toBeNull()
-    expect(screen.getByText('That’s every update.')).toBeTruthy()
+    expect(screen.getByText("That's every update.")).toBeTruthy()
   })
 
   it('says so when a page fails, and lets the reader try again', async () => {
@@ -211,12 +222,24 @@ describe('LiveFeed older updates', () => {
     feed({ live: false, older: SECOND })
     fireEvent.click(screen.getByRole('button', { name: 'Load older updates' }))
     await act(async () => {})
-    expect(screen.getByRole('alert').textContent).toContain('Couldn’t load older updates')
+    expect(screen.getByRole('alert').textContent).toContain("Couldn't load older updates")
 
     loadOlderLive.mockResolvedValueOnce({ ok: true, data: { items: <li>older</li>, after: null } })
     fireEvent.click(screen.getByRole('button', { name: 'Load older updates' }))
     await act(async () => {})
     expect(screen.getByText('older')).toBeTruthy()
+  })
+
+  it('says so when the connection drops, and lets the reader try again', async () => {
+    loadOlderLive.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+    feed({ live: false, older: SECOND })
+    fireEvent.click(screen.getByRole('button', { name: 'Load older updates' }))
+    await act(async () => {})
+    expect(screen.getByRole('alert').textContent).toContain("Couldn't load older updates")
+    expect(screen.getByRole('button', { name: 'Load older updates' })).toHaveProperty(
+      'disabled',
+      false,
+    )
   })
 })
 
@@ -255,7 +278,7 @@ describe('LiveTime', () => {
     render(
       <>
         {Array.from({ length: count }, (_, index) => (
-          <LiveTime key={index} utc={now / 1000 - 30} now={now} />
+          <LiveTime key={index} now={now} utc={now / 1000 - 30} />
         ))}
       </>,
     )
@@ -274,7 +297,7 @@ describe('LiveTime', () => {
 
   it('keeps counting after the server rendered it', async () => {
     const now = 1_700_000_000_000
-    render(<LiveTime utc={now / 1000 - 30} now={now} />)
+    render(<LiveTime now={now} utc={now / 1000 - 30} />)
     expect(screen.getByText('now')).toBeTruthy()
     await tick(30_000)
     await tick(30_000)

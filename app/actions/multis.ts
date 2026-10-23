@@ -18,7 +18,7 @@ import { isMultiName, isSubredditName } from '@/lib/reddit/names'
 import { getSubreddit } from '@/lib/reddit/reads'
 
 /*
- * Multireddit actions (design §8.2, implementation §6). Each validates its
+ * Multireddit actions. Each validates its
  * input, lets the data layer derive the multipath from the session, and
  * re-renders. The `…Form` variants take `useActionState`'s previous state
  * first, so `ActionForm` can show errors with or without JavaScript.
@@ -116,7 +116,7 @@ async function canonicalName(subreddit: string): Promise<string> {
       404,
       undefined,
       null,
-      `r/${subreddit} doesn’t exist.`,
+      `r/${subreddit} doesn't exist.`,
     )
   }
 }

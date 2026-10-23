@@ -8,7 +8,10 @@ import type { MoreFeedRequest } from '@/lib/feed-more'
 const loadMoreFeed = vi.fn()
 vi.mock('@/app/actions/feed', () => ({ loadMoreFeed }))
 
-type Observer = { callback: IntersectionObserverCallback; disconnected: boolean }
+interface Observer {
+  callback: IntersectionObserverCallback
+  disconnected: boolean
+}
 const observers: Observer[] = []
 class FakeObserver {
   observer: Observer
@@ -51,7 +54,7 @@ const request: MoreFeedRequest = {
 }
 
 function Feed() {
-  return <InfiniteFeed request={request} base="/r/pics" defaultSort="best" />
+  return <InfiniteFeed base="/r/pics" defaultSort="best" request={request} />
 }
 
 /** Scrolls the sentinel into range on the newest live observer. */
@@ -107,7 +110,7 @@ describe('InfiniteFeed', () => {
     loadMoreFeed.mockResolvedValue({ ok: true, data: { items: <li>last</li>, after: null } })
     render(<Feed />)
     await scrollToEnd()
-    expect(screen.getByText('You’ve reached the end.')).toBeTruthy()
+    expect(screen.getByText("You've reached the end.")).toBeTruthy()
   })
 
   it('shows a loading note while a page is on its way', async () => {
@@ -122,13 +125,21 @@ describe('InfiniteFeed', () => {
     loadMoreFeed.mockResolvedValueOnce({ ok: true, data: { items: <li>back</li>, after: null } })
     render(<Feed />)
     await scrollToEnd()
-    expect(screen.getByRole('alert').textContent).toContain('Couldn’t load more.')
+    expect(screen.getByRole('alert').textContent).toContain("Couldn't load more.")
 
     await act(async () => screen.getByRole('button', { name: 'Try again' }).click())
     await scrollToEnd()
     expect(loadMoreFeed).toHaveBeenCalledTimes(2)
     expect(loadMoreFeed).toHaveBeenLastCalledWith({ ...request, after: 't3_a', count: 25 })
     expect(screen.getByText('back')).toBeTruthy()
+  })
+
+  it('offers a retry when the connection drops, instead of loading forever', async () => {
+    loadMoreFeed.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+    render(<Feed />)
+    await scrollToEnd()
+    expect(screen.queryByRole('status')).toBeNull()
+    expect(screen.getByRole('alert').textContent).toContain("Couldn't load more.")
   })
 
   it(`hands off to a real next page after ${MAX_PAGES} pages`, async () => {
@@ -159,7 +170,7 @@ describe('InfiniteFeed', () => {
     [{ type: 'subreddit', name: 'pics' }, 'OL', true],
   ] as const)('appends %o pages in a matching list', async (source, tag, posts) => {
     loadMoreFeed.mockResolvedValue({ ok: true, data: { items: <li>more</li>, after: null } })
-    render(<InfiniteFeed request={{ ...request, source }} base="/x" defaultSort="new" />)
+    render(<InfiniteFeed base="/x" defaultSort="new" request={{ ...request, source }} />)
     await scrollToEnd()
     const list = screen.getByText('more').parentElement!
     expect(list.tagName).toBe(tag)
@@ -174,10 +185,10 @@ describe('InfiniteFeed', () => {
     })
     render(
       <InfiniteFeed
-        request={{ ...request, source: { type: 'search', q: 'cats', tab: 'posts' }, sort: 'new' }}
         base="/search"
         defaultSort="new"
         extra={{ q: 'cats', tab: 'posts' }}
+        request={{ ...request, source: { type: 'search', q: 'cats', tab: 'posts' }, sort: 'new' }}
       />,
     )
     for (let index = 0; index < MAX_PAGES; index += 1) await scrollToEnd()

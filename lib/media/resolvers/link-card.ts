@@ -1,10 +1,9 @@
 import 'server-only'
 
+import { imageSet, previewImageSet } from '@/lib/media/images'
+import { safeLinkUrl } from '@/lib/media/url'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { ImageSet, PostMedia } from '@/lib/view-models'
-
-import { imageSet, previewImageSet } from '../images'
-import { safeLinkUrl } from '../url'
 
 /**
  * Resolver 12, the terminal one: an outbound link with the best thumbnail we

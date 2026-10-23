@@ -2,6 +2,8 @@ import type { Metadata, Route } from 'next'
 import Link from 'next/link'
 import { Suspense, useId, ViewTransition } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
+import multis from '@/app/(app)/multis/multis.module.css'
 import { addToMultiForm, deleteMultiForm, updateMultiForm } from '@/app/actions/multis'
 import { ActionForm } from '@/components/islands/action-form'
 import { MembershipToggle } from '@/components/islands/membership-toggle'
@@ -13,9 +15,6 @@ import { getMulti } from '@/lib/reddit/multis'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMySubscriptions } from '@/lib/reddit/reads'
 import type { MultiView, SubredditView } from '@/lib/view-models'
-
-import styles from '../../feed-page.module.css'
-import multis from '../multis.module.css'
 
 type Props = PageProps<'/multis/[multi]'>
 
@@ -38,7 +37,7 @@ async function Editor({ params }: Pick<Props, 'params'>) {
     handleReadError(error)
     return (
       <div className={multis.panel}>
-        <p>Reddit won’t let you edit this multireddit.</p>
+        <p>Reddit won&apos;t let you edit this multireddit.</p>
       </div>
     )
   }
@@ -61,30 +60,30 @@ async function Editor({ params }: Pick<Props, 'params'>) {
       </nav>
       <h1 className={styles.title}>{multi.displayName}</h1>
 
-      <section className={multis.panel} aria-labelledby="details">
-        <h2 id="details" className={multis.heading}>
+      <section aria-labelledby="details" className={multis.panel}>
+        <h2 className={multis.heading} id="details">
           Details
         </h2>
         <ActionForm action={updateMultiForm} className={multis.form} success="Saved.">
-          <input type="hidden" name="name" value={multi.name} />
+          <input name="name" type="hidden" value={multi.name} />
           <label className={multis.field}>
             <span>Name</span>
             <input
+              className={multis.input}
+              defaultValue={multi.displayName}
+              maxLength={50}
               name="displayName"
               required
-              maxLength={50}
-              defaultValue={multi.displayName}
-              className={multis.input}
             />
           </label>
           <label className={multis.field}>
             <span>Description</span>
             <textarea
-              name="description"
-              maxLength={500}
-              rows={3}
-              defaultValue={multi.descriptionMd}
               className={multis.input}
+              defaultValue={multi.descriptionMd}
+              maxLength={500}
+              name="description"
+              rows={3}
             />
           </label>
           <fieldset className={multis.choices}>
@@ -92,10 +91,10 @@ async function Editor({ params }: Pick<Props, 'params'>) {
             {(['private', 'public', 'hidden'] as const).map((value) => (
               <label key={value}>
                 <input
-                  type="radio"
-                  name="visibility"
-                  value={value}
                   defaultChecked={multi.visibility === value}
+                  name="visibility"
+                  type="radio"
+                  value={value}
                 />
                 {value === 'private'
                   ? 'Only me'
@@ -111,46 +110,46 @@ async function Editor({ params }: Pick<Props, 'params'>) {
         </ActionForm>
       </section>
 
-      <section className={multis.panel} aria-labelledby="communities">
-        <h2 id="communities" className={multis.heading}>
+      <section aria-labelledby="communities" className={multis.panel}>
+        <h2 className={multis.heading} id="communities">
           Communities ({multi.subreddits.length})
         </h2>
         <ActionForm action={addToMultiForm} className={multis.inline}>
-          <input type="hidden" name="multi" value={multi.name} />
+          <input name="multi" type="hidden" value={multi.name} />
           <label className={multis.field}>
             <span>Add a community</span>
             <input
-              name="subreddit"
-              required
-              placeholder="r/…"
-              maxLength={24}
               className={multis.input}
+              maxLength={24}
+              name="subreddit"
+              placeholder="r/…"
+              required
             />
           </label>
           <PendingButton>Add</PendingButton>
         </ActionForm>
         {multi.subreddits.length > 0 ? (
-          <ul role="list" className={multis.list}>
+          <ul className={multis.list} role="list">
             {multi.subreddits.map((subreddit) => (
               <ViewTransition
-                key={subreddit.toLowerCase()}
+                default="none"
                 enter={LIST_ENTER}
                 exit={LIST_EXIT}
-                default="none"
+                key={subreddit.toLowerCase()}
               >
                 <li className={multis.row}>
                   <Link
-                    href={`/r/${subreddit}` as Route}
                     className={multis.name}
+                    href={`/r/${subreddit}` as Route}
                     transitionTypes={['nav-forward']}
                   >
                     r/{subreddit}
                   </Link>
                   <MembershipToggle
+                    label={multi.displayName}
+                    member
                     multi={multi.name}
                     subreddit={subreddit}
-                    member
-                    label={multi.displayName}
                     variant="button"
                   />
                 </li>
@@ -165,25 +164,25 @@ async function Editor({ params }: Pick<Props, 'params'>) {
       </section>
 
       {suggestions.length > 0 ? (
-        <section className={multis.panel} aria-labelledby="suggestions">
-          <h2 id="suggestions" className={multis.heading}>
+        <section aria-labelledby="suggestions" className={multis.panel}>
+          <h2 className={multis.heading} id="suggestions">
             From your subscriptions
           </h2>
-          <ul role="list" className={multis.list}>
+          <ul className={multis.list} role="list">
             {suggestions.map((entry) => (
               <ViewTransition
-                key={entry.fullname}
+                default="none"
                 enter={LIST_ENTER}
                 exit={LIST_EXIT}
-                default="none"
+                key={entry.fullname}
               >
                 <li className={multis.row}>
                   <span className={multis.name}>r/{entry.name}</span>
                   <MembershipToggle
+                    label={multi.displayName}
+                    member={false}
                     multi={multi.name}
                     subreddit={entry.name}
-                    member={false}
-                    label={multi.displayName}
                     variant="button"
                   />
                 </li>
@@ -202,30 +201,30 @@ async function Editor({ params }: Pick<Props, 'params'>) {
 function DangerZone({ multi }: { multi: MultiView }) {
   const id = useId()
   return (
-    <section className={`${multis.panel} ${multis.danger}`} aria-labelledby="danger">
-      <h2 id="danger" className={multis.heading}>
+    <section aria-labelledby="danger" className={`${multis.panel} ${multis.danger}`}>
+      <h2 className={multis.heading} id="danger">
         Delete
       </h2>
       <p className={multis.help}>Deleting removes the multireddit, not the communities in it.</p>
       <div>
-        <Button variant="secondary" size="sm" popoverTarget={id}>
+        <Button popoverTarget={id} size="sm" variant="secondary">
           Delete {multi.displayName}…
         </Button>
       </div>
       <div
+        aria-label={`Delete ${multi.displayName}`}
+        className={multis.confirm}
         id={id}
         popover="auto"
-        className={multis.confirm}
         role="dialog"
-        aria-label={`Delete ${multi.displayName}`}
       >
-        <p>Delete {multi.displayName}? This can’t be undone.</p>
+        <p>Delete {multi.displayName}? This can&apos;t be undone.</p>
         <div className={multis.confirmActions}>
-          <Button variant="secondary" size="sm" popoverTarget={id} popoverTargetAction="hide">
+          <Button popoverTarget={id} popoverTargetAction="hide" size="sm" variant="secondary">
             Cancel
           </Button>
           <ActionForm action={deleteMultiForm}>
-            <input type="hidden" name="name" value={multi.name} />
+            <input name="name" type="hidden" value={multi.name} />
             <PendingButton variant="danger">Delete</PendingButton>
           </ActionForm>
         </div>
@@ -238,11 +237,11 @@ export default function EditMultiPage({ params }: Props) {
   return (
     <PageTransition>
       <div className={styles.page}>
-        <SectionError title="Couldn’t load this multireddit">
+        <SectionError title="Couldn't load this multireddit">
           <Suspense
             fallback={
               <SkeletonExit>
-                <span className={`skeleton ${multis.skeleton}`} aria-busy="true" />
+                <span aria-busy="true" className={`skeleton ${multis.skeleton}`} />
               </SkeletonExit>
             }
           >

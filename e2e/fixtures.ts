@@ -2,14 +2,14 @@ import { test as base, expect, type Page } from '@playwright/test'
 
 export const MOCK_URL = 'http://localhost:4010'
 
-type MockState = {
+interface MockState {
   votes: Record<string, number>
   saved: string[]
   subscribed: string[]
   writes: Array<{ path: string; form: Record<string, string> }>
 }
 
-type Fixtures = {
+interface Fixtures {
   /** A page signed in through the mock OAuth flow, starting on /home. */
   signedIn: Page
   mock: {

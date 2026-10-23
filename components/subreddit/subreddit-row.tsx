@@ -14,7 +14,7 @@ import styles from './subreddit-row.module.css'
 const LIST_CHANGE = { 'list-change': 'fade-in', default: 'none' }
 const LIST_EXIT = { 'list-change': 'fade-out', default: 'none' }
 
-type RowOptions = {
+interface RowOptions {
   confirmLeave?: boolean
   showDescription?: boolean
   /** The viewer's multis, to offer "+ Multi" on communities. */
@@ -24,7 +24,7 @@ type RowOptions = {
 /** A list of communities or people, each with its own Join/Follow button. */
 export function SubredditRows({ items, ...options }: { items: SubredditView[] } & RowOptions) {
   return (
-    <ul role="list" className={styles.list}>
+    <ul className={styles.list} role="list">
       <SubredditRowItems items={items} {...options} />
     </ul>
   )
@@ -38,25 +38,25 @@ export function SubredditRowItems({
   multis,
 }: { items: SubredditView[] } & RowOptions) {
   return items.map((item) => (
-    <ViewTransition key={item.fullname} enter={LIST_CHANGE} exit={LIST_EXIT} default="none">
+    <ViewTransition default="none" enter={LIST_CHANGE} exit={LIST_EXIT} key={item.fullname}>
       <li className={item.kind === 'user' ? `${styles.row} ${styles.person}` : styles.row}>
         {item.icon ? (
           <img
-            className={styles.icon}
-            src={item.icon}
             alt=""
-            width={40}
+            className={styles.icon}
+            decoding="async"
             height={40}
             loading="lazy"
-            decoding="async"
+            src={item.icon}
+            width={40}
           />
         ) : (
-          <span className={styles.iconFallback} aria-hidden="true">
+          <span aria-hidden="true" className={styles.iconFallback}>
             {item.kind === 'user' ? 'u/' : 'r/'}
           </span>
         )}
         <div className={styles.text}>
-          <Link href={item.href as Route} className={styles.name} transitionTypes={['nav-forward']}>
+          <Link className={styles.name} href={item.href as Route} transitionTypes={['nav-forward']}>
             {item.kind === 'user' ? 'u/' : 'r/'}
             {item.name}
           </Link>
@@ -70,19 +70,19 @@ export function SubredditRowItems({
             ) : null}
           </p>
           {showDescription && item.description ? (
-            <RedditHtml html={item.description} className={styles.description} />
+            <RedditHtml className={styles.description} html={item.description} />
           ) : null}
         </div>
         <div className={styles.actions}>
           <SubscribeButton
-            key={String(item.subscribed)}
-            name={item.name}
-            kind={item.kind}
-            subscribed={item.subscribed}
             confirmLeave={confirmLeave}
+            key={String(item.subscribed)}
+            kind={item.kind}
+            name={item.name}
+            subscribed={item.subscribed}
           />
           {multis && item.kind === 'community' ? (
-            <AddToMultiMenu subreddit={item.name} multis={multis} />
+            <AddToMultiMenu multis={multis} subreddit={item.name} />
           ) : null}
         </div>
       </li>
@@ -92,10 +92,10 @@ export function SubredditRowItems({
 
 export function SubredditRowsSkeleton() {
   return (
-    <div className={styles.list} aria-busy="true">
+    <div aria-busy="true" className={styles.list}>
       <span className="visually-hidden">Loading…</span>
       {[0, 1, 2, 3, 4].map((index) => (
-        <div key={index} className={styles.row} aria-hidden="true">
+        <div aria-hidden="true" className={styles.row} key={index}>
           <span className={`skeleton ${styles.iconFallback}`} />
           <div className={styles.text}>
             <span className={`skeleton ${styles.nameSkeleton}`} />

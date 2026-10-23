@@ -1,5 +1,5 @@
 /*
- * A small stand-in for oauth.reddit.com and www.reddit.com (implementation §8),
+ * A small stand-in for oauth.reddit.com and www.reddit.com,
  * built from the committed samples in fixtures/reddit/things. Writes are kept
  * in memory so later reads reflect them. Test controls:
  *   POST /__mock/control  {"delayMs": 1500, "failNext": 1}  slow down or fail writes
@@ -72,7 +72,7 @@ const SELF_POST = LINKS.find((link) => link.is_self === true && !link.removed_by
 
 const isoNow = () => Math.floor(Date.now() / 1000)
 
-type State = {
+interface State {
   liveBody: string
   liveComments: Json[]
   liveUpdates: Json[]

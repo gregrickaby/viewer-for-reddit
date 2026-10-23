@@ -180,7 +180,7 @@ describe('ItemList', () => {
 
   it('renders posts and comments in order', async () => {
     const out = await renderServer(
-      <ItemList items={items} now={now} blurNsfw empty={{ title: 'x', detail: 'y' }} />,
+      <ItemList blurNsfw empty={{ title: 'x', detail: 'y' }} items={items} now={now} />,
     )
     expect(out.indexOf('post-abc-title')).toBeLessThan(out.indexOf('View context'))
     expect(firstFullname(items)).toBe('t3_abc')
@@ -190,7 +190,7 @@ describe('ItemList', () => {
 
   it('has an empty state', async () => {
     const out = await renderServer(
-      <ItemList items={[]} now={now} blurNsfw empty={{ title: 'Empty', detail: 'None' }} />,
+      <ItemList blurNsfw empty={{ title: 'Empty', detail: 'None' }} items={[]} now={now} />,
     )
     expect(out).toContain('Empty')
   })
@@ -208,7 +208,7 @@ describe('Tabs', () => {
       />,
     )
     expect(out).toContain('aria-label="Kinds"')
-    expect(out).toMatch(/aria-current="page" href="\/a"|href="\/a"[^>]*aria-current="page"/)
+    expect(out).toMatch(/<a aria-current="page"[^>]*href="\/a"/)
   })
 })
 
@@ -249,6 +249,7 @@ describe('SubredditRows', () => {
   it('lists communities and people with their buttons', async () => {
     const out = await renderServer(
       <SubredditRows
+        confirmLeave
         items={[
           subredditView({ title: 'Reddit Pics' }),
           subredditView({
@@ -262,7 +263,6 @@ describe('SubredditRows', () => {
           }),
         ]}
         showDescription
-        confirmLeave
       />,
     )
     expect(out).toContain('r/<!-- -->pics')
@@ -340,7 +340,7 @@ describe('/user/[username]', () => {
       <profilePage.default params={params} searchParams={search({})} />,
     )
     expect(out).not.toContain('Cake day')
-    expect(out).toContain('Reddit won’t show this profile’s activity')
+    expect(out).toContain('Reddit won&#x27;t show this profile&#x27;s activity')
   })
 })
 
@@ -403,7 +403,7 @@ describe('/subreddits', () => {
         searchParams={search({ q: 'zzz' })}
       />,
     )
-    expect(none).toContain('No matches for “zzz”')
+    expect(none).toContain('No matches for &quot;zzz&quot;')
     state.subscriptions = []
     const empty = await renderServer(
       <subscriptionsPage.default
@@ -497,21 +497,21 @@ describe('/search', () => {
         searchParams={search({ q: 'zzz', tab: 'posts' })}
       />,
     )
-    expect(posts).toContain('No posts match “zzz”')
+    expect(posts).toContain('No posts match &quot;zzz&quot;')
     const people = await renderServer(
       <searchPage.default
         params={Promise.resolve({})}
         searchParams={search({ q: 'zzz', tab: 'people' })}
       />,
     )
-    expect(people).toContain('No people match “zzz”')
+    expect(people).toContain('No people match &quot;zzz&quot;')
   })
 
   it('says when nothing matches', async () => {
     const out = await renderServer(
       <searchPage.default params={Promise.resolve({})} searchParams={search({ q: 'zzz' })} />,
     )
-    expect(out).toContain('No communities match “zzz”')
+    expect(out).toContain('No communities match &quot;zzz&quot;')
   })
 })
 
@@ -539,7 +539,7 @@ describe('failed reads', () => {
 
   it.each(sections)('$name shows why Reddit refused', async ({ read, render }) => {
     read.mockRejectedValueOnce(new errors.RedditForbiddenError('unknown'))
-    expect(await render()).toContain('Reddit won’t show this')
+    expect(await render()).toContain('Reddit won&#x27;t show this')
   })
 
   it.each(sections)('$name signs out when the session is gone', async ({ read, render }) => {

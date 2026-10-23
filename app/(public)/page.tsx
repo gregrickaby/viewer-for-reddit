@@ -22,9 +22,9 @@ export const metadata: Metadata = {
 }
 
 const ERROR_MESSAGES = {
-  denied: 'Sign-in was cancelled on Reddit. You can try again whenever you’re ready.',
+  denied: "Sign-in was cancelled on Reddit. You can try again whenever you're ready.",
   state: 'That sign-in attempt expired or was already used. Please try again.',
-  exchange: 'Reddit didn’t finish signing you in. Please try again in a moment.',
+  exchange: "Reddit didn't finish signing you in. Please try again in a moment.",
   session_expired: 'Your session ended. Sign in again to pick up where you left off.',
 } as const
 
@@ -37,9 +37,9 @@ function isErrorCode(value: unknown): value is ErrorCode {
 /** Plain GET form so sign-in works before hydration or without JavaScript. */
 function SignInForm({ next }: { next?: string }) {
   return (
-    <form action="/api/auth/login" method="get" className={styles.form}>
-      {next ? <input type="hidden" name="next" value={next} /> : null}
-      <Button type="submit" size="lg" className={styles.cta}>
+    <form action="/api/auth/login" className={styles.form} method="get">
+      {next ? <input name="next" type="hidden" value={next} /> : null}
+      <Button className={styles.cta} size="lg" type="submit">
         Sign in with Reddit
       </Button>
     </form>
@@ -67,10 +67,10 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
   return (
     <SiteShell>
       <JsonLd data={structuredData(env.BASE_URL)} />
-      <section className={`${site.inner} ${styles.hero}`} aria-labelledby="landing-title">
+      <section aria-labelledby="landing-title" className={`${site.inner} ${styles.hero}`}>
         <div className={styles.heroText}>
           <p className={site.eyebrow}>Free and open source</p>
-          <h1 id="landing-title" className={site.title}>
+          <h1 className={site.title} id="landing-title">
             Reddit without the ads.
           </h1>
           <p className={site.lede}>
@@ -88,9 +88,9 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
             <li>Open source</li>
           </ul>
           <p className={site.note}>
-            We never see your password. You’ll approve access on reddit.com, and you can revoke it
-            anytime from your{' '}
-            <a href="https://www.reddit.com/prefs/apps" target="_blank" rel="noopener noreferrer">
+            We never see your password. You&apos;ll approve access on reddit.com, and you can revoke
+            it anytime from your{' '}
+            <a href="https://www.reddit.com/prefs/apps" rel="noopener noreferrer" target="_blank">
               Reddit app settings
             </a>
             .
@@ -101,13 +101,13 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
         </div>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="why-title">
-        <h2 id="why-title" className={site.sectionTitle}>
+      <section aria-labelledby="why-title" className={`${site.inner} ${site.section}`}>
+        <h2 className={site.sectionTitle} id="why-title">
           Why use {SITE.name}
         </h2>
         <ul className={site.cards} role="list">
           {FEATURES.map((feature) => (
-            <li key={feature.title} className={site.card}>
+            <li className={site.card} key={feature.title}>
               <span className={site.icon}>
                 <FeatureIcon name={feature.icon} />
               </span>
@@ -119,16 +119,16 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
       </section>
 
       <section
-        id="how-it-works"
-        className={`${site.inner} ${site.section}`}
         aria-labelledby="how-title"
+        className={`${site.inner} ${site.section}`}
+        id="how-it-works"
       >
-        <h2 id="how-title" className={site.sectionTitle}>
+        <h2 className={site.sectionTitle} id="how-title">
           How it works
         </h2>
         <ol className={styles.steps} role="list">
           {STEPS.map((step) => (
-            <li key={step.title} className={styles.step}>
+            <li className={styles.step} key={step.title}>
               <h3 className={site.cardTitle}>{step.title}</h3>
               <p className={site.cardText}>{step.text}</p>
             </li>
@@ -136,13 +136,13 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
         </ol>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="faq-title">
-        <h2 id="faq-title" className={site.sectionTitle}>
+      <section aria-labelledby="faq-title" className={`${site.inner} ${site.section}`}>
+        <h2 className={site.sectionTitle} id="faq-title">
           Frequently asked questions
         </h2>
         <div className={site.faq}>
           {FAQ.map((item) => (
-            <details key={item.question} className={site.faqItem}>
+            <details className={site.faqItem} key={item.question}>
               <summary className={site.faqQuestion}>{item.question}</summary>
               <p className={site.faqAnswer}>
                 <FaqAnswer parts={item.answer} />
@@ -152,16 +152,16 @@ export default function LandingPage({ searchParams }: PageProps<'/'>) {
         </div>
       </section>
 
-      <section className={`${site.inner} ${site.section}`} aria-labelledby="closing-title">
+      <section aria-labelledby="closing-title" className={`${site.inner} ${site.section}`}>
         <div className={site.closing}>
-          <h2 id="closing-title" className={site.sectionTitle}>
+          <h2 className={site.sectionTitle} id="closing-title">
             Ready to read Reddit without ads?
           </h2>
           <p className={site.lede}>Sign in with your Reddit account to start.</p>
           <SignInForm />
           <p className={site.note}>
             Read <Link href="/about">how it works</Link>, or{' '}
-            <a href={SITE.links.github} target="_blank" rel="noopener noreferrer">
+            <a href={SITE.links.github} rel="noopener noreferrer" target="_blank">
               view the code on GitHub
             </a>
             .

@@ -13,19 +13,19 @@ const COPY: Record<ForbiddenReason, { title: string; detail: string }> = {
   },
   banned: {
     title: 'This community was banned',
-    detail: 'Reddit has banned it, so there’s nothing to show.',
+    detail: "Reddit has banned it, so there's nothing to show.",
   },
   gold_only: {
     title: 'This community is for Reddit Premium members',
     detail: 'Reddit only shows it to Premium accounts.',
   },
   unknown: {
-    title: 'Reddit won’t show this',
+    title: "Reddit won't show this",
     detail: 'Reddit refused access to this page.',
   },
 }
 
-/** An inline page state for a 403 from Reddit (design §12). */
+/** An inline page state for a 403 from Reddit. */
 export function ForbiddenPanel({ reason }: { reason: ForbiddenReason }) {
   const { title, detail } = COPY[reason]
   return (

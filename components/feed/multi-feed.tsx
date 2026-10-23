@@ -11,7 +11,7 @@ import styles from './multi-feed.module.css'
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>
 
-type MultiFeedProps = {
+interface MultiFeedProps {
   multi: Promise<string>
   /** `null` for `/m/[multi]`: the viewer's own multi. */
   owner: Promise<string> | null
@@ -30,11 +30,11 @@ async function MultiFeed({ multi, owner, searchParams }: MultiFeedProps) {
         {owner ? <p className={styles.owner}>by u/{ownerName}</p> : null}
       </div>
       <FeedSection
-        source={{ type: 'multi', owner: ownerName, name }}
         base={base}
-        sorts={LISTING_SORTS}
         searchParams={searchParams}
         showSubreddit
+        sorts={LISTING_SORTS}
+        source={{ type: 'multi', owner: ownerName, name }}
       />
     </>
   )
@@ -46,12 +46,12 @@ export function MultiFeedPage(props: MultiFeedProps) {
     <PageTransition>
       <div className={styles.page}>
         <BackLink href="/home">Home</BackLink>
-        <SectionError title="Couldn’t load this multireddit">
+        <SectionError title="Couldn't load this multireddit">
           <Suspense
             fallback={
               <SkeletonExit>
                 <div className={styles.page}>
-                  <span className={`skeleton ${styles.titleSkeleton}`} aria-hidden="true" />
+                  <span aria-hidden="true" className={`skeleton ${styles.titleSkeleton}`} />
                   <FeedSkeleton />
                 </div>
               </SkeletonExit>

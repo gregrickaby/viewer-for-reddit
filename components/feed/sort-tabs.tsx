@@ -33,8 +33,9 @@ const RANGE_LABELS: Record<TimeRange, string> = {
 }
 
 /**
- * Sort tabs are links (design §4.1 rule 3). Each carries a `LinkPendingHint`,
- * so the list dims while the next sort loads instead of flashing a skeleton.
+ * Sort tabs are links, so every sort has a URL. Each carries a
+ * `LinkPendingHint`, so the list dims while the next sort loads instead of
+ * flashing a skeleton.
  */
 export function SortTabs({
   base,
@@ -56,10 +57,10 @@ export function SortTabs({
       <nav aria-label="Sort posts" className={styles.tabs}>
         {sorts.map((sort) => (
           <Link
-            key={sort}
-            href={sortHref(base, sort, query.t, defaultSort, extra) as Route}
-            className={styles.tab}
             aria-current={sort === query.sort ? 'page' : undefined}
+            className={styles.tab}
+            href={sortHref(base, sort, query.t, defaultSort, extra) as Route}
+            key={sort}
           >
             {SORT_LABELS[sort]}
             <LinkPendingHint />
@@ -68,19 +69,19 @@ export function SortTabs({
       </nav>
       {usesTimeRange(query.sort) ? (
         <>
-          <button type="button" className={styles.rangeButton} popoverTarget={menuId}>
+          <button className={styles.rangeButton} popoverTarget={menuId} type="button">
             {RANGE_LABELS[query.t]}
             <span aria-hidden="true">▾</span>
           </button>
           {/* Keyed by the range: choosing one remounts the menu, so it closes after navigating. */}
-          <div key={query.t} id={menuId} popover="auto" className={styles.menu}>
+          <div className={styles.menu} id={menuId} key={query.t} popover="auto">
             <ul role="list">
               {TIME_RANGES.map((range) => (
                 <li key={range}>
                   <Link
-                    href={sortHref(base, query.sort, range, defaultSort, extra) as Route}
-                    className={styles.menuItem}
                     aria-current={range === query.t ? 'page' : undefined}
+                    className={styles.menuItem}
+                    href={sortHref(base, query.sort, range, defaultSort, extra) as Route}
                   >
                     {RANGE_LABELS[range]}
                     <LinkPendingHint />
@@ -97,7 +98,7 @@ export function SortTabs({
 
 export function SortTabsSkeleton() {
   return (
-    <div className={styles.toolbar} aria-hidden="true">
+    <div aria-hidden="true" className={styles.toolbar}>
       <span className={`skeleton ${styles.tabsSkeleton}`} />
     </div>
   )

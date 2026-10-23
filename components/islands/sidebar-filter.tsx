@@ -8,11 +8,11 @@ import { useState, ViewTransition, type FormEvent } from 'react'
 import { SidebarIcon } from '@/components/shell/sidebar-icon'
 import styles from '@/components/shell/sidebar.module.css'
 
-/** Rows fade in and out when a subscription changes (design §8.5, list-change). */
+/** Rows fade in and out when a subscription changes (list-change). */
 const LIST_ENTER = { 'list-change': 'fade-in', default: 'none' }
 const LIST_EXIT = { 'list-change': 'fade-out', default: 'none' }
 
-export type SidebarItem = {
+export interface SidebarItem {
   key: string
   /** What the filter matches against. */
   name: string
@@ -25,7 +25,7 @@ export type SidebarItem = {
 /** A list this short is quicker to scan than to filter. */
 const FILTER_OVER = 10
 
-type Props = {
+interface Props {
   items: SidebarItem[]
   /** How many rows show before the filter is used. */
   limit: number
@@ -40,7 +40,7 @@ type Props = {
 }
 
 /**
- * A sidebar list (design §10.1). The server renders the first `limit`; typing
+ * A sidebar list. The server renders the first `limit`; typing
  * filters all of them in place, and Enter opens the first match. Without
  * JavaScript the form submits to the manage page.
  */
@@ -67,34 +67,34 @@ export function SidebarFilter({
   return (
     <>
       {items.length > FILTER_OVER ? (
-        <form action={manageHref} method="get" role="search" onSubmit={open}>
+        <form action={manageHref} method="get" onSubmit={open} role="search">
           {Object.entries(manageFields).map(([name, value]) => (
-            <input key={name} type="hidden" name={name} value={value} />
+            <input key={name} name={name} type="hidden" value={value} />
           ))}
-          <label htmlFor={`sidebar-filter-${noun}`} className="visually-hidden">
+          <label className="visually-hidden" htmlFor={`sidebar-filter-${noun}`}>
             Filter your {noun}
           </label>
           <input
+            autoComplete="off"
+            className={styles.filter}
+            enterKeyHint="go"
             id={`sidebar-filter-${noun}`}
             name="q"
-            type="search"
-            value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={`Filter ${noun}…`}
-            className={styles.filter}
-            autoComplete="off"
-            enterKeyHint="go"
+            type="search"
+            value={query}
           />
         </form>
       ) : null}
       {matches.length > 0 ? (
-        <ul role="list" className={styles.list}>
+        <ul className={styles.list} role="list">
           {matches.map((item) => (
-            <ViewTransition key={item.key} enter={LIST_ENTER} exit={LIST_EXIT} default="none">
+            <ViewTransition default="none" enter={LIST_ENTER} exit={LIST_EXIT} key={item.key}>
               {' '}
               <li>
-                <Link href={item.href as Route} className={styles.link}>
-                  <SidebarIcon src={item.icon} fallback={fallback} />
+                <Link className={styles.link} href={item.href as Route}>
+                  <SidebarIcon fallback={fallback} src={item.icon} />
                   <span className={styles.label}>{item.label}</span>
                 </Link>
               </li>{' '}
@@ -103,13 +103,13 @@ export function SidebarFilter({
         </ul>
       ) : (
         <p className={styles.empty} role="status">
-          No {noun} match “{query.trim()}”.
+          No {noun} match &quot;{query.trim()}&quot;.
         </p>
       )}
       {!needle && items.length > limit ? (
         <Link
-          href={`${manageHref}${manageFields.tab ? `?tab=${manageFields.tab}` : ''}` as Route}
           className={styles.more}
+          href={`${manageHref}${manageFields.tab ? `?tab=${manageFields.tab}` : ''}` as Route}
         >
           All {items.length} {noun} →
         </Link>

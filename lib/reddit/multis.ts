@@ -12,14 +12,14 @@ import { MultiThing } from './schemas/multi'
 import { EmptyResponse } from './schemas/responses'
 
 /*
- * Multireddit management (design §6.1). The multipath always comes from the
+ * Multireddit management. The multipath always comes from the
  * session (`user/<me>/m/<name>`), never from the client.
  */
 
 export type MultiVisibility = MultiView['visibility']
 
 /** What the edit form controls. Subreddits are managed one at a time. */
-export type MultiDetails = {
+export interface MultiDetails {
   displayName: string
   description: string
   visibility: MultiVisibility

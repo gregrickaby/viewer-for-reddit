@@ -2,14 +2,17 @@ import 'server-only'
 
 /*
  * Reddit allows ~100 requests/minute per OAuth client, shared by every user of
- * this app (docs/design.md §6, R2). We track the budget Reddit reports on each
+ * this app. We track the budget Reddit reports on each
  * response and fail fast instead of burning requests into a 429.
  */
 
 /** Stop issuing requests when fewer than this many remain in the window. */
 export const MIN_REMAINING = 5
 
-type Budget = { remaining: number; resetAt: number }
+interface Budget {
+  remaining: number
+  resetAt: number
+}
 
 let budget: Budget | null = null
 

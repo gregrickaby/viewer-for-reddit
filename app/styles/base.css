@@ -38,7 +38,7 @@
     font-family: var(--font-mono);
   }
 
-  /* ── View transitions (docs/design.md §8.5) ─────────────────────────── */
+  /* ── View transitions ─────────────────────────── */
 
   ::view-transition {
     pointer-events: none;

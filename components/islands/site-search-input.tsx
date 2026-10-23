@@ -4,7 +4,9 @@ import { usePathname, useSearchParams } from 'next/navigation'
 
 import { parseText, pick, SEARCH_TABS } from '@/lib/url-state'
 
-type Props = { className?: string }
+interface Props {
+  className?: string
+}
 
 /**
  * The header's search field. On the results page it shows the query and keeps
@@ -19,18 +21,18 @@ export function SiteSearchInput({ className }: Props) {
 
   return (
     <>
-      {tab === 'communities' ? null : <input type="hidden" name="tab" value={tab} />}
+      {tab === 'communities' ? null : <input name="tab" type="hidden" value={tab} />}
       <input
         // A new search from elsewhere replaces what was typed.
-        key={q}
-        id="site-search"
-        name="q"
-        type="search"
-        defaultValue={q}
-        placeholder="Search Reddit…"
-        className={className}
         autoComplete="off"
+        className={className}
+        defaultValue={q}
         enterKeyHint="search"
+        id="site-search"
+        key={q}
+        name="q"
+        placeholder="Search Reddit…"
+        type="search"
       />
     </>
   )
@@ -40,13 +42,13 @@ export function SiteSearchInput({ className }: Props) {
 export function SiteSearchFallback({ className }: Props) {
   return (
     <input
+      autoComplete="off"
+      className={className}
+      enterKeyHint="search"
       id="site-search"
       name="q"
-      type="search"
       placeholder="Search Reddit…"
-      className={className}
-      autoComplete="off"
-      enterKeyHint="search"
+      type="search"
     />
   )
 }

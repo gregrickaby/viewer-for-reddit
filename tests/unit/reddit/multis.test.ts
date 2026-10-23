@@ -33,7 +33,7 @@ describe('multiSlug', () => {
 })
 
 describe('reads and writes', () => {
-  it('reads one of the viewer’s multis', async () => {
+  it("reads one of the viewer's multis", async () => {
     redditFetch.mockResolvedValue(thing)
     const view = await getMulti('five')
     expect(redditFetch).toHaveBeenCalledWith(`${base}/five`, {

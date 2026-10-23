@@ -1,3 +1,7 @@
+// New comments are rendered by `pollThreadLive` after the page loads, so their card styles
+// have to ship with the page instead.
+import '@/components/feed/comment-card.module.css'
+
 import type { Route } from 'next'
 import Link from 'next/link'
 
@@ -17,10 +21,6 @@ import { COMMENT_SORTS, parseThreadQuery, threadSortHref, type CommentSort } fro
 import type { ThreadView } from '@/lib/view-models'
 
 import { CommentTree, CommentTreeSkeleton } from './comment-tree'
-// New comments are rendered by `pollThreadLive` after the page loads, so their card styles
-// have to ship with the page instead.
-import '@/components/feed/comment-card.module.css'
-
 import styles from './thread.module.css'
 
 const SORT_LABELS: Record<CommentSort, string> = {
@@ -32,13 +32,13 @@ const SORT_LABELS: Record<CommentSort, string> = {
   qa: 'Q&A',
 }
 
-export type ThreadSectionProps = {
+export interface ThreadSectionProps {
   params: Promise<{ subreddit: string; id: string; rest?: string[] }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
 /**
- * The post and its comments (implementation §4.2). One Reddit call feeds
+ * The post and its comments. One Reddit call feeds
  * both, so they share one Suspense boundary.
  */
 export async function ThreadSection({ params, searchParams }: ThreadSectionProps) {
@@ -68,45 +68,45 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
     <>
       <nav aria-label="Breadcrumb">
         <Link
-          href={`/r/${post.subreddit}` as Route}
           className={styles.breadcrumb}
+          href={`/r/${post.subreddit}` as Route}
           transitionTypes={['nav-back']}
         >
           ← r/{post.subreddit}
         </Link>
       </nav>
 
-      <PostCard post={post} showSubreddit={false} blurNsfw={blurNsfw} now={now} variant="detail" />
+      <PostCard blurNsfw={blurNsfw} now={now} post={post} showSubreddit={false} variant="detail" />
 
       {readOnly ? (
         <p className={styles.banner} role="status">
           {post.flags.archived
-            ? 'This thread is archived. New comments and votes can’t be posted.'
-            : 'Comments are locked. New comments can’t be posted.'}
+            ? "This thread is archived. New comments and votes can't be posted."
+            : "Comments are locked. New comments can't be posted."}
         </p>
       ) : null}
 
       {focusCommentId ? (
         <p className={styles.banner} role="status">
-          You’re viewing a single comment thread.{' '}
+          You&apos;re viewing a single comment thread.{' '}
           <Link href={post.permalink as Route} transitionTypes={['nav-back']}>
             View all comments →
           </Link>
         </p>
       ) : null}
 
-      <section id="comments" className={styles.comments} aria-labelledby="comments-heading">
+      <section aria-labelledby="comments-heading" className={styles.comments} id="comments">
         <div className={styles.toolbar}>
-          <h2 id="comments-heading" className={styles.heading}>
+          <h2 className={styles.heading} id="comments-heading">
             <LiveCount initial={post.numComments} noun="comment" />
           </h2>
           <nav aria-label="Sort comments" className={styles.tabs}>
             {COMMENT_SORTS.map((sort) => (
               <Link
-                key={sort}
-                href={threadSortHref(threadBase, sort, defaultSort) as Route}
-                className={styles.tab}
                 aria-current={sort === current ? 'page' : undefined}
+                className={styles.tab}
+                href={threadSortHref(threadBase, sort, defaultSort) as Route}
+                key={sort}
                 scroll={false}
               >
                 {SORT_LABELS[sort]}
@@ -117,16 +117,15 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
         </div>
 
         {readOnly || !me ? null : (
-          <CommentComposer mode="reply" parent={post.fullname} me={me} label="Comment" />
+          <CommentComposer label="Comment" me={me} mode="reply" parent={post.fullname} />
         )}
 
         {watching ? <LiveComments /> : null}
 
-        <ContentReveal name="comment-tree" contentKey={current}>
+        <ContentReveal contentKey={current} name="comment-tree">
           <div className={styles.tree}>
             {comments.length > 0 ? (
               <CommentTree
-                nodes={comments}
                 ctx={{
                   postPath: post.permalink,
                   threadBase,
@@ -136,6 +135,7 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
                   readOnly,
                   focusCommentId,
                 }}
+                nodes={comments}
               />
             ) : (
               <p className={styles.empty}>No comments yet. Start the conversation.</p>
@@ -147,7 +147,7 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
   )
 
   return watching ? (
-    <LiveThread id={post.id} cursor={cursorFromTree(comments)} bodyHash={bodyHashOf(post.body)}>
+    <LiveThread bodyHash={bodyHashOf(post.body)} cursor={cursorFromTree(comments)} id={post.id}>
       {content}
     </LiveThread>
   ) : (
@@ -158,7 +158,7 @@ export async function ThreadSection({ params, searchParams }: ThreadSectionProps
 export function ThreadSkeleton() {
   return (
     <div className={styles.skeleton}>
-      <span className={`skeleton ${styles.breadcrumbSkeleton}`} aria-hidden="true" />
+      <span aria-hidden="true" className={`skeleton ${styles.breadcrumbSkeleton}`} />
       <PostCardSkeleton />
       <CommentTreeSkeleton />
     </div>

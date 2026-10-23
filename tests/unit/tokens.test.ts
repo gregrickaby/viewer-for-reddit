@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 /*
  * WCAG AA contrast for every semantic color pair, in both themes
- * (docs/design.md §10.4, docs/implementation.md §3.1).
+ *.
  */
 
 const css = readFileSync(

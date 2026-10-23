@@ -19,22 +19,22 @@ export function ComposerForm(props: CommentComposerProps) {
   if (props.mode === 'edit') {
     return (
       <form action={formAction(editComment)} className={styles.form}>
-        <input type="hidden" name="thing" value={props.thing} />
+        <input name="thing" type="hidden" value={props.thing} />
         <label className="visually-hidden" htmlFor={`edit-${props.thing}`}>
           Edit comment
         </label>
         <textarea
-          id={`edit-${props.thing}`}
-          name="text"
           className={styles.text}
           defaultValue={props.initial}
+          id={`edit-${props.thing}`}
           maxLength={COMMENT_MAX_CHARS}
+          name="text"
           required
           rows={4}
         />
         <div className={styles.bar}>
           <span className={styles.hint}>{EDIT_HINT}</span>
-          <Button type="submit" size="sm">
+          <Button size="sm" type="submit">
             Save edit
           </Button>
         </div>
@@ -45,22 +45,22 @@ export function ComposerForm(props: CommentComposerProps) {
   return (
     <div className={styles.root}>
       <form action={formAction(postComment)} className={styles.form}>
-        <input type="hidden" name="parent" value={props.parent} />
+        <input name="parent" type="hidden" value={props.parent} />
         <label className="visually-hidden" htmlFor={`text-${props.parent}`}>
           {props.label}
         </label>
         <textarea
-          id={`text-${props.parent}`}
-          name="text"
           className={styles.text}
-          placeholder={placeholderFor(props.parent)}
+          id={`text-${props.parent}`}
           maxLength={COMMENT_MAX_CHARS}
+          name="text"
+          placeholder={placeholderFor(props.parent)}
           required
           rows={3}
         />
         <div className={styles.bar}>
           <span className={styles.hint}>{REPLY_HINT}</span>
-          <Button type="submit" size="sm">
+          <Button size="sm" type="submit">
             {props.label}
           </Button>
         </div>

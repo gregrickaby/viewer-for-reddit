@@ -1,7 +1,7 @@
 import 'server-only'
 
 /*
- * Maps Reddit URLs onto this app's routes (docs/design.md §9). Anything we don't
+ * Maps Reddit URLs onto this app's routes. Anything we don't
  * render ourselves stays an absolute reddit.com link.
  */
 
@@ -29,7 +29,10 @@ const INTERNAL_ROUTES: Array<[pattern: RegExp, toPath: (m: RegExpExecArray) => s
   [/^\/live\/([a-z0-9]{10,16})\/?$/i, (m) => `/live/${m[1]!.toLowerCase()}`],
 ]
 
-export type ResolvedLink = { href: string; internal: boolean }
+export interface ResolvedLink {
+  href: string
+  internal: boolean
+}
 
 /**
  * Resolve an href from Reddit content. Relative links (`/r/foo`) are relative to reddit.com.

@@ -16,17 +16,17 @@ export function SiteShell({ children }: { children: ReactNode }) {
   return (
     <div className={styles.page}>
       <header className={`${styles.inner} ${styles.header}`}>
-        <Link href="/" className={styles.brand} aria-label={`${SITE.name} home`}>
+        <Link aria-label={`${SITE.name} home`} className={styles.brand} href="/">
           <Logo size={32} withWordmark />
         </Link>
         <nav aria-label="Site" className={styles.nav}>
           <Link href="/about">About</Link>
           <Link href="/donate">Donate</Link>
           <a
-            href={SITE.links.github}
             className={styles.navExtra}
-            target="_blank"
+            href={SITE.links.github}
             rel="noopener noreferrer"
+            target="_blank"
           >
             GitHub <span aria-hidden="true">↗</span>
           </a>

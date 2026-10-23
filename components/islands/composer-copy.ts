@@ -1,5 +1,6 @@
 /* Copy shared by the composer island and its server-rendered form (`ComposerForm`). */
 
+/** Reddit's limit for comment bodies. */
 export const COMMENT_MAX_CHARS = 10_000
 
 export const REPLY_HINT = 'Markdown supported · ⌘/Ctrl+Enter to send'

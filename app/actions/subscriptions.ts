@@ -8,7 +8,7 @@ import { isSubredditName, isUsername } from '@/lib/reddit/names'
 import { setSubscription as setRedditSubscription } from '@/lib/reddit/writes'
 
 /**
- * Join or leave a community, or follow or unfollow a person (design §8.2).
+ * Join or leave a community, or follow or unfollow a person.
  * Re-renders, so the sidebar and every button settle on Reddit's state.
  */
 export async function setSubscription(

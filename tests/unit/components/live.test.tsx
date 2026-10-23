@@ -35,7 +35,11 @@ const getLiveEvent = vi.fn(async () => {
   if (state.error) throw state.error
   return state.event!
 })
-type Page = { items: LiveUpdateView[]; after: string | null; before: null }
+interface Page {
+  items: LiveUpdateView[]
+  after: string | null
+  before: null
+}
 const getLiveUpdates = vi.fn<(id: string, query: unknown) => Promise<Page>>(async () => ({
   items: [
     update('LiveUpdate_a'),

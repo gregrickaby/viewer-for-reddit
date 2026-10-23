@@ -34,7 +34,7 @@ describe('sanitizeRedditHtml: XSS', () => {
 })
 
 describe('sanitizeRedditHtml: Reddit markdown output', () => {
-  it('unwraps Reddit’s md wrapper and drops SC_OFF comments', () => {
+  it("unwraps Reddit's md wrapper and drops SC_OFF comments", () => {
     const html =
       '<!-- SC_OFF --><div class="md"><p>Hello <strong>world</strong></p></div><!-- SC_ON -->'
     expect(sanitizeRedditHtml(html)).toBe('<p>Hello <strong>world</strong></p>')

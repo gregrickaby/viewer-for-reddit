@@ -43,7 +43,7 @@ test.describe('feeds', () => {
 
     // The next page is appended without a navigation, and the pager links are hidden.
     await expect(page.getByRole('link', { name: 'Next →' })).toBeHidden()
-    const end = page.getByText('You’ve reached the end.')
+    const end = page.getByText("You've reached the end.")
     await expect(async () => {
       await page.mouse.wheel(0, 4000)
       await expect(end).toBeVisible({ timeout: 500 })
@@ -69,7 +69,7 @@ test.describe('feeds', () => {
     expect(first).toHaveLength(25)
 
     await expect(page.getByRole('link', { name: 'Next →' })).toBeHidden()
-    const end = page.getByText('You’ve reached the end.')
+    const end = page.getByText("You've reached the end.")
     await expect(async () => {
       await page.mouse.wheel(0, 4000)
       await expect(end).toBeVisible({ timeout: 500 })

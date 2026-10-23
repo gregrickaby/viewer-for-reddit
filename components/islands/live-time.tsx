@@ -46,7 +46,9 @@ function subscribe(listener: () => void) {
   }
 }
 
-const getTicks = () => ticks
+function getTicks() {
+  return ticks
+}
 
 /** A relative time that keeps counting after the server rendered it. `now` is the render time. */
 export function LiveTime({ utc, now }: { utc: number; now: number }) {

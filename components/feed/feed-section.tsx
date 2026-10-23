@@ -14,7 +14,7 @@ import { Pagination } from './pagination'
 import { PostCardSkeleton } from './post-card'
 import { SortTabs, SortTabsSkeleton } from './sort-tabs'
 
-export type FeedSectionProps = {
+export interface FeedSectionProps {
   source: FeedSource
   /** The route the tabs and cursors link to, such as `/r/pics`. */
   base: string
@@ -25,7 +25,7 @@ export type FeedSectionProps = {
 }
 
 /**
- * One page of a feed with its sort tabs and cursors (implementation §3.5); the
+ * One page of a feed with its sort tabs and cursors; the
  * island after it appends later pages as the reader scrolls.
  * Reads request data, so it always renders inside a Suspense boundary.
  */
@@ -47,17 +47,17 @@ export async function FeedSection({
   const [{ blurNsfw }, now] = await Promise.all([getSettings(), requestTime()])
 
   return (
-    <section className={styles.feed} aria-label="Posts">
-      <SortTabs base={base} sorts={sorts} query={query} />
-      <ContentReveal name="feed-content" contentKey={feedKey(query)}>
+    <section aria-label="Posts" className={styles.feed}>
+      <SortTabs base={base} query={query} sorts={sorts} />
+      <ContentReveal contentKey={feedKey(query)} name="feed-content">
         <div className={styles.list}>
           {page.items.length > 0 ? (
-            <ol role="list" className={`${styles.items} ${styles.posts}`}>
+            <ol className={`${styles.items} ${styles.posts}`} role="list">
               <FeedItems
-                posts={page.items}
-                showSubreddit={showSubreddit}
                 blurNsfw={blurNsfw}
                 now={now}
+                posts={page.items}
+                showSubreddit={showSubreddit}
               />
             </ol>
           ) : (
@@ -72,9 +72,9 @@ export async function FeedSection({
         <InfiniteFeed
           // Appended pages are rendered once and held in client state, so a
           // changed blur setting has to restart them.
-          key={`${feedKey(query)}:${blurNsfw}`}
           base={base}
           defaultSort={sorts[0]!}
+          key={`${feedKey(query)}:${blurNsfw}`}
           request={{
             source,
             sort: query.sort,
@@ -86,12 +86,12 @@ export async function FeedSection({
         />
       ) : null}
       <Pagination
-        infinite
-        base={base}
-        query={query}
         after={page.after}
-        firstFullname={page.items[0]?.fullname}
+        base={base}
         defaultSort={sorts[0]!}
+        firstFullname={page.items[0]?.fullname}
+        infinite
+        query={query}
       />
     </section>
   )
@@ -99,12 +99,12 @@ export async function FeedSection({
 
 export function FeedSkeleton() {
   return (
-    <div className={styles.feed} aria-busy="true">
+    <div aria-busy="true" className={styles.feed}>
       <span className="visually-hidden">Loading posts…</span>
       <SortTabsSkeleton />
-      <ol role="list" className={styles.items} aria-hidden="true">
+      <ol aria-hidden="true" className={styles.items} role="list">
         {[0, 1, 2].map((index) => (
-          <li key={index} className={styles.item}>
+          <li className={styles.item} key={index}>
             <PostCardSkeleton />
           </li>
         ))}

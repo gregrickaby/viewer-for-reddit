@@ -10,7 +10,7 @@ import {
 import { safeNext } from '@/lib/auth/next-param'
 import { buildAuthorizeUrl } from '@/lib/auth/oauth'
 
-/** Starts the Reddit OAuth flow (docs/design.md §5.3). */
+/** Starts the Reddit OAuth flow. */
 export async function GET(request: NextRequest) {
   const state = randomBytes(32).toString('base64url')
   const next = safeNext(request.nextUrl.searchParams.get('next'))

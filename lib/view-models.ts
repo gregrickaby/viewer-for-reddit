@@ -1,22 +1,26 @@
 /*
- * Plain, serializable types that Server Components render (docs/design.md §7).
- * The UI never sees raw Reddit objects. This module holds types only, so client
- * islands may import from it.
+ * Plain, serializable types that Server Components render. The UI never sees
+ * raw Reddit objects. This module holds types only, so client islands may
+ * import from it.
  */
+
+import type { CommentSort } from '@/lib/url-state'
 
 /**
  * Sanitized HTML. Only `lib/reddit/sanitize.ts` can produce one; it is rendered
  * only by `components/reddit-html.tsx`.
  */
-import type { CommentSort } from '@/lib/url-state'
-
 export type SafeHtml = string & { readonly __brand: 'SafeHtml' }
 
 /** Reddit's `likes`: true → 1, false → -1, null → 0. */
 export type Vote = -1 | 0 | 1
 
 /** One page of a cursor-paginated listing. */
-export type Page<T> = { items: T[]; after: string | null; before: string | null }
+export interface Page<T> {
+  items: T[]
+  after: string | null
+  before: string | null
+}
 
 /** Why content is gone: removed by moderators or Reddit, or deleted by its author. */
 export type Removal = 'removed' | 'deleted'
@@ -28,7 +32,7 @@ export type Distinguished = 'moderator' | 'admin' | null
 export type FlairPart =
   { kind: 'text'; text: string } | { kind: 'emoji'; name: string; src: string }
 
-export type FlairView = {
+export interface FlairView {
   /** The flair as plain text, with emoji as their `:name:` codes. */
   text: string
   parts: FlairPart[]
@@ -38,9 +42,9 @@ export type FlairView = {
   textColor: 'light' | 'dark'
 }
 
-// ── Media (design §8.7) ────────────────────────────────────────────────────────
+// ── Media ────────────────────────────────────────────────────────────────────
 
-export type ImageSet = {
+export interface ImageSet {
   src: string
   /** `url 640w, url 960w, …`, including the source. */
   srcSet: string
@@ -51,10 +55,14 @@ export type ImageSet = {
 }
 
 /** A silent MP4 that loops like a GIF. */
-export type LoopVideo = { mp4: string; width: number; height: number }
+export interface LoopVideo {
+  mp4: string
+  width: number
+  height: number
+}
 
 /** HLS with audio, and an MP4 fallback (silent on v.redd.it) when one exists. */
-export type StreamVideo = {
+export interface StreamVideo {
   hls: string
   mp4Fallback: string | null
   width: number
@@ -74,7 +82,7 @@ export type ProviderId =
   | 'spotify'
   | 'soundcloud'
 
-export type EmbedView = {
+export interface EmbedView {
   provider: ProviderId
   title: string
   iframeSrc: string
@@ -86,16 +94,23 @@ export type EmbedView = {
   originalUrl: string
 }
 
-export type ImageMedia = { type: 'image'; image: ImageSet }
-export type AnimatedMedia = {
+export interface ImageMedia {
+  type: 'image'
+  image: ImageSet
+}
+export interface AnimatedMedia {
   type: 'animated'
   loop: LoopVideo | null
   gif: ImageSet | null
   poster: ImageSet | null
 }
-export type VideoMedia = { type: 'video'; video: StreamVideo; poster: ImageSet | null }
+export interface VideoMedia {
+  type: 'video'
+  video: StreamVideo
+  poster: ImageSet | null
+}
 
-export type GalleryItem = {
+export interface GalleryItem {
   media: ImageMedia | AnimatedMedia | VideoMedia
   caption: string | null
   outboundUrl: string | null
@@ -110,9 +125,9 @@ export type PostMedia =
   | { type: 'embed'; embed: EmbedView; poster: ImageSet | null }
   | { type: 'link'; url: string; domain: string; thumbnail: ImageSet | null }
 
-// ── Posts and comments ────────────────────────────────────────────────────────
+// ── Posts and comments ───────────────────────────────────────────────────────
 
-export type PostView = {
+export interface PostView {
   id: string
   fullname: `t3_${string}`
   subreddit: string
@@ -140,7 +155,7 @@ export type PostView = {
   suggestedSort: CommentSort | null
 }
 
-export type CommentView = {
+export interface CommentView {
   id: string
   fullname: `t1_${string}`
   /** null when the account is deleted. */
@@ -174,7 +189,7 @@ export type CommentView = {
 }
 
 /** A post with its comment tree. */
-export type ThreadView = {
+export interface ThreadView {
   post: PostView
   /** The sort the comments are in: the URL's, else the thread's suggested one, else Best. */
   sort: CommentSort
@@ -183,7 +198,7 @@ export type ThreadView = {
   focusCommentId: string | null
 }
 
-export type MoreNode = {
+export interface MoreNode {
   kind: 'more'
   id: string
   parentId: string
@@ -196,9 +211,9 @@ export type MoreNode = {
 export type CommentNode =
   { kind: 'comment'; comment: CommentView; replies: CommentNode[] } | MoreNode
 
-// ── Live threads ──────────────────────────────────────────────────────────────
+// ── Live threads ─────────────────────────────────────────────────────────────
 
-export type LiveEventView = {
+export interface LiveEventView {
   id: string
   title: string
   description: SafeHtml | null
@@ -210,7 +225,7 @@ export type LiveEventView = {
   createdUtc: number
 }
 
-export type LiveUpdateView = {
+export interface LiveUpdateView {
   /** The listing cursor, `LiveUpdate_<uuid>`. */
   name: string
   author: string | null
@@ -219,9 +234,9 @@ export type LiveUpdateView = {
   stricken: boolean
 }
 
-// ── Communities, people, multis ───────────────────────────────────────────────
+// ── Communities, people, multis ──────────────────────────────────────────────
 
-export type SubredditView = {
+export interface SubredditView {
   name: string
   fullname: `t5_${string}`
   title: string
@@ -239,7 +254,7 @@ export type SubredditView = {
   favorited: boolean
 }
 
-export type UserView = {
+export interface UserView {
   name: string
   fullname: `t2_${string}`
   icon: string | null
@@ -253,7 +268,10 @@ export type UserView = {
   nsfw: boolean
 }
 
-export type MeView = { name: string; icon: string | null }
+export interface MeView {
+  name: string
+  icon: string | null
+}
 
 /** A profile page's subject: an active account, or one Reddit suspended. */
 export type ProfileView = { kind: 'active'; user: UserView } | { kind: 'suspended'; name: string }
@@ -261,7 +279,7 @@ export type ProfileView = { kind: 'active'; user: UserView } | { kind: 'suspende
 /** An entry in a mixed listing (saved items, a profile's overview). */
 export type ListItem = { kind: 'post'; post: PostView } | { kind: 'comment'; comment: CommentView }
 
-export type MultiView = {
+export interface MultiView {
   name: string
   displayName: string
   owner: string

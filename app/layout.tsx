@@ -26,7 +26,7 @@ const redditMono = Reddit_Mono({
 
 /*
  * Applies the saved theme before first paint without reading cookies on the
- * server, which would make every route dynamic (docs/design.md §8.8, and the
+ * server, which would make every route dynamic (and the
  * bundled "Preventing flash before hydration" guide). The regex accepts only
  * known values, so the cookie can't inject anything.
  */
@@ -64,9 +64,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
-      lang="en"
-      data-theme="system"
       className={`${redditSans.variable} ${redditMono.variable}`}
+      data-theme="system"
+      lang="en"
       suppressHydrationWarning
     >
       <head>

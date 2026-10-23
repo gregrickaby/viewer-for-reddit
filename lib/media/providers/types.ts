@@ -7,10 +7,10 @@ import type { PostMedia, ProviderId } from '@/lib/view-models'
 export type ProviderIds = Record<string, string>
 
 /**
- * One third-party media host (design §8.7). Adding a provider is one module,
+ * One third-party media host. Adding a provider is one module,
  * its tests, and its CSP sources; nothing else changes.
  */
-export type Provider = {
+export interface Provider {
   id: ProviderId | 'social'
   /** Exact hosts, or `.suffix` for any subdomain (lib/media/url.ts). */
   hosts: readonly string[]
@@ -18,6 +18,6 @@ export type Provider = {
   parse(url: URL): ProviderIds | null
   /** Media for a post. Null lets the resolver chain continue. */
   resolve(ids: ProviderIds, link: RedditLink): PostMedia | null
-  /** Sources this provider needs in the Content Security Policy (Phase 8). */
+  /** Sources this provider needs in the Content Security Policy. */
   csp: { frameSrc?: readonly string[]; mediaSrc?: readonly string[]; imgSrc?: readonly string[] }
 }

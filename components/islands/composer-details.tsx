@@ -5,7 +5,7 @@ import { useState, type ReactNode } from 'react'
 import { CommentComposer, type CommentComposerProps } from './comment-composer'
 
 /**
- * A comment's Reply or Edit `<details>` (design §8.6). A thread can show hundreds of
+ * A comment's Reply or Edit `<details>`. A thread can show hundreds of
  * comments, so the composer island mounts only once its details first opens. Until
  * then the details holds `fallback`, the same form rendered on the server, which also
  * posts without JavaScript.

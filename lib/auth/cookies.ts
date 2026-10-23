@@ -6,7 +6,7 @@ import * as z from 'zod'
 import { env } from '@/lib/env'
 
 /*
- * Session cookies (docs/design.md §5.4). Access and refresh tokens live in separate
+ * Session cookies. Access and refresh tokens live in separate
  * sealed cookies: Reddit's tokens are long, and one cookie holding both risks the
  * ~4 KB per-cookie limit. This module is shared by proxy.ts and the DAL, so it must
  * not import `next/headers`.
@@ -63,14 +63,29 @@ export function secondsUntil(expiresAt: number, now = Date.now()): number {
   return Math.max(60, Math.floor((expiresAt - now) / 1000))
 }
 
-export const sealAccess = (token: AccessToken) => seal(token, secondsUntil(token.expiresAt))
-export const unsealAccess = (value?: string) => unseal(AccessToken, value)
+export function sealAccess(token: AccessToken): Promise<string> {
+  return seal(token, secondsUntil(token.expiresAt))
+}
 
-export const sealRefresh = (token: RefreshToken) => seal(token, REFRESH_MAX_AGE)
-export const unsealRefresh = (value?: string) => unseal(RefreshToken, value)
+export function unsealAccess(value?: string): Promise<AccessToken | null> {
+  return unseal(AccessToken, value)
+}
 
-export const sealOAuthState = (state: OAuthState) => seal(state, OAUTH_STATE_MAX_AGE)
-export const unsealOAuthState = (value?: string) => unseal(OAuthState, value)
+export function sealRefresh(token: RefreshToken): Promise<string> {
+  return seal(token, REFRESH_MAX_AGE)
+}
+
+export function unsealRefresh(value?: string): Promise<RefreshToken | null> {
+  return unseal(RefreshToken, value)
+}
+
+export function sealOAuthState(state: OAuthState): Promise<string> {
+  return seal(state, OAUTH_STATE_MAX_AGE)
+}
+
+export function unsealOAuthState(value?: string): Promise<OAuthState | null> {
+  return unseal(OAuthState, value)
+}
 
 export function cookieOptions(maxAgeSeconds: number, path = '/') {
   return {

@@ -85,7 +85,7 @@ export const FEATURES: ReadonlyArray<{ icon: FeatureIconName; title: string; tex
   {
     icon: 'lock',
     title: 'Secure sign-in',
-    text: 'You sign in on reddit.com with Reddit’s own login. Your password never reaches this site.',
+    text: "You sign in on reddit.com with Reddit's own login. Your password never reaches this site.",
   },
   {
     icon: 'code',
@@ -137,9 +137,9 @@ export const FAQ: ReadonlyArray<{
   {
     question: 'Why do I have to sign in?',
     answer: [
-      'Reddit ended public access to its API in June 2026. Apps like this one can’t read anything without your Reddit account. Reddit explains how apps get access in its ',
+      "Reddit ended public access to its API in June 2026. Apps like this one can't read anything without your Reddit account. Reddit explains how apps get access in its ",
       { text: 'API documentation', href: 'https://www.reddit.com/dev/api' },
-      '. If you don’t have an account, ',
+      ". If you don't have an account, ",
       { text: 'register on Reddit', href: 'https://www.reddit.com/register/' },
       '.',
     ],
@@ -147,7 +147,7 @@ export const FAQ: ReadonlyArray<{
   {
     question: 'Is my data safe?',
     answer: [
-      'Sign-in uses Reddit’s ',
+      "Sign-in uses Reddit's ",
       { text: 'official OAuth2 flow', href: REDDIT_OAUTH },
       ', so your password never reaches this site. Your access tokens stay in encrypted cookies in your browser, and you can revoke access anytime in your ',
       { text: 'Reddit app settings', href: REDDIT_APPS },
@@ -188,14 +188,14 @@ export const FAQ: ReadonlyArray<{
       ', and the ',
       { text: 'README', href: `${SITE.links.github}#setup` },
       ' lists the setup steps. Create your own app on ',
-      { text: 'Reddit’s app page', href: REDDIT_APPS },
+      { text: "Reddit's app page", href: REDDIT_APPS },
       ', then add your keys.',
     ],
   },
 ]
 
 /** Shown in every public page footer. */
-export const DISCLAIMER = `${SITE.name} is an independent project, not affiliated with Reddit, Inc. “Reddit” and the Snoo logo are trademarks of Reddit, Inc.`
+export const DISCLAIMER = `${SITE.name} is an independent project, not affiliated with Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc.`
 
 /** The link-preview image (public/social-share.png). */
 export const SHARE_IMAGE = {

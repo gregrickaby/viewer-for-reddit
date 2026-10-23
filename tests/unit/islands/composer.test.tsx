@@ -4,7 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ActionResult } from '@/lib/actions/result'
 
-type Deferred<T> = { promise: Promise<T>; resolve: (value: T) => void }
+interface Deferred<T> {
+  promise: Promise<T>
+  resolve: (value: T) => void
+}
 function deferred<T>(): Deferred<T> {
   let resolve!: (value: T) => void
   const promise = new Promise<T>((r) => (resolve = r))
@@ -46,7 +49,7 @@ function typeAndSend(text: string) {
 
 describe('CommentComposer (reply)', () => {
   it('clears the box and shows a pending comment at once', async () => {
-    render(<CommentComposer mode="reply" parent="t3_abc" me="spez" label="Comment" />)
+    render(<CommentComposer label="Comment" me="spez" mode="reply" parent="t3_abc" />)
     await typeAndSend('First!')
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('')
     expect(screen.getByText('First!')).toBeTruthy()
@@ -61,8 +64,8 @@ describe('CommentComposer (reply)', () => {
     expect(screen.queryByText('First!')).toBeNull()
   })
 
-  it('restores the draft and shows Reddit’s reason on failure', async () => {
-    render(<CommentComposer mode="reply" parent="t3_abc" me="spez" label="Comment" />)
+  it("restores the draft and shows Reddit's reason on failure", async () => {
+    render(<CommentComposer label="Comment" me="spez" mode="reply" parent="t3_abc" />)
     await typeAndSend('Too late')
     await act(async () => pending.post.resolve(locked))
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('Too late')
@@ -73,7 +76,7 @@ describe('CommentComposer (reply)', () => {
     render(
       <details open>
         <summary>Reply</summary>
-        <CommentComposer mode="reply" parent="t1_abc" me="spez" label="Reply" />
+        <CommentComposer label="Reply" me="spez" mode="reply" parent="t1_abc" />
       </details>,
     )
     expect(screen.getByRole('textbox').getAttribute('placeholder')).toBe('Write a reply…')
@@ -83,7 +86,7 @@ describe('CommentComposer (reply)', () => {
   })
 
   it('sends with ⌘/Ctrl+Enter and ignores a plain Enter', () => {
-    render(<CommentComposer mode="reply" parent="t3_abc" me="spez" label="Comment" />)
+    render(<CommentComposer label="Comment" me="spez" mode="reply" parent="t3_abc" />)
     const form = document.querySelector('form')!
     const requestSubmit = vi.fn()
     Object.assign(form, { requestSubmit })
@@ -101,7 +104,7 @@ describe('CommentComposer (edit)', () => {
     render(
       <details open>
         <summary>Edit</summary>
-        <CommentComposer mode="edit" thing="t1_abc" initial="Old text" />
+        <CommentComposer initial="Old text" mode="edit" thing="t1_abc" />
       </details>,
     )
     const box = screen.getByRole('textbox') as HTMLTextAreaElement
@@ -117,7 +120,7 @@ describe('CommentComposer (edit)', () => {
   })
 
   it('keeps the form open with the reason on failure', async () => {
-    render(<CommentComposer mode="edit" thing="t1_abc" initial="Old" />)
+    render(<CommentComposer initial="Old" mode="edit" thing="t1_abc" />)
     await typeAndSend('New')
     await act(async () => pending.edit.resolve(locked))
     expect(screen.getByRole('alert').textContent).toBe('This thread is locked.')
@@ -144,7 +147,7 @@ describe('ComposerDetails', () => {
 
   it('holds the server-rendered form until it first opens, then mounts the composer', async () => {
     const { container } = render(
-      <ComposerDetails summary="Reply" composer={reply} fallback={<ComposerForm {...reply} />} />,
+      <ComposerDetails composer={reply} fallback={<ComposerForm {...reply} />} summary="Reply" />,
     )
     const details = container.querySelector('details')!
     expect(container.querySelector('summary')!.textContent).toBe('Reply')
@@ -166,7 +169,7 @@ describe('ComposerDetails', () => {
 describe('ComposerForm', () => {
   it('renders a reply form that posts without JavaScript', () => {
     const { container } = render(
-      <ComposerForm mode="reply" parent="t3_abc" me="spez" label="Comment" />,
+      <ComposerForm label="Comment" me="spez" mode="reply" parent="t3_abc" />,
     )
     expect(screen.getByPlaceholderText('What are your thoughts?')).toBeTruthy()
     expect(container.querySelector<HTMLInputElement>('input[name="parent"]')!.value).toBe('t3_abc')
@@ -174,7 +177,7 @@ describe('ComposerForm', () => {
   })
 
   it('renders an edit form with the current text', () => {
-    const { container } = render(<ComposerForm mode="edit" thing="t1_c1" initial="Hello" />)
+    const { container } = render(<ComposerForm initial="Hello" mode="edit" thing="t1_c1" />)
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('Hello')
     expect(container.querySelector<HTMLInputElement>('input[name="thing"]')!.value).toBe('t1_c1')
     expect(screen.getByRole('button', { name: 'Save edit' })).toBeTruthy()

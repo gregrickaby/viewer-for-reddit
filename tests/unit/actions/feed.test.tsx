@@ -4,7 +4,11 @@ import type { ListItem, PostView, SubredditView } from '@/lib/view-models'
 import { renderServer } from '@/tests/helpers/render-server'
 import { multiView, postView, subredditView } from '@/tests/helpers/views'
 
-type Page = { items: PostView[]; after: string | null; before: null }
+interface Page {
+  items: PostView[]
+  after: string | null
+  before: null
+}
 const getFeed = vi.fn<(source: unknown, query: unknown) => Promise<Page>>(async () => ({
   items: [postView({ id: 'b', fullname: 't3_b' })],
   after: 't3_b',

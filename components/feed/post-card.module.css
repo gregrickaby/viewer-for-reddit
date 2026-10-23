@@ -146,7 +146,7 @@
     font-style: italic;
   }
 
-  /* Feed excerpt: clamped until "Read more" opens (design §8.9, no JS). */
+  /* Feed excerpt: clamped until "Read more" opens (no JS). */
   .excerpt {
     display: grid;
     gap: var(--space-1);

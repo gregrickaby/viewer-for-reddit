@@ -19,7 +19,7 @@ describe('stampGenerated', () => {
 })
 
 describe('capture manifest', () => {
-  it('captures the signed-in user’s saved items and every thread source', () => {
+  it("captures the signed-in user's saved items and every thread source", () => {
     const list = captures('someone')
     const names = list.map((c) => c.name)
     expect(list.find((c) => c.name === 'saved')?.path).toBe('/user/someone/saved')

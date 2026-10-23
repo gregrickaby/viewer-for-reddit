@@ -10,7 +10,7 @@ import { CommentThing } from './schemas/comment'
 import { EmptyResponse, FormResponse } from './schemas/responses'
 
 /*
- * Writes (design §6.1). Like the reads, each derives the token from the
+ * Writes. Like the reads, each derives the token from the
  * session. Callers validate ids first (lib/reddit/names.ts).
  */
 
@@ -81,7 +81,7 @@ export async function deleteComment(fullname: string): Promise<void> {
 
 /**
  * Joins or leaves a community. Following a person is the same call on their
- * profile subreddit, `u_<name>` (design §6.1).
+ * profile subreddit, `u_<name>`.
  */
 export async function setSubscription(srName: string, subscribe: boolean): Promise<void> {
   const { accessToken } = await requireAuth()

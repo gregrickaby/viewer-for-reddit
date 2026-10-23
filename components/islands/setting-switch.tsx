@@ -9,7 +9,7 @@ import { SwitchRow } from './switch-row'
 import { useEnhancedForm } from './use-enhanced-form'
 
 /**
- * "Blur NSFW media" (design §8.8). The switch flips at once; the action sets
+ * "Blur NSFW media". The switch flips at once; the action sets
  * the cookie and re-renders the page with or without the reveal wrappers.
  */
 export function SettingSwitch({
@@ -33,8 +33,8 @@ export function SettingSwitch({
 
   return (
     <form {...formProps} className={styles.root}>
-      <input type="hidden" name="blur" value={view ? 'off' : 'on'} />
-      <SwitchRow label={label} description={description} checked={view} />
+      <input name="blur" type="hidden" value={view ? 'off' : 'on'} />
+      <SwitchRow checked={view} description={description} label={label} />
       {error ? (
         <p className={styles.error} role="alert">
           {error}

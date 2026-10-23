@@ -1,11 +1,10 @@
 import 'server-only'
 
+import { loopVideo, previewImageSet } from '@/lib/media/images'
+import { safeMediaUrl } from '@/lib/media/url'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { RedditVideoData } from '@/lib/reddit/schemas/media'
 import type { ImageSet, PostMedia } from '@/lib/view-models'
-
-import { loopVideo, previewImageSet } from '../images'
-import { safeMediaUrl } from '../url'
 
 /** Resolver 4: a v.redd.it upload. */
 export function resolveRedditVideo(link: RedditLink): PostMedia | null {

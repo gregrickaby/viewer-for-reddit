@@ -3,7 +3,7 @@ import 'server-only'
 /**
  * Accept a post-login redirect target only if it is a same-origin relative path.
  * Anything else (absolute URLs, protocol-relative `//host`, backslash tricks,
- * encoded variants) falls back, preventing open redirects (docs/design.md §5.3).
+ * encoded variants) falls back, preventing open redirects.
  */
 export function safeNext(value: string | null | undefined, fallback = '/home'): string {
   if (!value) return fallback

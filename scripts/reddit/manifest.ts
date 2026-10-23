@@ -1,10 +1,10 @@
 /*
- * What to capture for type generation and the media corpus (docs/implementation.md §2.2).
+ * What to capture for type generation and the media corpus.
  * Breadth matters: quicktype infers optional fields and unions only from what the samples
  * contain, so we deliberately sample every media shape, listing kind, and envelope.
  */
 
-export type Capture = {
+export interface Capture {
   /** Output file: fixtures/reddit/raw/<name>.json */
   name: string
   path: string
@@ -30,7 +30,7 @@ const MEDIA_SUBREDDITS = [
   'nextjs',
 ]
 
-/** Provider samples via search: no subreddit lists, no configuration (docs/design.md §8.7). */
+/** Provider samples via search: no subreddit lists, no configuration. */
 const PROVIDER_SITES = [
   'redgifs.com',
   'giphy.com',

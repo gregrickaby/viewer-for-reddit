@@ -3,7 +3,7 @@ import 'server-only'
 import type { CommentNode, MoreNode } from '@/lib/view-models'
 
 /*
- * Expanding "load more" nodes on the server (design §8.3). The URL lists the
+ * Expanding "load more" nodes on the server. The URL lists the
  * `more` ids the reader expanded; each round fetches their children with one
  * `/api/morechildren` call and splices the results into the tree in place.
  */
@@ -14,7 +14,10 @@ export const MAX_CHILDREN = 100
 const MAX_ROUNDS = 3
 
 /** One fetched thing and the fullname of its parent (`t1_…` or `t3_…`). */
-export type FlatNode = { parentId: string; node: CommentNode }
+export interface FlatNode {
+  parentId: string
+  node: CommentNode
+}
 
 export type FetchChildren = (childIds: string[]) => Promise<FlatNode[]>
 

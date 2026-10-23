@@ -6,9 +6,16 @@ import type { ImageSet, LoopVideo } from '@/lib/view-models'
 import { REDDIT_MEDIA_HOSTS, safeMediaUrl } from './url'
 
 /** A single image rendition, normalized from Reddit's two spellings. */
-export type Rendition = { url: string; width: number; height: number }
+export interface Rendition {
+  url: string
+  width: number
+  height: number
+}
 
-type Renditions = { source: Rendition; resolutions: readonly Rendition[] }
+interface Renditions {
+  source: Rendition
+  resolutions: readonly Rendition[]
+}
 
 /**
  * Builds an `ImageSet` from a source and its downscaled resolutions. Unsafe

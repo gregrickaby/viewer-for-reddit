@@ -1,7 +1,7 @@
 import { expect, test } from './fixtures'
 
 /*
- * Optimistic writes (design §8.6): the UI answers before Reddit does, keeps
+ * Optimistic writes: the UI answers before Reddit does, keeps
  * the result when Reddit agrees, and rolls back with a reason when it doesn't.
  */
 

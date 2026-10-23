@@ -1,6 +1,6 @@
-/* Design tokens (docs/design.md §10.4). Reddit-native palette: brand orangered
+/* Design tokens. Reddit-native palette: brand orangered
    and reddit.com's near-black dark chrome. Semantic colors are defined once
-   with light-dark(); `data-theme` only switches `color-scheme` (§8.8). */
+   with light-dark(); `data-theme` only switches `color-scheme`. */
 @layer tokens {
   :root {
     color-scheme: light dark; /* data-theme="system" */
@@ -92,7 +92,7 @@
     --z-sticky: 10;
     --z-overlay: 100;
 
-    /* Motion (docs/design.md §8.5) */
+    /* Motion */
     --duration-exit: 150ms;
     --duration-enter: 210ms;
     --duration-move: 400ms;

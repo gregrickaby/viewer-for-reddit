@@ -9,7 +9,7 @@ import styles from './action-form.module.css'
 type FormState = ActionResult<unknown> | null
 
 /**
- * A form whose Server Action reports errors (design §8.2). `useActionState`
+ * A form whose Server Action reports errors. `useActionState`
  * keeps the last result, so Reddit's reason shows under the form, and because
  * the action is passed straight through, Next posts it and re-renders with
  * that state even without JavaScript.

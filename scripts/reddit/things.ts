@@ -1,6 +1,6 @@
 /*
  * Selects type-generation samples from captured Reddit JSON: one directory per Reddit kind,
- * which quicktype merges into one schema per kind (docs/design.md §7, docs/implementation.md §2.3).
+ * which quicktype merges into one schema per kind.
  *
  * Selection is coverage-based rather than "first N": a sample is kept when it contributes a
  * shape feature not yet seen for its kind: a new field path, a new value type at a path, or a
@@ -11,7 +11,9 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json }
-export type JsonObject = { [key: string]: Json }
+export interface JsonObject {
+  [key: string]: Json
+}
 
 /** Always keep this many samples per kind so "typical" shapes are well represented. */
 export const BASELINE = 15
@@ -31,13 +33,17 @@ export const KIND_DIRS: Record<string, string> = {
   LabeledMulti: 'LabeledMulti',
 }
 
-const isObject = (value: Json | undefined): value is JsonObject =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
+function isObject(value: Json | undefined): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
 
-const typeOf = (value: Json): string =>
-  value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value
+function typeOf(value: Json): string {
+  return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value
+}
 
-const isMapPath = (at: string) => MAP_FIELDS.has(at.split('.').at(-1) ?? '')
+function isMapPath(at: string): boolean {
+  return MAP_FIELDS.has(at.split('.').at(-1) ?? '')
+}
 
 type AddSample = (dir: string, sample: JsonObject) => void
 
@@ -120,7 +126,10 @@ export function shapeFeatures(sample: JsonObject, all: JsonObject[]): Set<string
   return out
 }
 
-export type Selection = { selected: JsonObject[]; features: number }
+export interface Selection {
+  selected: JsonObject[]
+  features: number
+}
 
 /** Keep the baseline, then any sample that adds a shape feature, up to the cap. */
 export function selectSamples(
@@ -167,7 +176,7 @@ export function collectCandidates(
   return new Map([...buckets].map(([dir, bucket]) => [dir, [...bucket.values()]]))
 }
 
-export type ExtractOptions = {
+export interface ExtractOptions {
   rawDir: string
   outDir: string
   schemaDir: string

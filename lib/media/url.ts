@@ -1,7 +1,7 @@
 import 'server-only'
 
 /*
- * Every media URL goes through here (design §8.7, "Safe URL parsing").
+ * Every media URL goes through here.
  * Hosts match exactly, or by suffix when the entry starts with a dot, so
  * `redd.it.evil.com` never passes as Reddit.
  */

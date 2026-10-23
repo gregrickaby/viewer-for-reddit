@@ -7,7 +7,7 @@ import { Button, LinkButton } from '@/components/ui/button'
 
 import styles from './status-page.module.css'
 
-/** The route-level fallback behind every `SectionError` (design §12). */
+/** The route-level fallback behind every `SectionError`. */
 export default function AppError({
   error,
   retry,
@@ -22,10 +22,10 @@ export default function AppError({
       <h1 className={styles.title}>Something went wrong</h1>
       <p className={styles.detail}>Reddit may be busy or rate-limiting us.</p>
       <div className={styles.actions}>
-        <Button variant="secondary" size="sm" onClick={() => retry()}>
+        <Button onClick={() => retry()} size="sm" variant="secondary">
           Try again
         </Button>
-        <LinkButton href="/home" variant="ghost" size="sm" transitionTypes={['nav-back']}>
+        <LinkButton href="/home" size="sm" transitionTypes={['nav-back']} variant="ghost">
           Home
         </LinkButton>
       </div>

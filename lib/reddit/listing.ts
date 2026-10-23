@@ -7,10 +7,14 @@ import { logger } from '@/lib/datadog/server'
 import { RedditSchemaError } from './errors'
 import { ListingEnvelope } from './schemas/things'
 
-export type ParsedListing<T> = { items: T[]; after: string | null; before: string | null }
+export interface ParsedListing<T> {
+  items: T[]
+  after: string | null
+  before: string | null
+}
 
 /**
- * Parses a Listing tolerantly (design N4): a bad envelope is a schema error for
+ * Parses a Listing tolerantly: a bad envelope is a schema error for
  * the whole response, but a bad child is logged and dropped on its own.
  */
 export function parseListing<T extends z.ZodType>(

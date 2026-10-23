@@ -24,10 +24,10 @@ const FEEDS: Array<{ href: Route; label: string }> = [
 export function SidebarFeeds() {
   return (
     <nav aria-label="Feeds" className={styles.section}>
-      <ul role="list" className={styles.list}>
+      <ul className={styles.list} role="list">
         {FEEDS.map((feed) => (
           <li key={feed.label}>
-            <Link href={feed.href} className={styles.link}>
+            <Link className={styles.link} href={feed.href}>
               {feed.label}
             </Link>
           </li>
@@ -47,7 +47,7 @@ export function SidebarSiteLinks() {
 }
 
 /**
- * Multis, communities, and followed people (design §10.1). It streams in
+ * Multis, communities, and followed people. It streams in
  * behind its own boundary and persists across navigations in the layout.
  */
 export async function SidebarLists() {
@@ -68,12 +68,13 @@ export async function SidebarLists() {
       <nav aria-label="Multireddits" className={styles.section}>
         <h2 className={styles.heading}>
           Multis
-          <Link href={'/multis' as Route} className={styles.headingLink}>
+          <Link className={styles.headingLink} href={'/multis' as Route}>
             Manage
           </Link>
         </h2>
         {multis.length > 0 ? (
           <SidebarFilter
+            fallback="m"
             items={multis.map((multi) => ({
               key: multi.href,
               name: multi.displayName,
@@ -82,9 +83,8 @@ export async function SidebarLists() {
               icon: multi.icon,
             }))}
             limit={LIST_LIMIT}
-            noun="multis"
-            fallback="m"
             manageHref="/multis"
+            noun="multis"
           />
         ) : (
           <p className={styles.empty}>No multis yet.</p>
@@ -94,12 +94,13 @@ export async function SidebarLists() {
       <nav aria-label="Communities" className={styles.section}>
         <h2 className={styles.heading}>
           Communities
-          <Link href={'/subreddits' as Route} className={styles.headingLink}>
+          <Link className={styles.headingLink} href={'/subreddits' as Route}>
             Manage
           </Link>
         </h2>
         {communities.length > 0 ? (
           <SidebarFilter
+            fallback="r"
             items={communities.map((community) => ({
               key: community.fullname,
               name: community.name,
@@ -108,12 +109,11 @@ export async function SidebarLists() {
               icon: community.icon,
             }))}
             limit={LIST_LIMIT}
-            noun="communities"
-            fallback="r"
             manageHref="/subreddits"
+            noun="communities"
           />
         ) : (
-          <p className={styles.empty}>You haven’t joined any communities.</p>
+          <p className={styles.empty}>You haven&apos;t joined any communities.</p>
         )}
       </nav>
 
@@ -121,6 +121,7 @@ export async function SidebarLists() {
         <nav aria-label="People" className={styles.section}>
           <h2 className={styles.heading}>People</h2>
           <SidebarFilter
+            fallback="u"
             items={people.map((person) => ({
               key: person.fullname,
               name: person.name,
@@ -129,10 +130,9 @@ export async function SidebarLists() {
               icon: person.icon,
             }))}
             limit={LIST_LIMIT}
-            noun="people"
-            fallback="u"
-            manageHref="/subreddits"
             manageFields={{ tab: 'people' }}
+            manageHref="/subreddits"
+            noun="people"
           />
         </nav>
       ) : null}
@@ -142,10 +142,10 @@ export async function SidebarLists() {
 
 export function SidebarSkeleton() {
   return (
-    <div className={styles.section} aria-busy="true">
+    <div aria-busy="true" className={styles.section}>
       <span className="visually-hidden">Loading your communities…</span>
       {[0, 1, 2, 3, 4, 5].map((index) => (
-        <span key={index} className={`skeleton ${styles.rowSkeleton}`} aria-hidden="true" />
+        <span aria-hidden="true" className={`skeleton ${styles.rowSkeleton}`} key={index} />
       ))}
     </div>
   )

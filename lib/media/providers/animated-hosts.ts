@@ -1,8 +1,8 @@
 import 'server-only'
 
+import { imageSet, loopVideo } from '@/lib/media/images'
 import type { ImageSet, PostMedia } from '@/lib/view-models'
 
-import { imageSet, loopVideo } from '../images'
 import { aspectOf, embed, lastSegment, posterOf } from './shared'
 import type { Provider } from './types'
 
@@ -22,7 +22,7 @@ export const redgifs: Provider = {
     return id && REDGIFS_ID.test(id) ? { id: id.toLowerCase() } : null
   },
   resolve({ id }, link) {
-    // Preferred over Reddit's transcode, which is often silent (design §8.7).
+    // Preferred over Reddit's transcode, which is often silent.
     return embed(link, { provider: 'redgifs', iframeSrc: `https://www.redgifs.com/ifr/${id}` })
   },
   csp: { frameSrc: ['https://www.redgifs.com'] },

@@ -1,4 +1,4 @@
-/* Shared by AutoplayVideo, RedditVideo, and EmbedFacade (design §8.7). */
+/* Shared by AutoplayVideo, RedditVideo, and EmbedFacade. */
 @layer components {
   .frame {
     position: relative;

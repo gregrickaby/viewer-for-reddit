@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
 import { FeedSkeleton } from '@/components/feed/feed-section'
 import feed from '@/components/feed/feed.module.css'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
@@ -31,8 +32,6 @@ import {
 } from '@/lib/url-state'
 import type { ListItem, Page } from '@/lib/view-models'
 
-import styles from '../feed-page.module.css'
-
 export const metadata: Metadata = { title: 'Saved' }
 
 const LABELS: Record<SavedType, string> = { all: 'All', links: 'Posts', comments: 'Comments' }
@@ -54,7 +53,7 @@ async function SavedSection({ searchParams }: Pick<PageProps<'/saved'>, 'searchP
   const extra = { type: type === 'all' ? null : type }
 
   return (
-    <section className={feed.feed} aria-label="Saved items">
+    <section aria-label="Saved items" className={feed.feed}>
       <Tabs
         label="Saved item types"
         tabs={SAVED_TYPES.map((value) => ({
@@ -64,27 +63,27 @@ async function SavedSection({ searchParams }: Pick<PageProps<'/saved'>, 'searchP
         }))}
       />
       <ContentReveal
-        name="saved-content"
         contentKey={`${type}:${query.after ?? query.before ?? 'first'}`}
+        name="saved-content"
       >
         <div className={feed.list}>
           <ItemList
-            items={page.items}
-            now={now}
             blurNsfw={blurNsfw}
             empty={{
               title: 'Nothing saved yet',
               detail: 'Save posts and comments to find them here.',
             }}
+            items={page.items}
+            now={now}
           />
         </div>
       </ContentReveal>
       {page.after ? (
         <InfiniteFeed
-          key={`${type}:${query.after ?? query.before ?? 'first'}:${blurNsfw}`}
           base="/saved"
           defaultSort="new"
           extra={extra}
+          key={`${type}:${query.after ?? query.before ?? 'first'}:${blurNsfw}`}
           request={{
             source: { type: 'saved', filter: type },
             sort: query.sort,
@@ -96,13 +95,13 @@ async function SavedSection({ searchParams }: Pick<PageProps<'/saved'>, 'searchP
         />
       ) : null}
       <Pagination
-        infinite
-        base="/saved"
-        query={query}
         after={page.after}
-        firstFullname={firstFullname(page.items)}
+        base="/saved"
         defaultSort="new"
         extra={extra}
+        firstFullname={firstFullname(page.items)}
+        infinite
+        query={query}
       />
     </section>
   )
@@ -114,7 +113,7 @@ export default function SavedPage({ searchParams }: PageProps<'/saved'>) {
       <div className={styles.page}>
         <BackLink href="/home">Home</BackLink>
         <h1 className={styles.title}>Saved</h1>
-        <SectionError title="Couldn’t load your saved items">
+        <SectionError title="Couldn't load your saved items">
           <Suspense
             fallback={
               <SkeletonExit>

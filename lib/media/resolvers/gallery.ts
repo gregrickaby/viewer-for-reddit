@@ -1,14 +1,13 @@
 import 'server-only'
 
+import { loopVideo, metadataGifSet, metadataImageSet } from '@/lib/media/images'
+import { safeLinkUrl, safeMediaUrl } from '@/lib/media/url'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import { MediaMetadataItem } from '@/lib/reddit/schemas/media'
 import type { GalleryItem, PostMedia } from '@/lib/view-models'
 
-import { loopVideo, metadataGifSet, metadataImageSet } from '../images'
-import { safeLinkUrl, safeMediaUrl } from '../url'
-
 /**
- * Resolver 3 (design §8.10). Items keep `gallery_data` order; anything not
+ * Resolver 3. Items keep `gallery_data` order; anything not
  * `valid` or unusable is skipped. One survivor renders as plain media, and
  * none falls through to the next resolver.
  */

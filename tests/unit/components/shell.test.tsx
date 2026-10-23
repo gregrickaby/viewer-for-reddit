@@ -128,7 +128,7 @@ describe('Sidebar', () => {
     state.subscriptions = []
     const none = await renderServer(<SidebarLists />)
     expect(none).toContain('No multis yet.')
-    expect(none).toContain('You haven’t joined any communities.')
+    expect(none).toContain('You haven&#x27;t joined any communities.')
     expect(none).not.toContain('aria-label="People"')
   })
 
@@ -147,7 +147,7 @@ describe('AppLayout', () => {
       </AppLayout>,
     )
     expect(out).toContain('popoverTarget="app-nav"')
-    expect(out).toContain('<form role="search" class="search" action="/search" method="get">')
+    expect(out).toContain('<form class="search" role="search" action="/search" method="get">')
     expect(out).toContain('id="app-nav" popover="auto"')
     expect(out).toContain('<main class="main"><p>content</p></main>')
     expect(out).toContain('aria-label="Viewer for Reddit home"')
@@ -186,7 +186,7 @@ describe('feed pages', () => {
     expect(popular).toContain('class="subreddit"')
   })
 
-  it('renders the viewer’s own multi and someone else’s', async () => {
+  it("renders the viewer's own multi and someone else's", async () => {
     const own = Promise.resolve({ multi: 'news' })
     expect(await ownMultiPage.generateMetadata({ params: own, searchParams })).toEqual({
       title: 'm/news',
@@ -246,13 +246,13 @@ describe('settings and status pages', () => {
   })
 
   it('has a friendly not-found page', async () => {
-    expect(await renderServer(<NotFound />)).toContain('Reddit couldn’t find that.')
+    expect(await renderServer(<NotFound />)).toContain('Reddit couldn&#x27;t find that.')
   })
 
   it('has a root not-found page for unknown addresses', async () => {
     expect(rootNotFound.metadata).toEqual({ title: 'Not found' })
     const out = await renderServer(<rootNotFound.default />)
-    expect(out).toContain('This page doesn’t exist')
+    expect(out).toContain('This page doesn&#x27;t exist')
     // Not `/home`: this page can't tell whether the reader is signed in.
     expect(out).toMatch(/href="\/"[^>]*>Back to Home/)
     expect(out).not.toContain('href="/home"')

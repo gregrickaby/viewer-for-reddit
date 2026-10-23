@@ -15,7 +15,8 @@ import {
   FormResponse,
 } from '@/lib/reddit/schemas/responses'
 import { Subreddit } from '@/lib/reddit/schemas/subreddit'
-import { Fullname, ListingEnvelope } from '@/lib/reddit/schemas/things'
+import { ListingEnvelope } from '@/lib/reddit/schemas/things'
+import { Fullname } from '@/lib/url-state'
 import { RAW_DIR, sample, samples } from '@/tests/helpers/fixtures'
 
 const CURATED: Record<string, z.ZodType> = {

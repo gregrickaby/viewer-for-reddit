@@ -13,7 +13,7 @@ import type { LiveEventView, LiveUpdateView, Page } from '@/lib/view-models'
 import { LiveUpdateItems } from './live-update-items'
 import styles from './live.module.css'
 
-export type LiveSectionProps = {
+export interface LiveSectionProps {
   params: Promise<{ id: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }
@@ -35,12 +35,12 @@ export async function LiveSection({ params, searchParams }: LiveSectionProps) {
     return <ForbiddenPanel reason={handleReadError(error)} />
   }
   const now = await requestTime()
-  const items = <LiveUpdateItems updates={page.items} now={now} />
+  const items = <LiveUpdateItems now={now} updates={page.items} />
 
   return (
     <>
       <nav aria-label="Breadcrumb">
-        <Link href="/home" className={styles.breadcrumb} transitionTypes={['nav-back']}>
+        <Link className={styles.breadcrumb} href="/home" transitionTypes={['nav-back']}>
           ← Home
         </Link>
       </nav>
@@ -49,13 +49,13 @@ export async function LiveSection({ params, searchParams }: LiveSectionProps) {
         <h1 className={styles.title}>{event.title}</h1>
         {event.description ? <RedditHtml html={event.description} /> : null}
         {event.resources ? (
-          <RedditHtml html={event.resources} className={styles.resources} />
+          <RedditHtml className={styles.resources} html={event.resources} />
         ) : null}
       </header>
 
       {after ? (
         <>
-          <ol role="list" className={styles.updates}>
+          <ol className={styles.updates} role="list">
             {items}
           </ol>
           <nav aria-label="Pages" className={styles.nav}>
@@ -70,9 +70,9 @@ export async function LiveSection({ params, searchParams }: LiveSectionProps) {
           <LiveFeed
             id={id}
             live={event.live}
-            viewers={event.viewers}
             newest={page.items[0]?.name ?? null}
             older={page.after}
+            viewers={event.viewers}
           >
             {items}
           </LiveFeed>
@@ -93,9 +93,9 @@ export async function LiveSection({ params, searchParams }: LiveSectionProps) {
 export function LiveSkeleton() {
   return (
     <div className={styles.skeleton}>
-      <span className={`skeleton ${styles.titleSkeleton}`} aria-hidden="true" />
+      <span aria-hidden="true" className={`skeleton ${styles.titleSkeleton}`} />
       {Array.from({ length: 4 }, (_, index) => (
-        <span key={index} className={`skeleton ${styles.updateSkeleton}`} aria-hidden="true" />
+        <span aria-hidden="true" className={`skeleton ${styles.updateSkeleton}`} key={index} />
       ))}
     </div>
   )

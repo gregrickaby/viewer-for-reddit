@@ -1,4 +1,4 @@
-/* Typography for sanitized Reddit HTML (design §8.9). Element selectors are scoped under .root. */
+/* Typography for sanitized Reddit HTML. Element selectors are scoped under .root. */
 @layer components {
   .root {
     max-inline-size: var(--measure);

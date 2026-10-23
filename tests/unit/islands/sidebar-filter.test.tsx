@@ -26,12 +26,12 @@ describe('SidebarFilter', () => {
   it('keeps the tab when it filters people without JavaScript', () => {
     render(
       <SidebarFilter
-        noun="people"
         fallback="u"
-        manageHref="/subreddits"
-        manageFields={{ tab: 'people' }}
         items={communities(60)}
         limit={50}
+        manageFields={{ tab: 'people' }}
+        manageHref="/subreddits"
+        noun="people"
       />,
     )
     expect(screen.getByRole('search').querySelector('input[name="tab"]')).toHaveProperty(
@@ -46,11 +46,11 @@ describe('SidebarFilter', () => {
   it('lists the first few, links to the rest, and filters all of them as you type', () => {
     render(
       <SidebarFilter
-        noun="communities"
         fallback="r"
-        manageHref="/subreddits"
         items={communities(60)}
         limit={50}
+        manageHref="/subreddits"
+        noun="communities"
       />,
     )
     expect(screen.getAllByRole('link', { name: /^r\/Sub/ })).toHaveLength(50)
@@ -67,11 +67,11 @@ describe('SidebarFilter', () => {
   it('opens the first match on Enter', () => {
     render(
       <SidebarFilter
-        noun="communities"
         fallback="r"
-        manageHref="/subreddits"
         items={communities(12)}
         limit={50}
+        manageHref="/subreddits"
+        noun="communities"
       />,
     )
     const input = screen.getByRole('searchbox')
@@ -85,16 +85,16 @@ describe('SidebarFilter', () => {
   it('says so when nothing matches, and stays put on Enter', () => {
     render(
       <SidebarFilter
-        noun="communities"
         fallback="r"
-        manageHref="/subreddits"
         items={communities(12)}
         limit={50}
+        manageHref="/subreddits"
+        noun="communities"
       />,
     )
     const input = screen.getByRole('searchbox')
     fireEvent.change(input, { target: { value: 'zzz' } })
-    expect(screen.getByRole('status').textContent).toBe('No communities match “zzz”.')
+    expect(screen.getByRole('status').textContent).toBe('No communities match "zzz".')
     fireEvent.submit(input.closest('form')!)
     expect(push).not.toHaveBeenCalled()
   })
@@ -102,11 +102,11 @@ describe('SidebarFilter', () => {
   it('skips the filter for a list of ten or fewer', () => {
     render(
       <SidebarFilter
-        noun="communities"
         fallback="r"
-        manageHref="/subreddits"
         items={communities(10)}
         limit={50}
+        manageHref="/subreddits"
+        noun="communities"
       />,
     )
     expect(screen.queryByRole('searchbox')).toBeNull()
@@ -116,11 +116,11 @@ describe('SidebarFilter', () => {
   it('submits to the Subscriptions page without JavaScript', () => {
     render(
       <SidebarFilter
-        noun="communities"
         fallback="r"
-        manageHref="/subreddits"
         items={communities(12)}
         limit={50}
+        manageHref="/subreddits"
+        noun="communities"
       />,
     )
     const form = screen.getByRole('search')

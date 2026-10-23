@@ -3,13 +3,13 @@ import { instant } from '@next/playwright'
 import { expect, signIn, test } from './fixtures'
 
 /*
- * Platform guarantees (design N-requirements): sign-in without JavaScript,
+ * Platform guarantees: sign-in without JavaScript,
  * the browser never talks to Reddit's API, the CSP holds, and navigation
  * paints the prefetched shell at once.
  */
 
 /*
- * Without JavaScript (design N6, as amended): forms work before hydration, and
+ * Without JavaScript (as amended): forms work before hydration, and
  * sign-in needs no scripts. Streamed Reddit data does: Partial Prerendering
  * sends it in hidden segments that an inline script moves into place, even
  * for crawlers, so script-less readers see the prerendered shell and skeletons.

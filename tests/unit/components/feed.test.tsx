@@ -50,7 +50,7 @@ const { HOME_SORTS, LISTING_SORTS } = await import('@/lib/url-state')
 
 const now = 1_700_000_000_000 + 3 * 3600_000
 const card = (post: PostView, blurNsfw = true, showSubreddit = true) =>
-  renderServer(<PostCard post={post} showSubreddit={showSubreddit} blurNsfw={blurNsfw} now={now} />)
+  renderServer(<PostCard blurNsfw={blurNsfw} now={now} post={post} showSubreddit={showSubreddit} />)
 
 beforeEach(() => {
   state.page = { items: [], after: null, before: null }
@@ -122,7 +122,9 @@ describe('PostCard', () => {
         },
       }),
     )
-    expect(emoji).toContain('Funny<img class="emoji" src="https://emoji.redditmedia.com/a/lul"')
+    expect(emoji).toMatch(
+      /Funny<img [^>]*class="emoji"[^>]*src="https:\/\/emoji\.redditmedia\.com\/a\/lul"/,
+    )
     expect(emoji).toContain('alt="lul"')
     expect(emoji).not.toContain(':lul:')
     expect(plain).toContain('Archived')
@@ -195,11 +197,11 @@ describe('FeedSection', () => {
   ) =>
     renderServer(
       <FeedSection
-        source={{ type: 'home' }}
         base={base}
-        sorts={sorts}
         searchParams={Promise.resolve(params)}
         showSubreddit
+        sorts={sorts}
+        source={{ type: 'home' }}
       />,
     )
 
@@ -264,7 +266,7 @@ describe('FeedSection', () => {
 
   it('says when the end is reached, and when there is nothing at all', async () => {
     state.page = { items: [postView()], after: null, before: null }
-    expect(await section({})).toContain('You’ve reached the end.')
+    expect(await section({})).toContain('You&#x27;ve reached the end.')
     state.page = { items: [], after: null, before: null }
     const empty = await section({})
     expect(empty).toContain('Nothing here yet')
@@ -330,7 +332,7 @@ describe('SubredditHeader', () => {
     expect(out).toContain('NSFW')
   })
 
-  it('offers + Multi when the multis load, and still works when they don’t', async () => {
+  it("offers + Multi when the multis load, and still works when they don't", async () => {
     expect(await header('pics')).toContain('aria-label="Add r/pics to a multireddit"')
     getMyMultis.mockRejectedValueOnce(new Error('rate limited'))
     const out = await header('pics')

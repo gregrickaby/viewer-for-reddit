@@ -7,7 +7,7 @@ import { metadataMedia } from './resolvers/gallery'
 import { REDDIT_MEDIA_HOSTS, safeMediaUrl } from './url'
 
 /*
- * Inline media in self text and comments (design §8.7). Reddit's HTML
+ * Inline media in self text and comments. Reddit's HTML
  * references uploaded images, GIFs, and Giphy-picker GIFs as plain links whose
  * text is the URL itself. After sanitizing, each such bare link to a known
  * media host becomes inline media. Links with real text stay links. The wrapper

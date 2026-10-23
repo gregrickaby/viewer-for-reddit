@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets (design §4.2) */
+/* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets */
 import { AutoplayVideo } from '@/components/islands/autoplay-video'
 import { GalleryLightbox } from '@/components/islands/gallery-lightbox'
 import { RedditVideo } from '@/components/islands/reddit-video'
@@ -8,7 +8,7 @@ import styles from './gallery.module.css'
 
 const SIZES = '(min-width: 1024px) 40rem, 100vw'
 
-/** The frame keeps the first item's shape, within 4:5 and 16:9 (design §8.10). */
+/** The frame keeps the first item's shape, within 4:5 and 16:9. */
 export function frameRatio(item: GalleryItem): number {
   const media = item.media
   const { width, height } =
@@ -25,7 +25,7 @@ function hostOf(url: string): string {
 }
 
 /**
- * A gallery (design §8.10): a server-rendered scroll-snap strip with CSS
+ * A gallery: a server-rendered scroll-snap strip with CSS
  * Carousel buttons and dots where supported, and a full-screen `<dialog>`
  * whose images load only while it is open. Without JavaScript each
  * image links to its full-size original.
@@ -44,67 +44,67 @@ export function Gallery({
     item.caption ?? `${title}, image ${index + 1} of ${count}`
 
   return (
-    <section className={styles.gallery} data-gallery={postId} aria-label={`Gallery: ${title}`}>
+    <section aria-label={`Gallery: ${title}`} className={styles.gallery} data-gallery={postId}>
       <ul
+        aria-label={`Gallery, ${count} items`}
+        aria-roledescription="carousel"
         className={styles.track}
         role="region"
-        aria-roledescription="carousel"
-        aria-label={`Gallery, ${count} items`}
-        tabIndex={0}
         style={{ aspectRatio: String(frameRatio(items[0]!)) }}
+        tabIndex={0}
       >
         {items.map((item, index) => (
           <li
-            key={index}
-            className={styles.slide}
-            aria-roledescription="slide"
             aria-label={`${index + 1} of ${count}`}
+            aria-roledescription="slide"
+            className={styles.slide}
+            key={index}
           >
             <div className={styles.slideMedia}>
               {item.media.type === 'image' ? (
                 <a
-                  href={item.media.image.src}
-                  target="_blank"
-                  rel="noopener"
-                  data-index={index}
                   className={styles.open}
+                  data-index={index}
+                  href={item.media.image.src}
+                  rel="noopener"
+                  target="_blank"
                 >
                   <img
+                    alt={altFor(item, index)}
                     className={styles.image}
+                    decoding="async"
+                    height={item.media.image.height}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    sizes={SIZES}
                     src={item.media.image.src}
                     srcSet={item.media.image.srcSet || undefined}
-                    sizes={SIZES}
                     width={item.media.image.width}
-                    height={item.media.image.height}
-                    alt={altFor(item, index)}
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
                   />
                 </a>
               ) : item.media.type === 'animated' && item.media.loop ? (
                 <AutoplayVideo
-                  mp4={item.media.loop.mp4}
-                  width={item.media.loop.width}
                   height={item.media.loop.height}
-                  poster={item.media.poster?.src ?? null}
                   label={altFor(item, index)}
+                  mp4={item.media.loop.mp4}
+                  poster={item.media.poster?.src ?? null}
+                  width={item.media.loop.width}
                 />
               ) : item.media.type === 'animated' ? (
                 <img
-                  className={styles.image}
-                  src={item.media.gif!.src}
                   alt={altFor(item, index)}
-                  loading="lazy"
+                  className={styles.image}
                   decoding="async"
+                  loading="lazy"
+                  src={item.media.gif!.src}
                 />
               ) : (
                 <RedditVideo
-                  hls={item.media.video.hls}
-                  mp4Fallback={item.media.video.mp4Fallback}
-                  width={item.media.video.width}
                   height={item.media.video.height}
-                  poster={item.media.poster?.src ?? null}
+                  hls={item.media.video.hls}
                   label={altFor(item, index)}
+                  mp4Fallback={item.media.video.mp4Fallback}
+                  poster={item.media.poster?.src ?? null}
+                  width={item.media.video.width}
                 />
               )}
             </div>
@@ -119,8 +119,8 @@ export function Gallery({
                     {item.caption ? ' · ' : null}
                     <a
                       href={item.outboundUrl}
-                      target="_blank"
                       rel="noopener noreferrer nofollow ugc"
+                      target="_blank"
                     >
                       {hostOf(item.outboundUrl)} ↗
                     </a>
@@ -133,30 +133,30 @@ export function Gallery({
       </ul>
 
       <dialog
-        id={`lightbox-${postId}`}
-        closedby="any"
-        className={styles.lightbox}
         aria-label={`${title}, full screen`}
+        className={styles.lightbox}
+        closedby="any"
+        id={`lightbox-${postId}`}
       >
         <ul className={styles.lightboxTrack} tabIndex={-1}>
           {items.map((item, index) =>
             item.media.type === 'image' ? (
-              <li key={index} className={styles.lightboxSlide} data-index={index}>
+              <li className={styles.lightboxSlide} data-index={index} key={index}>
                 {/* No `src` until the lightbox opens: `GalleryLightbox` loads these and drops them on close. */}
                 <img
+                  alt={altFor(item, index)}
                   className={styles.lightboxImage}
                   data-src={item.media.image.src}
                   data-srcset={item.media.image.srcSet || undefined}
+                  decoding="async"
+                  height={item.media.image.height}
+                  loading="lazy"
                   sizes="100vw"
                   width={item.media.image.width}
-                  height={item.media.image.height}
-                  alt={altFor(item, index)}
-                  loading="lazy"
-                  decoding="async"
                 />
                 <p className={styles.lightboxCaption}>
                   {item.caption ? `${item.caption} · ` : null}
-                  <a href={item.media.image.src} target="_blank" rel="noopener">
+                  <a href={item.media.image.src} rel="noopener" target="_blank">
                     Open original ↗
                   </a>
                 </p>
@@ -165,7 +165,7 @@ export function Gallery({
           )}
         </ul>
         <form method="dialog">
-          <button type="submit" className={styles.close} aria-label="Close">
+          <button aria-label="Close" className={styles.close} type="submit">
             ×
           </button>
         </form>

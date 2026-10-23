@@ -20,7 +20,7 @@ type Status = 'idle' | 'loading' | 'error'
  */
 export const MAX_PAGES = 7
 
-type Props = {
+interface Props {
   request: MoreFeedRequest
   /** The feed's route and default sort, for the next-page link once the cap is reached. */
   base: string
@@ -56,12 +56,16 @@ export function InfiniteFeed({ request, base, defaultSort, extra }: Props) {
         if (!entries.some((entry) => entry.isIntersecting)) return
         observer.disconnect()
         setStatus('loading')
-        void loadMoreFeed({ ...request, after: cursor, count: seen }).then((result) => {
-          if (!result.ok) return setStatus('error')
-          setPages((current) => [...current, result.data.items])
-          setCursor(result.data.after)
-          setStatus('idle')
-        })
+        loadMoreFeed({ ...request, after: cursor, count: seen }).then(
+          (result) => {
+            if (!result.ok) return setStatus('error')
+            setPages((current) => [...current, result.data.items])
+            setCursor(result.data.after)
+            setStatus('idle')
+          },
+          // A dropped connection rejects instead of returning an error result.
+          () => setStatus('error'),
+        )
       },
       { rootMargin: '0px 0px 1000px 0px' },
     )
@@ -72,13 +76,13 @@ export function InfiniteFeed({ request, base, defaultSort, extra }: Props) {
   return (
     <>
       {pages.length === 0 ? null : kind === 'rows' ? (
-        <ul role="list" className={`${rows.list} ${rows.continued}`}>
+        <ul className={`${rows.list} ${rows.continued}`} role="list">
           {appended}
         </ul>
       ) : (
         <ol
-          role="list"
           className={kind === 'posts' ? `${styles.items} ${styles.posts}` : styles.items}
+          role="list"
         >
           {appended}
         </ol>
@@ -87,30 +91,30 @@ export function InfiniteFeed({ request, base, defaultSort, extra }: Props) {
         <nav aria-label="Pages" className={styles.pagination}>
           <span />
           <Link
-            href={afterHref(base, request, cursor, seen, defaultSort, extra) as Route}
             className={styles.pageLink}
-            rel="next"
+            href={afterHref(base, request, cursor, seen, defaultSort, extra) as Route}
             // The same route stays on screen, so Next would keep the reader at the bottom.
             onNavigate={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+            rel="next"
           >
             Next page →
             <LinkPendingHint />
           </Link>
         </nav>
       ) : cursor ? (
-        <div ref={sentinel} className={styles.more}>
+        <div className={styles.more} ref={sentinel}>
           {status === 'loading' ? <p role="status">Loading more…</p> : null}
           {status === 'error' ? (
             <p role="alert">
-              Couldn’t load more.{' '}
-              <Button variant="secondary" size="sm" onClick={() => setStatus('idle')}>
+              Couldn&apos;t load more.{' '}
+              <Button onClick={() => setStatus('idle')} size="sm" variant="secondary">
                 Try again
               </Button>
             </p>
           ) : null}
         </div>
       ) : (
-        <p className={styles.end}>You’ve reached the end.</p>
+        <p className={styles.end}>You&apos;ve reached the end.</p>
       )}
     </>
   )

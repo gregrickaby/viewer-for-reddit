@@ -5,7 +5,7 @@ import { addNextjsError } from '@datadog/browser-rum-nextjs'
 
 /**
  * The last-resort error page: it replaces the root layout, so it brings its own
- * <html> and minimal styling, following the OS color scheme (design §12).
+ * <html> and minimal styling, following the OS color scheme.
  */
 export default function GlobalError({
   error,
@@ -27,11 +27,10 @@ export default function GlobalError({
         }}
       >
         <title>Something went wrong · Viewer for Reddit</title>
-        <main style={{ maxWidth: '40rem', margin: '0 auto', padding: '4rem 1rem' }} role="alert">
+        <main role="alert" style={{ maxWidth: '40rem', margin: '0 auto', padding: '4rem 1rem' }}>
           <h1>Something went wrong</h1>
           <p>Viewer for Reddit hit an unexpected error. Trying again usually works.</p>
           <button
-            type="button"
             onClick={() => retry()}
             style={{
               font: 'inherit',
@@ -43,6 +42,7 @@ export default function GlobalError({
               color: 'CanvasText',
               cursor: 'pointer',
             }}
+            type="button"
           >
             Try again
           </button>

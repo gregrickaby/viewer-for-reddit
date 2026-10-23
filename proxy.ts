@@ -19,13 +19,18 @@ import { isPrivatePath, PUBLIC_PAGES } from '@/lib/site'
 
 const PUBLIC_PATHS = new Set<string>([...PUBLIC_PAGES, '/manifest.webmanifest', '/api/health'])
 
-const isPublicPath = (pathname: string) =>
-  PUBLIC_PATHS.has(pathname) || pathname.startsWith('/api/auth/')
+function isPublicPath(pathname: string): boolean {
+  return PUBLIC_PATHS.has(pathname) || pathname.startsWith('/api/auth/')
+}
 
-type OutgoingCookie = { name: string; value: string; maxAge: number }
+interface OutgoingCookie {
+  name: string
+  value: string
+  maxAge: number
+}
 
 /**
- * Runs before every page, Server Action, and Route Handler (docs/design.md §5.5):
+ * Runs before every page, Server Action, and Route Handler:
  * 1. Proactively refreshes the Reddit access token and hands the fresh token to
  *    the rest of *this* request (request cookies) and to the browser (response).
  * 2. Optimistic auth gating. The DAL's `requireAuth()` is the real boundary.

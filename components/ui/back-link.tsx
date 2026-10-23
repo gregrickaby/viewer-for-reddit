@@ -7,7 +7,7 @@ import styles from './back-link.module.css'
 export function BackLink({ href, children }: { href: string; children: string }) {
   return (
     <nav aria-label="Breadcrumb">
-      <Link href={href as Route} className={styles.link} transitionTypes={['nav-back']}>
+      <Link className={styles.link} href={href as Route} transitionTypes={['nav-back']}>
         {`← ${children}`}
       </Link>
     </nav>

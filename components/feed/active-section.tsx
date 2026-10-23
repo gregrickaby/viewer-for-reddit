@@ -28,9 +28,9 @@ export async function ActiveSection() {
     )
   }
   return (
-    <section className={styles.feed} aria-label="Active threads">
-      <ol role="list" className={`${styles.items} ${styles.posts}`}>
-        <FeedItems posts={posts} showSubreddit blurNsfw={blurNsfw} now={now} />
+    <section aria-label="Active threads" className={styles.feed}>
+      <ol className={`${styles.items} ${styles.posts}`} role="list">
+        <FeedItems blurNsfw={blurNsfw} now={now} posts={posts} showSubreddit />
       </ol>
     </section>
   )

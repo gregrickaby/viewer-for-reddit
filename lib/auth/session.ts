@@ -7,7 +7,7 @@ import { cache } from 'react'
 
 import { ACCESS_COOKIE, REFRESH_COOKIE, unsealAccess, unsealRefresh } from './cookies'
 
-export type Auth = {
+export interface Auth {
   accessToken: string
   username: string
 }
@@ -40,7 +40,7 @@ const readSession = cache(async () => {
 
 /**
  * The Data Access Layer's view of the session. The proxy refreshes tokens before
- * the request reaches here (docs/design.md §5.5). Returns null if there is no usable session.
+ * the request reaches here. Returns null if there is no usable session.
  */
 export async function getAuth(): Promise<Auth | null> {
   const { access, refresh } = await readSession()

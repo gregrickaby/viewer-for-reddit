@@ -2,7 +2,7 @@
 
 Surf Reddit without ads or algorithms: **<https://reddit-viewer.com>**
 
-Viewer for Reddit is a Reddit client built on Next.js and React Server Components. It signs in with Reddit’s official OAuth. The browser never calls Reddit’s API: the server makes every read and write, through Server Components and Server Actions, and sends pages already rendered.
+Viewer for Reddit is a Reddit client built on Next.js and React Server Components. It signs in with Reddit's official OAuth. The browser never calls Reddit's API: the server makes every read and write, through Server Components and Server Actions, and sends pages already rendered.
 
 - **Feeds:** home, popular, subreddits, multireddits, user profiles, saved posts, search.
 - **Actions:** vote, save, comment, reply, edit and delete, subscribe to communities and follow users, and create and edit multireddits. Each one updates the page at once and rolls back if Reddit refuses.
@@ -91,4 +91,4 @@ MIT © [Greg Rickaby](https://gregrickaby.com). See [LICENSE](LICENSE).
 
 ---
 
-_Viewer for Reddit is an independent project not affiliated with Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc. See Reddit’s [brand guidelines](https://redditinc.com/brand), [API terms](https://redditinc.com/policies/data-api-terms), and [API documentation](https://www.reddit.com/dev/api/)._
+_Viewer for Reddit is an independent project not affiliated with Reddit, Inc. "Reddit" and the Snoo logo are trademarks of Reddit, Inc. See Reddit's [brand guidelines](https://redditinc.com/brand), [API terms](https://redditinc.com/policies/data-api-terms), and [API documentation](https://www.reddit.com/dev/api/)._

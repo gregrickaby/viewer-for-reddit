@@ -13,7 +13,7 @@ export type MoreSource =
   | { type: 'user'; name: string; tab: ProfileTab }
   | { type: 'search'; q: string; tab: SearchTab }
 
-export type MoreFeedRequest = {
+export interface MoreFeedRequest {
   source: MoreSource
   sort: FeedSort
   t: TimeRange

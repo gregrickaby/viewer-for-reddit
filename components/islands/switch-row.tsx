@@ -19,21 +19,21 @@ export function SwitchRow({
   const descriptionId = useId()
   return (
     <button
-      type="submit"
-      role="switch"
       aria-checked={checked}
       aria-describedby={description ? descriptionId : undefined}
       className={styles.row}
+      role="switch"
+      type="submit"
     >
       <span className={styles.text}>
         <span className={styles.label}>{label}</span>
         {description ? (
-          <span id={descriptionId} className={styles.description}>
+          <span className={styles.description} id={descriptionId}>
             {description}
           </span>
         ) : null}
       </span>
-      <span className={styles.track} aria-hidden="true">
+      <span aria-hidden="true" className={styles.track}>
         <span className={styles.thumb} />
       </span>
     </button>

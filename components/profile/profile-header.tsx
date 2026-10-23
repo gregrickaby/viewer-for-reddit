@@ -8,7 +8,7 @@ import styles from './profile-header.module.css'
 const cakeDay = new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' })
 
 /**
- * Avatar, karma, cake day, and Follow (design §10.2). A suspended account
+ * Avatar, karma, cake day, and Follow. A suspended account
  * gets a plain explanation instead.
  */
 export function ProfileHeader({
@@ -33,9 +33,9 @@ export function ProfileHeader({
     <header className={styles.root}>
       <div className={styles.identity}>
         {user.icon ? (
-          <img className={styles.avatar} src={user.icon} alt="" width={72} height={72} />
+          <img alt="" className={styles.avatar} height={72} src={user.icon} width={72} />
         ) : (
-          <span className={styles.avatarFallback} aria-hidden="true">
+          <span aria-hidden="true" className={styles.avatarFallback}>
             {user.name.slice(0, 1).toUpperCase()}
           </span>
         )}
@@ -52,8 +52,8 @@ export function ProfileHeader({
         {isMe ? null : (
           <SubscribeButton
             key={String(user.followed)}
-            name={user.name}
             kind="user"
+            name={user.name}
             subscribed={user.followed}
           />
         )}
@@ -65,9 +65,9 @@ export function ProfileHeader({
 
 export function ProfileHeaderSkeleton() {
   return (
-    <div className={styles.root} aria-busy="true">
+    <div aria-busy="true" className={styles.root}>
       <span className="visually-hidden">Loading profile…</span>
-      <div className={styles.identity} aria-hidden="true">
+      <div aria-hidden="true" className={styles.identity}>
         <span className={`skeleton ${styles.avatarFallback}`} />
         <div className={styles.names}>
           <span className={`skeleton ${styles.nameSkeleton}`} />

@@ -5,7 +5,7 @@ import { safeNext } from '@/lib/auth/next-param'
 
 /**
  * Clears a dead session. Server Components can't delete cookies, so the DAL
- * redirects here when Reddit rejects a token (docs/design.md §5.5). It does not
+ * redirects here when Reddit rejects a token. It does not
  * revoke: the token is already unusable. User-initiated sign-out is the
  * `signOut` Server Action.
  */

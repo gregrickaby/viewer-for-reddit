@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 /**
  * Closes open popovers (the account menu, the mobile nav drawer) after a
  * client navigation. They live in the persistent layout, so without this they
- * would stay open over the new page (design §8.6, "Activity-aware islands").
+ * would stay open over the new page.
  * Renders nothing.
  */
 export function PopoverDismiss() {

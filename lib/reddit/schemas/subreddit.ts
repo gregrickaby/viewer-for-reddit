@@ -7,7 +7,7 @@ import { thing } from './things'
 
 /**
  * A subreddit (`t5`). Followed users appear as `t5` too, with
- * `subreddit_type: "user"` and `display_name: "u_<name>"` (design §6.3).
+ * `subreddit_type: "user"` and `display_name: "u_<name>"`.
  */
 export const Subreddit = SubredditSchema.pick({
   id: true,

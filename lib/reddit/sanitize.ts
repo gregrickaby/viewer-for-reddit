@@ -8,7 +8,7 @@ import type { SafeHtml } from '@/lib/view-models'
 import { resolveRedditLink } from './links'
 
 /*
- * The only producer of `SafeHtml` (docs/design.md §7, §8.9). Reddit's own
+ * The only producer of `SafeHtml`. Reddit's own
  * markdown-to-HTML output (`selftext_html` / `body_html`, fetched with raw_json=1)
  * is reduced to a strict allowlist, links are rewritten to app routes, and
  * spoilers are made keyboard accessible.
@@ -103,10 +103,10 @@ const OPTIONS: sanitizeHtml.IOptions = {
   },
 }
 
-export type SanitizeOptions = {
+export interface SanitizeOptions {
   /**
    * Turn bare media links into inline images and GIF loops (self text and
-   * comments), using the thing's `media_metadata` for sizes (design §8.7).
+   * comments), using the thing's `media_metadata` for sizes.
    */
   inlineMedia?: { metadata: Record<string, unknown> | null | undefined }
 }

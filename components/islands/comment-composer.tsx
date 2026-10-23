@@ -9,7 +9,10 @@ import { COMMENT_MAX_CHARS, EDIT_HINT, placeholderFor, REPLY_HINT } from './comp
 import { PendingButton } from './pending-button'
 import { useEnhancedForm } from './use-enhanced-form'
 
-type PendingComment = { key: string; text: string }
+interface PendingComment {
+  key: string
+  text: string
+}
 
 export type CommentComposerProps =
   | { mode: 'reply'; parent: string; me: string; label: string }
@@ -29,7 +32,7 @@ function closeEnclosingDetails(form: HTMLFormElement | null) {
 }
 
 /**
- * Writes a comment or edits one (design §8.6). The textarea clears at once
+ * Writes a comment or edits one. The textarea clears at once
  * and a faded pending comment shows until the server re-render arrives with
  * the real one; on failure the draft comes back with Reddit's reason.
  */
@@ -65,20 +68,20 @@ function ReplyComposer({ parent, me, label }: Extract<CommentComposerProps, { mo
   return (
     <div className={styles.root}>
       <form ref={formRef} {...formProps} className={styles.form}>
-        <input type="hidden" name="parent" value={parent} />
+        <input name="parent" type="hidden" value={parent} />
         <label className="visually-hidden" htmlFor={`text-${parent}`}>
           {label}
         </label>
         <textarea
-          ref={textRef}
-          id={`text-${parent}`}
-          name="text"
           className={styles.text}
-          placeholder={placeholderFor(parent)}
+          id={`text-${parent}`}
           maxLength={COMMENT_MAX_CHARS}
+          name="text"
+          onKeyDown={submitOnShortcut}
+          placeholder={placeholderFor(parent)}
+          ref={textRef}
           required
           rows={3}
-          onKeyDown={submitOnShortcut}
         />
         <div className={styles.bar}>
           {error ? (
@@ -92,9 +95,9 @@ function ReplyComposer({ parent, me, label }: Extract<CommentComposerProps, { mo
         </div>
       </form>
       {pending.length > 0 ? (
-        <ol role="list" className={styles.pendingList} aria-live="polite">
+        <ol aria-live="polite" className={styles.pendingList} role="list">
           {pending.map((comment) => (
-            <li key={comment.key} className={styles.pending}>
+            <li className={styles.pending} key={comment.key}>
               <p className={styles.pendingMeta}>u/{me} · sending…</p>
               <p className={styles.pendingText}>{comment.text}</p>
             </li>
@@ -116,19 +119,19 @@ function EditComposer({ thing, initial }: Extract<CommentComposerProps, { mode: 
 
   return (
     <form ref={formRef} {...formProps} className={styles.form}>
-      <input type="hidden" name="thing" value={thing} />
+      <input name="thing" type="hidden" value={thing} />
       <label className="visually-hidden" htmlFor={`edit-${thing}`}>
         Edit comment
       </label>
       <textarea
-        id={`edit-${thing}`}
-        name="text"
         className={styles.text}
         defaultValue={initial}
+        id={`edit-${thing}`}
         maxLength={COMMENT_MAX_CHARS}
+        name="text"
+        onKeyDown={submitOnShortcut}
         required
         rows={4}
-        onKeyDown={submitOnShortcut}
       />
       <div className={styles.bar}>
         {error ? (

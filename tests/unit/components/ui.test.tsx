@@ -7,17 +7,17 @@ import { renderServer } from '@/tests/helpers/render-server'
 describe('Button', () => {
   it('defaults to a primary, medium, non-submitting button', async () => {
     const html = await renderServer(<Button>Save</Button>)
-    expect(html).toBe('<button type="button" class="button primary md">Save</button>')
+    expect(html).toBe('<button class="button primary md" type="button">Save</button>')
   })
 
   it('applies variants, sizes, extra classes, and native attributes', async () => {
     const html = await renderServer(
-      <Button type="submit" variant="ghost" size="sm" className="wide" disabled aria-busy="true">
+      <Button aria-busy="true" className="wide" disabled size="sm" type="submit" variant="ghost">
         Go
       </Button>,
     )
     expect(html).toBe(
-      '<button type="submit" class="button ghost sm wide" disabled="" aria-busy="true">Go</button>',
+      '<button class="button ghost sm wide" type="submit" aria-busy="true" disabled="">Go</button>',
     )
   })
 })
@@ -25,7 +25,7 @@ describe('Button', () => {
 describe('LinkButton', () => {
   it('renders a styled link', async () => {
     const html = await renderServer(
-      <LinkButton href="/home" variant="secondary" size="lg">
+      <LinkButton href="/home" size="lg" variant="secondary">
         Home
       </LinkButton>,
     )

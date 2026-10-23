@@ -84,7 +84,7 @@ function openAt(index: number) {
 
 describe('GalleryLightbox', () => {
   it('opens the dialog at the tapped image and announces it', () => {
-    render(<Gallery items={items} title="Trip" postId="p1" />)
+    render(<Gallery items={items} postId="p1" title="Trip" />)
     const dialog = document.querySelector('dialog')!
     expect(dialog.open).toBe(false)
     openAt(1)
@@ -100,7 +100,7 @@ describe('GalleryLightbox', () => {
       return { finished }
     })
     Object.assign(document, { startViewTransition })
-    render(<Gallery items={items} title="Trip" postId="p1" />)
+    render(<Gallery items={items} postId="p1" title="Trip" />)
     openAt(0)
     expect(startViewTransition).toHaveBeenCalledOnce()
     await act(async () => finished)
@@ -110,13 +110,13 @@ describe('GalleryLightbox', () => {
 
     cleanup()
     reducedMotion = true
-    render(<Gallery items={items} title="Trip" postId="p1" />)
+    render(<Gallery items={items} postId="p1" title="Trip" />)
     openAt(0)
     expect(startViewTransition).toHaveBeenCalledOnce()
   })
 
   it('moves with the arrow keys, updates the count after scrolling, and returns focus on close', () => {
-    render(<Gallery items={items} title="Trip" postId="p1" />)
+    render(<Gallery items={items} postId="p1" title="Trip" />)
     const link = openAt(0)
     const dialog = document.querySelector('dialog')!
     const track = dialog.querySelector('ul')!
@@ -138,7 +138,7 @@ describe('GalleryLightbox', () => {
   })
 
   it('leaves modified clicks, other clicks, and unmatched slides alone', () => {
-    render(<Gallery items={items} title="Trip" postId="p1" />)
+    render(<Gallery items={items} postId="p1" title="Trip" />)
     const dialog = document.querySelector('dialog')!
     const link = document.querySelector<HTMLAnchorElement>(
       'ul[aria-roledescription] a[data-index]',
@@ -157,7 +157,7 @@ describe('GalleryLightbox', () => {
   })
 
   it('closes an open lightbox when the route goes away', () => {
-    const { unmount } = render(<Gallery items={items} title="Trip" postId="p1" />)
+    const { unmount } = render(<Gallery items={items} postId="p1" title="Trip" />)
     const dialog = document.querySelector('dialog')!
     openAt(0)
     unmount()
@@ -178,8 +178,8 @@ describe('GalleryLightbox', () => {
             outboundUrl: null,
           },
         ]}
-        title="Trip"
         postId="p1"
+        title="Trip"
       />,
     )
     const dialog = document.querySelector('dialog')!

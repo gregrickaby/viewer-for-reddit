@@ -15,7 +15,11 @@ const updateView = (name: string): LiveUpdateView => ({
 const NEWEST = 'LiveUpdate_362ac036-b5eb-11f1-946d-ceb77989b019'
 const CURSOR = 'LiveUpdate_6603ce62-b094-11f1-94e4-7ec5abe59ad0'
 
-type Page = { items: LiveUpdateView[]; after: string | null; before: null }
+interface Page {
+  items: LiveUpdateView[]
+  after: string | null
+  before: null
+}
 const getLiveUpdates = vi.fn<(id: string, query: unknown) => Promise<Page>>(async () => ({
   items: [updateView(NEWEST)],
   after: CURSOR,

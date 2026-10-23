@@ -21,7 +21,7 @@ const cookieOptions = {
 export async function setTheme(formData: FormData): Promise<ActionResult> {
   const theme = formData.get('theme')
   if (!isTheme(theme)) return invalid()
-  // Not httpOnly: the no-flash head script reads it (design §8.8).
+  // Not httpOnly: the no-flash head script reads it.
   ;(await cookies()).set(THEME_COOKIE, theme, { ...cookieOptions, httpOnly: false })
   return { ok: true, data: undefined }
 }

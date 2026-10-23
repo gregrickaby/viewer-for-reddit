@@ -18,7 +18,7 @@ export function isPseudoSubreddit(name: string): boolean {
 
 /**
  * The community banner, icon, name, and member count. A sibling boundary of
- * the feed, so each reveals as soon as its own Reddit call resolves (design §8.4).
+ * the feed, so each reveals as soon as its own Reddit call resolves.
  */
 export async function SubredditHeader({ params }: { params: Promise<{ subreddit: string }> }) {
   const { subreddit: name } = await params
@@ -48,9 +48,9 @@ export async function SubredditHeader({ params }: { params: Promise<{ subreddit:
       />
       <div className={styles.identity}>
         {subreddit.icon ? (
-          <img className={styles.icon} src={subreddit.icon} alt="" width={64} height={64} />
+          <img alt="" className={styles.icon} height={64} src={subreddit.icon} width={64} />
         ) : (
-          <span className={styles.iconFallback} aria-hidden="true">
+          <span aria-hidden="true" className={styles.iconFallback}>
             r/
           </span>
         )}
@@ -67,15 +67,15 @@ export async function SubredditHeader({ params }: { params: Promise<{ subreddit:
         <div className={styles.actions}>
           <SubscribeButton
             key={String(subreddit.subscribed)}
-            name={subreddit.name}
             kind="community"
+            name={subreddit.name}
             subscribed={subreddit.subscribed}
           />
-          {multis ? <AddToMultiMenu subreddit={subreddit.name} multis={multis} /> : null}
+          {multis ? <AddToMultiMenu multis={multis} subreddit={subreddit.name} /> : null}
         </div>
       </div>
       {subreddit.description ? (
-        <RedditHtml html={subreddit.description} className={styles.description} />
+        <RedditHtml className={styles.description} html={subreddit.description} />
       ) : null}
     </header>
   )
@@ -91,10 +91,10 @@ function PlainHeader({ title }: { title: string }) {
 
 export function SubredditHeaderSkeleton() {
   return (
-    <div className={styles.root} aria-busy="true">
+    <div aria-busy="true" className={styles.root}>
       <span className="visually-hidden">Loading community…</span>
-      <span className={`skeleton ${styles.banner}`} aria-hidden="true" />
-      <div className={styles.identity} aria-hidden="true">
+      <span aria-hidden="true" className={`skeleton ${styles.banner}`} />
+      <div aria-hidden="true" className={styles.identity}>
         <span className={`skeleton ${styles.iconFallback}`} />
         <div className={styles.names}>
           <span className={`skeleton ${styles.titleSkeleton}`} />

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
 import feed from '@/components/feed/feed.module.css'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { firstFullname, ItemList } from '@/components/feed/item-list'
@@ -34,8 +35,6 @@ import {
 } from '@/lib/url-state'
 import type { ListItem, MultiView, Page, SubredditView } from '@/lib/view-models'
 
-import styles from '../feed-page.module.css'
-
 export const metadata: Metadata = { title: 'Search' }
 
 const SORTS = ['new'] as const
@@ -67,7 +66,7 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
     return (
       <div className={feed.notice}>
         <p className={feed.noticeTitle}>Find communities, people, and posts</p>
-        <p>Search by name or topic, like “typescript” or “houseplants”.</p>
+        <p>Search by name or topic, like &quot;typescript&quot; or &quot;houseplants&quot;.</p>
       </div>
     )
   }
@@ -91,7 +90,7 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
   const { after } = found.page
 
   return (
-    <section className={feed.feed} aria-label={`${LABELS[tab]} matching ${q}`}>
+    <section aria-label={`${LABELS[tab]} matching ${q}`} className={feed.feed}>
       <Tabs
         label="Search types"
         tabs={SEARCH_TABS.map((value) => ({
@@ -101,29 +100,29 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
         }))}
       />
       <ContentReveal
-        name="search-results"
         contentKey={`${q}:${tab}:${query.after ?? query.before ?? 'first'}`}
+        name="search-results"
       >
         <div className={feed.list}>
           {found.tab === 'posts' ? (
             <ItemList
-              items={found.page.items}
-              now={now}
               blurNsfw={blurNsfw}
               empty={{
-                title: `No posts match “${q}”`,
+                title: `No posts match "${q}"`,
                 detail: 'Try a shorter or different word.',
               }}
+              items={found.page.items}
+              now={now}
             />
           ) : items.length > 0 ? (
             <SubredditRows
               items={found.page.items}
-              showDescription
               multis={found.tab === 'communities' ? found.multis : undefined}
+              showDescription
             />
           ) : (
             <div className={feed.notice}>
-              <p className={feed.noticeTitle}>{`No ${LABELS[tab].toLowerCase()} match “${q}”`}</p>
+              <p className={feed.noticeTitle}>{`No ${LABELS[tab].toLowerCase()} match "${q}"`}</p>
               <p>Try a shorter or different word.</p>
             </div>
           )}
@@ -131,10 +130,10 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
       </ContentReveal>
       {after ? (
         <InfiniteFeed
-          key={`${q}:${tab}:${query.after ?? query.before ?? 'first'}:${blurNsfw}`}
           base="/search"
           defaultSort="new"
           extra={extra}
+          key={`${q}:${tab}:${query.after ?? query.before ?? 'first'}:${blurNsfw}`}
           request={{
             source: { type: 'search', q, tab },
             sort: query.sort,
@@ -146,13 +145,13 @@ async function Results({ searchParams }: Pick<PageProps<'/search'>, 'searchParam
         />
       ) : null}
       <Pagination
-        infinite
-        base="/search"
-        query={query}
         after={after}
-        firstFullname={first}
+        base="/search"
         defaultSort="new"
         extra={extra}
+        firstFullname={first}
+        infinite
+        query={query}
       />
     </section>
   )
@@ -164,7 +163,7 @@ export default function SearchPage({ searchParams }: PageProps<'/search'>) {
       <div className={styles.page}>
         <BackLink href="/home">Home</BackLink>
         <h1 className={styles.title}>Search</h1>
-        <SectionError title="Couldn’t search Reddit">
+        <SectionError title="Couldn't search Reddit">
           <Suspense
             fallback={
               <SkeletonExit>

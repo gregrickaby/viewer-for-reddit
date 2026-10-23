@@ -6,7 +6,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'r
 import { registerPlayer } from './player-registry'
 import styles from './players.module.css'
 
-export type EmbedFacadeProps = {
+export interface EmbedFacadeProps {
   provider: string
   /** Display name for the badge, e.g. "YouTube". */
   providerName: string
@@ -21,7 +21,7 @@ export type EmbedFacadeProps = {
 }
 
 /**
- * A click-to-load embed (design §8.7): until the reader presses play, it is
+ * A click-to-load embed: until the reader presses play, it is
  * a plain link with Reddit's preview, and no request reaches the provider.
  * Without JavaScript the link opens the original. Scrolling the player out of
  * view unloads it, which stops the audio.
@@ -66,16 +66,16 @@ export function EmbedFacade(props: EmbedFacadeProps) {
 
   if (active) {
     return (
-      <div ref={boxRef} className={styles.embed} style={box}>
+      <div className={styles.embed} ref={boxRef} style={box}>
         <iframe
-          ref={iframeRef}
+          allow={props.allow}
+          allowFullScreen
           className={styles.iframe}
+          ref={iframeRef}
+          referrerPolicy="strict-origin-when-cross-origin"
+          sandbox={props.sandbox}
           src={props.iframeSrc}
           title={props.title}
-          allow={props.allow}
-          sandbox={props.sandbox}
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
         />
       </div>
     )
@@ -83,27 +83,27 @@ export function EmbedFacade(props: EmbedFacadeProps) {
 
   return (
     <a
-      href={props.originalUrl}
+      aria-label={`Play ${props.title} (${props.providerName})`}
       className={styles.facade}
+      href={props.originalUrl}
+      onClick={activate}
+      rel="noopener noreferrer nofollow ugc"
       style={box}
       target="_blank"
-      rel="noopener noreferrer nofollow ugc"
-      onClick={activate}
-      aria-label={`Play ${props.title} (${props.providerName})`}
     >
       {props.poster ? (
         <img
-          className={styles.facadePoster}
-          src={props.poster}
           alt=""
-          loading="lazy"
+          className={styles.facadePoster}
           decoding="async"
+          loading="lazy"
+          src={props.poster}
         />
       ) : null}
       <span className={styles.facadeBadge} data-provider={props.provider}>
         {props.providerName}
       </span>
-      <span className={styles.facadePlay} aria-hidden="true">
+      <span aria-hidden="true" className={styles.facadePlay}>
         ▶
       </span>
     </a>

@@ -8,7 +8,7 @@ import { revokeToken } from '@/lib/auth/oauth'
 import { logger } from '@/lib/datadog/server'
 
 /**
- * User-initiated sign-out (docs/design.md §5.6): revoke at Reddit (best-effort),
+ * User-initiated sign-out: revoke at Reddit (best-effort),
  * clear the session, and return to the landing page.
  */
 export async function signOut(): Promise<void> {

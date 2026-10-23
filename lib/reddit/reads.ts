@@ -20,7 +20,7 @@ import { MultiListResponse } from './schemas/responses'
 import { SubredditThing } from './schemas/subreddit'
 
 /*
- * Reads (design §6.1). Each function derives the token from the session itself,
+ * Reads. Each function derives the token from the session itself,
  * so callers can't run it as someone else. Results are view models only.
  */
 

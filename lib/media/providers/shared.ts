@@ -1,12 +1,11 @@
 import 'server-only'
 
+import { previewImageSet } from '@/lib/media/images'
+import { safeLinkUrl } from '@/lib/media/url'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { EmbedView, ImageSet, PostMedia } from '@/lib/view-models'
 
-import { previewImageSet } from '../images'
-import { safeLinkUrl } from '../url'
-
-/** Every embed iframe gets this sandbox (design §11). */
+/** Every embed iframe gets this sandbox. */
 export const EMBED_SANDBOX = 'allow-scripts allow-same-origin allow-presentation allow-popups'
 
 /** The default `allow` list for video players. */

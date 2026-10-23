@@ -51,7 +51,7 @@ describe('getThread', () => {
     expect(node?.kind === 'comment' && node.comment.mine).toBe(true)
   })
 
-  it('leaves the sort to Reddit, and reports the thread’s suggested one', async () => {
+  it("leaves the sort to Reddit, and reports the thread's suggested one", async () => {
     redditFetch.mockResolvedValue([
       listing([{ kind: 't3', data: { ...post, suggested_sort: 'new' } }]),
       listing([]),

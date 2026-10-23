@@ -30,7 +30,7 @@ beforeEach(() => {
 })
 
 describe('getSaved', () => {
-  it('lists the viewer’s saved posts and comments', async () => {
+  it("lists the viewer's saved posts and comments", async () => {
     redditFetch.mockResolvedValue(listing([post, comment], 't1_next'))
     const page = await getSaved('all', parseFeedQuery({}, ['new']))
     expect(redditFetch).toHaveBeenCalledWith('/user/fixture_user/saved', {

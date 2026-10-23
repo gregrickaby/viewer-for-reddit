@@ -12,7 +12,7 @@ const Env = z.object({
   REDDIT_REDIRECT_URI: z.url(),
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters'),
   USER_AGENT: z.string().min(10),
-  GOOGLE_SITE_VERIFICATION: z.string().optional(),
+  GOOGLE_SITE_VERIFICATION: optional,
   // Overridable so tests can point at a mock Reddit server.
   REDDIT_API_BASE: z.url().default('https://oauth.reddit.com'),
   REDDIT_WWW_BASE: z.url().default('https://www.reddit.com'),

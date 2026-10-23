@@ -20,7 +20,7 @@ afterEach(cleanup)
 
 describe('SubscribeButton', () => {
   it('joins at once and keeps it when Reddit agrees', async () => {
-    render(<SubscribeButton name="typescript" kind="community" subscribed={false} />)
+    render(<SubscribeButton kind="community" name="typescript" subscribed={false} />)
     const button = screen.getByRole('button', { name: 'Join r/typescript' })
     await act(async () => fireEvent.click(button))
     expect(screen.getByRole('button').textContent).toBe('Joined')
@@ -34,7 +34,7 @@ describe('SubscribeButton', () => {
   })
 
   it('rolls back with the reason when Reddit refuses', async () => {
-    render(<SubscribeButton name="spez" kind="user" subscribed />)
+    render(<SubscribeButton kind="user" name="spez" subscribed />)
     await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Following u/spez' })))
     expect(screen.getByRole('button').textContent).toBe('Follow')
     await act(async () =>
@@ -49,7 +49,7 @@ describe('SubscribeButton', () => {
 
   it('asks before leaving on the manage page', async () => {
     const hidePopover = vi.fn()
-    render(<SubscribeButton name="pics" kind="community" subscribed confirmLeave />)
+    render(<SubscribeButton confirmLeave kind="community" name="pics" subscribed />)
     const confirm = document.querySelector<HTMLElement>('[popover]')!
     Object.assign(confirm, { hidePopover })
     expect(screen.getByText('Leave r/pics?')).toBeTruthy()
@@ -63,7 +63,7 @@ describe('SubscribeButton', () => {
   })
 
   it('asks before unfollowing a person', () => {
-    render(<SubscribeButton name="spez" kind="user" subscribed confirmLeave />)
+    render(<SubscribeButton confirmLeave kind="user" name="spez" subscribed />)
     expect(screen.getByText('Unfollow u/spez?')).toBeTruthy()
   })
 })

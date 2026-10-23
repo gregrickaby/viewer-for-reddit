@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
+import styles from '@/app/(app)/feed-page.module.css'
 import { SectionError } from '@/components/islands/section-error'
 import { LiveSection, LiveSkeleton } from '@/components/live/live-section'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
-
-import styles from '../../feed-page.module.css'
 
 type Props = PageProps<'/live/[id]'>
 
@@ -15,7 +14,7 @@ export default function LivePage({ params, searchParams }: Props) {
   return (
     <PageTransition>
       <div className={styles.page}>
-        <SectionError title="Couldn’t load this live thread">
+        <SectionError title="Couldn't load this live thread">
           <Suspense
             fallback={
               <SkeletonExit>

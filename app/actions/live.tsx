@@ -21,7 +21,7 @@ const PollRequest = z.object({
 
 const OlderRequest = z.object({ id: Id, after: Cursor })
 
-export type LivePoll = {
+export interface LivePoll {
   items: ReactNode
   count: number
   /** The newest update's cursor, or null when nothing new came back. */
@@ -29,7 +29,10 @@ export type LivePoll = {
   event: { live: boolean; viewers: number | null } | null
 }
 
-export type LiveOlder = { items: ReactNode; after: string | null }
+export interface LiveOlder {
+  items: ReactNode
+  after: string | null
+}
 
 /**
  * Updates newer than `before`, rendered on the server. The live island calls this
@@ -47,7 +50,7 @@ export async function pollLive(input: unknown): Promise<ActionResult<LivePoll>> 
       meta ? getLiveEvent(id) : null,
     ])
     return {
-      items: <LiveUpdateItems updates={page.items} now={Date.now()} />,
+      items: <LiveUpdateItems now={Date.now()} updates={page.items} />,
       count: page.items.length,
       newest: page.items[0]?.name ?? null,
       event: event ? { live: event.live, viewers: event.viewers } : null,
@@ -64,7 +67,7 @@ export async function loadOlderLive(input: unknown): Promise<ActionResult<LiveOl
   return runAction(async () => {
     const page = await getLiveUpdates(id, { after })
     return {
-      items: <LiveUpdateItems updates={page.items} now={Date.now()} />,
+      items: <LiveUpdateItems now={Date.now()} updates={page.items} />,
       after: page.after,
     }
   })

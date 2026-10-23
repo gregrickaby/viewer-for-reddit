@@ -17,7 +17,7 @@ describe('private route prefixes', () => {
     }
   })
 
-  it('cover every API route, and leave the sign-in routes to the proxy’s public list', () => {
+  it("cover every API route, and leave the sign-in routes to the proxy's public list", () => {
     for (const name of folders('app/api')) expect(isPrivatePath(`/api/${name}`)).toBe(true)
   })
 

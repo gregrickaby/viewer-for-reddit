@@ -1,10 +1,9 @@
 import 'server-only'
 
+import { resolveWithProviders } from '@/lib/media/providers/registry'
+import { safeLinkUrl } from '@/lib/media/url'
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
-
-import { resolveWithProviders } from '../providers/registry'
-import { safeLinkUrl } from '../url'
 
 /** Reddit wraps many oEmbed players in Embedly; the real player URL is its `src`. */
 const EMBEDLY = 'cdn.embedly.com'
@@ -26,7 +25,7 @@ export function oembedSrc(link: RedditLink): URL | null {
 }
 
 /**
- * Resolvers 5 and 10 (design §8.7): a known provider, recognized from the
+ * Resolvers 5 and 10: a known provider, recognized from the
  * post's URL or, failing that, from the oEmbed player URL. That second path
  * handles short links and vanity URLs (vm.tiktok.com, vimeo.com/<user>/<slug>).
  */

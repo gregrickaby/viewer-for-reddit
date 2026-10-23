@@ -79,7 +79,7 @@ describe('createMultiForm', () => {
     expect(createMulti).not.toHaveBeenCalled()
   })
 
-  it('shows Reddit’s reason when it refuses', async () => {
+  it("shows Reddit's reason when it refuses", async () => {
     createMulti.mockRejectedValueOnce(new RedditApiError('conflict', 409, 'MULTI_EXISTS'))
     expect(await actions.createMultiForm(null, form({ displayName: 'News' }))).toEqual({
       ok: false,
@@ -170,13 +170,13 @@ describe('setMembership', () => {
     expect(setMultiMembership).toHaveBeenCalledWith('news', 'pics', false)
   })
 
-  it('names a subreddit that doesn’t exist, and writes nothing', async () => {
+  it("names a subreddit that doesn't exist, and writes nothing", async () => {
     getSubreddit.mockRejectedValueOnce(new RedditNotFoundError())
     expect(
       await actions.setMembership(form({ multi: 'news', subreddit: 'nopenope', member: 'true' })),
     ).toEqual({
       ok: false,
-      error: { code: 'REDDIT', message: 'r/nopenope doesn’t exist.' },
+      error: { code: 'REDDIT', message: "r/nopenope doesn't exist." },
     })
     expect(setMultiMembership).not.toHaveBeenCalled()
   })

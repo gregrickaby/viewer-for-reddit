@@ -49,7 +49,10 @@ const Request = z.object({
   showSubreddit: z.boolean(),
 })
 
-export type MoreFeed = { items: ReactNode; after: string | null }
+export interface MoreFeed {
+  items: ReactNode
+  after: string | null
+}
 
 /** One page of `source`, drawn the way its first page was. */
 async function renderPage(
@@ -63,7 +66,7 @@ async function renderPage(
       source.tab === 'communities' ? getMyMultis().catch(() => undefined) : undefined,
     ])
     return {
-      items: <SubredditRowItems items={page.items} showDescription multis={multis} />,
+      items: <SubredditRowItems items={page.items} multis={multis} showDescription />,
       after: page.after,
     }
   }
@@ -74,7 +77,7 @@ async function renderPage(
     const page = await getFeed(source, query)
     return {
       items: (
-        <FeedItems posts={page.items} showSubreddit={showSubreddit} blurNsfw={blurNsfw} now={now} />
+        <FeedItems blurNsfw={blurNsfw} now={now} posts={page.items} showSubreddit={showSubreddit} />
       ),
       after: page.after,
     }
@@ -86,7 +89,7 @@ async function renderPage(
         ? await getUserListing(source.name, source.tab, query)
         : await searchPosts(source.q, query)
   return {
-    items: <ListItems items={page.items} now={now} blurNsfw={blurNsfw} />,
+    items: <ListItems blurNsfw={blurNsfw} items={page.items} now={now} />,
     after: page.after,
   }
 }

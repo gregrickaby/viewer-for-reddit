@@ -9,7 +9,7 @@ import styles from './add-to-multi-menu.module.css'
 
 /**
  * "+ Multi": a popover listing the viewer's editable multis, each with a
- * checkmark for whether it includes this subreddit (design §10.2).
+ * checkmark for whether it includes this subreddit.
  */
 export function AddToMultiMenu({ subreddit, multis }: { subreddit: string; multis: MultiView[] }) {
   const id = useId()
@@ -19,33 +19,33 @@ export function AddToMultiMenu({ subreddit, multis }: { subreddit: string; multi
   return (
     <div className={styles.root}>
       <button
-        type="button"
+        aria-label={`Add r/${subreddit} to a multireddit`}
         className={styles.trigger}
         popoverTarget={id}
-        aria-label={`Add r/${subreddit} to a multireddit`}
+        type="button"
       >
         + Multi <span aria-hidden="true">▾</span>
       </button>
-      <div id={id} popover="auto" className={styles.menu}>
+      <div className={styles.menu} id={id} popover="auto">
         <p className={styles.heading}>Add r/{subreddit} to…</p>
         {editable.length > 0 ? (
-          <ul role="list" className={styles.list}>
+          <ul className={styles.list} role="list">
             {editable.map((multi) => (
               <li key={multi.name}>
                 <MembershipToggle
                   key={String(multi.subreddits.some((name) => name.toLowerCase() === lower))}
+                  label={multi.displayName}
+                  member={multi.subreddits.some((name) => name.toLowerCase() === lower)}
                   multi={multi.name}
                   subreddit={subreddit}
-                  member={multi.subreddits.some((name) => name.toLowerCase() === lower)}
-                  label={multi.displayName}
                 />
               </li>
             ))}
           </ul>
         ) : (
-          <p className={styles.empty}>You don’t have any multireddits yet.</p>
+          <p className={styles.empty}>You don&apos;t have any multireddits yet.</p>
         )}
-        <Link href={'/multis' as Route} className={styles.manage}>
+        <Link className={styles.manage} href={'/multis' as Route}>
           Manage multireddits →
         </Link>
       </div>

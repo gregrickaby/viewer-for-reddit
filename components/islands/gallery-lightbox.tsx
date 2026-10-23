@@ -21,7 +21,7 @@ function releaseImages(dialog: HTMLDialogElement) {
 }
 
 /**
- * Morphs `from` into `to` while `update` swaps the page (design §8.10), or
+ * Morphs `from` into `to` while `update` swaps the page, or
  * just runs `update` without View Transitions or under reduced motion.
  */
 function morph(from: HTMLElement | null, to: HTMLElement | null, update: () => void) {
@@ -109,7 +109,7 @@ export function GalleryLightbox({ postId }: { postId: string }) {
   }, [postId])
 
   return (
-    <p ref={liveRef} className="visually-hidden" aria-live="polite">
+    <p aria-live="polite" className="visually-hidden" ref={liveRef}>
       {message}
     </p>
   )
