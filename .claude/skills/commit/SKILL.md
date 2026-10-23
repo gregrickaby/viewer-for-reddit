@@ -1,5 +1,6 @@
 ---
 name: commit
+model: claude-haiku-5-5
 description: Commit the working tree as small conventional commits, one per logical chunk of work. Use when the user says "commit", "micro commit", "commit this", or "/commit". Does not push unless asked.
 ---
 
@@ -11,9 +12,9 @@ Split the uncommitted work into small commits, one per logical change, with Conv
 
 ## 1. Survey
 
-1. Run `git status --short` and `git diff` (plus `git diff --cached` if anything is staged). Read new files in full.
+1. Run `git status --short` and `git diff -- . ':!package-lock.json'` (plus `--cached` if anything is staged). Read new files in full.
 2. Note changes you did not make in this session (for example `AGENTS.md` edits or config tweaks). Leave them unstaged and list them in the report, unless the user said to include them.
-3. If `npm run check` has not passed since the last edit, run it now. Stop and report if it fails.
+3. If `npm run check` has not passed since the last edit, run it with `2>&1 | tail -40`. Stop and report if it fails.
 
 ## 2. Group
 
@@ -31,7 +32,7 @@ When one file holds two changes, stage a version of it with only the first chang
 git update-index --add --cacheinfo 100644,$(git hash-object -w /path/to/partial),path/in/repo
 ```
 
-Commit, then `git add` the real file for the next commit. Check any commit built from a partial file in a temporary worktree (`git worktree add <dir> <sha>`, symlink `node_modules`, run `npm run check`, then `git worktree remove --force <dir>`).
+Commit, then `git add` the real file for the next commit. The final commit matches the tree that `npm run check` passed.
 
 ## 3. Write messages
 
