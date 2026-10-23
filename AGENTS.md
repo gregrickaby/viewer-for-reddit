@@ -65,7 +65,7 @@ npm run build         # Production build
 
 - Put styles in CSS Modules inside `@layer components`, using the design tokens in `app/styles/tokens.css`.
 - Keep links and forms working without JavaScript where they do today.
-- Write prose (UI copy, docs, commit messages) following [writing-style.md](./.claude/rules/writing-style.md): no emoji, no em dashes, plain verbs.
+- Write prose (UI copy, docs, commit messages) following `~/.claude/rules/writing-style.md`: no emoji, no em dashes, plain verbs.
 - Minimize subagent spawning. Each one is a separate billed request; use Read/Grep/Bash for known files and symbols.
 
 **Ask before**: changing the auth flow, adding dependencies, committing, or pushing.
