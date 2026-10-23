@@ -1,0 +1,14 @@
+$schema: 'https://json.schemastore.org/lefthook.json'
+
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      glob: '*.{js,mjs,ts,tsx}'
+      run: npx eslint {staged_files} --fix
+    stylelint:
+      glob: '*.css'
+      run: npx stylelint {staged_files} --fix
+    prettier:
+      glob: '*.{mjs,cjs,js,ts,tsx,md,css,json,yml,yaml}'
+      run: npx prettier {staged_files} --write
