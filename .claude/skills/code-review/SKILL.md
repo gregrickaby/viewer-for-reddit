@@ -1,5 +1,6 @@
 ---
 name: code-review
+model: claude-opus-5-5
 description: Review changed code in Viewer for Reddit against its architecture rules and conventions, and fix issues before committing.
 ---
 
