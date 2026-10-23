@@ -33,7 +33,7 @@ npm run build         # Production build
 
 **Secrets**: copy `.env.example` to `.env.local`: `BASE_URL`, `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_REDIRECT_URI`, `SESSION_SECRET`, `USER_AGENT`, `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`, optional `GOOGLE_SITE_VERIFICATION`, optional Datadog (`DD_API_KEY`, `DD_APPLICATION_ID`, `DD_CLIENT_TOKEN`, `DD_SITE`, `DD_SERVICE`, `DD_ENV`, `DD_AGENT_HOST`, `DD_TRACE_AGENT_PORT`). APM: `npm start` preloads `dd-trace` with `NODE_OPTIONS='--require dd-trace/init'`, because it must patch Node's module loader before Next loads; it sends traces to the Datadog Agent that runs beside the app on Coolify. Server code logs through `lib/datadog/server.ts` (never `console`, except inside `lib/datadog/server.ts` itself, which falls back to it); browser code through `lib/datadog/client.ts`. `lib/env.ts` validates them at startup, except the encryption key, which Next reads itself.
 
-## Architecture rules
+## Architecture
 
 - **Server-first.** The browser never fetches Reddit or JSON: reads happen in Server Components, writes in Server Actions (`app/actions/`). Client components are small islands (`components/islands/`) for optimistic UI and media playback. No client-side data fetching.
 - **One Reddit client.** `lib/reddit/client.ts` `redditFetch()` is the only place that calls Reddit. It adds auth, the User-Agent, and `raw_json=1`, tracks the rate-limit budget, and throws typed errors (`lib/reddit/errors.ts`). Callers validate the JSON with a Zod schema (`lib/reddit/schemas/`) and map it to view models (`lib/view-models.ts`).
@@ -46,28 +46,37 @@ npm run build         # Production build
 - **URL state.** Sorts, cursors, tabs, and expanded comments live in the URL (`lib/url-state.ts`), so every view is a link.
 - **SEO.** Only `/`, `/about`, and `/donate` are indexable (`PUBLIC_PAGES` in `lib/site.ts`, shared by `proxy.ts`, `app/robots.ts`, and `app/sitemap.ts`). The signed-in shell is `noindex`. Site name, copy, and links live in `lib/site.ts`.
 
-## Conventions
+## Rules
 
-**Never:**
+Read `docs/code-standards.md` before writing or reviewing code. It covers TypeScript, modules, naming, comments, styles, errors, tests, and writing.
 
-- Start the dev server; the user manages it.
+Never:
+
+- Start the dev server; the user runs it.
 - Fetch from the client, or call Reddit anywhere but `redditFetch()`.
-- Use `any`, or the `NEXT_PUBLIC_` env prefix.
-- Use `memo()`, `useCallback()`, or `useMemo()`: the React Compiler handles it.
-- Use barrel files.
+- Use the `NEXT_PUBLIC_` env prefix.
 - Render HTML with `dangerouslySetInnerHTML` outside `RedditHtml` and the root layout's theme script.
-- Add superfluous comments. Match the surrounding comment density and cite the reason, not the change.
-- Commit plans. Plans are internal: keep them in the session scratchpad or the gitignored `.plans/`, not in the repo.
-- Skip `npm run check` before declaring work complete.
-- Wax poetic in commit messages, add commit trailers, or add co-authors.
+- Commit plans. Keep them in the session scratchpad or `.plans/` (gitignored).
+- Add commit trailers or co-authors.
 
-**Always:**
+Always:
 
-- Put styles in CSS Modules inside `@layer components`, using the design tokens in `app/styles/tokens.css`.
 - Keep links and forms working without JavaScript where they do today.
-- Write prose (UI copy, docs, commit messages) following `~/.claude/rules/writing-style.md`: no emoji, no em dashes, plain verbs.
-- Minimize subagent spawning. Each one is a separate billed request; use Read/Grep/Bash for known files and symbols.
+- Follow the writing rules in `docs/code-standards.md` for UI copy, docs, and commit messages.
+- Keep subagents to a minimum; each one is a separate billed request.
 
-**Ask before**: changing the auth flow, adding dependencies, committing, or pushing.
+Ask before changing the auth flow, adding dependencies, committing, or pushing.
 
-**Definition of done**: `npm run format:check`, `npm run check`, and `npm run build` pass, with 90%+ coverage (enforced). Run `npm run test:e2e` when a change touches a user flow. Check every UX change in Chrome with Claude in Chrome against the user's running dev server.
+## Testing
+
+Unit tests live in `tests/unit/`. They run in Node; component tests add `// @vitest-environment happy-dom`. Render server components with `tests/helpers/render-server.tsx`, load scrubbed Reddit samples with `tests/helpers/fixtures.ts`, build view models with `tests/helpers/views.ts`, and fake `cookies()` with `tests/helpers/cookie-jar.ts`. E2E runs a production build against `e2e/mock-reddit`, so it needs no credentials. Coverage is enforced at 95%.
+
+## Definition of done
+
+1. `npm run format:check`, `npm run check`, and `npm run build` pass, with coverage at or above 95%.
+2. `npm run test:e2e` passes when a change touches a user flow.
+3. UX changes are checked in Chrome with Claude in Chrome against the user's running dev server: the rendered page, the main interaction, and console errors.
+
+## Deploy
+
+Coolify (Railpack) builds `main` and runs `npm start` on port 3000, with a health check on `/api/health`. `npm start` preloads `dd-trace`, which sends traces to the Datadog Agent running beside the app. Cloudflare sits in front.

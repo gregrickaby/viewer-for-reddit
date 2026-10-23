@@ -40,7 +40,7 @@ Commit, then `git add` the real file for the next commit. The final commit match
 - Subject: lowercase, imperative, no period, under 72 characters. Say what changed for the reader of the site, not which files moved.
 - Cite the reason when it's an outside event: a Dependabot alert number, a Node security release, a Reddit API change.
 - Add a body only when the reason is not obvious from the subject. Wrap at 72 columns.
-- Follow `~/.claude/rules/writing-style.md`: no emoji, no em dashes, plain verbs.
+- Follow the writing rules in `docs/code-standards.md`: no emoji, no em dashes, plain verbs.
 - No trailers, no co-authors, no "Generated with" lines.
 
 ## 4. Commit

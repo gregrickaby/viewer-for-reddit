@@ -22,7 +22,7 @@ Deduplicate. Keep `.ts`, `.tsx`, and `.css`. Skip `*.module.css.d.ts`, `coverage
 
 ### 2. Load standards
 
-The standards are `AGENTS.md` (already in context) and `~/.claude/rules/writing-style.md`. Read the matching file only when a finding depends on it:
+The standards are `AGENTS.md` (already in context) and `docs/code-standards.md`. Read `docs/code-standards.md` every time. Read the matching file only when a finding depends on it:
 
 | Concern                        | File                                               |
 | ------------------------------ | -------------------------------------------------- |
@@ -67,8 +67,8 @@ For each file, evaluate:
 - **Correctness and edge cases:** trace what the code does under boundary inputs (deleted or removed posts and comments, suspended users, private, quarantined, and NSFW subreddits, empty listings, the last page of a cursor, null oembed fields, expired sessions, rate-limit responses), not just whether it compiles and the happy-path test passes. Before trusting a date, count, or formatting choice, grep for how `lib/format.ts` and sibling code handle the same value and flag any divergence. A green suite doesn't prove the fixtures hit the risky boundary: check what the test pins.
 - **Without JavaScript:** links and forms that work without JavaScript today must keep working: `ActionForm` forms, Previous and Next links, the `<noscript>` Next link in infinite feeds.
 - **Security:** auth and session handling, open redirects, CSP changes, secrets in client bundles, unsanitized HTML or URLs. Changes to the auth flow need the user's sign-off.
-- **Project conventions:** does this follow the established patterns in the codebase? Comment density, naming, file placement. If not, fix it.
-- **Prose:** UI copy and docs follow `~/.claude/rules/writing-style.md`.
+- **Code standards:** does the change follow `docs/code-standards.md`? Check what lint can't: naming, comments, props typing, error handling (including rejected Server Action promises in islands), and test structure. If not, fix it.
+- **Prose:** UI copy and docs follow the writing rules in `docs/code-standards.md`.
 - **Praise:** call out anything done well. Specific, brief, no padding.
 
 Tag every finding **Blocker**, **Suggestion**, or **Nit**.
