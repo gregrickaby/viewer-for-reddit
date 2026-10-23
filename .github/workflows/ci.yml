@@ -27,7 +27,7 @@ jobs:
       - run: npm run check
 
   e2e:
-    name: Playwright against mock Reddit
+    name: E2E (Playwright)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
