@@ -3,6 +3,7 @@ import { AutoplayVideo } from '@/components/islands/autoplay-video'
 import { GalleryLightbox } from '@/components/islands/gallery-lightbox'
 import { RedditVideo } from '@/components/islands/reddit-video'
 import type { GalleryItem } from '@/lib/view-models'
+
 import styles from './gallery.module.css'
 
 const SIZES = '(min-width: 1024px) 40rem, 100vw'

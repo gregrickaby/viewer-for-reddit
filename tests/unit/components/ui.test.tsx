@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { Logo } from '@/components/brand/logo'
 import { Button, LinkButton } from '@/components/ui/button'
 import { renderServer } from '@/tests/helpers/render-server'

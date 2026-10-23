@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+
 import { FeatureIcon } from '@/components/site/landing-icons'
 import { SiteShell } from '@/components/site/site-shell'
-import { OPEN_GRAPH, SITE, TWITTER } from '@/lib/site'
 import site from '@/components/site/site.module.css'
+import { OPEN_GRAPH, SITE, TWITTER } from '@/lib/site'
 
 const description = `Support ${SITE.name}. Donations pay for hosting and keep it free and ad-free.`
 

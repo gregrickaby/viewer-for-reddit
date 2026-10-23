@@ -1,6 +1,6 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
+import { defineConfig, globalIgnores } from 'eslint/config'
 
 const NO_CLIENT_FETCHING = 'Server-first: no client data fetching (docs/design.md §4.1).'
 

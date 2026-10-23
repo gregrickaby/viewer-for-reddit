@@ -1,6 +1,7 @@
 'use client'
 
-import { type ReactNode, useState } from 'react'
+import { useState, type ReactNode } from 'react'
+
 import { CommentComposer, type CommentComposerProps } from './comment-composer'
 
 /**

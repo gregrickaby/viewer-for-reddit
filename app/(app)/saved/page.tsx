@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
 import { FeedSkeleton } from '@/components/feed/feed-section'
+import feed from '@/components/feed/feed.module.css'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
-import { ItemList, firstFullname } from '@/components/feed/item-list'
+import { firstFullname, ItemList } from '@/components/feed/item-list'
 import { Pagination } from '@/components/feed/pagination'
 import { InfiniteFeed } from '@/components/islands/infinite-feed'
 import { SectionError } from '@/components/islands/section-error'
@@ -12,23 +14,23 @@ import {
   Reveal,
   SkeletonExit,
 } from '@/components/motion/transitions'
-import { Tabs } from '@/components/ui/tabs'
 import { BackLink } from '@/components/ui/back-link'
+import { Tabs } from '@/components/ui/tabs'
 import { getSaved } from '@/lib/reddit/people'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
 import {
-  PAGE_SIZE,
-  SAVED_TYPES,
-  type SavedType,
   href,
+  PAGE_SIZE,
   pageOffset,
   parseFeedQuery,
   pick,
+  SAVED_TYPES,
+  type SavedType,
 } from '@/lib/url-state'
 import type { ListItem, Page } from '@/lib/view-models'
-import feed from '@/components/feed/feed.module.css'
+
 import styles from '../feed-page.module.css'
 
 export const metadata: Metadata = { title: 'Saved' }

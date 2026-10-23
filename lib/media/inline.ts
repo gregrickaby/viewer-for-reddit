@@ -1,5 +1,7 @@
 import 'server-only'
+
 import type { GalleryItem, ImageSet } from '@/lib/view-models'
+
 import { giphy } from './providers/animated-hosts'
 import { metadataMedia } from './resolvers/gallery'
 import { REDDIT_MEDIA_HOSTS, safeMediaUrl } from './url'

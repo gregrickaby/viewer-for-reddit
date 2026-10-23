@@ -1,6 +1,8 @@
 import 'server-only'
+
 import { env } from '@/lib/env'
-import { VIDEO_ALLOW, aspectOf, embed, lastSegment } from './shared'
+
+import { aspectOf, embed, lastSegment, VIDEO_ALLOW } from './shared'
 import type { Provider } from './types'
 
 /*

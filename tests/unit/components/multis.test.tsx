@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { MultiView, SubredditView } from '@/lib/view-models'
-import { multiView, subredditView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { multiView, subredditView } from '@/tests/helpers/views'
 
 const state = {
   multis: [] as MultiView[],

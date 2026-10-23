@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { hasInlineMedia, inlineFor, inlineMedia } from '@/lib/media/inline'
 import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
 import { sample, samples } from '@/tests/helpers/fixtures'

@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+
 import { SiteShell } from '@/components/site/site-shell'
+import site from '@/components/site/site.module.css'
 import { LinkButton } from '@/components/ui/button'
 import { SITE } from '@/lib/site'
-import site from '@/components/site/site.module.css'
 
 export const metadata: Metadata = { title: 'Not found' }
 

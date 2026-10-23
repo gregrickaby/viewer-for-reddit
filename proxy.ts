@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
+
 import {
   ACCESS_COOKIE,
-  REFRESH_COOKIE,
-  REFRESH_MAX_AGE,
   cookieOptions,
   needsRefresh,
+  REFRESH_COOKIE,
+  REFRESH_MAX_AGE,
   sealAccess,
   sealRefresh,
   secondsUntil,
@@ -14,7 +15,7 @@ import {
 import { refreshAccessToken } from '@/lib/auth/oauth'
 import { env } from '@/lib/env'
 import { securityHeaders } from '@/lib/security/headers'
-import { PUBLIC_PAGES, isPrivatePath } from '@/lib/site'
+import { isPrivatePath, PUBLIC_PAGES } from '@/lib/site'
 
 const PUBLIC_PATHS = new Set<string>([...PUBLIC_PAGES, '/manifest.webmanifest', '/api/health'])
 

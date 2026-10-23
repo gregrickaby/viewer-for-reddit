@@ -2,14 +2,15 @@
 
 import type { Route } from 'next'
 import Link from 'next/link'
-import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
+
 import { loadMoreFeed } from '@/app/actions/feed'
-import { LinkPendingHint } from '@/components/islands/link-pending-hint'
-import { Button } from '@/components/ui/button'
-import { type MoreFeedRequest, listKind } from '@/lib/feed-more'
-import { type FeedSort, type HrefQuery, PAGE_SIZE, afterHref } from '@/lib/url-state'
 import styles from '@/components/feed/feed.module.css'
+import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import rows from '@/components/subreddit/subreddit-row.module.css'
+import { Button } from '@/components/ui/button'
+import { listKind, type MoreFeedRequest } from '@/lib/feed-more'
+import { afterHref, PAGE_SIZE, type FeedSort, type HrefQuery } from '@/lib/url-state'
 
 type Status = 'idle' | 'loading' | 'error'
 

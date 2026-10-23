@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { PostView } from '@/lib/view-models'
-import { postView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { postView } from '@/tests/helpers/views'
 
 const state = { posts: [] as PostView[], error: null as unknown }
 const getActiveThreads = vi.fn<(now: number) => Promise<PostView[]>>(async () => {

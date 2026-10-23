@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { resolveMedia } from '@/lib/media/detect'
 import { metadataMedia } from '@/lib/media/resolvers/gallery'
 import { Link, type RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
-import { type Sample, sample, samples } from '@/tests/helpers/fixtures'
+import { sample, samples, type Sample } from '@/tests/helpers/fixtures'
 
 type Variant<T extends PostMedia['type']> = Extract<PostMedia, { type: T }>
 

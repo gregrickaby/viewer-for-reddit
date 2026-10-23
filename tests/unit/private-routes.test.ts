@@ -1,7 +1,8 @@
 import { readdirSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { PRIVATE_PREFIXES, PUBLIC_PAGES, isPrivatePath } from '@/lib/site'
+
+import { isPrivatePath, PRIVATE_PREFIXES, PUBLIC_PAGES } from '@/lib/site'
 
 const folders = (dir: string) =>
   readdirSync(path.join(process.cwd(), dir), { withFileTypes: true })

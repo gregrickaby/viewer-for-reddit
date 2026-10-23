@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { PostMedia, blurredOf } from '@/components/media/post-media'
+
+import { blurredOf, PostMedia } from '@/components/media/post-media'
 import { RedditHtml } from '@/components/reddit-html'
 import type { GalleryItem, PostMedia as Media } from '@/lib/view-models'
-import { blurred, html, imageSet } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { blurred, html, imageSet } from '@/tests/helpers/views'
 
 const render = (media: Media, reveal: 'nsfw' | 'spoiler' | null = null) =>
   renderServer(<PostMedia media={media} title="Title" reveal={reveal} postId="abc" />)

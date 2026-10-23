@@ -1,4 +1,4 @@
-import { type ReactNode, ViewTransition } from 'react'
+import { ViewTransition, type ReactNode } from 'react'
 
 /*
  * Motion primitives (design §8.5). All are Server Components: `<ViewTransition>`

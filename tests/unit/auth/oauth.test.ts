@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import {
-  SCOPES,
   buildAuthorizeUrl,
   exchangeCode,
   fetchIdentity,
   refreshAccessToken,
   revokeToken,
+  SCOPES,
 } from '@/lib/auth/oauth'
 
 function mockFetch(body: unknown, init: ResponseInit = { status: 200 }) {

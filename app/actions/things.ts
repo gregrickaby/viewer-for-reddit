@@ -1,7 +1,7 @@
 'use server'
 
-import { invalid, runAction } from '@/lib/actions/run-action'
 import type { ActionResult } from '@/lib/actions/result'
+import { invalid, runAction } from '@/lib/actions/run-action'
 import { isVotableFullname } from '@/lib/reddit/names'
 import { castVote, saveThing } from '@/lib/reddit/writes'
 import type { Vote } from '@/lib/view-models'

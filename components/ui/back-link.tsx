@@ -1,5 +1,6 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import styles from './back-link.module.css'
 
 /** The "← Home" line above a page that has a natural place to go back to. */

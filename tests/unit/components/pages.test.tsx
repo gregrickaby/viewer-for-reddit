@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+
 import { renderServer } from '@/tests/helpers/render-server'
 
 vi.mock('next/font/google', () => ({

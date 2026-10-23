@@ -1,5 +1,7 @@
 import 'server-only'
+
 import type { ImageSet, PostMedia } from '@/lib/view-models'
+
 import { imageSet, loopVideo } from '../images'
 import { aspectOf, embed, lastSegment, posterOf } from './shared'
 import type { Provider } from './types'

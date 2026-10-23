@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { mapComment, mapCommentTree } from '@/lib/reddit/mappers/comment'
 import { mapMe, mapMulti, mapSubreddit, mapUser } from '@/lib/reddit/mappers/community'
 import { mapPost } from '@/lib/reddit/mappers/post'
@@ -16,8 +17,8 @@ import { Comment } from '@/lib/reddit/schemas/comment'
 import { Link } from '@/lib/reddit/schemas/link'
 import { Multi } from '@/lib/reddit/schemas/multi'
 import { Subreddit } from '@/lib/reddit/schemas/subreddit'
-import { type Sample, sample, samples } from '@/tests/helpers/fixtures'
 import type { CommentNode } from '@/lib/view-models'
+import { sample, samples, type Sample } from '@/tests/helpers/fixtures'
 
 beforeEach(() => {
   vi.spyOn(console, 'info').mockImplementation(() => {})

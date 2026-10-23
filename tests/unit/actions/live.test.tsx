@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { LiveUpdateView } from '@/lib/view-models'
-import { html } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { html } from '@/tests/helpers/views'
 
 const updateView = (name: string): LiveUpdateView => ({
   name,

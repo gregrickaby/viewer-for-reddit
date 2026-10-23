@@ -1,16 +1,18 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useId } from 'react'
+
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import {
+  sortHref,
+  TIME_RANGES,
+  usesTimeRange,
   type FeedQuery,
   type FeedSort,
   type HrefQuery,
-  TIME_RANGES,
   type TimeRange,
-  sortHref,
-  usesTimeRange,
 } from '@/lib/url-state'
+
 import styles from './feed.module.css'
 
 const SORT_LABELS: Record<FeedSort, string> = {

@@ -2,9 +2,10 @@
 
 import type { ReactNode } from 'react'
 import * as z from 'zod'
+
+import { LiveUpdateItems } from '@/components/live/live-update-items'
 import type { ActionResult } from '@/lib/actions/result'
 import { invalid, runAction } from '@/lib/actions/run-action'
-import { LiveUpdateItems } from '@/components/live/live-update-items'
 import { getLiveEvent, getLiveUpdates } from '@/lib/reddit/live'
 import { LIVE_CURSOR_PATTERN, LIVE_ID_PATTERN } from '@/lib/reddit/names'
 

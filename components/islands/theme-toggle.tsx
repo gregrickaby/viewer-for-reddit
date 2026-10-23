@@ -1,9 +1,11 @@
 'use client'
 
-import { type FormEvent, useState, useSyncExternalStore } from 'react'
+import { useState, useSyncExternalStore, type FormEvent } from 'react'
+
 import { setTheme } from '@/app/actions/settings'
 import { formAction } from '@/lib/actions/form-action'
 import type { Theme } from '@/lib/settings'
+
 import { SwitchRow } from './switch-row'
 import styles from './theme-toggle.module.css'
 

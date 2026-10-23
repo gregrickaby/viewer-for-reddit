@@ -2,6 +2,7 @@
 import type { ReactNode } from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { MoreFeedRequest } from '@/lib/feed-more'
 
 const loadMoreFeed = vi.fn()

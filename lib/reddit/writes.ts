@@ -1,6 +1,8 @@
 import 'server-only'
+
 import { requireAuth } from '@/lib/auth/session'
 import type { Vote } from '@/lib/view-models'
+
 import { redditFetch } from './client'
 import { RedditApiError } from './errors'
 import { parseItems, parseResponse } from './listing'

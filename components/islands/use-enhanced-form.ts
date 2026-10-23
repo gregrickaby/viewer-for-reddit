@@ -1,7 +1,8 @@
 'use client'
 
-import { type FormEvent, addTransitionType, startTransition, useState, useTransition } from 'react'
-import { type ServerAction, formAction } from '@/lib/actions/form-action'
+import { addTransitionType, startTransition, useState, useTransition, type FormEvent } from 'react'
+
+import { formAction, type ServerAction } from '@/lib/actions/form-action'
 import type { ActionResult } from '@/lib/actions/result'
 
 type Handlers<T> = {

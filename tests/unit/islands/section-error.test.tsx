@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import { SectionError } from '@/components/islands/section-error'
 
 const { addNextjsError } = vi.hoisted(() => ({ addNextjsError: vi.fn() }))

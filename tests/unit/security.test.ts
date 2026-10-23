@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import { contentSecurityPolicy, securityHeaders } from '@/lib/security/headers'
 
 const directives = (policy: string) =>

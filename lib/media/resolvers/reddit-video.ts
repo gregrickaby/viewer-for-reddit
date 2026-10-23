@@ -1,7 +1,9 @@
 import 'server-only'
+
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { RedditVideoData } from '@/lib/reddit/schemas/media'
 import type { ImageSet, PostMedia } from '@/lib/view-models'
+
 import { loopVideo, previewImageSet } from '../images'
 import { safeMediaUrl } from '../url'
 

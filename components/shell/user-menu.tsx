@@ -1,10 +1,12 @@
 /* eslint-disable @next/next/no-img-element -- a Reddit-hosted avatar; see components/media/post-media.tsx */
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { signOut } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import { getUsername } from '@/lib/auth/session'
 import { getMe } from '@/lib/reddit/reads'
+
 import styles from './user-menu.module.css'
 
 /** The avatar, or null when Reddit can't be reached: the menu still works without it. */

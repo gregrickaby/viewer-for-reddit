@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { ThreadSection, ThreadSkeleton } from '@/components/thread/thread-section'
+
 import styles from '../../../../../feed-page.module.css'
 
 type Props = PageProps<'/r/[subreddit]/comments/[id]/[[...rest]]'>

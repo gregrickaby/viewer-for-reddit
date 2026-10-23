@@ -1,13 +1,14 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
+
 import { requireAuth } from '@/lib/auth/session'
 import { redditFetch } from '@/lib/reddit/client'
 import { RedditError } from '@/lib/reddit/errors'
 import {
-  THREADS_PER_SOURCE,
-  THREAD_SOURCES,
   captures,
+  THREAD_SOURCES,
+  THREADS_PER_SOURCE,
   type Capture,
 } from '@/scripts/reddit/manifest'
 import { scrub, scrubMe } from '@/scripts/reddit/scrub'

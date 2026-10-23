@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+
 import type { FeatureIconName } from '@/lib/site'
 
 const PATHS: Record<FeatureIconName, ReactNode> = {

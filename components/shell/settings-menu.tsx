@@ -1,6 +1,7 @@
 import { SettingSwitch } from '@/components/islands/setting-switch'
 import { ThemeToggle } from '@/components/islands/theme-toggle'
 import { getSettings } from '@/lib/settings'
+
 import styles from './settings-menu.module.css'
 
 /**

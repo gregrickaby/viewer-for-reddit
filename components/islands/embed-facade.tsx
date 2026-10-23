@@ -1,7 +1,8 @@
 'use client'
 
 /* eslint-disable @next/next/no-img-element -- the poster is Reddit's own resized preview */
-import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
+
 import { registerPlayer } from './player-registry'
 import styles from './players.module.css'
 

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
 import { SettingSwitch } from '@/components/islands/setting-switch'
 import { ThemeToggle } from '@/components/islands/theme-toggle'
 import { PageTransition } from '@/components/motion/transitions'
 import { BackLink } from '@/components/ui/back-link'
 import { getSettings } from '@/lib/settings'
+
 import styles from './page.module.css'
 
 export const metadata: Metadata = { title: 'Settings' }

@@ -7,7 +7,7 @@
  * field being *absent* where other samples have it (which is what makes quicktype mark it
  * optional). The result is small enough to commit while covering every observed variant.
  */
-import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json }

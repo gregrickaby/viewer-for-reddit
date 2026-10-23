@@ -1,7 +1,9 @@
 'use client'
 
 import { useOptimistic, useState } from 'react'
+
 import { setMembership } from '@/app/actions/multis'
+
 import styles from './membership-toggle.module.css'
 import { useEnhancedForm } from './use-enhanced-form'
 

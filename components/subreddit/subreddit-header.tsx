@@ -3,9 +3,10 @@ import { SubscribeButton } from '@/components/islands/subscribe-button'
 import { AddToMultiMenu } from '@/components/multi/add-to-multi-menu'
 import { RedditHtml } from '@/components/reddit-html'
 import { compactNumber } from '@/lib/format'
-import { getMyMultis, getSubreddit } from '@/lib/reddit/reads'
 import { handleReadError } from '@/lib/reddit/read-errors'
+import { getMyMultis, getSubreddit } from '@/lib/reddit/reads'
 import type { MultiView, SubredditView } from '@/lib/view-models'
+
 import styles from './subreddit-header.module.css'
 
 /** `r/popular` and `r/all` are feeds, not communities: they have no about page. */

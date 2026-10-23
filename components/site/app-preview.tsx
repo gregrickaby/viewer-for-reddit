@@ -1,4 +1,5 @@
 import { Logo } from '@/components/brand/logo'
+
 import styles from './app-preview.module.css'
 
 const SORTS = ['Best', 'Hot', 'New', 'Top', 'Rising'] as const

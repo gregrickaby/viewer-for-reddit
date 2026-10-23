@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { NewComment, ThreadPoll } from '@/lib/reddit/thread-live'
-import { html, postView } from '@/tests/helpers/views'
-import { renderServer } from '@/tests/helpers/render-server'
 import type { CommentView } from '@/lib/view-models'
+import { renderServer } from '@/tests/helpers/render-server'
+import { html, postView } from '@/tests/helpers/views'
 
 const commentView = (id: string): CommentView =>
   ({

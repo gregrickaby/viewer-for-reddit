@@ -1,7 +1,8 @@
 'use client'
 
 import { usePathname, useSearchParams } from 'next/navigation'
-import { SEARCH_TABS, parseText, pick } from '@/lib/url-state'
+
+import { parseText, pick, SEARCH_TABS } from '@/lib/url-state'
 
 type Props = { className?: string }
 

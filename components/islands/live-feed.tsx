@@ -1,11 +1,12 @@
 'use client'
 
-import { Fragment, type ReactNode, useRef, useState } from 'react'
+import { Fragment, useRef, useState, type ReactNode } from 'react'
+
 import { loadOlderLive, pollLive } from '@/app/actions/live'
 import { usePolling } from '@/components/islands/use-polling'
+import styles from '@/components/live/live.module.css'
 import { Button } from '@/components/ui/button'
 import { plural } from '@/lib/format'
-import styles from '@/components/live/live.module.css'
 
 /** The thread is re-read (state, viewers) on every fourth poll, about once a minute. */
 const META_EVERY = 4

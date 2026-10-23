@@ -1,5 +1,6 @@
 import { InlineLoopMotion } from '@/components/islands/inline-loop-motion'
 import type { SafeHtml } from '@/lib/view-models'
+
 import styles from './reddit-html.module.css'
 
 /**

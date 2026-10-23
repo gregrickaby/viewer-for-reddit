@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
+
 import { resolveMedia } from '@/lib/media/detect'
 import { giphy, imgur, redgifs } from '@/lib/media/providers/animated-hosts'
 import { social, soundcloud, spotify } from '@/lib/media/providers/audio-and-social'
-import { PROVIDERS, cspSources, findProvider } from '@/lib/media/providers/registry'
+import { cspSources, findProvider, PROVIDERS } from '@/lib/media/providers/registry'
 import { aspectOf } from '@/lib/media/providers/shared'
 import type { Provider } from '@/lib/media/providers/types'
 import { streamable, tiktok, twitch, vimeo } from '@/lib/media/providers/video-hosts'
@@ -11,7 +12,7 @@ import { resolveDirectFile } from '@/lib/media/resolvers/direct-file'
 import { oembedSrc } from '@/lib/media/resolvers/provider'
 import { Link, type RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
-import { type Sample, sample } from '@/tests/helpers/fixtures'
+import { sample, type Sample } from '@/tests/helpers/fixtures'
 
 type Embed = Extract<PostMedia, { type: 'embed' }>
 

@@ -1,4 +1,5 @@
 import 'server-only'
+
 import { resolveLinkCard } from '../resolvers/link-card'
 import { embed } from './shared'
 import type { Provider } from './types'

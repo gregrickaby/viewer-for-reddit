@@ -1,6 +1,8 @@
 import 'server-only'
-import tracer from 'dd-trace'
+
 import { after } from 'next/server'
+import tracer from 'dd-trace'
+
 import { env } from '@/lib/env'
 
 /*

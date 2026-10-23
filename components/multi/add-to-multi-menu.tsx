@@ -1,8 +1,10 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useId } from 'react'
+
 import { MembershipToggle } from '@/components/islands/membership-toggle'
 import type { MultiView } from '@/lib/view-models'
+
 import styles from './add-to-multi-menu.module.css'
 
 /**

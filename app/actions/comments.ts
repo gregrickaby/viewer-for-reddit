@@ -1,8 +1,9 @@
 'use server'
 
 import { refresh } from 'next/cache'
-import { invalid, runAction } from '@/lib/actions/run-action'
+
 import type { ActionResult } from '@/lib/actions/result'
+import { invalid, runAction } from '@/lib/actions/run-action'
 import { waitForComment } from '@/lib/reddit/thread'
 import {
   deleteComment as deleteRedditComment,

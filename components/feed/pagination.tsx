@@ -1,14 +1,16 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
 import {
-  type FeedQuery,
-  type FeedSort,
-  type HrefQuery,
   nextHref,
   pageOffset,
   prevHref,
+  type FeedQuery,
+  type FeedSort,
+  type HrefQuery,
 } from '@/lib/url-state'
+
 import styles from './feed.module.css'
 
 export type PaginationProps = {

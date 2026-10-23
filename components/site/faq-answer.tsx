@@ -1,4 +1,5 @@
 import Link from 'next/link'
+
 import type { FaqLink } from '@/lib/site'
 
 /** One FAQ answer: text, with links to this site or out to a service's documentation. */

@@ -1,9 +1,10 @@
-import { readFileSync, readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
+
 import { resolveMedia } from '@/lib/media/detect'
 import { Link } from '@/lib/reddit/schemas/link'
-import { type CorpusEntry, expectedOf } from '@/scripts/reddit/corpus'
+import { expectedOf, type CorpusEntry } from '@/scripts/reddit/corpus'
 
 /*
  * Real captured posts (npm run media:corpus) and the media each one resolved

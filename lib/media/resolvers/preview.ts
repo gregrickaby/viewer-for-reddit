@@ -1,6 +1,8 @@
 import 'server-only'
+
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
+
 import { imageSet, loopVideo, previewImageSet } from '../images'
 
 /** Resolver 7: an animated preview. The MP4 loop is preferred; the GIF is its fallback. */

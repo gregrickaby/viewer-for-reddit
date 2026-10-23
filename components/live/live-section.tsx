@@ -1,5 +1,6 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { LiveFeed } from '@/components/islands/live-feed'
 import { RedditHtml } from '@/components/reddit-html'
@@ -8,6 +9,7 @@ import { isLiveCursor } from '@/lib/reddit/names'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { requestTime } from '@/lib/request-time'
 import type { LiveEventView, LiveUpdateView, Page } from '@/lib/view-models'
+
 import { LiveUpdateItems } from './live-update-items'
 import styles from './live.module.css'
 

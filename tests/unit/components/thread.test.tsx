@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { CommentNode, CommentView, ThreadView } from '@/lib/view-models'
-import { html, postView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { html, postView } from '@/tests/helpers/views'
 
 const state = {
   thread: null as ThreadView | null,

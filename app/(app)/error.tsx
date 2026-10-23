@@ -1,9 +1,10 @@
 'use client'
 
-import { addNextjsError } from '@datadog/browser-rum-nextjs'
 import { useEffect } from 'react'
+import { addNextjsError } from '@datadog/browser-rum-nextjs'
 
 import { Button, LinkButton } from '@/components/ui/button'
+
 import styles from './status-page.module.css'
 
 /** The route-level fallback behind every `SectionError` (design §12). */

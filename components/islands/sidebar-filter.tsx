@@ -3,7 +3,8 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { type FormEvent, ViewTransition, useState } from 'react'
+import { useState, ViewTransition, type FormEvent } from 'react'
+
 import { SidebarIcon } from '@/components/shell/sidebar-icon'
 import styles from '@/components/shell/sidebar.module.css'
 

@@ -1,11 +1,13 @@
 'use client'
 
 import { useOptimistic, useState } from 'react'
+
 import { vote } from '@/app/actions/things'
 import { compactNumber } from '@/lib/format'
 import type { Vote } from '@/lib/view-models'
-import styles from './vote-buttons.module.css'
+
 import { useEnhancedForm } from './use-enhanced-form'
+import styles from './vote-buttons.module.css'
 
 type VoteState = { likes: Vote; score: number }
 

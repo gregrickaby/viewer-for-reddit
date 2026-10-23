@@ -1,6 +1,8 @@
 import 'server-only'
+
 import { requireAuth } from '@/lib/auth/session'
 import type { PostView } from '@/lib/view-models'
+
 import { redditFetch } from './client'
 import { parseListing } from './listing'
 import { mapPost } from './mappers/post'

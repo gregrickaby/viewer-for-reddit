@@ -3,19 +3,20 @@
 import {
   createContext,
   Fragment,
-  type ReactNode,
-  useContext,
-  useLayoutEffect,
   startTransition,
+  useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
+  type ReactNode,
 } from 'react'
-import { type LiveItem, pollThreadLive } from '@/app/actions/thread-live'
+
+import { pollThreadLive, type LiveItem } from '@/app/actions/thread-live'
 import { POLL_MS, usePolling } from '@/components/islands/use-polling'
+import styles from '@/components/live/live.module.css'
 import { Button } from '@/components/ui/button'
 import { compactNumber, plural } from '@/lib/format'
-import styles from '@/components/live/live.module.css'
 
 /** Past this scroll offset, the reader is mid-page: new comments must not move what they see. */
 const READING_OFFSET = 240

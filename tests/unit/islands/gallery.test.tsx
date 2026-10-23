@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { act, cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { GalleryItem } from '@/lib/view-models'
 import { imageSet } from '@/tests/helpers/views'
 

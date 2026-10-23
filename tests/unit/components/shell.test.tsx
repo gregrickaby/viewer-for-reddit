@@ -1,8 +1,9 @@
 import type * as Navigation from 'next/navigation'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { MultiView, SubredditView } from '@/lib/view-models'
-import { multiView, postView, subredditView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { multiView, postView, subredditView } from '@/tests/helpers/views'
 
 const state = {
   username: 'spez' as string | null,

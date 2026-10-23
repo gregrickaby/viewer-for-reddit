@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element -- community emoji are tiny images Reddit already serves */
 import { Fragment } from 'react'
+
 import type { FlairView } from '@/lib/view-models'
+
 import styles from './flair-text.module.css'
 
 /** A flair's text with its community emoji as images, where Reddit writes `:name:`. */

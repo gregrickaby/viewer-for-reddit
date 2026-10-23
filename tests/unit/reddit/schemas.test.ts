@@ -1,10 +1,11 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type * as z from 'zod'
+
 import { Account, Me } from '@/lib/reddit/schemas/account'
 import { Comment, CommentOrMore, More } from '@/lib/reddit/schemas/comment'
-import { Link, crosspostParent } from '@/lib/reddit/schemas/link'
+import { crosspostParent, Link } from '@/lib/reddit/schemas/link'
 import { MediaMetadataItem, Oembed } from '@/lib/reddit/schemas/media'
 import { Multi, MultiThing } from '@/lib/reddit/schemas/multi'
 import {

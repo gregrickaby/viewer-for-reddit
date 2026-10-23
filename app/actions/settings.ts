@@ -2,9 +2,10 @@
 
 import { refresh } from 'next/cache'
 import { cookies } from 'next/headers'
-import { invalid } from '@/lib/actions/run-action'
+
 import type { ActionResult } from '@/lib/actions/result'
-import { BLUR_COOKIE, SETTINGS_MAX_AGE, THEME_COOKIE, isTheme } from '@/lib/settings'
+import { invalid } from '@/lib/actions/run-action'
+import { BLUR_COOKIE, isTheme, SETTINGS_MAX_AGE, THEME_COOKIE } from '@/lib/settings'
 
 const cookieOptions = {
   path: '/',

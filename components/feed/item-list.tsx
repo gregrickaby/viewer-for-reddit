@@ -1,7 +1,8 @@
 import type { ListItem } from '@/lib/view-models'
+
 import { CommentCard } from './comment-card'
-import { PostCard } from './post-card'
 import styles from './feed.module.css'
+import { PostCard } from './post-card'
 
 /** A mixed list of posts and comments (saved items, profiles). */
 export function ItemList({

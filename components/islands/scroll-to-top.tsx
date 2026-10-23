@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+
 import styles from './scroll-to-top.module.css'
 
 /** How far down the page the button appears. */

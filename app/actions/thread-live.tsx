@@ -1,11 +1,12 @@
 'use server'
 
-import { type ReactNode, ViewTransition } from 'react'
+import { ViewTransition, type ReactNode } from 'react'
 import * as z from 'zod'
-import type { ActionResult } from '@/lib/actions/result'
-import { invalid, runAction } from '@/lib/actions/run-action'
+
 import { CommentCard } from '@/components/feed/comment-card'
 import { PostBody, revealReason } from '@/components/feed/post-card'
+import type { ActionResult } from '@/lib/actions/result'
+import { invalid, runAction } from '@/lib/actions/run-action'
 import { pollThread } from '@/lib/reddit/thread-live'
 import { getSettings } from '@/lib/settings'
 

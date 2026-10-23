@@ -1,9 +1,12 @@
 import 'server-only'
+
 import { cacheLife } from 'next/cache'
 import { cache } from 'react'
+
 import { requireAuth } from '@/lib/auth/session'
-import { type FeedQuery, PAGE_SIZE, usesTimeRange } from '@/lib/url-state'
+import { PAGE_SIZE, usesTimeRange, type FeedQuery } from '@/lib/url-state'
 import type { MeView, MultiView, Page, PostView, SubredditView } from '@/lib/view-models'
+
 import { redditFetch } from './client'
 import { RedditNotFoundError } from './errors'
 import { parseItems, parseListing, parseResponse } from './listing'

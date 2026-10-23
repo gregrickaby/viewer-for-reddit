@@ -1,5 +1,7 @@
 import Link from 'next/link'
+
 import { SITE } from '@/lib/site'
+
 import styles from './site-links.module.css'
 
 /**

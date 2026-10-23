@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type * as MultisModule from '@/lib/reddit/multis'
 import { multiView, subredditView } from '@/tests/helpers/views'
 

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
-import { type FlatNode, MAX_CHILDREN, resolveMore } from '@/lib/reddit/more'
+
+import { MAX_CHILDREN, resolveMore, type FlatNode } from '@/lib/reddit/more'
 import type { CommentNode, CommentView } from '@/lib/view-models'
 
 const comment = (id: string, replies: CommentNode[] = []): CommentNode => ({

@@ -1,9 +1,11 @@
 'use client'
 
-import { type KeyboardEvent, useOptimistic, useRef } from 'react'
+import { useOptimistic, useRef, type KeyboardEvent } from 'react'
+
 import { editComment, postComment } from '@/app/actions/comments'
+
 import styles from './comment-composer.module.css'
-import { COMMENT_MAX_CHARS, EDIT_HINT, REPLY_HINT, placeholderFor } from './composer-copy'
+import { COMMENT_MAX_CHARS, EDIT_HINT, placeholderFor, REPLY_HINT } from './composer-copy'
 import { PendingButton } from './pending-button'
 import { useEnhancedForm } from './use-enhanced-form'
 

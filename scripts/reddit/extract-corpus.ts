@@ -4,12 +4,14 @@
  * .env.local (the Twitch embed needs BASE_URL). Review the diff before committing:
  * a changed `expected` is a behavior change in media detection.
  */
-import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+
 import { resolveMedia } from '@/lib/media/detect'
 import { findProvider } from '@/lib/media/providers/registry'
-import { REDDIT_MEDIA_HOSTS, hostMatches } from '@/lib/media/url'
+import { hostMatches, REDDIT_MEDIA_HOSTS } from '@/lib/media/url'
 import { Link, type RedditLink } from '@/lib/reddit/schemas/link'
+
 import { fileName, selectCorpus } from './corpus'
 
 const RAW = path.join(process.cwd(), 'fixtures/reddit/raw')

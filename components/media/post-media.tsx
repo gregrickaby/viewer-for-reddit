@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets (design §4.2); the image optimizer would add a hop and a server cache of NSFW media. */
 import type { ReactNode } from 'react'
+
 import { AutoplayVideo } from '@/components/islands/autoplay-video'
 import { EmbedFacade } from '@/components/islands/embed-facade'
 import { RedditVideo } from '@/components/islands/reddit-video'
-import { Gallery } from './gallery'
 import type {
   AnimatedMedia,
   ImageSet,
@@ -11,6 +11,8 @@ import type {
   ProviderId,
   VideoMedia,
 } from '@/lib/view-models'
+
+import { Gallery } from './gallery'
 import styles from './media.module.css'
 
 /*

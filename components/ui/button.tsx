@@ -1,5 +1,6 @@
 import Link, { type LinkProps } from 'next/link'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
+
 import styles from './button.module.css'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { FIXTURE_USER, scrub, scrubMe } from '@/scripts/reddit/scrub'
 
 describe('fixture scrubbing', () => {

@@ -1,7 +1,9 @@
 import 'server-only'
+
 import { logger } from '@/lib/datadog/server'
-import { type RedditLink, crosspostParent } from '@/lib/reddit/schemas/link'
+import { crosspostParent, type RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
+
 import { resolveDirectFile } from './resolvers/direct-file'
 import { resolveGallery } from './resolvers/gallery'
 import { resolveLinkCard } from './resolvers/link-card'

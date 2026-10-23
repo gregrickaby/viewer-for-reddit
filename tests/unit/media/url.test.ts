@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { REDDIT_MEDIA_HOSTS, hostMatches, safeLinkUrl, safeMediaUrl } from '@/lib/media/url'
+
+import { hostMatches, REDDIT_MEDIA_HOSTS, safeLinkUrl, safeMediaUrl } from '@/lib/media/url'
 
 describe('hostMatches', () => {
   it('matches exact hosts and dot-suffixes, case-insensitively', () => {

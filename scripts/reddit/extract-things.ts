@@ -1,5 +1,6 @@
 /* CLI: `npm run types:extract`. Logic lives in ./things.ts. */
 import path from 'node:path'
+
 import { extractThings } from './things'
 
 const root = process.cwd()

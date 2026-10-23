@@ -1,10 +1,12 @@
 import 'server-only'
+
 import { notFound, redirect, unstable_rethrow } from 'next/navigation'
+
 import {
-  type ForbiddenReason,
   RedditAuthError,
   RedditForbiddenError,
   RedditNotFoundError,
+  type ForbiddenReason,
 } from './errors'
 
 /**

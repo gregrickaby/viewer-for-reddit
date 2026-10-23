@@ -1,7 +1,8 @@
 import path from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import { BANNER, REQUIRED_SCHEMAS, stampGenerated } from '@/scripts/reddit/generated'
-import { THREAD_SOURCES, captures } from '@/scripts/reddit/manifest'
+import { captures, THREAD_SOURCES } from '@/scripts/reddit/manifest'
 
 const fullSource = REQUIRED_SCHEMAS.map((name) => `export const ${name} = z.object({})`).join('\n')
 

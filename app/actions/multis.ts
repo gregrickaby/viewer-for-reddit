@@ -2,16 +2,17 @@
 
 import { refresh } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { invalid, runAction } from '@/lib/actions/run-action'
+
 import type { ActionResult } from '@/lib/actions/result'
+import { invalid, runAction } from '@/lib/actions/run-action'
 import { RedditApiError, RedditNotFoundError } from '@/lib/reddit/errors'
 import {
-  type MultiVisibility,
   createMulti as createRedditMulti,
   deleteMulti as deleteRedditMulti,
   multiSlug,
   setMultiMembership,
   updateMulti as updateRedditMulti,
+  type MultiVisibility,
 } from '@/lib/reddit/multis'
 import { isMultiName, isSubredditName } from '@/lib/reddit/names'
 import { getSubreddit } from '@/lib/reddit/reads'

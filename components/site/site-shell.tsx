@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+
 import { Logo } from '@/components/brand/logo'
 import { DISCLAIMER, SITE } from '@/lib/site'
+
 import { SiteLinks } from './site-links'
 import styles from './site.module.css'
 

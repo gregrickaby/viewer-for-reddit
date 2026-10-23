@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { LinkButton } from '@/components/ui/button'
+
 import { FeatureIcon } from '@/components/site/landing-icons'
 import { SiteShell } from '@/components/site/site-shell'
-import { OPEN_GRAPH, SITE, TWITTER } from '@/lib/site'
 import site from '@/components/site/site.module.css'
+import { LinkButton } from '@/components/ui/button'
+import { OPEN_GRAPH, SITE, TWITTER } from '@/lib/site'
 
 const description = `How ${SITE.name} works, what it does with your data, and who builds it.`
 

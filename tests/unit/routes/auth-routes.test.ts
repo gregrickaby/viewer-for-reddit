@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import { GET as callback } from '@/app/api/auth/callback/reddit/route'
 import { GET as login } from '@/app/api/auth/login/route'
 import { GET as signout } from '@/app/api/auth/signout/route'

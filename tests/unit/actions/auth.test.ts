@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { fakeCookieJar, type FakeCookieJar } from '@/tests/helpers/cookie-jar'
 
 const jar: { current: FakeCookieJar } = { current: fakeCookieJar() }

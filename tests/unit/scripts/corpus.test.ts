@@ -1,8 +1,9 @@
 import path from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import { Link, type RedditLink } from '@/lib/reddit/schemas/link'
 import type { PostMedia } from '@/lib/view-models'
-import { PER_BUCKET, expectedOf, fileName, selectCorpus } from '@/scripts/reddit/corpus'
+import { expectedOf, fileName, PER_BUCKET, selectCorpus } from '@/scripts/reddit/corpus'
 import { sample, samples } from '@/tests/helpers/fixtures'
 
 const links = samples('Link').map((value) => Link.parse(value))

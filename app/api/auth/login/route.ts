@@ -1,9 +1,10 @@
 import { randomBytes } from 'node:crypto'
 import { NextResponse, type NextRequest } from 'next/server'
+
 import {
+  cookieOptions,
   OAUTH_COOKIE,
   OAUTH_STATE_MAX_AGE,
-  cookieOptions,
   sealOAuthState,
 } from '@/lib/auth/cookies'
 import { safeNext } from '@/lib/auth/next-param'

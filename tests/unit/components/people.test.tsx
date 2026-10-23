@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { CommentView, ListItem, Page, ProfileView, SubredditView } from '@/lib/view-models'
-import { html, multiView, postView, subredditView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { html, multiView, postView, subredditView } from '@/tests/helpers/views'
 
 function commentView(overrides: Partial<CommentView> = {}): CommentView {
   return {

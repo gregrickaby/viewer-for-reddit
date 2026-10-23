@@ -1,6 +1,7 @@
 import type { PostView } from '@/lib/view-models'
-import { PostCard } from './post-card'
+
 import styles from './feed.module.css'
+import { PostCard } from './post-card'
 
 /** The `<li>`s of a post list: rendered by the feed page and by each infinite-scroll page. */
 export function FeedItems({

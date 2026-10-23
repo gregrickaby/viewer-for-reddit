@@ -1,7 +1,9 @@
 import 'server-only'
+
 import type { RedditLink } from '@/lib/reddit/schemas/link'
 import { MediaMetadataItem } from '@/lib/reddit/schemas/media'
 import type { GalleryItem, PostMedia } from '@/lib/view-models'
+
 import { loopVideo, metadataGifSet, metadataImageSet } from '../images'
 import { safeLinkUrl, safeMediaUrl } from '../url'
 

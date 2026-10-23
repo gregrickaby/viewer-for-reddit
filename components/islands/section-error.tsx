@@ -1,10 +1,11 @@
 'use client'
 
-import { addNextjsError } from '@datadog/browser-rum-nextjs'
+import { catchError, type ErrorInfo } from 'next/error'
 import { useEffect } from 'react'
+import { addNextjsError } from '@datadog/browser-rum-nextjs'
 
-import { type ErrorInfo, catchError } from 'next/error'
 import { Button } from '@/components/ui/button'
+
 import styles from './section-error.module.css'
 
 /**

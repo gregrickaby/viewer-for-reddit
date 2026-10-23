@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useSyncExternalStore } from 'react'
+
 import { absoluteTime, isoTime, timeAgo } from '@/lib/format'
 
 export const TICK_MS = 30_000

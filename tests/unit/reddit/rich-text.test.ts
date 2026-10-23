@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import sanitizeHtml from 'sanitize-html'
 import { describe, expect, it } from 'vitest'
+
 import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
 import { RAW_DIR, samples } from '@/tests/helpers/fixtures'
 

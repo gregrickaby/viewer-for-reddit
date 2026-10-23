@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { resolveRedditLink } from '@/lib/reddit/links'
 import { sanitizeRedditHtml } from '@/lib/reddit/sanitize'
 

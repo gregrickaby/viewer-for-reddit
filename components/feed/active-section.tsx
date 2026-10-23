@@ -4,6 +4,7 @@ import { handleReadError } from '@/lib/reddit/read-errors'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
 import type { PostView } from '@/lib/view-models'
+
 import { FeedItems } from './feed-items'
 import styles from './feed.module.css'
 

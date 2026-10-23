@@ -5,9 +5,10 @@ import './styles/base.css'
 import './styles/utilities.css'
 
 import type { Metadata, Viewport } from 'next'
-import { DatadogAppRouter } from '@datadog/browser-rum-nextjs'
-import { Suspense } from 'react'
 import { Reddit_Mono, Reddit_Sans } from 'next/font/google'
+import { Suspense } from 'react'
+import { DatadogAppRouter } from '@datadog/browser-rum-nextjs'
+
 import { env } from '@/lib/env'
 import { OPEN_GRAPH, SITE, TWITTER } from '@/lib/site'
 

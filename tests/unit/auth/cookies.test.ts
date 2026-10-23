@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
+
 import {
-  REFRESH_SKEW_MS,
   needsRefresh,
+  REFRESH_SKEW_MS,
   sealAccess,
   sealOAuthState,
   sealRefresh,

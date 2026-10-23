@@ -1,7 +1,9 @@
 import 'server-only'
-import { logger } from '@/lib/datadog/server'
+
 import { redirect, unstable_rethrow } from 'next/navigation'
+
 import { SessionUnavailableError } from '@/lib/auth/session'
+import { logger } from '@/lib/datadog/server'
 import {
   RedditApiError,
   RedditAuthError,
@@ -9,6 +11,7 @@ import {
   RedditNotFoundError,
   RedditRateLimitError,
 } from '@/lib/reddit/errors'
+
 import type { ActionError, ActionResult } from './result'
 
 /** Reddit's form error codes, in words a person would use. */

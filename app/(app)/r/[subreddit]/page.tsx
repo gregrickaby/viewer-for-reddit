@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
 import { FeedSection, FeedSkeleton } from '@/components/feed/feed-section'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { SubredditHeader, SubredditHeaderSkeleton } from '@/components/subreddit/subreddit-header'
 import { BackLink } from '@/components/ui/back-link'
 import { LISTING_SORTS } from '@/lib/url-state'
+
 import styles from '../../feed-page.module.css'
 
 export async function generateMetadata({ params }: PageProps<'/r/[subreddit]'>): Promise<Metadata> {

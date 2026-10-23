@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { ListItem, PostView, SubredditView } from '@/lib/view-models'
-import { multiView, postView, subredditView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { multiView, postView, subredditView } from '@/tests/helpers/views'
 
 type Page = { items: PostView[]; after: string | null; before: null }
 const getFeed = vi.fn<(source: unknown, query: unknown) => Promise<Page>>(async () => ({

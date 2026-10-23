@@ -1,14 +1,14 @@
 import { editComment, postComment } from '@/app/actions/comments'
 import type { CommentComposerProps } from '@/components/islands/comment-composer'
+import styles from '@/components/islands/comment-composer.module.css'
 import {
   COMMENT_MAX_CHARS,
   EDIT_HINT,
-  REPLY_HINT,
   placeholderFor,
+  REPLY_HINT,
 } from '@/components/islands/composer-copy'
 import { Button } from '@/components/ui/button'
 import { formAction } from '@/lib/actions/form-action'
-import styles from '@/components/islands/comment-composer.module.css'
 
 /**
  * The composer's markup as a Server Component: what a closed `ComposerDetails`

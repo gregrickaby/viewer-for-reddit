@@ -1,8 +1,9 @@
 'use server'
 
 import { refresh } from 'next/cache'
-import { invalid, runAction } from '@/lib/actions/run-action'
+
 import type { ActionResult } from '@/lib/actions/result'
+import { invalid, runAction } from '@/lib/actions/run-action'
 import { isSubredditName, isUsername } from '@/lib/reddit/names'
 import { setSubscription as setRedditSubscription } from '@/lib/reddit/writes'
 

@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { LiveEventView, LiveUpdateView } from '@/lib/view-models'
-import { html } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { html } from '@/tests/helpers/views'
 
 const CURSOR = 'LiveUpdate_6603ce62-b094-11f1-94e4-7ec5abe59ad0'
 

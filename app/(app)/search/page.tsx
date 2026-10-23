@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
+import feed from '@/components/feed/feed.module.css'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
-import { ItemList, firstFullname } from '@/components/feed/item-list'
+import { firstFullname, ItemList } from '@/components/feed/item-list'
 import { Pagination } from '@/components/feed/pagination'
 import { InfiniteFeed } from '@/components/islands/infinite-feed'
 import { SectionError } from '@/components/islands/section-error'
@@ -12,26 +14,26 @@ import {
   SkeletonExit,
 } from '@/components/motion/transitions'
 import { SubredditRows, SubredditRowsSkeleton } from '@/components/subreddit/subreddit-row'
-import { Tabs } from '@/components/ui/tabs'
 import { BackLink } from '@/components/ui/back-link'
+import { Tabs } from '@/components/ui/tabs'
 import { searchPeople, searchPosts, searchSubreddits } from '@/lib/reddit/people'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMyMultis } from '@/lib/reddit/reads'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
 import {
-  type FeedQuery,
-  PAGE_SIZE,
-  SEARCH_TABS,
-  type SearchTab,
   href,
+  PAGE_SIZE,
   pageOffset,
   parseFeedQuery,
   parseText,
   pick,
+  SEARCH_TABS,
+  type FeedQuery,
+  type SearchTab,
 } from '@/lib/url-state'
 import type { ListItem, MultiView, Page, SubredditView } from '@/lib/view-models'
-import feed from '@/components/feed/feed.module.css'
+
 import styles from '../feed-page.module.css'
 
 export const metadata: Metadata = { title: 'Search' }

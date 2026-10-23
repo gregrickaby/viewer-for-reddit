@@ -1,5 +1,6 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { LiveBody, LiveCount } from '@/components/islands/live-thread'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
@@ -9,6 +10,7 @@ import { FlairText } from '@/components/ui/flair-text'
 import { absoluteTime, compactNumber, isoTime, timeAgo } from '@/lib/format'
 import { hasInlineMedia } from '@/lib/media/inline'
 import type { PostView, SafeHtml } from '@/lib/view-models'
+
 import styles from './post-card.module.css'
 
 /** Self text longer than this gets a "Read more" (the clamp is ~12 lines). */

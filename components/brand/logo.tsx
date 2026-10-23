@@ -1,7 +1,9 @@
 import Image from 'next/image'
-import icon from './snoo.svg'
+
 import { SITE } from '@/lib/site'
+
 import styles from './logo.module.css'
+import icon from './snoo.svg'
 
 /**
  * Brand mark: the app icon, optionally with the site name beside it.

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+
 import { env } from '@/lib/env'
 import { PUBLIC_PAGES } from '@/lib/site'
 

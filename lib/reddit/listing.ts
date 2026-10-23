@@ -1,6 +1,9 @@
 import 'server-only'
+
 import * as z from 'zod'
+
 import { logger } from '@/lib/datadog/server'
+
 import { RedditSchemaError } from './errors'
 import { ListingEnvelope } from './schemas/things'
 

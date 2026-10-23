@@ -1,4 +1,5 @@
 import type { ForbiddenReason } from '@/lib/reddit/errors'
+
 import styles from './feed.module.css'
 
 const COPY: Record<ForbiddenReason, { title: string; detail: string }> = {

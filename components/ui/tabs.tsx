@@ -1,6 +1,8 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { LinkPendingHint } from '@/components/islands/link-pending-hint'
+
 import styles from './tabs.module.css'
 
 export type Tab = { href: string; label: string; current: boolean }

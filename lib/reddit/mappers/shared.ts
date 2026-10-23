@@ -1,6 +1,8 @@
 import 'server-only'
+
 import { safeMediaUrl } from '@/lib/media/url'
 import type { Distinguished, FlairPart, FlairView, Removal, Vote } from '@/lib/view-models'
+
 import { resolveRedditLink } from '../links'
 import type { FlairRichtext } from '../schemas/generated'
 

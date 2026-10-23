@@ -1,9 +1,10 @@
-import { type ReactElement, type ReactNode, isValidElement } from 'react'
+import { isValidElement, type ReactElement, type ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { FeedSort } from '@/lib/url-state'
 import type { Page, PostView } from '@/lib/view-models'
-import { html, postView, subredditView } from '@/tests/helpers/views'
 import { renderServer } from '@/tests/helpers/render-server'
+import { html, postView, subredditView } from '@/tests/helpers/views'
 
 const state = {
   page: { items: [] as PostView[], after: null as string | null, before: null as string | null },

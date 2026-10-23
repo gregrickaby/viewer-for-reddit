@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { sample } from '@/tests/helpers/fixtures'
 
 const redditFetch = vi.fn()

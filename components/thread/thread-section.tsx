@@ -1,5 +1,6 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { PostCard, PostCardSkeleton } from '@/components/feed/post-card'
 import { CommentComposer } from '@/components/islands/comment-composer'
@@ -12,12 +13,14 @@ import { getThread } from '@/lib/reddit/thread'
 import { bodyHashOf, cursorFromTree, WATCH_WINDOW_SECONDS } from '@/lib/reddit/thread-live'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
-import { COMMENT_SORTS, type CommentSort, parseThreadQuery, threadSortHref } from '@/lib/url-state'
+import { COMMENT_SORTS, parseThreadQuery, threadSortHref, type CommentSort } from '@/lib/url-state'
 import type { ThreadView } from '@/lib/view-models'
+
 import { CommentTree, CommentTreeSkeleton } from './comment-tree'
 // New comments are rendered by `pollThreadLive` after the page loads, so their card styles
 // have to ship with the page instead.
 import '@/components/feed/comment-card.module.css'
+
 import styles from './thread.module.css'
 
 const SORT_LABELS: Record<CommentSort, string> = {

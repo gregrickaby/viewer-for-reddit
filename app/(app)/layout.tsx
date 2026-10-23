@@ -1,20 +1,22 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
+
 import { Logo } from '@/components/brand/logo'
 import { PopoverDismiss } from '@/components/islands/popover-dismiss'
-import { SiteSearchFallback, SiteSearchInput } from '@/components/islands/site-search-input'
 import { ScrollToTop } from '@/components/islands/scroll-to-top'
 import { SectionError } from '@/components/islands/section-error'
+import { SiteSearchFallback, SiteSearchInput } from '@/components/islands/site-search-input'
+import { SettingsMenu, SettingsMenuSkeleton } from '@/components/shell/settings-menu'
 import {
   SidebarFeeds,
   SidebarLists,
   SidebarSiteLinks,
   SidebarSkeleton,
 } from '@/components/shell/sidebar'
-import { SettingsMenu, SettingsMenuSkeleton } from '@/components/shell/settings-menu'
 import { UserMenu, UserMenuSkeleton } from '@/components/shell/user-menu'
 import { SITE } from '@/lib/site'
+
 import styles from './layout.module.css'
 
 /** Signed-in pages are one person's Reddit: nothing here belongs in a search index. */

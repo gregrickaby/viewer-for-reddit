@@ -1,5 +1,7 @@
 import 'server-only'
+
 import type { LiveEventView, LiveUpdateView } from '@/lib/view-models'
+
 import { sanitizeRedditHtml } from '../sanitize'
 import type { RedditLiveEvent, RedditLiveUpdate } from '../schemas/live'
 import { authorName } from './shared'

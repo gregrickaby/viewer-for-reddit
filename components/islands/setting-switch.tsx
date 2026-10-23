@@ -1,7 +1,9 @@
 'use client'
 
 import { useOptimistic, useState } from 'react'
+
 import { setBlurNsfw } from '@/app/actions/settings'
+
 import styles from './setting-switch.module.css'
 import { SwitchRow } from './switch-row'
 import { useEnhancedForm } from './use-enhanced-form'

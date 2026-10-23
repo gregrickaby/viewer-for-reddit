@@ -1,7 +1,10 @@
 import 'server-only'
+
 import sanitizeHtml from 'sanitize-html'
-import type { SafeHtml } from '@/lib/view-models'
+
 import { inlineMedia } from '@/lib/media/inline'
+import type { SafeHtml } from '@/lib/view-models'
+
 import { resolveRedditLink } from './links'
 
 /*

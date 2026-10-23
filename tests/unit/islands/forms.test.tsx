@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import type { ActionResult } from '@/lib/actions/result'
 
 type Deferred<T> = { promise: Promise<T>; resolve: (value: T) => void }

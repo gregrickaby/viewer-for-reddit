@@ -1,7 +1,9 @@
 import type { Metadata, Route } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
+
 import { createMultiForm } from '@/app/actions/multis'
+import feed from '@/components/feed/feed.module.css'
 import { ForbiddenPanel } from '@/components/feed/forbidden-panel'
 import { ActionForm } from '@/components/islands/action-form'
 import { PendingButton } from '@/components/islands/pending-button'
@@ -12,7 +14,7 @@ import { BackLink } from '@/components/ui/back-link'
 import { handleReadError } from '@/lib/reddit/read-errors'
 import { getMyMultis } from '@/lib/reddit/reads'
 import type { MultiView } from '@/lib/view-models'
-import feed from '@/components/feed/feed.module.css'
+
 import styles from '../feed-page.module.css'
 import multis from './multis.module.css'
 

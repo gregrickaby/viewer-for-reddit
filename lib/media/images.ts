@@ -1,6 +1,8 @@
 import 'server-only'
+
 import type { RedditMediaMetadataItem, RedditPreviewImage } from '@/lib/reddit/schemas/media'
 import type { ImageSet, LoopVideo } from '@/lib/view-models'
+
 import { REDDIT_MEDIA_HOSTS, safeMediaUrl } from './url'
 
 /** A single image rendition, normalized from Reddit's two spellings. */

@@ -1,6 +1,7 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useId } from 'react'
+
 import { deleteCommentForm } from '@/app/actions/comments'
 import { ActionForm } from '@/components/islands/action-form'
 import type { CommentComposerProps } from '@/components/islands/comment-composer'
@@ -10,14 +11,15 @@ import { LiveTime } from '@/components/islands/live-time'
 import { PendingButton } from '@/components/islands/pending-button'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
+import { RedditHtml } from '@/components/reddit-html'
 import { Button } from '@/components/ui/button'
 import { FlairText } from '@/components/ui/flair-text'
-import { RedditHtml } from '@/components/reddit-html'
 import { absoluteTime, compactNumber } from '@/lib/format'
-import { type ThreadQuery, expandMoreHref } from '@/lib/url-state'
+import { expandMoreHref, type ThreadQuery } from '@/lib/url-state'
 import type { CommentNode, CommentView, MoreNode } from '@/lib/view-models'
-import { ComposerForm } from './composer-form'
+
 import styles from './comment-tree.module.css'
+import { ComposerForm } from './composer-form'
 
 export type TreeContext = {
   /** The post's own path, for "continue this thread" links. */

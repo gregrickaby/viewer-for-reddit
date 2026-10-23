@@ -1,9 +1,11 @@
 import { Suspense } from 'react'
+
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { BackLink } from '@/components/ui/back-link'
 import { getUsername } from '@/lib/auth/session'
 import { LISTING_SORTS } from '@/lib/url-state'
+
 import { FeedSection, FeedSkeleton } from './feed-section'
 import styles from './multi-feed.module.css'
 

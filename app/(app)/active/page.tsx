@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
 import { ActiveSection } from '@/components/feed/active-section'
 import { FeedSkeleton } from '@/components/feed/feed-section'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { BackLink } from '@/components/ui/back-link'
+
 import styles from '../feed-page.module.css'
 
 export const metadata: Metadata = { title: 'Active threads' }

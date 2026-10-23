@@ -1,11 +1,12 @@
 import { timingSafeEqual } from 'node:crypto'
 import { NextResponse, type NextRequest } from 'next/server'
+
 import {
   ACCESS_COOKIE,
+  cookieOptions,
   OAUTH_COOKIE,
   REFRESH_COOKIE,
   REFRESH_MAX_AGE,
-  cookieOptions,
   sealAccess,
   sealRefresh,
   secondsUntil,

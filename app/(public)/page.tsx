@@ -1,16 +1,18 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { JsonLd } from '@/components/site/json-ld'
+
 import { AppPreview } from '@/components/site/app-preview'
 import { FaqAnswer } from '@/components/site/faq-answer'
+import { JsonLd } from '@/components/site/json-ld'
 import { FeatureIcon } from '@/components/site/landing-icons'
 import { SiteShell } from '@/components/site/site-shell'
+import site from '@/components/site/site.module.css'
 import { Button } from '@/components/ui/button'
 import { safeNext } from '@/lib/auth/next-param'
 import { env } from '@/lib/env'
 import { FAQ, FEATURES, OPEN_GRAPH, SITE, STEPS, structuredData } from '@/lib/site'
-import site from '@/components/site/site.module.css'
+
 import styles from './page.module.css'
 
 /** The title and description are the site defaults (app/layout.tsx). */

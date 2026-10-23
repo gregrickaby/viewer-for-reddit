@@ -1,10 +1,12 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { SidebarFilter } from '@/components/islands/sidebar-filter'
 import { SiteLinks } from '@/components/site/site-links'
-import { getMyMultis, getMySubscriptions } from '@/lib/reddit/reads'
 import { handleReadError } from '@/lib/reddit/read-errors'
+import { getMyMultis, getMySubscriptions } from '@/lib/reddit/reads'
 import type { MultiView, SubredditView } from '@/lib/view-models'
+
 import styles from './sidebar.module.css'
 
 /** How many rows each sidebar list shows before the filter or "All N". */

@@ -2,6 +2,7 @@
 import { SubscribeButton } from '@/components/islands/subscribe-button'
 import { absoluteTime, compactNumber } from '@/lib/format'
 import type { ProfileView } from '@/lib/view-models'
+
 import styles from './profile-header.module.css'
 
 const cakeDay = new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' })

@@ -1,10 +1,12 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { LiveTime } from '@/components/islands/live-time'
 import { SaveButton } from '@/components/islands/save-button'
 import { VoteButtons } from '@/components/islands/vote-buttons'
 import { RedditHtml } from '@/components/reddit-html'
 import type { CommentView } from '@/lib/view-models'
+
 import styles from './comment-card.module.css'
 
 /**

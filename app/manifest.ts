@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+
 import { SITE } from '@/lib/site'
 
 /** The web app manifest, so the site installs to a home screen with its icon. */

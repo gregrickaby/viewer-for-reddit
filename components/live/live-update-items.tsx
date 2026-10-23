@@ -1,8 +1,10 @@
 import type { Route } from 'next'
 import Link from 'next/link'
+
 import { LiveTime } from '@/components/islands/live-time'
 import { RedditHtml } from '@/components/reddit-html'
 import type { LiveUpdateView } from '@/lib/view-models'
+
 import styles from './live.module.css'
 
 /** The list items of a run of updates. The caller owns the `<ol>`, so pages can be appended. */

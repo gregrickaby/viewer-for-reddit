@@ -1,13 +1,15 @@
 import 'server-only'
+
 import { requireAuth } from '@/lib/auth/session'
 import type { CommentSort, ThreadQuery } from '@/lib/url-state'
 import type { ThreadView } from '@/lib/view-models'
+
 import { redditFetch } from './client'
 import { RedditNotFoundError } from './errors'
 import { parseItems, parseListing, parseResponse } from './listing'
 import { mapComment, mapCommentTree, mapMore } from './mappers/comment'
 import { mapPost } from './mappers/post'
-import { type FlatNode, resolveMore } from './more'
+import { resolveMore, type FlatNode } from './more'
 import { CommentOrMore } from './schemas/comment'
 import { LinkThing } from './schemas/link'
 import { CommentsResponse, FormResponse } from './schemas/responses'

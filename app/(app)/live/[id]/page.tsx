@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
 import { SectionError } from '@/components/islands/section-error'
-import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { LiveSection, LiveSkeleton } from '@/components/live/live-section'
+import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
+
 import styles from '../../feed-page.module.css'
 
 type Props = PageProps<'/live/[id]'>

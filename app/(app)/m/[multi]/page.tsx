@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+
 import { MultiFeedPage } from '@/components/feed/multi-feed'
 
 export async function generateMetadata({ params }: PageProps<'/m/[multi]'>): Promise<Metadata> {

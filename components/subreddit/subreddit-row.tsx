@@ -2,11 +2,13 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { ViewTransition } from 'react'
+
 import { SubscribeButton } from '@/components/islands/subscribe-button'
 import { AddToMultiMenu } from '@/components/multi/add-to-multi-menu'
 import { RedditHtml } from '@/components/reddit-html'
 import { compactNumber } from '@/lib/format'
 import type { MultiView, SubredditView } from '@/lib/view-models'
+
 import styles from './subreddit-row.module.css'
 
 const LIST_CHANGE = { 'list-change': 'fade-in', default: 'none' }

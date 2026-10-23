@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+
 import { registerPlayer } from './player-registry'
 import { useReducedMotion } from './use-reduced-motion'
 

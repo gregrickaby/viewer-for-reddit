@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { absoluteTime, compactNumber, isoTime, plural, timeAgo } from '@/lib/format'
 
 describe('compactNumber', () => {

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
 import { FeedSection, FeedSkeleton } from '@/components/feed/feed-section'
 import { SectionError } from '@/components/islands/section-error'
 import { PageTransition, Reveal, SkeletonExit } from '@/components/motion/transitions'
 import { HOME_SORTS } from '@/lib/url-state'
+
 import styles from '../feed-page.module.css'
 
 export const metadata: Metadata = { title: 'Home' }

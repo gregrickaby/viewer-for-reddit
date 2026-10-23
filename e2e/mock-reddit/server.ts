@@ -6,8 +6,8 @@
  *   POST /__mock/reset                                      back to the samples
  *   GET  /__mock/state                                      votes, saves, subscriptions, …
  */
-import { readFileSync, readdirSync } from 'node:fs'
-import { type IncomingMessage, type ServerResponse, createServer } from 'node:http'
+import { readdirSync, readFileSync } from 'node:fs'
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import path from 'node:path'
 
 type Json = Record<string, unknown>

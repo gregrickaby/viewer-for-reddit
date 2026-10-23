@@ -1,7 +1,7 @@
 'use client'
 
-import { addNextjsError } from '@datadog/browser-rum-nextjs'
 import { useEffect } from 'react'
+import { addNextjsError } from '@datadog/browser-rum-nextjs'
 
 /**
  * The last-resort error page: it replaces the root layout, so it brings its own

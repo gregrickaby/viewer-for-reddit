@@ -1,17 +1,18 @@
 import { InfiniteFeed } from '@/components/islands/infinite-feed'
 import { ContentReveal } from '@/components/motion/transitions'
-import { type FeedSource, getFeed } from '@/lib/reddit/reads'
 import { handleReadError } from '@/lib/reddit/read-errors'
+import { getFeed, type FeedSource } from '@/lib/reddit/reads'
 import { requestTime } from '@/lib/request-time'
 import { getSettings } from '@/lib/settings'
-import { type FeedSort, PAGE_SIZE, feedKey, pageOffset, parseFeedQuery } from '@/lib/url-state'
+import { feedKey, PAGE_SIZE, pageOffset, parseFeedQuery, type FeedSort } from '@/lib/url-state'
 import type { Page, PostView } from '@/lib/view-models'
+
+import { FeedItems } from './feed-items'
+import styles from './feed.module.css'
 import { ForbiddenPanel } from './forbidden-panel'
 import { Pagination } from './pagination'
-import { FeedItems } from './feed-items'
 import { PostCardSkeleton } from './post-card'
 import { SortTabs, SortTabsSkeleton } from './sort-tabs'
-import styles from './feed.module.css'
 
 export type FeedSectionProps = {
   source: FeedSource

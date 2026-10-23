@@ -1,4 +1,5 @@
 import { LinkButton } from '@/components/ui/button'
+
 import styles from './status-page.module.css'
 
 /** Reddit said 404: a community, user, or post that doesn't exist (design §12). */
