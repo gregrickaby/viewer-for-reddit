@@ -18,7 +18,7 @@ Goal: catch everything a careful human reviewer would flag before the change is 
 git diff --name-only HEAD
 ```
 
-Deduplicate. Keep `.ts`, `.tsx`, `.mjs`, and `.css`. Skip `*.module.css.d.ts`, `coverage/`, `test-results/`, and `node_modules`. Treat `lib/reddit/schemas/generated.ts` as output: review the inputs and scripts that produced it, not the file.
+Deduplicate. Keep `.ts`, `.tsx`, and `.css`. Skip `*.module.css.d.ts`, `coverage/`, `test-results/`, and `node_modules`. Treat `lib/reddit/schemas/generated.ts` as output: review the inputs and scripts that produced it, not the file.
 
 ### 2. Load standards
 
@@ -26,9 +26,9 @@ The standards are `AGENTS.md` (already in context) and `~/.claude/rules/writing-
 
 | Concern                        | File                                               |
 | ------------------------------ | -------------------------------------------------- |
-| Lint rules, allowed HTML       | `eslint.config.mjs`                                |
-| CSS layers, tokens             | `stylelint.config.mjs`, `app/styles/tokens.css`    |
-| Coverage thresholds            | `vitest.config.mts`                                |
+| Lint rules, allowed HTML       | `eslint.config.ts`                                 |
+| CSS layers, tokens             | `stylelint.config.ts`, `app/styles/tokens.css`     |
+| Coverage thresholds            | `vitest.config.ts`                                 |
 | Reddit calls, errors           | `lib/reddit/client.ts`, `lib/reddit/errors.ts`     |
 | Failed reads                   | `lib/reddit/read-errors.ts`                        |
 | Names and ids from input       | `lib/reddit/names.ts`                              |

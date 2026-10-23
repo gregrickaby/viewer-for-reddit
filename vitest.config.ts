@@ -25,7 +25,7 @@ export default defineConfig({
         'app/**/*.{ts,tsx}',
         'components/**/*.{ts,tsx}',
         'scripts/**/*.ts',
-        'stylelint/**/*.mjs',
+        'stylelint/**/*.ts',
         'proxy.ts',
       ],
       exclude: [
@@ -36,10 +36,10 @@ export default defineConfig({
       reporter: ['text-summary', 'text', 'html', 'lcov'],
       // Enforced minimums (project requirement). Raising them is fine; lowering them is not.
       thresholds: {
-        branches: 90,
-        functions: 90,
-        lines: 90,
-        statements: 90,
+        branches: 95,
+        functions: 95,
+        lines: 95,
+        statements: 95,
       },
     },
   },

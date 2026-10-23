@@ -1,7 +1,8 @@
-/** @type {import('stylelint').Config} */
-const config = {
+import type { Config } from 'stylelint'
+
+const config: Config = {
   extends: ['stylelint-config-standard', 'stylelint-config-css-modules'],
-  plugins: ['./stylelint/require-components-layer.mjs'],
+  plugins: ['./stylelint/require-components-layer.ts'],
   ignoreFiles: ['.next/**', 'coverage/**', 'node_modules/**'],
   rules: {
     'viewer-for-reddit/require-components-layer': true,

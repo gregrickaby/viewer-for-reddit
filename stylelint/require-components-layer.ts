@@ -1,4 +1,4 @@
-import stylelint from 'stylelint'
+import stylelint, { type Rule } from 'stylelint'
 
 const {
   createPlugin,
@@ -14,7 +14,7 @@ const messages = ruleMessages(ruleName, {
  * Every rule in a CSS Module must sit inside `@layer components`, so cascade
  * order never depends on import order (docs/design.md §10.4).
  */
-const rule = (enabled) => (root, result) => {
+const rule: Rule = (enabled) => (root, result) => {
   if (!enabled) return
   const file = root.source?.input.file ?? ''
   if (!file.endsWith('.module.css')) return

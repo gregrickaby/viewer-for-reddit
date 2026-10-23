@@ -1,6 +1,6 @@
 import stylelint from 'stylelint'
 import { describe, expect, it } from 'vitest'
-import plugin from '@/stylelint/require-components-layer.mjs'
+import plugin from '@/stylelint/require-components-layer'
 
 async function lint(code: string, codeFilename: string, enabled = true) {
   const { results } = await stylelint.lint({
