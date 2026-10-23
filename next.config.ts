@@ -23,6 +23,8 @@ const nextConfig: NextConfig = {
   experimental: {
     // Runs the React Compiler natively instead of through Babel: about 15% faster builds here.
     turbopackRustReactCompiler: true,
+    // Retries navigations, prefetches, and Server Actions after a dropped connection.
+    useOffline: true,
     serverActions: {
       // Comments cap at 10k characters; nothing else we submit is large.
       bodySizeLimit: '100kb',
