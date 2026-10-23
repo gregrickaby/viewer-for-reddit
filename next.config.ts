@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   typedRoutes: true,
   poweredByHeader: false,
+  // Coolify sets SOURCE_COMMIT. Tabs left open across a deploy reload instead of mixing builds.
+  deploymentId: process.env.SOURCE_COMMIT,
   experimental: {
     // Runs the React Compiler natively instead of through Babel: about 15% faster builds here.
     turbopackRustReactCompiler: true,
