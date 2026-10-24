@@ -73,9 +73,7 @@ Unit tests live in `tests/unit/`. They run in Node; component tests add `// @vit
 
 ## Definition of done
 
-1. `npm run format:check`, `npm run check`, and `npm run build` pass, with coverage at or above 95%.
-2. `npm run test:e2e` passes when a change touches a user flow.
-3. UX changes are checked in Chrome with Claude in Chrome against the user's running dev server: the rendered page, the main interaction, and console errors.
+A task: `npm run format:check` and `npm run check` pass, with coverage at or above 95%. Shipping: the `code-review` skill adds `npm run build`, `npm run test:e2e` when a user flow changed or a Server Action renders something new, and a Chrome check against the user's dev server. The global instructions set the rest.
 
 ## Deploy
 
