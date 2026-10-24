@@ -2,12 +2,12 @@
 name: code-review
 model: claude-opus-5-5
 context: fork
-description: Review changed code in Viewer for Reddit against its architecture rules and conventions, and fix issues before committing. Use when the user says "review my code", "do a code review", or "/code-review".
+description: Review changed code in Viewer for Reddit against its architecture rules and conventions, and request changes before committing. Use when the user says "review my code", "do a code review", or "/code-review".
 ---
 
 # Code review
 
-Catch everything a careful human reviewer would flag, fix it, and report. Never commit.
+Catch everything a careful human reviewer would flag and request changes. Don't edit files and never commit: the session that called you fixes the findings and runs you again, until a round comes back clean.
 
 You run in a fresh context: you can't see the conversation, and nobody answers questions. Make each call yourself and explain it in the report.
 
@@ -64,30 +64,28 @@ Check each file for:
 - **Prose:** UI copy and docs follow the writing rules in `docs/code-standards.md`.
 - **Praise:** anything done well. Specific and brief.
 
-Tag each finding **Blocker**, **Suggestion**, **Nit**, or **Praise**. Fix every Blocker, Suggestion, and Nit unless there's a good reason not to; give the reason in the report.
+Tag each finding **Blocker**, **Suggestion**, **Nit**, or **Praise**. Every Blocker, Suggestion, and Nit is a change you're requesting, and any one of them fails the review. Don't list something you'd accept as is; leave it out or call it Praise. Tag anything that needs the user's call (a design choice, a waiver) **Question**; it fails the review too.
 
 ## 4. Validate
 
-This is the only place the build, E2E, and browser checks run; work sessions skip them. Run in this order:
+Work sessions skip the browser check, and CI runs the build and E2E on the pull request, so never run `npm run build` or `npm run test:e2e` here. Run in this order:
 
 1. `npm run format:check` and `npm run check`. `check` includes coverage, enforced at 95%.
 2. For UI changes, check the page in Chrome against the user's running dev server when the Chrome tools are available (never start a server). Check the rendered page in light and dark themes, at phone width, the main interaction, and console errors. Save a screenshot of each visual change to disk and list the paths in the report. If Chrome isn't available, say live checking wasn't possible.
-3. `npm run build`, after the Chrome check because it disrupts the dev server.
-4. `npm run test:e2e` when a change touches a user flow or a Server Action renders something new. It builds too.
 
-Fix what fails and re-run. If something still fails after two attempts, stop and report it.
+A failing command is a Blocker with its error. A check you couldn't finish (Chrome unavailable, a viewport the browser won't reach) is a Question, so the user decides whether to waive it.
 
 Pipe long output through `tail -40` and read screenshots back only to judge them; the report carries paths, not images.
 
 ## 5. Record the pass
 
-When validation passed and nothing is left for the user, and only then, record the tree so `commit` can check it:
+Only when the round has no Blocker, Suggestion, Nit, or Question and every check ran and passed, record the tree so `commit` can check it:
 
 ```bash
 .claude/skills/code-review/tree-hash.sh > "$(git rev-parse --git-dir)/review-passed"
 ```
 
-Make no edits after this step. Otherwise delete that file if it exists.
+Otherwise delete that file if it exists.
 
 ## 6. Report
 
@@ -96,6 +94,6 @@ The report is relayed to the user, so it's the only output that matters.
 | #   | File | Line | Severity | Finding | Fix |
 | --- | ---- | ---- | -------- | ------- | --- |
 
-One row per finding, none for files without one. The Fix column says what changed, or "flagged only" with the reason. Then one line each for validation results, screenshot paths, and anything left for the user to decide.
+One row per finding, none for files without one. The Fix column says what to change. Then one line each for validation results, screenshot paths, and anything left for the user to decide.
 
-End with a verdict line: `Ready to commit: yes` when validation passed and nothing was left for the user, otherwise `Ready to commit: no` and why.
+End with a verdict line: `Ready to commit: yes` when the pass was recorded, otherwise `Ready to commit: no` and the count of open findings.
