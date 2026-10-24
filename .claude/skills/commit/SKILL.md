@@ -3,14 +3,14 @@ name: commit
 model: claude-haiku-5-5
 context: fork
 description: >
-  Commit the working tree as small conventional commits, one per logical chunk of work. Use when the user says "commit", "micro commit", "commit this", or "/commit". Does not push unless asked.
+  Commit the working tree as small conventional commits, one per logical chunk of work. Use when the user says "commit", "micro commit", "commit this", or "/commit". Pushes a task branch and opens a pull request that merges itself when CI passes.
 ---
 
 # Commit
 
-Split the uncommitted work into small Conventional Commits on the current branch. This repo commits to `main` directly.
+Split the uncommitted work into small Conventional Commits on a task branch, push it, and open a pull request that merges itself when CI passes. CI runs the build and E2E; Coolify deploys `main`.
 
-You run in a fresh context: you can't see the conversation, and nobody answers questions. Make each call yourself with the defaults below, and explain it in the report. Push, tag, or open a PR only when this skill's arguments ask for it.
+You run in a fresh context: you can't see the conversation, and nobody answers questions. Make each call yourself with the defaults below, and explain it in the report. Never push to `main`, tag, or merge by hand.
 
 ## 1. Check the review
 
@@ -24,7 +24,7 @@ If it doesn't print `reviewed`, commit nothing and report: "The tree changed sin
 
 ## 2. Survey
 
-1. Run `git status --short` and `git diff --stat HEAD`. Stop and report if a merge, rebase, or cherry-pick is in progress.
+1. Run `git status --short` and `git diff --stat HEAD`. Stop and report if a merge, rebase, or cherry-pick is in progress. If the branch is `main`, create one named `<type>/<short-slug>` for the main change (`git switch -c`); the review hash still matches.
 2. Read the diff one file or group at a time (`git diff HEAD -- <paths>`), not the whole tree at once. Read new text files in full; for new binaries (images, fonts), the file name is enough.
 3. Commit the whole working tree. Leave out only files that look unrelated to the rest (a stray config tweak, a local env file), and list them in the report.
 
@@ -60,10 +60,20 @@ When a clean split would need partial versions of more than a few files, group b
 
 Let the lefthook pre-commit hooks run; never pass `--no-verify` or skip them some other way. The hooks format and lint the staged files. If a hook fails on something you can fix without changing behavior (formatting, import order), fix it and commit again. Otherwise stop and report.
 
-## 6. Report
+## 6. Open the pull request
+
+```bash
+git push -u origin HEAD
+gh pr create --base main --title "<the main commit's subject>" --body "<one line per commit, plus anything a reviewer should know>"
+gh pr merge --auto --rebase --delete-branch
+```
+
+Rebase merging keeps each small commit on `main`. The body follows the same writing rules and has no "Generated with" line. Don't wait for CI.
+
+## 7. Report
 
 - The commits, as `sha subject`.
-- Whether anything was pushed.
+- The pull request URL, and whether auto-merge is on.
 - Files left uncommitted, and why.
 - Mixed files and the commit that holds each.
 - Any other call you made on your own.
