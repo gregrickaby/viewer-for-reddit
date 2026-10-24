@@ -1,28 +1,25 @@
 ---
 name: code-review
 model: claude-opus-5-5
-description: Review changed code in Viewer for Reddit against its architecture rules and conventions, and fix issues before committing.
+context: fork
+description: Review changed code in Viewer for Reddit against its architecture rules and conventions, and fix issues before committing. Use when the user says "review my code", "do a code review", or "/code-review".
 ---
 
-# Code Review
+# Code review
 
-**Triggers:** "review my code", "do a code review", `/code-review`
+Catch everything a careful human reviewer would flag, fix it, and report. Never commit.
 
-Goal: catch everything a careful human reviewer would flag before the change is committed.
+You run in a fresh context: you can't see the conversation, and nobody answers questions. Make each call yourself and explain it in the report.
 
-## Steps
+## 1. Scope
 
-### 1. Collect changed files
+Review the uncommitted work: `git status --short`, `git diff --stat HEAD`, and `git ls-files --others --exclude-standard` for new files. If this skill's arguments name a commit range, review that instead (`git diff --stat <range>`). If there's nothing to review, say so and stop.
 
-```bash
-git diff --name-only HEAD
-```
+Keep `.ts`, `.tsx`, and `.css`. Skip `*.module.css.d.ts`, `coverage/`, `test-results/`, and `node_modules`. Treat `lib/reddit/schemas/generated.ts` as output: review the inputs and scripts that produced it, not the file.
 
-Deduplicate. Keep `.ts`, `.tsx`, and `.css`. Skip `*.module.css.d.ts`, `coverage/`, `test-results/`, and `node_modules`. Treat `lib/reddit/schemas/generated.ts` as output: review the inputs and scripts that produced it, not the file.
+## 2. Standards
 
-### 2. Load standards
-
-The standards are `AGENTS.md` (already in context) and `docs/code-standards.md`. Read `docs/code-standards.md` every time. Read the matching file only when a finding depends on it:
+Read `AGENTS.md` and `docs/code-standards.md`. Read another file only when a finding depends on it:
 
 | Concern                        | File                                               |
 | ------------------------------ | -------------------------------------------------- |
@@ -37,13 +34,13 @@ The standards are `AGENTS.md` (already in context) and `docs/code-standards.md`.
 | Indexable pages, CSP, proxying | `lib/site.ts`, `proxy.ts`, `next.config.ts`        |
 | E2E and the mock Reddit        | `e2e/`, `e2e/mock-reddit/`, `playwright.config.ts` |
 
-### 3. Review files
+## 3. Review
 
-Read the diff first (`git diff HEAD`), then the full file only where the diff lacks context. Read the tests for changed logic (`tests/unit/` mirrors the source tree). Grep for nearby conventions rather than reading sibling files in full.
+Read the diff one file or group at a time (`git diff HEAD -- <paths>`), and new files in full. Open the rest of a file only where the diff lacks context. Read the tests for changed logic (`tests/unit/` mirrors the source tree). Grep for nearby conventions instead of reading sibling files.
 
-For each file, evaluate:
+Check each file for:
 
-- **Architecture rules:** does the change break any rule in `AGENTS.md`? Check these first:
+- **Architecture rules** in `AGENTS.md`, first:
   - Browser code that fetches, or any Reddit call outside `redditFetch()`
   - Reddit JSON used without a Zod schema from `lib/reddit/schemas/` and a view model from `lib/view-models.ts`
   - Reads or writes that don't call `requireAuth()` themselves, or take a token from the caller
@@ -59,32 +56,17 @@ For each file, evaluate:
   - Logging through `console` instead of `lib/datadog/server.ts` or `lib/datadog/client.ts`
   - `any`, `NEXT_PUBLIC_`, `memo()`, `useCallback()`, `useMemo()`, barrel files
   - Styles outside `@layer components`, or raw colors instead of tokens
-
-  Cite the rule, explain, and give a fix with code.
-
 - **Reddit budget:** every reader shares about 100 requests a minute. Flag new calls per render, per poll, or per list item, and calls that could reuse data the page already has.
-- **Code coverage:** coverage must stay at or above 90% (enforced). Verify with `npm run test`, don't infer it from reading the test file. If coverage drops, fix it. Server components render through `tests/helpers/render-server.tsx`; fixtures come from `tests/helpers/fixtures.ts`; component tests start with `// @vitest-environment happy-dom`.
-- **Correctness and edge cases:** trace what the code does under boundary inputs (deleted or removed posts and comments, suspended users, private, quarantined, and NSFW subreddits, empty listings, the last page of a cursor, null oembed fields, expired sessions, rate-limit responses), not just whether it compiles and the happy-path test passes. Before trusting a date, count, or formatting choice, grep for how `lib/format.ts` and sibling code handle the same value and flag any divergence. A green suite doesn't prove the fixtures hit the risky boundary: check what the test pins.
-- **Without JavaScript:** links and forms that work without JavaScript today must keep working: `ActionForm` forms, Previous and Next links, the `<noscript>` Next link in infinite feeds.
-- **Security:** auth and session handling, open redirects, CSP changes, secrets in client bundles, unsanitized HTML or URLs. Changes to the auth flow need the user's sign-off.
-- **Code standards:** does the change follow `docs/code-standards.md`? Check what lint can't: naming, comments, props typing, error handling (including rejected Server Action promises in islands), and test structure. If not, fix it.
+- **Correctness:** trace boundary inputs (deleted or removed posts and comments, suspended users, private, quarantined, and NSFW subreddits, empty listings, the last page of a cursor, null oembed fields, expired sessions, rate-limit responses), not just the happy path. Before trusting a date, count, or format, grep how `lib/format.ts` and sibling code handle the same value. A green suite doesn't prove the fixtures hit the risky boundary: check what each test pins.
+- **Without JavaScript:** links and forms that work without JavaScript today keep working: `ActionForm` forms, Previous and Next links, the `<noscript>` Next link in infinite feeds.
+- **Security:** auth and session handling, open redirects, CSP changes, secrets in client bundles, unsanitized HTML or URLs. Don't change the auth flow yourself: report a needed change as a Blocker for the user to sign off on.
+- **Code standards** that lint can't check: naming, comments, props typing, error handling (including rejected Server Action promises in islands), test structure.
 - **Prose:** UI copy and docs follow the writing rules in `docs/code-standards.md`.
-- **Praise:** call out anything done well. Specific, brief, no padding.
+- **Praise:** anything done well. Specific and brief.
 
-Tag every finding **Blocker**, **Suggestion**, or **Nit**.
+Tag each finding **Blocker**, **Suggestion**, **Nit**, or **Praise**. Fix every Blocker, Suggestion, and Nit unless there's a good reason not to; give the reason in the report.
 
-Fix all Blockers and rule violations before Step 4. Fix Suggestions and Nits too unless there's a good reason not to, and say so if one is left. Praise notes are informational only.
-
-### 4. Present findings
-
-| #   | File | Line | Severity | Finding | Fix |
-| --- | ---- | ---- | -------- | ------- | --- |
-
-One row per finding. Skip files with nothing to report rather than padding the table with "no issues" rows. In the Fix column, say what changed, or "flagged only" for Praise or anything deliberately left alone. Print this table before running validation.
-
-Close with a one-line status: for example "All findings fixed; validation clean" or "1 suggestion left unfixed (see row 3), confirm before committing."
-
-### 5. Validate
+## 4. Validate
 
 ```bash
 npm run format:check
@@ -92,6 +74,15 @@ npm run check
 npm run build
 ```
 
-Run `npm run test:e2e` when a change touches a user flow or a Server Action renders something new. For UX changes, check the page in Chrome against the user's running dev server (never start it).
+`npm run check` includes coverage, enforced at 95%. Run `npm run test:e2e` when a change touches a user flow or a Server Action renders something new. For UI changes, check the page in Chrome against the user's running dev server when the Chrome tools are available (never start a server); otherwise say live checking wasn't possible.
 
-Fix all errors and re-run until clean. Report the final output.
+Fix what fails and re-run. If something still fails after two attempts, stop and report it.
+
+## 5. Report
+
+The report is relayed to the user, so it's the only output that matters.
+
+| #   | File | Line | Severity | Finding | Fix |
+| --- | ---- | ---- | -------- | ------- | --- |
+
+One row per finding, none for files without one. The Fix column says what changed, or "flagged only" with the reason. Then one line each for validation results and anything left for the user to decide.
