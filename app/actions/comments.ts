@@ -5,7 +5,7 @@ import { refresh } from 'next/cache'
 import { COMMENT_MAX_CHARS } from '@/components/islands/composer-copy'
 import type { ActionResult } from '@/lib/actions/result'
 import { invalid, runAction } from '@/lib/actions/run-action'
-import { isCommentFullname, isVotableFullname } from '@/lib/reddit/names'
+import { isCommentFullname, isThingId, isVotableFullname } from '@/lib/reddit/names'
 import { waitForComment } from '@/lib/reddit/thread'
 import {
   deleteComment as deleteRedditComment,
@@ -58,7 +58,9 @@ export async function deleteComment(formData: FormData): Promise<ActionResult> {
 
   return runAction(async () => {
     await deleteRedditComment(thing)
-    await waitForComment(post, thing.slice(3), 'deleted')
+    // The post id comes from the permalink and only drives the poll for the
+    // deletion, so one that doesn't parse skips the poll, not the delete.
+    if (isThingId(post)) await waitForComment(post, thing.slice(3), 'deleted')
     refresh()
   })
 }
