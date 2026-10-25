@@ -73,6 +73,12 @@ describe('editComment and deleteComment', () => {
     expect(waitForComment).toHaveBeenCalledWith('p1', 'abc', 'deleted')
   })
 
+  it('delete anyway when the permalink yielded no post id to poll', async () => {
+    expect((await actions.deleteComment(form({ thing: 't1_abc', post: '' }))).ok).toBe(true)
+    expect(deleteComment).toHaveBeenCalledWith('t1_abc')
+    expect(waitForComment).not.toHaveBeenCalled()
+  })
+
   it('reports a failed delete to the confirmation form', async () => {
     deleteComment.mockRejectedValueOnce(new RedditRateLimitError(3))
     const result = await actions.deleteCommentForm(null, form({ thing: 't1_abc', post: 'p1' }))
