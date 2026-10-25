@@ -16,7 +16,8 @@ const cookieOptions = {
 
 /**
  * The no-JS path for the theme. With JavaScript, `ThemeToggle` applies the
- * theme and writes the cookie itself, so nothing needs re-rendering.
+ * theme and writes the cookie itself, so nothing needs re-rendering. A cookie
+ * is all it touches, so it needs no session.
  */
 export async function setTheme(formData: FormData): Promise<ActionResult> {
   const theme = formData.get('theme')
@@ -26,7 +27,10 @@ export async function setTheme(formData: FormData): Promise<ActionResult> {
   return { ok: true, data: undefined }
 }
 
-/** Media blur is applied by the server, so the page re-renders. */
+/**
+ * Media blur is applied by the server, so the page re-renders. It writes only
+ * a cookie, so it needs no session either.
+ */
 export async function setBlurNsfw(formData: FormData): Promise<ActionResult<{ blur: boolean }>> {
   const blur = formData.get('blur')
   if (blur !== 'on' && blur !== 'off') return invalid()
