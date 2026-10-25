@@ -5,13 +5,13 @@ description: Triage production errors for reddit-viewer.com from Datadog, Coolif
 
 # Triage errors
 
-The site runs on Coolify (app `viewer-for-reddit`, UUID `vlbknz4prtp9hohbalsrgjh0`) behind Cloudflare. Datadog has browser RUM and logs, server logs over HTTP intake, APM traces (`dd-trace` preloaded by `npm start`, sent to the "Datadog Agent" Coolify service), and one synthetics uptime monitor. APM spans from before 2026-10-11 came from the old v9 instance.
+The site runs on Coolify (app `viewer-for-reddit`) behind Cloudflare. Datadog has browser RUM and logs, server logs over HTTP intake, APM traces (`dd-trace` preloaded by `npm start`, sent to the "Datadog Agent" Coolify service), and one synthetics uptime monitor.
 
 Read-only. Never start the dev server, and never change monitors, synthetics, Coolify, or Cloudflare settings while triaging.
 
 ## 1. Set the window
 
-Convert the user's start time to UTC (the user is in US Central; CDT is UTC-5). Default to the last 24 hours if none is given.
+Convert the user's start time to UTC. Default to the last 24 hours if none is given.
 
 ## 2. Datadog errors
 
@@ -23,17 +23,16 @@ Write output to the session scratchpad. Group by `source:` tag (`source:browser`
 
 Also check monitors: `pup monitors list` (look at `overall_state`). The "APM 5xx responses" monitor reads No Data until a 5xx happens; that is normal.
 
-Server logs (`source:nextjs`) such as `fetchUserInfo`, "Invalid autocomplete search query", or "possible CSRF attack" came from the old v9 instance, not v10. Grep the repo for a message before treating it as current.
-
 ## 3. Coolify and Cloudflare
 
-Coolify MCP (deferred tools, load with ToolSearch):
+Coolify MCP. Find the app by name first, then use its UUID for the rest:
 
-- `list_deployments(application_uuid=vlbknz4prtp9hohbalsrgjh0)`: newest deployment and its status.
+- `list_applications` or `search_resources` with `viewer-for-reddit`: the app's UUID.
+- `list_deployments(application_uuid=...)`: newest deployment and its status.
 - `get_deployment(include_log_summary=true)` for a failed build.
 - `get_logs` for the running container's server output. It only works while the app is running.
 
-Cloudflare MCP (`mcp__cloudflare-api__*`): check for 5xx at the edge, WAF blocks, or cache rules that could explain an error. Read-only.
+Cloudflare MCP: check for 5xx at the edge, WAF blocks, or cache rules that could explain an error. Read-only.
 
 ## 4. Triage
 
@@ -41,7 +40,7 @@ For each distinct error, give: count, where (browser or server, path), first and
 
 For server errors with APM on, pull traces for the same window: `pup traces aggregate` or the Datadog MCP, filtered to `service:reddit-viewer status:error`.
 
-Cloudflare sits in front. A browser `Fetch error POST` whose stack is HTML titled `502: Bad gateway` means Cloudflare could not reach the origin. Compare its time with Coolify deployments before blaming code; one that matches no deploy points at the origin or the home network.
+Cloudflare sits in front. A browser `Fetch error POST` whose stack is HTML titled `502: Bad gateway` means Cloudflare could not reach the origin. Compare its time with Coolify deployments before blaming code; one that matches no deploy points at the origin or the path to it.
 
 Known non-issues: `Uncaught "Script error."` with no stack from the Instagram iOS in-app browser or Mobile Safari (injected scripts). `Can't find variable: EmptyRanges` from `syncControl`/`endTimeForBufferedRangeContainingCurrentTime` (WebKit's own media controls). `XHR error` on `v.redd.it` and `Fetch error` on `preview.redd.it` in one session (Reddit media or a dropped connection). View transition aborts ("Viewport size changed", "Prepaint layout check failed"). A single `UnrecognizedActionError` within minutes of a deploy (a tab left open across it). "Transition was aborted because of invalid state. Document hidden" (a backgrounded dev tab). A lone `Minified React error #419` from one device is a watch item, not a fix, unless it repeats or a server error matches.
 
