@@ -36,9 +36,25 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      # playwright.config.ts builds and starts the app with dummy credentials
-      # pointed at e2e/mock-reddit; no secrets are needed.
+      - id: playwright
+        run: echo "version=$(npx playwright --version | cut -d' ' -f2)" >> "$GITHUB_OUTPUT"
+      - id: browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - if: steps.browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+      # The browsers came from the cache, but the system libraries they need didn't.
+      - if: steps.browsers.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+      - uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'public/content/**', 'next.config.ts') }}
+          restore-keys: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+      # playwright.config.ts builds and starts the app and the mock Reddit;
+      # the mock credentials are dummy, so no secrets are needed.
       - run: npm run test:e2e
         env:
           CI: true
