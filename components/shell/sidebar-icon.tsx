@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- tiny Reddit-hosted icons; see components/media/post-media.tsx */
+/* oxlint-disable nextjs/no-img-element -- tiny Reddit-hosted icons; see components/media/post-media.tsx */
 import styles from './sidebar.module.css'
 
 export function SidebarIcon({ src, fallback }: { src: string | null; fallback: string }) {

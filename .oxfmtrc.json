@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "sortPackageJson": false,
+  // Imports go in three groups: packages (Node built-ins, then Next and React, then the rest),
+  // `@/` paths, and same-folder `./` paths.
+  "sortImports": {
+    "customGroups": [
+      { "groupName": "next-react", "elementNamePattern": ["next", "next/**", "react", "react/**"] }
+    ],
+    "groups": [
+      ["side_effect", "side_effect_style"],
+      "builtin",
+      { "newlinesBetween": false },
+      "next-react",
+      { "newlinesBetween": false },
+      "external",
+      "internal",
+      ["parent", "sibling", "index"],
+      "unknown"
+    ]
+  },
+  // Generated output, fixtures, and local settings.
+  "ignorePatterns": [
+    "/.claude/settings.local.json",
+    "docs",
+    "fixtures",
+    "lib/reddit/schemas/generated.ts",
+    "tests/media/corpus",
+    "**/*.module.css.d.ts",
+    "**/*.module.css.d.ts.map",
+    "package-lock.json"
+  ]
+}

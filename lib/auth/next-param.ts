@@ -21,6 +21,7 @@ export function safeNext(value: string | null | undefined, fallback = '/home'): 
       candidate.startsWith('//') ||
       candidate.includes('\\') ||
       // Control characters can be normalized away by browsers into `//`.
+      // oxlint-disable-next-line eslint/no-control-regex -- matching control characters is the check
       /[\u0000-\u001f\u007f]/.test(candidate)
     ) {
       return fallback

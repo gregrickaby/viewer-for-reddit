@@ -26,6 +26,7 @@ export default defineConfig({
         'components/**/*.{ts,tsx}',
         'scripts/**/*.ts',
         'stylelint/**/*.ts',
+        'oxlint/**/*.ts',
         'proxy.ts',
       ],
       exclude: [

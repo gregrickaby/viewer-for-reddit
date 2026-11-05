@@ -1,6 +1,6 @@
 # Code standards
 
-How code in this repo is written. `AGENTS.md` covers the architecture: the single Reddit client, the session, Server Actions, and URL state. This file covers the code itself. ESLint, Stylelint, and Prettier enforce the rules marked (lint). Review catches the rest.
+How code in this repo is written. `AGENTS.md` covers the architecture: the single Reddit client, the session, Server Actions, and URL state. This file covers the code itself. Oxlint, Stylelint, and Oxfmt enforce the rules marked (lint). Review catches the rest.
 
 ## TypeScript
 
@@ -13,7 +13,7 @@ How code in this repo is written. `AGENTS.md` covers the architecture: the singl
 
 - Named exports only (lint). Default exports are for files Next.js or a tool loads by default: route files (`page`, `layout`, `error`, `not-found`, `sitemap`, and the rest) and `*.config.ts`.
 - No barrel files. Import from the module that defines the thing.
-- Imports sort into three groups, separated by a blank line: packages (Node built-ins, then `next` and `react`, then the rest), `@/` paths, and `./` siblings. Prettier sorts them on format (lint). Side-effect imports (`import 'server-only'`, global CSS) stay where they are, so put them first.
+- Imports sort into three groups, separated by a blank line: packages (Node built-ins, then `next` and `react`, then the rest), `@/` paths, and `./` siblings. Oxfmt sorts them on format (lint). Oxfmt moves side-effect imports (`import 'server-only'`, global CSS) to the top and keeps their order.
 - Import from another folder with `@/`, and from the same folder with `./` (lint bans `../`).
 - Modules in `lib/reddit/`, `lib/media/`, `lib/auth/`, and `lib/env.ts` start with `import 'server-only'` (lint). Islands may import only types from them (lint).
 - A module that islands share with the server (`lib/view-models.ts`, `lib/url-state.ts`, `lib/format.ts`) holds types or pure functions only.

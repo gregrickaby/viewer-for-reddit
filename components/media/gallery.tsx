@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets */
+/* oxlint-disable nextjs/no-img-element -- Reddit already serves resized renditions and srcsets */
 import { AutoplayVideo } from '@/components/islands/autoplay-video'
 import { GalleryLightbox } from '@/components/islands/gallery-lightbox'
 import { RedditVideo } from '@/components/islands/reddit-video'

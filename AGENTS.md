@@ -14,7 +14,7 @@ Version 10 of [Viewer for Reddit](https://github.com/gregrickaby/viewer-for-redd
 
 ## Stack
 
-Next.js 16 (App Router, Cache Components, Partial Prerendering, typed routes, React Compiler) · React 19.3 · TypeScript (strict) · CSS Modules with cascade layers · Zod 4 · iron-session (sealed cookies) · sanitize-html · hls.js · Vitest 5 + Testing Library + happy-dom · Playwright against a mock Reddit · ESLint + Stylelint + Prettier.
+Next.js 16 (App Router, Cache Components, Partial Prerendering, typed routes, React Compiler) · React 19.3 · TypeScript (strict) · CSS Modules with cascade layers · Zod 4 · iron-session (sealed cookies) · sanitize-html · hls.js · Vitest 5 + Testing Library + happy-dom · Playwright against a mock Reddit · Oxlint + Stylelint + Oxfmt.
 
 ## Not what you know
 
@@ -25,7 +25,7 @@ Next.js 16 (App Router, Cache Components, Partial Prerendering, typed routes, Re
 
 ```bash
 npm run check         # CSS module types + typecheck + lint + unit tests with coverage. REQUIRED before done
-npm run format        # Prettier (CI runs format:check)
+npm run format        # Oxfmt (CI runs format:check)
 npm run test:watch    # Vitest in watch mode
 npm run test:e2e      # Playwright: builds the app and runs it against e2e/mock-reddit (no credentials)
 npm run build         # Production build

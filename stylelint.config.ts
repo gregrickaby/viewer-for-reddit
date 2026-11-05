@@ -1,7 +1,7 @@
 import type { Config } from 'stylelint'
 
 const config: Config = {
-  extends: ['stylelint-config-standard', 'stylelint-config-css-modules'],
+  extends: ['stylelint-config-standard'],
   plugins: ['./stylelint/require-components-layer.ts'],
   ignoreFiles: ['.next/**', 'coverage/**', 'node_modules/**'],
   rules: {
@@ -34,6 +34,11 @@ const config: Config = {
         'selector-type-no-unknown': [true, { ignoreTypes: ['left', 'right'] }],
         'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['target-current'] }],
       },
+    },
+    {
+      // `:global` keeps Reddit's own markup classes unhashed inside a CSS Module.
+      files: ['components/reddit-html.module.css'],
+      rules: { 'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }] },
     },
     {
       // Reduced-motion overrides must beat component animations.

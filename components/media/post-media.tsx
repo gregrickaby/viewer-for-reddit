@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- Reddit already serves resized renditions and srcsets; the image optimizer would add a hop and a server cache of NSFW media. */
+/* oxlint-disable nextjs/no-img-element -- Reddit already serves resized renditions and srcsets; the image optimizer would add a hop and a server cache of NSFW media. */
 import type { ReactNode } from 'react'
 
 import { AutoplayVideo } from '@/components/islands/autoplay-video'

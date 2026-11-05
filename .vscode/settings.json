@@ -1,8 +1,7 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
-  "eslint.run": "onSave",
   "js/ts.suggest.autoImports": true,
   "js/ts.updateImportsOnFileMove.enabled": "always",
   "[typescript]": {

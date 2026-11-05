@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- a Reddit-hosted avatar; see components/media/post-media.tsx */
+/* oxlint-disable nextjs/no-img-element -- a Reddit-hosted avatar; see components/media/post-media.tsx */
 import type { Route } from 'next'
 import Link from 'next/link'
 
