@@ -30,7 +30,8 @@ export type Distinguished = 'moderator' | 'admin' | null
 
 /** A piece of flair: text, or one of the community's emoji (Reddit writes them `:name:`). */
 export type FlairPart =
-  { kind: 'text'; text: string } | { kind: 'emoji'; name: string; src: string }
+  | { kind: 'text'; text: string }
+  | { kind: 'emoji'; name: string; src: string }
 
 export interface FlairView {
   /** The flair as plain text, with emoji as their `:name:` codes. */
@@ -209,7 +210,8 @@ export interface MoreNode {
 }
 
 export type CommentNode =
-  { kind: 'comment'; comment: CommentView; replies: CommentNode[] } | MoreNode
+  | { kind: 'comment'; comment: CommentView; replies: CommentNode[] }
+  | MoreNode
 
 // ── Live threads ─────────────────────────────────────────────────────────────
 

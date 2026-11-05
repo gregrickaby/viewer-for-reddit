@@ -4,7 +4,13 @@
  */
 
 export type ActionErrorCode =
-  'INVALID' | 'RATE_LIMITED' | 'FORBIDDEN' | 'NOT_FOUND' | 'UNAVAILABLE' | 'REDDIT' | 'UNKNOWN'
+  | 'INVALID'
+  | 'RATE_LIMITED'
+  | 'FORBIDDEN'
+  | 'NOT_FOUND'
+  | 'UNAVAILABLE'
+  | 'REDDIT'
+  | 'UNKNOWN'
 
 export interface ActionError {
   code: ActionErrorCode
