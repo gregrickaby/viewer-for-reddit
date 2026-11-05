@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- Reddit-hosted icon and banner; see components/media/post-media.tsx */
+/* oxlint-disable nextjs/no-img-element -- Reddit-hosted icon and banner; see components/media/post-media.tsx */
 import { SubscribeButton } from '@/components/islands/subscribe-button'
 import { AddToMultiMenu } from '@/components/multi/add-to-multi-menu'
 import { RedditHtml } from '@/components/reddit-html'

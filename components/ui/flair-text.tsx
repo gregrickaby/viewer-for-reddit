@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element -- community emoji are tiny images Reddit already serves */
+/* oxlint-disable nextjs/no-img-element -- community emoji are tiny images Reddit already serves */
 import { Fragment } from 'react'
 
 import type { FlairView } from '@/lib/view-models'

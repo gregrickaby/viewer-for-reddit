@@ -49,10 +49,10 @@ Requirements: Node 24 and npm.
 | ----------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `npm run dev`                 | Dev server on https://localhost:3000                                                                 |
 | `npm run build` / `npm start` | Production build and server                                                                          |
-| `npm run check`               | CSS module types, `tsc`, ESLint and Stylelint, then unit tests with coverage                         |
+| `npm run check`               | CSS module types, `tsc`, Oxlint and Stylelint, then unit tests with coverage                         |
 | `npm test`                    | Vitest with coverage; fails below 90% branches, functions, lines, or statements                      |
 | `npm run test:e2e`            | Playwright: builds the app and runs it against a mock Reddit (no credentials needed)                 |
-| `npm run format`              | Prettier                                                                                             |
+| `npm run format`              | Oxfmt                                                                                                |
 | `npm run types:generate`      | Regenerates `lib/reddit/schemas/generated.ts` from the committed samples in `fixtures/reddit/things` |
 | `npm run media:corpus`        | Rebuilds `tests/media/corpus` from local raw captures                                                |
 

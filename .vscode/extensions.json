@@ -1,8 +1,7 @@
 {
   "recommendations": [
     "EditorConfig.EditorConfig",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
+    "oxc.oxc-vscode",
     "stylelint.vscode-stylelint",
     "GitHub.copilot-chat"
   ]

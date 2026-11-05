@@ -1,6 +1,6 @@
 'use client'
 
-/* eslint-disable @next/next/no-img-element -- the poster is Reddit's own resized preview */
+/* oxlint-disable nextjs/no-img-element -- the poster is Reddit's own resized preview */
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
 
 import { registerPlayer } from './player-registry'

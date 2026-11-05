@@ -23,7 +23,7 @@ Read `AGENTS.md` and `docs/code-standards.md`. Read another file only when a fin
 
 | Concern                        | File                                               |
 | ------------------------------ | -------------------------------------------------- |
-| Lint rules, allowed HTML       | `eslint.config.ts`                                 |
+| Lint rules, allowed HTML       | `.oxlintrc.json`                                   |
 | CSS layers, tokens             | `stylelint.config.ts`, `app/styles/tokens.css`     |
 | Coverage thresholds            | `vitest.config.ts`                                 |
 | Reddit calls, errors           | `lib/reddit/client.ts`, `lib/reddit/errors.ts`     |
