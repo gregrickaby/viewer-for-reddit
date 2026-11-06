@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": [".claude/skills"],
+  "mcp": {
+    "servers": {
+      "next-devtools": {
+        "type": "local",
+        "command": ["npx", "-y", "next-devtools-mcp@latest"]
+      }
+    }
+  }
+}
