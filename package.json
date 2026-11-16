@@ -35,7 +35,7 @@
   "dependencies": {
     "@datadog/browser-logs": "7.17.0",
     "@datadog/browser-rum": "7.17.0",
-    "@datadog/browser-rum-nextjs": "7.17.0",
+    "@datadog/browser-rum-nextjs": "7.17.1",
     "dd-trace": "6.24.0",
     "hls.js": "1.7.4",
     "iron-session": "9.0.1",
